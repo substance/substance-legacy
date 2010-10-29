@@ -1,0 +1,108 @@
+* {
+  box-sizing:border-box;
+  -webkit-box-sizing:border-box;
+  -moz-box-sizing:border-box;
+}
+
+li        {  -webkit-transition: background, background-color, border-color, color, opacity 0.35s linear; }
+a         {  -webkit-transition: background, background-color, border-color, color, opacity 0.35s linear; }
+label     {  -webkit-transition: background, background-color, border-color, color, opacity 0.35s linear; }
+input     {  -webkit-transition: background, background-color, border-color, color, opacity 0.35s linear; }
+textarea  {  -webkit-transition: background, background-color, border-color, color, opacity 0.35s linear; }
+
+.lpl.buttons {
+  clear:both;
+  height:40px;
+  margin:10px 5px 5px 0;
+  border:1px solid #0fa;
+}
+
+.lpl.button {
+  display:block;
+  float:right;
+  height:30px;
+  padding:2px 10px;
+  margin-left:5px;
+  background:#6a9;
+  -webkit-border-radius:6px;
+  -moz-border-radius:6px;
+  border-radius:6px;
+  border:1px solid rgba(100,100,100,1);
+}
+
+.lpl.widget_container {
+  position:relative;
+  margin-bottom:20px;
+  padding:5px 10px;
+  background:#e5e5e5;
+  background: -webkit-gradient(linear, 0% 0%, 0% 30%, from(#fff), to(#e5e5e5));
+  color:#333;
+  -webkit-border-radius:6px;
+  -moz-border-radius:6px;
+  border-radius:6px;
+  border-bottom:1px solid rgba(255,255,255,0.5);
+  -webkit-box-shadow:0px 5px 8px rgba(0,0,0,0.3);
+  -moz-box-shadow:0px 5px 8px rgba(0,0,0,0.3);
+  box-shadow:0px 5px 8px rgba(0,0,0,0.3);
+}
+
+.lpl.texteditor {
+  position:relative;
+  margin:0 5px 0 0;
+}
+
+.lpl.texteditor label {
+  position:relative;
+  display:block;
+  margin:2px 0;
+  padding:0 5px;
+  font-size:0.8em;
+  text-align:right;
+  text-transform:uppercase;
+}
+
+.lpl.texteditor .lpl.inputcombo label {
+  opacity:0.25;
+}
+
+.lpl.texteditor .lpl.inputcombo:hover label { opacity:1.0; }
+
+.lpl.texteditor input {
+  position:relative;
+  display:block;
+  width:100%;
+  height:30px;
+  margin:0 auto;
+  padding:0 5px;
+  font-size:18px;
+  -webkit-border-radius:3px;
+  -moz-border-radius:3px;
+  border-radius:3px;
+  border:1px solid transparent;
+  background-color:rgba(255,255,255,0.4);
+}
+
+.lpl.texteditor textarea {
+  position:relative;
+  display:block;
+  width:100%;
+  height:250px;
+  margin:0 auto;
+  padding:5px;
+  font-size:18px;
+  -webkit-border-radius:3px;
+  -moz-border-radius:3px;
+  border-radius:3px;
+  border:1px solid transparent;
+  resize:none;
+  background-color:rgba(255,255,255,0.4);
+}
+
+.lpl.texteditor input:hover, .lpl.texteditor textarea:hover { 
+  background-color:rgba(255,255,255,0.9);
+}
+
+.lpl.texteditor input:focus, .lpl.texteditor textarea:focus { 
+  background-color:rgba(255,255,255,1);
+  -webkit-box-shadow:0px 2px 4px rgba(0,0,0,0.25);
+}
