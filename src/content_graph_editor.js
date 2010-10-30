@@ -42,7 +42,7 @@ var Editor = function(cg) {
   // TODO: The Widgets should be responsible for updating the node's data
   var updateContentNode = function(node) {
     // update node properties
-    $('form#edit_node').serializeArray().forEach(function(prop) {
+    $('#edit_node').serializeArray().forEach(function(prop) {
       node.data[prop.name] = prop.value;
     });
     
