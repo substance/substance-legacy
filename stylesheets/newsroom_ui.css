@@ -36,12 +36,12 @@ body {
   min-height:700px;
   margin:0 10px 20px 10px;
   padding:10px 30px;
-  background:#f5f5f5;
+  background:#f0f0f0;
   color:#333;
   border-top:1px solid rgba(255,255,255,0.75);
-  -webkit-border-radius:3px;
-  -moz-border-radius:3px;
-  border-radius:3px;
+  -webkit-border-radius:5px;
+  -moz-border-radius:5px;
+  border-radius:5px;
   -webkit-box-shadow:0px 2px 4px rgba(0,0,0,0.5);
   -moz-box-shadow:0px 2px 4px rgba(0,0,0,0.5);
   box-shadow:0px 2px 4px rgba(0,0,0,0.5);
