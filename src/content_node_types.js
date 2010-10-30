@@ -1,6 +1,17 @@
 // Register ContentNode types (including meta information).
 
 ContentNode.types = {
+  "document": {
+    name: "Document",
+    allowedChildren: ["section"],
+    properties: [
+      {
+        "key": "title",
+        "name": "Title",
+        "defaultValue": "A document title"
+      }
+    ]
+  },
   "section": {
     name: "Section",
     allowedChildren: ["paragraph"],

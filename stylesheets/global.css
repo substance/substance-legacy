@@ -100,15 +100,22 @@ div.bespin {
   top: 10px;
   z-index: 50000;
   padding: 2px;
-  background: #444;
 }
 
 #actions a {
   color: #eee;
+  background: #444;
+  padding: 3px;
+  text-decoration: none;
+  font-size: 10px;
+  text-transform: uppercase;
+  border-radius: 5px;
+  margin: 2px;
 }
 
 #actions a:hover {
   color: white;
+  background: black;
 }
 
 

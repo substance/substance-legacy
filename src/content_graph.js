@@ -40,7 +40,6 @@ ContentNode.prototype.build = function() {
       }
       
       that.set('children', nodeId, n);
-      
       // Register parent
       n.parent = that;
     });
@@ -65,6 +64,11 @@ ContentNode.prototype.addChild = function(node, referenceNode) {
   that.g.set('nodes', node.key, node);
 };
 
+ContentNode.prototype.removeChild = function(key) {
+  this.all('children').delete(key);
+  
+  // TODO: Also remove from g.all('nodes') when no longer referenced
+};
 
 // ContentGraph
 // -----------------------------------------------------------------------------
@@ -105,7 +109,7 @@ var ContentGraph = function(g) {
   });
 };
 
-ContentGraph.prototype = uv.inherit(uv.Node);
+ContentGraph.prototype = uv.inherit(ContentNode);
 
 // Generates a unique id for new nodes
 ContentGraph.prototype.generateId = function () {
@@ -140,6 +144,7 @@ ContentGraph.prototype.serialize = function() {
   
   return result;
 };
+
 
 
 // HTMLRenderer
@@ -177,7 +182,7 @@ var HTMLRenderer = function(root) {
       var converter = new Showdown.converter();
       
       str += converter.makeHtml(node.data.content);
-      // node.all('children').each(function(index, node) {
+      // node.all('children').each(function(node, key, index) {
       //   str += renderers[node.type](node); // node.render();
       // });
       

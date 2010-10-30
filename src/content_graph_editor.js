@@ -39,6 +39,7 @@ var Editor = function(cg) {
     bindEvents();
   };
   
+  // TODO: The Widgets should be responsible for updating the node's data
   var updateContentNode = function(node) {
     // update node properties
     $('form#edit_node').serializeArray().forEach(function(prop) {
@@ -75,11 +76,39 @@ var Editor = function(cg) {
     
     $('#actions').css('left', $node.offset().left).css('top', $node.offset().top+$node.height());
     
-    // init actions (context-based links and bind action events)
-    $('#actions').html('<a href="#" type="paragraph" class="add_sibling">add paragraph</a> <a href="#" type="section" class="add_sibling">add section</a>');
-    $('#actions a').click(function() {
+    // Context based node insertion based on node type specification
+    var allowedChilds = ContentNode.types[node.type].allowedChildren;
+    var allowedSiblings = ContentNode.types[node.parent.type].allowedChildren;
+    
+    var actions = '';
+    uv.each(allowedChilds, function(c) {
+      actions += '<a href="#" type="'+c+'" class="add_child">add child '+c+'</a>';
+    });
+    
+    uv.each(allowedSiblings, function(c) {
+      actions += '<a href="#" type="'+c+'" class="add_sibling">add '+c+'</a>';
+    });
+    
+    actions += '<a href="#" type="section" class="remove_node">remove</a>';
+    $('#actions').html(actions);
+
+    // Add siblings
+    $('#actions a.add_sibling').click(function() {
       // Create node of a given type
       createSibling(that.selectedNode, $(this).attr('type'));
+      return false;
+    });
+    
+    // Add child
+    $('#actions a.add_child').click(function() {
+      // Create node of a given type
+      createChild(that.selectedNode, $(this).attr('type'));
+      return false;
+    });
+    
+    // Delete node
+    $('#actions a.remove_node').click(function() {
+      removeNode(that.selectedNode);
       return false;
     });
     
@@ -99,6 +128,26 @@ var Editor = function(cg) {
         
     renderNode(predecessor.parent);
     selectContentNode(newNode.key);
+  };
+  
+  // Create a child node of a given type
+  var createChild = function(parent, type) {
+    var newNode = createEmptyNode(type);
+    newNode.build();
+    newNode.parent = parent;
+    
+    // Attach to ContentGraph
+    parent.addChild(newNode);
+        
+    renderNode(parent);
+    selectContentNode(newNode.key);
+  };
+  
+  // Remove a node from the document
+  var removeNode = function(node) {
+    node.parent.removeChild(node.key);
+    
+    renderNode(node.parent);
   };
   
   // Update ContentNode
@@ -126,7 +175,7 @@ var Editor = function(cg) {
     
     // Save Document
     $('#save_document').click(function() {
-      alert('persistence to couchdb is not implemented yet. However the the serialized DocumentGraph is alreaedy available. Click OK.');
+      alert('Persistence to CouchDB is not implemented yet. However the the serialized DocumentGraph is alreaedy available. Click OK.');
       alert(JSON.stringify(cg.serialize()));
       return false;
     });
