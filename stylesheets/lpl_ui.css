@@ -13,6 +13,9 @@ label     {  -webkit-transition: background, background-color, border-color, col
 input     {  -webkit-transition: background, background-color, border-color, color, opacity 0.35s linear; }
 textarea  {  -webkit-transition: background, background-color, border-color, color, opacity 0.35s linear; }
 
+
+/*  BUTTONS  */
+
 .lpl.buttons {
   clear:both;
   margin:10px 5px 5px 0;
@@ -86,7 +89,9 @@ textarea  {  -webkit-transition: background, background-color, border-color, col
   background: -moz-linear-gradient(top, rgba(213,0,20,0.75), rgba(143,0,0,0.8));
 }
 
-.lpl.widget_container {
+/*  WIDGETS  */
+
+.lpl.widget-container {
   position:relative;
   margin-bottom:20px;
   padding:5px 10px;
@@ -103,9 +108,179 @@ textarea  {  -webkit-transition: background, background-color, border-color, col
   box-shadow:0px 5px 8px rgba(0,0,0,0.3);
 }
 
+.lpl.widget-container.inactive {
+  background:#e5e5e5  url(assets/stripes.png);
+}
+
+.lpl.widget-container.inactive > * { opacity:0.5; }
+
+.lpl.progress-container {
+  position:relative;
+  height:18px;
+  margin:5px 0;
+  background:#666;
+  background: -webkit-gradient(linear, 0% 0%, 0% 70%, from(#333), to(#666966));
+  background: -moz-linear-gradient(top, #333, #666966);
+  -webkit-border-radius:5px;
+  -moz-border-radius:5px;
+  border-radius:5px;
+  -webkit-box-shadow:0px 1px 0px rgba(255,255,255,0.5), inset 0px 1px 4px rgba(0,0,0,0.75);
+  -moz-box-shadow:0px 1px 0px rgba(255,255,255,0.5), inset 0px 1px 4px rgba(0,0,0,0.75);
+  box-shadow:0px 1px 0px rgba(255,255,255,0.5), inset 0px 1px 4px rgba(0,0,0,0.75);
+  overflow:hidden;
+}
+
+.lpl.progress-container.white {
+  background: rgb(218,220,218);
+  background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(rgb(218,220,218)), to(rgb(250,252,250)));
+  background: -moz-linear-gradient(top, rgb(218,220,218), rgb(250,252,250));
+  -webkit-box-shadow:0px 1px 0px rgba(255,255,255,0.5), inset 0px 1px 3px rgba(0,0,0,0.35);
+  -moz-box-shadow:0px 1px 0px rgba(255,255,255,0.5), inset 0px 1px 3px rgba(0,0,0,0.35);
+  box-shadow:0px 1px 0px rgba(255,255,255,0.5), inset 0px 1px 3px rgba(0,0,0,0.35);
+}
+
+.lpl.progress-bar {
+  position:relative;
+  height:100%;
+  background: rgba(148,207,13,1);
+  background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(rgb(178,237,43)), color-stop(0.7, rgb(148,207,13)), color-stop(0.701, rgb(168,215,23)), to(rgb(148,207,13)));
+  background: -moz-linear-gradient(top, rgb(178,237,43), rgb(148,207,13) 70%, rgb(168,215,23) 70.1%, rgb(148,207,13));
+  -webkit-border-radius:4px;
+  -moz-border-radius:4px;
+  border-radius:4px;
+  border:1px solid rgba(0,50,0,0.5);
+  -webkit-box-shadow:0px 0px 2px rgba(0,0,0,0.3);
+  -moz-box-shadow:0px 0px 2px rgba(0,0,0,0.2);
+  box-shadow:0px 0px 2px rgba(0,0,0,0.2);
+  -webkit-background-clip: padding-box;
+}
+
+@-webkit-keyframes stripeScroller {
+  from { background-position-x:40px; background-position-y:-9px; }
+  to   { background-position-x:0px; background-position-y:-9px; }
+}
+
+.lpl.progress-bar.stripes {
+  background: rgba(148,207,13,1) url(assets/progress.png) repeat-x 0px -9px;
+}
+
+.lpl.progress-bar.animated {
+  -webkit-animation: stripeScroller 1s infinite linear;
+}
+
+.lpl.toggle {
+  position:relative;
+  width:100px;
+  height:30px;
+  margin-top:5px;
+  margin-bottom:5px;
+  background: rgba(200,200,200,1);
+  background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(rgb(210,212,210)), color-stop(0.5, rgb(230,232,230)), color-stop(0.501, rgb(240,242,240)), to(rgb(250,252,250)));
+  background: -moz-linear-gradient(top, rgb(210,212,210), rgb(230,232,230) 50%, rgb(240,242,240) 50.1%, rgb(250,252,250));
+  -webkit-border-radius:5px;
+  -moz-border-radius:5px;
+  border-radius:5px;
+  -webkit-box-shadow:0px 1px 0px rgba(255,255,255,0.75), inset 0px 1px 4px rgba(0,0,0,0.75), inset 0px 0px 1px rgba(0,0,0,0.5);
+  -moz-box-shadow:0px 1px 0px rgba(255,255,255,0.75), inset 0px 1px 4px rgba(0,0,0,0.75), inset 0px 0px 1px rgba(0,0,0,0.5);
+  box-shadow:0px 1px 0px rgba(255,255,255,0.75), inset 0px 1px 4px rgba(0,0,0,0.75), inset 0px 0px 1px rgba(0,0,0,0.5);
+  overflow:hidden;
+}
+
+.lpl.toggle * {  -webkit-transition: width 0.2s; }
+
+
+.lpl.toggle-button {
+  position:relative;
+  height:100%;
+  width:50%;
+  background: rgb(218,220,218);
+  background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(rgb(218,220,218)), to(rgb(250,252,250)));
+  background: -moz-linear-gradient(top, rgb(218,220,218), rgb(250,252,250));
+  -webkit-border-radius:4px;
+  -moz-border-radius:4px;
+  border-radius:4px;
+  border:1px solid rgba(0,0,0,0.4);
+  -webkit-box-shadow: inset 0px 1px 0px rgba(255,255,255,0.5), 0px 0px 2px rgba(0,0,0,0.25);
+  -moz-box-shadow: inset 0px 1px 0px rgba(255,255,255,0.5), 0px 0px 2px rgba(0,0,0,0.25);
+  box-shadow: inset 0px 1px 0px rgba(255,255,255,0.5), 0px 0px 2px rgba(0,0,0,0.25);
+  z-index:100;
+}
+
+.lpl.toggle-off-value {
+  position:absolute;
+  top:0px;
+  left:0px;
+  width:50%;
+  height:100%;
+  color:#777;
+  font-size:90%;
+  font-weight:bold;
+  line-height:240%;
+  text-align:center;
+  text-transform:uppercase;
+  text-shadow:0px 1px 0px rgba(255,255,255,0.75);
+}
+
+.lpl.toggle-on-container {
+  position:absolute;
+  top:0px;
+  right:0%;
+  width:100%;
+  height:100%;
+  background: rgba(200,200,200,1);
+  background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(rgb(109,186,19)), color-stop(0.5, rgb(143,200,29)), color-stop(0.501, rgb(155,210,13)), to(rgb(178,237,43)));
+  background: -moz-linear-gradient(top, rgb(109,186,19), rgb(143,200,29) 50%, rgb(155,210,13) 50.1%, rgb(178,237,43));
+  -webkit-border-radius:5px;
+  -moz-border-radius:5px;
+  border-radius:5px;
+  -webkit-box-shadow:0px 1px 0px rgba(255,255,255,0.5), inset 0px 1px 4px rgba(0,0,0,0.75), inset 0px 0px 1px rgba(0,0,0,0.5);
+  -moz-box-shadow:0px 1px 0px rgba(255,255,255,0.5), inset 0px 1px 4px rgba(0,0,0,0.75), inset 0px 0px 1px rgba(0,0,0,0.5);
+  box-shadow:0px 1px 0px rgba(255,255,255,0.5), inset 0px 1px 4px rgba(0,0,0,0.75), inset 0px 0px 1px rgba(0,0,0,0.5);
+}
+
+.lpl.toggle.on .lpl.toggle-on-container { right:0px; width:100%; }
+.lpl.toggle.off .lpl.toggle-on-container { right:0px; width:50%; }
+
+.lpl.toggle.on .lpl.toggle-button { width:50%; }
+.lpl.toggle.off .lpl.toggle-button { width:100%; }
+
+.lpl.toggle-on-value {
+  position:absolute;
+  top:0px;
+  left:50%;
+  width:50%;
+  height:100%;
+  color:#222;
+  font-size:90%;
+  font-weight:bold;
+  line-height:240%;
+  text-align:center;
+  text-transform:uppercase;
+  text-shadow:0px 1px 0px rgba(255,255,255,0.75);
+  overflow:hidden;
+  z-index:10;
+}
+
+.lpl.toggle.off .lpl.toggle-on-value { width:0%; }
+
+
+.lpl.legend {
+  margin:0;
+  padding:0 2px;
+  font-size:11px;
+  color:rgba(0,0,0,0.5);
+  text-shadow:0px 1px 0px rgba(256,256,256,0.5);
+}
+
+.lpl.legend strong {
+  color:rgba(0,0,0,0.75);
+}
+
+/*  TEXT EDITOR STUFF  */
+
 .lpl.texteditor {
   position:relative;
-  margin:0 5px 0 0;
+  margin:0 0 10px 0;
 }
 
 .lpl.texteditor label {

@@ -11,8 +11,8 @@ JavaScript
 UI Design Work
 ==============
 
-* Progress Bar (used by file upload)
-* Toggles (ON/OFF)
+* <strike>Progress Bar (used by file upload)</strike>
+* <strike>Toggles (ON/OFF)</strike>
 * Scrollbars
 * CSS & Icons for rich text editor
 * UI for inserting & appending content

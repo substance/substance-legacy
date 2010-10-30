@@ -36,7 +36,7 @@ body {
   min-height:700px;
   margin:0 10px 20px 10px;
   padding:10px 30px;
-  background:#f0f0f0;
+  background:#f8f8f8;
   color:#333;
   border-top:1px solid rgba(255,255,255,0.75);
   -webkit-border-radius:5px;
@@ -48,9 +48,9 @@ body {
 }
 
 #nr_sidebar {
-  position:fixed;
+  position:absolute;
   right:0px;
-  top:50px;
+  top:32px;
   width:40%;
 }
 
