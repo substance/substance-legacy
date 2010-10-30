@@ -1,21 +1,204 @@
 /*
------------------------------------------
- Layout and typography
------------------------------------------
+--------------------------------------------------------------------------------
+ Lepilo UI
+--------------------------------------------------------------------------------
 */
 
-body {
+/* lpl green: rgba(148,207,13,1) */
+
+* {
+  box-sizing:border-box;
+  -webkit-box-sizing:border-box;
+  -moz-box-sizing:border-box;
+}
+
+li        {  -webkit-transition: background, background-color, border-color, color, opacity 0.35s linear; }
+a         {  -webkit-transition: background, background-color, border-color, color, opacity 0.35s linear; }
+label     {  -webkit-transition: background, background-color, border-color, color, opacity 0.35s linear; }
+input     {  -webkit-transition: background, background-color, border-color, color, opacity 0.35s linear; }
+textarea  {  -webkit-transition: background, background-color, border-color, color, opacity 0.35s linear; }
+
+.lpl.buttons {
+  clear:both;
+  margin:10px 5px 5px 0;
+  padding:2px 0;
+}
+
+.lpl.button {
+  display:inline;
+  height:50px;
+  padding:4px 10px 5px 10px;
+  margin:10px 5px 10px 0;
+  color:#333;
+  font-size:12px;
+  font-family:"Helvetica Neue Medium", "HelveticaNeue-Medium";
+  font-weight:300;
+  -webkit-font-smoothing: subpixel-antialiased;
+  text-decoration:none;
+  text-shadow:0px 1px 0px rgba(255,255,255,0.5);
+  line-height:1.5em;
+  -webkit-border-radius:5px;
+  -moz-border-radius:5px;
+  border-radius:5px;
+  border:1px solid rgba(100,100,100,0.6);
+  /* border-bottom:1px solid rgba(100,100,100,0.5); */
+  background:#e9e9e9;
+  background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#fafafa), to(#e0e0e0));
+  background: -moz-linear-gradient(top, #fafafa, #e0e0e0);
+  -webkit-background-clip: padding-box;
+  -webkit-box-shadow: inset 0px 0px 1px rgba(255,255,255,0.25), inset 0px 0px 1px rgba(255,255,255,1), 0px 1px 1px rgba(255,255,255,0.35);
+  -moz-box-shadow: inset 0px 0px 1px rgba(255,255,255,1), 0px 1px 1px rgba(255,255,255,0.35);
+  box-shadow: inset 0px 0px 1px rgba(255,255,255,1), 0px 1px 1px rgba(255,255,255,0.35);
+}
+
+.lpl.button:active {
+  border:1px solid rgba(0,0,0,0.35);
+  background:#d9d9d9;
+  background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#e6e6e6), to(#d0d0d0));
+  background: -moz-linear-gradient(top, #e6e6e6, #d0d0d0);
+  -webkit-background-clip: padding-box;
+  -webkit-box-shadow: inset 0px 1px 1px rgba(0,0,0,0.25), 0px 1px 1px rgba(255,255,255,0.35);
+  -moz-box-shadow: inset 0px 1px 1px rgba(0,0,0,0.25), 0px 1px 1px rgba(255,255,255,0.35);
+  box-shadow: inset 0px 1px 1px rgba(0,0,0,0.25), 0px 1px 1px rgba(255,255,255,0.35);
+}
+
+.lpl.button.action {
+  color:#000;
+  background:rgba(148,207,13,1);
+  background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(rgb(225,256,43)), to(rgb(148,207,25)));
+  background: -moz-linear-gradient(top, rgb(225,256,43), rgb(148,207,25));
+  border:1px solid rgba(48,107,0,0.6);
+}
+
+.lpl.button.action:active {
+  background:rgba(128,187,0,1);
+  background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(rgba(188,217,0,0.75)), to(rgba(108,167,0,0.8)));
+  background: -moz-linear-gradient(top, rgba(188,217,0,0.75), rgba(108,167,0,0.8));
+}
+
+.lpl.button.abort {
+  color:#fff;
+  text-shadow:0px -1px 0px rgba(0,0,0,0.5);
+  background:rgba(213,14,60,1);
+  background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(rgb(243,34,80)), to(rgb(183,0,30)));
+  background: -moz-linear-gradient(top, rgb(243,34,80), rgb(183,0,30));
+  border:1px solid rgba(120,0,20,1);
+}
+
+.lpl.button.abort:active {
+  background:rgba(193,0,40,1);
+  background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(rgba(213,0,20,0.75)), to(rgba(143,0,0,0.8)));
+  background: -moz-linear-gradient(top, rgba(213,0,20,0.75), rgba(143,0,0,0.8));
+}
+
+.lpl.widget_container {
+  position:relative;
+  margin-bottom:20px;
+  padding:5px 10px;
+  background:#e5e5e5;
+  background: -webkit-gradient(linear, 0% 0%, 0% 70%, from(#fff), to(#f0f0f0));
+  background: -moz-linear-gradient(top, #fff, #f0f0f0);
+  color:#333;
+  -webkit-border-radius:6px;
+  -moz-border-radius:6px;
+  border-radius:6px;
+  border-bottom:1px solid rgba(255,255,255,0.5);
+  -webkit-box-shadow:0px 5px 8px rgba(0,0,0,0.3);
+  -moz-box-shadow:0px 5px 8px rgba(0,0,0,0.3);
+  box-shadow:0px 5px 8px rgba(0,0,0,0.3);
+}
+
+.lpl.texteditor {
+  position:relative;
+  margin:0 5px 0 0;
+}
+
+.lpl.texteditor label {
+  position:relative;
+  display:block;
+  margin:2px 0;
+  padding:0 5px;
+  font-size:0.8em;
+  text-align:right;
+  text-transform:uppercase;
+}
+
+.lpl.texteditor .lpl.inputcombo label {
+  opacity:0.25;
+}
+
+.lpl.texteditor .lpl.inputcombo:hover label { opacity:1.0; }
+
+.lpl.texteditor input {
+  position:relative;
+  display:block;
+  width:100%;
+  height:30px;
+  margin:0 auto;
+  padding:0 5px;
+  font-size:18px;
+  -webkit-border-radius:3px;
+  -moz-border-radius:3px;
+  border-radius:3px;
+  border:1px solid transparent;
+  background-color:rgba(255,255,255,0.4);
+}
+
+.lpl.texteditor textarea {
+  position:relative;
+  display:block;
+  width:100%;
+  height:250px;
+  margin:0 auto;
+  padding:5px;
+  font-size:18px;
+  -webkit-border-radius:3px;
+  -moz-border-radius:3px;
+  border-radius:3px;
+  border:1px solid transparent;
+  resize:none;
+  background-color:rgba(255,255,255,0.4);
+}
+
+.lpl.texteditor input:hover, .lpl.texteditor textarea:hover { 
+  background-color:rgba(255,255,255,0.9);
+}
+
+.lpl.texteditor input:focus, .lpl.texteditor textarea:focus { 
+  background-color:rgba(255,255,255,1);
+  -webkit-box-shadow:0px 2px 4px rgba(0,0,0,0.25);
+  -moz-box-shadow:0px 2px 4px rgba(0,0,0,0.25);
+  box-shadow:0px 2px 4px rgba(0,0,0,0.25);
+}
+
+
+
+/*
+--------------------------------------------------------------------------------
+ Layout and typography
+--------------------------------------------------------------------------------
+*/
+
+/*body {
   font-family: 'Palatino Linotype', 'Book Antiqua', Palatino, FreeSerif, serif; background: #f5f5f5;
   font-size: 1em;
   line-height: 24px;
   margin: 0; padding: 0;
+}*/
+
+
+body {
+  color:#fff;
+  font-family:"HelveticaNeue", Helvetica, Arial, sans-serif;
+  font-size:14px;
+  line-height:1.5em;
+  background: #343634 url(assets/nr_bg.jpg);
 }
 
 .clear {
   clear: both;
 }
 
-/* Newspaper Color: #FFF5EC */
 
 a { color: #252519; }
 a:hover { text-decoration: underline; color: #19469D; }
@@ -57,7 +240,6 @@ div.bespin {
   position: fixed;
   bottom: 60px;
   left: 20px;
-  background: #ccc;
 }
 
 .content-node {
@@ -100,52 +282,46 @@ div.bespin {
   top: 10px;
   z-index: 50000;
   padding: 2px;
-  background: #444;
 }
 
 #actions a {
   color: #eee;
+  background: #444;
+  padding: 3px;
+  text-decoration: none;
+  font-size: 10px;
+  text-transform: uppercase;
+  border-radius: 5px;
+  margin: 2px;
 }
 
 #actions a:hover {
   color: white;
+  background: black;
 }
 
 
-
-#editor {
+#sidebar {
   padding: 10px;
-  
-  background: #444;
   position: fixed;
   margin-left: 20px;
   width: 450px;
   bottom: 0px;
   top: 0px;
-  
-  color: #eee;
+}
+
+#editor {
+
 }
 
 
 #editor a {
   background: #eee;
   padding: 3px;
-  font-family: 'Helvetica';
 }
 
-#edit_node label {
-  display: block;
-  float: left;
-  width: 100px;
-  text-transform: uppercase;
-  font-size: 10px;
-}
 
-#edit_node textarea {
-  width: 320px;
-  height: 100px;
-  background: #ccc;
-}
+
 
 /*
 -----------------------------------------
@@ -158,10 +334,13 @@ div.bespin {
   padding: 15px;
   padding-top: 1px;
   margin-left: 500px;
+  margin-top: 10px;
   margin-right: 10px;
   border-left: 1px solid #ccc;
   border-right: 1px solid #ccc;
   border-bottom: 1px solid #ccc;
+  border-radius: 5px;
+  color: #333;
 }
 
 #body {
@@ -212,22 +391,6 @@ code {
 }
 
 
-/*
------------------------------------------
- Head up display
------------------------------------------
-*/
-
-#hud {
-  position: fixed; top: 40px; left: 40px; bottom: 40px; right: 40px; background: black; 
-  -moz-border-radius: 15px; -webkit-border-radius: 15px;
-  opacity: 0.8;
-  color: white;
-  padding: 20px;
-  display: none;
-}
-
-#hud a { color: white; }
 
 
 

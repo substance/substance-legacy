@@ -15,20 +15,18 @@
   
   
   <script type="text/x-handlebars-template" name="edit_paragraph">
-    <h3>Edit text</h3>
-    <form id="edit_node">
-    <label>Content</label>
-    
-    <!--<div class="bespin">{{content}}</div>-->
-    
-    <textarea name="content" class="property">{{content}}</textarea>
+    <form class="lpl texteditor" id="edit_node">
+      <div class="lpl inputcombo">
+        <label for="content_text">content:</label>
+        <textarea class="property" name="content" id="content_texteditor">{{content}}</textarea>
+      </div>
     </form>
   </script>
   
   
   <script type="text/x-handlebars-template" name="edit_section">
     <h3>Edit section</h3>
-    <form id="edit_section">
+    <form id="edit_node">
       <label>Section Name</label>
       <input type="text" class="property" name="name" value="{{name}}"/><br/>
     </form>
@@ -76,6 +74,7 @@
   <!-- styles --> 
   <!-- <link id="bespin_base" href="./lib/bespin"/> -->
   <!-- <link href="lib/bespin/BespinEmbedded.css" media="screen" rel="stylesheet" type="text/css" /> -->
+  <!-- <link href="stylesheets/reset.css" media="screen" rel="stylesheet" type="text/css" /> -->
   <link href="stylesheets/global.css" media="screen" rel="stylesheet" type="text/css" />
   
   <!-- libraries --> 
@@ -98,20 +97,22 @@
   
 </head>
 <body>
-  <div id="editor">
-    <h3>Content Node Editor</h3>
-    
-    <div id="node_edit">
-      Please select a node from the document to make changes.
+  <div id="sidebar">
+    <div id="editor" class="lpl widget_container">
+      Please select some content nodes on the right to get started.
     </div>
-  </div>
   
-  <div id="toolbar">
-    <a id="save_document" href="#">Save document</a>
-  </div>  
+    <div class="lpl widget_container">
+      <div class="lpl buttons">
+        <a class="lpl button abort" href="#">Delete Paragraph</a>
+        <a class="lpl button" href="#">Cancel</a>
+        <a class="lpl button action" href="#">Save &amp; Publish</a>
+      </div>
+    </div>
+  </div> <!-- end sidebar -->
   
   <div id="actions">
-    add node
+    
   </div>
   
   <div id="content">
