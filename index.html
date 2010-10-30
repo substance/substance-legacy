@@ -17,17 +17,11 @@
   <script type="text/x-handlebars-template" name="edit_paragraph">
     <h3>Edit text</h3>
     <form id="edit_node">
-
     <label>Content</label>
+    
+    <!--<div class="bespin">{{content}}</div>-->
+    
     <textarea name="content" class="property">{{content}}</textarea>
-    
-    <label>Style</label>
-    <!--<select name="em_level" class="property">
-      <option value="0">Regular</option>
-      <option value="1"{{#em}} selected{{/em}}>Emphasized</option>
-      <option value="2"{{#strong}} selected{{/strong}}>Strong</option>
-    </select>-->
-    
     </form>
   </script>
   
@@ -79,12 +73,19 @@
   </form>
   </script>
   
+  <!-- styles --> 
+  <!-- <link id="bespin_base" href="./lib/bespin"/> -->
+  <!-- <link href="lib/bespin/BespinEmbedded.css" media="screen" rel="stylesheet" type="text/css" /> -->
+  <link href="stylesheets/global.css" media="screen" rel="stylesheet" type="text/css" />
   
   <!-- libraries --> 
   <script src="lib/jquery-1.4.3.min.js"></script>
   <script src="lib/handlebars.js"></script>
   <script src="lib/showdown.js"></script>
-  <script src="lib/unveil.js"></script>
+  <!-- <script src="lib/bespin/BespinEmbedded.js"></script> -->
+
+  <script src="lib/sorted_hash.js"></script>
+  <script src="lib/node.js"></script>
   
   <!-- fixtures -->
   <script src="fixtures/article.js"></script>
@@ -95,8 +96,6 @@
   <script src="src/content_graph_editor.js"></script>
   <script src="src/content_node_widgets.js"></script>
   
-  <!-- styles --> 
-  <link href="stylesheets/global.css" media="screen" rel="stylesheet" type="text/css" />
 </head>
 <body>
   <div id="editor">
@@ -105,15 +104,14 @@
     <div id="node_edit">
       Please select a node from the document to make changes.
     </div>
-    
   </div>
   
   <div id="toolbar">
     <a id="save_document" href="#">Save document</a>
-    <!-- <h5>Actions:</h5>
-    <a id="add_sibling" href="#">Add sibling</a>
-    <a id="add_child" href="#">Add child</a>
-    <a id="delete_node" href="#">Delete Node</a> -->
+  </div>  
+  
+  <div id="actions">
+    add node
   </div>
   
   <div id="content">

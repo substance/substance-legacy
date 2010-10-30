@@ -8,15 +8,19 @@ ContentNode.types = {
       {
         "key": "name",
         "name": "Section name",
-        "defaultValue": ""
+        "defaultValue": "Hooray I'm a new section "
       }
     ]
   },
   "paragraph": {
     name: "Paragraph",
-    allowedChildren: ["text", "image"],
+    allowedChildren: [],
     properties: [
-      
+      {
+        "key": "content",
+        "name": "Content",
+        "defaultValue": "Hooray I'm a newborn paragraph."
+      }
     ]
   },
   "text": {

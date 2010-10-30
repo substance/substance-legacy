@@ -46,12 +46,17 @@ em { padding: 3px;}
 -----------------------------------------
 */
 
+/* bespin editor */
+div.bespin {
+  float:right;
+  width: 300px;
+  height: 120px;
+}
 
 #toolbar {
   position: fixed;
   bottom: 60px;
   left: 20px;
-  
   background: #ccc;
 }
 
@@ -88,6 +93,24 @@ em { padding: 3px;}
   z-index: 50000;
   background: #333;
 }
+
+#actions {
+  position: absolute;
+  left: 20px;
+  top: 10px;
+  z-index: 50000;
+  padding: 2px;
+  background: #444;
+}
+
+#actions a {
+  color: #eee;
+}
+
+#actions a:hover {
+  color: white;
+}
+
 
 
 #editor {
