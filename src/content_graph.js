@@ -65,7 +65,7 @@ ContentNode.prototype.addChild = function(node, referenceNode) {
 };
 
 ContentNode.prototype.removeChild = function(key) {
-  this.all('children').delete(key);
+  this.all('children').del(key);
   
   // TODO: Also remove from g.all('nodes') when no longer referenced
 };

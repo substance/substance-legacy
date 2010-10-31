@@ -1,5 +1,6 @@
 // Default Widget
-ContentNodeEditor.widgets.default = function(editor, node) {
+
+ContentNodeEditor.widgets['default'] = function(editor, node) {
   // Attach handlers that trigger a change
   var view = { properties: [] };
   
