@@ -188,6 +188,7 @@ var Editor = function(cg) {
   };
   
   that.updateContentNode = updateContentNode;
+  that.renderNode = renderNode;
   that.save = function() {
     
   }

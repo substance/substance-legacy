@@ -14,7 +14,7 @@ ContentNode.types = {
   },
   "section": {
     name: "Section",
-    allowedChildren: ["paragraph"],
+    allowedChildren: ["paragraph", "image"],
     properties: [
       {
         "key": "name",
@@ -31,6 +31,17 @@ ContentNode.types = {
         "key": "content",
         "name": "Content",
         "defaultValue": "Hooray I'm a newborn paragraph."
+      }
+    ]
+  },
+  "image": {
+    name: "Image",
+    allowedChildren: [],
+    properties: [
+      {
+        "key": "url",
+        "name": "Image URL",
+        "defaultValue": ""
       }
     ]
   },

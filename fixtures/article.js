@@ -8,7 +8,7 @@ var article_fixture = {
     "preface": {
       "type": "section",
       "name": "Preface",
-      "children": ["text1", "text2"]
+      "children": ["text1", "image1", "text2"]
     },
     "history": {
       "type": "section",
@@ -23,6 +23,10 @@ var article_fixture = {
     "text1": {
       "type": "paragraph",
       "content": "Austria, officially the Republic of Austria (German: Republik Österreich), is a landlocked country of roughly 8.3 million people[3] in Central Europe."
+    },
+    "image1": {
+      "type": "image",
+      "url": "http://tmp.vivian.transloadit.com/scratch/9a65045a69dd88c2baf281c28dbd15a7"
     },
     "text2": {
       "type": "paragraph",

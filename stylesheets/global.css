@@ -172,6 +172,61 @@ textarea  {  -webkit-transition: background, background-color, border-color, col
 }
 
 
+.lpl.widget-container.inactive > * { opacity:0.5; }
+
+.lpl.progress-container {
+  position:relative;
+  height:18px;
+  margin:5px 0;
+  background:#666;
+  background: -webkit-gradient(linear, 0% 0%, 0% 70%, from(#333), to(#666966));
+  background: -moz-linear-gradient(top, #333, #666966);
+  -webkit-border-radius:5px;
+  -moz-border-radius:5px;
+  border-radius:5px;
+  -webkit-box-shadow:0px 1px 0px rgba(255,255,255,0.5), inset 0px 1px 4px rgba(0,0,0,0.75);
+  -moz-box-shadow:0px 1px 0px rgba(255,255,255,0.5), inset 0px 1px 4px rgba(0,0,0,0.75);
+  box-shadow:0px 1px 0px rgba(255,255,255,0.5), inset 0px 1px 4px rgba(0,0,0,0.75);
+  overflow:hidden;
+}
+
+.lpl.progress-container.white {
+  background: rgb(218,220,218);
+  background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(rgb(218,220,218)), to(rgb(250,252,250)));
+  background: -moz-linear-gradient(top, rgb(218,220,218), rgb(250,252,250));
+  -webkit-box-shadow:0px 1px 0px rgba(255,255,255,0.5), inset 0px 1px 3px rgba(0,0,0,0.35);
+  -moz-box-shadow:0px 1px 0px rgba(255,255,255,0.5), inset 0px 1px 3px rgba(0,0,0,0.35);
+  box-shadow:0px 1px 0px rgba(255,255,255,0.5), inset 0px 1px 3px rgba(0,0,0,0.35);
+}
+
+.lpl.progress-bar {
+  position:relative;
+  height:100%;
+  background: rgba(148,207,13,1);
+  background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(rgb(178,237,43)), color-stop(0.7, rgb(148,207,13)), color-stop(0.701, rgb(168,215,23)), to(rgb(148,207,13)));
+  background: -moz-linear-gradient(top, rgb(178,237,43), rgb(148,207,13) 70%, rgb(168,215,23) 70.1%, rgb(148,207,13));
+  -webkit-border-radius:4px;
+  -moz-border-radius:4px;
+  border-radius:4px;
+  border:1px solid rgba(0,50,0,0.5);
+  -webkit-box-shadow:0px 0px 2px rgba(0,0,0,0.3);
+  -moz-box-shadow:0px 0px 2px rgba(0,0,0,0.2);
+  box-shadow:0px 0px 2px rgba(0,0,0,0.2);
+  -webkit-background-clip: padding-box;
+}
+
+@-webkit-keyframes stripeScroller {
+  from { background-position-x:40px; background-position-y:-9px; }
+  to   { background-position-x:0px; background-position-y:-9px; }
+}
+
+.lpl.progress-bar.stripes {
+  background: rgba(148,207,13,1) url(assets/progress.png) repeat-x 0px -9px;
+}
+
+.lpl.progress-bar.animated {
+  -webkit-animation: stripeScroller 1s infinite linear;
+}
 
 /*
 --------------------------------------------------------------------------------
@@ -241,6 +296,7 @@ div.bespin {
   bottom: 60px;
   left: 20px;
 }
+
 
 .content-node {
   margin-top: 10px;
@@ -320,7 +376,11 @@ div.bespin {
   padding: 3px;
 }
 
+/* Image Widget */
 
+#progress_container {
+  display: none;
+}
 
 
 /*
@@ -353,6 +413,10 @@ div.bespin {
   margin-right: 250px;
   text-align: right;
   font-size: 12px;
+}
+
+#footer a {
+  color: white;
 }
 
 #navigation {

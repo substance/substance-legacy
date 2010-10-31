@@ -13,7 +13,6 @@
     </form>
   </script>
   
-  
   <script type="text/x-handlebars-template" name="edit_paragraph">
     <form class="lpl texteditor" id="edit_node">
       <div class="lpl inputcombo">
@@ -23,6 +22,21 @@
     </form>
   </script>
   
+  <script type="text/x-handlebars-template" name="edit_image">
+    <h3>Edit image</h3>
+    <p>Select an image to be uploaded, resized and embedded into the document.</p>
+    
+    <form id="MyForm" action="http://api2.transloadit.com/assemblies" enctype="multipart/form-data" method="POST">
+    <input type="hidden" name="params" value="{&quot;auth&quot;:{&quot;key&quot;:&quot;4ccca6b9de144af4882760af72ec3211&quot;},&quot;steps&quot;:{&quot;resize_image&quot;:{&quot;robot&quot;:&quot;\/image\/resize&quot;,&quot;width&quot;:320,&quot;height&quot;:240,&quot;result&quot;:true}},&quot;redirect_url&quot;:&quot;http:\/\/example.com\/upload&quot;}" />
+    <input type="file" name="my_file" />
+    <input type="submit" value="Upload">
+    </form>
+    
+    <div id="progress_container">
+      <div class="lpl progress-container"><div id="upload_progress" class="lpl progress-bar stripes animated" style="width:60%"></div></div>
+      <div id="image_progress_legend" class="lpl legend">
+    </div>
+  </script>
   
   <script type="text/x-handlebars-template" name="edit_section">
     <h3>Edit section</h3>
@@ -30,45 +44,6 @@
       <label>Section Name</label>
       <input type="text" class="property" name="name" value="{{name}}"/><br/>
     </form>
-  </script>
-  
-  
-  <script type="text/x-handlebars-template" name="edit_node">
-  <form id="edit_node">
-    <h3>Edit node</h3>
-
-    <!--<label>{{key}}</label>
-    <input type="text" class="property" name="{{key}}" value="{{value}}"/><br/>-->
-    
-    <div id="properties">
-      {{#properties}}
-        <div id="property_{{key}}"></div>
-      {{/properties}}
-    </div>
-    
-    <h3>Add child node:</h3>
-    <select name="type">
-      <option value="text">Text</option>
-      <option value="text">Section</option>
-      <option value="text">Paragraph</option>
-    </select>
-    <a href="#" id="insert_node">Add Child node</a>
-  </form>
-  <a id="save_document" href="#">Save document</a>
-  </script>
-  
-  
-  
-  <script type="text/x-handlebars-template" name="add_node">
-  <form id="add_node">
-    <h3>Add node</h3>
-    <select name="type">
-      <option value="text">Section</option>
-      <option value="text">Paragraph</option>
-      <option value="text">Text</option>
-    </select>
-    <a href="#" id="insert_node">Add</a>
-  </form>
   </script>
   
   <!-- styles --> 
@@ -83,6 +58,12 @@
   <script src="lib/showdown.js"></script>
   <!-- <script src="lib/bespin/BespinEmbedded.js"></script> -->
 
+  <!-- transloadit.com file processing service -->
+  <script type="text/javascript">
+  var tlProtocol = (('https:' == document.location.protocol) ? 'https://' : 'http://');
+  document.write(unescape("%3Cscript src='" + tlProtocol + "assets.transloadit.com/js/jquery.transloadit2.js' type='text/javascript'%3E%3C/script%3E"));
+  </script>
+  
   <script src="lib/sorted_hash.js"></script>
   <script src="lib/node.js"></script>
   
@@ -123,8 +104,7 @@
   </div>
   
   <div id="footer">
-    ContentGraph is an engine powering data-driven content authoring tools.
+    Newsroom is an <a href="http://github.com/michael/newsroom">open source effort</a> of <a href="http://gestaltungsbureau.com">Gestaltungsbureau</a> and <a href="http://quasipartikel.at">Quasipartikel</a>.
   </div>
-  
 </body> 
 </html>

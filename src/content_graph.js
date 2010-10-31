@@ -188,7 +188,20 @@ var HTMLRenderer = function(root) {
       
       str += '</div>';
       return str;
-    } // ,
+    },
+    image: function(node) {
+      var str = '<div id="'+node.key+'" class="content-node"><div class="content-node-info">Image</div>';
+      
+      if (node.data.url.length > 0) {
+        str += '<img src="'+node.data.url+'"/>';
+      } else {
+        str += "image placeholder ...";
+      }
+      
+      str += "</div>";
+      return str;
+    },
+    // ,
     // text: function(node) {
     //   var str = '<div id="'+node.key+'" class="content-node"><div class="content-node-info">Text</div>';
     //   
