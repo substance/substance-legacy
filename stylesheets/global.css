@@ -356,7 +356,6 @@ div.bespin {
   background: black;
 }
 
-
 #sidebar {
   padding: 10px;
   position: fixed;
@@ -369,7 +368,6 @@ div.bespin {
 #editor {
 
 }
-
 
 #editor a {
   background: #eee;
@@ -389,7 +387,7 @@ div.bespin {
 -----------------------------------------
 */
 
-#content {
+#document {
   background: #fff;
   padding: 15px;
   padding-top: 1px;
@@ -453,6 +451,8 @@ code {
   padding: 7px;
   border-left: 3px solid #ccc;
 }
+
+
 
 
 

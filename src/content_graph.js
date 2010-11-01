@@ -1,10 +1,3 @@
-// Check for Node.js environment
-// if (typeof exports !== 'undefined') {
-//   var fs = require('fs'),
-//       path = require('path');
-//   require('./unveil');
-// }
-
 // ContentNode
 // -----------------------------------------------------------------------------
 
@@ -200,30 +193,7 @@ var HTMLRenderer = function(root) {
       
       str += "</div>";
       return str;
-    },
-    // ,
-    // text: function(node) {
-    //   var str = '<div id="'+node.key+'" class="content-node"><div class="content-node-info">Text</div>';
-    //   
-    //   if (node.data.em_level == 1) {
-    //     str += '<em>';
-    //   }
-    //   if (node.data.em_level == 2) {
-    //     str += '<strong>';
-    //   }
-    //   
-    //   str += node.data.content;
-    //   
-    //   if (node.data.em_level == 1) {
-    //     str += '</em>';
-    //   }
-    //   if (node.data.em_level == 2) {
-    //     str += '</strong>';
-    //   }
-    //   
-    //   str += '</div>';
-    //   return str;
-    // }
+    }
   };
   
   return {
@@ -235,8 +205,4 @@ var HTMLRenderer = function(root) {
 };
 
 
-// Exports (for Node.js environment)
-// -----------------------------------------------------------------------------
-// if (typeof exports !== 'undefined') {
-//   exports.ContentGraph = ContentGraph;
-// }
+

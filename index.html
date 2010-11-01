@@ -2,18 +2,49 @@
 <html> 
 <head> 
   <title>Newsroom Demo</title>
+  
   <!-- templates -->
-  <script type="text/x-handlebars-template" name="edit_default">
-    <h3>Edit node</h3>
-    <form id="edit_node">
-    {{#properties}}
-      <label>{{key}}</label>
-      <input type="text" class="property" name="{{key}}" value="{{value}}"/><br/>
-    {{/properties}}
-    </form>
+  <script type="text/x-handlebars-template" name="editor">
+    <div id="sidebar">
+      <div id="editor" class="lpl widget_container">
+        Please select some content nodes on the right to get started.
+      </div>
+
+      <div class="lpl widget_container">
+        <div class="lpl buttons">
+          <a class="lpl button abort" href="#">Delete Paragraph</a>
+          <a class="lpl button" href="#">Cancel</a>
+          <a class="lpl button action" href="#">Save &amp; Publish</a>
+        </div>
+      </div>
+    </div> <!-- end sidebar -->
+
+    <div id="actions">
+
+    </div>
+
+    <div id="document">
+      <h2>Hang on a second...</h2>
+      <p>
+        The content graph is being rendered for you.
+      </p>
+    </div>
+  </script>
+
+  <script type="text/x-handlebars-template" name="actions">
+    {{#children}}
+      <a href="#" type="{{.}}" class="add_child">add child {{.}}</a>
+    {{/children}}
+    
+    {{#siblings}}
+      <a href="#" type="{{.}}" class="add_sibling">add {{.}}</a>
+    {{/siblings}}
+    
+    <a href="#" class="remove_node">remove</a>
   </script>
   
   <script type="text/x-handlebars-template" name="edit_paragraph">
+    <h3>Edit Paragraph</h3>
     <form class="lpl texteditor" id="edit_node">
       <div class="lpl inputcombo">
         <label for="content_text">content:</label>
@@ -46,6 +77,15 @@
     </form>
   </script>
   
+  <script type="text/x-handlebars-template" name="edit_document">
+    <h3>Edit document</h3>
+    <form id="edit_node">
+      <label>Document Title</label>
+      <input type="text" class="property" name="title" value="{{title}}"/><br/>
+    </form>
+  </script>
+  
+  
   <!-- styles --> 
   <!-- <link id="bespin_base" href="./lib/bespin"/> -->
   <!-- <link href="lib/bespin/BespinEmbedded.css" media="screen" rel="stylesheet" type="text/css" /> -->
@@ -56,6 +96,7 @@
   <script src="lib/jquery-1.4.3.min.js"></script>
   <script src="lib/handlebars.js"></script>
   <script src="lib/showdown.js"></script>
+  
   <!-- <script src="lib/bespin/BespinEmbedded.js"></script> -->
 
   <!-- transloadit.com file processing service -->
@@ -64,47 +105,25 @@
   document.write(unescape("%3Cscript src='" + tlProtocol + "assets.transloadit.com/js/jquery.transloadit2.js' type='text/javascript'%3E%3C/script%3E"));
   </script>
   
+  <!-- Libraries -->
+  <script src="lib/underscore.js"></script>
+  <script src="lib/backbone.js"></script>
   <script src="lib/sorted_hash.js"></script>
   <script src="lib/node.js"></script>
+  <script src="src/content_graph.js"></script>
   
-  <!-- fixtures -->
+  <!-- Fixtures -->
   <script src="fixtures/article.js"></script>
   
-  <!-- source -->
-  <script src="src/content_graph.js"></script>
+  <!-- The app -->
   <script src="src/content_node_types.js"></script>
-  <script src="src/content_graph_editor.js"></script>
-  <script src="src/content_node_widgets.js"></script>
+  <script src="src/app.js"></script>
+  
   
 </head>
 <body>
-  <div id="sidebar">
-    <div id="editor" class="lpl widget_container">
-      Please select some content nodes on the right to get started.
-    </div>
-  
-    <div class="lpl widget_container">
-      <div class="lpl buttons">
-        <a class="lpl button abort" href="#">Delete Paragraph</a>
-        <a class="lpl button" href="#">Cancel</a>
-        <a class="lpl button action" href="#">Save &amp; Publish</a>
-      </div>
-    </div>
-  </div> <!-- end sidebar -->
-  
-  <div id="actions">
+  <div id="container">
     
-  </div>
-  
-  <div id="content">
-    <h2>Hang on a second...</h2>
-    <p>
-      The content graph is being rendered for you.
-    </p>
-  </div>
-  
-  <div id="footer">
-    Newsroom is an <a href="http://github.com/michael/newsroom">open source effort</a> of <a href="http://gestaltungsbureau.com">Gestaltungsbureau</a> and <a href="http://quasipartikel.at">Quasipartikel</a>.
   </div>
 </body> 
 </html>
