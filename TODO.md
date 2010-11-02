@@ -13,7 +13,7 @@ UI Design Work
 
 * <strike>Progress Bar (used by file upload)</strike>
 * <strike>Toggles (ON/OFF)</strike>
-* Scrollbars
+* <strike>Scrollbars</strike>
 * CSS & Icons for rich text editor
 * UI for inserting & appending content
 * UI for Article/Page/Chapter overview
