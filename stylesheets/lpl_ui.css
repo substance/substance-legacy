@@ -89,6 +89,73 @@ textarea  {  -webkit-transition: background, background-color, border-color, col
   background: -moz-linear-gradient(top, rgba(213,0,20,0.75), rgba(143,0,0,0.8));
 }
 
+.lpl.scrollbar {
+  position:fixed;
+  right:0px;
+  top:0px;
+  padding:5px 0 16px 0;
+  height:100%;
+  width:16px;
+  overflow:hidden;
+  z-index:200000;
+}
+
+.lpl.scrollbar .lpl.scrollbar-canal {
+  position:relative;
+  height:100%;
+  width:12px;
+  -webkit-border-radius:8px;
+  -moz-border-radius:8px;
+  border-radius:8px;
+  background:rgba(100,100,100,0.1);
+  -webkit-box-shadow:0px 1px 0px rgba(255,255,255,0.1), inset 1px 1px 3px rgba(0,0,0,0.35);
+  -moz-box-shadow:0px 1px 0px rgba(255,255,255,0.1), inset 0px 1px 3px rgba(0,0,0,0.35);
+  box-shadow:0px 1px 0px rgba(255,255,255,0.1), inset 0px 1px 3px rgba(0,0,0,0.35);
+  overflow:hidden;
+}
+
+.lpl.scrollbar .lpl.scrollbar-indicator {
+  position:relative;
+  margin:1px;
+  width:10px;
+  height:100px;
+  background: rgb(238,240,238);
+  background: -webkit-gradient(linear, 0% 0%, 100% 0%, from(rgb(250,252,250)), to(rgb(218,220,218)));
+  background: -moz-linear-gradient(left, rgb(250,252,250), rgb(218,220,218));
+  -webkit-border-radius:6px;
+  -moz-border-radius:6px;
+  border-radius:6px;
+  -webkit-box-shadow: inset -1px 0px 1px rgba(255,255,255,0.75), 0px 0px 2px rgba(0,0,0,1);
+  -moz-box-shadow: inset -1px 0px 1px rgba(255,255,255,0.75), 0px 0px 2px rgba(0,0,0,1);
+  box-shadow: inset -1px 0px 1px rgba(255,255,255,0.75), 0px 0px 2px rgba(0,0,0,1);
+  z-index:100;
+}
+
+.lpl.scrollbar.horizontal {
+  top:auto;
+  left:0px;
+  bottom:0px;
+  height:16px;
+  width:100%;
+  padding:0 16px 0 5px;
+}
+
+.lpl.scrollbar.horizontal  .lpl.scrollbar-canal {
+  height:12px;
+  width:100%;
+}
+
+.lpl.scrollbar.horizontal .lpl.scrollbar-indicator {
+  width:100px;
+  height:10px;
+  background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(rgb(250,252,250)), to(rgb(218,220,218)));
+  background: -moz-linear-gradient(top, rgb(250,252,250), rgb(218,220,218));
+  -webkit-box-shadow: inset 0px -1px 1px rgba(255,255,255,0.75), 0px 0px 2px rgba(0,0,0,1);
+  -moz-box-shadow: inset 0px -1px 1px rgba(255,255,255,0.75), 0px 0px 2px rgba(0,0,0,1);
+  box-shadow: inset 0px -1px 1px rgba(255,255,255,0.75), 0px 0px 2px rgba(0,0,0,1);
+}
+
+
 /*  WIDGETS  */
 
 .lpl.widget-container {
