@@ -40,7 +40,14 @@ ContentNode.prototype.build = function() {
 };
 
 ContentNode.prototype.serialize = function() {
-  return this.data;
+  var result = _.extend({}, this.data);
+  result.children = [];
+  
+  this.all('children').each(function(node, key, index) {
+    result.children.push(key);
+  });
+  
+  return result;
 };
 
 // Add child either to the end of the children list or after
@@ -72,11 +79,11 @@ var ContentGraph = function(g) {
   
   this.type = 'document';
   this.data = g;
-  this.g = g;
+  this.g = this;
   
   this.key = 'root';
   
-  this.nodeCount = 1000;
+  this.nodeCount = g.nodeCount || 1000;
   
   // Register ContentNodes
   uv.each(g.nodes, function(node, key) {
@@ -128,10 +135,18 @@ ContentGraph.prototype.serialize = function() {
   var result = {
     title: this.data.title,
     nodes: {},
+    children: [],
     nodeCount: this.nodeCount
   };
 
+  this.all('children').each(function(node, key, index) {
+    result.children.push(key);
+  });
+
   this.all('nodes').each(function(node, key, index) {
+    
+    console.log(key);
+    
     result.nodes[key] = node.serialize();
   });
   
