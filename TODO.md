@@ -1,7 +1,14 @@
 Backend Code
 ============
 
-* File Upload
+* <strike>File Upload</strike>
+* <strike>MVC code separation using Backbone.js</strike>
+* Server Logic
+  * New Document
+  * Update Document
+  * Delete Document
+  * List Document
+  * Find Document
 
 JavaScript
 ==========

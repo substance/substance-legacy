@@ -1,10 +1,3 @@
-// Check for Node.js environment
-// if (typeof exports !== 'undefined') {
-//   var fs = require('fs'),
-//       path = require('path');
-//   require('./unveil');
-// }
-
 // ContentNode
 // -----------------------------------------------------------------------------
 
@@ -65,7 +58,7 @@ ContentNode.prototype.addChild = function(node, referenceNode) {
 };
 
 ContentNode.prototype.removeChild = function(key) {
-  this.all('children').delete(key);
+  this.all('children').del(key);
   
   // TODO: Also remove from g.all('nodes') when no longer referenced
 };
@@ -188,29 +181,19 @@ var HTMLRenderer = function(root) {
       
       str += '</div>';
       return str;
-    } // ,
-    // text: function(node) {
-    //   var str = '<div id="'+node.key+'" class="content-node"><div class="content-node-info">Text</div>';
-    //   
-    //   if (node.data.em_level == 1) {
-    //     str += '<em>';
-    //   }
-    //   if (node.data.em_level == 2) {
-    //     str += '<strong>';
-    //   }
-    //   
-    //   str += node.data.content;
-    //   
-    //   if (node.data.em_level == 1) {
-    //     str += '</em>';
-    //   }
-    //   if (node.data.em_level == 2) {
-    //     str += '</strong>';
-    //   }
-    //   
-    //   str += '</div>';
-    //   return str;
-    // }
+    },
+    image: function(node) {
+      var str = '<div id="'+node.key+'" class="content-node"><div class="content-node-info">Image</div>';
+      
+      if (node.data.url.length > 0) {
+        str += '<img src="'+node.data.url+'"/>';
+      } else {
+        str += "image placeholder ...";
+      }
+      
+      str += "</div>";
+      return str;
+    }
   };
   
   return {
@@ -222,8 +205,4 @@ var HTMLRenderer = function(root) {
 };
 
 
-// Exports (for Node.js environment)
-// -----------------------------------------------------------------------------
-// if (typeof exports !== 'undefined') {
-//   exports.ContentGraph = ContentGraph;
-// }
+
