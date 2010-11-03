@@ -18,14 +18,35 @@
   
   var Document = Backbone.Model.extend({
     
-    initialize: function(g) {
+    initialize: function(spec) {
       // Initialize content graph
-      this.g = g;
-      this.selectedNode = g.get('nodes', 'image1');
+      console.log('document contructor called...');
+      
+      // Initialize ContentGraph if present
+      if (this.get('contents')) {
+        this.g = new ContentGraph(this.get('contents'));
+      }
+      
+      this.selectedNode = null;
     },
     
-    save: function() {
-      console.log('not yet implemented...');
+    parse: function(res) {
+      if (res.contents) {
+        this.g = new ContentGraph(res.contents);
+      }
+      return res;
+    },
+    
+    toJSON: function() {
+      var that = this;
+      
+      var result = _.extend(_.clone(this.attributes), {
+        contents: this.g.serialize()
+      });
+      
+      console.log(result);
+      
+      return result;
     },
     
     createEmptyNode: function(type) {
@@ -84,6 +105,7 @@
     // Update attributes of selected node
     updateSelectedNode: function(attrs) {
       _.extend(this.selectedNode.data, attrs);
+      
       this.trigger('change:node', this.selectedNode);
     },
     
@@ -93,11 +115,70 @@
       } else {
         this.selectedNode = this.g.get('nodes', key);
       }
-      
       this.trigger('select:node', this.selectedNode);
     }
   });
+  
+  // Acts as a stub for new documents
+  Document.EMPTY = {
+    "title": "Untitled",
+    "author": "John Doe",
+    "children": ["1", "2"],
+    "nodeCount": 4,
+    "nodes": {
+      "1": {
+        "type": "section",
+        "name": "First Chapter",
+        "children": ["3"]
+      },
+      "2": {
+        "type": "section",
+        "name": "Second Chapter",
+        "children": ["4"]
+      },
+      "3": {
+        "type": "paragraph",
+        "content": "Your text goes here."
+      },
+      "4": {
+        "type": "image",
+        "url": "http://tmp.vivian.transloadit.com/scratch/9a65045a69dd88c2baf281c28dbd15a7"
+      }
+    }
+  };
+  
+  
+  // Todo Collection
+  // ---------------
 
+  // The collection of todos is backed by *localStorage* instead of a remote
+  // server.
+  var DocumentList = Backbone.Collection.extend({
+
+    // Reference to this collection's model.
+    model: Document,
+    
+    url: '/documents',
+    
+    initialize: function() {
+      
+    },
+
+    // We keep the Documents in sequential order, despite being saved by unordered
+    // GUID in the database. This generates the next order number for new items.
+    nextOrder: function() {
+      if (!this.length) return 1;
+      return this.last().get('order') + 1;
+    },
+
+    // Todos are sorted by their original insertion order.
+    comparator: function(todo) {
+      return todo.get('order');
+    }
+  });
+  
+  var Documents = new DocumentList();
+  
 
   // NodeEditors
   // ---------------
@@ -115,8 +196,9 @@
       var that = this;
       
       setTimeout(function() {
+        console.log($('#editor input[name=title]').val());
         that.model.updateSelectedNode({
-          content: $('#editor input[name=title]').val()
+          title: $('#editor input[name=title]').val()
         });
       }, 5);
     },
@@ -320,8 +402,10 @@
       return false;
     },
     
-    selectNode: function(e) {      
-      this.$('#' + this.model.selectedNode.key).removeClass('selected');
+    selectNode: function(e) {
+      if (this.model.selectedNode) {
+        this.$('#' + this.model.selectedNode.key).removeClass('selected');
+      }
       this.model.selectNode($(e.currentTarget).attr('id'));
       $(e.currentTarget).addClass('selected');
       return false;
@@ -331,27 +415,78 @@
   
   // The Application
   // ---------------
-
+  
   // This is the top-level piece of UI.
   var DocumentComposer = Backbone.View.extend({
     events: {
-      
+      'click a.new_document': 'newDocument',
+      'click a.browse_documents': 'browseDocuments',
+      'click a.save_document': 'saveDocument',
+      'click a.open_document': 'openDocument'
     },
 
     initialize: function() {
+      var that = this;
+      
       _.bindAll(this, "render");
     },
-
-    // Should be rendered just once
-    render: function() {
-      $(this.el).html(Helpers.renderTemplate('editor')); 
-      return this;
+    
+    newDocument: function() {
+      // Create a new document and add it to the Documents Collection
+      this.model = new Document({
+        contents: Document.EMPTY
+      });
+      
+      Documents.add(this.model);    
+      this.model.save({}, {
+        success: function() {
+          alert('A document has been created successfully.')
+        }
+      });
+      
+      this.init();
+      return false;
     },
     
-    // Load document
-    load: function(doc) {
+    saveDocument: function() {
+      this.model.save({}, {
+        success: function() {
+          alert('The document has been stored on the server...');
+        },
+        error: function() {
+          alert('Error during saving...');
+        },
+      });
+    },
+    
+    loadDocument: function(id) {
       var that = this;
-      this.model = new Document(doc);
+      
+      this.model = Documents.get(id)
+      this.model.fetch({
+        success: function() {
+          that.init();
+        }
+      });
+      
+      $('#dialog').html('');
+      
+    },
+    
+    browseDocuments: function() {
+      var that = this;
+      // Load all documents available in the Repository
+      // and render DocumentBrowser View
+      Documents.fetch({
+        success: function() {
+          that.renderDocumentBrowser();
+        }
+      });
+    },
+    
+    // Initializes the editor (with a new document)
+    init: function() {
+      var that = this;
       
       // Inject node editor on every select:node
       this.model.unbind('select:node');
@@ -359,12 +494,21 @@
         that.renderNodeEditor();
       });
       
-      this.renderNodeEditor();
       this.renderDocumentView();
     },
     
+    // Should be rendered just once
+    render: function() {
+      $(this.el).html(Helpers.renderTemplate('editor'));
+      return this;
+    },
+    
+    renderDocumentBrowser: function() {
+      this.documentBrowser = new DocumentBrowser({el: this.$('#dialog'), model: this.model, composer: this});
+      this.documentBrowser.render();
+    },
+    
     renderNodeEditor: function() {
-      
       // Depending on the selected node's type, render the right editor
       if (this.model.selectedNode.type === 'document') {
         this.nodeEditor = new DocumentEditor({el: this.$('#editor'), model: this.model});
@@ -383,22 +527,51 @@
       
       // Init Actions panel
       this.actions = new NodeActions({el: $('#actions'), model: this.model});
-      this.actions.render();
     }
   });
-
+  
+  // DocumentBrowser widget / used to select a document to load
+  var DocumentBrowser = Backbone.View.extend({
+    events: {
+      'click a.load_document': 'loadDocument'
+    },
+    
+    initialize: function() {
+      
+    },
+    
+    loadDocument: function(e) {
+      // Trigger a document load
+      this.options.composer.loadDocument($(e.currentTarget).attr('key'));
+      return false;
+    },
+    
+    render: function() {
+      $(this.el).html(Helpers.renderTemplate('browse_documents', {
+        documents: Documents.models.map(function(d) { return d.attributes })
+      }));
+    }
+  });
+  
   
   $(function() {
 
     // Load a document
-    var doc = new ContentGraph(article_fixture);
+    // var doc = new ContentGraph(Document.EMPTY_DOC);
     
     // Start the engines
     var app = new DocumentComposer({el: $('#container')});
     
     // Initial rendering
     app.render();
-    app.load(doc);
+    
+    // Load initial doc
+    // Documents.fetch({
+    //   success: function() {
+    //     app.loadDocument('075059412b9d2d61362b5014bb003618');
+    //   }
+    // });
+        
   });
   
 })();

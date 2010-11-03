@@ -356,13 +356,27 @@ div.bespin {
   background: black;
 }
 
+#menubar {
+  background: black;
+  padding: 4px;
+  text-align: right;
+}
+
+#dialog {
+  background: black;
+}
+
 #sidebar {
-  padding: 10px;
+  background: #ccc;
+  float: right;
+  width: 450px;
+  margin-top: 10px;
+/*  padding: 10px;
   position: fixed;
   margin-left: 20px;
   width: 450px;
   bottom: 0px;
-  top: 0px;
+  top: 0px;*/
 }
 
 #editor {
@@ -391,9 +405,9 @@ div.bespin {
   background: #fff;
   padding: 15px;
   padding-top: 1px;
-  margin-left: 500px;
+  margin-right: 500px;
   margin-top: 10px;
-  margin-right: 10px;
+  margin-left: 10px;
   border-left: 1px solid #ccc;
   border-right: 1px solid #ccc;
   border-bottom: 1px solid #ccc;

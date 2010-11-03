@@ -22,7 +22,7 @@ var article_fixture = {
     },
     "text1": {
       "type": "paragraph",
-      "content": "Austria, officially the Republic of Austria (German: Republik Österreich), is a landlocked country of roughly 8.3 million people[3] in Central Europe."
+      "content": "Austria, officially the Republic of Austria (German: Republik Oesterreich), is a landlocked country of roughly 8.3 million people[3] in Central Europe."
     },
     "image1": {
       "type": "image",
@@ -42,7 +42,7 @@ var article_fixture = {
     },
     "text5": {
       "type": "paragraph",
-      "content": "The head of state is the Federal President (Bundespräsident), who is directly elected by popular vote. The chairman of the Federal Government is the Federal Chancellor, who is appointed by the president. The government can be removed from office by either a presidential decree or by vote of no confidence in the lower chamber of parliament, the Nationalrat."
+      "content": "The head of state is the Federal President (Bundespraesident), who is directly elected by popular vote. The chairman of the Federal Government is the Federal Chancellor, who is appointed by the president. The government can be removed from office by either a presidential decree or by vote of no confidence in the lower chamber of parliament, the Nationalrat."
     }
   }
 };

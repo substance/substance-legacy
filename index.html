@@ -5,17 +5,22 @@
   
   <!-- templates -->
   <script type="text/x-handlebars-template" name="editor">
+    <div id="menubar">
+      <div class="lpl buttons">
+        <a class="lpl button new_document" href="#">New</a>
+        <a class="lpl button browse_documents" href="#">Browse</a>
+        <a class="lpl button action save_document" href="#">Save &amp; Publish</a>
+      </div>
+    </div>
+    
+    <div id="dialog">
+      
+    </div>
+    
     <div id="sidebar">
       <div id="editor" class="lpl widget_container">
-        Please select some content nodes on the right to get started.
-      </div>
-
-      <div class="lpl widget_container">
-        <div class="lpl buttons">
-          <a class="lpl button abort" href="#">Delete Paragraph</a>
-          <a class="lpl button" href="#">Cancel</a>
-          <a class="lpl button action" href="#">Save &amp; Publish</a>
-        </div>
+        Plase create a new document
+        You can then select some nodes on the right to edit the contents.
       </div>
     </div> <!-- end sidebar -->
 
@@ -24,10 +29,18 @@
     </div>
 
     <div id="document">
-      <h2>Hang on a second...</h2>
-      <p>
-        The content graph is being rendered for you.
-      </p>
+      No document loaded... You can either create a <em>New Document</em> or <em>Browse</em> existing ones.
+    </div>
+  </script>
+  
+  <script type="text/x-handlebars-template" name="browse_documents">
+    <h3>Browse Documents</h3>
+    <div class="lpl widget_container">
+      <ul>
+        {{#documents}}
+          <li><a href="#" key="{{id}}" class="load_document">{{title}}</a> ({{id}})</li>
+        {{/documents}}
+      </ul>
     </div>
   </script>
 
@@ -58,6 +71,7 @@
     <p>Select an image to be uploaded, resized and embedded into the document.</p>
     
     <form id="MyForm" action="http://api2.transloadit.com/assemblies" enctype="multipart/form-data" method="POST">
+    
     <input type="hidden" name="params" value="{&quot;auth&quot;:{&quot;key&quot;:&quot;4ccca6b9de144af4882760af72ec3211&quot;},&quot;steps&quot;:{&quot;resize_image&quot;:{&quot;robot&quot;:&quot;\/image\/resize&quot;,&quot;width&quot;:320,&quot;height&quot;:240,&quot;result&quot;:true}},&quot;redirect_url&quot;:&quot;http:\/\/example.com\/upload&quot;}" />
     <input type="file" name="my_file" />
     <input type="submit" value="Upload">
@@ -85,7 +99,6 @@
     </form>
   </script>
   
-  
   <!-- styles --> 
   <!-- <link id="bespin_base" href="./lib/bespin"/> -->
   <!-- <link href="lib/bespin/BespinEmbedded.css" media="screen" rel="stylesheet" type="text/css" /> -->
@@ -100,10 +113,11 @@
   <!-- <script src="lib/bespin/BespinEmbedded.js"></script> -->
 
   <!-- transloadit.com file processing service -->
-  <script type="text/javascript">
+  <script src="lib/jquery.transloadit2.js"></script>
+  <!-- <script type="text/javascript">
   var tlProtocol = (('https:' == document.location.protocol) ? 'https://' : 'http://');
   document.write(unescape("%3Cscript src='" + tlProtocol + "assets.transloadit.com/js/jquery.transloadit2.js' type='text/javascript'%3E%3C/script%3E"));
-  </script>
+  </script> -->
   
   <!-- Libraries -->
   <script src="lib/underscore.js"></script>
@@ -118,7 +132,6 @@
   <!-- The app -->
   <script src="src/content_node_types.js"></script>
   <script src="src/app.js"></script>
-  
   
 </head>
 <body>
