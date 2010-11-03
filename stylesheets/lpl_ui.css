@@ -1,17 +1,175 @@
 /* lpl green: rgba(148,207,13,1) */
 
-
 * {
   box-sizing:border-box;
   -webkit-box-sizing:border-box;
   -moz-box-sizing:border-box;
 }
 
+/* WEBKIT ANIMATION SETTINGS */
+
 li        {  -webkit-transition: background, background-color, border-color, color, opacity 0.35s linear; }
 a         {  -webkit-transition: background, background-color, border-color, color, opacity 0.35s linear; }
 label     {  -webkit-transition: background, background-color, border-color, color, opacity 0.35s linear; }
 input     {  -webkit-transition: background, background-color, border-color, color, opacity 0.35s linear; }
 textarea  {  -webkit-transition: background, background-color, border-color, color, opacity 0.35s linear; }
+
+html {overflow:auto;}
+
+/* WINDOW / lpl SCROLLBARS */
+
+::-webkit-scrollbar {
+  width:12px;
+  height:12px;
+}
+
+::-webkit-scrollbar-corner {
+  display:none;
+}
+
+::-webkit-scrollbar-button {
+  display:none;
+}
+
+.lpl.scrollbar {
+  position:fixed;
+  right:0px;
+  top:0px;
+  padding:5px 0 16px 0;
+  height:100%;
+  width:16px;
+  overflow:hidden;
+  z-index:200000;
+}
+
+.lpl.scrollbar .lpl.scrollbar-track,
+::-webkit-scrollbar-track:vertical {
+  position:relative;
+  display:block;
+  height:100%;
+  width:15px;
+  padding:1px;
+  -webkit-border-radius:8px;
+  -moz-border-radius:8px;
+  border-radius:8px;
+  background:rgba(100,100,100,0.05);
+  background: -webkit-gradient(linear, 0% 0%, 100% 0%, from(rgba(0,0,0,0.05)), to(rgba(250,250,250,0.05)));
+  background: -moz-linear-gradient(left, rgba(0,0,0,0.05), rgba(250,250,250,0.05));
+  -webkit-box-shadow:0px 1px 0px rgba(255,255,255,0.1), inset 1px 1px 3px rgba(0,0,0,0.15);
+  -moz-box-shadow:0px 1px 0px rgba(255,255,255,0.1), inset 0px 1px 3px rgba(0,0,0,0.15);
+  box-shadow:0px 1px 0px rgba(255,255,255,0.1), inset 0px 1px 3px rgba(0,0,0,0.15);
+  overflow:hidden;
+}
+
+.lpl.scrollbar .lpl.scrollbar-track:hover,
+::-webkit-scrollbar-track:vertical:hover {
+  background:rgba(100,100,100,0.1);
+  background: -webkit-gradient(linear, 0% 0%, 100% 0%, from(rgba(0,0,0,0.15)), to(rgba(250,250,250,0.15)));
+  background: -moz-linear-gradient(left, rgba(0,0,0,0.15), rgba(250,250,250,0.15));
+  -webkit-box-shadow:0px 1px 0px rgba(255,255,255,0.1), inset 1px 1px 3px rgba(0,0,0,0.35);
+  -moz-box-shadow:0px 1px 0px rgba(255,255,255,0.1), inset 0px 1px 3px rgba(0,0,0,0.35);
+  box-shadow:0px 1px 0px rgba(255,255,255,0.1), inset 0px 1px 3px rgba(0,0,0,0.35);
+}
+
+.lpl.scrollbar .lpl.scrollbar-indicator,
+::-webkit-scrollbar-thumb:vertical {
+  position:relative;
+  display:block;
+  width:10px;
+  height:100px;
+  background: rgba(238,240,238,0.5);
+  background: -webkit-gradient(linear, 0% 0%, 100% 0%, from(rgba(250,252,250,0.5)), to(rgba(218,220,218,0.5)));
+  background: -moz-linear-gradient(left, rgba(250,252,250,0.5), rgba(218,220,218,0.5));
+  -webkit-border-radius:6px;
+  -moz-border-radius:6px;
+  border-radius:6px;
+  -webkit-box-shadow: inset -1px 0px 1px rgba(255,255,255,0.25), 0px 0px 2px rgba(0,0,0,0.1);
+  -moz-box-shadow: inset -1px 0px 1px rgba(255,255,255,0.25), 0px 0px 2px rgba(0,0,0,0.1);
+  box-shadow: inset -1px 0px 1px rgba(255,255,255,0.25), 0px 0px 2px rgba(0,0,0,0.1);
+  z-index:100;
+  cursor: ns-resize;
+}
+
+.lpl.scrollbar .lpl.scrollbar-track:hover .lpl.scrollbar-indicator,
+::-webkit-scrollbar-track:vertical:hover ::-webkit-scrollbar-thumb:vertical,
+.lpl.scrollbar .lpl.scrollbar-indicator:hover,
+::-webkit-scrollbar-thumb:vertical:hover { 
+  background: rgb(238,240,238);
+  background: -webkit-gradient(linear, 0% 0%, 100% 0%, from(rgb(250,252,250)), to(rgb(218,220,218)));
+  background: -moz-linear-gradient(left, rgb(250,252,250), rgb(218,220,218));
+  -webkit-box-shadow: inset -1px 0px 1px rgba(255,255,255,0.75), 0px 0px 2px rgba(0,0,0,1);
+  -moz-box-shadow: inset -1px 0px 1px rgba(255,255,255,0.75), 0px 0px 2px rgba(0,0,0,1);
+  box-shadow: inset -1px 0px 1px rgba(255,255,255,0.75), 0px 0px 2px rgba(0,0,0,1);
+}
+
+.lpl.scrollbar.horizontal {
+  top:auto;
+  left:0px;
+  bottom:0px;
+  height:16px;
+  width:100%;
+  padding:0 16px 0 5px;
+}
+
+.lpl.scrollbar.horizontal  .lpl.scrollbar-track,
+::-webkit-scrollbar-track:horizontal {
+  height:12px;
+  width:100%;
+  -webkit-border-radius:8px;
+  -moz-border-radius:8px;
+  border-radius:8px;
+  background:rgba(100,100,100,0.05);
+  background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(rgba(0,0,0,0.05)), to(rgba(250,250,250,0.05)));
+  background: -moz-linear-gradient(top, rgba(0,0,0,0.05), rgba(250,250,250,0.05));
+  -webkit-box-shadow:0px 1px 0px rgba(255,255,255,0.1), inset 1px 1px 3px rgba(0,0,0,0.15);
+  -moz-box-shadow:0px 1px 0px rgba(255,255,255,0.1), inset 0px 1px 3px rgba(0,0,0,0.15);
+  box-shadow:0px 1px 0px rgba(255,255,255,0.1), inset 0px 1px 3px rgba(0,0,0,0.15);
+  overflow:hidden;
+}
+
+.lpl.scrollbar.horizontal  .lpl.scrollbar-track:hover,
+::-webkit-scrollbar-track:horizontal:hover {
+  background:rgba(100,100,100,0.1);
+  background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(rgba(0,0,0,0.15)), to(rgba(250,250,250,0.15)));
+  background: -moz-linear-gradient(top, rgba(0,0,0,0.15), rgba(250,250,250,0.15));
+  -webkit-box-shadow:0px 1px 0px rgba(255,255,255,0.1), inset 1px 1px 3px rgba(0,0,0,0.35);
+  -moz-box-shadow:0px 1px 0px rgba(255,255,255,0.1), inset 0px 1px 3px rgba(0,0,0,0.35);
+  box-shadow:0px 1px 0px rgba(255,255,255,0.1), inset 0px 1px 3px rgba(0,0,0,0.35);
+  overflow:hidden;
+}
+
+.lpl.scrollbar.horizontal .lpl.scrollbar-indicator,
+::-webkit-scrollbar-thumb:horizontal {
+  position:relative;
+  min-width:36px;
+  height:10px;
+  background: rgba(238,240,238,0.5);
+  background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(rgba(250,252,250,0.5)), to(rgba(218,220,218,0.5)));
+  background: -moz-linear-gradient(top, rgba(250,252,250,0.5), rgba(218,220,218,0.5));
+  -webkit-border-radius:6px;
+  -moz-border-radius:6px;
+  border-radius:6px;
+  -webkit-box-shadow: inset 0px -1px 1px rgba(255,255,255,0.25), 0px 0px 2px rgba(0,0,0,0.1);
+  -moz-box-shadow: inset 0px -1px 1px rgba(255,255,255,0.25), 0px 0px 2px rgba(0,0,0,0.1);
+  box-shadow: inset 0px -1px 1px rgba(255,255,255,0.25), 0px 0px 2px rgba(0,0,0,0.1);
+  z-index:100;
+  cursor: ew-resize;
+}
+
+.lpl.scrollbar.horizontal  .lpl.scrollbar-track:hover .lpl.scrollbar-indicator,
+::-webkit-scrollbar-track:horizontal:hover ::-webkit-scrollbar-thumb:horizontal,
+.lpl.scrollbar.horizontal .lpl.scrollbar-indicator:hover,
+::-webkit-scrollbar-thumb:horizontal:hover {
+  background: rgb(238,240,238);
+  background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(rgb(250,252,250)), to(rgb(218,220,218)));
+  background: -moz-linear-gradient(top, rgb(250,252,250), rgb(218,220,218));
+  -webkit-border-radius:6px;
+  -moz-border-radius:6px;
+  border-radius:6px;
+  -webkit-box-shadow: inset 0px -1px 1px rgba(255,255,255,0.75), 0px 0px 2px rgba(0,0,0,1);
+  -moz-box-shadow: inset 0px -1px 1px rgba(255,255,255,0.75), 0px 0px 2px rgba(0,0,0,1);
+  box-shadow: inset 0px -1px 1px rgba(255,255,255,0.75), 0px 0px 2px rgba(0,0,0,1);
+}
 
 
 /*  BUTTONS  */
@@ -89,78 +247,6 @@ textarea  {  -webkit-transition: background, background-color, border-color, col
   background: -moz-linear-gradient(top, rgba(213,0,20,0.75), rgba(143,0,0,0.8));
 }
 
-.lpl.scrollbar {
-  position:fixed;
-  right:0px;
-  top:0px;
-  padding:5px 0 16px 0;
-  height:100%;
-  width:16px;
-  overflow:hidden;
-  z-index:200000;
-}
-
-.lpl.scrollbar .lpl.scrollbar-canal {
-  position:relative;
-  height:100%;
-  width:12px;
-  -webkit-border-radius:8px;
-  -moz-border-radius:8px;
-  border-radius:8px;
-  background:rgba(100,100,100,0.1);
-  background: -webkit-gradient(linear, 0% 0%, 100% 0%, from(rgba(0,0,0,0.15)), to(rgba(250,250,250,0.15)));
-  background: -moz-linear-gradient(left, rgba(0,0,0,0.15), rgba(250,250,250,0.15));
-  -webkit-box-shadow:0px 1px 0px rgba(255,255,255,0.1), inset 1px 1px 3px rgba(0,0,0,0.35);
-  -moz-box-shadow:0px 1px 0px rgba(255,255,255,0.1), inset 0px 1px 3px rgba(0,0,0,0.35);
-  box-shadow:0px 1px 0px rgba(255,255,255,0.1), inset 0px 1px 3px rgba(0,0,0,0.35);
-  overflow:hidden;
-}
-
-.lpl.scrollbar .lpl.scrollbar-indicator {
-  position:relative;
-  margin:1px;
-  width:10px;
-  height:100px;
-  background: rgb(238,240,238);
-  background: -webkit-gradient(linear, 0% 0%, 100% 0%, from(rgb(250,252,250)), to(rgb(218,220,218)));
-  background: -moz-linear-gradient(left, rgb(250,252,250), rgb(218,220,218));
-  -webkit-border-radius:6px;
-  -moz-border-radius:6px;
-  border-radius:6px;
-  -webkit-box-shadow: inset -1px 0px 1px rgba(255,255,255,0.75), 0px 0px 2px rgba(0,0,0,1);
-  -moz-box-shadow: inset -1px 0px 1px rgba(255,255,255,0.75), 0px 0px 2px rgba(0,0,0,1);
-  box-shadow: inset -1px 0px 1px rgba(255,255,255,0.75), 0px 0px 2px rgba(0,0,0,1);
-  z-index:100;
-  cursor: ns-resize;
-}
-
-.lpl.scrollbar.horizontal {
-  top:auto;
-  left:0px;
-  bottom:0px;
-  height:16px;
-  width:100%;
-  padding:0 16px 0 5px;
-}
-
-.lpl.scrollbar.horizontal  .lpl.scrollbar-canal {
-  height:12px;
-  width:100%;
-  background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(rgba(0,0,0,0.15)), to(rgba(250,250,250,0.15)));
-  background: -moz-linear-gradient(top, rgba(0,0,0,0.15), rgba(250,250,250,0.15));
-}
-
-.lpl.scrollbar.horizontal .lpl.scrollbar-indicator {
-  width:100px;
-  height:10px;
-  background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(rgb(250,252,250)), to(rgb(218,220,218)));
-  background: -moz-linear-gradient(top, rgb(250,252,250), rgb(218,220,218));
-  -webkit-box-shadow: inset 0px -1px 1px rgba(255,255,255,0.75), 0px 0px 2px rgba(0,0,0,1);
-  -moz-box-shadow: inset 0px -1px 1px rgba(255,255,255,0.75), 0px 0px 2px rgba(0,0,0,1);
-  box-shadow: inset 0px -1px 1px rgba(255,255,255,0.75), 0px 0px 2px rgba(0,0,0,1);
-  cursor: ew-resize;
-}
-
 
 /*  WIDGETS  */
 
@@ -184,6 +270,14 @@ textarea  {  -webkit-transition: background, background-color, border-color, col
 .lpl.widget-container.inactive {
   background:#e5e5e5  url(assets/stripes.png);
 }
+
+.lpl.widget-container.inactive::selection {  background:transparent;  }
+.lpl.widget-container.inactive::-moz-selection {  background:transparent;  }
+.lpl.widget-container.inactive::-webkit-selection {  background:transparent;  }
+.lpl.widget-container.inactive *::selection {  background:transparent;  }
+.lpl.widget-container.inactive *::-moz-selection {  background:transparent;  }
+.lpl.widget-container.inactive *::-webkit-selection {  background:transparent;  }
+
 
 .lpl.widget-container.inactive > * { opacity:0.5; }
 
@@ -381,11 +475,14 @@ textarea  {  -webkit-transition: background, background-color, border-color, col
   margin:0 auto;
   padding:0 5px;
   font-size:18px;
-  -webkit-border-radius:3px;
-  -moz-border-radius:3px;
-  border-radius:3px;
+  -webkit-border-radius:4px;
+  -moz-border-radius:4px;
+  border-radius:4px;
   border:1px solid transparent;
-  background-color:rgba(255,255,255,0.4);
+  background-color:rgba(255,255,255,0.75);
+  -webkit-box-shadow:0px 1px 2px rgba(0,0,0,0.1);
+  -moz-box-shadow:0px 1px 2px rgba(0,0,0,0.1);
+  box-shadow:0px 1px 2px rgba(0,0,0,0.1);
 }
 
 .lpl.texteditor textarea {
@@ -395,13 +492,16 @@ textarea  {  -webkit-transition: background, background-color, border-color, col
   height:250px;
   margin:0 auto;
   padding:5px;
-  font-size:18px;
-  -webkit-border-radius:3px;
-  -moz-border-radius:3px;
-  border-radius:3px;
+  font-size:14px;
+  -webkit-border-radius:4px;
+  -moz-border-radius:4px;
+  border-radius:4px;
   border:1px solid transparent;
   resize:none;
-  background-color:rgba(255,255,255,0.4);
+  background-color:rgba(255,255,255,0.75);
+  -webkit-box-shadow:0px 1px 2px rgba(0,0,0,0.1);
+  -moz-box-shadow:0px 1px 2px rgba(0,0,0,0.1);
+  box-shadow:0px 1px 2px rgba(0,0,0,0.1);
 }
 
 .lpl.texteditor input:hover, .lpl.texteditor textarea:hover { 
@@ -416,13 +516,13 @@ textarea  {  -webkit-transition: background, background-color, border-color, col
 }
 
 .lpl.texteditor.rich textarea {
-  padding-top:40px;
+  padding-top:48px;
 }
 
 .lpl.richtext {
   position:relative;
-  height:37px;
-  margin-bottom:-38px;
+  height:42px;
+  margin-bottom:-44px;
   border-bottom:1px solid rgba(0,0,0,0.05);
   -webkit-box-shadow:0px 1px 0px rgba(255,255,255,0.75);
   -moz-box-shadow:0px 1px 0px rgba(255,255,255,0.75);
@@ -440,7 +540,7 @@ textarea  {  -webkit-transition: background, background-color, border-color, col
   width:200%;
   padding:2px 4px;
   background: rgba(200,200,200,1);
-  background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(rgba(255,255,255,0)), to(rgba(50,50,50,0.05)));
+  background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(rgba(255,255,255,0)), to(rgba(50,50,50,0.08)));
   background: -moz-linear-gradient(top, rgba(255,255,255,0), rgba(50,50,50,0.05));
   overflow:hidden;
 }
@@ -448,8 +548,8 @@ textarea  {  -webkit-transition: background, background-color, border-color, col
 .lpl.richtext-styles .lpl.richtext-action {
   position:relative;
   float:left;
-  width:32px;
-  height:32px;
+  width:36px;
+  height:36px;
   margin:0 2px 0 0;
   color:#999;
   font-size:9px;
@@ -458,18 +558,18 @@ textarea  {  -webkit-transition: background, background-color, border-color, col
   text-transform:uppercase;
   text-shadow:0px 1px 0px rgba(255,255,255,0.75);
   background:rgba(0,0,0,0.01);
-  -webkit-border-radius:3px;
-  -moz-border-radius:3px;
-  border-radius:3px;
-  -webkit-box-shadow:0px 1px 0px rgba(255,255,255,0.5), inset 0px 1px 0px rgba(0,0,0,0.02);
-  -moz-box-shadow:0px 1px 0px rgba(255,255,255,0.5), inset 0px 1px 0px rgba(0,0,0,0.02);
-  box-shadow:0px 1px 0px rgba(255,255,255,0.5), inset 0px 1px 0px rgba(0,0,0,0.02);
+  -webkit-border-radius:5px;
+  -moz-border-radius:5px;
+  border-radius:5px;
+  -webkit-box-shadow:0px 1px 0px rgba(255,255,255,0.75), inset 0px 1px 0px rgba(0,0,0,0.03);
+  -moz-box-shadow:0px 1px 0px rgba(255,255,255,0.75), inset 0px 1px 0px rgba(0,0,0,0.03);
+  box-shadow:0px 1px 0px rgba(255,255,255,0.75), inset 0px 1px 0px rgba(0,0,0,0.03);
   cursor:pointer;
   overflow:hidden;
 }
 
 .lpl.richtext-styles .lpl.richtext-action:hover {
-  background:rgba(255,255,255,0.75);
+  background:rgba(255,255,255,0.5);
 }
 
 .lpl.richtext-styles .lpl.richtext-action:active {
@@ -487,13 +587,13 @@ textarea  {  -webkit-transition: background, background-color, border-color, col
   position:relative;
   float:left;
   width:1px;
-  height:32px;
-  margin:0 4px 0 2px;
+  height:38px;
+  margin:0 6px 0 4px;
   text-align:center;
   text-indent:-5000px;
-  background:rgba(0,0,0,0.08);
-  -webkit-box-shadow:1px 0px 0px rgba(255,255,255,0.75);
-  -moz-box-shadow:1px 0px 0px rgba(255,255,255,0.75);
-  box-shadow:1px 0px 0px rgba(255,255,255,0.75);
+  background:rgba(0,0,0,0.04);
+  -webkit-box-shadow:1px 0px 0px rgba(255,255,255,0.5);
+  -moz-box-shadow:1px 0px 0px rgba(255,255,255,0.5);
+  box-shadow:1px 0px 0px rgba(255,255,255,0.5);
 }
 

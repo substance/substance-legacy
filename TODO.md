@@ -24,12 +24,12 @@ UI Design Work
 * CSS & Icons for rich text editor
 * UI for inserting & appending content
 * UI for Article/Page/Chapter overview
+* Tag editing UI
 * UI for application settings
 
 UI Design Work, Step 2
 ----------------------
 
-* Tag element
 * Calendar widget
 * Rating element
 * Checkbox element

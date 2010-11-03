@@ -34,7 +34,8 @@ body {
 
 #nr_document .page {
   position:relative;
-  min-height:700px;
+  min-height:300px;
+  max-height:500px;
   margin:0 10px 20px 10px;
   padding:10px 30px;
   background:#f8f8f8;
@@ -46,6 +47,7 @@ body {
   -webkit-box-shadow:0px 2px 4px rgba(0,0,0,0.5);
   -moz-box-shadow:0px 2px 4px rgba(0,0,0,0.5);
   box-shadow:0px 2px 4px rgba(0,0,0,0.5);
+  overflow:auto;
 }
 
 #nr_sidebar {
