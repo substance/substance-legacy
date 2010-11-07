@@ -10,7 +10,7 @@
 ----------------------
 */
 
-body { color:#fff; font-family:"HelveticaNeue", Helvetica, Arial, sans-serif; font-size:14px; line-height:1.5em; background: #EDEDED; }
+body { color:#fff; font-family:"HelveticaNeue", Helvetica, Arial, sans-serif; font-size:14px; line-height:1.5em; background: #ededed; /*background: #EDEDED; */}
 
 a { color: #252519; }
 a:hover { text-decoration: underline; color: #19469D; }
@@ -28,7 +28,15 @@ h2 { font-size: 1.8em; margin-bottom: 1em;}
 ----------------------
 */
 
-#menubar { position: fixed; top: 0px; z-index: 1000; width:100%; margin-bottom:10px; background: #343634 url(assets/nr_bg.jpg); font-size:10px; font-weight:bold; text-shadow:0px 1px 1px rgba(0,0,0,0.5); text-transform:uppercase; clear:both; }
+#menubar {
+  left: 20px; right: 20px; position: fixed; top: 0px; z-index: 1000; margin-bottom:10px; background: #343634; font-size:10px; font-weight:bold; text-shadow:0px 1px 1px rgba(0,0,0,0.5); text-transform:uppercase; clear:both;
+  border-bottom-left-radius: 7px;
+  border-bottom-right-radius: 7px;
+  
+  -webkit-box-shadow: 0px 2px 4px rgba(0,0,0,1);
+  -moz-box-shadow:    0px 2px 4px rgba(0,0,0,1);
+  box-shadow:         0px 2px 4px rgba(0,0,0,1);  
+}
 
 #commands { padding: 4px; float: right; }
 
@@ -36,17 +44,42 @@ h2 { font-size: 1.8em; margin-bottom: 1em;}
 
 #logo h1 { margin: 0; padding: 0; margin-top: 15px; margin-left: 15px; font-size: 16px; text-transform: none;}
 
-#shelf { border-top: 1px solid white; background: #4C4C47; overflow: auto; }
+#shelf { background: #4C4C47; overflow: auto; }
 
-#main { margin-top: 60px; }
+
 
 /*
  Sidebar
 ----------------------
 */
 
-#sidebar { float: right; width: 450px; margin-top: 0px; margin-right: 20px; }
-
+#sidebar {
+  position:fixed;
+  right:20px;
+  top:100px;
+  width:410px;
+  background: white;
+  padding:10px 15px 10px 15px;
+    
+  -webkit-border-radius:7px;
+  -moz-border-radius:   7px;
+  border-radius:        7px;
+  -webit-border-bottom-left-radius: 0;
+  -webit-border-top-left-radius:    0;
+  -moz-border-radius-topleft:       0;
+  -moz-border-radius-bottomleft:    0;
+  border-bottom-left-radius:        0;
+  border-top-left-radius:           0;
+  background:#f8f8f8;
+  
+  -webkit-box-shadow: 0px 2px 4px rgba(100,100,100,1);
+  -moz-box-shadow:    0px 2px 4px rgba(100,100,100,1);
+  box-shadow:         0px 2px 4px rgba(100,100,100,1);
+  
+  overflow:hidden;
+  z-index:10;
+  
+}
 
 /*
  Editors
@@ -55,24 +88,52 @@ h2 { font-size: 1.8em; margin-bottom: 1em;}
 
 #document_tags { height: 50px;}
 
-#editor a { background: #eee; padding: 3px; }
+#editor { padding: 3px; color: #444;}
 
 /* Image Widget */
 
 #progress_container { display: none; }
+
 
 /*
  Document view
 ----------------------
 */
 
-#document { background: #fff; padding: 15px; margin-right: 490px; margin-top: 70px; margin-left: 20px; margin-bottom: 20px; color: #333; }
+
+#main {
+  position:relative;
+  margin:10px 20px 10px 20px;
+  margin-top: 80px;
+  margin-bottom: 30px;
+}
+
+#document {
+  color: #333;
+  min-height: 500px;
+  position:relative;
+  background:#fff;
+  margin:-10px -20px -10px -10px;
+  margin-right: 400px;
+  padding: 20px;
+  
+  -webkit-border-radius:7px;
+  -moz-border-radius:   7px;
+  border-radius:        7px;
+  
+  -webkit-box-shadow: 0px 0px 16px rgba(0,0,0,0.15), 0px 0px 2px rgba(0,0,0,0.25);
+  -moz-box-shadow:    0px 0px 16px rgba(0,0,0,0.15), 0px 0px 2px rgba(0,0,0,0.25);
+  box-shadow:         0px 0px 16px rgba(0,0,0,0.15), 0px 0px 2px rgba(0,0,0,0.25);
+  z-index: 100;
+}
+
+
 
 .content-node { margin-top: 10px; position: relative; }
 
 .content-node.active { background: #ccc; }
 
-.content-node.selected { border: 1px dotted #000; }
+.content-node.selected { border-right: 3px solid #555; }
 
 .content-node .content-node-info { display: none; }
 
@@ -85,9 +146,6 @@ h2 { font-size: 1.8em; margin-bottom: 1em;}
 #actions a:hover { color: white; background: black; }
 
 code { display: block; font-family: Monaco, Consolas; font-size: 12px; margin-top: 15px; padding: 7px; border-left: 3px solid #ccc; }
-
-
-
 
 
 

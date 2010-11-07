@@ -2,8 +2,10 @@ var express = require('express@1.0.0rc4');
 var app = express.createServer();
 var http = require('http');
 var cradle = require('cradle@0.2.2');
-var conn = new(cradle.Connection)('mql.couchone.com', 80);
-var db = conn.database('document_composer');
+
+var conn = new(cradle.Connection)('substance.cloudant.com', 80);
+var db = conn.database('manoftheday');
+
 
 // Server Configuration
 // -----------
