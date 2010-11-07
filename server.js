@@ -34,12 +34,30 @@ app.get('/documents', function(req, res) {
   });
 });
 
+
+// Get all documents with contents
+// -----------
+
+app.get('/documents/full', function(req, res) {
+  db.view('documents/full', function (err, documents) {
+    
+    var result = documents.map(function(d) {
+      var res = d.contents;
+      res.id = d.id;
+      return res;
+    });
+    
+    res.send(JSON.stringify(result));
+  });
+});
+
 // Fetch a document
 // -----------
 
 app.get('/documents/:id', function(req, res) {
   db.get(req.params.id, function (err, doc) {
     delete doc._rev;
+    doc.id = doc._id;
     delete doc._id;
     res.send(JSON.stringify(doc));
   });

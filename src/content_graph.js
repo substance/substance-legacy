@@ -133,20 +133,18 @@ ContentGraph.prototype.addChild = function(node, referenceNode) {
 // Serializes the current state to a JSON representation
 ContentGraph.prototype.serialize = function() {
   var result = {
-    title: this.data.title,
     nodes: {},
     children: [],
     nodeCount: this.nodeCount
   };
-
+  
+  _.extend(result, this.data);
+  
   this.all('children').each(function(node, key, index) {
     result.children.push(key);
   });
 
   this.all('nodes').each(function(node, key, index) {
-    
-    console.log(key);
-    
     result.nodes[key] = node.serialize();
   });
   

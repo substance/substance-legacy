@@ -1,46 +1,64 @@
 <!DOCTYPE html> 
 <html> 
 <head> 
-  <title>Newsroom Demo</title>
+  <title>Substance™ </title>
   
   <!-- templates -->
   <script type="text/x-handlebars-template" name="editor">
     <div id="menubar">
-      <div class="lpl buttons">
-        <a class="lpl button new_document" href="#">New</a>
-        <a class="lpl button browse_documents" href="#">Browse</a>
-        <a class="lpl button action save_document" href="#">Save &amp; Publish</a>
+      <div id="commands">
+        <div class="lpl buttons">
+          <a class="lpl button new_document" href="#">New</a>
+          <a class="lpl button browse_documents" href="#">Browse</a>
+          <a class="lpl button action save_document" href="#">Save &amp; Publish</a>
+        </div>
       </div>
-    </div>
-    
-    <div id="dialog">
       
+      <div id="logo">
+        <h1>Substance™ — Data-driven document authoring</h1>
+      </div>
+      
+      <br class="clear"/>
+      
+      <div id="shelf">
+        
+      </div>
     </div>
     
-    <div id="sidebar">
-      <div id="editor" class="lpl widget_container">
-        Plase create a new document
-        You can then select some nodes on the right to edit the contents.
+    <div id="main">
+      <div id="sidebar">
+        <div id="editor" class="lpl widget-container">
+          <img src="/images/loading-small-bright.gif"/>
+          Plase create a new document
+          You can then select some nodes on the right to edit the contents.
+        </div>
+      </div> <!-- end sidebar -->
+
+      <div id="actions">
+
       </div>
-    </div> <!-- end sidebar -->
 
-    <div id="actions">
-
-    </div>
-
-    <div id="document">
-      No document loaded... You can either create a <em>New Document</em> or <em>Browse</em> existing ones.
+      <div id="document">
+        <p>No document loaded... You can either create a <em>New Document</em> or <em>Browse</em> existing ones.</p>
+      </div>
+    
     </div>
   </script>
   
   <script type="text/x-handlebars-template" name="browse_documents">
-    <h3>Browse Documents</h3>
-    <div class="lpl widget_container">
-      <ul>
+    <div>
+      <div id="document_list" style="padding: 10px">
         {{#documents}}
-          <li><a href="#" key="{{id}}" class="load_document">{{title}}</a> ({{id}})</li>
+          <div class="icon-container ui-draggable">
+            <div class="icon">
+              <a href="#" key="{{id}}" class="load_document"><img src="http://demo.lepilo.at/stylesheets/assets/lpl/icons/128x128_file.png" alt="icon"></a>
+            </div>
+            <div>{{title}}</div>
+            <div class="metadata">2010-11-07 13:04</div>
+          </div>
         {{/documents}}
-      </ul>
+        <br class="clear"/>
+      </div>
     </div>
   </script>
 
@@ -58,23 +76,29 @@
   
   <script type="text/x-handlebars-template" name="edit_paragraph">
     <h3>Edit Paragraph</h3>
-    <form class="lpl texteditor" id="edit_node">
+    <div class="lpl texteditor" id="edit_node">
       <div class="lpl inputcombo">
         <label for="content_text">content:</label>
         <textarea class="property" name="content" id="content_texteditor">{{content}}</textarea>
       </div>
-    </form>
+    </div>
   </script>
   
   <script type="text/x-handlebars-template" name="edit_image">
     <h3>Edit image</h3>
     <p>Select an image to be uploaded, resized and embedded into the document.</p>
     
-    <form id="MyForm" action="http://api2.transloadit.com/assemblies" enctype="multipart/form-data" method="POST">
     
-    <input type="hidden" name="params" value="{&quot;auth&quot;:{&quot;key&quot;:&quot;4ccca6b9de144af4882760af72ec3211&quot;},&quot;steps&quot;:{&quot;resize_image&quot;:{&quot;robot&quot;:&quot;\/image\/resize&quot;,&quot;width&quot;:320,&quot;height&quot;:240,&quot;result&quot;:true}},&quot;redirect_url&quot;:&quot;http:\/\/example.com\/upload&quot;}" />
-    <input type="file" name="my_file" />
-    <input type="submit" value="Upload">
+    <form id="upload_image" action="http://api2.transloadit.com/assemblies" enctype="multipart/form-data" method="POST">
+      <div class="lpl texteditor">
+          <label for="my_file">select file</label>
+          <input type="file" name="my_file" id="my_file" />
+          <!--<input type="text" name="name" class="property" value="{{name}}" id="section_name">-->
+          
+          <input type="hidden" name="params" value="{&quot;auth&quot;:{&quot;key&quot;:&quot;4ccca6b9de144af4882760af72ec3211&quot;},&quot;steps&quot;:{&quot;resize_image&quot;:{&quot;robot&quot;:&quot;\/image\/resize&quot;,&quot;width&quot;:320,&quot;height&quot;:240,&quot;result&quot;:true}},&quot;redirect_url&quot;:&quot;http:\/\/example.com\/upload&quot;}" />
+      </div>
+
+      <input type="submit" value="Upload">
     </form>
     
     <div id="progress_container">
@@ -85,25 +109,40 @@
   
   <script type="text/x-handlebars-template" name="edit_section">
     <h3>Edit section</h3>
-    <form id="edit_node">
-      <label>Section Name</label>
-      <input type="text" class="property" name="name" value="{{name}}"/><br/>
-    </form>
+    <div class="lpl texteditor">
+        <label for="section_name">section name</label>
+        <input type="text" name="name" class="property" value="{{name}}" id="section_name">
+    </div>
   </script>
   
   <script type="text/x-handlebars-template" name="edit_document">
     <h3>Edit document</h3>
-    <form id="edit_node">
-      <label>Document Title</label>
-      <input type="text" class="property" name="title" value="{{title}}"/><br/>
-    </form>
+    <div class="lpl texteditor">
+        <label for="document_title">title</label>
+        <input type="text" name="document_title" class="property" value="{{title}}" id="document_title">
+        <label for="publication_date">publication date</label>
+        <input type="text" name="publication_date" class="property" value="{{publication_date}}" id="publication_date">
+        <label for="document_tags">tags</label>
+        <textarea name="document_tags" class="property" id="document_tags">{{tags}}</textarea>
+        
+        <label>Published</label>
+        <div id="published" class="lpl toggle on">
+          <div class="lpl toggle-off-value">off</div>
+          <div class="lpl toggle-on-container">
+            <div class="lpl toggle-button"></div>
+            <div class="lpl toggle-on-value">on</div>
+          </div>
+        </div>
+    </div>
+    
   </script>
   
   <!-- styles --> 
   <!-- <link id="bespin_base" href="./lib/bespin"/> -->
   <!-- <link href="lib/bespin/BespinEmbedded.css" media="screen" rel="stylesheet" type="text/css" /> -->
-  <!-- <link href="stylesheets/reset.css" media="screen" rel="stylesheet" type="text/css" /> -->
-  <link href="stylesheets/global.css" media="screen" rel="stylesheet" type="text/css" />
+  <link href="stylesheets/reset.css" media="screen" rel="stylesheet" type="text/css" />
+  <link href="stylesheets/widgets.css" media="screen" rel="stylesheet" type="text/css" />
+  <link href="stylesheets/app.css" media="screen" rel="stylesheet" type="text/css" />
   
   <!-- libraries --> 
   <script src="lib/jquery-1.4.3.min.js"></script>
@@ -114,10 +153,6 @@
 
   <!-- transloadit.com file processing service -->
   <script src="lib/jquery.transloadit2.js"></script>
-  <!-- <script type="text/javascript">
-  var tlProtocol = (('https:' == document.location.protocol) ? 'https://' : 'http://');
-  document.write(unescape("%3Cscript src='" + tlProtocol + "assets.transloadit.com/js/jquery.transloadit2.js' type='text/javascript'%3E%3C/script%3E"));
-  </script> -->
   
   <!-- Libraries -->
   <script src="lib/underscore.js"></script>
@@ -138,5 +173,7 @@
   <div id="container">
     
   </div>
+
+
 </body> 
 </html>
