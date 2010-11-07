@@ -29,32 +29,73 @@ body {
 
 #nr_document {
   position:relative;
-  margin:10px 40% 10px 50px;
+  margin:10px 10px 10px 50px;
+  padding:0 40% 0 0;
+  background:#eee;
+  -webkit-border-radius:7px;
+  -moz-border-radius:   7px;
+  border-radius:        7px;
+  -webkit-box-shadow: 0px 2px 4px rgba(0,0,0,1);
+  -moz-box-shadow:    0px 2px 4px rgba(0,0,0,1);
+  box-shadow:         0px 2px 4px rgba(0,0,0,1);
+  z-index:100;
 }
 
-#nr_document .page {
+#nr_document_pages {
   position:relative;
+  background:#f8f8f8;
+  margin:-10px -20px -10px -10px;
+  padding:10px 20px 10px 10px;
+  -webit-border-bottom-left-radius: 7px;
+  -webit-border-top-left-radius:    7px;
+  -moz-border-radius-topleft:       7px;
+  -moz-border-radius-bottomleft:    7px;
+  border-bottom-left-radius:        7px;
+  border-top-left-radius:           7px;
+  -webkit-box-shadow: 0px 0px 16px rgba(0,0,0,0.15), 0px 0px 2px rgba(0,0,0,0.25);
+  -moz-box-shadow:    0px 0px 16px rgba(0,0,0,0.15), 0px 0px 2px rgba(0,0,0,0.25);
+  box-shadow:         0px 0px 16px rgba(0,0,0,0.15), 0px 0px 2px rgba(0,0,0,0.25);
+}
+
+#nr_document_pages .page {
+  position:relative;
+  width:100%;
   min-height:300px;
   max-height:500px;
-  margin:0 10px 20px 10px;
-  padding:10px 30px;
-  background:#f8f8f8;
+  margin:0 10px 20px 5px;
+  padding:10px 10px;
   color:#333;
   border-top:1px solid rgba(255,255,255,0.75);
-  -webkit-border-radius:5px;
-  -moz-border-radius:5px;
-  border-radius:5px;
-  -webkit-box-shadow:0px 2px 4px rgba(0,0,0,0.5);
-  -moz-box-shadow:0px 2px 4px rgba(0,0,0,0.5);
-  box-shadow:0px 2px 4px rgba(0,0,0,0.5);
+  -webkit-border-radius:3px;
+  -moz-border-radius:   3px;
+  border-radius:        3px;
+  -webkit-box-shadow: 0px 1px 2px rgba(0,0,0,0.1);
+  -moz-box-shadow:    0px 1px 2px rgba(0,0,0,0.1);
+  box-shadow:         0px 1px 2px rgba(0,0,0,0.1);
   overflow:auto;
+  clear:both;
 }
 
-#nr_sidebar {
+#nr_document_sidebar {
   position:absolute;
-  right:12px;
-  top:32px;
+  right:0px;
+  top:0px;
   width:40%;
+  height:100%;
+  padding:10px 15px 10px 15px;
+  /* background: -webkit-gradient(linear, 0% 0%, 1% 0%, from(rgb(180,180,180)), to(rgb(240,240,240)));
+  background: -moz-linear-gradient(left, rgb(180,180,180), rgb(240,240,240) 1%); */
+  -webkit-border-radius:7px;
+  -moz-border-radius:   7px;
+  border-radius:        7px;
+  -webit-border-bottom-left-radius: 0;
+  -webit-border-top-left-radius:    0;
+  -moz-border-radius-topleft:       0;
+  -moz-border-radius-bottomleft:    0;
+  border-bottom-left-radius:        0;
+  border-top-left-radius:           0;
+  overflow:hidden;
+  z-index:10;
 }
 
 #nr_sidebar > * {

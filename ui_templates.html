@@ -3,8 +3,8 @@
 <head> 
   <title>Newsroom UI Components</title>
   <link href="/stylesheets/reset.css" media="screen" rel="stylesheet" type="text/css" />
-  <link href="/stylesheets/newsroom_ui.css" media="screen" rel="stylesheet" type="text/css" />
   <link href="/stylesheets/lpl_ui.css" media="screen" rel="stylesheet" type="text/css" />
+  <link href="/stylesheets/newsroom_ui.css" media="screen" rel="stylesheet" type="text/css" />
 </head>
 <body>
   
@@ -16,18 +16,62 @@
     asdasdasda
   </div>
 
-  <div id="nr_sidebar">
+  
+  <div id="nr_document">
     
-    <div class="lpl widget-container">
+    <div id="nr_document_pages">
+      
+      <div class="page">
+        
+        <div class="lpl texteditor">
+          <label for="content_title">title</label>
+          <input type="text" name="content_title" value="put title here" id="title_texteditor">
+          <label for="content_text">content</label>
+          <textarea name="content_text" id="content_texteditor"></textarea>
+        </div>
+        
+        <div class="lpl progress-container white"><div class="lpl progress-bar stripes animated" style="width:80%"></div></div>
+        <div class="lpl legend"><strong>Uploading:</strong> 80% of "animated progress bar.mp4" uploaded...</div>
+        
+        <div class="lpl widget-container">
+          <div class="lpl progress-container"><div class="lpl progress-bar" style="width:24%"></div></div>
+          <div class="lpl legend"><strong>Uploading:</strong> 24% of "animated progress bar.mp4" uploaded...</div>
+        </div>
+        
+      </div>
+
+      <div class="page">
+
+        <div class="lpl texteditor">
+          <label for="content_title">title</label>
+          <input type="text" name="content_title" value="put title here" id="title_texteditor">
+          <label for="content_text">content</label>
+          <textarea name="content_text" id="content_texteditor"></textarea>
+        </div>
+
+        <div class="lpl progress-container white"><div class="lpl progress-bar stripes animated" style="width:80%"></div></div>
+        <div class="lpl legend"><strong>Uploading:</strong> 80% of "animated progress bar.mp4" uploaded...</div>
+
+        <div class="lpl widget-container">
+          <div class="lpl progress-container"><div class="lpl progress-bar" style="width:24%"></div></div>
+          <div class="lpl legend"><strong>Uploading:</strong> 24% of "animated progress bar.mp4" uploaded...</div>
+        </div>
+
+      </div>
+
+    </div>
+    <!-- #nr_document_pages END -->
+
+    <div id="nr_document_sidebar">
+
       <div class="lpl progress-container white"><div class="lpl progress-bar" style="width:40%"></div></div>
       <div class="lpl legend"><strong>Uploading:</strong> 40% of "something awesome, dude.avi" uploaded...</div>
 
       <div class="lpl progress-container"><div class="lpl progress-bar stripes" style="width:60%"></div></div>
       <div class="lpl legend"><strong>Uploading:</strong> 60% of "animated progress bar.mp4" uploaded...</div>
-    </div>
-    
-    <div class="lpl widget-container">
-      
+
+      <br/>
+
       <div class="lpl toggle on" style="float:right">
         <div class="lpl toggle-off-value">off</div>
         <div class="lpl toggle-on-container">
@@ -35,7 +79,7 @@
           <div class="lpl toggle-on-value">on</div>
         </div>
       </div>
-      
+
       <div class="lpl toggle off">
         <div class="lpl toggle-off-value">off</div>
         <div class="lpl toggle-on-container">
@@ -43,6 +87,8 @@
           <div class="lpl toggle-on-value">on</div>
         </div>
       </div>
+
+      <br/>
 
       <div class="lpl toggle off" style="width:250px">
         <div class="lpl toggle-off-value">250px wide off</div>
@@ -52,6 +98,8 @@
         </div>
       </div>
 
+      <br/>
+
       <div class="lpl toggle on" style="width:100%">
         <div class="lpl toggle-off-value">100% wide off</div>
         <div class="lpl toggle-on-container">
@@ -60,15 +108,7 @@
         </div>
       </div>
 
-    </div>
-    
-    
-    <div class="lpl widget-container">
-      blah
-    </div>
-    
-    
-    <div class="lpl widget-container">
+      <br/>
 
       <div class="lpl texteditor rich">
         <div class="lpl inputcombo">
@@ -95,65 +135,45 @@
           <textarea name="content_text" id="content_texteditor"></textarea>
         </div>
       </div>
-      
+
       <div class="lpl buttons">
         <a class="lpl button abort" href="#">Delete Paragraph</a>
         <a class="lpl button" href="#">Cancel</a>
         <a class="lpl button action" href="#">Save &amp; Publish</a>
       </div>
-      
-    </div>
 
-    <div class="lpl widget-container inactive">
-      
-      <div class="lpl progress-container white"><div class="lpl progress-bar" style="width:40%"></div></div>
-      <div class="lpl legend"><strong>Uploading:</strong> 40% of "something awesome, dude.avi" uploaded...</div>
+      <br/>
 
-      <div class="lpl toggle on" style="float:right">
-        <div class="lpl toggle-off-value">off</div>
-        <div class="lpl toggle-on-container">
-          <div class="lpl toggle-button"></div>
-          <div class="lpl toggle-on-value">on</div>
+      <div class="lpl widget-container inactive">
+
+        <div class="lpl progress-container white"><div class="lpl progress-bar" style="width:40%"></div></div>
+        <div class="lpl legend"><strong>Uploading:</strong> 40% of "something awesome, dude.avi" uploaded...</div>
+
+        <div class="lpl toggle on" style="float:right">
+          <div class="lpl toggle-off-value">off</div>
+          <div class="lpl toggle-on-container">
+            <div class="lpl toggle-button"></div>
+            <div class="lpl toggle-on-value">on</div>
+          </div>
         </div>
-      </div>
-      
-      <div class="lpl toggle off">
-        <div class="lpl toggle-off-value">off</div>
-        <div class="lpl toggle-on-container">
-          <div class="lpl toggle-button"></div>
-          <div class="lpl toggle-on-value">on</div>
+
+        <div class="lpl toggle off">
+          <div class="lpl toggle-off-value">off</div>
+          <div class="lpl toggle-on-container">
+            <div class="lpl toggle-button"></div>
+            <div class="lpl toggle-on-value">on</div>
+          </div>
         </div>
+
       </div>
-      
+
     </div>
-    
-    
+    <!-- #nr_sidebar END -->
     
   </div>
+  <!-- #nr_document END -->
   
-  
-  <div id="nr_document">
-    
-    <div class="page">
-      
-      <div class="lpl texteditor">
-        <label for="content_title">title</label>
-        <input type="text" name="content_title" value="put title here" id="title_texteditor">
-        <label for="content_text">content</label>
-        <textarea name="content_text" id="content_texteditor"></textarea>
-      </div>
-      
-      <div class="lpl progress-container white"><div class="lpl progress-bar stripes animated" style="width:80%"></div></div>
-      <div class="lpl legend"><strong>Uploading:</strong> 80% of "animated progress bar.mp4" uploaded...</div>
-      
-      <div class="lpl widget-container">
-        <div class="lpl progress-container"><div class="lpl progress-bar" style="width:24%"></div></div>
-        <div class="lpl legend"><strong>Uploading:</strong> 24% of "animated progress bar.mp4" uploaded...</div>
-      </div>
-      
-    </div>
-    
-  </div>
+  <br/>
   
   <div id="nr_modal">
     

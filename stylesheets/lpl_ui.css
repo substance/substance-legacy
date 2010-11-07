@@ -50,14 +50,14 @@ html {overflow:auto;}
   width:15px;
   padding:1px;
   -webkit-border-radius:8px;
-  -moz-border-radius:8px;
-  border-radius:8px;
+  -moz-border-radius:   8px;
+  border-radius:        8px;
   background:rgba(100,100,100,0.05);
   background: -webkit-gradient(linear, 0% 0%, 100% 0%, from(rgba(0,0,0,0.05)), to(rgba(250,250,250,0.05)));
   background: -moz-linear-gradient(left, rgba(0,0,0,0.05), rgba(250,250,250,0.05));
-  -webkit-box-shadow:0px 1px 0px rgba(255,255,255,0.1), inset 1px 1px 3px rgba(0,0,0,0.15);
-  -moz-box-shadow:0px 1px 0px rgba(255,255,255,0.1), inset 0px 1px 3px rgba(0,0,0,0.15);
-  box-shadow:0px 1px 0px rgba(255,255,255,0.1), inset 0px 1px 3px rgba(0,0,0,0.15);
+  -webkit-box-shadow: 0px 1px 0px rgba(255,255,255,0.1), inset 1px 1px 3px rgba(0,0,0,0.15);
+  -moz-box-shadow:    0px 1px 0px rgba(255,255,255,0.1), inset 0px 1px 3px rgba(0,0,0,0.15);
+  box-shadow:         0px 1px 0px rgba(255,255,255,0.1), inset 0px 1px 3px rgba(0,0,0,0.15);
   overflow:hidden;
 }
 
@@ -66,9 +66,9 @@ html {overflow:auto;}
   background:rgba(100,100,100,0.1);
   background: -webkit-gradient(linear, 0% 0%, 100% 0%, from(rgba(0,0,0,0.15)), to(rgba(250,250,250,0.15)));
   background: -moz-linear-gradient(left, rgba(0,0,0,0.15), rgba(250,250,250,0.15));
-  -webkit-box-shadow:0px 1px 0px rgba(255,255,255,0.1), inset 1px 1px 3px rgba(0,0,0,0.35);
-  -moz-box-shadow:0px 1px 0px rgba(255,255,255,0.1), inset 0px 1px 3px rgba(0,0,0,0.35);
-  box-shadow:0px 1px 0px rgba(255,255,255,0.1), inset 0px 1px 3px rgba(0,0,0,0.35);
+  -webkit-box-shadow: 0px 1px 0px rgba(255,255,255,0.1), inset 1px 1px 3px rgba(0,0,0,0.35);
+  -moz-box-shadow:    0px 1px 0px rgba(255,255,255,0.1), inset 0px 1px 3px rgba(0,0,0,0.35);
+  box-shadow:         0px 1px 0px rgba(255,255,255,0.1), inset 0px 1px 3px rgba(0,0,0,0.35);
 }
 
 .lpl.scrollbar .lpl.scrollbar-indicator,
@@ -81,11 +81,11 @@ html {overflow:auto;}
   background: -webkit-gradient(linear, 0% 0%, 100% 0%, from(rgba(250,252,250,0.5)), to(rgba(218,220,218,0.5)));
   background: -moz-linear-gradient(left, rgba(250,252,250,0.5), rgba(218,220,218,0.5));
   -webkit-border-radius:6px;
-  -moz-border-radius:6px;
-  border-radius:6px;
+  -moz-border-radius:   6px;
+  border-radius:        6px;
   -webkit-box-shadow: inset -1px 0px 1px rgba(255,255,255,0.25), 0px 0px 2px rgba(0,0,0,0.1);
-  -moz-box-shadow: inset -1px 0px 1px rgba(255,255,255,0.25), 0px 0px 2px rgba(0,0,0,0.1);
-  box-shadow: inset -1px 0px 1px rgba(255,255,255,0.25), 0px 0px 2px rgba(0,0,0,0.1);
+  -moz-box-shadow:    inset -1px 0px 1px rgba(255,255,255,0.25), 0px 0px 2px rgba(0,0,0,0.1);
+  box-shadow:         inset -1px 0px 1px rgba(255,255,255,0.25), 0px 0px 2px rgba(0,0,0,0.1);
   z-index:100;
   cursor: ns-resize;
 }
@@ -98,8 +98,8 @@ html {overflow:auto;}
   background: -webkit-gradient(linear, 0% 0%, 100% 0%, from(rgb(250,252,250)), to(rgb(218,220,218)));
   background: -moz-linear-gradient(left, rgb(250,252,250), rgb(218,220,218));
   -webkit-box-shadow: inset -1px 0px 1px rgba(255,255,255,0.75), 0px 0px 2px rgba(0,0,0,1);
-  -moz-box-shadow: inset -1px 0px 1px rgba(255,255,255,0.75), 0px 0px 2px rgba(0,0,0,1);
-  box-shadow: inset -1px 0px 1px rgba(255,255,255,0.75), 0px 0px 2px rgba(0,0,0,1);
+  -moz-box-shadow:    inset -1px 0px 1px rgba(255,255,255,0.75), 0px 0px 2px rgba(0,0,0,1);
+  box-shadow:         inset -1px 0px 1px rgba(255,255,255,0.75), 0px 0px 2px rgba(0,0,0,1);
 }
 
 .lpl.scrollbar.horizontal {
@@ -116,14 +116,14 @@ html {overflow:auto;}
   height:12px;
   width:100%;
   -webkit-border-radius:8px;
-  -moz-border-radius:8px;
-  border-radius:8px;
+  -moz-border-radius:   8px;
+  border-radius:        8px;
   background:rgba(100,100,100,0.05);
   background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(rgba(0,0,0,0.05)), to(rgba(250,250,250,0.05)));
   background: -moz-linear-gradient(top, rgba(0,0,0,0.05), rgba(250,250,250,0.05));
-  -webkit-box-shadow:0px 1px 0px rgba(255,255,255,0.1), inset 1px 1px 3px rgba(0,0,0,0.15);
-  -moz-box-shadow:0px 1px 0px rgba(255,255,255,0.1), inset 0px 1px 3px rgba(0,0,0,0.15);
-  box-shadow:0px 1px 0px rgba(255,255,255,0.1), inset 0px 1px 3px rgba(0,0,0,0.15);
+  -webkit-box-shadow: 0px 1px 0px rgba(255,255,255,0.1), inset 1px 1px 3px rgba(0,0,0,0.15);
+  -moz-box-shadow:    0px 1px 0px rgba(255,255,255,0.1), inset 0px 1px 3px rgba(0,0,0,0.15);
+  box-shadow:         0px 1px 0px rgba(255,255,255,0.1), inset 0px 1px 3px rgba(0,0,0,0.15);
   overflow:hidden;
 }
 
@@ -132,9 +132,9 @@ html {overflow:auto;}
   background:rgba(100,100,100,0.1);
   background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(rgba(0,0,0,0.15)), to(rgba(250,250,250,0.15)));
   background: -moz-linear-gradient(top, rgba(0,0,0,0.15), rgba(250,250,250,0.15));
-  -webkit-box-shadow:0px 1px 0px rgba(255,255,255,0.1), inset 1px 1px 3px rgba(0,0,0,0.35);
-  -moz-box-shadow:0px 1px 0px rgba(255,255,255,0.1), inset 0px 1px 3px rgba(0,0,0,0.35);
-  box-shadow:0px 1px 0px rgba(255,255,255,0.1), inset 0px 1px 3px rgba(0,0,0,0.35);
+  -webkit-box-shadow: 0px 1px 0px rgba(255,255,255,0.1), inset 1px 1px 3px rgba(0,0,0,0.35);
+  -moz-box-shadow:    0px 1px 0px rgba(255,255,255,0.1), inset 0px 1px 3px rgba(0,0,0,0.35);
+  box-shadow:         0px 1px 0px rgba(255,255,255,0.1), inset 0px 1px 3px rgba(0,0,0,0.35);
   overflow:hidden;
 }
 
@@ -147,11 +147,11 @@ html {overflow:auto;}
   background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(rgba(250,252,250,0.5)), to(rgba(218,220,218,0.5)));
   background: -moz-linear-gradient(top, rgba(250,252,250,0.5), rgba(218,220,218,0.5));
   -webkit-border-radius:6px;
-  -moz-border-radius:6px;
-  border-radius:6px;
+  -moz-border-radius:   6px;
+  border-radius:        6px;
   -webkit-box-shadow: inset 0px -1px 1px rgba(255,255,255,0.25), 0px 0px 2px rgba(0,0,0,0.1);
-  -moz-box-shadow: inset 0px -1px 1px rgba(255,255,255,0.25), 0px 0px 2px rgba(0,0,0,0.1);
-  box-shadow: inset 0px -1px 1px rgba(255,255,255,0.25), 0px 0px 2px rgba(0,0,0,0.1);
+  -moz-box-shadow:    inset 0px -1px 1px rgba(255,255,255,0.25), 0px 0px 2px rgba(0,0,0,0.1);
+  box-shadow:         inset 0px -1px 1px rgba(255,255,255,0.25), 0px 0px 2px rgba(0,0,0,0.1);
   z-index:100;
   cursor: ew-resize;
 }
@@ -164,11 +164,11 @@ html {overflow:auto;}
   background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(rgb(250,252,250)), to(rgb(218,220,218)));
   background: -moz-linear-gradient(top, rgb(250,252,250), rgb(218,220,218));
   -webkit-border-radius:6px;
-  -moz-border-radius:6px;
-  border-radius:6px;
+  -moz-border-radius:   6px;
+  border-radius:        6px;
   -webkit-box-shadow: inset 0px -1px 1px rgba(255,255,255,0.75), 0px 0px 2px rgba(0,0,0,1);
-  -moz-box-shadow: inset 0px -1px 1px rgba(255,255,255,0.75), 0px 0px 2px rgba(0,0,0,1);
-  box-shadow: inset 0px -1px 1px rgba(255,255,255,0.75), 0px 0px 2px rgba(0,0,0,1);
+  -moz-box-shadow:    inset 0px -1px 1px rgba(255,255,255,0.75), 0px 0px 2px rgba(0,0,0,1);
+  box-shadow:         inset 0px -1px 1px rgba(255,255,255,0.75), 0px 0px 2px rgba(0,0,0,1);
 }
 
 
@@ -194,8 +194,8 @@ html {overflow:auto;}
   text-shadow:0px 1px 0px rgba(255,255,255,0.5);
   line-height:1.5em;
   -webkit-border-radius:5px;
-  -moz-border-radius:5px;
-  border-radius:5px;
+  -moz-border-radius:   5px;
+  border-radius:        5px;
   border:1px solid rgba(100,100,100,0.6);
   /* border-bottom:1px solid rgba(100,100,100,0.5); */
   background:#e9e9e9;
@@ -203,8 +203,8 @@ html {overflow:auto;}
   background: -moz-linear-gradient(top, #fafafa, #e0e0e0);
   -webkit-background-clip: padding-box;
   -webkit-box-shadow: inset 0px 0px 1px rgba(255,255,255,0.25), inset 0px 0px 1px rgba(255,255,255,1), 0px 1px 1px rgba(255,255,255,0.35);
-  -moz-box-shadow: inset 0px 0px 1px rgba(255,255,255,1), 0px 1px 1px rgba(255,255,255,0.35);
-  box-shadow: inset 0px 0px 1px rgba(255,255,255,1), 0px 1px 1px rgba(255,255,255,0.35);
+  -moz-box-shadow:    inset 0px 0px 1px rgba(255,255,255,0.25), inset 0px 0px 1px rgba(255,255,255,1), 0px 1px 1px rgba(255,255,255,0.35);
+  box-shadow:         inset 0px 0px 1px rgba(255,255,255,0.25), inset 0px 0px 1px rgba(255,255,255,1), 0px 1px 1px rgba(255,255,255,0.35);
 }
 
 .lpl.button:active {
@@ -214,8 +214,8 @@ html {overflow:auto;}
   background: -moz-linear-gradient(top, #e6e6e6, #d0d0d0);
   -webkit-background-clip: padding-box;
   -webkit-box-shadow: inset 0px 1px 1px rgba(0,0,0,0.25), 0px 1px 1px rgba(255,255,255,0.35);
-  -moz-box-shadow: inset 0px 1px 1px rgba(0,0,0,0.25), 0px 1px 1px rgba(255,255,255,0.35);
-  box-shadow: inset 0px 1px 1px rgba(0,0,0,0.25), 0px 1px 1px rgba(255,255,255,0.35);
+  -moz-box-shadow:    inset 0px 1px 1px rgba(0,0,0,0.25), 0px 1px 1px rgba(255,255,255,0.35);
+  box-shadow:         inset 0px 1px 1px rgba(0,0,0,0.25), 0px 1px 1px rgba(255,255,255,0.35);
 }
 
 .lpl.button.action {
@@ -259,12 +259,12 @@ html {overflow:auto;}
   background: -moz-linear-gradient(top, #fff, #f0f0f0);
   color:#333;
   -webkit-border-radius:6px;
-  -moz-border-radius:6px;
-  border-radius:6px;
+  -moz-border-radius:   6px;
+  border-radius:        6px;
   border-bottom:1px solid rgba(255,255,255,0.5);
-  -webkit-box-shadow:0px 5px 8px rgba(0,0,0,0.3);
-  -moz-box-shadow:0px 5px 8px rgba(0,0,0,0.3);
-  box-shadow:0px 5px 8px rgba(0,0,0,0.3);
+  -webkit-box-shadow: 0px 5px 8px rgba(0,0,0,0.3);
+  -moz-box-shadow:    0px 5px 8px rgba(0,0,0,0.3);
+  box-shadow:         0px 5px 8px rgba(0,0,0,0.3);
 }
 
 .lpl.widget-container.inactive {
@@ -289,11 +289,11 @@ html {overflow:auto;}
   background: -webkit-gradient(linear, 0% 0%, 0% 70%, from(#333), to(#666966));
   background: -moz-linear-gradient(top, #333, #666966);
   -webkit-border-radius:5px;
-  -moz-border-radius:5px;
-  border-radius:5px;
-  -webkit-box-shadow:0px 1px 0px rgba(255,255,255,0.5), inset 0px 1px 4px rgba(0,0,0,0.75);
-  -moz-box-shadow:0px 1px 0px rgba(255,255,255,0.5), inset 0px 1px 4px rgba(0,0,0,0.75);
-  box-shadow:0px 1px 0px rgba(255,255,255,0.5), inset 0px 1px 4px rgba(0,0,0,0.75);
+  -moz-border-radius:   5px;
+  border-radius:        5px;
+  -webkit-box-shadow: 0px 1px 0px rgba(255,255,255,0.5), inset 0px 1px 4px rgba(0,0,0,0.75);
+  -moz-box-shadow:    0px 1px 0px rgba(255,255,255,0.5), inset 0px 1px 4px rgba(0,0,0,0.75);
+  box-shadow:         0px 1px 0px rgba(255,255,255,0.5), inset 0px 1px 4px rgba(0,0,0,0.75);
   overflow:hidden;
 }
 
@@ -301,9 +301,9 @@ html {overflow:auto;}
   background: rgb(218,220,218);
   background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(rgb(218,220,218)), to(rgb(250,252,250)));
   background: -moz-linear-gradient(top, rgb(218,220,218), rgb(250,252,250));
-  -webkit-box-shadow:0px 1px 0px rgba(255,255,255,0.5), inset 0px 1px 3px rgba(0,0,0,0.35);
-  -moz-box-shadow:0px 1px 0px rgba(255,255,255,0.5), inset 0px 1px 3px rgba(0,0,0,0.35);
-  box-shadow:0px 1px 0px rgba(255,255,255,0.5), inset 0px 1px 3px rgba(0,0,0,0.35);
+  -webkit-box-shadow: 0px 1px 0px rgba(255,255,255,0.5), inset 0px 1px 3px rgba(0,0,0,0.35);
+  -moz-box-shadow:    0px 1px 0px rgba(255,255,255,0.5), inset 0px 1px 3px rgba(0,0,0,0.35);
+  box-shadow:         0px 1px 0px rgba(255,255,255,0.5), inset 0px 1px 3px rgba(0,0,0,0.35);
 }
 
 .lpl.progress-bar {
@@ -313,12 +313,12 @@ html {overflow:auto;}
   background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(rgb(178,237,43)), color-stop(0.7, rgb(148,207,13)), color-stop(0.701, rgb(168,215,23)), to(rgb(148,207,13)));
   background: -moz-linear-gradient(top, rgb(178,237,43), rgb(148,207,13) 70%, rgb(168,215,23) 70.1%, rgb(148,207,13));
   -webkit-border-radius:4px;
-  -moz-border-radius:4px;
-  border-radius:4px;
+  -moz-border-radius:   4px;
+  border-radius:        4px;
   border:1px solid rgba(0,50,0,0.5);
-  -webkit-box-shadow:0px 0px 2px rgba(0,0,0,0.3);
-  -moz-box-shadow:0px 0px 2px rgba(0,0,0,0.2);
-  box-shadow:0px 0px 2px rgba(0,0,0,0.2);
+  -webkit-box-shadow: 0px 0px 2px rgba(0,0,0,0.3);
+  -moz-box-shadow:    0px 0px 2px rgba(0,0,0,0.2);
+  box-shadow:         0px 0px 2px rgba(0,0,0,0.2);
   -webkit-background-clip: padding-box;
 }
 
@@ -345,11 +345,11 @@ html {overflow:auto;}
   background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(rgb(210,212,210)), color-stop(0.5, rgb(230,232,230)), color-stop(0.501, rgb(240,242,240)), to(rgb(250,252,250)));
   background: -moz-linear-gradient(top, rgb(210,212,210), rgb(230,232,230) 50%, rgb(240,242,240) 50.1%, rgb(250,252,250));
   -webkit-border-radius:5px;
-  -moz-border-radius:5px;
-  border-radius:5px;
-  -webkit-box-shadow:0px 1px 0px rgba(255,255,255,0.75), inset 0px 1px 4px rgba(0,0,0,0.75), inset 0px 0px 1px rgba(0,0,0,0.5);
-  -moz-box-shadow:0px 1px 0px rgba(255,255,255,0.75), inset 0px 1px 4px rgba(0,0,0,0.75), inset 0px 0px 1px rgba(0,0,0,0.5);
-  box-shadow:0px 1px 0px rgba(255,255,255,0.75), inset 0px 1px 4px rgba(0,0,0,0.75), inset 0px 0px 1px rgba(0,0,0,0.5);
+  -moz-border-radius:   5px;
+  border-radius:        5px;
+  -webkit-box-shadow: 0px 1px 0px rgba(255,255,255,0.75), inset 0px 1px 4px rgba(0,0,0,0.75), inset 0px 0px 1px rgba(0,0,0,0.5);
+  -moz-box-shadow:    0px 1px 0px rgba(255,255,255,0.75), inset 0px 1px 4px rgba(0,0,0,0.75), inset 0px 0px 1px rgba(0,0,0,0.5);
+  box-shadow:         0px 1px 0px rgba(255,255,255,0.75), inset 0px 1px 4px rgba(0,0,0,0.75), inset 0px 0px 1px rgba(0,0,0,0.5);
   overflow:hidden;
 }
 
@@ -364,12 +364,12 @@ html {overflow:auto;}
   background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(rgb(218,220,218)), to(rgb(250,252,250)));
   background: -moz-linear-gradient(top, rgb(218,220,218), rgb(250,252,250));
   -webkit-border-radius:4px;
-  -moz-border-radius:4px;
-  border-radius:4px;
+  -moz-border-radius:   4px;
+  border-radius:        4px;
   border:1px solid rgba(0,0,0,0.4);
   -webkit-box-shadow: inset 0px 1px 0px rgba(255,255,255,0.5), 0px 0px 2px rgba(0,0,0,0.25);
-  -moz-box-shadow: inset 0px 1px 0px rgba(255,255,255,0.5), 0px 0px 2px rgba(0,0,0,0.25);
-  box-shadow: inset 0px 1px 0px rgba(255,255,255,0.5), 0px 0px 2px rgba(0,0,0,0.25);
+  -moz-box-shadow:    inset 0px 1px 0px rgba(255,255,255,0.5), 0px 0px 2px rgba(0,0,0,0.25);
+  box-shadow:         inset 0px 1px 0px rgba(255,255,255,0.5), 0px 0px 2px rgba(0,0,0,0.25);
   z-index:100;
   cursor:pointer;
 }
@@ -399,11 +399,11 @@ html {overflow:auto;}
   background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(rgb(109,186,19)), color-stop(0.5, rgb(143,200,29)), color-stop(0.501, rgb(155,210,13)), to(rgb(178,237,43)));
   background: -moz-linear-gradient(top, rgb(109,186,19), rgb(143,200,29) 50%, rgb(155,210,13) 50.1%, rgb(178,237,43));
   -webkit-border-radius:5px;
-  -moz-border-radius:5px;
-  border-radius:5px;
-  -webkit-box-shadow:0px 1px 0px rgba(255,255,255,0.5), inset 0px 1px 4px rgba(0,0,0,0.75), inset 0px 0px 1px rgba(0,0,0,0.5);
-  -moz-box-shadow:0px 1px 0px rgba(255,255,255,0.5), inset 0px 1px 4px rgba(0,0,0,0.75), inset 0px 0px 1px rgba(0,0,0,0.5);
-  box-shadow:0px 1px 0px rgba(255,255,255,0.5), inset 0px 1px 4px rgba(0,0,0,0.75), inset 0px 0px 1px rgba(0,0,0,0.5);
+  -moz-border-radius:   5px;
+  border-radius:        5px;
+  -webkit-box-shadow: 0px 1px 0px rgba(255,255,255,0.5), inset 0px 1px 4px rgba(0,0,0,0.75), inset 0px 0px 1px rgba(0,0,0,0.5);
+  -moz-box-shadow:    0px 1px 0px rgba(255,255,255,0.5), inset 0px 1px 4px rgba(0,0,0,0.75), inset 0px 0px 1px rgba(0,0,0,0.5);
+  box-shadow:         0px 1px 0px rgba(255,255,255,0.5), inset 0px 1px 4px rgba(0,0,0,0.75), inset 0px 0px 1px rgba(0,0,0,0.5);
 }
 
 .lpl.toggle.on .lpl.toggle-on-container { right:0px; width:100%; }
@@ -456,6 +456,7 @@ html {overflow:auto;}
   display:block;
   margin:2px 0;
   padding:0 5px;
+  color:#666;
   font-size:0.8em;
   text-align:right;
   text-transform:uppercase;
@@ -476,13 +477,13 @@ html {overflow:auto;}
   padding:0 5px;
   font-size:18px;
   -webkit-border-radius:4px;
-  -moz-border-radius:4px;
-  border-radius:4px;
+  -moz-border-radius:   4px;
+  border-radius:        4px;
   border:1px solid transparent;
   background-color:rgba(255,255,255,0.75);
-  -webkit-box-shadow:0px 1px 2px rgba(0,0,0,0.1);
-  -moz-box-shadow:0px 1px 2px rgba(0,0,0,0.1);
-  box-shadow:0px 1px 2px rgba(0,0,0,0.1);
+  -webkit-box-shadow: 0px 1px 2px rgba(0,0,0,0.1);
+  -moz-box-shadow:    0px 1px 2px rgba(0,0,0,0.1);
+  box-shadow:         0px 1px 2px rgba(0,0,0,0.1);
 }
 
 .lpl.texteditor textarea {
@@ -494,14 +495,14 @@ html {overflow:auto;}
   padding:5px;
   font-size:14px;
   -webkit-border-radius:4px;
-  -moz-border-radius:4px;
-  border-radius:4px;
+  -moz-border-radius:   4px;
+  border-radius:        4px;
   border:1px solid transparent;
   resize:none;
-  background-color:rgba(255,255,255,0.75);
-  -webkit-box-shadow:0px 1px 2px rgba(0,0,0,0.1);
-  -moz-box-shadow:0px 1px 2px rgba(0,0,0,0.1);
-  box-shadow:0px 1px 2px rgba(0,0,0,0.1);
+  background-color:rgba(255,255,255,0.5);
+  -webkit-box-shadow: 0px 1px 2px rgba(0,0,0,0.1);
+  -moz-box-shadow:    0px 1px 2px rgba(0,0,0,0.1);
+  box-shadow:         0px 1px 2px rgba(0,0,0,0.1);
 }
 
 .lpl.texteditor input:hover, .lpl.texteditor textarea:hover { 
@@ -510,9 +511,9 @@ html {overflow:auto;}
 
 .lpl.texteditor input:focus, .lpl.texteditor textarea:focus { 
   background-color:rgba(255,255,255,1);
-  -webkit-box-shadow:0px 2px 4px rgba(0,0,0,0.25);
-  -moz-box-shadow:0px 2px 4px rgba(0,0,0,0.25);
-  box-shadow:0px 2px 4px rgba(0,0,0,0.25);
+  -webkit-box-shadow: 0px 2px 4px rgba(0,0,0,0.35);
+  -moz-box-shadow:    0px 2px 4px rgba(0,0,0,0.35);
+  box-shadow:         0px 2px 4px rgba(0,0,0,0.35);
 }
 
 .lpl.texteditor.rich textarea {
@@ -524,9 +525,9 @@ html {overflow:auto;}
   height:42px;
   margin-bottom:-44px;
   border-bottom:1px solid rgba(0,0,0,0.05);
-  -webkit-box-shadow:0px 1px 0px rgba(255,255,255,0.75);
-  -moz-box-shadow:0px 1px 0px rgba(255,255,255,0.75);
-  box-shadow:0px 1px 0px rgba(255,255,255,0.75);
+  -webkit-box-shadow: 0px 1px 0px rgba(255,255,255,0.75);
+  -moz-box-shadow:    0px 1px 0px rgba(255,255,255,0.75);
+  box-shadow:         0px 1px 0px rgba(255,255,255,0.75);
   z-index:1000;
   overflow:hidden;
 }
@@ -540,8 +541,8 @@ html {overflow:auto;}
   width:200%;
   padding:2px 4px;
   background: rgba(200,200,200,1);
-  background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(rgba(255,255,255,0)), to(rgba(50,50,50,0.08)));
-  background: -moz-linear-gradient(top, rgba(255,255,255,0), rgba(50,50,50,0.05));
+  background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(rgba(255,255,255,0)), to(rgba(50,50,50,0.1)));
+  background: -moz-linear-gradient(top, rgba(255,255,255,0), rgba(50,50,50,0.1));
   overflow:hidden;
 }
 
@@ -559,28 +560,28 @@ html {overflow:auto;}
   text-shadow:0px 1px 0px rgba(255,255,255,0.75);
   background:rgba(0,0,0,0.01);
   -webkit-border-radius:5px;
-  -moz-border-radius:5px;
-  border-radius:5px;
-  -webkit-box-shadow:0px 1px 0px rgba(255,255,255,0.75), inset 0px 1px 0px rgba(0,0,0,0.03);
-  -moz-box-shadow:0px 1px 0px rgba(255,255,255,0.75), inset 0px 1px 0px rgba(0,0,0,0.03);
-  box-shadow:0px 1px 0px rgba(255,255,255,0.75), inset 0px 1px 0px rgba(0,0,0,0.03);
+  -moz-border-radius:   5px;
+  border-radius:        5px;
+  -webkit-box-shadow: 0px 1px 0px rgba(255,255,255,0.75), inset 0px 1px 0px rgba(0,0,0,0.03);
+  -moz-box-shadow:    0px 1px 0px rgba(255,255,255,0.75), inset 0px 1px 0px rgba(0,0,0,0.03);
+  box-shadow:         0px 1px 0px rgba(255,255,255,0.75), inset 0px 1px 0px rgba(0,0,0,0.03);
   cursor:pointer;
   overflow:hidden;
 }
 
 .lpl.richtext-styles .lpl.richtext-action:hover {
-  background:rgba(255,255,255,0.5);
+  background:rgba(255,255,255,0.75);
 }
 
 .lpl.richtext-styles .lpl.richtext-action:active {
-  background:rgba(0,0,0,0.05);
+  background:rgba(0,0,0,0.08);
 }
 
 .lpl.richtext-styles .lpl.richtext-action.selected {
-  background:rgba(0,0,0,0.08);
-  -webkit-box-shadow:inset 0px 1px 4px rgba(0,0,0,0.15), inset 0px 2px 2px rgba(0,0,0,0.04), 0px 1px 0px rgba(255,255,255,0.5);
-  -moz-box-shadow:inset 0px 1px 4px rgba(0,0,0,0.15), inset 0px 2px 2px rgba(0,0,0,0.04), 0px 1px 0px rgba(255,255,255,0.5);
-  box-shadow:inset 0px 1px 4px rgba(0,0,0,0.15), inset 0px 2px 2px rgba(0,0,0,0.04), 0px 1px 0px rgba(255,255,255,0.5);
+  background:rgba(0,0,0,0.12);
+  -webkit-box-shadow: inset 0px 1px 4px rgba(0,0,0,0.2), inset 0px 2px 2px rgba(0,0,0,0.04), 0px 1px 0px rgba(255,255,255,0.5);
+  -moz-box-shadow:    inset 0px 1px 4px rgba(0,0,0,0.2), inset 0px 2px 2px rgba(0,0,0,0.04), 0px 1px 0px rgba(255,255,255,0.5);
+  box-shadow:         inset 0px 1px 4px rgba(0,0,0,0.2), inset 0px 2px 2px rgba(0,0,0,0.04), 0px 1px 0px rgba(255,255,255,0.5);
 }
 
 .lpl.richtext-action > div {position:relative; width:100%; height:100%; }
@@ -607,8 +608,8 @@ html {overflow:auto;}
   text-align:center;
   text-indent:-5000px;
   background:rgba(0,0,0,0.04);
-  -webkit-box-shadow:1px 0px 0px rgba(255,255,255,0.5);
-  -moz-box-shadow:1px 0px 0px rgba(255,255,255,0.5);
-  box-shadow:1px 0px 0px rgba(255,255,255,0.5);
+  -webkit-box-shadow: 1px 0px 0px rgba(255,255,255,0.5);
+  -moz-box-shadow:    1px 0px 0px rgba(255,255,255,0.5);
+  box-shadow:         1px 0px 0px rgba(255,255,255,0.5);
 }
 
