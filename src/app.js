@@ -18,10 +18,7 @@
   
   var Document = Backbone.Model.extend({
     
-    initialize: function(spec) {
-      // Initialize content graph
-      console.log('document contructor called...');
-      
+    initialize: function(spec) {      
       // Initialize ContentGraph if present
       if (this.get('contents')) {
         this.g = new ContentGraph(this.get('contents'));
@@ -196,9 +193,10 @@
       var that = this;
       
       setTimeout(function() {
-        console.log($('#editor input[name=title]').val());
         that.model.updateSelectedNode({
-          title: $('#editor input[name=title]').val()
+          title: $('#editor input[name=document_title]').val(),
+          publication_date: $('#editor input[name=publication_date]').val(),
+          tags: $('#editor textarea[name=document_tags]').val()
         });
       }, 5);
     },
@@ -267,7 +265,7 @@
       var that = this;
       this.render();
       
-      $('#MyForm').transloadit({
+      $('#upload_image').transloadit({
         modal: false,
         wait: true,
         autoSubmit: false,
@@ -290,9 +288,7 @@
             });
             $('#progress_container').hide();
           } catch (err) {
-            console.log(assembly);
-            console.log(err);
-            alert('Strange upload error. See console.');
+            throw err;
           }
         }
       });
@@ -429,6 +425,8 @@
       var that = this;
       
       _.bindAll(this, "render");
+      
+      
     },
     
     newDocument: function() {
@@ -440,7 +438,7 @@
       Documents.add(this.model);    
       this.model.save({}, {
         success: function() {
-          alert('A document has been created successfully.')
+          alert('A document has been created successfully.');
         }
       });
       
@@ -462,21 +460,21 @@
     loadDocument: function(id) {
       var that = this;
       
-      this.model = Documents.get(id)
+      this.model = Documents.get(id);
       this.model.fetch({
         success: function() {
           that.init();
         }
       });
       
-      $('#dialog').html('');
-      
+      $('#shelf').html('');
     },
     
     browseDocuments: function() {
       var that = this;
       // Load all documents available in the Repository
       // and render DocumentBrowser View
+      
       Documents.fetch({
         success: function() {
           that.renderDocumentBrowser();
@@ -504,7 +502,7 @@
     },
     
     renderDocumentBrowser: function() {
-      this.documentBrowser = new DocumentBrowser({el: this.$('#dialog'), model: this.model, composer: this});
+      this.documentBrowser = new DocumentBrowser({el: this.$('#shelf'), model: this.model, composer: this});
       this.documentBrowser.render();
     },
     
@@ -566,11 +564,11 @@
     app.render();
     
     // Load initial doc
-    // Documents.fetch({
-    //   success: function() {
-    //     app.loadDocument('075059412b9d2d61362b5014bb003618');
-    //   }
-    // });
+    Documents.fetch({
+      success: function() {
+        app.loadDocument('e59976ea3dca7ba11cffd2d5f2001a87');
+      }
+    });
         
   });
   
