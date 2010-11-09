@@ -46,7 +46,7 @@ app.get('/documents', function(req, res) {
 // -----------
 
 app.get('/documents/full', function(req, res) {
-  db.view('documents/full', function (err, documents) {
+  db.view('documents/all', function (err, documents) {
     
     var result = documents.map(function(d) {
       var res = d.contents;

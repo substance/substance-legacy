@@ -462,7 +462,6 @@
     },
     
     showActions: function(e) {
-      // console.log('action!.');
       $(e.currentTarget).addClass('active');
       return false;
     },
@@ -536,7 +535,7 @@
       var that = this;
       this.model.save({}, {
         success: function() {
-          console.log(that.model);
+          // console.log(that.model);
           alert('The document has been stored on the server...');
         },
         error: function() {
@@ -550,7 +549,7 @@
       
       this.model = Documents.get(id);
       
-      console.log(id);
+      // console.log(id);
       this.model.fetch({
         success: function() {
           that.init();
@@ -568,7 +567,9 @@
       Documents.fetch({
         success: function() {
           that.renderDocumentBrowser();
-          console.log(Documents.models);
+        },
+        error: function() {
+          alert('Error while fetching documents.');
         }
       });
     },
