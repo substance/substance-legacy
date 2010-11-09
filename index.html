@@ -63,14 +63,14 @@
 
   <script type="text/x-handlebars-template" name="actions">
     {{#children}}
-      <a href="#" type="{{.}}" class="add_child">add child {{.}}</a>
+      <a href="#" type="{{.}}" node="{{../node/key}}" class="add_child">add child {{.}}</a>
     {{/children}}
     
     {{#siblings}}
-      <a href="#" type="{{.}}" class="add_sibling">add {{.}}</a>
+      <a href="#" type="{{.}}" node="{{../node/key}}" class="add_sibling">add {{.}}</a>
     {{/siblings}}
     
-    <a href="#" class="remove_node">remove</a>
+    <!--<a href="#" class="remove_node" node="huhu">remove</a>-->
   </script>
   
   <script type="text/x-handlebars-template" name="edit_paragraph">

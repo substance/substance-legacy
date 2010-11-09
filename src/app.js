@@ -13,6 +13,119 @@
     return template(view, helpers || {});
   };
   
+  
+  // HTMLRenderer
+  // ---------------
+  
+  var HTMLRenderer = function(root) {
+
+    // Implement node types
+    var renderers = {
+      document: function(node) {
+        var str = '<div id="root" class="content-node document"><div class="content-node-info">Document</div><div class="border"></div><h1>' + node.data.title + '</h1>';
+        
+        
+        if (node.all('children').length > 0) {
+          node.all('children').each(function(node, key, index) {
+            str += renderers[node.type](node);
+          
+            // register placeholders
+            var html = Helpers.renderTemplate('actions', {
+              node: node,
+              children: [], // ContentNode.types[node.type].allowedChildren,
+              siblings: node.parent ? ContentNode.types[node.parent.type].allowedChildren : []
+            });
+
+            str += '<div class="node-placeholder">' + html + '</div>'
+          });
+          
+        } else {
+          // register placeholders
+          var html = Helpers.renderTemplate('actions', {
+            node: node,
+            children: ContentNode.types[node.type].allowedChildren,
+            siblings: []
+          });
+
+          str += '<div class="node-placeholder">' + html + '</div>'
+        }
+
+        str += '</div>';
+        return str;
+      },
+      section: function(node) {
+        // var str = '<h'+(this.level+1)+' id="section_'+this.sectionId+'">'+this.val+'</h'+(this.level+1)+'>';
+        var str = '<div id="'+node.key+'" class="content-node section"><a href="#" class="remove_node" node="'+node.key+'">X</a><div class="content-node-info">Section</div><div class="border"></div><h2>'+node.data.name+'</h2>';
+
+        if (node.all('children').length > 0) {
+          node.all('children').each(function(node, key, index) {
+            str += renderers[node.type](node); // node.render();
+          
+            // register placeholders
+            var html = Helpers.renderTemplate('actions', {
+              node: node,
+              children: [], // ContentNode.types[node.type].allowedChildren,
+              siblings: node.parent ? ContentNode.types[node.parent.type].allowedChildren : []
+            });
+
+            str += '<div class="node-placeholder">' + html + '</div>'
+          });
+        } else {
+          
+          // register placeholders
+          var html = Helpers.renderTemplate('actions', {
+            node: node,
+            children: ContentNode.types[node.type].allowedChildren,
+            siblings: []
+          });
+
+          str += '<div class="node-placeholder">' + html + '</div>'
+        }
+
+        str += "</div>";
+        return str;
+      },
+      paragraph: function(node) {
+        var str = '<div id="'+node.key+'" class="content-node paragraph"><a href="#" class="remove_node" node="'+node.key+'">X</a><div class="content-node-info">Paragraph</div><div class="border"></div>';
+
+        var converter = new Showdown.converter();
+
+        str += converter.makeHtml(node.data.content);
+        
+        // node.all('children').each(function(node, key, index) {
+        //   str += renderers[node.type](node); // node.render();
+        // });
+        
+        str += '</div>';
+
+
+        return str;
+      },
+      image: function(node) {
+        var str = '<div id="'+node.key+'" class="content-node image"><a href="#" class="remove_node" node="'+node.key+'">X</a><div class="content-node-info">Image</div><div class="border"></div>';
+
+        if (node.data.url.length > 0) {
+          str += '<img src="'+node.data.url+'"/>';
+        } else {
+          str += "image placeholder ...";
+        }
+
+        str += "</div>";
+        return str;
+      }
+    };
+
+    return {
+      render: function() {
+        // Traverse the document
+        return renderers[root.type](root);
+      }
+    };
+  };
+  
+  
+  
+  
   // Document - acts as a proxy to the underlying ContentGraph
   // ---------------
   
@@ -41,8 +154,6 @@
         contents: this.g.serialize()
       });
       
-      console.log(result);
-      
       return result;
     },
     
@@ -62,9 +173,9 @@
     },
     
     // Create a node of a given type
-    createSibling: function(type) {
+    createSibling: function(type, predecessorKey) {
       var newNode = this.createEmptyNode(type),
-          predecessor = this.selectedNode;
+          predecessor = this.g.get('nodes', predecessorKey);
           
       newNode.build();
       newNode.parent = predecessor.parent;
@@ -77,10 +188,14 @@
     },
 
     // Create a child node of a given type
-    createChild: function(type) {
-      var parent = this.selectedNode,
-          newNode = this.createEmptyNode(type);
-          
+    createChild: function(type, parentKey) {
+      var newNode = this.createEmptyNode(type),
+          parent = this.g.get('nodes', parentKey);
+      
+      if (parentKey === "root") {
+        parent = this.g;
+      }
+      
       newNode.build();
       newNode.parent = parent;
 
@@ -92,8 +207,8 @@
     },
 
     // Remove a node from the document
-    removeNode: function() {
-      var node = this.selectedNode;
+    removeNode: function(nodeKey) {
+      var node = this.g.get('nodes', nodeKey);
       node.parent.removeChild(node.key);
       
       this.trigger('change:node', node.parent);
@@ -176,7 +291,6 @@
   
   var Documents = new DocumentList();
   
-
   // NodeEditors
   // ---------------
 
@@ -203,6 +317,7 @@
     
     render: function() {
       $(this.el).html(Helpers.renderTemplate('edit_document', this.model.selectedNode.data));
+      this.$('input[name=document_title]').focus();
     }
   });
 
@@ -227,6 +342,8 @@
     
     render: function() {
       $(this.el).html(Helpers.renderTemplate('edit_paragraph', this.model.selectedNode.data));
+      // Focus on textarea
+      this.$('textarea[name=content]').focus();
     }
   });
   
@@ -252,6 +369,7 @@
     
     render: function() {
       $(this.el).html(Helpers.renderTemplate('edit_section', this.model.selectedNode.data));
+      this.$('input[name=name]').focus();
     }
   });
 
@@ -300,67 +418,6 @@
   });
   
   
-  // NodeActions Panel
-  // ---------------
-  
-  var NodeActions = Backbone.View.extend({
-    events: {
-      'click a.add_child': 'addChild',
-      'click a.add_sibling': 'addSibling',
-      'click a.remove_node': 'removeNode'
-    },
-    
-    initialize: function() {
-      // Init somehow
-      var that = this;
-      
-      // this.el.hide();
-      
-      // Re-render on select:node
-      this.model.bind('select:node', function(node) {
-        that.render();
-      });
-    },
-    
-    // Show action panel
-    show: function() {
-      
-    },
-    
-    // Hide action panel
-    hide: function() {
-      
-    },
-    
-    addChild: function(e) {
-      this.model.createChild($(e.currentTarget).attr('type'));
-      return false;
-    },
-    
-    addSibling: function(e) {
-      this.model.createSibling($(e.currentTarget).attr('type'));
-      return false;
-    },
-    
-    removeNode: function(e) {
-      this.model.removeNode();
-      return false;
-    },
-    
-    render: function() {
-      var $node = $('#'+this.model.selectedNode.key);
-      
-      $('#actions').css('left', $node.offset().left).css('top', $node.offset().top+$node.height());
-      
-      if (this.model.selectedNode) {
-        $(this.el).html(Helpers.renderTemplate('actions', {
-          children: ContentNode.types[this.model.selectedNode.type].allowedChildren,
-          siblings: this.model.selectedNode.parent ? ContentNode.types[this.model.selectedNode.parent.type].allowedChildren : []
-        }));
-      }
-    }
-  });
-  
   // DocumentView
   // ---------------
   
@@ -368,7 +425,13 @@
     events: {
       'mouseover .content-node': 'highlightNode',
       'mouseout .content-node': 'unhighlightNode',
-      'click .content-node': 'selectNode'
+      'mouseover .node-placeholder': 'showActions',
+      'mouseout .node-placeholder': 'hideActions',
+      'click .content-node': 'selectNode',
+      // Actions
+      'click a.add_child': 'addChild',
+      'click a.add_sibling': 'addSibling',
+      'click a.remove_node': 'removeNode'
     },
     
     initialize: function() {
@@ -398,12 +461,37 @@
       return false;
     },
     
+    showActions: function(e) {
+      // console.log('action!.');
+      $(e.currentTarget).addClass('active');
+      return false;
+    },
+    
+    hideActions: function(e) {
+      $(e.currentTarget).removeClass('active');
+    },
+    
     selectNode: function(e) {
       if (this.model.selectedNode) {
         this.$('#' + this.model.selectedNode.key).removeClass('selected');
       }
       this.model.selectNode($(e.currentTarget).attr('id'));
       $(e.currentTarget).addClass('selected');
+      return false;
+    },
+    
+    addChild: function(e) {
+      this.model.createChild($(e.currentTarget).attr('type'), $(e.currentTarget).attr('node'));
+      return false;
+    },
+    
+    addSibling: function(e) {
+      this.model.createSibling($(e.currentTarget).attr('type'), $(e.currentTarget).attr('node'));
+      return false;
+    },
+    
+    removeNode: function(e) {
+      this.model.removeNode($(e.currentTarget).attr('node'));
       return false;
     }
   });
@@ -425,8 +513,6 @@
       var that = this;
       
       _.bindAll(this, "render");
-      
-      
     },
     
     newDocument: function() {
@@ -436,19 +522,21 @@
       });
       
       Documents.add(this.model);    
-      this.model.save({}, {
-        success: function() {
-          alert('A document has been created successfully.');
-        }
-      });
+      // this.model.save({}, {
+      //   success: function() {
+      //     alert('A document has been created successfully.');
+      //   }
+      // });
       
       this.init();
       return false;
     },
     
     saveDocument: function() {
+      var that = this;
       this.model.save({}, {
         success: function() {
+          console.log(that.model);
           alert('The document has been stored on the server...');
         },
         error: function() {
@@ -461,6 +549,8 @@
       var that = this;
       
       this.model = Documents.get(id);
+      
+      console.log(id);
       this.model.fetch({
         success: function() {
           that.init();
@@ -478,6 +568,7 @@
       Documents.fetch({
         success: function() {
           that.renderDocumentBrowser();
+          console.log(Documents.models);
         }
       });
     },
@@ -523,8 +614,6 @@
       this.documentView = new DocumentView({el: this.$('#document'), model: this.model});
       this.documentView.render();
       
-      // Init Actions panel
-      this.actions = new NodeActions({el: $('#actions'), model: this.model});
     }
   });
   
@@ -550,7 +639,7 @@
       }));
     }
   });
-  
+
   
   $(function() {
 
@@ -563,12 +652,15 @@
     // Initial rendering
     app.render();
     
+    app.newDocument();
+    
     // Load initial doc
-    Documents.fetch({
-      success: function() {
-        app.loadDocument('e59976ea3dca7ba11cffd2d5f2001a87');
-      }
-    });
+    
+    // Documents.fetch({
+    //   success: function() {
+    //     app.loadDocument('e59976ea3dca7ba11cffd2d5f20026b0');
+    //   }
+    // });
         
   });
   
