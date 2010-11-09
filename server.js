@@ -2,9 +2,14 @@ var express = require('express@1.0.0rc4');
 var app = express.createServer();
 var http = require('http');
 var cradle = require('cradle@0.2.2');
+var fs = require('fs');
 
-var conn = new(cradle.Connection)('substance.cloudant.com', 80);
-var db = conn.database('manoftheday');
+// Read Config
+var config = JSON.parse(fs.readFileSync(__dirname+ '/config.json', 'utf-8'));
+
+// Init CouchDB Connection
+var conn = new(cradle.Connection)(config.couchdb.host, config.couchdb.port);
+var db = conn.database(config.couchdb.db);
 
 
 // Server Configuration
@@ -15,7 +20,7 @@ app.configure(function(){
     app.use(express.methodOverride());
     app.use(app.router);
     app.use(express.staticProvider(__dirname));
-    app.use(express.logger({ format: ':method :uri' }));
+    app.use(express.logger({ format: ':method :url' }));
 });
 
 // Get all documents
@@ -26,7 +31,7 @@ app.get('/documents', function(req, res) {
     
     var result = documents.map(function(d) {
       return {
-        id: d.id,
+        id: d._id,
         title: d.contents.title,
         author: d.contents.author
       };
@@ -45,7 +50,7 @@ app.get('/documents/full', function(req, res) {
     
     var result = documents.map(function(d) {
       var res = d.contents;
-      res.id = d.id;
+      res.id = d._id;
       return res;
     });
     
@@ -106,4 +111,4 @@ app.del('/documents/:id', function(req, res) {
 // Start the server
 // -----------
 
-app.listen(3003);
+app.listen(config.server_port);

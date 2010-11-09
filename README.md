@@ -81,7 +81,7 @@ This is particularly useful for journalists who can publish and edit their stori
 
 **Software Documentation**
 
-You could use Substance to create and maintain the documentation for your software library. Well, it
+You could use Substance to create and maintain software documentation (right in the browser). Well, it
 may not be the best fit for API docs, but for any kind of Readme or Tutorial. Embedding code snippet's would be done through a special Code-NodeType.
   
 **Documents as a service**
