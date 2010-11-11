@@ -65,6 +65,27 @@ multiple document repositories within the same editor instance.
 
 
 
+
+API
+--------------------------------------------------------------------------------
+
+`GET /documents/`
+
+Get a list of documents available in the repository.
+
+
+Example: [http://substance.quasipartikel.at/documents](http://substance.quasipartikel.at/documents)
+
+
+`GET /documents/:id`
+
+Get a document by ID.
+
+
+Example: [http://substance.quasipartikel.at/documents/cc97d5a64b929a4936fce989608b081b](http://substance.quasipartikel.at/documents/cc97d5a64b929a4936fce989608b081b)
+
+
+
 Extensibility
 --------------------------------------------------------------------------------
 
