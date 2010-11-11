@@ -3,7 +3,9 @@
 ----------------------
 */
 
-.clear {  clear: both; }
+.clear { clear: both; }
+
+.hidden { display: none; }
 
 /*
  Common Styles
@@ -90,8 +92,8 @@ h2 { font-size: 1.8em; margin-bottom: 1em;}
 
 #editor { padding: 3px; color: #444;}
 
-/* Image Widget */
 
+/* ImageEditor Widget */
 #progress_container { display: none; }
 
 
@@ -129,8 +131,7 @@ h2 { font-size: 1.8em; margin-bottom: 1em;}
 
 /* Content Nodes */
 
-
-.content-node { padding: 10px; margin-left: 20px; margin-top: 10px; position: relative; }
+.content-node { margin-top: 10px; position: relative; }
 
 
 .content-node div.border {
@@ -197,8 +198,13 @@ h2 { font-size: 1.8em; margin-bottom: 1em;}
 .content-node.active > .content-node-info { display: block; position: absolute; top: -40px; right: -10px; padding: 3px; color: #eee; border-radius: 7px; font-weight: bold; font-family: Helvetica; font-size: 10px; text-transform: uppercase; z-index: 50000; }
 
 
+#document.structure-mode .node-actions { display: none; }
 
-.node-placeholder {
+#document.structure-mode {background: #eee;}
+
+#document.structure-mode .content-node { margin-left: 20px; }
+
+.node-actions {
   z-index: -100;
   padding-right: 10px;
   
@@ -222,8 +228,40 @@ h2 { font-size: 1.8em; margin-bottom: 1em;}
 */
 
 
-.node-placeholder a { color: #aaa; background: white; padding: 3px; text-decoration: none; font-size: 10px; text-transform: uppercase; border-radius: 5px; margin: 2px; }
-.node-placeholder a:hover { color: #444 }
+.node-actions a { color: #aaa; padding: 3px; text-decoration: none; font-size: 10px; text-transform: uppercase; border-radius: 5px; margin: 2px; }
+.node-actions a:hover { color: #444 }
+
+
+/* placehoder for drag and drop */
+
+.node-placeholder {
+  z-index: -100;
+  padding-right: 10px;
+  
+  margin-left: 20px;
+  margin-top: 20px;
+  margin-bottom: 20px;
+  
+  background:#fff;
+
+  -webkit-border-radius:7px;
+  -moz-border-radius:   7px;
+  border-radius:        7px;
+  
+  border: 1px dashed #ccc;
+  padding: 5px;
+  color: #ccc;
+  text-align: center;
+}
+
+.node-placeholder.dragover {
+  background: #ccc;
+}
+
+
+#document:not(.structure-mode) .node-placeholder { display: none; }
+
+
 
 code { display: block; font-family: Monaco, Consolas; font-size: 12px; margin-top: 15px; padding: 7px; border-left: 3px solid #ccc; }
 

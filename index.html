@@ -36,7 +36,6 @@
       <div id="actions">
 
       </div>
-
       <div id="document">
         <p>No document loaded... You can either create a <em>New Document</em> or <em>Browse</em> existing ones.</p>
       </div>
@@ -158,14 +157,30 @@
   <script src="lib/backbone.js"></script>
   <script src="lib/sorted_hash.js"></script>
   <script src="lib/node.js"></script>
-  <script src="src/content_graph.js"></script>
+  
   
   <!-- Fixtures -->
   <script src="fixtures/article.js"></script>
   
   <!-- The app -->
+  <script src="src/models/content_graph.js"></script>
+  <script src="src/models/document.js"></script>
+  
   <script src="src/content_node_types.js"></script>
+  <script src="src/helpers.js"></script>
+  <script src="src/renderers/html_renderer.js"></script>
+
+  
+  <script src="src/node_editors/document_editor.js"></script>
+  <script src="src/node_editors/section_editor.js"></script>
+  <script src="src/node_editors/paragraph_editor.js"></script>
+  <script src="src/node_editors/image_editor.js"></script>
+  
+  <script src="src/views/document_view.js"></script>
+  <script src="src/views/document_browser.js"></script>
+  <script src="src/views/document_composer.js"></script>
   <script src="src/app.js"></script>
+  
   
 </head>
 <body>
