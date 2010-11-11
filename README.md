@@ -65,7 +65,6 @@ multiple document repositories within the same editor instance.
 
 
 
-
 Extensibility
 --------------------------------------------------------------------------------
 
@@ -98,8 +97,9 @@ Roadmap
 
 1. Implement most important ContentNode types (like lists, images, videos, tables)
 2. Create an appealing UI. The interface will be minimalistic, adding as little noise as possible. Authors should be able to focus on writing while readers should focus on reading.
-3. Introduce references, which are special content nodes, that can be used to build a bibliography (cmp. BibTeX)
-4. Implement a LaTeX renderer (this allows at any time the download of a snapshot as a pretty formatted PDF, ready to be printed).
+3. Add support realtime collaborative editing by synchronizing updated content-nodes between all clients that are editing the same doc at the same time (probably through Web-Sockets).
+4. Introduce references, which are special content nodes, that can be used to build a bibliography (cmp. BibTeX)
+5. Implement a LaTeX renderer (this allows at any time the download of a snapshot as a pretty formatted PDF, ready to be printed).
 
 
 Actually, the system aims to be an alternative to editing documents in LaTeX or Word. Since DocumentGraphs contain all the information necessary to be rendered as LaTeX markup you wouldn't need to write Latex. You can edit and share your documents online and update them at any time. 
