@@ -5,8 +5,6 @@ var DocumentView = Backbone.View.extend({
   events: {
     'mouseover .content-node': 'highlightNode',
     'mouseout .content-node': 'unhighlightNode',
-    'mouseover .node-placeholder': 'showActions',
-    'mouseout .node-placeholder': 'hideActions',
     'click .content-node': 'selectNode',
     // Actions
     'click a.add_child': 'addChild',
@@ -105,15 +103,6 @@ var DocumentView = Backbone.View.extend({
   unhighlightNode: function(e) {
     $(e.currentTarget).removeClass('active');
     return false;
-  },
-  
-  showActions: function(e) {
-    $(e.currentTarget).addClass('active');
-    return false;
-  },
-  
-  hideActions: function(e) {
-    $(e.currentTarget).removeClass('active');
   },
   
   selectNode: function(e) {

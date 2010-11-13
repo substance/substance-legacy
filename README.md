@@ -2,7 +2,7 @@ Substance
 ================================================================================
 
 Substance is a data-driven document authoring tool based on the ContentGraph 
-document format.
+document format. It's demo-ware for the moment, but we're working on it.
 
 ![Screenshot](http://ma.zive.at/substance.png)
 
@@ -45,7 +45,7 @@ The JSON representation of a simple ContentGraph looks as follows:
         "url": "http://tmp.vivian.transloadit.com/scratch/9a65045a69dd88c2baf281c28dbd15a7"
       }
     }
-  };
+  }
 </code>
 </pre>
 
@@ -118,8 +118,8 @@ Roadmap
 
 1. Implement most important ContentNode types (like lists, images, videos, tables)
 2. Create an appealing UI. The interface will be minimalistic, adding as little noise as possible. Authors should be able to focus on writing while readers should focus on reading.
-3. Add support realtime collaborative editing by synchronizing updated content-nodes between all clients that are editing the same doc at the same time (probably through Web-Sockets).
-4. Introduce references, which are special content nodes, that can be used to build a bibliography (cmp. BibTeX)
+3. Add support for realtime collaborative editing by synchronizing updated content-nodes between all clients that are editing the same doc at the same time (probably through Web-Sockets).
+4. Introduce references, which are special content nodes that can be used to build a bibliography (cmp. BibTeX)
 5. Implement a LaTeX renderer (this allows at any time the download of a snapshot as a pretty formatted PDF, ready to be printed).
 
 

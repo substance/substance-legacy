@@ -44,10 +44,10 @@
       <div id="actions">
 
       </div>
+      
       <div id="document">
         <p>No document loaded... You can either create a <em>New Document</em> or <em>Browse</em> existing ones.</p>
       </div>
-    
     </div>
   </script>
   
@@ -67,18 +67,24 @@
       </div>
     </div>
   </script>
-
-  <script type="text/x-handlebars-template" name="actions">
-    {{#children}}
-      <a href="#" type="{{.}}" node="{{../node/key}}" class="add_child">add child {{.}}</a>
-    {{/children}}
+  
+  
+  <script type="text/x-handlebars-template" name="controls">
+    <div class="node-actions" node="{{node/key}}">
+      {{#children}}
+        <a href="#" type="{{.}}" node="{{../node/key}}" class="add_child">add child {{.}}</a>
+      {{/children}}
     
-    {{#siblings}}
-      <a href="#" type="{{.}}" node="{{../node/key}}" class="add_sibling">add {{.}}</a>
-    {{/siblings}}
+      {{#siblings}}
+        <a href="#" type="{{.}}" node="{{../node/key}}" class="add_sibling">add {{.}}</a>
+      {{/siblings}}
+    </div>
     
-    <!--<a href="#" class="remove_node" node="huhu">remove</a>-->
+    <div class="node-placeholder {{allowedTypes}}" node="{{node/key}}">
+      drop here
+    </div>
   </script>
+  
   
   <script type="text/x-handlebars-template" name="edit_paragraph">
     <h3>Edit Paragraph</h3>
@@ -94,13 +100,10 @@
     <h3>Edit image</h3>
     <p>Select an image to be uploaded, resized and embedded into the document.</p>
     
-    
     <form id="upload_image" action="http://api2.transloadit.com/assemblies" enctype="multipart/form-data" method="POST">
       <div class="lpl texteditor">
           <label for="my_file">select file</label>
           <input type="file" name="my_file" id="my_file" />
-          <!--<input type="text" name="name" class="property" value="{{name}}" id="section_name">-->
-          
           <input type="hidden" name="params" value="{&quot;auth&quot;:{&quot;key&quot;:&quot;4ccca6b9de144af4882760af72ec3211&quot;},&quot;steps&quot;:{&quot;resize_image&quot;:{&quot;robot&quot;:&quot;\/image\/resize&quot;,&quot;width&quot;:320,&quot;height&quot;:240,&quot;result&quot;:true}},&quot;redirect_url&quot;:&quot;http:\/\/example.com\/upload&quot;}" />
       </div>
 
@@ -140,13 +143,98 @@
           </div>
         </div>
     </div>
+  </script>
+  
+  
+  <!-- content-node templates for the editor -->
+  
+  <script type="text/x-handlebars-template" name="document">    
+    <div id="{{node/key}}" class="content-node document">
+      <div class="content-node-info">Document</div>
+      <div class="border"></div>
+      <h1>{{node/data/title}}</h1>
+      {{{content}}}
+      
+      {{^hasChildren}}
+        <div class="node-actions" destination="after" node="{{node/key}}">{{{actions}}}</div>
+      {{/hasChildren}}
+    </div>
+  </script>
+  
+  <script type="text/x-handlebars-template" name="section">
+    
+    {{#firstNode}}
+      <div class="controls" node="{{node/key}}" destination="before">
+        {{{controls}}}
+      </div>
+    {{/firstNode}}
+    
+    <div id="{{node/key}}" draggable="true" class="content-node section">
+      <a href="#" class="remove_node" node="{{node/key}}">X</a>
+      <div class="content-node-info">-&gt; drag to move &lt;-&nbsp;&nbsp;&nbsp;&nbsp; Section</div>
+      <div class="border"></div>
+      
+      <h2>{{node/data/name}}</h2>
+      {{{content}}}
+    </div>
+    
+    <div class="controls" node="{{node/key}}" destination="after">
+      {{{controls}}}
+    </div>
     
   </script>
   
+  <script type="text/x-handlebars-template" name="paragraph">
+    {{#firstNode}}
+      <div class="controls" node="{{node/key}}" destination="before">
+        {{{controls}}}
+      </div>
+    {{/firstNode}}
+    
+    <div id="{{node/key}}" draggable="true" class="content-node paragraph">
+      <a href="#" class="remove_node" node="{{node/key}}">X</a>
+      <div class="content-node-info">-&gt; drag to move &lt;-&nbsp;&nbsp;&nbsp;&nbsp; Paragraph</div>
+      <div class="border"></div>
+      {{{content}}}
+    </div>
+    
+    <div class="controls" node="{{node/key}}" destination="after">
+      {{{controls}}}
+    </div>
+    
+  </script>
+  
+  <script type="text/x-handlebars-template" name="image">
+    
+    {{#firstNode}}
+      <div class="controls" node="{{node/key}}" destination="before">
+        {{{controls}}}
+      </div>
+    {{/firstNode}}
+    
+    <div id="{{node/key}}" draggable="true" class="content-node image">
+      <a href="#" class="remove_node" node="{{node/key}}">X</a>
+      <div class="content-node-info">-&gt; drag to move &lt;-&nbsp;&nbsp;&nbsp;&nbsp; Image</div>
+      <div class="border"></div>
+      {{#node/data/url}}
+        <img src="{{.}}"/>
+      {{/node/data/url}}
+      {{^node/data/url}}
+        image placeholder..
+      {{/node/data/url}}
+    </div>
+    
+    <div class="controls" node="{{node/key}}" destination="after">
+      {{{controls}}}
+    </div>
+
+  </script>
+  
+
   <!-- styles --> 
   <!-- <link id="bespin_base" href="./lib/bespin"/> -->
   <!-- <link href="lib/bespin/BespinEmbedded.css" media="screen" rel="stylesheet" type="text/css" /> -->
-  <!--<link href="stylesheets/reset.css" media="screen" rel="stylesheet" type="text/css" />-->
+  <!-- <link href="stylesheets/reset.css" media="screen" rel="stylesheet" type="text/css" />-->
   <link href="stylesheets/widgets.css" media="screen" rel="stylesheet" type="text/css" />
   <link href="stylesheets/app.css" media="screen" rel="stylesheet" type="text/css" />
   
@@ -165,7 +253,6 @@
   <script src="lib/backbone.js"></script>
   <script src="lib/sorted_hash.js"></script>
   <script src="lib/node.js"></script>
-  
   
   <!-- Fixtures -->
   <script src="fixtures/article.js"></script>
@@ -187,7 +274,6 @@
   <script src="src/views/document_browser.js"></script>
   <script src="src/views/document_composer.js"></script>
   <script src="src/app.js"></script>
-  
   
 </head>
 <body>
