@@ -41,7 +41,7 @@ ContentNode.types = {
       {
         "key": "url",
         "name": "Image URL",
-        "defaultValue": ""
+        "defaultValue": null
       }
     ]
   },
