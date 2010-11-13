@@ -1,0 +1,8 @@
+{
+  "couchdb": {
+    "host": "substance.cloudant.com",
+    "db": "substance",
+    "port": 80
+  },
+  "server_port": 3003
+}
