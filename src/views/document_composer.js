@@ -12,7 +12,6 @@ var DocumentComposer = Backbone.View.extend({
 
   initialize: function() {
     var that = this;
-    
     _.bindAll(this, "render");
   },
   
@@ -22,12 +21,7 @@ var DocumentComposer = Backbone.View.extend({
       contents: Document.EMPTY
     });
     
-    Documents.add(this.model);    
-    // this.model.save({}, {
-    //   success: function() {
-    //     alert('A document has been created successfully.');
-    //   }
-    // });
+    Documents.add(this.model);
     
     this.init();
     return false;
@@ -36,7 +30,6 @@ var DocumentComposer = Backbone.View.extend({
   saveDocument: function() {
     var that = this;
     
-    // console.log(this.model.g.serialize());
     this.model.save({}, {
       success: function() {
         alert('The document has been stored on the server...');
@@ -114,6 +107,5 @@ var DocumentComposer = Backbone.View.extend({
   renderDocumentView: function(g) {
     this.documentView = new DocumentView({el: this.$('#document'), model: this.model});
     this.documentView.render();
-    
   }
 });

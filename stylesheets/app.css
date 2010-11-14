@@ -34,18 +34,14 @@ h2 { font-size: 1.8em; margin-bottom: 1em;}
   left: 20px; right: 20px; position: fixed; top: 0px; z-index: 1000; margin-bottom:10px; background: #343634; font-size:10px; font-weight:bold; text-shadow:0px 1px 1px rgba(0,0,0,0.5); text-transform:uppercase; clear:both;
   border-bottom-left-radius: 7px;
   border-bottom-right-radius: 7px;
-  
   -webkit-box-shadow: 0px 2px 4px rgba(0,0,0,1);
   -moz-box-shadow:    0px 2px 4px rgba(0,0,0,1);
   box-shadow:         0px 2px 4px rgba(0,0,0,1);  
 }
 
 #commands { padding: 4px; float: right; }
-
 #logo { float: left; }
-
 #logo h1 { margin: 0; padding: 0; margin-top: 15px; margin-left: 15px; font-size: 16px; text-transform: none;}
-
 #shelf { background: #4C4C47; overflow: auto; }
 
 
@@ -80,7 +76,6 @@ h2 { font-size: 1.8em; margin-bottom: 1em;}
   
   overflow:hidden;
   z-index:10;
-  
 }
 
 /*
@@ -143,43 +138,32 @@ h2 { font-size: 1.8em; margin-bottom: 1em;}
   right: -10px;
   bottom: -10px;
   left: -10px;
-  
-  -webkit-border-radius:7px;
-  -moz-border-radius:   7px;
-  border-radius:        7px;
-  
-  border: 5px solid #ccc;
+  border: 2px solid #ccc;
 }
 
-.remove_node {
+.remove-node {
   display: none;
 }
 
-.content-node.active > a.remove_node {
+.content-node.active > a.remove-node {
   display: block;
   position: absolute;
   bottom: 10px;
   right: 10px;
-  background: #cc5555;
+  border: 1px solid #cc5555;
   font-size: 10px;
   font-weight: bold;
   text-align: center;
   
   padding-top: 0px;
-  -webkit-border-radius:10px;
-  -moz-border-radius:   10px;
-  border-radius:        10px;
-  color: white;
+  color: #cc5555;
   text-decoration: none;
   width: 20px;
   height: 20px;
 }
 
-
-
 .content-node.active > div.border { display: block; opacity: 0.5; }
 .content-node.selected > div.border { display: block; opacity: 1.0; }
-
 
 /* Color Coding */
 .content-node.document > .border { border-color: #8db5c8; }
@@ -192,11 +176,8 @@ h2 { font-size: 1.8em; margin-bottom: 1em;}
 .content-node.paragraph > .content-node-info { background: #93baa1; }
 .content-node.image > .content-node-info { background: #b16649; }
 
-
 .content-node .content-node-info { display: none; }
-
-.content-node.active > .content-node-info { display: block; position: absolute; top: -40px; right: -10px; padding: 3px; color: #eee; border-radius: 7px; font-weight: bold; font-family: Helvetica; font-size: 10px; text-transform: uppercase; z-index: 50000; }
-
+.content-node.active > .content-node-info { display: block; position: absolute; top: -38px; right: -10px; padding: 3px; color: #eee; font-weight: bold; font-family: Helvetica; font-size: 10px; text-transform: uppercase; z-index: 50000; }
 
 #document.structure-mode .node-actions { display: none; }
 
@@ -207,30 +188,46 @@ h2 { font-size: 1.8em; margin-bottom: 1em;}
 .node-actions {
   z-index: -100;
   padding-right: 10px;
-  
-  margin-left: 20px;
   margin-top: 20px;
   margin-bottom: 20px;
-  
-  background:#fff;
-  border-top: 1px solid #ccc;
-  border-bottom: 1px solid #ccc;
   padding: 5px;
+  
+  border-top: 1px solid #fff;
+  border-bottom: 1px solid #fff;
 }
 
-/* 
-#actions { position: absolute; left: 20px; top: 10px; z-index: 50000; padding: 2px; }
+.node-actions:hover {
+  border-top: 1px solid #ccc;
+  border-bottom: 1px solid #ccc;
+}
 
+.node-actions .handle {
+  position: absolute;
+  left: 0px;
+  right: 0px;
+  height: 20px;
+}
 
-#actions a { color: #eee; background: #444; padding: 3px; text-decoration: none; font-size: 10px; text-transform: uppercase; border-radius: 5px; margin: 2px; }
+.node-actions .handle a {
+  font-size: 12px;
+  color: #ccc;
+}
 
-#actions a:hover { color: white; background: black; }
-*/
+.node-actions .handle a:hover {
+  font-size: 12px;
+  color: #aaa;
+}
 
+.node-actions .content {
+/*  background: #ccc;*/
+  position: absolute;
+  top: 0px;
+  left: 20px;
+  display: none;
+}
 
 .node-actions a { color: #aaa; padding: 3px; text-decoration: none; font-size: 10px; text-transform: uppercase; border-radius: 5px; margin: 2px; }
 .node-actions a:hover { color: #444 }
-
 
 /* placehoder for drag and drop */
 
@@ -241,7 +238,6 @@ h2 { font-size: 1.8em; margin-bottom: 1em;}
   margin-left: 20px;
   margin-top: 20px;
   margin-bottom: 20px;
-  
   background:#fff;
 
   -webkit-border-radius:7px;
@@ -258,14 +254,9 @@ h2 { font-size: 1.8em; margin-bottom: 1em;}
   background: #ccc;
 }
 
-
-
 #document:not(.structure-mode) .node-placeholder { display: none; }
 
-
-
 code { display: block; font-family: Monaco, Consolas; font-size: 12px; margin-top: 15px; padding: 7px; border-left: 3px solid #ccc; }
-
 
 
 /*---------------------- HiJs Syntax Highlighting -------------------------*/
@@ -275,7 +266,6 @@ code .string, code .regexp { color: #219161 }
 /*code .class, code .special { font-weight: bold; }*/
 /*code .number               { color: pink }*/
 code .comment              { color: #888 }
-
 
 /*---------------------- Syntax Highlighting -----------------------------*/
 td.linenos { background-color: #f0f0f0; padding-right: 10px; }

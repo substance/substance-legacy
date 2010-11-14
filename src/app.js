@@ -8,7 +8,6 @@
     
     // Initial rendering
     app.render();
-    
     app.newDocument();
     
     // Load initial doc

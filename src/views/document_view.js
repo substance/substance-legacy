@@ -6,10 +6,14 @@ var DocumentView = Backbone.View.extend({
     'mouseover .content-node': 'highlightNode',
     'mouseout .content-node': 'unhighlightNode',
     'click .content-node': 'selectNode',
+    
+    'mouseover .node-actions .handle': 'showActions',
+    'mouseout .node-actions .handle': 'hideActions',
+    
     // Actions
     'click a.add_child': 'addChild',
     'click a.add_sibling': 'addSibling',
-    'click a.remove_node': 'removeNode',
+    'click a.remove-node': 'removeNode',
     'dragstart': 'dragStart',
     'dragend': 'dragEnd',
     'dragenter': 'dragEnter',
@@ -21,8 +25,8 @@ var DocumentView = Backbone.View.extend({
   dragStart: function(e) {
     var dt = e.originalEvent.dataTransfer,
         node = this.model.g.get('nodes', e.target.id);
+        
     dt.setData("Text", e.target.id);
-    
     $('#document').addClass('structure-mode');
     
     this.draggedNode = node;
@@ -72,9 +76,19 @@ var DocumentView = Backbone.View.extend({
     $(e.target).html(dt.getData("Text")+" -> "+$(e.target).attr('node'));
     
     // Move node to new position
-    this.model.moveNode(dt.getData("Text"), $(e.target).attr('node'));
+    this.model.moveNode(dt.getData("Text"), $(e.target).attr('node'), $(e.target).parent().attr('destination'));
     
     e.stopPropagation();
+    return false;
+  },
+  
+  showActions: function(e) {
+    $(e.target).parent().parent().find('.content').show();
+    return false;
+  },
+  
+  hideActions: function(e) {
+    $(e.target).parent().parent().find('.content').hide();
     return false;
   },
   
@@ -116,11 +130,19 @@ var DocumentView = Backbone.View.extend({
   
   addChild: function(e) {
     this.model.createChild($(e.currentTarget).attr('type'), $(e.currentTarget).attr('node'));
-    return false;
+    // return false;
+    return true;
   },
   
   addSibling: function(e) {
-    this.model.createSibling($(e.currentTarget).attr('type'), $(e.currentTarget).attr('node'));
+    switch($(e.currentTarget).parent().parent().parent().parent().attr('destination')) {
+      case 'before': 
+        this.model.createSiblingBefore($(e.currentTarget).attr('type'), $(e.currentTarget).attr('node'));
+      break;
+      case 'after':
+        this.model.createSiblingAfter($(e.currentTarget).attr('type'), $(e.currentTarget).attr('node'));
+      break;
+    }
     return false;
   },
   

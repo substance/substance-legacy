@@ -44,7 +44,7 @@ var Document = Backbone.Model.extend({
     return new ContentNode(this.g, key, data);
   },
   
-  moveNode: function(sourceKey, targetKey) {
+  moveNode: function(sourceKey, targetKey, destination) {
     var source = this.g.get('nodes', sourceKey),
         target = this.g.get('nodes', targetKey);
     
@@ -54,7 +54,7 @@ var Document = Backbone.Model.extend({
     source.parent.removeChild(source.key);
     
     // Attach at new position
-    target.parent.addChild(source, target);
+    target.parent.addChild(source, target, destination);
 
     // Re-render changed nodes
     this.trigger('change:node', source.parent);
@@ -64,7 +64,7 @@ var Document = Backbone.Model.extend({
   },
   
   // Create a node of a given type
-  createSibling: function(type, predecessorKey) {
+  createSiblingAfter: function(type, predecessorKey) {
     var newNode = this.createEmptyNode(type),
         predecessor = this.g.get('nodes', predecessorKey);
         
@@ -72,9 +72,23 @@ var Document = Backbone.Model.extend({
     newNode.parent = predecessor.parent;
 
     // Attach to ContentGraph
-    predecessor.parent.addChild(newNode, predecessor);
+    predecessor.parent.addChild(newNode, predecessor, 'after');
     
     this.trigger('change:node', predecessor.parent);
+    this.selectNode(newNode.key);
+  },
+  
+  createSiblingBefore: function(type, successorKey) {
+    var newNode = this.createEmptyNode(type),
+        successor = this.g.get('nodes', successorKey);
+        
+    newNode.build();
+    newNode.parent = successor.parent;
+
+    // Attach to ContentGraph
+    successor.parent.addChild(newNode, successor, 'before');
+    
+    this.trigger('change:node', successor.parent);
     this.selectNode(newNode.key);
   },
   
@@ -108,7 +122,6 @@ var Document = Backbone.Model.extend({
   // Update attributes of selected node
   updateSelectedNode: function(attrs) {
     _.extend(this.selectedNode.data, attrs);
-    
     this.trigger('change:node', this.selectedNode);
   },
   
@@ -186,4 +199,3 @@ var DocumentList = Backbone.Collection.extend({
 
 
 var Documents = new DocumentList();
-

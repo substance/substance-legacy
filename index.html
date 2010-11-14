@@ -40,10 +40,6 @@
           </p>
         </div>
       </div> <!-- end sidebar -->
-
-      <div id="actions">
-
-      </div>
       
       <div id="document">
         <p>No document loaded... You can either create a <em>New Document</em> or <em>Browse</em> existing ones.</p>
@@ -68,23 +64,30 @@
     </div>
   </script>
   
-  
   <script type="text/x-handlebars-template" name="controls">
-    <div class="node-actions" node="{{node/key}}">
-      {{#children}}
-        <a href="#" type="{{.}}" node="{{../node/key}}" class="add_child">add child {{.}}</a>
-      {{/children}}
+    <div class="controls" node="{{node/key}}" destination="{{destination}}">
+      <div class="node-actions" node="{{node/key}}">
+        <div class="handle">
+          <a href="#">+</a>
+          <div class="content">
+            {{#children}}
+              <a href="#" type="{{.}}" node="{{../node/key}}" class="add_child">insert child {{.}}</a>
+            {{/children}}
+
+            {{#siblings}}
+              <a href="#" type="{{.}}" node="{{../node/key}}" class="add_sibling">insert {{.}}</a>
+            {{/siblings}}
+          </div>
+        </div>
+
+        <br class="clear"/>
+      </div>
     
-      {{#siblings}}
-        <a href="#" type="{{.}}" node="{{../node/key}}" class="add_sibling">add {{.}}</a>
-      {{/siblings}}
-    </div>
-    
-    <div class="node-placeholder {{allowedTypes}}" node="{{node/key}}">
-      drop here
+      <div class="node-placeholder {{allowedTypes}}" node="{{node/key}}">
+        drop here
+      </div>
     </div>
   </script>
-  
   
   <script type="text/x-handlebars-template" name="edit_paragraph">
     <h3>Edit Paragraph</h3>
@@ -145,7 +148,6 @@
     </div>
   </script>
   
-  
   <!-- content-node templates for the editor -->
   
   <script type="text/x-handlebars-template" name="document">    
@@ -154,66 +156,32 @@
       <div class="border"></div>
       <h1>{{node/data/title}}</h1>
       {{{content}}}
-      
-      {{^hasChildren}}
-        <div class="node-actions" destination="after" node="{{node/key}}">{{{actions}}}</div>
-      {{/hasChildren}}
     </div>
   </script>
   
   <script type="text/x-handlebars-template" name="section">
-    
-    {{#firstNode}}
-      <div class="controls" node="{{node/key}}" destination="before">
-        {{{controls}}}
-      </div>
-    {{/firstNode}}
-    
     <div id="{{node/key}}" draggable="true" class="content-node section">
-      <a href="#" class="remove_node" node="{{node/key}}">X</a>
+      <a href="#" class="remove-node" node="{{node/key}}">X</a>
       <div class="content-node-info">-&gt; drag to move &lt;-&nbsp;&nbsp;&nbsp;&nbsp; Section</div>
       <div class="border"></div>
       
       <h2>{{node/data/name}}</h2>
       {{{content}}}
     </div>
-    
-    <div class="controls" node="{{node/key}}" destination="after">
-      {{{controls}}}
-    </div>
-    
   </script>
   
   <script type="text/x-handlebars-template" name="paragraph">
-    {{#firstNode}}
-      <div class="controls" node="{{node/key}}" destination="before">
-        {{{controls}}}
-      </div>
-    {{/firstNode}}
-    
     <div id="{{node/key}}" draggable="true" class="content-node paragraph">
-      <a href="#" class="remove_node" node="{{node/key}}">X</a>
+      <a href="#" class="remove-node" node="{{node/key}}">X</a>
       <div class="content-node-info">-&gt; drag to move &lt;-&nbsp;&nbsp;&nbsp;&nbsp; Paragraph</div>
       <div class="border"></div>
       {{{content}}}
     </div>
-    
-    <div class="controls" node="{{node/key}}" destination="after">
-      {{{controls}}}
-    </div>
-    
   </script>
   
   <script type="text/x-handlebars-template" name="image">
-    
-    {{#firstNode}}
-      <div class="controls" node="{{node/key}}" destination="before">
-        {{{controls}}}
-      </div>
-    {{/firstNode}}
-    
     <div id="{{node/key}}" draggable="true" class="content-node image">
-      <a href="#" class="remove_node" node="{{node/key}}">X</a>
+      <a href="#" class="remove-node" node="{{node/key}}">X</a>
       <div class="content-node-info">-&gt; drag to move &lt;-&nbsp;&nbsp;&nbsp;&nbsp; Image</div>
       <div class="border"></div>
       {{#node/data/url}}
@@ -223,11 +191,6 @@
         image placeholder..
       {{/node/data/url}}
     </div>
-    
-    <div class="controls" node="{{node/key}}" destination="after">
-      {{{controls}}}
-    </div>
-
   </script>
   
 
