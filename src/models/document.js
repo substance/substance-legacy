@@ -27,7 +27,7 @@ var Document = Backbone.Model.extend({
   
   toJSON: function() {
     return _.extend(_.clone(this.attributes), {
-      contents: this.g ? this.g.serialize() : {}
+      contents: this.g.serialize()
     });
   },
   
