@@ -16,12 +16,8 @@ var DocumentComposer = Backbone.View.extend({
     this.menu = new Menu({el: '#menubar', model: this.model, composer: this});
     
     this.bind('document:changed', function() {
-      // console.log('before:');
-      // console.log(that.menu.model);
       that.menu.model = that.model;
       that.menu.render();
-      // console.log('after');
-      // console.log(that.menu.model);
     });
   },
   

@@ -31,8 +31,6 @@ var Menu = Backbone.View.extend({
   },
   
   render: function() {
-    if (this.model)
-      console.log();
     $(this.el).html(Helpers.renderTemplate('menu', {
       title: this.model ? this.model.g.data.title : ''
     }));
