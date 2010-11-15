@@ -4,15 +4,25 @@
 // This is the top-level piece of UI.
 var DocumentComposer = Backbone.View.extend({
   events: {
-    'click a.new_document': 'newDocument',
-    'click a.browse_documents': 'browseDocuments',
-    'click a.save_document': 'saveDocument',
-    'click a.open_document': 'openDocument'
+    'click a.new-document': 'newDocument',
+    'click a.browse-documents': 'browseDocuments',
+    'click a.save-document': 'saveDocument',
   },
 
   initialize: function() {
     var that = this;
     _.bindAll(this, "render");
+    
+    this.menu = new Menu({el: '#menubar', model: this.model, composer: this});
+    
+    this.bind('document:changed', function() {
+      // console.log('before:');
+      // console.log(that.menu.model);
+      that.menu.model = that.model;
+      that.menu.render();
+      // console.log('after');
+      // console.log(that.menu.model);
+    });
   },
   
   newDocument: function() {
@@ -24,18 +34,23 @@ var DocumentComposer = Backbone.View.extend({
     Documents.add(this.model);
     
     this.init();
+    this.trigger('document:changed');
+    
+    notifier.notify(Notifications.BLANK_DOCUMENT);
     return false;
   },
   
   saveDocument: function() {
     var that = this;
     
+    notifier.notify(Notifications.DOCUMENT_SAVING);
+
     this.model.save({}, {
       success: function() {
-        alert('The document has been stored on the server...');
+        notifier.notify(Notifications.DOCUMENT_SAVED);
       },
       error: function() {
-        alert('Error during saving...');
+        notifier.notify(Notifications.DOCUMENT_SAVING_FAILED);
       },
     });
   },
@@ -43,12 +58,25 @@ var DocumentComposer = Backbone.View.extend({
   loadDocument: function(id) {
     var that = this;
     
-    this.model = Documents.get(id);
+    this.model = new Document({
+      id: id,
+      contents: Document.EMPTY
+    });
+    
+    notifier.notify(Notifications.DOCUMENT_LOADING);
+    
     this.model.fetch({
       success: function() {
         that.init();
+        that.trigger('document:changed');
+        notifier.notify(Notifications.DOCUMENT_LOADED);
+      },
+      error: function() {
+        notifier.notify(Notifications.DOCUMENT_LOADING_FAILED);
       }
     });
+    
+    
     
     $('#shelf').html('');
   },
@@ -57,12 +85,16 @@ var DocumentComposer = Backbone.View.extend({
     var that = this;
     // Load all documents available in the Repository
     // and render DocumentBrowser View
+    
+    notifier.notify(Notifications.DOCUMENTS_LOADING);
+    
     Documents.fetch({
       success: function() {
         that.renderDocumentBrowser();
+        notifier.notify(Notifications.DOCUMENTS_LOADED);
       },
       error: function() {
-        alert('Error while fetching documents.');
+        notifier.notify(Notifications.DOCUMENTS_LOADING_FAILED);
       }
     });
   },
@@ -83,6 +115,9 @@ var DocumentComposer = Backbone.View.extend({
   // Should be rendered just once
   render: function() {
     $(this.el).html(Helpers.renderTemplate('editor'));
+    
+    // Render Menu
+    this.menu.render();
     return this;
   },
   

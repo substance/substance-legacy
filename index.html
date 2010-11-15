@@ -1,34 +1,57 @@
 <!DOCTYPE html> 
 <html> 
 <head> 
-  <title>Substance™ </title>
+  <title>Untitled — Substance™</title>
   
   <!-- templates -->
-  <script type="text/x-handlebars-template" name="editor">
-    <div id="menubar">
-      <div id="commands">
-        <div class="lpl buttons">
-          <a class="lpl button new_document" href="#">New</a>
-          <a class="lpl button browse_documents" href="#">Browse</a>
-          <a class="lpl button action save_document" href="#">Save &amp; Publish</a>
-        </div>
+  <script type="text/x-handlebars-template" name="menu">
+    <div id="persistence_status">
+      <div class="lpl buttons">
+        <a class="lpl button action save-document" href="#">Save</a>
       </div>
-      
-      <div id="logo">
-        <h1>Substance™ — Data-driven document authoring</h1>
-      </div>
+      <div id="updated_at">Saved x minutes ago.</div>
       
       <br class="clear"/>
-      
-      <div id="shelf">
-        
+    </div>
+  
+    <div id="logo">
+      <h1>SUBSTANCE ™</h1>
+    </div>
+  
+    <div id="title">
+      {{title}}
+    </div>
+  
+    <div id="actions">
+      <div class="lpl buttons">
+        <a class="lpl button new-document" href="#">New</a>
+        <a class="lpl button browse-documents" href="#">Browse</a>
       </div>
+    </div>
+    
+    <br class="clear"/>
+    <div id="notifications">
+      <img src="/images/activity.gif" class="activity"/>
+      <div class="message">stored successfully.</div>
+      <br class="clear"/>
+    </div>
+    
+    <div id="shelf">
+    
+    </div>
+
+  </script>
+  
+  
+  <script type="text/x-handlebars-template" name="editor">
+    <div id="menubar">
+      
     </div>
     
     <div id="main">
       <div id="sidebar">
         <div id="editor">
-          <h3>Welcome to this early demo</h3>
+          <h3>Welcome</h3>
           <p>You can select some <em>Content-Nodes</em> on the left to edit the contents. You can drag <em>Nodes</em> around to arrange them. 
           But keep in mind this is an early draft/sketch. Things will get more stable as we work on it.
           </p>
@@ -49,13 +72,16 @@
   
   <script type="text/x-handlebars-template" name="browse_documents">
     <div>
+      <a href="#" class="close-shelf">Close Shelf</a>
       <div id="document_list" style="padding: 10px">
         {{#documents}}
           <div class="icon-container ui-draggable">
+            
             <div class="icon">
-              <a href="#" key="{{id}}" class="load_document"><img src="http://demo.lepilo.at/stylesheets/assets/lpl/icons/128x128_file.png" alt="icon"></a>
+              <a href="#load/{{id}}" key="{{id}}" class="load-document"><img src="http://demo.lepilo.at/stylesheets/assets/lpl/icons/128x128_file.png" alt="icon"></a>
             </div>
-            <div>{{title}}</div>
+            
+            <div>{{title}} <a href="#delete/{{id}}" title="Delete Document" key="{{id}}" class="delete-document">x</a></div>
             <div class="metadata">2010-11-07 13:04</div>
           </div>
         {{/documents}}
@@ -149,7 +175,6 @@
   </script>
   
   <!-- content-node templates for the editor -->
-  
   <script type="text/x-handlebars-template" name="document">    
     <div id="{{node/key}}" class="content-node document">
       <div class="content-node-info">Document</div>
@@ -220,6 +245,9 @@
   <!-- Fixtures -->
   <script src="fixtures/article.js"></script>
   
+  <!-- Backbone Extensions -->
+  <script src="src/notifier.js"></script>
+  
   <!-- The app -->
   <script src="src/models/content_graph.js"></script>
   <script src="src/models/document.js"></script>
@@ -233,7 +261,10 @@
   <script src="src/node_editors/paragraph_editor.js"></script>
   <script src="src/node_editors/image_editor.js"></script>
   
+  <script src="src/controllers/application.js"></script>
+  
   <script src="src/views/document_view.js"></script>
+  <script src="src/views/menu.js"></script>
   <script src="src/views/document_browser.js"></script>
   <script src="src/views/document_composer.js"></script>
   <script src="src/app.js"></script>

@@ -4,7 +4,6 @@
 */
 
 .clear { clear: both; }
-
 .hidden { display: none; }
 
 /*
@@ -26,25 +25,56 @@ h2 { font-size: 1.8em; margin-bottom: 1em;}
 
 
 /*
- Menu bar
+ Menu
 ----------------------
 */
 
 #menubar {
   left: 20px; right: 20px; position: fixed; top: 0px; z-index: 1000; margin-bottom:10px; background: #343634; font-size:10px; font-weight:bold; text-shadow:0px 1px 1px rgba(0,0,0,0.5); text-transform:uppercase; clear:both;
-  border-bottom-left-radius: 7px;
-  border-bottom-right-radius: 7px;
   -webkit-box-shadow: 0px 2px 4px rgba(0,0,0,1);
   -moz-box-shadow:    0px 2px 4px rgba(0,0,0,1);
   box-shadow:         0px 2px 4px rgba(0,0,0,1);  
 }
 
-#commands { padding: 4px; float: right; }
+#persistence_status { padding: 4px; float: right; width: 300px; margin: 4px;}
+#persistence_status #updated_at { float: right; margin-right: 10px; padding: 2px;}
+#menubar #persistence_status .buttons { float: right; margin:0px 0px 0px 0; clear: none;}
+
 #logo { float: left; }
-#logo h1 { margin: 0; padding: 0; margin-top: 15px; margin-left: 15px; font-size: 16px; text-transform: none;}
-#shelf { background: #4C4C47; overflow: auto; }
+#logo h1 { margin: 0; padding: 0; margin-top: 10px; margin-left: 15px; font-size: 16px; text-transform: none;}
+#shelf { background: #4C4C47; overflow: auto; position: relative;  max-height: 370px; }
+
+#updated_at { color: #aaa; }
+#actions { float: left; margin: 8px; margin-left: 40px; }
+#title { margin-left: 20px; margin-top: 10px; float: left; text-transform: none; font-size: 14px;}
+
+/*
+ Notifications
+----------------------
+*/
+
+#notifications { background: #444; display: none; }
+#notifications .activity { float: left; display: none; }
+#notifications .message { padding-left: 10px; float: left; }
+
+#notifications .message.info { color: #eee; }
+#notifications .message.success { color: green; }
+#notifications .message.error { color: green; }
 
 
+/*
+ Document Browser
+----------------------
+*/
+
+a.close-shelf {
+  color: #eee;
+  position: absolute;
+  right: 20px;
+  bottom: 10px;
+}
+
+a.delete-document { color: red; text-decoration: none; }
 
 /*
  Sidebar
@@ -90,7 +120,6 @@ h2 { font-size: 1.8em; margin-bottom: 1em;}
 
 /* ImageEditor Widget */
 #progress_container { display: none; }
-
 
 /*
  Document view
@@ -185,6 +214,8 @@ h2 { font-size: 1.8em; margin-bottom: 1em;}
 
 #document.structure-mode .content-node { margin-left: 20px; }
 
+
+
 .node-actions {
   z-index: -100;
   padding-right: 10px;
@@ -257,6 +288,10 @@ h2 { font-size: 1.8em; margin-bottom: 1em;}
 #document:not(.structure-mode) .node-placeholder { display: none; }
 
 code { display: block; font-family: Monaco, Consolas; font-size: 12px; margin-top: 15px; padding: 7px; border-left: 3px solid #ccc; }
+
+
+
+
 
 
 /*---------------------- HiJs Syntax Highlighting -------------------------*/

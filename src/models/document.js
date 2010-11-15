@@ -8,8 +8,14 @@ var Document = Backbone.Model.extend({
     if (this.get('contents')) {
       this.g = new ContentGraph(this.get('contents'));
     }
-    
     this.selectedNode = null;
+  },
+  
+  url: function() {
+    if (this.id)
+      return '/documents/' + this.id;
+    else
+      return '/documents/';
   },
   
   parse: function(res) {
@@ -20,13 +26,9 @@ var Document = Backbone.Model.extend({
   },
   
   toJSON: function() {
-    var that = this;
-    
-    var result = _.extend(_.clone(this.attributes), {
-      contents: this.g.serialize()
+    return _.extend(_.clone(this.attributes), {
+      contents: this.g ? this.g.serialize() : {}
     });
-    
-    return result;
   },
   
   createEmptyNode: function(type) {
@@ -136,6 +138,7 @@ var Document = Backbone.Model.extend({
 });
 
 // Acts as a stub for new documents
+
 Document.EMPTY = {
   "title": "Untitled",
   "author": "John Doe",
@@ -196,6 +199,5 @@ var DocumentList = Backbone.Collection.extend({
     return todo.get('order');
   }
 });
-
 
 var Documents = new DocumentList();

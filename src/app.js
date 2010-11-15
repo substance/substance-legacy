@@ -1,7 +1,8 @@
 // DocumentComposer - Data-driven content authoring
 (function() {
-  
   $(function() {
+    // set up a notifier for status-message communication
+    window.notifier = new Backbone.Notifier();
     
     // Start the engines
     var app = new DocumentComposer({el: $('#container')});
@@ -10,12 +11,9 @@
     app.render();
     app.newDocument();
     
-    // Load initial doc
+    // Initialize controllers
+    new ApplicationController({app: app});
+    Backbone.history.start();
     
-    // Documents.fetch({
-    //   success: function() {
-    //     app.loadDocument('e59976ea3dca7ba11cffd2d5f20026b0');
-    //   }
-    // });
   });
 })();
