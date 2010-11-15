@@ -74,7 +74,7 @@ app.get('/documents/:id', function(req, res) {
 // -----------
 
 app.post('/documents', function(req, res) {
-  var doc = JSON.parse(req.body.model);
+  var doc = req.body;
   
   // Store the document
   db.insert(doc, function (err, result) {
@@ -89,22 +89,27 @@ app.post('/documents', function(req, res) {
 // Update a document
 // -----------
 
-app.put('/documents/:id', function(req, res) {  
-  var doc = JSON.parse(req.body.model);
-  
+app.put('/documents/:id', function(req, res) {    
+  var doc = req.body;
+
   db.get(req.params.id, function (err, prevdoc) {
     db.save(req.params.id, prevdoc.rev, doc, function (err, result) {
       console.log(err);
       res.send('{"status": "ok"}');
     });
-  });
+  });  
 });
 
 // Delete a document
 // -----------
 
 app.del('/documents/:id', function(req, res) {
- res.send('not implemented');
+ db.get(req.params.id, function (err, prevdoc) {
+   db.remove(req.params.id, prevdoc.rev, function (err, result) {
+     console.log(err);
+     res.send('{"status": "ok"}');
+   });
+ });
 });
 
 
