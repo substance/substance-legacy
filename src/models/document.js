@@ -125,6 +125,30 @@ var Document = Backbone.Model.extend({
   updateSelectedNode: function(attrs) {
     _.extend(this.selectedNode.data, attrs);
     this.trigger('change:node', this.selectedNode);
+    
+    // notify all collaborators about the changed node
+    socket.send({
+      type: "change:node",
+      body: {
+        key: this.selectedNode.key,
+        node: this.selectedNode.serialize()
+      }
+    });
+  },
+  
+  updateNode: function(nodeKey, attrs) {
+    if (nodeKey === 'root') {
+      var node = this.g;
+    } else {
+      var node = this.g.get('nodes', nodeKey);
+    }
+    
+    _.extend(node.data, attrs);
+    this.trigger('change:node', node);
+    
+    if (this.selectedNode === node) {
+      this.trigger('select:node', this.selectedNode);
+    }
   },
   
   selectNode: function(key) {

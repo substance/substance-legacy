@@ -113,12 +113,14 @@ A Substance server instance exposes an API for retrieving documents either as da
 Since a client consumes data rather then a rendered output (like HTML), lots of interesting things can be done using this data that contains all the knowledge about the documents structure. Visualizing the structure of a document in real-time could help during authoring and viewing a document. Not least it's visually appealing. ;-)
 
 
+
+
 Roadmap
 --------------------------------------------------------------------------------
 
 1. Implement most important ContentNode types (like lists, images, videos, tables)
 2. Create an appealing UI. The interface will be minimalistic, adding as little noise as possible. Authors should be able to focus on writing while readers should focus on reading.
-3. Add support for realtime collaborative editing by synchronizing updated content-nodes between all clients that are editing the same doc at the same time (probably through Web-Sockets).
+3. <strike>Add support for realtime collaborative editing by synchronizing updated content-nodes between all clients that are editing the same doc at the same time (probably through Web-Sockets).</strike>
 4. Introduce references, which are special content nodes that can be used to build a bibliography (cmp. BibTeX)
 5. Implement a LaTeX renderer (this allows at any time the download of a snapshot as a pretty formatted PDF, ready to be printed).
 
@@ -134,12 +136,21 @@ The current implementation is at an early state (roughly 2 weeks of coding work)
 However, I really want to push this forward, in addition to Unveil.js, a browser-based visualization toolkit. Any form of contribution is highly appreciated! :)
 
 
+
 Installation
 --------------------------------------------------------------------------------
 
 Detailed installation instructions will be added soon. 
 
 However, to setup your own Substance instance you'll need Node.js (>=0.3) installed and a CouchDB database if you want to host your own document repository. That's all basically. Actually, most stuff is done on the client side through regular Javascript. The Node.js server just functions as a proxy to the CouchDB database and exposes a clean API.
+
+
+Updates
+--------------------------------------------------------------------------------
+
+**16th November**
+
+Added basic support for realtime collaborative editing. For now all parties need to open a persisted document, then start editing. If another party arrives at a later point in time, real-time changes are not visible to him (to be fixed...)
 
 
 Contributors (so far)

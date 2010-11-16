@@ -15,5 +15,25 @@
     new ApplicationController({app: app});
     Backbone.history.start();
     
+    window.socket = new io.Socket();
+    socket.connect();
+    
+    socket.on('connect', function() {
+      
+    });
+    
+    socket.on('message', function(msg) {
+      if (msg.type === 'change:node') {
+        delete msg.body.node.children;
+        delete msg.body.node.type;
+        app.model.updateNode(msg.body.key, msg.body.node);        
+      } else if (msg.type === 'new:collaborator') {
+        notifier.notify(Notifications.NEW_COLLABORATOR);
+      } else if (msg.type === 'exit:collaborator') {
+        notifier.notify(Notifications.EXIT_COLLABORATOR);
+      }
+    });
+    
+    socket.on('disconnect', function(){ }); 
   });
 })();

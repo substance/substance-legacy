@@ -66,13 +66,19 @@ var DocumentComposer = Backbone.View.extend({
         that.init();
         that.trigger('document:changed');
         notifier.notify(Notifications.DOCUMENT_LOADED);
+        
+        // Register at ContentNodeDispatcher
+        socket.send({
+          type: "register",
+          body: {
+            id: that.model.id
+          }
+        });
       },
       error: function() {
         notifier.notify(Notifications.DOCUMENT_LOADING_FAILED);
       }
     });
-    
-    
     
     $('#shelf').html('');
   },

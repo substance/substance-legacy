@@ -99,6 +99,7 @@ var DocumentView = Backbone.View.extend({
     this.model.bind('change:node', function(node) {
       that.renderNode(node);
     });
+    
   },
   
   renderNode: function(node) {

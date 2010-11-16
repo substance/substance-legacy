@@ -63,6 +63,16 @@ var Notifications = {
   DOCUMENT_DELETING_FAILED: {
     message: "Error during deletion.",
     type: 'error'
+  },
+  
+  NEW_COLLABORATOR: {
+    message: "A new collaborator just went online.",
+    type: 'info'
+  },
+  
+  EXIT_COLLABORATOR: {
+    message: "A new collaborator just left.",
+    type: 'info'
   }
 };
 
