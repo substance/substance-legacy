@@ -15,9 +15,12 @@
     new ApplicationController({app: app});
     Backbone.history.start();
     
-    window.socket = new io.Socket();
-    socket.connect();
+    window.socket = new io.Socket(null, {
+      port: 3003,
+      transports: ['websocket']
+    });
     
+    socket.connect();
     socket.on('connect', function() {
       
     });
