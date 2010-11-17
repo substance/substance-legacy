@@ -2,7 +2,7 @@ Substance
 ================================================================================
 
 Substance is a data-driven document authoring tool based on the ContentGraph 
-document format.
+document format. It's demo-ware for the moment, but we're working on it.
 
 ![Screenshot](http://ma.zive.at/substance.png)
 
@@ -45,7 +45,7 @@ The JSON representation of a simple ContentGraph looks as follows:
         "url": "http://tmp.vivian.transloadit.com/scratch/9a65045a69dd88c2baf281c28dbd15a7"
       }
     }
-  };
+  }
 </code>
 </pre>
 
@@ -63,6 +63,26 @@ means we get document versioning for free. A CouchDB database functions as a
 document repository containing arbitrary many documents. You'll eventually be able to manage
 multiple document repositories within the same editor instance. 
 
+
+
+
+API
+--------------------------------------------------------------------------------
+
+`GET /documents/`
+
+Get a list of documents available in the repository.
+
+
+Example: [http://substance.quasipartikel.at/documents](http://substance.quasipartikel.at/documents)
+
+
+`GET /documents/:id`
+
+Get a document by ID.
+
+
+Example: [http://substance.quasipartikel.at/documents/cc97d5a64b929a4936fce989608b081b](http://substance.quasipartikel.at/documents/cc97d5a64b929a4936fce989608b081b)
 
 
 
@@ -93,13 +113,16 @@ A Substance server instance exposes an API for retrieving documents either as da
 Since a client consumes data rather then a rendered output (like HTML), lots of interesting things can be done using this data that contains all the knowledge about the documents structure. Visualizing the structure of a document in real-time could help during authoring and viewing a document. Not least it's visually appealing. ;-)
 
 
+
+
 Roadmap
 --------------------------------------------------------------------------------
 
 1. Implement most important ContentNode types (like lists, images, videos, tables)
 2. Create an appealing UI. The interface will be minimalistic, adding as little noise as possible. Authors should be able to focus on writing while readers should focus on reading.
-3. Introduce references, which are special content nodes, that can be used to build a bibliography (cmp. BibTeX)
-4. Implement a LaTeX renderer (this allows at any time the download of a snapshot as a pretty formatted PDF, ready to be printed).
+3. <strike>Add support for realtime collaborative editing by synchronizing updated content-nodes between all clients that are editing the same doc at the same time (probably through Web-Sockets).</strike>
+4. Introduce references, which are special content nodes that can be used to build a bibliography (cmp. BibTeX)
+5. Implement a LaTeX renderer (this allows at any time the download of a snapshot as a pretty formatted PDF, ready to be printed).
 
 
 Actually, the system aims to be an alternative to editing documents in LaTeX or Word. Since DocumentGraphs contain all the information necessary to be rendered as LaTeX markup you wouldn't need to write Latex. You can edit and share your documents online and update them at any time. 
@@ -113,12 +136,21 @@ The current implementation is at an early state (roughly 2 weeks of coding work)
 However, I really want to push this forward, in addition to Unveil.js, a browser-based visualization toolkit. Any form of contribution is highly appreciated! :)
 
 
+
 Installation
 --------------------------------------------------------------------------------
 
 Detailed installation instructions will be added soon. 
 
 However, to setup your own Substance instance you'll need Node.js (>=0.3) installed and a CouchDB database if you want to host your own document repository. That's all basically. Actually, most stuff is done on the client side through regular Javascript. The Node.js server just functions as a proxy to the CouchDB database and exposes a clean API.
+
+
+Updates
+--------------------------------------------------------------------------------
+
+**16th November**
+
+Added basic support for realtime collaborative editing. For now all parties need to open a persisted document, then start editing. If another party arrives at a later point in time, real-time changes are not visible to him (to be fixed...)
 
 
 Contributors (so far)

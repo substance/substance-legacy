@@ -1,58 +1,87 @@
 <!DOCTYPE html> 
 <html> 
 <head> 
-  <title>Substance™ </title>
+  <title>Untitled — Substance™</title>
   
   <!-- templates -->
-  <script type="text/x-handlebars-template" name="editor">
-    <div id="menubar">
-      <div id="commands">
-        <div class="lpl buttons">
-          <a class="lpl button new_document" href="#">New</a>
-          <a class="lpl button browse_documents" href="#">Browse</a>
-          <a class="lpl button action save_document" href="#">Save &amp; Publish</a>
-        </div>
+  <script type="text/x-handlebars-template" name="menu">
+    <div id="persistence_status">
+      <div class="lpl buttons">
+        <a class="lpl button action save-document" href="#">Save</a>
       </div>
-      
-      <div id="logo">
-        <h1>Substance™ — Data-driven document authoring</h1>
-      </div>
+      <div id="updated_at">Saved x minutes ago.</div>
       
       <br class="clear"/>
-      
-      <div id="shelf">
-        
+    </div>
+  
+    <div id="logo">
+      <h1>SUBSTANCE ™</h1>
+    </div>
+  
+    <div id="title">
+      {{title}}
+    </div>
+  
+    <div id="actions">
+      <div class="lpl buttons">
+        <a class="lpl button new-document" href="#">New</a>
+        <a class="lpl button browse-documents" href="#">Browse</a>
       </div>
+    </div>
+    
+    <br class="clear"/>
+    <div id="notifications">
+      <img src="/images/activity.gif" class="activity"/>
+      <div class="message">stored successfully.</div>
+      <br class="clear"/>
+    </div>
+    
+    <div id="shelf">
+    
+    </div>
+
+  </script>
+  
+  
+  <script type="text/x-handlebars-template" name="editor">
+    <div id="menubar">
+      
     </div>
     
     <div id="main">
       <div id="sidebar">
         <div id="editor">
-          Plase create a new document
-          You can then select some nodes on the right to edit the contents.
+          <h3>Welcome</h3>
+          <p>You can select some <em>Content-Nodes</em> on the left to edit the contents. You can drag <em>Nodes</em> around to arrange them. 
+          But keep in mind this is an early draft/sketch. Things will get more stable as we work on it.
+          </p>
+          <p>
+          And you can help by giving <a href="http://github.com/michael/substance/issues">feedback</a> or reporting <a href="http://github.com/michael/substance/issues">bugs</a>.
+          </p>
+          <p>
+          Please have a look at the <a href="http://github.com/michael/substance">README</a> to learn more.
+          </p>
         </div>
       </div> <!-- end sidebar -->
-
-      <div id="actions">
-
-      </div>
-
+      
       <div id="document">
         <p>No document loaded... You can either create a <em>New Document</em> or <em>Browse</em> existing ones.</p>
       </div>
-    
     </div>
   </script>
   
   <script type="text/x-handlebars-template" name="browse_documents">
     <div>
+      <a href="#" class="close-shelf">Close Shelf</a>
       <div id="document_list" style="padding: 10px">
         {{#documents}}
           <div class="icon-container ui-draggable">
+            
             <div class="icon">
-              <a href="#" key="{{id}}" class="load_document"><img src="http://demo.lepilo.at/stylesheets/assets/lpl/icons/128x128_file.png" alt="icon"></a>
+              <a href="#load/{{id}}" key="{{id}}" class="load-document"><img src="http://demo.lepilo.at/stylesheets/assets/lpl/icons/128x128_file.png" alt="icon"></a>
             </div>
-            <div>{{title}}</div>
+            
+            <div>{{title}} <a href="#delete/{{id}}" title="Delete Document" key="{{id}}" class="delete-document">x</a></div>
             <div class="metadata">2010-11-07 13:04</div>
           </div>
         {{/documents}}
@@ -60,17 +89,30 @@
       </div>
     </div>
   </script>
+  
+  <script type="text/x-handlebars-template" name="controls">
+    <div class="controls" node="{{node/key}}" destination="{{destination}}">
+      <div class="node-actions" node="{{node/key}}">
+        <div class="handle">
+          <a href="#">+</a>
+          <div class="content">
+            {{#children}}
+              <a href="#" type="{{.}}" node="{{../node/key}}" class="add_child">insert child {{.}}</a>
+            {{/children}}
 
-  <script type="text/x-handlebars-template" name="actions">
-    {{#children}}
-      <a href="#" type="{{.}}" node="{{../node/key}}" class="add_child">add child {{.}}</a>
-    {{/children}}
+            {{#siblings}}
+              <a href="#" type="{{.}}" node="{{../node/key}}" class="add_sibling">insert {{.}}</a>
+            {{/siblings}}
+          </div>
+        </div>
+
+        <br class="clear"/>
+      </div>
     
-    {{#siblings}}
-      <a href="#" type="{{.}}" node="{{../node/key}}" class="add_sibling">add {{.}}</a>
-    {{/siblings}}
-    
-    <!--<a href="#" class="remove_node" node="huhu">remove</a>-->
+      <div class="node-placeholder {{allowedTypes}}" node="{{node/key}}">
+        drop here
+      </div>
+    </div>
   </script>
   
   <script type="text/x-handlebars-template" name="edit_paragraph">
@@ -87,13 +129,10 @@
     <h3>Edit image</h3>
     <p>Select an image to be uploaded, resized and embedded into the document.</p>
     
-    
     <form id="upload_image" action="http://api2.transloadit.com/assemblies" enctype="multipart/form-data" method="POST">
       <div class="lpl texteditor">
           <label for="my_file">select file</label>
           <input type="file" name="my_file" id="my_file" />
-          <!--<input type="text" name="name" class="property" value="{{name}}" id="section_name">-->
-          
           <input type="hidden" name="params" value="{&quot;auth&quot;:{&quot;key&quot;:&quot;4ccca6b9de144af4882760af72ec3211&quot;},&quot;steps&quot;:{&quot;resize_image&quot;:{&quot;robot&quot;:&quot;\/image\/resize&quot;,&quot;width&quot;:320,&quot;height&quot;:240,&quot;result&quot;:true}},&quot;redirect_url&quot;:&quot;http:\/\/example.com\/upload&quot;}" />
       </div>
 
@@ -133,13 +172,57 @@
           </div>
         </div>
     </div>
-    
   </script>
   
+  <!-- content-node templates for the editor -->
+  <script type="text/x-handlebars-template" name="document">    
+    <div id="{{node/key}}" class="content-node document">
+      <div class="content-node-info">Document</div>
+      <div class="border"></div>
+      <h1>{{node/data/title}}</h1>
+      {{{content}}}
+    </div>
+  </script>
+  
+  <script type="text/x-handlebars-template" name="section">
+    <div id="{{node/key}}" draggable="true" class="content-node section">
+      <a href="#" class="remove-node" node="{{node/key}}">X</a>
+      <div class="content-node-info">-&gt; drag to move &lt;-&nbsp;&nbsp;&nbsp;&nbsp; Section</div>
+      <div class="border"></div>
+      
+      <h2>{{node/data/name}}</h2>
+      {{{content}}}
+    </div>
+  </script>
+  
+  <script type="text/x-handlebars-template" name="paragraph">
+    <div id="{{node/key}}" draggable="true" class="content-node paragraph">
+      <a href="#" class="remove-node" node="{{node/key}}">X</a>
+      <div class="content-node-info">-&gt; drag to move &lt;-&nbsp;&nbsp;&nbsp;&nbsp; Paragraph</div>
+      <div class="border"></div>
+      {{{content}}}
+    </div>
+  </script>
+  
+  <script type="text/x-handlebars-template" name="image">
+    <div id="{{node/key}}" draggable="true" class="content-node image">
+      <a href="#" class="remove-node" node="{{node/key}}">X</a>
+      <div class="content-node-info">-&gt; drag to move &lt;-&nbsp;&nbsp;&nbsp;&nbsp; Image</div>
+      <div class="border"></div>
+      {{#node/data/url}}
+        <img src="{{.}}"/>
+      {{/node/data/url}}
+      {{^node/data/url}}
+        image placeholder..
+      {{/node/data/url}}
+    </div>
+  </script>
+  
+
   <!-- styles --> 
   <!-- <link id="bespin_base" href="./lib/bespin"/> -->
   <!-- <link href="lib/bespin/BespinEmbedded.css" media="screen" rel="stylesheet" type="text/css" /> -->
-  <!--<link href="stylesheets/reset.css" media="screen" rel="stylesheet" type="text/css" />-->
+  <!-- <link href="stylesheets/reset.css" media="screen" rel="stylesheet" type="text/css" />-->
   <link href="stylesheets/widgets.css" media="screen" rel="stylesheet" type="text/css" />
   <link href="stylesheets/app.css" media="screen" rel="stylesheet" type="text/css" />
   
@@ -158,13 +241,34 @@
   <script src="lib/backbone.js"></script>
   <script src="lib/sorted_hash.js"></script>
   <script src="lib/node.js"></script>
-  <script src="src/content_graph.js"></script>
+  
+  <script src="socket.io/socket.io.js"></script>
   
   <!-- Fixtures -->
   <script src="fixtures/article.js"></script>
   
+  <!-- Backbone Extensions -->
+  <script src="src/notifier.js"></script>
+  
   <!-- The app -->
+  <script src="src/models/content_graph.js"></script>
+  <script src="src/models/document.js"></script>
+  
   <script src="src/content_node_types.js"></script>
+  <script src="src/helpers.js"></script>
+  <script src="src/renderers/html_renderer.js"></script>
+
+  <script src="src/node_editors/document_editor.js"></script>
+  <script src="src/node_editors/section_editor.js"></script>
+  <script src="src/node_editors/paragraph_editor.js"></script>
+  <script src="src/node_editors/image_editor.js"></script>
+  
+  <script src="src/controllers/application.js"></script>
+  
+  <script src="src/views/document_view.js"></script>
+  <script src="src/views/menu.js"></script>
+  <script src="src/views/document_browser.js"></script>
+  <script src="src/views/document_composer.js"></script>
   <script src="src/app.js"></script>
   
 </head>
@@ -172,7 +276,5 @@
   <div id="container">
     
   </div>
-
-
 </body> 
 </html>
