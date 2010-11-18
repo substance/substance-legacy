@@ -1,0 +1,16 @@
+<!DOCTYPE html> 
+<html> 
+<head> 
+  <title>Substance™ — Documents</title>
+</head>
+<body>
+  <h1>Available Documents</h1>
+  <div id="container">
+    {{#documents}}
+      <div>
+        <a href="/view/{{id}}">{{title}}</a> by {{author}}
+      </div>
+    {{/documents}}
+  </div>
+</body> 
+</html>
