@@ -4,6 +4,8 @@ var http = require('http');
 var io = require('socket.io@0.6.1');
 var cradle = require('cradle@0.2.2');
 var fs = require('fs');
+var Handlebars = require('./lib/handlebars.js');
+var HTMLRenderer = require('./src/renderers/frontend_renderer').Renderer;
 
 require('./lib/underscore.js');
 
@@ -13,6 +15,18 @@ var config = JSON.parse(fs.readFileSync(__dirname+ '/config.json', 'utf-8'));
 // Init CouchDB Connection
 var conn = new(cradle.Connection)(config.couchdb.host, config.couchdb.port);
 var db = conn.database(config.couchdb.db);
+
+// Helpers
+// -----------
+
+var Helpers = {};
+
+// Templates for the moment are recompiled every time
+Helpers.renderTemplate = function(tpl, view, helpers) {
+  var source = fs.readFileSync(__dirname+ '/templates/' + tpl + '.html', 'utf-8');
+  var template = Handlebars.compile(source);
+  return template(view, helpers || {});
+};
 
 
 // Server Configuration
@@ -26,21 +40,110 @@ app.configure(function(){
   app.use(express.logger({ format: ':method :url' }));
 });
 
+
+// Document Model
+// -----------
+
+var Document = {
+  
+  all: function(options) {
+    db.view('documents/all', function (err, documents) {
+      var result = documents.map(function(d) {
+
+        if (options.withContents) {
+          var res = d.contents;
+          res.id = d._id;
+          return res;
+        } else {
+          return {
+            id: d._id,
+            title: d.contents.title,
+            author: d.contents.author
+          };
+        }
+      });
+
+      options.success(result);
+    });
+  },
+  
+  get: function(id, options) {
+    db.get(id, function (err, doc) {
+      delete doc._rev;
+      doc.id = doc._id;
+      delete doc._id;
+
+      options.success(doc);
+    });
+  },
+
+  create: function(doc, options) {
+    db.insert(doc, function (err, result) {
+      options.success(result);
+    });
+  },
+  
+  update: function(id, doc, options) {
+    db.get(id, function (err, prevdoc) {
+      db.save(id, prevdoc.rev, doc, function (err, result) {
+        options.success();
+      });
+    });
+  },
+  
+  delete: function(id, options) {
+    db.get(id, function (err, prevdoc) {
+      db.remove(id, prevdoc.rev, function (err, result) {
+        options.success()
+      });
+    });
+  }
+};
+
+
+// The Document Index
+// -----------
+
+app.get('/documents.html', function(req, res) {  
+  Document.all({
+    success: function(documents) {
+      res.send(Helpers.renderTemplate('documents', {documents: documents}));
+    }
+  });
+});
+
+
+// Fetch a document as HTML
+// -----------
+
+app.get('/documents/:id.html', function(req, res) {
+  Document.get(req.params.id, {
+    withContents: true,
+    success: function(doc) {
+      res.send(Helpers.renderTemplate('document', {
+        document: new HTMLRenderer(doc.contents).render()
+      }));
+    }
+  });
+});
+
+
+// The engine room
+// -----------
+
+app.get('/', function(req, res) {
+  res.send(fs.readFileSync(__dirname+ '/templates/app.html', 'utf-8'));
+});
+
+
 // Get all documents
 // -----------
 
 app.get('/documents', function(req, res) {
-  db.view('documents/all', function (err, documents) {
-    
-    var result = documents.map(function(d) {
-      return {
-        id: d._id,
-        title: d.contents.title,
-        author: d.contents.author
-      };
-    });
-    
-    res.send(JSON.stringify(result));
+  Document.all({
+    success: function(documents) {
+      res.send(JSON.stringify(documents));
+    }
   });
 });
 
@@ -49,70 +152,64 @@ app.get('/documents', function(req, res) {
 // -----------
 
 app.get('/documents/full', function(req, res) {
-  db.view('documents/all', function (err, documents) {
-    
-    var result = documents.map(function(d) {
-      var res = d.contents;
-      res.id = d._id;
-      return res;
-    });
-    
-    res.send(JSON.stringify(result));
+  Document.all({
+    withContents: true,
+    success: function(documents) {
+      res.send(JSON.stringify(documents));
+    }
   });
 });
 
-// Fetch a document
+
+// Fetch a document as JSON
 // -----------
 
 app.get('/documents/:id', function(req, res) {
-  db.get(req.params.id, function (err, doc) {
-    delete doc._rev;
-    doc.id = doc._id;
-    delete doc._id;
-    res.send(JSON.stringify(doc));
+  Document.get(req.params.id, {
+    withContents: true,
+    success: function(doc) {
+      res.send(JSON.stringify(doc));
+    }
   });
 });
+
 
 // Create a document
 // -----------
 
 app.post('/documents', function(req, res) {
-  var doc = req.body;
-  
-  // Store the document
-  db.insert(doc, function (err, result) {
-    // Handle response
-    console.log(result);
-    res.send(JSON.stringify({
-      id: result.id
-    }));
+  Document.create(req.body, {
+    withContents: true,
+    success: function(result) {
+      res.send(JSON.stringify({id: result.id}));
+    }
   });
 });
+
 
 // Update a document
 // -----------
 
 app.put('/documents/:id', function(req, res) {    
   var doc = req.body;
-
-  db.get(req.params.id, function (err, prevdoc) {
-    db.save(req.params.id, prevdoc.rev, doc, function (err, result) {
-      console.log(err);
+  
+  Document.update(req.params.id, req.body, {
+    withContents: true,
+    success: function() {
       res.send('{"status": "ok"}');
-    });
-  });  
+    }
+  });
 });
 
 // Delete a document
 // -----------
 
 app.del('/documents/:id', function(req, res) {
- db.get(req.params.id, function (err, prevdoc) {
-   db.remove(req.params.id, prevdoc.rev, function (err, result) {
-     console.log(err);
-     res.send('{"status": "ok"}');
-   });
- });
+  Document.delete(id, {
+    success: function() {
+      res.send('{"status": "ok"}');
+    }
+  });  
 });
 
 
@@ -200,11 +297,10 @@ ContentNodeDispatcher.prototype.notifyCollaborators = function(clientId, msg) {
 var dispatcher = new ContentNodeDispatcher();
 
 var socket = io.listen(app); 
-socket.on('connection', function(client) { 
-  
+socket.on('connection', function(client) {
   dispatcher.registerClient(client);
   
-  // new client is here!
+  // New client is here!
   client.on('message', function(msg) { 
     if (msg.type === 'register') {
       dispatcher.registerDocument(client.sessionId, msg.body);
