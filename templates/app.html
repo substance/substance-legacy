@@ -13,15 +13,15 @@
       
       <br class="clear"/>
     </div>
-  
+    
     <div id="logo">
       <h1>SUBSTANCE ™</h1>
     </div>
-  
+
     <div id="title">
       {{title}}
     </div>
-  
+    
     <div id="actions">
       <div class="lpl buttons">
         <a class="lpl button new-document" href="#">New</a>
@@ -95,7 +95,7 @@
       <div class="node-actions" node="{{node/key}}">
         <div class="handle">
           <a href="#">+</a>
-          <div class="content">
+          <div class="links">
             {{#children}}
               <a href="#" type="{{.}}" node="{{../node/key}}" class="add_child">insert child {{.}}</a>
             {{/children}}
@@ -119,8 +119,9 @@
     <h3>Edit Paragraph</h3>
     <div class="lpl texteditor" id="edit_node">
       <div class="lpl inputcombo">
+        <!--
         <label for="content_text">content:</label>
-        <textarea class="property" name="content" id="content_texteditor">{{content}}</textarea>
+        <textarea class="property" name="content" id="content_texteditor">{{content}}</textarea>-->
       </div>
     </div>
   </script>
@@ -148,29 +149,29 @@
   <script type="text/x-handlebars-template" name="edit_section">
     <h3>Edit section</h3>
     <div class="lpl texteditor">
-        <label for="section_name">section name</label>
-        <input type="text" name="name" class="property" value="{{name}}" id="section_name">
+        <!--<label for="section_name">section name</label>
+        <input type="text" name="name" class="property" value="{{name}}" id="section_name">-->
     </div>
   </script>
   
   <script type="text/x-handlebars-template" name="edit_document">
     <h3>Edit document</h3>
     <div class="lpl texteditor">
-        <label for="document_title">title</label>
-        <input type="text" name="document_title" class="property" value="{{title}}" id="document_title">
+        <!--<label for="document_title">title</label>
+        <input type="text" name="document_title" class="property" value="{{title}}" id="document_title">-->
         <label for="publication_date">publication date</label>
         <input type="text" name="publication_date" class="property" value="{{publication_date}}" id="publication_date">
         <label for="document_tags">tags</label>
         <textarea name="document_tags" class="property" id="document_tags">{{tags}}</textarea>
         
-        <label>Published</label>
+        <!--<label>Published</label>
         <div id="published" class="lpl toggle on">
           <div class="lpl toggle-off-value">off</div>
           <div class="lpl toggle-on-container">
             <div class="lpl toggle-button"></div>
             <div class="lpl toggle-on-value">on</div>
           </div>
-        </div>
+        </div>-->
     </div>
   </script>
   
@@ -178,37 +179,38 @@
   <script type="text/x-handlebars-template" name="document">    
     <div id="{{node/key}}" class="content-node document">
       <div class="content-node-info">Document</div>
-      <div class="border"></div>
-      <h1>{{node/data/title}}</h1>
+      <!--<div class="border"></div>-->
+      <h1 contenteditable="true" class='content'>{{node/data/title}}</h1>
       {{{content}}}
     </div>
   </script>
   
   <script type="text/x-handlebars-template" name="section">
-    <div id="{{node/key}}" draggable="true" class="content-node section">
+    <div id="{{node/key}}" draggable="false" class="content-node section">
       <a href="#" class="remove-node" node="{{node/key}}">X</a>
-      <div class="content-node-info">-&gt; drag to move &lt;-&nbsp;&nbsp;&nbsp;&nbsp; Section</div>
-      <div class="border"></div>
+      <div class="content-node-info">Section</div>
+      <!--<div class="border"></div>-->
       
-      <h2>{{node/data/name}}</h2>
+      <h2 contenteditable="true" class='content'>{{node/data/name}}</h2>
       {{{content}}}
     </div>
   </script>
   
   <script type="text/x-handlebars-template" name="paragraph">
-    <div id="{{node/key}}" draggable="true" class="content-node paragraph">
+    <div id="{{node/key}}" draggable="false" class="content-node paragraph">
       <a href="#" class="remove-node" node="{{node/key}}">X</a>
-      <div class="content-node-info">-&gt; drag to move &lt;-&nbsp;&nbsp;&nbsp;&nbsp; Paragraph</div>
-      <div class="border"></div>
-      {{{content}}}
+      <div class="content-node-info">Paragraph</div>
+      <!--<div class="border"></div>-->
+      
+      <div class='content' contenteditable="true">{{{content}}}</div>
     </div>
   </script>
   
   <script type="text/x-handlebars-template" name="image">
-    <div id="{{node/key}}" draggable="true" class="content-node image">
+    <div id="{{node/key}}" draggable="false" class="content-node image">
       <a href="#" class="remove-node" node="{{node/key}}">X</a>
-      <div class="content-node-info">-&gt; drag to move &lt;-&nbsp;&nbsp;&nbsp;&nbsp; Image</div>
-      <div class="border"></div>
+      <div class="content-node-info">Image</div>
+      <!--<div class="border"></div>-->
       {{#node/data/url}}
         <img src="{{.}}"/>
       {{/node/data/url}}
@@ -218,10 +220,7 @@
     </div>
   </script>
   
-
   <!-- styles --> 
-  <!-- <link id="bespin_base" href="./lib/bespin"/> -->
-  <!-- <link href="lib/bespin/BespinEmbedded.css" media="screen" rel="stylesheet" type="text/css" /> -->
   <!-- <link href="stylesheets/reset.css" media="screen" rel="stylesheet" type="text/css" />-->
   <link href="stylesheets/widgets.css" media="screen" rel="stylesheet" type="text/css" />
   <link href="stylesheets/app.css" media="screen" rel="stylesheet" type="text/css" />
@@ -230,8 +229,6 @@
   <script src="lib/jquery-1.4.3.min.js"></script>
   <script src="lib/handlebars.js"></script>
   <script src="lib/showdown.js"></script>
-  
-  <!-- <script src="lib/bespin/BespinEmbedded.js"></script> -->
 
   <!-- transloadit.com file processing service -->
   <script src="lib/jquery.transloadit2.js"></script>
@@ -270,7 +267,7 @@
   <script src="src/views/document_browser.js"></script>
   <script src="src/views/document_composer.js"></script>
   <script src="src/app.js"></script>
-  
+
 </head>
 <body>
   <div id="container">

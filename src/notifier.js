@@ -71,7 +71,7 @@ var Notifications = {
   },
   
   EXIT_COLLABORATOR: {
-    message: "A new collaborator just left.",
+    message: "One collaborator just left.",
     type: 'info'
   }
 };

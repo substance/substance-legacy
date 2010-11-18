@@ -3,17 +3,12 @@ Backend Code
 
 * <strike>File Upload</strike>
 * <strike>MVC code separation using Backbone.js</strike>
-* Server Logic
-  * New Document
-  * Update Document
-  * Delete Document
-  * List Document
-  * Find Document
 
 JavaScript
 ==========
 
-* update SortedHash in unveil.js
+* Update SortedHash in Unveil.js
+* Realtime synchronization for Node insertion/deletion.
 
 UI Design Work
 ==============

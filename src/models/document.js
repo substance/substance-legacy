@@ -57,12 +57,18 @@ var Document = Backbone.Model.extend({
     
     // Attach at new position
     target.parent.addChild(source, target, destination);
-
+    
     // Re-render changed nodes
-    this.trigger('change:node', source.parent);
     if (source.parent.key !== target.parent.key) {
-      this.trigger('change:node', target.parent);
+      this.makeDirty(source.parent.key);
+      this.makeDirty(target.parent.key);
     }
+  },
+  
+  makeDirtyNode: function(nodeKey) {
+    var node = this.getNode(nodeKey);
+    // node.dirty = true;
+    this.trigger('change:node', node);
   },
   
   // Create a node of a given type
@@ -121,12 +127,35 @@ var Document = Backbone.Model.extend({
     this.trigger('change:node', node.parent);
   },
   
+  getNode: function(nodeKey) {
+    if (nodeKey === 'root') {
+      return this.g;
+    } else {
+      return this.g.get('nodes', nodeKey);
+    }
+  },
+  
+  updateNode: function(nodeKey, attrs) {
+    var node = this.getNode(nodeKey);
+    
+    _.extend(node.data, attrs);
+    this.makeDirtyNode(nodeKey);
+    
+    // if (this.selectedNode === node) {
+    //   this.trigger('select:node', this.selectedNode);
+    // }
+  },
+  
   // Update attributes of selected node
   updateSelectedNode: function(attrs) {
     _.extend(this.selectedNode.data, attrs);
-    this.trigger('change:node', this.selectedNode);
     
-    // notify all collaborators about the changed node
+    // Only set dirty if explicitly
+    if (attrs.dirty) {
+      this.makeDirtyNode(this.selectedNode.key);
+    }
+    
+    // Notify all collaborators about the changed node
     socket.send({
       type: "change:node",
       body: {
@@ -136,27 +165,8 @@ var Document = Backbone.Model.extend({
     });
   },
   
-  updateNode: function(nodeKey, attrs) {
-    if (nodeKey === 'root') {
-      var node = this.g;
-    } else {
-      var node = this.g.get('nodes', nodeKey);
-    }
-    
-    _.extend(node.data, attrs);
-    this.trigger('change:node', node);
-    
-    if (this.selectedNode === node) {
-      this.trigger('select:node', this.selectedNode);
-    }
-  },
-  
-  selectNode: function(key) {
-    if (key === "root") {
-      this.selectedNode = this.g;
-    } else {
-      this.selectedNode = this.g.get('nodes', key);
-    }
+  selectNode: function(nodeKey) {
+    this.selectedNode = this.getNode(nodeKey);
     this.trigger('select:node', this.selectedNode);
   }
 });
