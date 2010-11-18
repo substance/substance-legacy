@@ -129,6 +129,11 @@ a {color:rgba(148,207,13,1);text-decoration:none;}
   overflow:hidden;
 }
 
+#lpl_shelf *::selection         {  background:transparent;  }
+#lpl_shelf *::-moz-selection    {  background:transparent;  }
+#lpl_shelf *::-webkit-selection {  background:transparent;  }
+
+
 #lpl_shelf.open #lpl_shelf_content {
   height:100%;
 }
@@ -198,9 +203,8 @@ a {color:rgba(148,207,13,1);text-decoration:none;}
   width:100%;
   height:100%;
   background:rgb(53,56,53);
-  background:-webkit-gradient(linear, 0% 0%, 0% 100%, from(rgba(53,56,53,1)), to(rgba(35,37,35,1)));
-  background: -moz-linear-gradient(top, rgba(53,56,53,1), rgba(35,37,35,1));
-  -webkit-transition: all 0.35s linear;
+  background:-webkit-gradient(linear, 0% 0%, 0% 100%, from(rgba(67,70,67,1)), to(rgba(35,37,35,1)));
+  background: -moz-linear-gradient(top, rgba(67,70,67,1), rgba(35,37,35,1));
 }
 
 #lpl_logo {
