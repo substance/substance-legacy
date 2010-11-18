@@ -24,7 +24,7 @@ input     {  -webkit-transition: background, background-color, border-color, col
 textarea  {  -webkit-transition: background, background-color, border-color, color, opacity 0.35s linear; }
 
 #lpl_shelf  {  -webkit-transition: height .35s linear; }
-#lpl_header {  -webkit-transition: all .35s linear; }
+#lpl_shelf_content  {  -webkit-transition: height .35s linear; }
 
 html {overflow:auto;}
 a {color:rgba(148,207,13,1);text-decoration:none;}
@@ -35,13 +35,147 @@ a {color:rgba(148,207,13,1);text-decoration:none;}
   position:fixed;
   height:0px;
   width:100%;
-  background: url(assets/texture_felt.jpg);
+  background: #2d2f2f url(assets/texture_carbon.jpg);
   -webkit-box-shadow: inset 0px 1px 16px rgba(0,0,0,0.75);
   -moz-box-shadow:    inset 0px 1px 16px rgba(0,0,0,0.75);
   box-shadow:         inset 0px 1px 16px rgba(0,0,0,0.75);
   z-index:1000;
-  -webkit-perspective: 800;
 }
+
+#lpl_shelf.open {
+  height:250px;
+}
+
+#lpl_shelf a { color:#fff; }
+
+#lpl_shelf_filter {
+  position:absolute;
+  top:0px;
+  left:0px;
+  height:34px;
+  width:100%;
+  color:#fff;
+  font-size:12px;
+  background:rgb(53,56,53);
+  background:-webkit-gradient(linear, 0% 0%, 0% 100%, from(rgba(53,56,53,1)), color-stop(0.1, rgba(63,66,63,1)), to(rgba(35,37,35,1)));
+  background: -moz-linear-gradient(top, rgba(53,56,53,1), rgba(63,66,63,1) 10%, rgba(35,37,35,1));
+  -webkit-box-shadow: 0px 1px 3px rgba(0,0,0,0.75);
+  -moz-box-shadow:    0px 1px 3px rgba(0,0,0,0.75);
+  box-shadow:         0px 1px 3px rgba(0,0,0,0.75);
+}
+
+#lpl_shelf_filter label {
+  float:left;
+  margin:7px 10px 0 10px;
+  color:#ccc;
+  text-shadow:0px 1px 0px rgba(0,0,0,0.5);
+}
+
+#lpl_shelf_filter .button {
+  display:block;
+  float:left;
+  margin:5px 5px 0 0;
+  padding:1px 12px 1px 12px;
+  text-shadow:0px -1px 0px rgba(0,0,0,0.75);
+  -webkit-border-radius:14px;
+  -moz-border-radius:   14px;
+  border-radius:        14px;
+  border:1px solid rgb(35,37,35);
+  background:rgb(55,55,55);
+  background:-webkit-gradient(linear, 0% 0%, 0% 100%, from(rgba(53,56,53,1)), color-stop(0.1, rgba(63,66,63,1)), to(rgba(35,37,35,1)));
+  background: -moz-linear-gradient(top, rgba(53,56,53,1), rgba(63,66,63,1) 10%, rgba(35,37,35,1));
+  -webkit-box-shadow: 0px 1px 0px rgba(255,255,255,0.05);
+  -moz-box-shadow:    0px 1px 0px rgba(255,255,255,0.05);
+  box-shadow:         0px 1px 0px rgba(255,255,255,0.05);
+}
+
+#lpl_shelf_filter .button:hover {
+  background:rgba(65,65,65,0.05);
+  background:-webkit-gradient(linear, 0% 0%, 0% 100%, from(rgba(63,66,63,1)), color-stop(0.1, rgba(73,76,73,1)), to(rgba(45,47,45,1)));
+  background: -moz-linear-gradient(top, rgba(63,66,63,1), rgba(73,76,73,1) 10%, rgba(45,47,45,1));
+}
+
+#lpl_shelf_filter .button:active {
+  background:rgb(55,55,55);
+  background:-webkit-gradient(linear, 0% 0%, 0% 100%, from(rgba(53,56,53,1)), color-stop(0.1, rgba(63,66,63,1)), to(rgba(35,37,35,1)));
+  background: -moz-linear-gradient(top, rgba(53,56,53,1), rgba(63,66,63,1) 10%, rgba(35,37,35,1));
+  -webkit-box-shadow: 0px 1px 0px rgba(255,255,255,0.05), inset 0px 1px 6px rgba(0,0,0,1);
+  -moz-box-shadow:    0px 1px 0px rgba(255,255,255,0.05), inset 0px 1px 6px rgba(0,0,0,1);
+  box-shadow:         0px 1px 0px rgba(255,255,255,0.05), inset 0px 1px 6px rgba(0,0,0,1);
+}
+
+#lpl_shelf_filter .button.selected {
+  color:#000;
+  font-weight:bold;
+  text-shadow:0px 1px 0px rgba(255,255,255,0.5);
+  background: rgba(200,200,200,1);
+  background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(rgb(109,186,19)), color-stop(0.5, rgb(143,200,29)), color-stop(0.501, rgb(155,210,13)), to(rgb(178,237,43)));
+  background: -moz-linear-gradient(top, rgb(109,186,19), rgb(143,200,29) 50%, rgb(155,210,13) 50.1%, rgb(178,237,43));
+  -webkit-box-shadow: 0px 1px 0px rgba(255,255,255,0.05), inset 0px 1px 6px rgba(0,0,0,0.5), inset 0px 0px 1px rgba(0,20,0,1);
+  -moz-box-shadow:    0px 1px 0px rgba(255,255,255,0.05), inset 0px 1px 6px rgba(0,0,0,0.5), inset 0px 0px 1px rgba(0,20,0,1);
+  box-shadow:         0px 1px 0px rgba(255,255,255,0.05), inset 0px 1px 6px rgba(0,0,0,0.5), inset 0px 0px 1px rgba(0,20,0,1);
+  border:none; 
+  /* 1px solid rgb(29,60,0); */
+/*  box-sizing:padding-box;
+  -webkit-box-sizing:padding-box;
+  -moz-box-sizing:padding-box;
+*/}
+
+#lpl_shelf_content {
+  position:relative;
+  height:0;
+  margin-top:40px;
+  padding:5px 10px;
+  overflow:hidden;
+}
+
+#lpl_shelf.open #lpl_shelf_content {
+  height:100%;
+}
+
+#lpl_shelf_content .item {
+  float:left;
+  margin:0 10px 10px 0;
+  -webkit-border-radius:7px;
+  -moz-border-radius:   7px;
+  border-radius:        7px;
+  border:2px dashed transparent;
+}
+
+#lpl_shelf_content .item:hover {
+  background:rgba(0,0,0,0.25);
+  border:2px dashed rgba(0,0,0,0.25);
+}
+
+#lpl_shelf_content .item:active {
+  background:rgba(0,0,0,0.5);
+  border:2px dashed rgba(255,255,255,0.5);
+}
+
+#lpl_shelf_content .item.selected {
+  background:rgba(0,0,0,0.15);
+  border:2px dashed rgba(148,207,13,1);
+}
+
+#lpl_shelf_content .item img {
+  display:block;
+  max-width:128px;
+  max-height:128px;
+}
+
+#lpl_shelf_content .item p {
+  display:block;
+  text-align:center;
+  margin:5px;
+  text-shadow:0px 1px 2px rgb(0,0,0);
+}
+
+#lpl_shelf_content .item p span {
+  display:block;
+  color:#999;
+  font-size:12px;
+}
+
 
 #lpl_header {
   position:absolute;
@@ -49,8 +183,8 @@ a {color:rgba(148,207,13,1);text-decoration:none;}
   width:100%;
   bottom:-50px;
   text-shadow:0px -1px 0px rgb(0,0,0);
-  /* background:#e9e9e9; */
-  background: url(assets/texture_carbon.jpg);
+  background:#222;
+  /* background: url(assets/texture_carbon.jpg); */
   border-top:1px solid #333;
   border-bottom:1px solid #222;
   -webkit-box-shadow: 0px 2px 3px rgba(0,0,0,0.75);
@@ -63,23 +197,10 @@ a {color:rgba(148,207,13,1);text-decoration:none;}
   position:absolute;
   width:100%;
   height:100%;
-  background:-webkit-gradient(linear, 0% 0%, 0% 100%, from(rgba(255,255,255,0.16)), to(rgba(0,0,0,0.1)));
-  background: -moz-linear-gradient(top, rgba(255,255,255,0.16), rgba(0,0,0,0.1));
+  background:rgb(53,56,53);
+  background:-webkit-gradient(linear, 0% 0%, 0% 100%, from(rgba(53,56,53,1)), to(rgba(35,37,35,1)));
+  background: -moz-linear-gradient(top, rgba(53,56,53,1), rgba(35,37,35,1));
   -webkit-transition: all 0.35s linear;
-}
-
-#lpl_shelf.open {
-  height:250px;
-}
-
-#lpl_shelf.open #lpl_header {
-  bottom:-30px;
-  -webkit-transform-style: preserve-3d;
-  -webkit-transform: rotateX(-60deg);
-}
-
-#lpl_shelf.open #lpl_header > .gradient {
-  opacity:.25;
 }
 
 #lpl_logo {
