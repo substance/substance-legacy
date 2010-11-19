@@ -58,10 +58,10 @@ var Document = Backbone.Model.extend({
     // Attach at new position
     target.parent.addChild(source, target, destination);
     
-    // Re-render changed nodes
+    this.makeDirtyNode(source.parent.key);
+    
     if (source.parent.key !== target.parent.key) {
-      this.makeDirty(source.parent.key);
-      this.makeDirty(target.parent.key);
+      this.makeDirtyNode(target.parent.key);
     }
   },
   

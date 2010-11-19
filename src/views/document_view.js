@@ -6,8 +6,8 @@ var DocumentView = Backbone.View.extend({
     'mouseover .content-node': 'highlightNode',
     'mouseout .content-node': 'unhighlightNode',
     'click .content-node': 'selectNode',
-    'mouseover .node-actions .handle': 'showActions',
-    'mouseout .node-actions .handle': 'hideActions',
+    'click .node-actions .handle': 'showActions',
+    // 'mouseout .node-actions .handle': 'hideActions',
     
     // Actions
     'click a.add_child': 'addChild',
@@ -21,17 +21,50 @@ var DocumentView = Backbone.View.extend({
     'drop': 'drop'
   },
   
+  initialize: function() {
+    var that = this;
+    
+    // Bind Events
+    this.model.bind('change:node', function(node) {
+      that.renderNode(node);
+    });
+    
+    
+    // $('#container').unbind('click');
+    // $('#container').click(function(e) {
+    //   // that.reset();
+    //   // return true;
+    // });
+    
+    $(document).unbind('keyup');
+    $(document).keyup(function(e) {
+      if (e.keyCode == 27) { that.reset(); }     // esc
+    });
+  },
+  
+  // Reset to view mode (aka unselect everything)
+  reset: function() {
+    if (this.model.selectedNode) {
+      this.$('#' + this.model.selectedNode.key).removeClass('selected');
+    }
+    
+    this.model.selectedNode = null;
+    $('#document').removeClass('edit-mode');
+    return false;
+  },
+  
   dragStart: function(e) {
     var dt = e.originalEvent.dataTransfer,
-        node = this.model.g.get('nodes', e.target.id);
+        sourceKey = $(e.target).parent().attr('id'),
+        node = this.model.g.get('nodes', sourceKey);
         
-    dt.setData("Text", e.target.id);
+    dt.setData("Text", sourceKey);
     $('#document').addClass('structure-mode');
     
     this.draggedNode = node;
     
     // TODO: Hide useless placeholders
-    // $('#document .node-placeholder[node='+e.target.id+']').addClass('hidden');
+    $('#document .node-placeholder[node='+sourceKey+']').addClass('invisible');
     
     // Hide placeholder where the dragged type can't be placed
     $('.node-placeholder:not(.'+node.type+')').addClass('hidden');
@@ -66,17 +99,15 @@ var DocumentView = Backbone.View.extend({
   },
   
   drop: function(e) {
+    var $target = $(e.target);
     $('#document').removeClass('structure-mode');
     $('#document .node-placeholder.hidden').removeClass('hidden');
     
-    if (!$(e.target).hasClass('node-placeholder')) return true;
-    
+    if (!$target.hasClass('node-placeholder')) return true;
     var dt = e.originalEvent.dataTransfer;
-    $(e.target).html(dt.getData("Text")+" -> "+$(e.target).attr('node'));
     
     // Move node to new position
-    this.model.moveNode(dt.getData("Text"), $(e.target).attr('node'), $(e.target).parent().attr('destination'));
-    
+    this.model.moveNode(dt.getData("Text"), $target.attr('node'), $target.parent().attr('destination'));
     e.stopPropagation();
     return false;
   },
@@ -89,15 +120,6 @@ var DocumentView = Backbone.View.extend({
   hideActions: function(e) {
     $(e.target).parent().parent().find('.links').hide();
     return false;
-  },
-  
-  initialize: function() {
-    var that = this;
-    
-    // Bind Events
-    this.model.bind('change:node', function(node) {
-      that.renderNode(node);
-    });
   },
   
   renderNode: function(node) {

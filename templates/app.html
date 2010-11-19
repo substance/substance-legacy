@@ -30,11 +30,6 @@
     </div>
     
     <br class="clear"/>
-    <div id="notifications">
-      <img src="/images/activity.gif" class="activity"/>
-      <div class="message">stored successfully.</div>
-      <br class="clear"/>
-    </div>
     
     <div id="shelf">
     
@@ -188,7 +183,7 @@
   <script type="text/x-handlebars-template" name="section">
     <div id="{{node/key}}" draggable="false" class="content-node section">
       <a href="#" class="remove-node" node="{{node/key}}">X</a>
-      <div class="content-node-info">Section</div>
+      <div class="content-node-info" draggable="true">Section <img src="/images/drag-handle.png"></div>
       <!--<div class="border"></div>-->
       
       <h2 contenteditable="true" class='content'>{{node/data/name}}</h2>
@@ -199,7 +194,7 @@
   <script type="text/x-handlebars-template" name="paragraph">
     <div id="{{node/key}}" draggable="false" class="content-node paragraph">
       <a href="#" class="remove-node" node="{{node/key}}">X</a>
-      <div class="content-node-info">Paragraph</div>
+      <div class="content-node-info" draggable="true">Paragraph <img src="/images/drag-handle.png"></div>
       <!--<div class="border"></div>-->
       
       <div class='content' contenteditable="true">{{{content}}}</div>
@@ -209,7 +204,7 @@
   <script type="text/x-handlebars-template" name="image">
     <div id="{{node/key}}" draggable="false" class="content-node image">
       <a href="#" class="remove-node" node="{{node/key}}">X</a>
-      <div class="content-node-info">Image</div>
+      <div class="content-node-info" draggable="true">Image <img src="/images/drag-handle.png"></div>
       <!--<div class="border"></div>-->
       {{#node/data/url}}
         <img src="{{.}}"/>
@@ -272,6 +267,10 @@
 <body>
   <div id="container">
     
+  </div>
+  <div id="notifications">
+    <div class="wrapper">
+    </div>
   </div>
 </body> 
 </html>

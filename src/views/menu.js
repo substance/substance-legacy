@@ -12,21 +12,19 @@ var Menu = Backbone.View.extend({
     });
   },
   
-  renderMessage: function(message) {
-    this.$('#notifications').show();
-    this.$('.message').html(message.message);
+  renderMessage: function(message) {  
+    var $message = $('<p class="notification"><span>info:</span>'+message.message+'</p>');
+    $('#notifications .wrapper').append($message);
     
     if (message.message.indexOf('...') !== -1) {
-      // Show acitivity indicator
-      this.$('.activity').show();
-    } else {
-      // Hide acitivity indicator
-      this.$('.activity').hide();
+      $message.addClass('activity');
       
+    } else {
+      $('#notifications .wrapper p.activity').remove();
       // Just flash message if it's not a wait... message
       setTimeout(function() {
-        this.$('#notifications').hide();
-      }, 2000);      
+        $message.remove();
+      }, 4000);
     }
   },
   
