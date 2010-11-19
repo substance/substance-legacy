@@ -22,9 +22,10 @@ a         {  -webkit-transition: background, background-color, border-color, col
 label     {  -webkit-transition: background, background-color, border-color, color, opacity 0.35s linear; }
 input     {  -webkit-transition: background, background-color, border-color, color, opacity 0.35s linear; }
 textarea  {  -webkit-transition: background, background-color, border-color, color, opacity 0.35s linear; }
+img       {  -webkit-transition: opacity 0.35s linear; }
 
-#lpl_shelf  {  -webkit-transition: height .35s linear; }
-#lpl_shelf_content  {  -webkit-transition: height .35s linear; }
+#lpl_shelf  {  -webkit-transition: height .35s ease-in-out; }
+#lpl_shelf_content  {  -webkit-transition: height .35s ease-in-out; }
 
 html {overflow:auto;}
 a {color:rgba(148,207,13,1);text-decoration:none;}
@@ -75,7 +76,9 @@ a {color:rgba(148,207,13,1);text-decoration:none;}
   display:block;
   float:left;
   margin:5px 5px 0 0;
-  padding:1px 12px 1px 12px;
+  padding:0px 12px 2px 12px;
+  font-weight:bold;
+  -webkit-font-smoothing: antialiased;
   text-shadow:0px -1px 0px rgba(0,0,0,0.75);
   -webkit-border-radius:14px;
   -moz-border-radius:   14px;
@@ -96,6 +99,7 @@ a {color:rgba(148,207,13,1);text-decoration:none;}
 }
 
 #lpl_shelf_filter .button:active {
+  padding:1px 12px 1px 12px;
   background:rgb(55,55,55);
   background:-webkit-gradient(linear, 0% 0%, 0% 100%, from(rgba(53,56,53,1)), color-stop(0.1, rgba(63,66,63,1)), to(rgba(35,37,35,1)));
   background: -moz-linear-gradient(top, rgba(53,56,53,1), rgba(63,66,63,1) 10%, rgba(35,37,35,1));
@@ -107,6 +111,7 @@ a {color:rgba(148,207,13,1);text-decoration:none;}
 #lpl_shelf_filter .button.selected {
   color:#000;
   font-weight:bold;
+  padding:1px 12px 1px 12px;
   text-shadow:0px 1px 0px rgba(255,255,255,0.5);
   background: rgba(200,200,200,1);
   background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(rgb(109,186,19)), color-stop(0.5, rgb(143,200,29)), color-stop(0.501, rgb(155,210,13)), to(rgb(178,237,43)));
@@ -139,17 +144,20 @@ a {color:rgba(148,207,13,1);text-decoration:none;}
 }
 
 #lpl_shelf_content .item {
+  position:relative;
   float:left;
   margin:0 10px 10px 0;
   -webkit-border-radius:7px;
   -moz-border-radius:   7px;
   border-radius:        7px;
   border:2px dashed transparent;
+  z-index:100;
 }
 
 #lpl_shelf_content .item:hover {
   background:rgba(0,0,0,0.25);
   border:2px dashed rgba(0,0,0,0.25);
+  z-index:150;
 }
 
 #lpl_shelf_content .item:active {
@@ -163,9 +171,19 @@ a {color:rgba(148,207,13,1);text-decoration:none;}
 }
 
 #lpl_shelf_content .item img {
+  position:relative;
   display:block;
+  margin:0 auto;
   max-width:64px;
   max-height:64px;
+  z-index:20;
+  -webkit-transition: all 0.15s ease-in-out;
+  -webkit-transform:translateY(0) scale(1);
+}
+
+#lpl_shelf_content .item img:active {
+  z-index:2000;
+  -webkit-transform:translateY(64px) scale(4);
 }
 
 #lpl_shelf_content .item p {
@@ -229,8 +247,19 @@ a {color:rgba(148,207,13,1);text-decoration:none;}
   display:block;
   position:relative;
   float:left;
+  margin:3px 3px 0 0;
   width:42px;
   height:42px;
+  background:rgba(128,128,128,0.1);
+  background:-webkit-gradient(linear, 0% 0%, 0% 100%, from(rgba(255,255,255,0.05)), color-stop(0.5, rgba(128,128,128,0)), to(rgba(0,0,0,0.1)));
+  background: -moz-linear-gradient(top, rgba(255,255,255,0.05), rgba(128,128,128,0) 50%, rgba(0,0,0,0.1));
+  border:1px solid rgba(0,0,0,0.35);
+  -webkit-border-radius:7px;
+  -moz-border-radius:   7px;
+  border-radius:        7px;
+  -webkit-box-shadow: inset 0px 0px 1px rgba(255,255,255,0.15), 0px 1px 1px rgba(255,255,255,0.1);
+  -moz-box-shadow:    inset 0px 0px 1px rgba(255,255,255,0.15), 0px 1px 1px rgba(255,255,255,0.1);
+  box-shadow:         inset 0px 0px 1px rgba(255,255,255,0.15), 0px 1px 1px rgba(255,255,255,0.1);
 }
 
 #lpl_toolbar {
@@ -605,8 +634,8 @@ a {color:rgba(148,207,13,1);text-decoration:none;}
   display:block;
   top:-20px;
   right:-20px;
-  width:28px;
-  height:28px;
+  width:22px;
+  height:22px;
   color:#fff;
   font-size:23px;
   font-weight:bold;
@@ -620,7 +649,6 @@ a {color:rgba(148,207,13,1);text-decoration:none;}
   background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(rgb(243,34,80)), to(rgb(183,0,30)));
   background: -moz-linear-gradient(top, rgb(243,34,80), rgb(183,0,30));
   -webkit-background-clip: padding-box;
-  border:3px solid #fff;
   -webkit-border-radius:14px;
   -moz-border-radius:   14px;
   border-radius:        14px;
@@ -631,16 +659,28 @@ a {color:rgba(148,207,13,1);text-decoration:none;}
   z-index:10;
 }
 
-.lpl.content.separator {
+.lpl.content.drop-target {
   position:relative;
   height:36px;
-  background:rgba(50,50,50,0.5);
+  color:rgba(0,0,0,0.5);
+  font-size:12px;
+  line-height:34px;
+  text-align:center;
+  text-shadow:0px 1px 0px rgba(255,255,255,1);
+  border:1px dashed rgba(0,0,0,0.25);
   -webkit-border-radius:5px;
   -moz-border-radius:   5px;
   border-radius:        5px;
-  -webkit-box-shadow: inset 0px 1px 4px rgba(0,0,0,0.4), inset 0px 2px 2px rgba(0,0,0,0.2), 0px 1px 0px rgba(255,255,255,0.5);
-  -moz-box-shadow:    inset 0px 1px 4px rgba(0,0,0,0.4), inset 0px 2px 2px rgba(0,0,0,0.2), 0px 1px 0px rgba(255,255,255,0.5);
-  box-shadow:         inset 0px 1px 4px rgba(0,0,0,0.4), inset 0px 2px 2px rgba(0,0,0,0.2), 0px 1px 0px rgba(255,255,255,0.5);
+}
+
+
+.lpl.content.separator {
+  position:relative;
+  height:36px;
+  border:1px dashed rgba(0,0,0,0.25);
+  -webkit-border-radius:5px;
+  -moz-border-radius:   5px;
+  border-radius:        5px;
 }
 
 .lpl.content.separator .icon.add {
@@ -649,10 +689,13 @@ a {color:rgba(148,207,13,1);text-decoration:none;}
   margin-left:-46px;
   width:36px;
   height:36px;
-  background:rgba(50,50,50,0.5);
+  background:rgba(255,255,255,1);
   -webkit-border-radius:5px;
   -moz-border-radius:   5px;
   border-radius:        5px;
+  -webkit-box-shadow: -2px 1px 6px rgba(0,0,0,0.5);
+  -moz-box-shadow:    -2px 1px 6px rgba(0,0,0,0.5);
+  box-shadow:         -2px 1px 6px rgba(0,0,0,0.5);
 }
 
 /* STANDALONE UI ELEMENTS */
