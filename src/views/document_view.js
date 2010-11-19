@@ -6,7 +6,6 @@ var DocumentView = Backbone.View.extend({
     'mouseover .content-node': 'highlightNode',
     'mouseout .content-node': 'unhighlightNode',
     'click .content-node': 'selectNode',
-    
     'mouseover .node-actions .handle': 'showActions',
     'mouseout .node-actions .handle': 'hideActions',
     
@@ -83,12 +82,12 @@ var DocumentView = Backbone.View.extend({
   },
   
   showActions: function(e) {
-    $(e.target).parent().parent().find('.content').show();
+    $(e.target).parent().parent().find('.links').show();
     return false;
   },
   
   hideActions: function(e) {
-    $(e.target).parent().parent().find('.content').hide();
+    $(e.target).parent().parent().find('.links').hide();
     return false;
   },
   
@@ -99,7 +98,6 @@ var DocumentView = Backbone.View.extend({
     this.model.bind('change:node', function(node) {
       that.renderNode(node);
     });
-    
   },
   
   renderNode: function(node) {
@@ -126,6 +124,9 @@ var DocumentView = Backbone.View.extend({
     }
     this.model.selectNode($(e.currentTarget).attr('id'));
     $(e.currentTarget).addClass('selected');
+    
+    $('#document').addClass('edit-mode');
+    
     return false;
   },
   

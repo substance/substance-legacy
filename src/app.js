@@ -31,6 +31,7 @@
         delete msg.body.node.type;
         app.model.updateNode(msg.body.key, msg.body.node);        
       } else if (msg.type === 'new:collaborator') {
+        
         notifier.notify(Notifications.NEW_COLLABORATOR);
       } else if (msg.type === 'exit:collaborator') {
         notifier.notify(Notifications.EXIT_COLLABORATOR);

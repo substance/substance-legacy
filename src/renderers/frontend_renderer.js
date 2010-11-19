@@ -23,7 +23,6 @@ var FrontendRenderer = function(root) {
       var content = '';
       
       content += '<h2>' + node.name + '</h2>';
-      
       node.children.forEach(function(child) {
         content += renderers[root.nodes[child].type](root.nodes[child]);
       });

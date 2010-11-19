@@ -4,7 +4,14 @@ var SectionEditor = Backbone.View.extend({
   },
   
   initialize: function() {
+    var that = this;
     this.render();
+    
+    this.$node = $('#' + this.model.selectedNode.key + ' > .content');
+    this.$node.unbind('keydown');
+    this.$node.bind('keydown', function(event) {
+      that.updateNode();
+    });
   },
   
   updateNode: function(e) {
@@ -12,13 +19,12 @@ var SectionEditor = Backbone.View.extend({
     
     setTimeout(function() {
       that.model.updateSelectedNode({
-        name: $('#editor input[name=name]').val()
+        name: that.$node.html()
       });
     }, 5);
   },
   
   render: function() {
     $(this.el).html(Helpers.renderTemplate('edit_section', this.model.selectedNode.data));
-    this.$('input[name=name]').focus();
   }
 });

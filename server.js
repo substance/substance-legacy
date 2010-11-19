@@ -293,7 +293,6 @@ ContentNodeDispatcher.prototype.notifyCollaborators = function(clientId, msg) {
   });
 };
 
-
 var dispatcher = new ContentNodeDispatcher();
 
 var socket = io.listen(app); 
