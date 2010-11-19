@@ -179,10 +179,10 @@ a {color:rgba(148,207,13,1);text-decoration:none;}
   z-index:20;
   -webkit-transition: all 0.15s ease-in-out;
   -webkit-transform:translateY(0) scale(1);
+  z-index:2000;
 }
 
 #lpl_shelf_content .item img:active {
-  z-index:2000;
   -webkit-transform:translateY(64px) scale(4);
 }
 
@@ -213,7 +213,7 @@ a {color:rgba(148,207,13,1);text-decoration:none;}
   -webkit-box-shadow: 0px 2px 3px rgba(0,0,0,0.75);
   -moz-box-shadow:    0px 2px 3px rgba(0,0,0,0.75);
   box-shadow:         0px 2px 3px rgba(0,0,0,0.75);
-  z-index:1000;
+  z-index:10000;
 }
 
 #lpl_header > .gradient {
@@ -250,17 +250,58 @@ a {color:rgba(148,207,13,1);text-decoration:none;}
   margin:3px 3px 0 0;
   width:42px;
   height:42px;
+  text-align:center;
+  text-indent:-5000px;
   background:rgba(128,128,128,0.1);
   background:-webkit-gradient(linear, 0% 0%, 0% 100%, from(rgba(255,255,255,0.05)), color-stop(0.5, rgba(128,128,128,0)), to(rgba(0,0,0,0.1)));
   background: -moz-linear-gradient(top, rgba(255,255,255,0.05), rgba(128,128,128,0) 50%, rgba(0,0,0,0.1));
-  border:1px solid rgba(0,0,0,0.35);
+  border:1px solid rgba(0,0,0,0.5);
   -webkit-border-radius:7px;
   -moz-border-radius:   7px;
   border-radius:        7px;
-  -webkit-box-shadow: inset 0px 0px 1px rgba(255,255,255,0.15), 0px 1px 1px rgba(255,255,255,0.1);
-  -moz-box-shadow:    inset 0px 0px 1px rgba(255,255,255,0.15), 0px 1px 1px rgba(255,255,255,0.1);
-  box-shadow:         inset 0px 0px 1px rgba(255,255,255,0.15), 0px 1px 1px rgba(255,255,255,0.1);
+  -webkit-box-shadow: inset 0px 0px 1px rgba(255,255,255,0.15), inset 0px 1px 1px rgba(0,0,0,0.5), 0px 1px 1px rgba(255,255,255,0.1);
+  -moz-box-shadow:    inset 0px 0px 1px rgba(255,255,255,0.15), inset 0px 1px 1px rgba(0,0,0,0.5), 0px 1px 1px rgba(255,255,255,0.1);
+  box-shadow:         inset 0px 0px 1px rgba(255,255,255,0.15), inset 0px 1px 1px rgba(0,0,0,0.5), 0px 1px 1px rgba(255,255,255,0.1);
 }
+
+#lpl_actions .header.button:hover {
+  background:rgba(192,192,192,0.1);
+  background:-webkit-gradient(linear, 0% 0%, 0% 100%, from(rgba(255,255,255,0.1)), color-stop(0.5, rgba(192,192,192,0.08)), to(rgba(50,50,50,0.1)));
+  background: -moz-linear-gradient(top, rgba(255,255,255,0.05), rgba(128,128,128,0) 50%, rgba(0,0,0,0.1));
+}
+
+#lpl_actions .header.button:active {
+  background:rgba(192,192,192,0.1);
+  background:-webkit-gradient(linear, 0% 0%, 0% 100%, from(rgba(50,50,50,0.2)), color-stop(0.5, rgba(50,50,50,0.1)), to(rgba(0,0,0,0.15)));
+  background: -moz-linear-gradient(top, rgba(50,50,50,0.2), rgba(50,50,50,0.1) 50%, rgba(0,0,0,0.15));
+  -webkit-box-shadow: inset 0px 0px 4px rgba(0,0,0,0.5), 0px 1px 1px rgba(255,255,255,0.1);
+  -moz-box-shadow:    inset 0px 0px 4px rgba(0,0,0,0.5), 0px 1px 1px rgba(255,255,255,0.1);
+  box-shadow:         inset 0px 0px 4px rgba(0,0,0,0.5), 0px 1px 1px rgba(255,255,255,0.1);
+}
+
+#lpl_actions .header.button.text {
+  width:auto;
+  height:42px;
+  padding:6px 12px;
+  font-size:12px;
+  line-height:13px;
+  text-align:center;
+  text-indent:0px;
+  text-transform:none;
+}
+
+#lpl_actions .header.button.text:active {
+  padding:7px 12px;
+}
+
+#lpl_actions .header.button.text.centered {
+  padding:13px 16px;
+}
+
+#lpl_actions .header.button.text.centered:active {
+  padding:14px 16px;
+}
+
 
 #lpl_toolbar {
   position:fixed;
