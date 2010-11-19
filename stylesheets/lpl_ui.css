@@ -164,8 +164,8 @@ a {color:rgba(148,207,13,1);text-decoration:none;}
 
 #lpl_shelf_content .item img {
   display:block;
-  max-width:128px;
-  max-height:128px;
+  max-width:64px;
+  max-height:64px;
 }
 
 #lpl_shelf_content .item p {
