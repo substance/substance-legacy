@@ -7,7 +7,6 @@ var DocumentView = Backbone.View.extend({
     'mouseout .content-node': 'unhighlightNode',
     'click .content-node': 'selectNode',
     'click .node-actions .handle': 'showActions',
-    // 'mouseout .node-actions .handle': 'hideActions',
     
     // Actions
     'click a.add_child': 'addChild',
@@ -28,13 +27,11 @@ var DocumentView = Backbone.View.extend({
     this.model.bind('change:node', function(node) {
       that.renderNode(node);
     });
-    
-    
-    // $('#container').unbind('click');
-    // $('#container').click(function(e) {
-    //   // that.reset();
-    //   // return true;
-    // });
+        
+    $('#container').click(function(e) {
+      that.reset();
+      return true;
+    });
     
     $(document).unbind('keyup');
     $(document).keyup(function(e) {
@@ -43,13 +40,18 @@ var DocumentView = Backbone.View.extend({
   },
   
   // Reset to view mode (aka unselect everything)
-  reset: function() {
+  reset: function(noBlur) {
     if (this.model.selectedNode) {
       this.$('#' + this.model.selectedNode.key).removeClass('selected');
     }
     
+    if (!noBlur) $('.content').blur();
+    
+    $('#document .node-actions .links').hide();
+    
     this.model.selectedNode = null;
     $('#document').removeClass('edit-mode');
+    $('#document').removeClass('insert-mode');
     return false;
   },
   
@@ -113,12 +115,10 @@ var DocumentView = Backbone.View.extend({
   },
   
   showActions: function(e) {
+    this.reset();
     $(e.target).parent().parent().find('.links').show();
-    return false;
-  },
-  
-  hideActions: function(e) {
-    $(e.target).parent().parent().find('.links').hide();
+    // Enable insert mode
+    $('#document').addClass('insert-mode');
     return false;
   },
   
@@ -141,9 +141,8 @@ var DocumentView = Backbone.View.extend({
   },
   
   selectNode: function(e) {
-    if (this.model.selectedNode) {
-      this.$('#' + this.model.selectedNode.key).removeClass('selected');
-    }
+    this.reset(true);
+    
     this.model.selectNode($(e.currentTarget).attr('id'));
     $(e.currentTarget).addClass('selected');
     

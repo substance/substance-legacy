@@ -22,8 +22,7 @@ var ApplicationController = Backbone.Controller.extend({
     
     this.model.destroy({
       success: function(model, response) {
-        // Reload document browser
-        that.app.browseDocuments();
+        that.app.newDocument();
         notifier.notify(Notifications.DOCUMENT_DELETED);
       }, error: function() {
         notifier.notify(Notifications.DOCUMENT_DELETED);

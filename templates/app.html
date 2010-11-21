@@ -4,42 +4,44 @@
   <title>Untitled — Substance™</title>
   
   <!-- templates -->
-  <script type="text/x-handlebars-template" name="menu">
-    <div id="persistence_status">
-      <div class="lpl buttons">
-        <a class="lpl button action save-document" href="#">Save</a>
+  <script type="text/x-handlebars-template" name="shelf">
+    <div id="lpl_header"><!-- menubar -->
+      <div class="gradient">
+        <div id="lpl_logo">
+          SUBSTANCE™ — {{title}}
+        </div> 
+        <div id="lpl_actions">
+          <div class="left">
+            <a href="#new_document" class="header button text new centered new-document">New</a>
+            <a href="#save_document" class="header button text centered save-document">Save</a>
+          </div>
+          <div class="center">
+            <a href="#file_browser" class="header button text centered browse-documents">Browse</a>
+            <a href="#file_browser" class="header button text centered view-collaborators">1 Collaborator</a>
+          </div>
+          <div class="right">
+            {{#id}}
+              <a href="#delete/{{.}}" class="header button text centered delete-document" key="{{.}}">delete</a>
+            {{/id}}
+          </div>
+        </div>
       </div>
-      <div id="updated_at">Saved x minutes ago.</div>
+    </div>
+
+    <div id="lpl_shelf_filter">
+      <label>Filter Shelf:</label>
+      <a class="button" href="#shelf_show-documents">Documents</a>
+      <a class="button" href="#shelf_show-images">Images</a>
+      <a class="button selected" href="#shelf_show-images">an active Filter</a>
+    </div>
+
+    <div id="lpl_shelf_content">
       
-      <br class="clear"/>
     </div>
-    
-    <div id="logo">
-      <h1>SUBSTANCE ™</h1>
-    </div>
-
-    <div id="title">
-      {{title}}
-    </div>
-    
-    <div id="actions">
-      <div class="lpl buttons">
-        <a class="lpl button new-document" href="#">New</a>
-        <a class="lpl button browse-documents" href="#">Browse</a>
-      </div>
-    </div>
-    
-    <br class="clear"/>
-    
-    <div id="shelf">
-    
-    </div>
-
   </script>
   
-  
   <script type="text/x-handlebars-template" name="editor">
-    <div id="menubar">
+    <div id="lpl_shelf" class="closed">
       
     </div>
     
@@ -65,23 +67,25 @@
     </div>
   </script>
   
+  <script type="text/x-handlebars-template" name="collaborators">
+    <h3>Active Collaborators</h3>
+    <p>
+      Coming soon.
+    </p>
+  </script>
+  
   <script type="text/x-handlebars-template" name="browse_documents">
-    <div>
-      <a href="#" class="close-shelf">Close Shelf</a>
-      <div id="document_list" style="padding: 10px">
-        {{#documents}}
-          <div class="icon-container ui-draggable">
-            
-            <div class="icon">
-              <a href="#load/{{id}}" key="{{id}}" class="load-document"><img src="http://demo.lepilo.at/stylesheets/assets/lpl/icons/128x128_file.png" alt="icon"></a>
-            </div>
-            
-            <div>{{title}} <a href="#delete/{{id}}" title="Delete Document" key="{{id}}" class="delete-document">x</a></div>
-            <div class="metadata">2010-11-07 13:04</div>
-          </div>
-        {{/documents}}
-        <br class="clear"/>
-      </div>
+    <div class="wrapper">
+      
+      {{#documents}}
+        <a href="#load/{{id}}" key="{{id}}" class="load-document item">
+          <img src="stylesheets/assets/icons/256-document.png" alt="thumbnail" class="thumbnail" />
+          <p class="description">
+            {{title}}
+            <span>2010-11-07 13:04</span>
+          </p>
+        </a>
+      {{/documents}}
     </div>
   </script>
   
@@ -100,7 +104,6 @@
             {{/siblings}}
           </div>
         </div>
-
         <br class="clear"/>
       </div>
     
@@ -152,8 +155,6 @@
   <script type="text/x-handlebars-template" name="edit_document">
     <h3>Edit document</h3>
     <div class="lpl texteditor">
-        <!--<label for="document_title">title</label>
-        <input type="text" name="document_title" class="property" value="{{title}}" id="document_title">-->
         <label for="publication_date">publication date</label>
         <input type="text" name="publication_date" class="property" value="{{publication_date}}" id="publication_date">
         <label for="document_tags">tags</label>
@@ -258,16 +259,18 @@
   <script src="src/controllers/application.js"></script>
   
   <script src="src/views/document_view.js"></script>
-  <script src="src/views/menu.js"></script>
+  <script src="src/views/shelf.js"></script>
   <script src="src/views/document_browser.js"></script>
+  <script src="src/views/collaborators.js"></script>
   <script src="src/views/document_composer.js"></script>
   <script src="src/app.js"></script>
 
 </head>
 <body>
   <div id="container">
-    
+
   </div>
+  
   <div id="notifications">
     <div class="wrapper">
     </div>

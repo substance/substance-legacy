@@ -11,11 +11,9 @@ var FrontendRenderer = function(root) {
     document: function(node) {
       var content = '';
       content += '<h1>'+ node.title +'</h1>';
-      
       node.children.forEach(function(child) {
         content += renderers[root.nodes[child].type](root.nodes[child]);
       });
-      
       return content;
     },
     
@@ -26,7 +24,6 @@ var FrontendRenderer = function(root) {
       node.children.forEach(function(child) {
         content += renderers[root.nodes[child].type](root.nodes[child]);
       });
-      
       return content;
     },
     

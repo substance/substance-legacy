@@ -5,30 +5,27 @@
 var DocumentComposer = Backbone.View.extend({
   events: {
     'click a.new-document': 'newDocument',
-    'click a.browse-documents': 'browseDocuments',
-    'click a.save-document': 'saveDocument',
+    'click a.save-document': 'saveDocument'
   },
 
   initialize: function() {
     var that = this;
     _.bindAll(this, "render");
     
-    this.menu = new Menu({el: '#menubar', model: this.model, composer: this});
+    this.shelf = new Shelf({el: '#lpl_shelf', model: this.model, composer: this});
     
     this.bind('document:changed', function() {
-      that.menu.model = that.model;
-      that.menu.render();
+      that.shelf.model = that.model;
+      that.shelf.render();
     });
   },
   
   newDocument: function() {
     // Create a new document and add it to the Documents Collection
     this.model = new Document({
-      contents: Document.EMPTY
+      contents: JSON.parse(JSON.stringify(Document.EMPTY))
     });
-    
-    Documents.add(this.model);
-    
+        
     this.init();
     this.trigger('document:changed');
     
@@ -55,8 +52,7 @@ var DocumentComposer = Backbone.View.extend({
     var that = this;
     
     this.model = new Document({
-      id: id,
-      contents: Document.EMPTY
+      id: id
     });
     
     notifier.notify(Notifications.DOCUMENT_LOADING);
@@ -80,25 +76,7 @@ var DocumentComposer = Backbone.View.extend({
       }
     });
     
-    $('#shelf').html('');
-  },
-  
-  browseDocuments: function() {
-    var that = this;
-    // Load all documents available in the Repository
-    // and render DocumentBrowser View
-    
-    notifier.notify(Notifications.DOCUMENTS_LOADING);
-    
-    Documents.fetch({
-      success: function() {
-        that.renderDocumentBrowser();
-        notifier.notify(Notifications.DOCUMENTS_LOADED);
-      },
-      error: function() {
-        notifier.notify(Notifications.DOCUMENTS_LOADING_FAILED);
-      }
-    });
+    this.shelf.close();
   },
   
   // Initializes the editor (with a new document)
@@ -119,7 +97,7 @@ var DocumentComposer = Backbone.View.extend({
     $(this.el).html(Helpers.renderTemplate('editor'));
     
     // Render Menu
-    this.menu.render();
+    this.shelf.render();
     return this;
   },
   

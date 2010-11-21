@@ -205,7 +205,7 @@ app.put('/documents/:id', function(req, res) {
 // -----------
 
 app.del('/documents/:id', function(req, res) {
-  Document.delete(id, {
+  Document.delete(req.params.id, {
     success: function() {
       res.send('{"status": "ok"}');
     }

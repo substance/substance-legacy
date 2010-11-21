@@ -8,6 +8,7 @@ var Document = Backbone.Model.extend({
     if (this.get('contents')) {
       this.g = new ContentGraph(this.get('contents'));
     }
+    
     this.selectedNode = null;
   },
   
@@ -140,10 +141,6 @@ var Document = Backbone.Model.extend({
     
     _.extend(node.data, attrs);
     this.makeDirtyNode(nodeKey);
-    
-    // if (this.selectedNode === node) {
-    //   this.trigger('select:node', this.selectedNode);
-    // }
   },
   
   // Update attributes of selected node
@@ -177,12 +174,12 @@ Document.EMPTY = {
   "title": "Untitled",
   "author": "John Doe",
   "children": ["1", "2"],
-  "nodeCount": 5,
+  "nodeCount": 4,
   "nodes": {
     "1": {
       "type": "section",
       "name": "First Chapter",
-      "children": ["3", "5"]
+      "children": ["3"]
     },
     "2": {
       "type": "section",
@@ -194,10 +191,6 @@ Document.EMPTY = {
       "content": "Your text goes here."
     },
     "4": {
-      "type": "image",
-      "url": "http://tmp.vivian.transloadit.com/scratch/9a65045a69dd88c2baf281c28dbd15a7"
-    },
-    "5": {
       "type": "paragraph",
       "content": "Additional text."
     }
