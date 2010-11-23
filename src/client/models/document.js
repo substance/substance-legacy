@@ -1,36 +1,9 @@
 // Document - acts as a proxy to the underlying ContentGraph
 // ---------------
 
-var Document = Backbone.Model.extend({
+var Document = _.inherits(ContentGraph, {
   
-  initialize: function(spec) {      
-    // Initialize ContentGraph if present
-    if (this.get('contents')) {
-      this.g = new ContentGraph(this.get('contents'));
-    }
-    
-    this.selectedNode = null;
-  },
-  
-  url: function() {
-    if (this.id)
-      return '/documents/' + this.id;
-    else
-      return '/documents/';
-  },
-  
-  parse: function(res) {
-    if (res.contents) {
-      this.g = new ContentGraph(res.contents);
-    }
-    return res;
-  },
-  
-  toJSON: function() {
-    return _.extend(_.clone(this.attributes), {
-      contents: this.g.serialize()
-    });
-  },
+  selectedNode: null,
   
   createEmptyNode: function(type) {
     var key = this.g.generateId(); // Get a new unique NodeId
@@ -44,7 +17,7 @@ var Document = Backbone.Model.extend({
       data[p.key] = p.defaultValue;
     });
 
-    return new ContentNode(this.g, key, data);
+    return new ContentNode(this, key, data);
   },
   
   moveNode: function(sourceKey, targetKey, destination) {
@@ -147,26 +120,34 @@ var Document = Backbone.Model.extend({
   updateSelectedNode: function(attrs) {
     _.extend(this.selectedNode.data, attrs);
     
-    // Only set dirty if explicitly
+    // Only set dirty if explicitly requested
     if (attrs.dirty) {
       this.makeDirtyNode(this.selectedNode.key);
     }
     
+    if (this.selectedNode.type === 'document') {
+      this.trigger('document:changed');
+    }
+    
     // Notify all collaborators about the changed node
-    socket.send({
-      type: "change:node",
-      body: {
-        key: this.selectedNode.key,
-        node: this.selectedNode.serialize()
-      }
-    });
+    if (app.status && app.status.collaborators.length > 1) {
+      var serializedNode = this.selectedNode.serialize();
+      delete serializedNode.children;
+      
+      remote.Session.registerNodeChange(this.selectedNode.key, serializedNode);
+    }
   },
   
   selectNode: function(nodeKey) {
-    this.selectedNode = this.getNode(nodeKey);
+    this.selectedNode = this.getNode(nodeKey);    
     this.trigger('select:node', this.selectedNode);
   }
 });
+
+
+// Mixin the Events module
+_.extend(Document.prototype, Backbone.Events);
+
 
 // Acts as a stub for new documents
 
@@ -196,35 +177,3 @@ Document.EMPTY = {
     }
   }
 };
-
-
-// Todo Collection
-// ---------------
-
-// The collection of todos is backed by *localStorage* instead of a remote
-// server.
-var DocumentList = Backbone.Collection.extend({
-
-  // Reference to this collection's model.
-  model: Document,
-  
-  url: '/documents',
-  
-  initialize: function() {
-    
-  },
-
-  // We keep the Documents in sequential order, despite being saved by unordered
-  // GUID in the database. This generates the next order number for new items.
-  nextOrder: function() {
-    if (!this.length) return 1;
-    return this.last().get('order') + 1;
-  },
-
-  // Todos are sorted by their original insertion order.
-  comparator: function(todo) {
-    return todo.get('order');
-  }
-});
-
-var Documents = new DocumentList();

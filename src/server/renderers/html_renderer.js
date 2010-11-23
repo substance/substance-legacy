@@ -1,4 +1,4 @@
-var Showdown = require('../../lib/showdown').Showdown;
+var Showdown = require('../../../lib/showdown').Showdown;
 
 
 // FrontendRenderer

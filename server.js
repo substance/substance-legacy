@@ -1,11 +1,12 @@
-var express = require('express@1.0.0rc4');
+var express = require('express@1.0.0');
 var app = express.createServer();
 var http = require('http');
-var io = require('socket.io@0.6.1');
-var cradle = require('cradle@0.2.2');
+var cradle = require('cradle@0.2.3');
 var fs = require('fs');
 var Handlebars = require('./lib/handlebars.js');
-var HTMLRenderer = require('./src/renderers/frontend_renderer').Renderer;
+var HTMLRenderer = require('./src/server/renderers/html_renderer').Renderer;
+var DNode = require('dnode');
+var qs = require('querystring');
 
 require('./lib/underscore.js');
 
@@ -15,6 +16,7 @@ var config = JSON.parse(fs.readFileSync(__dirname+ '/config.json', 'utf-8'));
 // Init CouchDB Connection
 var conn = new(cradle.Connection)(config.couchdb.host, config.couchdb.port);
 var db = conn.database(config.couchdb.db);
+
 
 // Helpers
 // -----------
@@ -29,12 +31,14 @@ Helpers.renderTemplate = function(tpl, view, helpers) {
 };
 
 
-// Server Configuration
+// Express.js Configuration
 // -----------
 
 app.configure(function(){
   app.use(express.bodyDecoder());
   app.use(express.methodOverride());
+  app.use(express.cookieDecoder());
+  app.use(express.session());
   app.use(app.router);
   app.use(express.staticProvider(__dirname));
   app.use(express.logger({ format: ':method :url' }));
@@ -62,30 +66,27 @@ var Document = {
           };
         }
       });
-
-      options.success(result);
+      options.success(JSON.parse(JSON.stringify(result)));
     });
   },
   
   get: function(id, options) {
-    db.get(id, function (err, doc) {
-      delete doc._rev;
-      doc.id = doc._id;
-      delete doc._id;
-
-      options.success(doc);
+    db.get(id, function (err, doc) {      
+      var result = doc.contents;
+      result.id = doc._id;
+      options.success(JSON.parse(JSON.stringify(result)));
     });
   },
 
   create: function(doc, options) {
-    db.insert(doc, function (err, result) {
+    db.insert({contents: doc, type: 'document'}, function (err, result) {
       options.success(result);
     });
   },
   
   update: function(id, doc, options) {
     db.get(id, function (err, prevdoc) {
-      db.save(id, prevdoc.rev, doc, function (err, result) {
+      db.save(id, prevdoc.rev, {contents: doc, type: 'document'}, function (err, result) {
         options.success();
       });
     });
@@ -101,8 +102,10 @@ var Document = {
 };
 
 
-// The Document Index
+// Web server
 // -----------
+
+// The Document Index
 
 app.get('/documents.html', function(req, res) {  
   Document.all({
@@ -114,7 +117,6 @@ app.get('/documents.html', function(req, res) {
 
 
 // Fetch a document as HTML
-// -----------
 
 app.get('/documents/:id.html', function(req, res) {
   Document.get(req.params.id, {
@@ -128,8 +130,7 @@ app.get('/documents/:id.html', function(req, res) {
 });
 
 
-// The engine room
-// -----------
+// The Engineroom
 
 app.get('/', function(req, res) {
   res.send(fs.readFileSync(__dirname+ '/templates/app.html', 'utf-8'));
@@ -137,7 +138,6 @@ app.get('/', function(req, res) {
 
 
 // Get all documents
-// -----------
 
 app.get('/documents', function(req, res) {
   Document.all({
@@ -149,7 +149,6 @@ app.get('/documents', function(req, res) {
 
 
 // Get all documents with contents
-// -----------
 
 app.get('/documents/full', function(req, res) {
   Document.all({
@@ -162,7 +161,6 @@ app.get('/documents/full', function(req, res) {
 
 
 // Fetch a document as JSON
-// -----------
 
 app.get('/documents/:id', function(req, res) {
   Document.get(req.params.id, {
@@ -173,142 +171,282 @@ app.get('/documents/:id', function(req, res) {
   });
 });
 
-
-// Create a document
-// -----------
-
-app.post('/documents', function(req, res) {
-  Document.create(req.body, {
-    withContents: true,
-    success: function(result) {
-      res.send(JSON.stringify({id: result.id}));
-    }
-  });
-});
-
-
-// Update a document
-// -----------
-
-app.put('/documents/:id', function(req, res) {    
-  var doc = req.body;
-  
-  Document.update(req.params.id, req.body, {
-    withContents: true,
-    success: function() {
-      res.send('{"status": "ok"}');
-    }
-  });
-});
-
-// Delete a document
-// -----------
-
-app.del('/documents/:id', function(req, res) {
-  Document.delete(req.params.id, {
-    success: function() {
-      res.send('{"status": "ok"}');
-    }
-  });  
-});
-
-
-// Start the server
-// -----------
-
 app.listen(config['server_port']);
 
 
-// ContentNode Dispatcher (for realtime collaborative editing)
+// The DNode Server (RMI Interface for the client)
 // -----------
 
-var ContentNodeDispatcher = function() {
-  this.clients = {}; // Keeps a reference to all client objects
-  this.documents = {}; // keeps a list of id's to clients that edit that document
+var sessions = {},        // Keeps a reference to all active sessions
+    cookieSessions = {},
+    users = {},           // Keeps a reference to all authenticated users
+    documents = {};       // Keeps a reference to all documents that are edited
+
+
+// Registered users
+var registeredUsers = {
+  'michael': {password: 'demo'},
+  'demo': {password: 'demo'},
+  'demo2': {password: 'demo2'},
+  'demo3': {password: 'demo3'},
+  'demo4': {password: 'demo4'},
+  'demo5': {password: 'demo5'},
+  'demo6': {password: 'demo6'}
 };
 
 
-ContentNodeDispatcher.prototype.registerClient = function(client) {
-  // Keep a reference to the client object
-  this.clients[client.sessionId] = {
-    client: client,
-    id: client.sessionId,
-    document: null // the document the client is currently editing
+DNode(function (client, conn) {
+  
+  // Session API
+  // -----------
+  // 
+  // A Session:
+  //   - has an assigned user (username)
+  //   - holds the connection and the client reference
+  //   - knows the document that is currently edited and participating parties.
+  
+  // Helpers
+  // -----------
+  
+  var getSessionId = function() {
+    var cookie = qs.parse(conn.stream.socketio.request.headers.cookie.replace(/;/g, '&'));
+    return cookie[' connect'].sid;
   };
-};
-
-
-ContentNodeDispatcher.prototype.unregisterClient = function(client) {
-  var documentId = this.clients[client.sessionId].document;
-  if (documentId) {
-    
-    // Remove the client from the list of contributors if he's editing a document
-    this.documents[documentId].splice(this.documents[documentId].indexOf(client.sessionId), 1);
-    
-    // Unregister the document if no one is editing it any longer
-    if (this.documents[documentId].length === 0) {
-      delete this.documents[documentId];
-    }
-  }
   
-  // Remove the client 
-  delete this.clients[client.sessionId];
-  
-  this.notifyCollaborators(client.sessionId, {
-    type: "exit:collaborator"
-  });
-};
-
-
-ContentNodeDispatcher.prototype.registerDocument = function(clientId, document) {
-  this.clients[clientId].document = document.id;
-  
-  if (this.documents[document.id]) {
-    this.documents[document.id].push(clientId);
+  // Message all active users
+  var broadCast = function() {
     
-    this.notifyCollaborators(clientId, {
-      type: "new:collaborator"
+  };
+  
+  var buildStatusPackage = function(documentId) {
+    var document = documents[documentId];
+    
+    return {
+      collaborators: _.map(document.sessions, function(session) {
+        return sessions[session].user;
+      })
+    };
+  };
+  
+  // Get a list of collaborators that are actively co-editing a certain document
+  var getCollaborators = function(documentId) {
+    var document = documents[documentId];
+    
+    return _.select(document.sessions, function(session) {
+      return session !== conn.id;
     });
-  } else {
-    this.documents[document.id] = [clientId];
-  }
-};
-
-ContentNodeDispatcher.prototype.registerNodeChange = function(clientId, node) {
-  var client = this.clients[clientId];
-  var documentId = this.clients[clientId].document;
+  };
+  
+  // Notify all collaborators about the current state of a document editing session
+  var notifyCollaborators = function(documentId) {
+    var document = documents[documentId];
+    var session = sessions[conn.id];
     
-  this.notifyCollaborators(clientId, {
-    type: "change:node",
-    body: node
-  });
-};
-
-// Send message to all collaborators (except the original sender of the message)
-ContentNodeDispatcher.prototype.notifyCollaborators = function(clientId, msg) {
-  _.each(this.clients, function(client, key) {
-    if (client.client.sessionId !== clientId) {
-      client.client.send(msg);
-    }
-  });
-};
-
-var dispatcher = new ContentNodeDispatcher();
-
-var socket = io.listen(app); 
-socket.on('connection', function(client) {
-  dispatcher.registerClient(client);
+    if (document.sessions.length <= 1) return;
+    
+    // A list of session id that are actively co-editing a certain document
+    _.each(getCollaborators(documentId), function(sessionId) {
+      sessions[sessionId].client.Session.updateStatus(buildStatusPackage(documentId));
+    });
+  };
   
-  // New client is here!
-  client.on('message', function(msg) { 
-    if (msg.type === 'register') {
-      dispatcher.registerDocument(client.sessionId, msg.body);
-    } else if (msg.type === 'change:node') {
-       dispatcher.registerNodeChange(client.sessionId, msg.body);
+  var notifyNodeChange = function(documentId, key, node) {
+    var document = documents[documentId];
+    var session = sessions[conn.id];
+    
+    _.each(getCollaborators(documentId), function(sessionId) {
+      sessions[sessionId].client.Session.updateNode(key, node);
+    });
+  };
+  
+  var notifyNodeInsertion = function(documentId, insertionType, type, targetKey, destination) {
+    var document = documents[documentId];
+    var session = sessions[conn.id];
+    
+    _.each(getCollaborators(documentId), function(sessionId) {
+      sessions[sessionId].client.Session.insertNode(insertionType, type, targetKey, destination);
+    });
+  };
+  
+  var notifyNodeMovement = function(documentId, sourceKey, targetKey, destination) {
+    var document = documents[documentId];
+    var session = sessions[conn.id];
+    
+    _.each(getCollaborators(documentId), function(sessionId) {
+      sessions[sessionId].client.Session.moveNode(sourceKey, targetKey, destination);
+    });
+  };
+  
+  var notifyNodeDeletion = function(documentId, key) {
+    var document = documents[documentId];
+    var session = sessions[conn.id];
+    
+    _.each(getCollaborators(documentId), function(sessionId) {
+      sessions[sessionId].client.Session.removeNode(key);
+    });
+  };
+  
+  var unregisterDocument = function(documentId) {
+
+    // Unregister the document if no one is editing it any longer
+    if (documents[documentId].sessions.length <= 1) {
+      // Remove the session from the list of contributors if he's currently editing a doc
+      documents[documentId].sessions.splice(documents[documentId].sessions.indexOf(conn.id), 1);
+      delete documents[documentId];
+    } else {
+      // Remove the session from the list of contributors if he's currently editing a doc
+      documents[documentId].sessions.splice(documents[documentId].sessions.indexOf(conn.id), 1);
+      // Fore some reason this doesn't work properly when calling notifyCollaborators
+      _.each(getCollaborators(documentId), function(sessionId) {
+        sessions[sessionId].client.Session.updateStatus(buildStatusPackage(documentId));
+      });
     }
+  };
+  
+  // Kill the current session (happens on logout or disconnect)
+  var killSession = function() {
+    var session = sessions[conn.id];
+    if (session) var doc = session.document;
+    
+    delete sessions[conn.id];
+    
+    // Unregister document
+    if (doc) { 
+      unregisterDocument(doc);
+    }
+
+  };
+  
+  // Interface for collaborative document editing session
+  // ------------
+  
+  var Session = {
+    authenticate: function(username, password, options) {
+      if (registeredUsers[username] && registeredUsers[username].password == password) {
+
+        sessions[conn.id] = {
+          conn: conn,
+          user: username,
+          client: client,
+          document: null
+        };
+        
+        cookieSessions[getSessionId()] = username;
+        options.success(username);
+      } else {
+        options.error();
+      }
+    },
+    
+    initialize: function(options) {
+      var username = cookieSessions[getSessionId()];
+            
+      // Automatic re-authentication based on cookie-data
+      if (username) { 
+        sessions[conn.id] = {
+          conn: conn,
+          user: username,
+          client: client,
+          document: null
+        };
+        
+        options.success();
+      } else {
+        options.error();
+      }
+    },
+    
+    logout: function(options) {
+      // Release cookiesession
+      delete cookieSessions[getSessionId()];
+      
+      killSession();
+      options.success();
+    },
+    
+    insertNode: function(insertionType, type, targetKey, destination) {
+      var session = sessions[conn.id];
+      notifyNodeInsertion(session.document, insertionType, type, targetKey, destination);
+    },
+    
+    moveNode: function(sourceKey, targetKey, destination) {
+      var session = sessions[conn.id];
+      notifyNodeMovement(session.document, sourceKey, targetKey, destination);
+    },
+    
+    removeNode: function(key) {
+      var session = sessions[conn.id];
+      notifyNodeDeletion(session.document, key);
+    },
+    
+    registerNodeChange: function(key, node) {
+      var session = sessions[conn.id];
+      notifyNodeChange(session.document, key, node);
+    },
+    
+    // Get the current document from the swarm (including real-time changes)
+    getDocument: function(id, options) {
+      // Get document either from the database if you're the first starting to edit this doc
+      // or from one of the collaborators having the most current doc.
+      if (documents[id] && documents[id].sessions.length > 0) {
+        // You're not alone. You are getting the doc from the swarm. :)
+        sessions[documents[id].sessions[0]].client.Session.getDocument({
+          success: function(document) {
+            options.success(document);
+          }
+        });
+      } else {
+        // The client is the first collaborator (the doc is fetched from the database)
+        Document.get(id, options);
+      }
+    },
+    
+    // Called when a client loads an existing document
+    registerDocument: function(documentId) {
+      var session = sessions[conn.id];
+      
+      if (session.document === documentId) return;
+      
+      if (session.document) {
+        unregisterDocument(session.document);
+      }
+      
+      session.document = documentId;
+      
+      if (documents[documentId]) { // Document is already registered
+        documents[documentId].sessions.push(conn.id);
+        
+        // Synchronizes the session with the client
+        notifyCollaborators(documentId);
+        
+      } else {
+        documents[documentId] = {
+          sessions: [ conn.id ]
+        };
+      }
+      
+      // Send Status update package
+      client.Session.updateStatus(buildStatusPackage(documentId));
+    }
+  };
+  
+  // On connect (initiated by client, calling Session.initialize)
+  conn.on('connect', function() {
+    
   });
   
-  client.on('disconnect', function() {
-    dispatcher.unregisterClient(client);
+  conn.on('end', function() {
+    killSession();
   });
-});
+  
+  // Expose the Document API (document persistence)
+  // -----------
+  
+  this.Document = Document;
+  
+  // Expose the Session API (for realtime synchronization)
+  // -----------
+  
+  this.Session = Session;
+  
+}).listen(app);

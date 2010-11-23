@@ -24,14 +24,14 @@ var DocumentView = Backbone.View.extend({
     var that = this;
     
     // Bind Events
-    this.model.bind('change:node', function(node) {
+    app.model.bind('change:node', function(node) {
       that.renderNode(node);
     });
         
-    $('#container').click(function(e) {
-      that.reset();
-      return true;
-    });
+    // $('#container').click(function(e) {
+    //   that.reset();
+    //   return true;
+    // });
     
     $(document).unbind('keyup');
     $(document).keyup(function(e) {
@@ -41,15 +41,14 @@ var DocumentView = Backbone.View.extend({
   
   // Reset to view mode (aka unselect everything)
   reset: function(noBlur) {
-    if (this.model.selectedNode) {
-      this.$('#' + this.model.selectedNode.key).removeClass('selected');
+    if (app.model.selectedNode) {
+      this.$('#' + app.model.selectedNode.key).removeClass('selected');
     }
     
     if (!noBlur) $('.content').blur();
-    
     $('#document .node-actions .links').hide();
     
-    this.model.selectedNode = null;
+    app.model.selectedNode = null;
     $('#document').removeClass('edit-mode');
     $('#document').removeClass('insert-mode');
     return false;
@@ -58,7 +57,7 @@ var DocumentView = Backbone.View.extend({
   dragStart: function(e) {
     var dt = e.originalEvent.dataTransfer,
         sourceKey = $(e.target).parent().attr('id'),
-        node = this.model.g.get('nodes', sourceKey);
+        node = app.model.get('nodes', sourceKey);
         
     dt.setData("Text", sourceKey);
     $('#document').addClass('structure-mode');
@@ -109,7 +108,11 @@ var DocumentView = Backbone.View.extend({
     var dt = e.originalEvent.dataTransfer;
     
     // Move node to new position
-    this.model.moveNode(dt.getData("Text"), $target.attr('node'), $target.parent().attr('destination'));
+    app.model.moveNode(dt.getData("Text"), $target.attr('node'), $target.parent().attr('destination'));
+    
+    // Broadcast move node command
+    remote.Session.moveNode(dt.getData("Text"), $target.attr('node'), $target.parent().attr('destination'));
+    
     e.stopPropagation();
     return false;
   },
@@ -127,7 +130,7 @@ var DocumentView = Backbone.View.extend({
   },
   
   render: function() {
-    $(this.el).html(new HTMLRenderer(this.model.g).render());
+    $(this.el).html(new HTMLRenderer(app.model).render());
   },
   
   highlightNode: function(e) {
@@ -143,7 +146,7 @@ var DocumentView = Backbone.View.extend({
   selectNode: function(e) {
     this.reset(true);
     
-    this.model.selectNode($(e.currentTarget).attr('id'));
+    app.model.selectNode($(e.currentTarget).attr('id'));
     $(e.currentTarget).addClass('selected');
     
     $('#document').addClass('edit-mode');
@@ -152,25 +155,39 @@ var DocumentView = Backbone.View.extend({
   },
   
   addChild: function(e) {
-    this.model.createChild($(e.currentTarget).attr('type'), $(e.currentTarget).attr('node'));
-    // return false;
+    app.model.createChild($(e.currentTarget).attr('type'), $(e.currentTarget).attr('node'));
+    
+    // Broadcast insert node command
+    remote.Session.insertNode('child', $(e.currentTarget).attr('type'), $(e.currentTarget).attr('node'), 'after');
     return true;
   },
   
   addSibling: function(e) {
     switch($(e.currentTarget).parent().parent().parent().parent().attr('destination')) {
       case 'before': 
-        this.model.createSiblingBefore($(e.currentTarget).attr('type'), $(e.currentTarget).attr('node'));
+        app.model.createSiblingBefore($(e.currentTarget).attr('type'), $(e.currentTarget).attr('node'));
+        
+        // Broadcast insert node command
+        remote.Session.insertNode('sibling', $(e.currentTarget).attr('type'), $(e.currentTarget).attr('node'), 'before');
+        
       break;
       case 'after':
-        this.model.createSiblingAfter($(e.currentTarget).attr('type'), $(e.currentTarget).attr('node'));
+        app.model.createSiblingAfter($(e.currentTarget).attr('type'), $(e.currentTarget).attr('node'));
+        
+        // Broadcast insert node command
+        remote.Session.insertNode('sibling', $(e.currentTarget).attr('type'), $(e.currentTarget).attr('node'), 'after');
+        
       break;
     }
     return false;
   },
   
   removeNode: function(e) {
-    this.model.removeNode($(e.currentTarget).attr('node'));
+    app.model.removeNode($(e.currentTarget).attr('node'));
+    
+    // Broadcast remove node command
+    remote.Session.removeNode($(e.currentTarget).attr('node'));
+    
     return false;
   }
 });

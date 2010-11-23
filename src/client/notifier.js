@@ -1,5 +1,20 @@
 // Register Notifications
 var Notifications = {
+  CONNECTED: {
+    message: 'Just established a server connection.',
+    type: 'info'
+  },
+  
+  AUTHENTICATED: {
+    message: 'Successfully authenticated.',
+    type: 'success'
+  },
+  
+  AUTHENTICATION_FAILED: {
+    message: 'Authentication failed.',
+    type: 'error'
+  },
+  
   DOCUMENT_LOADING: {
     message: 'Loading document ...',
     type: 'info'

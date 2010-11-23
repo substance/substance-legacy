@@ -7,7 +7,7 @@ var SectionEditor = Backbone.View.extend({
     var that = this;
     this.render();
     
-    this.$node = $('#' + this.model.selectedNode.key + ' > .content');
+    this.$node = $('#' + app.model.selectedNode.key + ' > .content');
     this.$node.unbind('keydown');
     this.$node.bind('keydown', function(event) {
       that.updateNode();
@@ -18,13 +18,13 @@ var SectionEditor = Backbone.View.extend({
     var that = this;
     
     setTimeout(function() {
-      that.model.updateSelectedNode({
+      app.model.updateSelectedNode({
         name: that.$node.html()
       });
     }, 5);
   },
   
   render: function() {
-    $(this.el).html(Helpers.renderTemplate('edit_section', this.model.selectedNode.data));
+    $(this.el).html(Helpers.renderTemplate('edit_section', app.model.selectedNode.data));
   }
 });

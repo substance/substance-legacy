@@ -30,17 +30,37 @@ h2 { font-size: 1.8em; margin-bottom: 1em;}
   outline: 0;
 }
 
+
+/*
+ Signup View
+----------------------
+*/
+
+#signup {
+  color: #444;
+  margin: auto;
+  width: 400px;
+  margin-top: 50px;
+  background: #efefef;
+  padding: 20px;
+  
+  -webkit-border-radius:7px;
+  -moz-border-radius:   7px;
+  border-radius:        7px;
+}
+
+
 /*
  Menu
 ----------------------
 */
 
 
-#lpl_actions .header.save {margin-right: 40px;}
+#lpl_actions .header.save { margin-right: 40px; }
 
-#lpl_actions {margin-left: 100px;}
+#lpl_actions { margin-left: 100px; }
 
-#lpl_actions .right { float: right;}
+#lpl_actions .right { float: right; }
 #lpl_logo { width: 540px; }
 
 /*
@@ -99,29 +119,20 @@ h2 { font-size: 1.8em; margin-bottom: 1em;}
 #lpl_shelf_content a.delete-document { color: red; text-decoration: none; position: absolute; top: 30px; left: 10px; }
 #container { margin: 0; padding: 0;}
 
+
 /*
  Sidebar
 ----------------------
 */
 
-#sidebar {
-  display: none;
-  position:fixed;
-  right:20px;
+#drawer {
+  position: fixed;
+  right:40px;
   top:100px;
-  width:120px;
+  min-height: 300px;
+  width:300px;
   background: white;
   padding:10px 15px 10px 15px;
-    
-  -webkit-border-radius:7px;
-  -moz-border-radius:   7px;
-  border-radius:        7px;
-  -webit-border-bottom-left-radius: 0;
-  -webit-border-top-left-radius:    0;
-  -moz-border-radius-topleft:       0;
-  -moz-border-radius-bottomleft:    0;
-  border-bottom-left-radius:        0;
-  border-top-left-radius:           0;
   background:#f8f8f8;
   
   -webkit-box-shadow: 0px 2px 4px rgba(100,100,100,1);
@@ -132,17 +143,19 @@ h2 { font-size: 1.8em; margin-bottom: 1em;}
   z-index:10;
 }
 
-/*
- Editors
-----------------------
-*/
+/* Transitions */
 
-#document_tags { height: 50px;}
+#document  { -webkit-transition: margin-right .35s ease-in-out; }
 
-#editor { padding: 3px; color: #444;}
+#main:not(.drawer-opened) #drawer_content { display: none; }
 
-/* ImageEditor Widget */
-#progress_container { display: none; }
+#main.drawer-opened #document { margin-right: 260px;}
+
+#drawer .toggle a {
+  position: absolute;
+  top: 5px;
+  right: 10px;
+}
 
 /*
  Document view
@@ -150,7 +163,7 @@ h2 { font-size: 1.8em; margin-bottom: 1em;}
 */
 
 #main {
-  margin: 0 60px 0 60px;
+  margin: 0 80px 0 60px;
   padding-top: 100px;
 }
 
@@ -163,7 +176,7 @@ h2 { font-size: 1.8em; margin-bottom: 1em;}
   min-height: 500px;
   position:relative;
   background:#fff;
-  margin-right: 150px;
+  margin-right: 20px;
   
   -webkit-box-shadow: 0px 0px 20px rgba(0,0,0,0.3), 0px 0px 2px rgba(0,0,0,0.4);
   -moz-box-shadow:    0px 0px 20px rgba(0,0,0,0.3), 0px 0px 2px rgba(0,0,0,0.4);
@@ -172,6 +185,17 @@ h2 { font-size: 1.8em; margin-bottom: 1em;}
 }
 
 
+/*
+ Editors
+----------------------
+*/
+
+#document_tags { height: 50px;}
+
+#drawer_content { padding: 3px; color: #444;}
+
+/* ImageEditor Widget */
+#progress_container { display: none; }
 
 /* Content Nodes */
 
@@ -247,11 +271,11 @@ h2 { font-size: 1.8em; margin-bottom: 1em;}
 
 .content-node-info {
   height: 30px;
-  border-top-right-radius:         5px;
+  /* border-top-right-radius:         5px;
   border-bottom-right-radius:        5px;
-  -webkit-box-shadow:5px 0px 8px rgba(0,0,0,0.3);
+  -webkit-box-shadow: 5px 0px 8px rgba(0,0,0,0.3); */
   position: relative;
-  width: 90px; display: block; position: absolute; top: 0px; right: -90px; padding: 3px; color: #eee; font-weight: bold; font-family: Helvetica; font-size: 10px; text-transform: uppercase; z-index: 50000; 
+  width: 90px; display: block; position: absolute; top: -30px; right: 0px; padding: 3px; color: #eee; font-weight: bold; font-family: Helvetica; font-size: 10px; text-transform: uppercase; z-index: 50000; 
 }
 
 .content-node-info img {
@@ -275,18 +299,6 @@ h2 { font-size: 1.8em; margin-bottom: 1em;}
   margin-bottom: 5px;
   padding: 5px;
   margin-left:-30px; padding-left: 10px; margin-right: -10px; padding-right: 10px;
-  
-/*  background: black;
-  
-  opacity: 0.1;*/
-
-/*  border-top: 1px solid transparent;
-  border-bottom: 1px solid transparent; */
-}
-
-.node-actions:hover {
-/*  border-top: 1px solid #ccc;
-  border-bottom: 1px solid #ccc;*/
 }
 
 .node-actions .handle {

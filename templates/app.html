@@ -12,17 +12,21 @@
         </div> 
         <div id="lpl_actions">
           <div class="left">
-            <a href="#new_document" class="header button text new centered new-document">New</a>
-            <a href="#save_document" class="header button text centered save-document">Save</a>
+            <a href="/" onclick="javascript: return false;" class="header button text new centered new-document">New</a>
+            <a href="/" onclick="javascript: return false;" class="header button text centered save-document">Save</a>
           </div>
           <div class="center">
-            <a href="#file_browser" class="header button text centered browse-documents">Browse</a>
-            <a href="#file_browser" class="header button text centered view-collaborators">1 Collaborator</a>
+            <a href="/" onclick="javascript: return false;" class="header button text centered browse-documents">Browse</a>
+            {{#num_collaborators}}<a href="#file_browser" class="header button text centered view-collaborators">{{.}} Collaborator(s)</a>{{/num_collaborators}}
+            {{#id}}
+              <a href="#" class="header button text centered delete-document" key="{{.}}">delete</a>
+            {{/id}}
           </div>
           <div class="right">
-            {{#id}}
-              <a href="#delete/{{.}}" class="header button text centered delete-document" key="{{.}}">delete</a>
-            {{/id}}
+            <span style="float: left; margin-right: 20px; margin-top: 17px;">Signed in as: {{username}}</span>
+            
+            <a href="#" class="header button text centered logout">logout</a>
+            
           </div>
         </div>
       </div>
@@ -40,26 +44,32 @@
     </div>
   </script>
   
+  <script type="text/x-handlebars-template" name="drawer">
+    <div class="toggle"><a href="#">Toggle</a></div>
+    <div id="drawer_content">
+      <div id="editor">
+        <h3>Welcome</h3>
+        <p>You can select some <em>Content-Nodes</em> on the left to edit the contents. You can drag <em>Nodes</em> around to arrange them. 
+        But keep in mind this is an early draft/sketch. Things will get more stable as we work on it.
+        </p>
+        <p>
+        And you can help by giving <a href="http://github.com/michael/substance/issues">feedback</a> or reporting <a href="http://github.com/michael/substance/issues">bugs</a>.
+        </p>
+        <p>
+        Please have a look at the <a href="http://github.com/michael/substance">README</a> to learn more.
+        </p>
+      </div>
+    </div>
+  </script>
+  
   <script type="text/x-handlebars-template" name="editor">
     <div id="lpl_shelf" class="closed">
-      
     </div>
     
     <div id="main">
-      <div id="sidebar">
-        <div id="editor">
-          <h3>Welcome</h3>
-          <p>You can select some <em>Content-Nodes</em> on the left to edit the contents. You can drag <em>Nodes</em> around to arrange them. 
-          But keep in mind this is an early draft/sketch. Things will get more stable as we work on it.
-          </p>
-          <p>
-          And you can help by giving <a href="http://github.com/michael/substance/issues">feedback</a> or reporting <a href="http://github.com/michael/substance/issues">bugs</a>.
-          </p>
-          <p>
-          Please have a look at the <a href="http://github.com/michael/substance">README</a> to learn more.
-          </p>
-        </div>
-      </div> <!-- end sidebar -->
+      <div id="drawer">
+
+      </div>
       
       <div id="document">
         <p>No document loaded... You can either create a <em>New Document</em> or <em>Browse</em> existing ones.</p>
@@ -67,10 +77,53 @@
     </div>
   </script>
   
+  <script type="text/x-handlebars-template" name="signup">
+    <div id="signup">
+      <h3>Login</h3>
+      <div class="lpl texteditor">
+        <form id="login-form">
+          <label for="login-user">username</label>
+          <input type="text" name="username" id="login-user" value="demo">
+          <label for="login-password">tags</label>
+          <input type="text" name="password" id="login-password" value="demo">
+          <p><br/>
+          <input type="submit" value="Login"/>
+          </p>
+        </form>
+      </div>
+    </div>
+  </script>
+  
+  <script type="text/x-handlebars-template" name="browser_not_supported">
+    <div id="signup">
+      <h3>Your Browser is currently not supported</h3>
+      <div class="lpl texteditor">
+        <p>
+        Substance makes use of WebSockets, a new technology that allows realtime communication.
+        </p>
+        
+        <p>Please take the time to upgrade your browser to one of those supporting WebSockets — it is worth it!</p>
+        <div style="text-align: center;">
+          <a href="http://www.google.com/chrome/" title="Google Chrome"><img src="/images/chrome.png"/></a>
+          <a href="http://www.apple.com/safari/" title="Safari 5"><img src="/images/safari.png"/></a>
+          <a href="http://www.mozilla.com/en-US/firefox/beta/" title="Firefox 4 Beta"><img src="/images/firefox.png"/></a>
+        </div>
+        
+      </div>
+    </div>
+  </script>
+  
   <script type="text/x-handlebars-template" name="collaborators">
-    <h3>Active Collaborators</h3>
+    <h3>Currently active Collaborators</h3>
+    <ul>
+      {{#status/collaborators}}
+        <li>{{.}}</li>
+      {{/status/collaborators}}
+    </ul>
+    <p></p>
+    <p>Invite new collaborators by sharing this link:</p>
     <p>
-      Coming soon.
+      <input type="text" value="http://{{hostname}}/#load/{{id}}" style="width: 450px;"></input>
     </p>
   </script>
   
@@ -231,39 +284,40 @@
   
   <!-- Libraries -->
   <script src="lib/underscore.js"></script>
+  <script src="lib/data.js"></script>
   <script src="lib/backbone.js"></script>
-  <script src="lib/sorted_hash.js"></script>
-  <script src="lib/node.js"></script>
   
-  <script src="socket.io/socket.io.js"></script>
+  
+  <script src="dnode.js"></script>
   
   <!-- Fixtures -->
   <script src="fixtures/article.js"></script>
   
   <!-- Backbone Extensions -->
-  <script src="src/notifier.js"></script>
+  <script src="src/client/notifier.js"></script>
   
   <!-- The app -->
-  <script src="src/models/content_graph.js"></script>
-  <script src="src/models/document.js"></script>
+  <script src="src/client/models/content_graph.js"></script>
+  <script src="src/client/models/document.js"></script>
   
-  <script src="src/content_node_types.js"></script>
-  <script src="src/helpers.js"></script>
-  <script src="src/renderers/html_renderer.js"></script>
+  <script src="src/client/content_node_types.js"></script>
+  <script src="src/client/helpers.js"></script>
+  <script src="src/client/renderers/html_renderer.js"></script>
 
-  <script src="src/node_editors/document_editor.js"></script>
-  <script src="src/node_editors/section_editor.js"></script>
-  <script src="src/node_editors/paragraph_editor.js"></script>
-  <script src="src/node_editors/image_editor.js"></script>
+  <script src="src/client/node_editors/document_editor.js"></script>
+  <script src="src/client/node_editors/section_editor.js"></script>
+  <script src="src/client/node_editors/paragraph_editor.js"></script>
+  <script src="src/client/node_editors/image_editor.js"></script>
   
-  <script src="src/controllers/application.js"></script>
+  <script src="src/client/controllers/application.js"></script>
   
-  <script src="src/views/document_view.js"></script>
-  <script src="src/views/shelf.js"></script>
-  <script src="src/views/document_browser.js"></script>
-  <script src="src/views/collaborators.js"></script>
-  <script src="src/views/document_composer.js"></script>
-  <script src="src/app.js"></script>
+  <script src="src/client/views/signup_view.js"></script>
+  <script src="src/client/views/document_view.js"></script>
+  <script src="src/client/views/shelf.js"></script>
+  <script src="src/client/views/drawer.js"></script>
+  <script src="src/client/views/document_browser.js"></script>
+  <script src="src/client/views/collaborators.js"></script>
+  <script src="src/client/views/application.js"></script>  
 
 </head>
 <body>

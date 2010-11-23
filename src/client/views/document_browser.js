@@ -4,15 +4,19 @@ var DocumentBrowser = Backbone.View.extend({
   },
   
   initialize: function() {
-    
     var that = this;
+    
     // Load all documents available in the Repository
     // and render DocumentBrowser View
     
     notifier.notify(Notifications.DOCUMENTS_LOADING);
     
-    Documents.fetch({
-      success: function() {
+    // Call the remote for all documents
+    this.documents = []; // A list of documents to choose from
+    
+    remote.Document.all({
+      success: function(documents) {
+        that.documents = documents;
         that.render();
         notifier.notify(Notifications.DOCUMENTS_LOADED);
       },
@@ -20,12 +24,11 @@ var DocumentBrowser = Backbone.View.extend({
         notifier.notify(Notifications.DOCUMENTS_LOADING_FAILED);
       }
     });
-    
   },
   
   render: function() {
     $(this.el).html(Helpers.renderTemplate('browse_documents', {
-      documents: Documents.models.map(function(d) { return d.attributes })
+      documents: this.documents
     }));
   }
 });

@@ -37,8 +37,10 @@ var Shelf = Backbone.View.extend({
     var that = this;
     
     $(this.el).html(Helpers.renderTemplate('shelf', {
-      title: this.model ? this.model.g.data.title : 'Untitled',
-      id: this.model ? this.model.id : null
+      title: app.model ? app.model.data.title : 'Untitled',
+      id: app.model ? app.model.id : null,
+      num_collaborators: app.status ? app.status.collaborators.length : null,
+      username: app.username
     }));
     
     // bind events manually since declarative events do not work here for some reason
@@ -53,7 +55,7 @@ var Shelf = Backbone.View.extend({
   
   toggle: function(module, e) {
     if (!$(e.target).hasClass('selected')) { // Open
-      this.shelfContent = new window[module]({el: this.$('#lpl_shelf_content'), model: this.model});
+      this.shelfContent = new window[module]({el: this.$('#lpl_shelf_content')});
       this.shelfContent.render();
       
       $('#lpl_shelf').removeClass('closed');

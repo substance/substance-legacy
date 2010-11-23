@@ -6,7 +6,7 @@ var ParagraphEditor = Backbone.View.extend({
   initialize: function() {
     var that = this;
     this.render();
-    this.$node = $('#' + this.model.selectedNode.key + ' div.content');
+    this.$node = $('#' + app.model.selectedNode.key + ' div.content');
 
     this.$node.unbind('keydown');
     this.$node.bind('keydown', function(event) {
@@ -18,15 +18,13 @@ var ParagraphEditor = Backbone.View.extend({
     var that = this;
     
     setTimeout(function() {
-      that.model.updateSelectedNode({
+      app.model.updateSelectedNode({
         content: that.$node.html()
       });
     }, 5);
   },
   
   render: function() {
-    $(this.el).html(Helpers.renderTemplate('edit_paragraph', this.model.selectedNode.data));
-    // Focus on textarea
-    // this.$('textarea[name=content]').focus();
+    $(this.el).html(Helpers.renderTemplate('edit_paragraph', app.model.selectedNode.data));
   }
 });

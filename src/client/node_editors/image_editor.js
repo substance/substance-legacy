@@ -7,6 +7,10 @@ var ImageEditor = Backbone.View.extend({
     var that = this;
     this.render();
     
+    if (!$('#main').hasClass('drawer-opened')) {
+      app.drawer.toggle();
+    }
+    
     $('#upload_image').transloadit({
       modal: false,
       wait: true,
@@ -23,20 +27,20 @@ var ImageEditor = Backbone.View.extend({
         $('#progress_container').show();
       },
       onSuccess: function(assembly) {
-        try {
-          // This triggers a node re-render
-          that.model.updateSelectedNode({
-            url: assembly.results.resize_image[0].url
-          });
-          $('#progress_container').hide();
-        } catch (err) {
-          throw err;
-        }
+
+        // This triggers a node re-render
+        app.model.updateSelectedNode({
+          url: assembly.results.resize_image[0].url,
+          dirty: true
+        });
+        
+        $('#progress_container').hide();
+
       }
     });
   },
   
   render: function() {
-    $(this.el).html(Helpers.renderTemplate('edit_image', this.model.selectedNode.data));
+    $(this.el).html(Helpers.renderTemplate('edit_image', app.model.selectedNode.data));
   }
 });
