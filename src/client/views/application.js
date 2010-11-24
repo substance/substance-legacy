@@ -29,7 +29,8 @@ var Application = Backbone.View.extend({
     
     this.bind('connected', function() {
       notifier.notify(Notifications.CONNECTED);
-      remote.Session.initialize({
+      
+      remote.Session.init({
         success: function() { // auto-authenticated
           that.trigger('authenticated');
         },
@@ -202,7 +203,7 @@ var Application = Backbone.View.extend({
     
     notifier.notify(Notifications.DOCUMENT_DELETING);
     
-    remote.Document.delete(this.model.id, {
+    remote.Document.destroy(this.model.id, {
       success: function() {
         app.newDocument();
         notifier.notify(Notifications.DOCUMENT_DELETED);
@@ -228,6 +229,8 @@ var Application = Backbone.View.extend({
   
   // Should be rendered just once
   render: function() {
+    
+    
     var that = this;
     // Browser not supported
     if (!window.WebSocket) {

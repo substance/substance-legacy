@@ -92,7 +92,7 @@ var Document = {
     });
   },
   
-  delete: function(id, options) {
+  destroy: function(id, options) {
     db.get(id, function (err, prevdoc) {
       db.remove(id, prevdoc.rev, function (err, result) {
         options.success()
@@ -209,13 +209,8 @@ DNode(function (client, conn) {
   // -----------
   
   var getSessionId = function() {
-    var cookie = qs.parse(conn.stream.socketio.request.headers.cookie.replace(/;/g, '&'));
-    return cookie[' connect'].sid;
-  };
-  
-  // Message all active users
-  var broadCast = function() {
-    
+    var cookie = conn.stream.socketio.request.headers.cookie;
+    return cookie.match(/connect.sid=([^; ]+)/)[1];
   };
   
   var buildStatusPackage = function(documentId) {
@@ -287,7 +282,6 @@ DNode(function (client, conn) {
   };
   
   var unregisterDocument = function(documentId) {
-
     // Unregister the document if no one is editing it any longer
     if (documents[documentId].sessions.length <= 1) {
       // Remove the session from the list of contributors if he's currently editing a doc
@@ -337,11 +331,10 @@ DNode(function (client, conn) {
         options.error();
       }
     },
-    
-    initialize: function(options) {
-      var username = cookieSessions[getSessionId()];
-            
+        
+    init: function(options) {
       // Automatic re-authentication based on cookie-data
+      var username = cookieSessions[getSessionId()];
       if (username) { 
         sessions[conn.id] = {
           conn: conn,
@@ -349,7 +342,6 @@ DNode(function (client, conn) {
           client: client,
           document: null
         };
-        
         options.success();
       } else {
         options.error();
@@ -418,7 +410,6 @@ DNode(function (client, conn) {
         
         // Synchronizes the session with the client
         notifyCollaborators(documentId);
-        
       } else {
         documents[documentId] = {
           sessions: [ conn.id ]
