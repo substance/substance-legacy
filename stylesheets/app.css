@@ -32,6 +32,18 @@ h2 { font-size: 1.8em; margin-bottom: 1em;}
 
 
 /*
+ Property Editor
+----------------------
+*/
+
+
+.lpl.texteditor .property-editor input { width: 70%; display: inline; }
+.lpl.texteditor .property-editor input[type=submit] { width: 30px; }
+.property-editor div.items { padding: 10px; }
+
+.property-editor a.remove { color: red; }
+
+/*
  Signup View
 ----------------------
 */
@@ -114,6 +126,8 @@ h2 { font-size: 1.8em; margin-bottom: 1em;}
 ----------------------
 */
 
+#lpl_shelf_content { overflow: auto; }
+
 #lpl_shelf_content a.item { position: relative; }
 
 #lpl_shelf_content a.delete-document { color: red; text-decoration: none; position: absolute; top: 30px; left: 10px; }
@@ -129,7 +143,7 @@ h2 { font-size: 1.8em; margin-bottom: 1em;}
   position: fixed;
   right:40px;
   top:100px;
-  min-height: 300px;
+  bottom: 80px;
   width:300px;
   background: white;
   padding:10px 15px 10px 15px;
@@ -139,7 +153,7 @@ h2 { font-size: 1.8em; margin-bottom: 1em;}
   -moz-box-shadow:    0px 2px 4px rgba(100,100,100,1);
   box-shadow:         0px 2px 4px rgba(100,100,100,1);
   
-  overflow:hidden;
+  overflow:auto;
   z-index:10;
 }
 
@@ -271,9 +285,6 @@ h2 { font-size: 1.8em; margin-bottom: 1em;}
 
 .content-node-info {
   height: 30px;
-  /* border-top-right-radius:         5px;
-  border-bottom-right-radius:        5px;
-  -webkit-box-shadow: 5px 0px 8px rgba(0,0,0,0.3); */
   position: relative;
   width: 90px; display: block; position: absolute; top: -30px; right: 0px; padding: 3px; color: #eee; font-weight: bold; font-family: Helvetica; font-size: 10px; text-transform: uppercase; z-index: 50000; 
 }

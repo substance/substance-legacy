@@ -24,9 +24,7 @@
           </div>
           <div class="right">
             <span style="float: left; margin-right: 20px; margin-top: 17px;">Signed in as: {{username}}</span>
-            
             <a href="#" class="header button text centered logout">logout</a>
-            
           </div>
         </div>
       </div>
@@ -40,7 +38,6 @@
     </div>
 
     <div id="lpl_shelf_content">
-      
     </div>
   </script>
   
@@ -53,7 +50,8 @@
         But keep in mind this is an early draft/sketch. Things will get more stable as we work on it.
         </p>
         <p>
-        And you can help by giving <a href="http://github.com/michael/substance/issues">feedback</a> or reporting <a href="http://github.com/michael/substance/issues">bugs</a>.
+        And you can help by giving <a href="http://github.com/michael/substance/issues">feedback</a> or
+        reporting <a href="http://github.com/michael/substance/issues">bugs</a>.
         </p>
         <p>
         Please have a look at the <a href="http://github.com/michael/substance">README</a> to learn more.
@@ -65,12 +63,9 @@
   <script type="text/x-handlebars-template" name="editor">
     <div id="lpl_shelf" class="closed">
     </div>
-    
     <div id="main">
       <div id="drawer">
-
       </div>
-      
       <div id="document">
         <p>No document loaded... You can either create a <em>New Document</em> or <em>Browse</em> existing ones.</p>
       </div>
@@ -101,14 +96,12 @@
         <p>
         Substance makes use of WebSockets, a new technology that allows realtime communication.
         </p>
-        
         <p>Please take the time to upgrade your browser to one of those supporting WebSockets — it is worth it!</p>
         <div style="text-align: center;">
           <a href="http://www.google.com/chrome/" title="Google Chrome"><img src="/images/chrome.png"/></a>
           <a href="http://www.apple.com/safari/" title="Safari 5"><img src="/images/safari.png"/></a>
           <a href="http://www.mozilla.com/en-US/firefox/beta/" title="Firefox 4 Beta"><img src="/images/firefox.png"/></a>
         </div>
-        
       </div>
     </div>
   </script>
@@ -207,20 +200,12 @@
   
   <script type="text/x-handlebars-template" name="edit_document">
     <h3>Edit document</h3>
+    
     <div class="lpl texteditor">
-        <label for="publication_date">publication date</label>
-        <input type="text" name="publication_date" class="property" value="{{publication_date}}" id="publication_date">
-        <label for="document_tags">tags</label>
-        <textarea name="document_tags" class="property" id="document_tags">{{tags}}</textarea>
-        
-        <!--<label>Published</label>
-        <div id="published" class="lpl toggle on">
-          <div class="lpl toggle-off-value">off</div>
-          <div class="lpl toggle-on-container">
-            <div class="lpl toggle-button"></div>
-            <div class="lpl toggle-on-value">on</div>
-          </div>
-        </div>-->
+      {{#attributes}}
+        <h4>{{name}}</h4>
+        <div id="property_{{key}}" key="{{key}}" type="{{type}}" class="property-editor {{#unique}} unique{{/unique}}{{^unique}} non-unique{{/unique}}"></div>
+      {{/attributes}}
     </div>
   </script>
   
@@ -269,6 +254,27 @@
     </div>
   </script>
   
+  <script type="text/x-handlebars-template" name="multi_string_editor">
+    <form>
+      <input type="text" name="new_value"/>
+      <input type="submit" value="+"/>
+    </form>
+    <div class="items">
+      {{#items}}
+        <span>{{.}} <a href="/" value="{{.}}" class="remove">x</a></span>
+      {{/items}}
+    </div>
+  </script>
+  
+  <script type="text/x-handlebars-template" name="string_editor">
+    <input type="text" name="value" value="{{value}}"/>
+  </script>
+  
+  <!-- Prepare config data -->
+  <script>
+  var settings = {{settings}};
+  </script>
+  
   <!-- styles --> 
   <!-- <link href="stylesheets/reset.css" media="screen" rel="stylesheet" type="text/css" />-->
   <link href="stylesheets/widgets.css" media="screen" rel="stylesheet" type="text/css" />
@@ -286,8 +292,6 @@
   <script src="lib/underscore.js"></script>
   <script src="lib/data.js"></script>
   <script src="lib/backbone.js"></script>
-  
-  
   <script src="dnode.js"></script>
   
   <!-- Fixtures -->
@@ -311,6 +315,12 @@
   
   <script src="src/client/controllers/application.js"></script>
   
+  <!-- UI components -->
+  <script src="src/client/ui/common.js"></script>
+  <script src="src/client/ui/string_editor.js"></script>
+  <script src="src/client/ui/multi_string_editor.js"></script>
+  
+  <!-- Views -->
   <script src="src/client/views/signup_view.js"></script>
   <script src="src/client/views/document_view.js"></script>
   <script src="src/client/views/shelf.js"></script>

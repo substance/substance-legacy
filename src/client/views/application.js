@@ -141,6 +141,7 @@ var Application = Backbone.View.extend({
   
   newDocument: function() {
     this.model = new Document(JSON.parse(JSON.stringify(Document.EMPTY)));
+    this.status = null;
     this.init();
     this.trigger('document:changed');
     this.shelf.close();

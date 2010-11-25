@@ -66,7 +66,7 @@ var ContentNode = _.inherits(Data.Node, {
 
   removeChild: function(key) {
     this.all('children').del(key);
-    // TODO: Also remove from g.all('nodes') when no longer referenced
+    this.g.all('nodes').del(key);
   }
 });
 
@@ -80,12 +80,17 @@ var ContentGraph = _.inherits(ContentNode, {
     Data.Node.call(this);
 
     this.type = 'document';
-    this.data = g;
+    this.data = {
+      title: g.title
+    };
+    
     this.g = this;
     this.id = g.id; // if present
+    
+    // Meta-information that can be attached
+    this.attributes = g.attributes || {};
 
     this.key = 'root';
-
     this.nodeCount = g.nodeCount || 1000;
 
     // Register ContentNodes
@@ -122,6 +127,7 @@ var ContentGraph = _.inherits(ContentNode, {
     var result = _.extend({}, this.data, {
       nodes: {},
       children: [],
+      attributes: this.attributes,
       nodeCount: this.nodeCount    
     });
 

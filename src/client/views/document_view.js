@@ -33,6 +33,8 @@ var DocumentView = Backbone.View.extend({
     //   return true;
     // });
     
+    // TODO: Select the document node on-init
+    
     $(document).unbind('keyup');
     $(document).keyup(function(e) {
       if (e.keyCode == 27) { that.reset(); }     // esc
@@ -145,12 +147,9 @@ var DocumentView = Backbone.View.extend({
   
   selectNode: function(e) {
     this.reset(true);
-    
     app.model.selectNode($(e.currentTarget).attr('id'));
     $(e.currentTarget).addClass('selected');
-    
     $('#document').addClass('edit-mode');
-    
     return false;
   },
   
@@ -169,14 +168,12 @@ var DocumentView = Backbone.View.extend({
         
         // Broadcast insert node command
         remote.Session.insertNode('sibling', $(e.currentTarget).attr('type'), $(e.currentTarget).attr('node'), 'before');
-        
       break;
       case 'after':
         app.model.createSiblingAfter($(e.currentTarget).attr('type'), $(e.currentTarget).attr('node'));
         
         // Broadcast insert node command
         remote.Session.insertNode('sibling', $(e.currentTarget).attr('type'), $(e.currentTarget).attr('node'), 'after');
-        
       break;
     }
     return false;
@@ -187,7 +184,6 @@ var DocumentView = Backbone.View.extend({
     
     // Broadcast remove node command
     remote.Session.removeNode($(e.currentTarget).attr('node'));
-    
     return false;
   }
 });

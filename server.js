@@ -17,7 +17,6 @@ var config = JSON.parse(fs.readFileSync(__dirname+ '/config.json', 'utf-8'));
 var conn = new(cradle.Connection)(config.couchdb.host, config.couchdb.port);
 var db = conn.database(config.couchdb.db);
 
-
 // Helpers
 // -----------
 
@@ -132,8 +131,9 @@ app.get('/documents/:id.html', function(req, res) {
 
 // The Engineroom
 
-app.get('/', function(req, res) {
-  res.send(fs.readFileSync(__dirname+ '/templates/app.html', 'utf-8'));
+app.get('/', function(req, res) {  
+  html = fs.readFileSync(__dirname+ '/templates/app.html', 'utf-8');
+  res.send(html.replace('{{settings}}', JSON.stringify(config.settings)));
 });
 
 
@@ -311,7 +311,7 @@ DNode(function (client, conn) {
 
   };
   
-  // Interface for collaborative document editing session
+  // Interface for collaborative document editing sessions
   // ------------
   
   var Session = {
