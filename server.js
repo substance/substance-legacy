@@ -23,11 +23,12 @@ var db = conn.database(config.couchdb.db);
 var Helpers = {};
 
 // Templates for the moment are recompiled every time
-Helpers.renderTemplate = function(tpl, view, helpers) {
+_.renderTemplate = function(tpl, view, helpers) {
   var source = fs.readFileSync(__dirname+ '/templates/' + tpl + '.html', 'utf-8');
   var template = Handlebars.compile(source);
   return template(view, helpers || {});
 };
+
 
 
 // Express.js Configuration
@@ -55,6 +56,7 @@ var Document = {
 
         if (options.withContents) {
           var res = d.contents;
+          res.attributes = d.contents.attributes;
           res.id = d._id;
           return res;
         } else {
@@ -101,17 +103,68 @@ var Document = {
 };
 
 
+// Empty Data.Graph of documents
+
+function createGraph(documents) {
+  var result = {
+    "/type/document": {
+      "type": "type",
+      "name": "Document",
+      "properties": {
+        "id": {
+          "name": "Document Id",
+          "unique": true,
+          "expected_type": "string"          
+        },
+        "title": {
+          "name": "Document Title",
+          "unique": true,
+          "expected_type": "string"
+        }
+      }
+    }
+  };
+  
+  // Append document attributes as properties
+  _.each(config.settings.attributes, function(attr) {
+    result["/type/document"].properties[attr.key] = {
+      "name": attr.name,
+      "unique": attr.unique,
+      "expected_type": attr.type
+    }
+  });
+  
+  // Add registered documents to the output
+  _.each(documents, function(doc) {
+    result[doc.id] = {
+      type: '/type/document',
+      properties: {
+        id: doc.id,
+        title: doc.title
+      }
+    };
+    
+    // Iterate over document attributes
+    _.each(config.settings.attributes, function(attr) {
+      var val = doc.attributes ? doc.attributes[attr.key] : undefined;
+      var def = attr.default ? _.clone(attr.default) : null;
+      
+      result[doc.id].properties[attr.key] = val ? val : def;
+    });
+  });
+  return result;
+};
+
+
+
 // Web server
 // -----------
 
-// The Document Index
+// The DocumentBrowser on the front-end
 
 app.get('/documents.html', function(req, res) {  
-  Document.all({
-    success: function(documents) {
-      res.send(Helpers.renderTemplate('documents', {documents: documents}));
-    }
-  });
+  html = fs.readFileSync(__dirname+ '/templates/browser.html', 'utf-8');
+  res.send(html.replace('{{settings}}', JSON.stringify(config.settings)));
 });
 
 
@@ -119,10 +172,9 @@ app.get('/documents.html', function(req, res) {
 
 app.get('/documents/:id.html', function(req, res) {
   Document.get(req.params.id, {
-    withContents: true,
     success: function(doc) {
-      res.send(Helpers.renderTemplate('document', {
-        document: new HTMLRenderer(doc.contents).render()
+      res.send(_.renderTemplate('document', {
+        document: new HTMLRenderer(doc).render()
       }));
     }
   });
@@ -143,6 +195,20 @@ app.get('/documents', function(req, res) {
   Document.all({
     success: function(documents) {
       res.send(JSON.stringify(documents));
+    }
+  });
+});
+
+// Get all documents as a Data.Graph serialization
+
+app.get('/documents.json', function(req, res) {
+  Document.all({
+    withContents: true,
+    success: function(documents) {
+      var result = createGraph(documents);
+      
+      res.send(result);
+      // res.send(JSON.stringify(documents));
     }
   });
 });

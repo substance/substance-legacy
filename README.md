@@ -10,6 +10,14 @@ Documents are created by adding and editing `ContentNodes` of various types. A J
 a `ContentGraph` as JSON, and holds an internal memory representation of the current document (respectively the arrangement of `ContentNodes`). This memory representation is rendered dynamically. The user can immediately read and navigate the whole document. Everything is at one page. Every ContentNode can be modified by clicking on it. A ContentNode editor pane gets activated and the node's properties can be edited. The changes made are reflected in realtime. Users see the results as they type.
 
 
+Demo
+--------------------------------------------------------------------------------
+
+You've got two options to try out the most recent work-in-progress version:
+
+* [Edit Documents](http://substance.quasipartikel.at:3003) (a.k.a. The Machineroom)
+* [Browse Documents](http://substance.quasipartikel.at:3003/documents.html) (a.k.a. The Explorer)
+
 ContentGraph
 --------------------------------------------------------------------------------
 
@@ -74,7 +82,7 @@ API
 Get a list of documents available in the repository.
 
 
-Example: [http://substance.quasipartikel.at/documents](http://substance.quasipartikel.at/documents)
+Example: [http://substance.quasipartikel.at:3003/documents](http://substance.quasipartikel.at:3003/documents)
 
 
 `GET /documents/:id`
@@ -82,7 +90,7 @@ Example: [http://substance.quasipartikel.at/documents](http://substance.quasipar
 Get a document by ID.
 
 
-Example: [http://substance.quasipartikel.at/documents/cc97d5a64b929a4936fce989608b081b](http://substance.quasipartikel.at/documents/cc97d5a64b929a4936fce989608b081b)
+Example: [http://substance.quasipartikel.at:3003/documents/cc97d5a64b929a4936fce989608b081b](http://substance.quasipartikel.at:3003/documents/cc97d5a64b929a4936fce989608b081b)
 
 
 
@@ -148,7 +156,11 @@ However, to setup your own Substance instance you'll need Node.js (>=0.3) instal
 Updates
 --------------------------------------------------------------------------------
 
-**16th November**
+**27th November 2010**
+
+Added a first version of the Substance front-end. Documents can be browsed by various attributes using faceted navigation. The results are calculated on the client-side, so filtering operations should perform blazin' fast. :) In order to accomplish this, some data manipulation magic is used. I've made the corresponding code available as a separate library, [Data.js](http://github.com/michael/data).
+
+**16th November 2010**
 
 Added basic support for realtime collaborative editing. For now all parties need to open a persisted document, then start editing. If another party arrives at a later point in time, real-time changes are not visible to him (to be fixed...)
 

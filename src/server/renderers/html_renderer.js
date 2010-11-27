@@ -40,6 +40,7 @@ var FrontendRenderer = function(root) {
   return {
     render: function() {
       // Traverse the document
+
       return renderers['document'](root);
     }
   };

@@ -204,7 +204,7 @@
     <div class="lpl texteditor">
       {{#attributes}}
         <h4>{{name}}</h4>
-        <div id="property_{{key}}" key="{{key}}" type="{{type}}" class="property-editor {{#unique}} unique{{/unique}}{{^unique}} non-unique{{/unique}}"></div>
+        <div id="property_{{key}}" key="{{key}}" type="{{type}}" class="attribute-editor {{#unique}} unique{{/unique}}{{^unique}} non-unique{{/unique}}"></div>
       {{/attributes}}
     </div>
   </script>
@@ -298,36 +298,38 @@
   <script src="fixtures/article.js"></script>
   
   <!-- Backbone Extensions -->
-  <script src="src/client/notifier.js"></script>
+  <script src="src/backend/notifier.js"></script>
+  
+  <!-- Shared helpers -->
+  <script src="src/shared/helpers.js"></script>
   
   <!-- The app -->
-  <script src="src/client/models/content_graph.js"></script>
-  <script src="src/client/models/document.js"></script>
+  <script src="src/backend/models/content_graph.js"></script>
+  <script src="src/backend/models/document.js"></script>
   
-  <script src="src/client/content_node_types.js"></script>
-  <script src="src/client/helpers.js"></script>
-  <script src="src/client/renderers/html_renderer.js"></script>
+  <script src="src/backend/content_node_types.js"></script>
+  <script src="src/backend/renderers/html_renderer.js"></script>
 
-  <script src="src/client/node_editors/document_editor.js"></script>
-  <script src="src/client/node_editors/section_editor.js"></script>
-  <script src="src/client/node_editors/paragraph_editor.js"></script>
-  <script src="src/client/node_editors/image_editor.js"></script>
+  <script src="src/backend/node_editors/document_editor.js"></script>
+  <script src="src/backend/node_editors/section_editor.js"></script>
+  <script src="src/backend/node_editors/paragraph_editor.js"></script>
+  <script src="src/backend/node_editors/image_editor.js"></script>
   
-  <script src="src/client/controllers/application.js"></script>
+  <script src="src/backend/controllers/application.js"></script>
   
   <!-- UI components -->
-  <script src="src/client/ui/common.js"></script>
-  <script src="src/client/ui/string_editor.js"></script>
-  <script src="src/client/ui/multi_string_editor.js"></script>
+  <script src="src/backend/ui/common.js"></script>
+  <script src="src/backend/ui/string_editor.js"></script>
+  <script src="src/backend/ui/multi_string_editor.js"></script>
   
   <!-- Views -->
-  <script src="src/client/views/signup_view.js"></script>
-  <script src="src/client/views/document_view.js"></script>
-  <script src="src/client/views/shelf.js"></script>
-  <script src="src/client/views/drawer.js"></script>
-  <script src="src/client/views/document_browser.js"></script>
-  <script src="src/client/views/collaborators.js"></script>
-  <script src="src/client/views/application.js"></script>  
+  <script src="src/backend/views/signup_view.js"></script>
+  <script src="src/backend/views/document_view.js"></script>
+  <script src="src/backend/views/shelf.js"></script>
+  <script src="src/backend/views/drawer.js"></script>
+  <script src="src/backend/views/document_browser.js"></script>
+  <script src="src/backend/views/collaborators.js"></script>
+  <script src="src/backend/views/application.js"></script>  
 
 </head>
 <body>

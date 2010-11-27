@@ -1,0 +1,138 @@
+/*
+ Helpers
+----------------------
+*/
+
+.clear { clear: both; }
+.hidden { display: none; }
+.invisible { opacity: 0; }
+
+/*
+-----------------------------------------
+ Various
+-----------------------------------------
+*/
+
+.clearfix:after, #frame:after, .navigation:after { content: "."; display: block; height: 0; clear: both; visibility: hidden; }
+.clearfix, #frame, .navigation { display: inline-block;}
+* html .clearfix, * html #frame, * html .navigation {height: 1%;}
+.clearfix, #frame, .navigation { display: block; }
+
+
+/*
+ Common Styles
+----------------------
+*/
+
+header, footer, section, nav { display:block; }
+
+/*
+-----------------------------------------
+ Common shared
+-----------------------------------------
+*/
+
+/* samo background color: #eaefe0; */
+
+html { overflow-x: hidden; }
+html,body { margin:0px; padding:0px; color: #33302a; font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 14px; background: #fff; }
+body { margin: 0px; padding: 0px; }
+
+div#wrapper { position: absolute; top: 0px; left: 0px; right: 0px; bottom: 0px; overflow: hidden; }
+a { color: #3b3b32; text-decoration: none; }
+a:hover { color: #000; }
+
+h2 { font-family: 'Times'; font-style: italic; font-size: 19px; color: #3a3227; padding: 5px 5px; margin: 0px; }
+h3 { font-size: 15px; color: #3a3227; padding: 0px; margin: 0px; font-weight: normal; }
+h4 { font-family: 'Times'; font-style: italic; }
+
+h5 { margin: 0px; padding: 2px 0px; text-transform: uppercase;}
+
+
+/*
+-----------------------------------------
+ Header
+-----------------------------------------
+*/
+
+section#header { font-family: 'Helvetica Neue'; font-style: italic; height: 70px; width: 250px; border-top: 4px solid #000;}
+section#header h1 { width: 200px; color: #000; font-weight: bold; margin: 0px; font-size:26px; padding: 0px; padding-left: 10px; padding-top: 5px; margin-left: 0px; }
+section#header p { font-family: 'Helvetica Neue'; margin: 0; padding: 0; padding-left: 10px; font-size: 13px; line-height:1.3; color: #555; position: relative; top: -6px; }
+
+
+/*
+-----------------------------------------
+ Navigation
+-----------------------------------------
+*/
+
+#navigation { position: absolute; left: 0px; bottom: 0px; right: 0px; height: 20px; padding: 0px; }
+
+ul#available-sheets { margin: 0px; padding: 0px; white-space: nowrap; }
+ul#available-sheets li { margin: 0px; padding: 0px; display: inline; list-style-type: none; }
+ul#available-sheets a { font-family: 'Times'; font-style: italic; font-size: 14px; padding: 3px 5px; background: #eee;}
+ul#available-sheets a:hover, ul#available-sheets li.selected a { color: #fff; background-color: #000; text-decoration: none; }
+
+/*
+-----------------------------------------
+ Facets
+-----------------------------------------
+*/
+
+div#facets { background: #fff; float: left; }
+
+.facet ul { margin: 0px; padding: 0px; }
+.facet.selected ul { display: block; }
+.facet li { list-style: none; margin: 0; padding: 0.25em; overflow: auto; }
+
+.facet li a { display: block; }
+.facet li a span { float: right; }
+/*.facet li a { float: left; text-decoration: none; }
+.facet li span { float: right; }*/
+.facet .facet-choices { overflow: auto; }
+
+.facet li.facet-choice { color: #888; }
+.facet li.facet-choice a { color: #888; }
+.facet li.facet-choice a:hover { color: black }
+
+.facet li.facet-choice.selected { color: black; }
+.facet li.facet-choice.selected a { color: black;  font-weight: bold;}
+
+.facet h3 { padding: 3px; text-transform: uppercase; font-weight: bold; background: #333; font-size: 11px; margin-top: 1px; }
+.facet h3:hover { background: black; }
+.facet.selected h3 { background: black; }
+.facet h3 a { color: white; display: block; }
+
+
+/*
+-----------------------------------------
+ Documents (Results)
+-----------------------------------------
+*/
+
+div#documents { margin-left: 330px; }
+
+
+
+/*
+-----------------------------------------
+ History
+-----------------------------------------
+*/
+
+#history { overflow: auto; position: absolute; top: 0px; right: 0px; height: 70px; width: 185px; border-top: 4px solid #000; }
+
+/*
+-----------------------------------------
+ Trail
+-----------------------------------------
+*/
+
+#trail { font-size: 20px; position: absolute; top: 70px; left: 0px; right: 200px; height: 30px; border-bottom: 1px solid black; }
+#trail span.item_count { font-size: 25px; font-weight: bold; }
+
+
+
+
+
+

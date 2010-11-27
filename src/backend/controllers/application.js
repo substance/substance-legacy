@@ -1,5 +1,3 @@
-// nothing
-
 var ApplicationController = Backbone.Controller.extend({
   routes: {
     'load/:document': 'loadDocument'
@@ -12,5 +10,4 @@ var ApplicationController = Backbone.Controller.extend({
   loadDocument: function(document) {
     app.loadDocument(document);
   }
-
 });

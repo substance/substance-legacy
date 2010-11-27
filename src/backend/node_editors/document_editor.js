@@ -38,7 +38,7 @@ var DocumentEditor = Backbone.View.extend({
     }, app.model.selectedNode.data)));
     
     // Initialize AttributeEditors for non-unique-strings
-    $('.property-editor').each(function() {
+    $('.attribute-editor').each(function() {
       var key = $(this).attr('key'),
           unique = $(this).hasClass('unique'),
           type = $(this).attr('type'),

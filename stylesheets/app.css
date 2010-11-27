@@ -37,11 +37,10 @@ h2 { font-size: 1.8em; margin-bottom: 1em;}
 */
 
 
-.lpl.texteditor .property-editor input { width: 70%; display: inline; }
-.lpl.texteditor .property-editor input[type=submit] { width: 30px; }
-.property-editor div.items { padding: 10px; }
-
-.property-editor a.remove { color: red; }
+.lpl.texteditor .attribute-editor input { width: 70%; display: inline; }
+.lpl.texteditor .attribute-editor input[type=submit] { width: 30px; }
+.attribute-editor div.items { padding: 10px; }
+.attribute-editor a.remove { color: red; }
 
 /*
  Signup View
