@@ -138,10 +138,8 @@ function createGraph(documents) {
   _.each(documents, function(doc) {
     result[doc.id] = {
       type: '/type/document',
-      properties: {
-        id: doc.id,
-        title: doc.title
-      }
+      id: doc.id,
+      title: doc.title
     };
     
     // Iterate over document attributes
@@ -149,7 +147,7 @@ function createGraph(documents) {
       var val = doc.attributes ? doc.attributes[attr.key] : undefined;
       var def = attr.default ? _.clone(attr.default) : null;
       
-      result[doc.id].properties[attr.key] = val ? val : def;
+      result[doc.id][attr.key] = val ? val : def;
     });
   });
   return result;
