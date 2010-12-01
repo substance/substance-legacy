@@ -1,6 +1,7 @@
 // DocumentBrowser widget / used to select a document to load
 var DocumentBrowser = Backbone.View.extend({
   events: {
+    
   },
   
   initialize: function() {

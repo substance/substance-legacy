@@ -18,7 +18,8 @@ _.extend(Document, {
           id: d.id,
           title: d.title,
           author: d.author,
-          name: d.name
+          name: d.name,
+          attributes: d.attributes
         };
       });
       options.success(JSON.parse(JSON.stringify(result)));

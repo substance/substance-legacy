@@ -25,7 +25,7 @@ var Facets = Backbone.View.extend({
     var view = {facets: []};
     
     app.model.get('types', '/type/document').all('properties').each(function(property, key) {
-      if (property.type !== 'number' && property.type !== 'collection') {
+      if (property.type !== 'number' && property.type !== 'collection' && property.key !== 'id') {
         var facet_choices = [];
         var selected_facet_choices = [];
         property.all("values").each(function(value) {
