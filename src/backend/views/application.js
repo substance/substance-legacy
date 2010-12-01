@@ -5,7 +5,6 @@
 var Application = Backbone.View.extend({
   events: {
     'click a.new-document': 'newDocument',
-    'click a.save-document': 'saveDocument',
     'click a.delete-document': 'deleteDocument',
     'click a.logout': 'logout'
   },
@@ -21,9 +20,6 @@ var Application = Backbone.View.extend({
     
     this.authenticated = false;
     
-    // Initialize controller
-    this.controller = new ApplicationController({app: this});
-    
     // Try to establish a server connection
     this.connect();
     
@@ -31,12 +27,19 @@ var Application = Backbone.View.extend({
       notifier.notify(Notifications.CONNECTED);
       
       remote.Session.init({
-        success: function() { // auto-authenticated
+        success: function(username) { // auto-authenticated
+          that.username = username;
           that.trigger('authenticated');
+          
+          // Start responding to routes
+          Backbone.history.start();
         },
         error: function() {
           // Render landing page
           that.render();
+          
+          // Start responding to routes
+          Backbone.history.start();
         }
       });
     });
@@ -50,9 +53,6 @@ var Application = Backbone.View.extend({
       // Start with a blank document
       that.newDocument();
       
-      // Start responding to routes
-      Backbone.history.start();
-      
     });
     
     this.bind('status:changed', function() {
@@ -61,6 +61,7 @@ var Application = Backbone.View.extend({
         
     this.bind('document:changed', function() {
       document.title = that.model.data.title;
+      
       // Re-render shelf and drawer
       that.shelf.render();
       that.drawer.render();
@@ -129,6 +130,20 @@ var Application = Backbone.View.extend({
     return false;
   },
   
+  registerUser: function() {
+    var that = this;
+    remote.Session.registerUser($('#signup-user').val(), $('#signup-email').val(), $('#signup-password').val(), {
+      success: function(username) { 
+        notifier.notify(Notifications.AUTHENTICATED);
+        that.username = username;
+        that.trigger('authenticated');
+      },
+      error: function() {
+        notifier.notify(Notifications.AUTHENTICATION_FAILED);
+      }
+    });
+  },
+  
   logout: function() {
     var that = this;
     remote.Session.logout({
@@ -150,30 +165,34 @@ var Application = Backbone.View.extend({
     return false;
   },
   
+  createDocument: function(name) {
+    var that = this;
+    remote.Document.create(this.username, name, this.model.serialize(), {
+      success: function() {
+        that.model.id = 'users:'+that.username + ':documents:' + name;
+        that.model.author = that.username;
+        that.model.name = name;
+        that.trigger('document:changed');
+        notifier.notify(Notifications.DOCUMENT_SAVED);
+      },
+      error: function() {
+        notifier.notify(Notifications.DOCUMENT_SAVING_FAILED);
+      }
+    });
+  },
+  
   saveDocument: function() {
     var that = this;
     
     notifier.notify(Notifications.DOCUMENT_SAVING);
-    
-    if (that.model.id) { // Update
-      remote.Document.update(that.model.id, that.model.serialize(), {
-        success: function() {
-          notifier.notify(Notifications.DOCUMENT_SAVED);
-        },
-        error: function() {
-          notifier.notify(Notifications.DOCUMENT_SAVING_FAILED);
-        }
-      });
-    } else { // Create
-      remote.Document.create(that.model.serialize(), {
-        success: function() {
-          notifier.notify(Notifications.DOCUMENT_SAVED);
-        },
-        error: function() {
-          notifier.notify(Notifications.DOCUMENT_SAVING_FAILED);
-        }
-      });
-    }
+    remote.Document.update(that.model.id, that.model.serialize(), {
+      success: function() {
+        notifier.notify(Notifications.DOCUMENT_SAVED);
+      },
+      error: function() {
+        notifier.notify(Notifications.DOCUMENT_SAVING_FAILED);
+      }
+    });
   },
   
   loadDocument: function(id) {
@@ -184,6 +203,7 @@ var Application = Backbone.View.extend({
     remote.Session.getDocument(id, {
       success: function(doc) {       
         that.model = new Document(doc);
+        
         that.render();
         that.init();
         that.trigger('document:changed');
@@ -230,8 +250,6 @@ var Application = Backbone.View.extend({
   
   // Should be rendered just once
   render: function() {
-    
-    
     var that = this;
     // Browser not supported
     if (!window.WebSocket) {
@@ -246,7 +264,7 @@ var Application = Backbone.View.extend({
         // Render Drawer
         this.drawer.render();        
       } else { // Display landing page
-        $(this.el).html(Helpers.renderTemplate('signup'));
+        $(this.el).html(Helpers.renderTemplate('login'));
         $('#login-form').submit(function() {
           that.authenticate();
           return false;
@@ -254,6 +272,15 @@ var Application = Backbone.View.extend({
       }
     }
     return this;
+  },
+  
+  renderSignupForm: function() {
+    var that = this;
+    $(this.el).html(Helpers.renderTemplate('signup'));
+    $('#signup-form').submit(function() {
+      that.registerUser();
+      return false;
+    });
   },
   
   renderDocumentBrowser: function() {
@@ -267,9 +294,10 @@ var Application = Backbone.View.extend({
   }
 });
 
-var remote,   // Remote handle for server-side methods
-    notifier, // Global notifiction system
-    app;      // The Application
+var remote,     // Remote handle for server-side methods
+    notifier,   // Global notifiction system
+    app,        // The Application
+    controller; // Controller responding to routes
 
 (function() {
   $(function() {
@@ -278,5 +306,9 @@ var remote,   // Remote handle for server-side methods
     
     // Start the engines
     app = new Application({el: $('#container')});
+    
+    // Initialize controller
+    controller = new ApplicationController({app: this});
+
   });
 })();

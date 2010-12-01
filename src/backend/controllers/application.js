@@ -1,13 +1,17 @@
 var ApplicationController = Backbone.Controller.extend({
   routes: {
-    'load/:document': 'loadDocument'
+    ':username/:docname': 'loadDocument',
+    'signup': 'renderSignupForm'
   },
 
-  initialize: function() {
-    // this.app = options.app;
+  loadDocument: function(username, docname) {
+    if (app.authenticated) {
+      app.loadDocument('users:'+username+':documents:'+docname);
+    }
+    return false;
   },
-
-  loadDocument: function(document) {
-    app.loadDocument(document);
+  
+  renderSignupForm: function() {
+    app.renderSignupForm();
   }
 });

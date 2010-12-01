@@ -153,7 +153,6 @@ _.extend(Document.prototype, Backbone.Events);
 
 Document.EMPTY = {
   "title": "Untitled",
-  "author": "John Doe",
   "children": ["1", "2"],
   "nodeCount": 4,
   "nodes": {

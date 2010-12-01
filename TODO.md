@@ -7,8 +7,7 @@ Backend Code
 JavaScript
 ==========
 
-* Update SortedHash in Unveil.js
-* Realtime synchronization for Node insertion/deletion.
+* <strike>Realtime synchronization for Node insertion/deletion.</strike>
 
 UI Design Work
 ==============

@@ -42,6 +42,20 @@ h2 { font-size: 1.8em; margin-bottom: 1em;}
 .attribute-editor div.items { padding: 10px; }
 .attribute-editor a.remove { color: red; }
 
+
+/*
+ Create Document View
+----------------------
+*/
+
+
+#lpl_shelf_content input { border: none; padding: 4px; }
+
+#lpl_shelf_content input[disabled=disabled] {
+  background: #aaa;
+  color: #000;
+}
+
 /*
  Signup View
 ----------------------

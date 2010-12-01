@@ -7,7 +7,7 @@ var ContentNode = _.inherits(Data.Node, {
 
     this.g = g;
     this.key = key;
-
+    
     // Node is expectd to have a type property
     this.type = data.type;
 
@@ -17,25 +17,26 @@ var ContentNode = _.inherits(Data.Node, {
   
   build: function() {
     var that = this;
-
+    
     // Init children relationship
-    this.replace('children', new Data.SortedHash());
+    this.replace('children', new Data.Hash());
 
     if (that.data.children) {
       // Register children if there are some
       _.each(that.data.children, function(nodeId) {
         // Find referenced node
         var n = that.g.get('nodes', nodeId);
-
+    
         if (!n) {
           throw 'node '+key+' not found at document';
         }
-
+    
         that.set('children', nodeId, n);
         // Register parent
         n.parent = that;
       });
     }
+    
   },
 
   serialize: function() {
@@ -85,7 +86,11 @@ var ContentGraph = _.inherits(ContentNode, {
     };
     
     this.g = this;
-    this.id = g.id; // if present
+    
+    // if present
+    this.id = g.id;
+    this.name = g.name;
+    this.author = g.author;
     
     // Meta-information that can be attached
     this.attributes = g.attributes || {};
@@ -110,7 +115,7 @@ var ContentGraph = _.inherits(ContentNode, {
 
       n.parent = that;
     });
-
+    
     // Now that all nodes are registered we can build them
     this.all('nodes').each(function(r, key, index) {
       r.build();

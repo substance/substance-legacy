@@ -8,11 +8,11 @@
     <div id="lpl_header"><!-- menubar -->
       <div class="gradient">
         <div id="lpl_logo">
-          SUBSTANCE™ — {{title}}
+          SUBSTANCE™ {{#model}}{{#name}}— {{../author}} / {{../name}} {{/name}}{{/model}}
         </div> 
         <div id="lpl_actions">
           <div class="left">
-            <a href="/" onclick="javascript: return false;" class="header button text new centered new-document">New</a>
+            <a href="#" onclick="javascript: return false;" class="header button text new centered new-document">New</a>
             <a href="/" onclick="javascript: return false;" class="header button text centered save-document">Save</a>
           </div>
           <div class="center">
@@ -72,17 +72,37 @@
     </div>
   </script>
   
-  <script type="text/x-handlebars-template" name="signup">
+  <script type="text/x-handlebars-template" name="login">
     <div id="signup">
       <h3>Login</h3>
       <div class="lpl texteditor">
         <form id="login-form">
           <label for="login-user">username</label>
           <input type="text" name="username" id="login-user" value="demo">
-          <label for="login-password">tags</label>
-          <input type="text" name="password" id="login-password" value="demo">
+          <label for="login-password">password</label>
+          <input type="password" name="password" id="login-password" value="demo">
           <p><br/>
           <input type="submit" value="Login"/>
+          </p>
+          <a href="#signup">Create a free account</a>
+        </form>
+      </div>
+    </div>
+  </script>
+  
+  <script type="text/x-handlebars-template" name="signup">
+    <div id="signup">
+      <h3>Sign up</h3>
+      <div class="lpl texteditor">
+        <form id="signup-form">
+          <label for="signup-user">username</label>
+          <input type="text" name="username" id="signup-user" value="">
+          <label for="signup-email">email</label>
+          <input type="text" name="email" id="signup-email" value="">
+          <label for="signup-password">password</label>
+          <input type="text" name="password" id="signup-password" value="">
+          <p><br/>
+          <input type="submit" value="Create an account"/>
           </p>
         </form>
       </div>
@@ -120,15 +140,27 @@
     </p>
   </script>
   
+  <script type="text/x-handlebars-template" name="create_document">
+    <h3>Create document</h3>
+    <p>Please use a unique document identifier (e.g. "resume").</p>
+    <div>
+      <form id="create-document-form">
+        <label for="document-name">File as:</label>
+        <input type="text" name="user_name" id="user-name" value="michael" disabled="disabled">
+        / <input type="text" name="document_name" id="document-name">
+        <input type="submit" value="Save"/>
+      </form>
+    </div>
+  </script>
+  
   <script type="text/x-handlebars-template" name="browse_documents">
     <div class="wrapper">
-      
       {{#documents}}
-        <a href="#load/{{id}}" key="{{id}}" class="load-document item">
+        <a href="#{{author}}/{{name}}" key="{{author}}/{{name}}" class="load-document item">
           <img src="stylesheets/assets/icons/256-document.png" alt="thumbnail" class="thumbnail" />
           <p class="description">
             {{title}}
-            <span>2010-11-07 13:04</span>
+            <span>{{author}} / {{name}}</span>
           </p>
         </a>
       {{/documents}}
@@ -162,11 +194,6 @@
   <script type="text/x-handlebars-template" name="edit_paragraph">
     <h3>Edit Paragraph</h3>
     <div class="lpl texteditor" id="edit_node">
-      <div class="lpl inputcombo">
-        <!--
-        <label for="content_text">content:</label>
-        <textarea class="property" name="content" id="content_texteditor">{{content}}</textarea>-->
-      </div>
     </div>
   </script>
   
@@ -192,10 +219,6 @@
   
   <script type="text/x-handlebars-template" name="edit_section">
     <h3>Edit section</h3>
-    <div class="lpl texteditor">
-        <!--<label for="section_name">section name</label>
-        <input type="text" name="name" class="property" value="{{name}}" id="section_name">-->
-    </div>
   </script>
   
   <script type="text/x-handlebars-template" name="edit_document">
@@ -323,7 +346,7 @@
   <script src="src/backend/ui/multi_string_editor.js"></script>
   
   <!-- Views -->
-  <script src="src/backend/views/signup_view.js"></script>
+  <script src="src/backend/views/create_document.js"></script>
   <script src="src/backend/views/document_view.js"></script>
   <script src="src/backend/views/shelf.js"></script>
   <script src="src/backend/views/drawer.js"></script>

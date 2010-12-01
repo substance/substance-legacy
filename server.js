@@ -1,21 +1,27 @@
 var express = require('express@1.0.0');
 var app = express.createServer();
 var http = require('http');
-var cradle = require('cradle@0.2.3');
+var cradle = require('cradle');
 var fs = require('fs');
 var Handlebars = require('./lib/handlebars.js');
 var HTMLRenderer = require('./src/server/renderers/html_renderer').Renderer;
 var DNode = require('dnode');
 var qs = require('querystring');
-
 require('./lib/underscore.js');
+
+// Models
+var Document = require('./src/server/models/document.js');
+var User = require('./src/server/models/user.js');
+
 
 // Read Config
 var config = JSON.parse(fs.readFileSync(__dirname+ '/config.json', 'utf-8'));
 
 // Init CouchDB Connection
-var conn = new(cradle.Connection)(config.couchdb.host, config.couchdb.port);
-var db = conn.database(config.couchdb.db);
+global.conn = new(cradle.Connection)(config.couchdb.host, config.couchdb.port);
+global.db = conn.database(config.couchdb.db);
+
+
 
 // Helpers
 // -----------
@@ -29,8 +35,6 @@ _.renderTemplate = function(tpl, view, helpers) {
   return template(view, helpers || {});
 };
 
-
-
 // Express.js Configuration
 // -----------
 
@@ -43,64 +47,6 @@ app.configure(function(){
   app.use(express.staticProvider(__dirname));
   app.use(express.logger({ format: ':method :url' }));
 });
-
-
-// Document Model
-// -----------
-
-var Document = {
-  
-  all: function(options) {
-    db.view('documents/all', function (err, documents) {
-      var result = documents.map(function(d) {
-
-        if (options.withContents) {
-          var res = d.contents;
-          res.attributes = d.contents.attributes;
-          res.id = d._id;
-          return res;
-        } else {
-          return {
-            id: d._id,
-            title: d.contents.title,
-            author: d.contents.author
-          };
-        }
-      });
-      options.success(JSON.parse(JSON.stringify(result)));
-    });
-  },
-  
-  get: function(id, options) {
-    db.get(id, function (err, doc) {      
-      var result = doc.contents;
-      result.id = doc._id;
-      options.success(JSON.parse(JSON.stringify(result)));
-    });
-  },
-
-  create: function(doc, options) {
-    db.insert({contents: doc, type: 'document'}, function (err, result) {
-      options.success(result);
-    });
-  },
-  
-  update: function(id, doc, options) {
-    db.get(id, function (err, prevdoc) {
-      db.save(id, prevdoc.rev, {contents: doc, type: 'document'}, function (err, result) {
-        options.success();
-      });
-    });
-  },
-  
-  destroy: function(id, options) {
-    db.get(id, function (err, prevdoc) {
-      db.remove(id, prevdoc.rev, function (err, result) {
-        options.success()
-      });
-    });
-  }
-};
 
 
 // Empty Data.Graph of documents
@@ -131,7 +77,7 @@ function createGraph(documents) {
       "name": attr.name,
       "unique": attr.unique,
       "expected_type": attr.type
-    }
+    };
   });
   
   // Add registered documents to the output
@@ -152,7 +98,6 @@ function createGraph(documents) {
   });
   return result;
 };
-
 
 
 // Web server
@@ -204,9 +149,7 @@ app.get('/documents.json', function(req, res) {
     withContents: true,
     success: function(documents) {
       var result = createGraph(documents);
-      
       res.send(result);
-      // res.send(JSON.stringify(documents));
     }
   });
 });
@@ -242,21 +185,9 @@ app.listen(config['server_port']);
 // -----------
 
 var sessions = {},        // Keeps a reference to all active sessions
-    cookieSessions = {},
+    cookieSessions = {},  // Remember Client Cookie Sessions
     users = {},           // Keeps a reference to all authenticated users
     documents = {};       // Keeps a reference to all documents that are edited
-
-
-// Registered users
-var registeredUsers = {
-  'michael': {password: 'demo'},
-  'demo': {password: 'demo'},
-  'demo2': {password: 'demo2'},
-  'demo3': {password: 'demo3'},
-  'demo4': {password: 'demo4'},
-  'demo5': {password: 'demo5'},
-  'demo6': {password: 'demo6'}
-};
 
 
 DNode(function (client, conn) {
@@ -372,7 +303,16 @@ DNode(function (client, conn) {
     if (doc) { 
       unregisterDocument(doc);
     }
-
+  };
+  
+  var makeSession = function(username) {
+    sessions[conn.id] = {
+      conn: conn,
+      user: username,
+      client: client,
+      document: null
+    };
+    cookieSessions[getSessionId()] = username;
   };
   
   // Interface for collaborative document editing sessions
@@ -380,20 +320,35 @@ DNode(function (client, conn) {
   
   var Session = {
     authenticate: function(username, password, options) {
-      if (registeredUsers[username] && registeredUsers[username].password == password) {
-
-        sessions[conn.id] = {
-          conn: conn,
-          user: username,
-          client: client,
-          document: null
-        };
-        
-        cookieSessions[getSessionId()] = username;
-        options.success(username);
-      } else {
-        options.error();
-      }
+      User.get(username, {
+        success: function(user) {
+          if (username === user.username && password === user.password) {
+            makeSession(username);
+            options.success(username);
+          } else {
+            options.error();
+          }
+        },
+        error: function() {
+          options.error();
+        }
+      });
+    },
+    
+    registerUser: function(username, email, password, options) {
+      User.create({
+        username: username,
+        email: email,
+        password: password
+      }, {
+        success: function() {
+          makeSession();
+          options.success(username);
+        },
+        error: function(err) {
+          options.error();
+        }
+      });
     },
         
     init: function(options) {
@@ -406,7 +361,7 @@ DNode(function (client, conn) {
           client: client,
           document: null
         };
-        options.success();
+        options.success(username);
       } else {
         options.error();
       }

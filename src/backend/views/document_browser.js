@@ -7,7 +7,7 @@ var DocumentBrowser = Backbone.View.extend({
     var that = this;
     
     // Load all documents available in the Repository
-    // and render DocumentBrowser View
+    // and render the DocumentBrowser
     
     notifier.notify(Notifications.DOCUMENTS_LOADING);
     
