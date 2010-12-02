@@ -15,6 +15,31 @@ var Outline = function(graph) {
     height: settings.height
   });
   
+  // A color per node type
+  var colors = {
+    'document': '#5D95A8',
+    'section': '#729325',
+    'paragraph': '#336881',
+    'image': '#814639'
+  };
+  
+  var userColors = [
+    '#000',
+    '#666',
+    '#222',
+    '#ccc',
+    '#444',
+    '#eee',
+  ]
+  
+  function userColor(user) {
+    if (app.status) {
+      var idx = _.indexOf(app.status.collaborators, user);
+      return idx >= 0 ? userColors [idx] : '#000';
+    }
+    return '#000';
+  }
+  
   // NodeBar Actor
   // ---------------
   
@@ -22,7 +47,7 @@ var Outline = function(graph) {
     constructor: function(node, level, index, height) {
       var that = this;
          
-      // Fix the scene reference problem
+      // Temporarily fix the scene reference problem
       that.scene = scene;
       
       // Super call
@@ -30,11 +55,17 @@ var Outline = function(graph) {
         id: node.key,
         x: 20,
         y: index*height, // offset
-        width: 10,
+        width: 8,
         height: height-2,
         interactive: true,
+        lineWidth: function() {
+          return this.active ? 2 : 0;
+        },
+        strokeStyle: function() {
+          return colors[node.type];
+        },
         fillStyle: function() {
-          return this.active ? '#444' : '#777';
+          return colors[node.type];
         }
       });
       
@@ -42,15 +73,68 @@ var Outline = function(graph) {
       that.add({
         id: node.key+'_label',
         type: 'label',
+        font: 'bold 12px Helvetica, Arial',
         text: function() {
           return node.data.name || node.type;
         },
         x: -10,
-        y: height / 2,
+        y: 10,
         fillStyle: '#000',
         visible: function() {
           return this.parent.active;
         }
+      });
+      
+      
+      // Cursor
+      var cursor = that.add({
+        type: 'path',
+        fillStyle: 'green',
+        lineWidth: 0,
+        points: [
+          { x: 0, y: 0 },
+          { x: 10, y: 0 },
+          { x: 15, y: 5 },
+          { x: 10, y: 10 },
+          { x: 0, y: 10 },
+          { x: 0, y: 0 },
+        ],
+        x: -10,
+        y: parseInt(height/2),
+        
+        fillStyle: function() {
+          if (app.status) {
+            return userColor(app.status.cursors[node.key]);
+          }
+          return '#000';
+        },
+        
+        visible: function() {
+          if (!app.status) { // for unsynced docs
+            return app.model.selectedNode === node;
+          }
+          return app.status.cursors[node.key];
+        },
+        actors: [
+          {
+            type: 'label',
+            text: function() {
+              if (!app.status) { // for unsynced docs
+                return app.username;
+              }              
+              return app.status.cursors[node.key];
+            },
+            // textAlign: 'right',
+            x: -2,
+            y: -5,
+            fillStyle: '#000',
+          }
+        ]
+      });
+      
+      that.bind('click', function() {
+        document.location.href = '#' + node.key;
+        graph.selectNode(node.key);
       });
       
       var h = height / node.all('children').length;
@@ -60,7 +144,6 @@ var Outline = function(graph) {
       });
     }
   });
-  
   
   // Outline related
   // ---------------
@@ -75,6 +158,10 @@ var Outline = function(graph) {
   
   // Instance methods
   return {
+    refresh: function() {
+      scene.render();
+    },
+    
     render: function() {
       scene.start();
     }

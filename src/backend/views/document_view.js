@@ -48,14 +48,14 @@ var DocumentView = Backbone.View.extend({
   
   // Reset to view mode (aka unselect everything)
   reset: function(noBlur) {
-    if (app.model.selectedNode) {
-      this.$('#' + app.model.selectedNode.key).removeClass('selected');
-    }
+    this.$('.content-node.selected').removeClass('selected');
     
     if (!noBlur) $('.content').blur();
     $('#document .node-actions .links').hide();
-    
+
     app.model.selectedNode = null;
+    app.outline.refresh();
+    
     $('#document').removeClass('edit-mode');
     $('#document').removeClass('insert-mode');
     return false;
@@ -151,10 +151,7 @@ var DocumentView = Backbone.View.extend({
   },
   
   selectNode: function(e) {
-    this.reset(true);
     app.model.selectNode($(e.currentTarget).attr('id'));
-    $(e.currentTarget).addClass('selected');
-    $('#document').addClass('edit-mode');
     return false;
   },
   

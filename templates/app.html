@@ -137,7 +137,7 @@
     <p></p>
     <p>Invite new collaborators by sharing this link:</p>
     <p>
-      <input type="text" value="http://{{hostname}}/#load/{{id}}" style="width: 450px;"></input>
+      <input type="text" value="http://{{hostname}}/#{{author}}/{{name}}" style="width: 450px;"></input>
     </p>
   </script>
   
@@ -235,19 +235,17 @@
   
   <!-- content-node templates for the editor -->
   <script type="text/x-handlebars-template" name="document">    
-    <div id="{{node/key}}" class="content-node document">
+    <div id="{{node/key}}" name={{node/key}} class="content-node document">
       <div class="content-node-info">Document</div>
-      <!--<div class="border"></div>-->
       <h1 contenteditable="true" class='content'>{{node/data/title}}</h1>
       {{{content}}}
     </div>
   </script>
   
   <script type="text/x-handlebars-template" name="section">
-    <div id="{{node/key}}" draggable="false" class="content-node section">
+    <div id="{{node/key}}" name={{node/key}} draggable="false" class="content-node section">
       <a href="#" class="remove-node" node="{{node/key}}">X</a>
       <div class="content-node-info" draggable="true">Section <img src="/images/drag-handle.png"></div>
-      <!--<div class="border"></div>-->
       
       <h2 contenteditable="true" class='content'>{{node/data/name}}</h2>
       {{{content}}}
@@ -255,20 +253,17 @@
   </script>
   
   <script type="text/x-handlebars-template" name="paragraph">
-    <div id="{{node/key}}" draggable="false" class="content-node paragraph">
+    <div id="{{node/key}}" name={{node/key}} draggable="false" class="content-node paragraph">
       <a href="#" class="remove-node" node="{{node/key}}">X</a>
       <div class="content-node-info" draggable="true">Paragraph <img src="/images/drag-handle.png"></div>
-      <!--<div class="border"></div>-->
-      
       <div class='content' contenteditable="true">{{{content}}}</div>
     </div>
   </script>
   
   <script type="text/x-handlebars-template" name="image">
-    <div id="{{node/key}}" draggable="false" class="content-node image">
+    <div id="{{node/key}}" name={{node/key}} draggable="false" class="content-node image">
       <a href="#" class="remove-node" node="{{node/key}}">X</a>
       <div class="content-node-info" draggable="true">Image <img src="/images/drag-handle.png"></div>
-      <!--<div class="border"></div>-->
       {{#node/data/url}}
         <img src="{{.}}"/>
       {{/node/data/url}}

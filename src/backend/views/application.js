@@ -57,6 +57,7 @@ var Application = Backbone.View.extend({
     
     this.bind('status:changed', function() {
       that.shelf.render();
+      app.outline.refresh();
     });
         
     this.bind('document:changed', function() {
@@ -243,7 +244,11 @@ var Application = Backbone.View.extend({
     // Inject node editor on every select:node
     this.model.unbind('select:node');
     this.model.bind('select:node', function(node) {
+      that.$('.content-node.selected').removeClass('selected');
+      $('#'+node.key).addClass('selected');
+      $('#document').addClass('edit-mode');
       that.drawer.renderNodeEditor();
+      app.outline.refresh();
     });
     
     this.renderDocumentView();

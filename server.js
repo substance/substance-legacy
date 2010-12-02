@@ -3,11 +3,11 @@ var app = express.createServer();
 var http = require('http');
 var cradle = require('cradle');
 var fs = require('fs');
-var Handlebars = require('./lib/handlebars.js');
+var Handlebars = require('./lib/handlebars');
 var HTMLRenderer = require('./src/server/renderers/html_renderer').Renderer;
 var DNode = require('dnode');
 var qs = require('querystring');
-require('./lib/underscore.js');
+var _ = require('underscore');
 
 // Models
 var Document = require('./src/server/models/document.js');
@@ -20,7 +20,6 @@ var config = JSON.parse(fs.readFileSync(__dirname+ '/config.json', 'utf-8'));
 // Init CouchDB Connection
 global.conn = new(cradle.Connection)(config.couchdb.host, config.couchdb.port);
 global.db = conn.database(config.couchdb.db);
-
 
 
 // Helpers
@@ -91,7 +90,7 @@ function createGraph(documents) {
     // Iterate over document attributes
     _.each(config.settings.attributes, function(attr) {
       var val = doc.attributes ? doc.attributes[attr.key] : undefined;
-      var def = attr.default ? _.clone(attr.default) : null;
+      var def = attr['default'] ? _.clone(attr['default']) : null;
       
       result[doc.id][attr.key] = val ? val : def;
     });
@@ -210,11 +209,21 @@ DNode(function (client, conn) {
   
   var buildStatusPackage = function(documentId) {
     var document = documents[documentId];
+
+    var cursors = {};
+    
+    _.each(document.sessions, function(sessionId) {
+      var session = sessions[sessionId];
+      if (session.cursor) {
+        cursors[session.cursor] = session.user
+      }
+    });
     
     return {
       collaborators: _.map(document.sessions, function(session) {
         return sessions[session].user;
-      })
+      }),
+      cursors: cursors
     };
   };
   
@@ -249,6 +258,17 @@ DNode(function (client, conn) {
     });
   };
   
+  var notifyNodeSelection = function(session, key) {
+    var document = documents[session.document];
+    var user = session.user;
+    
+    session.cursor = key; // reverse lookup of the sessions cursor key
+    
+    _.each(document.sessions, function(sessionId) {
+      sessions[sessionId].client.Session.updateStatus(buildStatusPackage(session.document));
+    });
+  };
+  
   var notifyNodeInsertion = function(documentId, insertionType, type, targetKey, destination) {
     var document = documents[documentId];
     var session = sessions[conn.id];
@@ -277,6 +297,7 @@ DNode(function (client, conn) {
   };
   
   var unregisterDocument = function(documentId) {
+    var session = sessions[conn.id];
     // Unregister the document if no one is editing it any longer
     if (documents[documentId].sessions.length <= 1) {
       // Remove the session from the list of contributors if he's currently editing a doc
@@ -300,7 +321,7 @@ DNode(function (client, conn) {
     delete sessions[conn.id];
     
     // Unregister document
-    if (doc) { 
+    if (doc) {
       unregisterDocument(doc);
     }
   };
@@ -350,7 +371,7 @@ DNode(function (client, conn) {
         }
       });
     },
-        
+    
     init: function(options) {
       // Automatic re-authentication based on cookie-data
       var username = cookieSessions[getSessionId()];
@@ -375,7 +396,12 @@ DNode(function (client, conn) {
       options.success();
     },
     
-    insertNode: function(insertionType, type, targetKey, destination) {
+    selectNode: function(nodeKey) {
+      var session = sessions[conn.id];
+      notifyNodeSelection(session, nodeKey);
+    },
+    
+    insertNode: function(insertionType, type, targetKey, destination) {
       var session = sessions[conn.id];
       notifyNodeInsertion(session.document, insertionType, type, targetKey, destination);
     },
@@ -431,7 +457,8 @@ DNode(function (client, conn) {
         notifyCollaborators(documentId);
       } else {
         documents[documentId] = {
-          sessions: [ conn.id ]
+          sessions: [ conn.id ],
+          cursors: {}
         };
       }
       

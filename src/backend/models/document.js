@@ -139,8 +139,11 @@ var Document = _.inherits(ContentGraph, {
   },
   
   selectNode: function(nodeKey) {
-    this.selectedNode = this.getNode(nodeKey);    
+    this.selectedNode = this.getNode(nodeKey);
     this.trigger('select:node', this.selectedNode);
+    
+    // The server will respond with a status package containing my own cursor position
+    remote.Session.selectNode(nodeKey);
   }
 });
 

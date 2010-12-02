@@ -1,4 +1,4 @@
-require('underscore');
+var _ = require('underscore');
 
 // Document Model
 // -----------
