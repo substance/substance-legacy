@@ -206,6 +206,7 @@ var Application = Backbone.View.extend({
         
         that.render();
         that.init();
+        
         that.trigger('document:changed');
         
         notifier.notify(Notifications.DOCUMENT_LOADED);
@@ -246,6 +247,10 @@ var Application = Backbone.View.extend({
     });
     
     this.renderDocumentView();
+    
+    // Render outline
+    this.outline = new Outline(that.model);
+    this.outline.render();
   },
   
   // Should be rendered just once

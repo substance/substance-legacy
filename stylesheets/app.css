@@ -23,7 +23,7 @@ p { margin: 0 0 15px 0; }
 
 h1, h2, h3, h4, h5, h6 {  margin: 40px 0 15px 0; }
 h3, h4, h5, h6 { margin-top: 20px; }
-h2 { font-size: 1.8em; margin-bottom: 1em;}
+h2 { font-size: 1.8em; margin-bottom: 1em; }
 
 
 :focus {
@@ -176,7 +176,7 @@ h2 { font-size: 1.8em; margin-bottom: 1em;}
 
 #main:not(.drawer-opened) #drawer_content { display: none; }
 
-#main.drawer-opened #document { margin-right: 260px;}
+#main.drawer-opened #document { margin-right: 260px; }
 
 #drawer .toggle a {
   position: absolute;
@@ -190,8 +190,18 @@ h2 { font-size: 1.8em; margin-bottom: 1em;}
 */
 
 #main {
-  margin: 0 80px 0 60px;
+  margin: 0 80px 0 130px;
   padding-top: 100px;
+}
+
+#outline {
+  position: fixed;
+  
+  left: 10px;
+  width: 90px;
+  top: 100px;
+  bottom: 20px;
+/*  background: #eee;*/
 }
 
 #document {

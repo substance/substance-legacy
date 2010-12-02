@@ -26,6 +26,11 @@ var DocumentView = Backbone.View.extend({
     // Bind Events
     app.model.bind('change:node', function(node) {
       that.renderNode(node);
+      
+      // Re-render outline on every node change
+      $('#outline').html('');
+      app.outline = new Outline(app.model);
+      app.outline.render();
     });
         
     // $('#container').click(function(e) {

@@ -63,6 +63,7 @@
   <script type="text/x-handlebars-template" name="editor">
     <div id="lpl_shelf" class="closed">
     </div>
+    <div id="outline"></div>
     <div id="main">
       <div id="drawer">
       </div>
@@ -314,6 +315,7 @@
   <!-- Libraries -->
   <script src="lib/underscore.js"></script>
   <script src="lib/data.js"></script>
+  <script src="lib/unveil.js"></script>
   <script src="lib/backbone.js"></script>
   <script src="dnode.js"></script>
   
@@ -342,6 +344,9 @@
   <script src="src/backend/ui/string_editor.js"></script>
   <script src="src/backend/ui/multi_string_editor.js"></script>
   
+  <!-- Visualizations -->
+  <script src="src/backend/visualizations/outline.js"></script>
+  
   <!-- Views -->
   <script src="src/backend/views/create_document.js"></script>
   <script src="src/backend/views/document_view.js"></script>
@@ -349,8 +354,8 @@
   <script src="src/backend/views/drawer.js"></script>
   <script src="src/backend/views/document_browser.js"></script>
   <script src="src/backend/views/collaborators.js"></script>
-  <script src="src/backend/views/application.js"></script>  
-
+  <script src="src/backend/views/application.js"></script>
+  
 </head>
 <body>
   <div id="container">
