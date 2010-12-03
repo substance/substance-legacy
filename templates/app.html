@@ -170,17 +170,37 @@
   
   <script type="text/x-handlebars-template" name="controls">
     <div class="controls" node="{{node/key}}" destination="{{destination}}">
+      <div class="handle">
+        <a href="#">+</a>
+      </div>
+      <div class="actions">
+        {{#children}}
+          <a href="#" type="{{.}}" node="{{../node/key}}" class="add_child">insert child {{.}}</a>
+        {{/children}}
+
+        {{#siblings}}
+          <a href="#" type="{{.}}" node="{{../node/key}}" class="add_sibling">insert {{.}}</a>
+        {{/siblings}}
+        
+        {{#parentChildren}}
+          <a href="#" type="{{.}}" node="{{../node/parent/key}}" class="add_child">insert child {{.}}</a>
+        {{/parentChildren}}
+
+        {{#parentSiblings}}
+          <a href="#" type="{{.}}" node="{{../node/parent/key}}" class="add_sibling">insert {{.}}</a>
+        {{/parentSiblings}}
+        <br class="clear"/>
+      </div>
+    </div>
+  </script>
+  
+  <!-- <script type="text/x-handlebars-template" name="actions">
+    <div class="controls" node="{{node/key}}" destination="{{destination}}">
       <div class="node-actions" node="{{node/key}}">
         <div class="handle">
           <a href="#">+</a>
           <div class="links">
-            {{#children}}
-              <a href="#" type="{{.}}" node="{{../node/key}}" class="add_child">insert child {{.}}</a>
-            {{/children}}
 
-            {{#siblings}}
-              <a href="#" type="{{.}}" node="{{../node/key}}" class="add_sibling">insert {{.}}</a>
-            {{/siblings}}
           </div>
         </div>
         <br class="clear"/>
@@ -190,7 +210,7 @@
         drop here
       </div>
     </div>
-  </script>
+  </script> -->
   
   <script type="text/x-handlebars-template" name="edit_paragraph">
     <h3>Edit Paragraph</h3>
@@ -245,7 +265,7 @@
   <script type="text/x-handlebars-template" name="section">
     <div id="{{node/key}}" name={{node/key}} draggable="false" class="content-node section">
       <a href="#" class="remove-node" node="{{node/key}}">X</a>
-      <div class="content-node-info" draggable="true">Section <img src="/images/drag-handle.png"></div>
+      <div class="content-node-info" draggable="false">Section</div>
       
       <h2 contenteditable="true" class='content'>{{node/data/name}}</h2>
       {{{content}}}
@@ -254,8 +274,8 @@
   
   <script type="text/x-handlebars-template" name="paragraph">
     <div id="{{node/key}}" name={{node/key}} draggable="false" class="content-node paragraph">
-      <a href="#" class="remove-node" node="{{node/key}}">X</a>
-      <div class="content-node-info" draggable="true">Paragraph <img src="/images/drag-handle.png"></div>
+      <a href="#" class="remove-node remove" node="{{node/key}}">x</a>
+      <div class="content-node-info" draggable="false">Paragraph</div>
       <div class='content' contenteditable="true">{{{content}}}</div>
     </div>
   </script>
@@ -263,7 +283,7 @@
   <script type="text/x-handlebars-template" name="image">
     <div id="{{node/key}}" name={{node/key}} draggable="false" class="content-node image">
       <a href="#" class="remove-node" node="{{node/key}}">X</a>
-      <div class="content-node-info" draggable="true">Image <img src="/images/drag-handle.png"></div>
+      <div class="content-node-info" draggable="false">Image</div>
       {{#node/data/url}}
         <img src="{{.}}"/>
       {{/node/data/url}}

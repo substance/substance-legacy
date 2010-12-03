@@ -6,7 +6,7 @@ var DocumentView = Backbone.View.extend({
     'mouseover .content-node': 'highlightNode',
     'mouseout .content-node': 'unhighlightNode',
     'click .content-node': 'selectNode',
-    'click .node-actions .handle': 'showActions',
+    'click .controls .handle': 'showActions',
     
     // Actions
     'click a.add_child': 'addChild',
@@ -48,17 +48,22 @@ var DocumentView = Backbone.View.extend({
   
   // Reset to view mode (aka unselect everything)
   reset: function(noBlur) {
-    this.$('.content-node.selected').removeClass('selected');
-    
     if (!noBlur) $('.content').blur();
-    $('#document .node-actions .links').hide();
-
+    
     app.model.selectedNode = null;
     app.outline.refresh();
+      
+    this.resetSelection()
+
+    return false;
+  },
+  
+  resetSelection: function() {
+    this.$('.content-node.selected').removeClass('selected');
+    $('#document .controls.active').removeClass('active');
     
     $('#document').removeClass('edit-mode');
     $('#document').removeClass('insert-mode');
-    return false;
   },
   
   dragStart: function(e) {
@@ -126,7 +131,10 @@ var DocumentView = Backbone.View.extend({
   
   showActions: function(e) {
     this.reset();
-    $(e.target).parent().parent().find('.links').show();
+    
+    $(e.target).parent().parent().addClass('active');
+        
+    // $(e.target).parent().parent().find('.actions').show();
     // Enable insert mode
     $('#document').addClass('insert-mode');
     return false;
@@ -164,7 +172,7 @@ var DocumentView = Backbone.View.extend({
   },
   
   addSibling: function(e) {
-    switch($(e.currentTarget).parent().parent().parent().parent().attr('destination')) {
+    switch($(e.currentTarget).parent().parent().attr('destination')) {
       case 'before': 
         app.model.createSiblingBefore($(e.currentTarget).attr('type'), $(e.currentTarget).attr('node'));
         

@@ -70,24 +70,25 @@ var Outline = function(graph) {
       });
       
       // Add node label
-      that.add({
-        id: node.key+'_label',
-        type: 'label',
-        font: 'bold 12px Helvetica, Arial',
-        text: function() {
-          return node.data.name || node.type;
-        },
-        x: -10,
-        y: 10,
-        fillStyle: '#000',
-        visible: function() {
-          return this.parent.active;
-        }
-      });
+      // that.add({
+      //   id: node.key+'_label',
+      //   type: 'label',
+      //   font: 'bold 12px Helvetica, Arial',
+      //   text: function() {
+      //     return node.data.name || node.type;
+      //   },
+      //   x: -10,
+      //   y: 10,
+      //   fillStyle: '#000',
+      //   visible: function() {
+      //     return this.parent.active;
+      //   }
+      // });
       
       
       // Cursor
       var cursor = that.add({
+        id: node.key+'_cursor',
         type: 'path',
         fillStyle: 'green',
         lineWidth: 0,
@@ -116,19 +117,19 @@ var Outline = function(graph) {
           return app.status.cursors[node.key];
         },
         actors: [
-          {
-            type: 'label',
-            text: function() {
-              if (!app.status) { // for unsynced docs
-                return app.username;
-              }              
-              return app.status.cursors[node.key];
-            },
-            // textAlign: 'right',
-            x: -2,
-            y: -5,
-            fillStyle: '#000',
-          }
+          // {
+          //   type: 'label',
+          //   text: function() {
+          //     if (!app.status) { // for unsynced docs
+          //       return app.username;
+          //     }              
+          //     return app.status.cursors[node.key];
+          //   },
+          //   // textAlign: 'right',
+          //   x: -2,
+          //   y: -5,
+          //   fillStyle: '#000',
+          // }
         ]
       });
       

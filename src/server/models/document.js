@@ -42,14 +42,18 @@ _.extend(Document, {
   },
 
   create: function(username, name, doc, options) {
-    db.save('users:'+username+':documents:'+name, {
-      author: username,
-      name: name,
-      contents: doc,
-      type: 'document'
-    }, function (err, result) {
-      err ? options.error(err) : options.success();
-    });
+    if (username.length>0 && name.length>0) {
+      db.save('users:'+username+':documents:'+name, {
+        author: username,
+        name: name,
+        contents: doc,
+        type: 'document'
+      }, function (err, result) {
+        err ? options.error(err) : options.success();
+      });
+    } else {
+      options.error('Document name missing');
+    }
   },
 
   update: function(id, doc, options) {

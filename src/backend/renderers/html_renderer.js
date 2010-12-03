@@ -4,13 +4,27 @@
 var HTMLRenderer = function(root) {
   
   var renderControls = function(node, destination) {
+    
     if (destination === 'after' || (node.parent && node.parent.all('children').index(node.key) === 0)) {
+      
+      var children = destination !== 'before' && node.all('children').length === 0 ? ContentNode.types[node.type].allowedChildren : [];
+      var siblings = node.parent ? ContentNode.types[node.parent.type].allowedChildren : [];
+      
+      // Check for collapsed actions, in this case the node also takes over the actions of the parent node
+      if (node.parent && node.parent.all('children').last() === node && destination === 'after') {
+        var parentChildren = destination !== 'before' && node.parent.all('children').length === 0 ? ContentNode.types[node.parent.type].allowedChildren : [];
+        var parentSiblings = node.parent.parent ? ContentNode.types[node.parent.parent.type].allowedChildren : [];
+        // console.log(node.type+ ": "+destination+" is a collapsed node");
+      }
+      
       return Helpers.renderTemplate('controls', {
         destination: destination,
         node: node,
-        children: destination !== 'before' && node.all('children').length === 0 ? ContentNode.types[node.type].allowedChildren : [],
-        siblings: node.parent ? ContentNode.types[node.parent.type].allowedChildren : [],
-        allowedTypes: node.parent ? ContentNode.types[node.parent.type].allowedChildren.join(' ') : []
+        children: children,
+        siblings: siblings,
+        parentChildren: parentChildren,
+        parentSiblings: parentSiblings,
+        allowedTypes: node.parent ? ContentNode.types[node.parent.type].allowedChildren.join(' ') : [],
       });
     } else return '';
   };
@@ -21,12 +35,14 @@ var HTMLRenderer = function(root) {
       var content = '';
       
       if (node.all('children').length === 0) {
+        // Empty document
         content += renderControls(node, 'after');
       } else {
-        node.all('children').each(function(node, key, index) {
-          content += renderControls(node, 'before');
-          content += renderers[node.type](node);
-          content += renderControls(node, 'after');
+        node.all('children').each(function(child, key, index) {
+          content += renderControls(child, 'before');
+          content += renderers[child.type](child);
+          if (child.all('children').length === 0)
+            content += renderControls(child, 'after');
         });
       }
       
@@ -40,16 +56,17 @@ var HTMLRenderer = function(root) {
     section: function(node) {
       var content = '';
       
-      node.all('children').each(function(node, key, index) { 
-        content += renderControls(node, 'before');
-        content += renderers[node.type](node);
-        content += renderControls(node, 'after');
+      node.all('children').each(function(child, key, index) { 
+        content += renderControls(child, 'before');
+        content += renderers[child.type](child);
+        if (child.all('children').length === 0)
+          content += renderControls(child, 'after');
       });
       
       // TODO: ...index(node.key) is a performance killer
       return Helpers.renderTemplate('section', {
         node: node,
-        firstNode: node.parent ? node.parent.all('children').index(node.key) === 0 : false,
+        // firstNode: node.parent ? node.parent.all('children').index(node.key) === 0 : false,
         content: content
       });
     },
@@ -59,7 +76,7 @@ var HTMLRenderer = function(root) {
       
       return Helpers.renderTemplate('paragraph', {
         node: node,
-        firstNode: node.parent ? node.parent.all('children').index(node.key) === 0 : false,
+        // firstNode: node.parent ? node.parent.all('children').index(node.key) === 0 : false,
         content: converter.makeHtml(node.data.content)
       });
     },
@@ -67,7 +84,7 @@ var HTMLRenderer = function(root) {
     image: function(node) {
       return Helpers.renderTemplate('image', {
         node: node,
-        firstNode: node.parent ? node.parent.all('children').index(node.key) === 0 : false
+        // firstNode: node.parent ? node.parent.all('children').index(node.key) === 0 : false
       });
     }
   };
