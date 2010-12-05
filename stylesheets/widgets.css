@@ -25,7 +25,8 @@ a {color:rgba(148,207,13,1);text-decoration:none;}
   position:fixed;
   height:0px;
   width:100%;
-  background: #2d2f2f url(assets/texture_carbon.jpg);
+  background: #f0f1eb;
+  /*  background: #2d2f2f url(assets/texture_carbon.jpg);*/
   -webkit-box-shadow: inset 0px 1px 16px rgba(0,0,0,0.75);
   -moz-box-shadow:    inset 0px 1px 16px rgba(0,0,0,0.75);
   box-shadow:         inset 0px 1px 16px rgba(0,0,0,0.75);
@@ -118,7 +119,7 @@ a {color:rgba(148,207,13,1);text-decoration:none;}
 #lpl_shelf_content {
   position:relative;
   height:0;
-  margin-top:40px;
+  margin-top:20px;
   padding:5px 10px;
   overflow:hidden;
 }
@@ -179,7 +180,7 @@ a {color:rgba(148,207,13,1);text-decoration:none;}
   display:block;
   text-align:center;
   margin:5px;
-  text-shadow:0px 1px 2px rgb(0,0,0);
+/*  text-shadow:0px 1px 2px rgb(0,0,0);*/
 }
 
 #lpl_shelf_content .item p span {
@@ -191,36 +192,36 @@ a {color:rgba(148,207,13,1);text-decoration:none;}
 
 #lpl_header {
   position:absolute;
-  height:50px;
+  height:30px;
   width:100%;
-  bottom:-50px;
-  text-shadow:0px -1px 0px rgb(0,0,0);
-  background:#222;
+  bottom:-30px;
+  color: #585a4f;
+/*  text-shadow:0px -1px 0px rgb(0,0,0);*/
+  background:#f0f1eb;
   /* background: url(assets/texture_carbon.jpg); */
-  border-top:1px solid #333;
-  border-bottom:1px solid #222;
-  -webkit-box-shadow: 0px 2px 3px rgba(0,0,0,0.75);
+  border-bottom:2px solid #d8dad0;
+/*  -webkit-box-shadow: 0px 2px 3px rgba(0,0,0,0.75);
   -moz-box-shadow:    0px 2px 3px rgba(0,0,0,0.75);
   box-shadow:         0px 2px 3px rgba(0,0,0,0.75);
+*/  
   z-index:10000;
 }
 
-#lpl_header > .gradient {
+/*#lpl_header > .gradient {
   position:absolute;
   width:100%;
   height:100%;
   background:rgb(53,56,53);
   background:-webkit-gradient(linear, 0% 0%, 0% 100%, from(rgba(67,70,67,1)), to(rgba(35,37,35,1)));
   background: -moz-linear-gradient(top, rgba(67,70,67,1), rgba(35,37,35,1));
-}
+}*/
 
 #lpl_logo {
   position:absolute;
   width:240px;
-  height:50px;
-  padding:0 10px;
+  padding:0 12px;
   font-weight:bold;
-  line-height:48px;
+  line-height:30px;
 }
 
 #lpl_actions {
@@ -235,22 +236,25 @@ a {color:rgba(148,207,13,1);text-decoration:none;}
 #lpl_actions .header.button {
   display:block;
   position:relative;
+  color: #585a4f;
   float:left;
   margin:3px 3px 0 0;
   width:42px;
-  height:42px;
+  height:20px;
   text-align:center;
   text-indent:-5000px;
   background:rgba(128,128,128,0.1);
   background:-webkit-gradient(linear, 0% 0%, 0% 100%, from(rgba(255,255,255,0.05)), color-stop(0.5, rgba(128,128,128,0)), to(rgba(0,0,0,0.1)));
   background: -moz-linear-gradient(top, rgba(255,255,255,0.05), rgba(128,128,128,0) 50%, rgba(0,0,0,0.1));
-  border:1px solid rgba(0,0,0,0.5);
+  border:1px solid #d8dad0;
+/*  rgba(0,0,0,0.5);*/
   -webkit-border-radius:7px;
   -moz-border-radius:   7px;
   border-radius:        7px;
-  -webkit-box-shadow: inset 0px 0px 1px rgba(255,255,255,0.15), inset 0px 1px 1px rgba(0,0,0,0.5), 0px 1px 1px rgba(255,255,255,0.1);
+/*  -webkit-box-shadow: inset 0px 0px 1px rgba(255,255,255,0.15), inset 0px 1px 1px rgba(0,0,0,0.5), 0px 1px 1px rgba(255,255,255,0.1);
   -moz-box-shadow:    inset 0px 0px 1px rgba(255,255,255,0.15), inset 0px 1px 1px rgba(0,0,0,0.5), 0px 1px 1px rgba(255,255,255,0.1);
   box-shadow:         inset 0px 0px 1px rgba(255,255,255,0.15), inset 0px 1px 1px rgba(0,0,0,0.5), 0px 1px 1px rgba(255,255,255,0.1);
+*/
 }
 
 #lpl_actions .header.button:hover {
@@ -279,25 +283,28 @@ a {color:rgba(148,207,13,1);text-decoration:none;}
 
 #lpl_actions .header.button.text {
   width:auto;
-  height:42px;
-  padding:6px 12px;
+  height:20px;
+  
+  padding:50px 12px;
+  
+  padding-top: -10px;
   font-size:12px;
-  line-height:13px;
+  line-height:3px;
   text-align:center;
   text-indent:0px;
   text-transform:none;
 }
 
 #lpl_actions .header.button.text:active {
-  padding:7px 12px;
+  padding:5px 12px;
 }
 
 #lpl_actions .header.button.text.centered {
-  padding:13px 16px;
+  padding:11px 16px;
 }
 
 #lpl_actions .header.button.text.centered:active {
-  padding:14px 16px;
+  padding:12px 16px;
 }
 
 
@@ -309,8 +316,6 @@ a {color:rgba(148,207,13,1);text-decoration:none;}
   background:#ad0;
   overflow:hidden;
 }
-
-
 
 
 

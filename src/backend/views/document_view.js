@@ -24,20 +24,17 @@ var DocumentView = Backbone.View.extend({
     var that = this;
     
     // Bind Events
-    app.model.bind('change:node', function(node) {
+    
+    app.editor.model.bind('change:node', function(node) {
       that.renderNode(node);
       
       // Re-render outline on every node change
       $('#outline').html('');
-      app.outline = new Outline(app.model);
-      app.outline.render();
+      
+      app.editor.outline = new Outline(app.editor.model);
+      app.editor.outline.render();
     });
-        
-    // $('#container').click(function(e) {
-    //   that.reset();
-    //   return true;
-    // });
-    
+
     // TODO: Select the document node on-init
     
     $(document).unbind('keyup');
@@ -50,8 +47,8 @@ var DocumentView = Backbone.View.extend({
   reset: function(noBlur) {
     if (!noBlur) $('.content').blur();
     
-    app.model.selectedNode = null;
-    app.outline.refresh();
+    app.editor.model.selectedNode = null;
+    app.editor.outline.refresh();
       
     this.resetSelection()
 
@@ -66,75 +63,74 @@ var DocumentView = Backbone.View.extend({
     $('#document').removeClass('insert-mode');
   },
   
-  dragStart: function(e) {
-    var dt = e.originalEvent.dataTransfer,
-        sourceKey = $(e.target).parent().attr('id'),
-        node = app.model.get('nodes', sourceKey);
-        
-    dt.setData("Text", sourceKey);
-    $('#document').addClass('structure-mode');
-    
-    this.draggedNode = node;
-    
-    // TODO: Hide useless placeholders
-    $('#document .node-placeholder[node='+sourceKey+']').addClass('invisible');
-    
-    // Hide placeholder where the dragged type can't be placed
-    $('.node-placeholder:not(.'+node.type+')').addClass('hidden');
-    
-    return true;
-  },
+  // dragStart: function(e) {
+  //   var dt = e.originalEvent.dataTransfer,
+  //       sourceKey = $(e.target).parent().attr('id'),
+  //       node = app.model.get('nodes', sourceKey);
+  //       
+  //   dt.setData("Text", sourceKey);
+  //   $('#document').addClass('structure-mode');
+  //   
+  //   this.draggedNode = node;
+  //   
+  //   // TODO: Hide useless placeholders
+  //   $('#document .node-placeholder[node='+sourceKey+']').addClass('invisible');
+  //   
+  //   // Hide placeholder where the dragged type can't be placed
+  //   $('.node-placeholder:not(.'+node.type+')').addClass('hidden');
+  //   
+  //   return true;
+  // },
+  // 
+  // dragEnter: function(e) {
+  //   if (!$(e.target).hasClass('node-placeholder')) return true;
+  //   $(e.target).addClass('dragover');
+  //   
+  //   // TODO: Preview node-content?
+  //   return false;
+  // },
   
-  dragEnter: function(e) {
-    if (!$(e.target).hasClass('node-placeholder')) return true;
-    $(e.target).addClass('dragover');
-    
-    // TODO: Preview node-content?
-    return false;
-  },
+  // dragLeave: function(e) {
+  //   if (!$(e.target).hasClass('node-placeholder')) return true;
+  //   $(e.target).removeClass('dragover');
+  //   return false;
+  // },
+  // 
+  // dragOver: function(e) {
+  //   // Allow drops within node-placeholder elements
+  //   if (!$(e.target).hasClass('node-placeholder')) return true;      
+  //   
+  //   return false;
+  // },
+  // 
+  // dragEnd: function() {
+  //   $('#document').removeClass('structure-mode');
+  //   $('#document .node-placeholder.hidden').removeClass('hidden');
+  // },
   
-  dragLeave: function(e) {
-    if (!$(e.target).hasClass('node-placeholder')) return true;
-    $(e.target).removeClass('dragover');
-    return false;
-  },
-  
-  dragOver: function(e) {
-    // Allow drops within node-placeholder elements
-    if (!$(e.target).hasClass('node-placeholder')) return true;      
-    
-    return false;
-  },
-  
-  dragEnd: function() {
-    $('#document').removeClass('structure-mode');
-    $('#document .node-placeholder.hidden').removeClass('hidden');
-  },
-  
-  drop: function(e) {
-    var $target = $(e.target);
-    $('#document').removeClass('structure-mode');
-    $('#document .node-placeholder.hidden').removeClass('hidden');
-    
-    if (!$target.hasClass('node-placeholder')) return true;
-    var dt = e.originalEvent.dataTransfer;
-    
-    // Move node to new position
-    app.model.moveNode(dt.getData("Text"), $target.attr('node'), $target.parent().attr('destination'));
-    
-    // Broadcast move node command
-    remote.Session.moveNode(dt.getData("Text"), $target.attr('node'), $target.parent().attr('destination'));
-    
-    e.stopPropagation();
-    return false;
-  },
+  // drop: function(e) {
+  //   var $target = $(e.target);
+  //   $('#document').removeClass('structure-mode');
+  //   $('#document .node-placeholder.hidden').removeClass('hidden');
+  //   
+  //   if (!$target.hasClass('node-placeholder')) return true;
+  //   var dt = e.originalEvent.dataTransfer;
+  //   
+  //   // Move node to new position
+  //   app.model.moveNode(dt.getData("Text"), $target.attr('node'), $target.parent().attr('destination'));
+  //   
+  //   // Broadcast move node command
+  //   remote.Session.moveNode(dt.getData("Text"), $target.attr('node'), $target.parent().attr('destination'));
+  //   
+  //   e.stopPropagation();
+  //   return false;
+  // },
   
   showActions: function(e) {
     this.reset();
     
     $(e.target).parent().parent().addClass('active');
-        
-    // $(e.target).parent().parent().find('.actions').show();
+    
     // Enable insert mode
     $('#document').addClass('insert-mode');
     return false;
@@ -145,7 +141,7 @@ var DocumentView = Backbone.View.extend({
   },
   
   render: function() {
-    $(this.el).html(new HTMLRenderer(app.model).render());
+    $(this.el).html(new HTMLRenderer(app.editor.model).render());
   },
   
   highlightNode: function(e) {
@@ -159,12 +155,12 @@ var DocumentView = Backbone.View.extend({
   },
   
   selectNode: function(e) {
-    app.model.selectNode($(e.currentTarget).attr('id'));
+    app.editor.model.selectNode($(e.currentTarget).attr('id'));
     return false;
   },
   
   addChild: function(e) {
-    app.model.createChild($(e.currentTarget).attr('type'), $(e.currentTarget).attr('node'));
+    app.model.model.createChild($(e.currentTarget).attr('type'), $(e.currentTarget).attr('node'));
     
     // Broadcast insert node command
     remote.Session.insertNode('child', $(e.currentTarget).attr('type'), $(e.currentTarget).attr('node'), 'after');
@@ -174,13 +170,13 @@ var DocumentView = Backbone.View.extend({
   addSibling: function(e) {
     switch($(e.currentTarget).parent().parent().attr('destination')) {
       case 'before': 
-        app.model.createSiblingBefore($(e.currentTarget).attr('type'), $(e.currentTarget).attr('node'));
+        app.editor.model.createSiblingBefore($(e.currentTarget).attr('type'), $(e.currentTarget).attr('node'));
         
         // Broadcast insert node command
         remote.Session.insertNode('sibling', $(e.currentTarget).attr('type'), $(e.currentTarget).attr('node'), 'before');
       break;
       case 'after':
-        app.model.createSiblingAfter($(e.currentTarget).attr('type'), $(e.currentTarget).attr('node'));
+        app.editor.model.createSiblingAfter($(e.currentTarget).attr('type'), $(e.currentTarget).attr('node'));
         
         // Broadcast insert node command
         remote.Session.insertNode('sibling', $(e.currentTarget).attr('type'), $(e.currentTarget).attr('node'), 'after');
@@ -190,7 +186,7 @@ var DocumentView = Backbone.View.extend({
   },
   
   removeNode: function(e) {
-    app.model.removeNode($(e.currentTarget).attr('node'));
+    app.editor.model.removeNode($(e.currentTarget).attr('node'));
     
     // Broadcast remove node command
     remote.Session.removeNode($(e.currentTarget).attr('node'));

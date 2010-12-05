@@ -1,7 +1,8 @@
 var Facets = Backbone.View.extend({
   
-  initialize: function() {
-    this.selectedFacet = app.model.get('types', '/type/document').all('properties').first().key;
+  initialize: function(options) {
+    this.browser = options.browser;
+    this.selectedFacet = this.browser.model.get('types', '/type/document').all('properties').first().key;
     this.facetChoices = {};
   },
   
@@ -24,7 +25,7 @@ var Facets = Backbone.View.extend({
     var that = this;
     var view = {facets: []};
     
-    app.model.get('types', '/type/document').all('properties').each(function(property, key) {
+    this.browser.model.get('types', '/type/document').all('properties').each(function(property, key) {
       if (property.type !== 'number' && property.type !== 'collection' && property.key !== 'id') {
         var facet_choices = [];
         var selected_facet_choices = [];
@@ -32,16 +33,20 @@ var Facets = Backbone.View.extend({
           if (that.facetChoices[key+'::CONTAINS::'+value.val] === true) {
             selected_facet_choices.push({excaped_value: escape(value.val), value: value.val, item_count: value.all('objects').length});
           } else {
-            facet_choices.push({excaped_value: escape(value.val), value: value.val, item_count: value.all('objects').length});
+            if (value.val && value.val.length > 0) {
+              facet_choices.push({excaped_value: escape(value.val), value: value.val, item_count: value.all('objects').length});
+            }
           }
         });
         
-        view.facets.push({
-          property: key,
-          property_name: property.name,
-          facet_choices: facet_choices,
-          selected_facet_choices: selected_facet_choices
-        });
+        if (!_.include(["title", "name"], property.key) && facet_choices.length + selected_facet_choices.length > 0) {
+          view.facets.push({
+            property: key,
+            property_name: property.name,
+            facet_choices: facet_choices,
+            selected_facet_choices: selected_facet_choices
+          });          
+        }
       }
     });
     

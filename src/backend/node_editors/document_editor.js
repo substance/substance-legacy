@@ -8,10 +8,10 @@ var DocumentEditor = Backbone.View.extend({
     this.render();
     
     if (!$('#main').hasClass('drawer-opened')) {
-      app.drawer.toggle();
+      app.editor.drawer.toggle();
     }
     
-    this.$node = $('#' + app.model.selectedNode.key + ' > .content');
+    this.$node = $('#' + app.editor.model.selectedNode.key + ' > .content');
     this.$node.unbind('keydown');
     this.$node.bind('keydown', function(event) {
       that.updateNode();
@@ -21,12 +21,13 @@ var DocumentEditor = Backbone.View.extend({
   updateNode: function() {
     var that = this;
     setTimeout(function() {
-      app.model.updateSelectedNode({
+      app.editor.model.updateSelectedNode({
         title: that.$node.html(),
         publication_date: $('#editor input[name=publication_date]').val(),
         tags: $('#editor textarea[name=document_tags]').val()
       });
-      app.trigger('document:changed');
+      
+      app.editor.trigger('document:changed');
     }, 5);
   },
   
@@ -35,18 +36,18 @@ var DocumentEditor = Backbone.View.extend({
     
     $(this.el).html(Helpers.renderTemplate('edit_document', _.extend({
       attributes: settings.attributes
-    }, app.model.selectedNode.data)));
+    }, app.editor.model.selectedNode.data)));
     
     // Initialize AttributeEditors for non-unique-strings
     $('.attribute-editor').each(function() {
       var key = $(this).attr('key'),
           unique = $(this).hasClass('unique'),
           type = $(this).attr('type'),
-          value = app.model.attributes[key]; // property value / might be an array or a single value
+          value = app.editor.model.attributes[key]; // property value / might be an array or a single value
 
       var editor = that.createAttributeEditor(key, type, unique, value, $(this));
       editor.bind('changed', function() {
-        app.model.attributes[key] = editor.value();
+        app.editor.model.attributes[key] = editor.value();
       });
     });
   },
@@ -60,9 +61,9 @@ var DocumentEditor = Backbone.View.extend({
           return this.createMultiStringEditor(key, value, target);
         }
       break;
-      case 'number': 
+      case 'number':
       break;
-      case 'boolean': 
+      case 'boolean':
       break;
     }
   },

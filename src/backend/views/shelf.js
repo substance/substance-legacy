@@ -1,7 +1,4 @@
 var Shelf = Backbone.View.extend({
-  events: {
-
-  },
   
   initialize: function() {
     var that = this;
@@ -18,7 +15,7 @@ var Shelf = Backbone.View.extend({
   },
   
   saveDocument: function(e) {
-    if (app.model.id) {
+    if (app.editor.model.id) {
       app.saveDocument();
     } else {
       this.toggle('CreateDocument', e);
@@ -47,46 +44,19 @@ var Shelf = Backbone.View.extend({
     var that = this;
     
     $(this.el).html(Helpers.renderTemplate('shelf', {
-      title: app.model ? app.model.data.title : 'Untitled',
-      id: app.model ? app.model.id : null,
-      model: app.model,
-      num_collaborators: app.status ? app.status.collaborators.length : null,
+      title: app.editor.model ? app.editor.model.data.title : 'Untitled',
+      id: app.editor.model ? app.editor.model.id : null,
+      model: app.editor.model,
+      num_collaborators: app.editor.status ? app.editor.status.collaborators.length : null,
       username: app.username
     }));
-    
-    this.bindEvents();
   },
-  
-  // bind events manually since declarative events do not work here for some reason
-  bindEvents: function() {
-    $(this.el).find('*').unbind();
-    
-    var that = this;
-    
-    this.$('a.browse-documents').bind('click', function(e) {
-      that.toggle('DocumentBrowser', e);
-    });
-    
-    this.$('a.view-collaborators').bind('click', function(e) {
-      that.toggle('Collaborators', e);
-    });
-    
-    this.$('a.save-document').bind('click', function(e) {
-      that.saveDocument(e);
-    });
-    
-    this.$('#create-document-form').submit(function(e) {
-      app.createDocument(that.$('#document-name').val());
-      that.close();
-      return false;
-    });
-  },
+
   
   toggle: function(module, e) {
     if (!$(e.target).hasClass('selected')) { // Open
       this.shelfContent = new window[module]({el: this.$('#lpl_shelf_content')});
       this.shelfContent.render();
-      this.bindEvents();
       $('#lpl_shelf').removeClass('closed');
       $('#lpl_shelf').addClass('open');
       $('#lpl_actions .header.button').removeClass('selected');

@@ -133,7 +133,10 @@ var ContentGraph = _.inherits(ContentNode, {
       nodes: {},
       children: [],
       attributes: this.attributes,
-      nodeCount: this.nodeCount    
+      nodeCount: this.nodeCount,
+      name: this.name,
+      author: this.author,
+      id: this.id
     });
 
     this.all('children').each(function(node, key, index) {

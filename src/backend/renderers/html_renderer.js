@@ -41,8 +41,14 @@ var HTMLRenderer = function(root) {
         node.all('children').each(function(child, key, index) {
           content += renderControls(child, 'before');
           content += renderers[child.type](child);
-          if (child.all('children').length === 0)
-            content += renderControls(child, 'after');
+          content += renderControls(child, 'after');
+          // if (child.all('children').length === 0)
+          //   content += renderControls(child, 'after');
+          // else {
+          //   console.log('meh');
+          //   console.log(app.editor.model);
+          //   content += "<div>"+child.type+" has "+child.all('children').length+" children</div>";
+          // }
         });
       }
       
@@ -59,14 +65,13 @@ var HTMLRenderer = function(root) {
       node.all('children').each(function(child, key, index) { 
         content += renderControls(child, 'before');
         content += renderers[child.type](child);
-        if (child.all('children').length === 0)
-          content += renderControls(child, 'after');
+        // if (child.all('children').length === 0)
+        content += renderControls(child, 'after');
       });
       
       // TODO: ...index(node.key) is a performance killer
       return Helpers.renderTemplate('section', {
         node: node,
-        // firstNode: node.parent ? node.parent.all('children').index(node.key) === 0 : false,
         content: content
       });
     },
@@ -76,7 +81,6 @@ var HTMLRenderer = function(root) {
       
       return Helpers.renderTemplate('paragraph', {
         node: node,
-        // firstNode: node.parent ? node.parent.all('children').index(node.key) === 0 : false,
         content: converter.makeHtml(node.data.content)
       });
     },
@@ -84,7 +88,6 @@ var HTMLRenderer = function(root) {
     image: function(node) {
       return Helpers.renderTemplate('image', {
         node: node,
-        // firstNode: node.parent ? node.parent.all('children').index(node.key) === 0 : false
       });
     }
   };

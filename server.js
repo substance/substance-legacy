@@ -15,7 +15,7 @@ var User = require('./src/server/models/user.js');
 
 
 // Read Config
-var config = JSON.parse(fs.readFileSync(__dirname+ '/config.json', 'utf-8'));
+global.config = JSON.parse(fs.readFileSync(__dirname+ '/config.json', 'utf-8'));
 
 // Init CouchDB Connection
 global.conn = new(cradle.Connection)(config.couchdb.host, config.couchdb.port);
@@ -46,57 +46,6 @@ app.configure(function(){
   app.use(express.staticProvider(__dirname));
   app.use(express.logger({ format: ':method :url' }));
 });
-
-
-// Empty Data.Graph of documents
-
-function createGraph(documents) {
-  var result = {
-    "/type/document": {
-      "type": "type",
-      "name": "Document",
-      "properties": {
-        "id": {
-          "name": "Document Id",
-          "unique": true,
-          "expected_type": "string"          
-        },
-        "title": {
-          "name": "Document Title",
-          "unique": true,
-          "expected_type": "string"
-        }
-      }
-    }
-  };
-  
-  // Append document attributes as properties
-  _.each(config.settings.attributes, function(attr) {
-    result["/type/document"].properties[attr.key] = {
-      "name": attr.name,
-      "unique": attr.unique,
-      "expected_type": attr.type
-    };
-  });
-  
-  // Add registered documents to the output
-  _.each(documents, function(doc) {
-    result[doc.id] = {
-      type: '/type/document',
-      id: doc.id,
-      title: doc.title
-    };
-    
-    // Iterate over document attributes
-    _.each(config.settings.attributes, function(attr) {
-      var val = doc.attributes ? doc.attributes[attr.key] : undefined;
-      var def = attr['default'] ? _.clone(attr['default']) : null;
-      
-      result[doc.id][attr.key] = val ? val : def;
-    });
-  });
-  return result;
-};
 
 
 // Web server
@@ -144,11 +93,12 @@ app.get('/documents', function(req, res) {
 // Get all documents as a Data.Graph serialization
 
 app.get('/documents.json', function(req, res) {
-  Document.all({
-    withContents: true,
-    success: function(documents) {
-      var result = createGraph(documents);
+  Document.allAsGraph({
+    success: function(result) {
       res.send(result);
+    },
+    error: function() {
+      res.send('Error occured');
     }
   });
 });
@@ -434,7 +384,11 @@ DNode(function (client, conn) {
         });
       } else {
         // The client is the first collaborator (the doc is fetched from the database)
-        Document.get(id, options);
+        Document.get(id, {
+          success: function(doc) {
+            options.success(doc);
+          }
+        });
       }
     },
     

@@ -2,34 +2,24 @@ var DocumentBrowser = Backbone.View.extend({
   
   initialize: function(options) {
     var that = this;
-    this.el.html('Fetching documents....');
     
-    $.ajax({
-      url: '/documents.json',
-      dataType: 'json',
-      success: function(documents) {
-        that.model = new Data.Graph(documents);
-        
-        that.currentCommand = -1;
-        that.commands = [];
-        
-        // Initialize Facets View
-        that.facets = new Facets({el: '#facets'});
-        
-        // Initialize Documents View
-        that.documents = new Documents({el: '#documents'});
-        
-        // Finally, render
-        that.render();
-        
-        // Register controller
-        that.controller = new ApplicationController({app: that});
-        Backbone.history.start();
-      },
-      error: function() {
-        alert('An error occured during fetching the documents');
-      }
-    });
+    that.commands = [];
+    
+    // Initialize Facets View
+    that.facets = new Facets({el: '#facets', browser: that});
+    
+    // Finally, render
+    that.render();
+  },
+  
+  render: function() {
+    var documents = this.model.all('objects').toArray()
+    this.el.html(_.renderTemplate('document_browser', {
+      num_documents: documents.length,
+      documents: documents
+    }));
+    
+    this.facets.render();
   },
   
   // Takes a command spec and applies the command
@@ -87,23 +77,5 @@ var DocumentBrowser = Backbone.View.extend({
       this.commands[this.currentCommand].execute();
       this.render();    
     }
-  },
-  
-  render: function() {
-    this.el.html(_.renderTemplate('browser', {
-      
-    }));
-    
-    this.facets.render();
-    this.documents.render();
   }
 });
-
-var app;
-
-(function() {
-  $(function() {
-    // Start the browser
-    app = new DocumentBrowser({el: $('#container')});
-  });
-})();

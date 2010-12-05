@@ -1,8 +1,27 @@
 {
   "couchdb": {
     "host": "substance.cloudant.com",
-    "db": "substance",
+    "db": "development",
     "port": 80
   },
-  "server_port": 3003
+  "host_name": "substance.quasipartikel.at",
+  "server_port": 3003,
+  "settings": {
+    "attributes": [
+      {
+        "key": "topics",
+        "name": "Themen",
+        "type": "string", 
+        "unique": false,
+        "default": []
+      },
+      {
+        "key": "keywords",
+        "name": "Schlagworte",
+        "type": "string", 
+        "unique": false,
+        "default": []
+      }
+    ]
+  }
 }

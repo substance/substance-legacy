@@ -130,7 +130,7 @@ var Document = _.inherits(ContentGraph, {
     }
     
     // Notify all collaborators about the changed node
-    if (app.status && app.status.collaborators.length > 1) {
+    if (app.editor.status && app.editor.status.collaborators.length > 1) {
       var serializedNode = this.selectedNode.serialize();
       delete serializedNode.children;
       

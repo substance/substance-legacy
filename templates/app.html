@@ -4,42 +4,47 @@
   <title>Untitled — Substance™</title>
   
   <!-- templates -->
+  
   <script type="text/x-handlebars-template" name="shelf">
     <div id="lpl_header"><!-- menubar -->
       <div class="gradient">
         <div id="lpl_logo">
-          SUBSTANCE™ {{#model}}{{#name}}— {{../author}} / {{../name}} {{/name}}{{/model}}
-        </div> 
+          <a href="/">SUBSTANCE™</a> {{#model}}{{#name}}— {{../author}} / {{../name}} {{/name}}{{/model}}
+        </div>
         <div id="lpl_actions">
           <div class="left">
-            <a href="#" onclick="javascript: return false;" class="header button text new centered new-document">New</a>
-            <a href="/" onclick="javascript: return false;" class="header button text centered save-document">Save</a>
+
           </div>
-          <div class="center">
-            <a href="/" onclick="javascript: return false;" class="header button text centered browse-documents">Browse</a>
-            {{#num_collaborators}}<a href="#file_browser" class="header button text centered view-collaborators">{{.}} Collaborator(s)</a>{{/num_collaborators}}
-            {{#id}}
-              <a href="#" class="header button text centered delete-document" key="{{.}}">delete</a>
-            {{/id}}
+          <div class="center" id="shelf_actions">
+            <!-- Document Actions -->
+            <div class="document">
+              <a href="#toggle/dashboard" class="header button text new centered">Dashboard</a>
+              <a href="#new" class="header button text new centered new-document">New</a>
+              <a href="/" onclick="javascript: return false;" class="header button text centered save-document">Save</a>
+              <!--<a href="/" onclick="javascript: return false;" class="header button text centered browse-documents">Browse</a>-->
+              {{#num_collaborators}}<a href="#file_browser" class="header button text centered view-collaborators">{{.}} Collaborator(s)</a>{{/num_collaborators}}
+            </div>
+            <!-- Dashboard Actions -->
+            <div class="dashboard">
+              {{#model}}
+              <a href="#toggle/document" class="header button text new centered">{{data/title}}</a>
+              {{/model}}
+            </div>
           </div>
           <div class="right">
-            <span style="float: left; margin-right: 20px; margin-top: 17px;">Signed in as: {{username}}</span>
+            {{#username}}
+            <span style="float: left; margin-right: 20px; margin-top: 9px;">Signed in as: {{.}}</span>
             <a href="#" class="header button text centered logout">logout</a>
+            {{/username}}
           </div>
         </div>
       </div>
     </div>
 
-    <div id="lpl_shelf_filter">
-      <label>Filter Shelf:</label>
-      <a class="button" href="#shelf_show-documents">Documents</a>
-      <a class="button" href="#shelf_show-images">Images</a>
-      <a class="button selected" href="#shelf_show-images">an active Filter</a>
-    </div>
-
     <div id="lpl_shelf_content">
     </div>
   </script>
+  
   
   <script type="text/x-handlebars-template" name="drawer">
     <div class="toggle"><a href="#">Toggle</a></div>
@@ -61,8 +66,6 @@
   </script>
   
   <script type="text/x-handlebars-template" name="editor">
-    <div id="lpl_shelf" class="closed">
-    </div>
     <div id="outline"></div>
     <div id="main">
       <div id="drawer">
@@ -85,7 +88,7 @@
           <p><br/>
           <input type="submit" value="Login"/>
           </p>
-          <a href="#signup">Create a free account</a>
+          <a href="/" class="signup">Create a free account</a>
         </form>
       </div>
     </div>
@@ -154,17 +157,63 @@
     </div>
   </script>
   
-  <script type="text/x-handlebars-template" name="browse_documents">
-    <div class="wrapper">
-      {{#documents}}
-        <a href="#{{author}}/{{name}}" key="{{author}}/{{name}}" class="load-document item">
-          <img src="stylesheets/assets/icons/256-document.png" alt="thumbnail" class="thumbnail" />
-          <p class="description">
-            {{title}}
-            <span>{{author}} / {{name}}</span>
-          </p>
-        </a>
-      {{/documents}}
+  <script type="text/x-handlebars-template" name="dashboard">
+    <div id="search_panel">
+      <br/>
+      <a href="#new" class="new-document">
+        <img src="/images/new-document.png"/>
+      </a>
+    </div>
+    
+    <div id="document_browser">
+      Fetching documents...
+    </div>
+    
+    <div id="user_browser">
+      user browser
+    </div>
+  </script>
+  
+  <script type="text/x-handlebars-template" name="document_browser">
+    <div id="facets">
+      Loading facets...
+    </div>
+  
+    <div id="documents">
+      <h2>{{num_documents}} Documents:</h2>
+      <div class="list">
+        {{#documents}}
+          <div class="document">
+            <a class="link" href="#load/{{value/data/author}}/{{value/data/name}}">
+              <div class="icon"><img src="/images/document_icon.png"/></div>
+              <div class="content">
+                <h5 class="title">{{value/data/title}}</h5>
+                <p class="meta">Created by {{value/data/author}}, 2010-12-04</p>
+              </div>
+            </a>
+            <a href="/" class="remove delete-document" document="{{value/data/id}}">x</a>
+          </div>
+        {{/documents}}
+      </div>
+    </div>
+  </script>
+  
+  <script type="text/x-handlebars-template" name="facets">
+    <h2>{{num_documents}} Filter by attributes:</h2>
+    <div class="list">
+      {{#facets}}
+        <div class="facet" id="facet_{{property}}">
+          <h3>{{property_name}}</h3>
+          <ul class="facet-choices">
+            {{#selected_facet_choices}}
+              <li class="facet-choice selected"><a href="#remove_criterion/{{../property}}/CONTAINS/{{value}}">{{value}}<span class="item-count">{{item_count}}</span></a></li>
+            {{/selected_facet_choices}}
+            {{#facet_choices}}
+              <li class="facet-choice"><a href="#add_criterion/{{../property}}/CONTAINS/{{value}}">{{value}}<span class="item-count">{{item_count}}</span></a></li>
+            {{/facet_choices}}
+          </ul>
+        </div>
+      {{/facets}}
     </div>
   </script>
   
@@ -193,24 +242,6 @@
       </div>
     </div>
   </script>
-  
-  <!-- <script type="text/x-handlebars-template" name="actions">
-    <div class="controls" node="{{node/key}}" destination="{{destination}}">
-      <div class="node-actions" node="{{node/key}}">
-        <div class="handle">
-          <a href="#">+</a>
-          <div class="links">
-
-          </div>
-        </div>
-        <br class="clear"/>
-      </div>
-    
-      <div class="node-placeholder {{allowedTypes}}" node="{{node/key}}">
-        drop here
-      </div>
-    </div>
-  </script> -->
   
   <script type="text/x-handlebars-template" name="edit_paragraph">
     <h3>Edit Paragraph</h3>
@@ -264,7 +295,7 @@
   
   <script type="text/x-handlebars-template" name="section">
     <div id="{{node/key}}" name={{node/key}} draggable="false" class="content-node section">
-      <a href="#" class="remove-node" node="{{node/key}}">X</a>
+      <a href="#" class="remove remove-node" node="{{node/key}}">X</a>
       <div class="content-node-info" draggable="false">Section</div>
       
       <h2 contenteditable="true" class='content'>{{node/data/name}}</h2>
@@ -282,7 +313,7 @@
   
   <script type="text/x-handlebars-template" name="image">
     <div id="{{node/key}}" name={{node/key}} draggable="false" class="content-node image">
-      <a href="#" class="remove-node" node="{{node/key}}">X</a>
+      <a href="#" class="remove remove-node" node="{{node/key}}">X</a>
       <div class="content-node-info" draggable="false">Image</div>
       {{#node/data/url}}
         <img src="{{.}}"/>
@@ -300,7 +331,7 @@
     </form>
     <div class="items">
       {{#items}}
-        <span>{{.}} <a href="/" value="{{.}}" class="remove">x</a></span>
+        <span>{{.}} <a href="/" value="{{.}}" class="remove-item">x</a></span>
       {{/items}}
     </div>
   </script>
@@ -363,18 +394,30 @@
   <script src="src/backend/visualizations/outline.js"></script>
   
   <!-- Views -->
+  <script src="src/backend/views/dashboard.js"></script>
+  <script src="src/backend/views/editor.js"></script>
   <script src="src/backend/views/create_document.js"></script>
   <script src="src/backend/views/document_view.js"></script>
   <script src="src/backend/views/shelf.js"></script>
   <script src="src/backend/views/drawer.js"></script>
-  <script src="src/backend/views/document_browser.js"></script>
+  
+  <script src="src/shared/commands.js"></script>
+  <script src="src/shared/views/document_browser.js"></script>
+  <script src="src/shared/views/facets.js"></script>
+  <script src="src/shared/controllers/facet_controller.js"></script>
+  
   <script src="src/backend/views/collaborators.js"></script>
   <script src="src/backend/views/application.js"></script>
   
 </head>
 <body>
   <div id="container">
-
+    <div id="lpl_shelf">
+    </div>
+    <div id="dashboard">
+    </div>
+    <div id="editor">
+    </div>
   </div>
   
   <div id="notifications">

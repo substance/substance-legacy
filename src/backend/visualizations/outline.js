@@ -33,8 +33,8 @@ var Outline = function(graph) {
   ]
   
   function userColor(user) {
-    if (app.status) {
-      var idx = _.indexOf(app.status.collaborators, user);
+    if (app.editor.status) {
+      var idx = _.indexOf(app.editor.status.collaborators, user);
       return idx >= 0 ? userColors [idx] : '#000';
     }
     return '#000';
@@ -54,9 +54,9 @@ var Outline = function(graph) {
       uv.Rect.call(this, {
         id: node.key,
         x: 20,
-        y: index*height, // offset
+        y: parseInt(index*height), // offset
         width: 8,
-        height: height-2,
+        height: parseInt(height)-2,
         interactive: true,
         lineWidth: function() {
           return this.active ? 2 : 0;
@@ -104,26 +104,26 @@ var Outline = function(graph) {
         y: parseInt(height/2),
         
         fillStyle: function() {
-          if (app.status) {
-            return userColor(app.status.cursors[node.key]);
+          if (app.editor.status) {
+            return userColor(app.editor.status.cursors[node.key]);
           }
           return '#000';
         },
         
         visible: function() {
-          if (!app.status) { // for unsynced docs
-            return app.model.selectedNode === node;
+          if (!app.editor.status) { // for unsynced docs
+            return app.editor.model.selectedNode === node;
           }
-          return app.status.cursors[node.key];
+          return app.editor.status.cursors[node.key];
         },
         actors: [
           // {
           //   type: 'label',
           //   text: function() {
-          //     if (!app.status) { // for unsynced docs
+          //     if (!app.editor.status) { // for unsynced docs
           //       return app.username;
           //     }              
-          //     return app.status.cursors[node.key];
+          //     return app.editor.status.cursors[node.key];
           //   },
           //   // textAlign: 'right',
           //   x: -2,

@@ -6,10 +6,10 @@ var Collaborators = Backbone.View.extend({
   
   render: function() {    
     $(this.el).html(Helpers.renderTemplate('collaborators', {
-      status: app.status,
-      id: app.model.id,
-      author: app.model.author,
-      name: app.model.name,
+      status: app.editor.status,
+      id: app.editor.model.id,
+      author: app.editor.model.author,
+      name: app.editor.model.name,
       hostname: window.location.hostname + (window.location.port !== 80 ? ":" + window.location.port : "")
     }));
   }

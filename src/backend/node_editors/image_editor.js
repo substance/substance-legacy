@@ -27,20 +27,18 @@ var ImageEditor = Backbone.View.extend({
         $('#progress_container').show();
       },
       onSuccess: function(assembly) {
-
         // This triggers a node re-render
-        app.model.updateSelectedNode({
+        app.editor.model.updateSelectedNode({
           url: assembly.results.resize_image[0].url,
           dirty: true
         });
         
         $('#progress_container').hide();
-
       }
     });
   },
   
   render: function() {
-    $(this.el).html(Helpers.renderTemplate('edit_image', app.model.selectedNode.data));
+    $(this.el).html(Helpers.renderTemplate('edit_image', app.editor.model.selectedNode.data));
   }
 });
