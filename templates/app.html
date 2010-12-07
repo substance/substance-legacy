@@ -18,23 +18,23 @@
           <div class="center" id="shelf_actions">
             <!-- Document Actions -->
             <div class="document">
-              <a href="#toggle/dashboard" class="header button text new centered">Dashboard</a>
-              <a href="#new" class="header button text new centered new-document">New</a>
-              <a href="/" onclick="javascript: return false;" class="header button text centered save-document">Save</a>
-              <!--<a href="/" onclick="javascript: return false;" class="header button text centered browse-documents">Browse</a>-->
-              {{#num_collaborators}}<a href="#file_browser" class="header button text centered view-collaborators">{{.}} Collaborator(s)</a>{{/num_collaborators}}
+              <a href="#toggle/dashboard" class="header button text new">Dashboard</a>
+              <a href="#new" class="header button text new new-document">New</a>
+              <a href="/" onclick="javascript: return false;" class="header button text save-document">Save</a>
+              <!--<a href="/" onclick="javascript: return false;" class="header button text browse-documents">Browse</a>-->
+              {{#num_collaborators}}<a href="#file_browser" class="header button text view-collaborators">{{.}} Collaborator(s)</a>{{/num_collaborators}}
             </div>
             <!-- Dashboard Actions -->
             <div class="dashboard">
               {{#model}}
-              <a href="#toggle/document" class="header button text new centered">{{data/title}}</a>
+              <a href="#toggle/document" class="header button text new">{{data/title}}</a>
               {{/model}}
             </div>
           </div>
           <div class="right">
             {{#username}}
             <span style="float: left; margin-right: 20px; margin-top: 9px;">Signed in as: {{.}}</span>
-            <a href="#" class="header button text centered logout">logout</a>
+            <a href="#" class="header button text logout">logout</a>
             {{/username}}
           </div>
         </div>
@@ -191,7 +191,7 @@
                 <p class="meta">Created by {{value/data/author}}, 2010-12-04</p>
               </div>
             </a>
-            <a href="/" class="remove delete-document" document="{{value/data/id}}">x</a>
+            <a href="/" class="delete-document" document="{{value/data/id}}">x</a>
           </div>
         {{/documents}}
       </div>
