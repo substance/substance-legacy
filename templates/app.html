@@ -243,8 +243,8 @@
     </div>
   </script>
   
-  <script type="text/x-handlebars-template" name="edit_paragraph">
-    <h3>Edit Paragraph</h3>
+  <script type="text/x-handlebars-template" name="edit_text">
+    <h3>Edit Text</h3>
     <div class="lpl texteditor" id="edit_node">
     </div>
   </script>
@@ -303,10 +303,10 @@
     </div>
   </script>
   
-  <script type="text/x-handlebars-template" name="paragraph">
-    <div id="{{node/key}}" name={{node/key}} draggable="false" class="content-node paragraph">
+  <script type="text/x-handlebars-template" name="text">
+    <div id="{{node/key}}" name={{node/key}} draggable="false" class="content-node text">
       <a href="#" class="remove-node remove" node="{{node/key}}">x</a>
-      <div class="content-node-info" draggable="false">Paragraph</div>
+      <div class="content-node-info" draggable="false">Text</div>
       <div class='content' contenteditable="true">{{{content}}}</div>
     </div>
   </script>
@@ -363,6 +363,7 @@
   <script src="lib/data.js"></script>
   <script src="lib/unveil.js"></script>
   <script src="lib/backbone.js"></script>
+  <script src="lib/proper.js"></script>
   <script src="dnode.js"></script>
   
   <!-- Backbone Extensions -->
@@ -380,7 +381,7 @@
 
   <script src="src/backend/node_editors/document_editor.js"></script>
   <script src="src/backend/node_editors/section_editor.js"></script>
-  <script src="src/backend/node_editors/paragraph_editor.js"></script>
+  <script src="src/backend/node_editors/text_editor.js"></script>
   <script src="src/backend/node_editors/image_editor.js"></script>
   
   <script src="src/backend/controllers/application.js"></script>

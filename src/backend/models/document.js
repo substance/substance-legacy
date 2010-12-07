@@ -139,11 +139,15 @@ var Document = _.inherits(ContentGraph, {
   },
   
   selectNode: function(nodeKey) {
-    this.selectedNode = this.getNode(nodeKey);
-    this.trigger('select:node', this.selectedNode);
+    var node = this.getNode(nodeKey);
     
-    // The server will respond with a status package containing my own cursor position
-    remote.Session.selectNode(nodeKey);
+    if (this.selectedNode !== node) { // only if changed
+      this.selectedNode = this.getNode(nodeKey);
+      this.trigger('select:node', this.selectedNode);
+
+      // The server will respond with a status package containing my own cursor position
+      remote.Session.selectNode(nodeKey);      
+    }
   }
 });
 
@@ -170,11 +174,11 @@ Document.EMPTY = {
       "children": ["4"]
     },
     "3": {
-      "type": "paragraph",
+      "type": "text",
       "content": "Your text goes here."
     },
     "4": {
-      "type": "paragraph",
+      "type": "text",
       "content": "Additional text."
     }
   }

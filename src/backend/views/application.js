@@ -182,6 +182,7 @@ var Application = Backbone.View.extend({
     this.view = view;
     
     if (this.view === 'dashboard') {
+      editor.deactivate();
       $('#dashboard').show();
       $('#editor').hide();
       
@@ -238,7 +239,8 @@ var Application = Backbone.View.extend({
 var remote,     // Remote handle for server-side methods
     notifier,   // Global notifiction system
     app,        // The Application
-    controller; // Controller responding to routes
+    controller, // Controller responding to routes
+    editor;     // A global instance of the Proper Richtext editor
 
 (function() {
   $(function() {
@@ -251,5 +253,8 @@ var remote,     // Remote handle for server-side methods
     // Initialize controller
     controller = new ApplicationController({app: this});
     facetController = new FacetController();
+    
+    // Set up a globals instance of the Proper Richtext Editor
+    editor = new Proper();
   });
 })();

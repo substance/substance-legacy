@@ -19,7 +19,7 @@ var Outline = function(graph) {
   var colors = {
     'document': '#5D95A8',
     'section': '#729325',
-    'paragraph': '#336881',
+    'text': '#336881',
     'image': '#814639'
   };
   
@@ -30,7 +30,7 @@ var Outline = function(graph) {
     '#ccc',
     '#444',
     '#eee',
-  ]
+  ];
   
   function userColor(user) {
     if (app.editor.status) {

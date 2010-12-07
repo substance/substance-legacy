@@ -63,6 +63,21 @@ var DocumentView = Backbone.View.extend({
     $('#document').removeClass('insert-mode');
   },
   
+  renderNodeEditor: function(node) {
+    var $node = $('#'+node.key);
+    
+    // Depending on the selected node's type, render the right editor
+    if (app.editor.model.selectedNode.type === 'document') {
+      this.nodeEditor = new DocumentEditor({el: this.$('#drawer_content')});
+    } else if (app.editor.model.selectedNode.type === 'text') {
+      this.nodeEditor = new TextEditor({el: $node});
+    } else if (app.editor.model.selectedNode.type === 'section') {
+      this.nodeEditor = new SectionEditor({el: this.$('#drawer_content')});
+    } else if (app.editor.model.selectedNode.type === 'image') {
+      this.nodeEditor = new ImageEditor({el: this.$('#drawer_content')});
+    }
+  },
+  
   // dragStart: function(e) {
   //   var dt = e.originalEvent.dataTransfer,
   //       sourceKey = $(e.target).parent().attr('id'),
@@ -160,7 +175,7 @@ var DocumentView = Backbone.View.extend({
   },
   
   addChild: function(e) {
-    app.model.model.createChild($(e.currentTarget).attr('type'), $(e.currentTarget).attr('node'));
+    app.editor.model.createChild($(e.currentTarget).attr('type'), $(e.currentTarget).attr('node'));
     
     // Broadcast insert node command
     remote.Session.insertNode('child', $(e.currentTarget).attr('type'), $(e.currentTarget).attr('node'), 'after');

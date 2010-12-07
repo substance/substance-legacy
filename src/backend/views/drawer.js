@@ -16,18 +16,5 @@ var Drawer = Backbone.View.extend({
     this.$('.toggle a').click(function(e) {
       that.toggle(e);
     });
-  },
-  
-  renderNodeEditor: function() {
-    // Depending on the selected node's type, render the right editor
-    if (app.editor.model.selectedNode.type === 'document') {
-      this.nodeEditor = new DocumentEditor({el: this.$('#drawer_content')});
-    } else if (app.editor.model.selectedNode.type === 'paragraph') {
-      this.nodeEditor = new ParagraphEditor({el: this.$('#drawer_content')});
-    } else if (app.editor.model.selectedNode.type === 'section') {
-      this.nodeEditor = new SectionEditor({el: this.$('#drawer_content')});
-    } else if (app.editor.model.selectedNode.type === 'image') {
-      this.nodeEditor = new ImageEditor({el: this.$('#drawer_content')});
-    }
   }
 });

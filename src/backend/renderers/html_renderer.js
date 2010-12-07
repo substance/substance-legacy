@@ -76,10 +76,10 @@ var HTMLRenderer = function(root) {
       });
     },
     
-    paragraph: function(node) {
+    text: function(node) {
       var converter = new Showdown.converter();
       
-      return Helpers.renderTemplate('paragraph', {
+      return Helpers.renderTemplate('text', {
         node: node,
         content: converter.makeHtml(node.data.content)
       });

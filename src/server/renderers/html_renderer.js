@@ -27,7 +27,7 @@ var FrontendRenderer = function(root) {
       return content;
     },
     
-    paragraph: function(node) {
+    text: function(node) {
       var converter = new Showdown.converter();
       return converter.makeHtml(node.content);
     },

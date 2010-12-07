@@ -45,7 +45,7 @@ The JSON representation of a simple ContentGraph looks as follows:
         "children": ["4"]
       },
       "3": {
-        "type": "paragraph",
+        "type": "text",
         "content": "Your text goes here."
       },
       "4": {

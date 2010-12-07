@@ -16,6 +16,7 @@ var DocumentEditor = Backbone.View.extend({
     this.$node.bind('keydown', function(event) {
       that.updateNode();
     });
+    
   },
   
   updateNode: function() {

@@ -14,7 +14,7 @@ ContentNode.types = {
   },
   "section": {
     name: "Section",
-    allowedChildren: ["paragraph", "image"],
+    allowedChildren: ["text", "image"],
     properties: [
       {
         "key": "name",
@@ -23,14 +23,14 @@ ContentNode.types = {
       }
     ]
   },
-  "paragraph": {
-    name: "Paragraph",
+  "text": {
+    name: "Text",
     allowedChildren: [],
     properties: [
       {
         "key": "content",
         "name": "Content",
-        "defaultValue": "Hooray I'm a newborn paragraph."
+        "defaultValue": "Hooray I'm a newborn text node."
       }
     ]
   },
@@ -42,22 +42,6 @@ ContentNode.types = {
         "key": "url",
         "name": "Image URL",
         "defaultValue": null
-      }
-    ]
-  },
-  "text": {
-    name: "Text",
-    allowedChildren: [],
-    properties: [
-      {
-        "key": "content",
-        "name": "Content",
-        "defaultValue": "Hurray, I'm a new node"
-      },
-      {
-        "key": "em_level",
-        "name": "Emphasis level",
-        "defaultValue": "0"
       }
     ]
   }

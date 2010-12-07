@@ -39,10 +39,17 @@ var Editor = Backbone.View.extend({
     // Inject node editor on every select:node
     this.model.unbind('select:node');
     this.model.bind('select:node', function(node) {
+      
       that.documentView.resetSelection();
       $('#'+node.key).addClass('selected');
       $('#document').addClass('edit-mode');
-      that.drawer.renderNodeEditor();
+      
+      // Deactivate Richtext Editor
+      editor.deactivate();
+      
+      // Render inline Node editor
+      that.documentView.renderNodeEditor(node);
+      
       app.editor.outline.refresh();
     });
     
@@ -103,7 +110,7 @@ var Editor = Backbone.View.extend({
   
   createDocument: function(name) {
     var that = this;
-    
+
     remote.Document.create(app.username, name, this.model.serialize(), {
       success: function() {
         that.model.id = 'users:'+app.username + ':documents:' + name;
