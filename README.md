@@ -148,13 +148,40 @@ However, I really want to push this forward, in addition to Unveil.js, a browser
 Installation
 --------------------------------------------------------------------------------
 
-Detailed installation instructions will be added soon. 
 
-However, to setup your own Substance instance you'll need Node.js (>=0.3) installed and a CouchDB database if you want to host your own document repository. That's all basically. Actually, most stuff is done on the client side through regular Javascript. The Node.js server just functions as a proxy to the CouchDB database and exposes a clean API.
+**Prerequisites**
+
+* Node.js >= 0.3
+* CoffeeScript >= 0.9.6
+* An empty CouchDB database (either locally or remote)
+* Couchapp (install with: `$ easy_install couchapp`)
+
+
+**Steps**
+
+1. Clone the repository
+2. Setup config.json (you can use config.json.example as a template)
+
+   Fill in CouchDB Host, Port, and Database
+3. Initialize CouchDB Views
+
+   `$ cake couch:push # from the project directory`
+4. Install Libraries
+
+   `npm install cradle underscore express dnode`
+5. Start the server
+  
+   `$ node server.js`
+
+6. Navigate to: `http://localhost:3003`
 
 
 Updates
 --------------------------------------------------------------------------------
+
+**7th December 2010**
+
+Integrated [Proper](http://github.com/michael/proper), a Semantic Rich Text Editor.
 
 **27th November 2010**
 
