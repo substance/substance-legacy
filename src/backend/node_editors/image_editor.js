@@ -7,21 +7,22 @@ var ImageEditor = Backbone.View.extend({
     var that = this;
     this.render();
     
-    if (!$('#main').hasClass('drawer-opened')) {
-      app.drawer.toggle();
-    }
+    // if (!$('#main').hasClass('drawer-opened')) {
+    //   app.editor.drawer.toggle();
+    // }
     
     $('#upload_image').transloadit({
       modal: false,
       wait: true,
       autoSubmit: false,
       onProgress: function(bytesReceived, bytesExpected) {
-        percentage = (bytesReceived / bytesExpected * 100).toFixed(2)
+        percentage = (bytesReceived / bytesExpected * 100).toFixed(2) || 0;
         $('#upload_progress').attr('style', 'width:' + percentage +'%');
         $('#image_progress_legend').html('<strong>Uploading:</strong> ' + percentage + '% complete</div>');
       },
       onError: function(assembly) {
         alert(assembly.error+': '+assembly.message);
+        $('#progress_container').hide();
       },
       onStart: function() {
         $('#progress_container').show();
@@ -32,13 +33,12 @@ var ImageEditor = Backbone.View.extend({
           url: assembly.results.resize_image[0].url,
           dirty: true
         });
-        
         $('#progress_container').hide();
       }
     });
   },
   
   render: function() {
-    $(this.el).html(Helpers.renderTemplate('edit_image', app.editor.model.selectedNode.data));
+    this.$('.node-editor-placeholder').html(Helpers.renderTemplate('edit_image', app.editor.model.selectedNode.data));
   }
 });

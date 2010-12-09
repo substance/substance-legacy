@@ -336,6 +336,11 @@ h2 { font-size: 1.4em; margin-bottom: 1em; }
 /* ImageEditor Widget */
 #progress_container { display: none; }
 
+#upload_image input[type=file] { width: 240px; display: inline; }
+#upload_image input[type=submit] { width: 100px; display: inline; }
+
+
+
 /* Content Nodes */
 
 .content-node { position: relative; padding: 10px; }
@@ -818,3 +823,7 @@ code { display: block; font-family: Monaco, Consolas; font-size: 12px; margin-to
   box-shadow:         1px 0px 0px rgba(255,255,255,0.5);
 }
 
+
+
+
+#temp { display: none; }

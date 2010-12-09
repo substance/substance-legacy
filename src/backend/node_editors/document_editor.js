@@ -22,10 +22,13 @@ var DocumentEditor = Backbone.View.extend({
   updateNode: function() {
     var that = this;
     setTimeout(function() {
+      var sanitizedContent = _.stripTags(that.$node.html());
+
+      // Update HTML with sanitized content
+      that.$node.html(sanitizedContent);
+      
       app.editor.model.updateSelectedNode({
-        title: that.$node.html(),
-        publication_date: $('#editor input[name=publication_date]').val(),
-        tags: $('#editor textarea[name=document_tags]').val()
+        title: sanitizedContent
       });
       
       app.editor.trigger('document:changed');

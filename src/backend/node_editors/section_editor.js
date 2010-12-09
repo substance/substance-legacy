@@ -18,8 +18,13 @@ var SectionEditor = Backbone.View.extend({
     var that = this;
     
     setTimeout(function() {
+      var sanitizedContent = _.stripTags(that.$node.html());
+
+      // Update HTML with sanitized content
+      that.$node.html(sanitizedContent);
+      
       app.editor.model.updateSelectedNode({
-        name: that.$node.html()
+        name: sanitizedContent
       });
     }, 5);
   },

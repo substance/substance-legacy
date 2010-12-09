@@ -250,23 +250,21 @@
   </script>
   
   <script type="text/x-handlebars-template" name="edit_image">
-    <h3>Edit image</h3>
-    <p>Select an image to be uploaded, resized and embedded into the document.</p>
-    
     <form id="upload_image" action="http://api2.transloadit.com/assemblies" enctype="multipart/form-data" method="POST">
       <div class="lpl texteditor">
           <label for="my_file">select file</label>
           <input type="file" name="my_file" id="my_file" />
           <input type="hidden" name="params" value="{&quot;auth&quot;:{&quot;key&quot;:&quot;4ccca6b9de144af4882760af72ec3211&quot;},&quot;steps&quot;:{&quot;resize_image&quot;:{&quot;robot&quot;:&quot;\/image\/resize&quot;,&quot;width&quot;:320,&quot;height&quot;:240,&quot;result&quot;:true}},&quot;redirect_url&quot;:&quot;http:\/\/example.com\/upload&quot;}" />
+          <input type="submit" value="Upload">
+      </div>
+      <div id="progress_container">
+        <div class="lpl progress-container"><div id="upload_progress" class="lpl progress-bar stripes animated" style="width:60%"></div></div>
+        <div id="image_progress_legend" class="lpl legend">
       </div>
 
-      <input type="submit" value="Upload">
+      
     </form>
     
-    <div id="progress_container">
-      <div class="lpl progress-container"><div id="upload_progress" class="lpl progress-bar stripes animated" style="width:60%"></div></div>
-      <div id="image_progress_legend" class="lpl legend">
-    </div>
   </script>
   
   <script type="text/x-handlebars-template" name="edit_section">
@@ -299,6 +297,7 @@
       <div class="content-node-info" draggable="false">Section</div>
       
       <h2 contenteditable="true" class='content'>{{node/data/name}}</h2>
+      <div class="node-editor-placeholder"></div>
       {{{content}}}
     </div>
   </script>
@@ -308,6 +307,7 @@
       <a href="#" class="remove-node remove" node="{{node/key}}">x</a>
       <div class="content-node-info" draggable="false">Text</div>
       <div class='content' contenteditable="true">{{{content}}}</div>
+      <div class="node-editor-placeholder"></div>
     </div>
   </script>
   
@@ -321,6 +321,10 @@
       {{^node/data/url}}
         image placeholder..
       {{/node/data/url}}
+      
+      <div class="node-editor-placeholder">
+        
+      </div>
     </div>
   </script>
   
@@ -363,6 +367,7 @@
   <script src="lib/data.js"></script>
   <script src="lib/unveil.js"></script>
   <script src="lib/backbone.js"></script>
+  <script src="lib/sanitize.js"></script>
   <script src="lib/proper.js"></script>
   <script src="dnode.js"></script>
   
@@ -425,5 +430,8 @@
     <div class="wrapper">
     </div>
   </div>
+  
+  <!-- for temporary storage of DOM nodes -->
+  <div id="temp"></div>
 </body> 
 </html>

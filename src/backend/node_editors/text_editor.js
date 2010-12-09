@@ -8,17 +8,12 @@ var TextEditor = Backbone.View.extend({
     this.render();
     
     this.$content = this.$('div.content');
-    
     editor.activate(this.$content);
     
     // Update node when editor commands are applied
     editor.bind('changed', function() {
       that.updateNode();
-    });
-    
-    this.$content.unbind('keydown');
-    this.$content.bind('keydown', function(event) {
-      that.updateNode();
+      $('#sanitized_content').val(editor.content());
     });
   },
   
