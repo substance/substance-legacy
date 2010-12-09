@@ -6,6 +6,8 @@ sys           = require 'sys'
 CoffeeScript  = require 'coffee-script'
 {spawn, exec} = require 'child_process'
 
+config = JSON.parse(fs.readFileSync(__dirname+ '/config.json', 'utf-8'))
+
 # ANSI terminal colors.
 red   = '\033[0;31m'
 green = '\033[0;32m'
@@ -13,7 +15,7 @@ reset = '\033[0m'
 
 # Commands
 compressionCmd = 'java -jar ./lib/compiler.jar --js substance.js --js_output_file substance.min.js'
-couchPushCmd = 'cd couch && couchapp push http://substance.cloudant.com/development && cd ..'
+couchPushCmd = "cd couch && couchapp push #{config.couchdb.protocol}://#{config.couchdb.user}:#{config.couchdb.password}@#{config.couchdb.host}:#{config.couchdb.port}/#{config.couchdb.db} && cd .."
 
 
 # Substance source files
