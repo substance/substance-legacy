@@ -39,7 +39,7 @@ var DocumentView = Backbone.View.extend({
     
     $(document).unbind('keyup');
     $(document).keyup(function(e) {
-      if (e.keyCode == 27) { that.reset(); }     // esc
+      if (e.keyCode == 27) { that.reset(); }  // esc
     });
   },
   
@@ -49,7 +49,6 @@ var DocumentView = Backbone.View.extend({
     
     app.editor.model.selectedNode = null;
     app.editor.outline.refresh();
-      
     this.resetSelection()
 
     return false;
@@ -61,6 +60,9 @@ var DocumentView = Backbone.View.extend({
     
     $('#document').removeClass('edit-mode');
     $('#document').removeClass('insert-mode');
+    
+    // Reset node-editor-placeholders
+    $('.node-editor-placeholder').html('');
   },
   
   renderNodeEditor: function(node) {
@@ -68,13 +70,13 @@ var DocumentView = Backbone.View.extend({
     
     // Depending on the selected node's type, render the right editor
     if (app.editor.model.selectedNode.type === 'document') {
-      this.nodeEditor = new DocumentEditor({el: this.$('#drawer_content')});
+      this.nodeEditor = new DocumentEditor({el: $('#drawer_content')});
     } else if (app.editor.model.selectedNode.type === 'text') {
       this.nodeEditor = new TextEditor({el: $node});
     } else if (app.editor.model.selectedNode.type === 'section') {
-      this.nodeEditor = new SectionEditor({el: this.$('#drawer_content')});
+      // this.nodeEditor = new SectionEditor({el: $('#drawer_content')});
     } else if (app.editor.model.selectedNode.type === 'image') {
-      this.nodeEditor = new ImageEditor({el: this.$('#drawer_content')});
+      this.nodeEditor = new ImageEditor({el: $node});
     }
   },
   
@@ -170,8 +172,13 @@ var DocumentView = Backbone.View.extend({
   },
   
   selectNode: function(e) {
-    app.editor.model.selectNode($(e.currentTarget).attr('id'));
-    return false;
+    var key = $(e.currentTarget).attr('id');
+    
+    if (!app.editor.model.selectedNode || app.editor.model.selectedNode.key !== key) {
+      app.editor.model.selectNode(key);
+    }
+    
+    e.stopPropagation();
   },
   
   addChild: function(e) {
