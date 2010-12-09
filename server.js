@@ -13,14 +13,15 @@ var _ = require('underscore');
 var Document = require('./src/server/models/document.js');
 var User = require('./src/server/models/user.js');
 
-
 // Read Config
 global.config = JSON.parse(fs.readFileSync(__dirname+ '/config.json', 'utf-8'));
 
 // Init CouchDB Connection
-global.conn = new(cradle.Connection)(config.couchdb.host, config.couchdb.port);
-global.db = conn.database(config.couchdb.db);
+global.conn = new(cradle.Connection)(config.couchdb.host, config.couchdb.port, {
+  auth: config.couchdb.user ? {user: 'michael', pass: 'test'} : null
+});
 
+global.db = conn.database(config.couchdb.db);
 
 // Helpers
 // -----------
@@ -397,10 +398,7 @@ DNode(function (client, conn) {
       var session = sessions[conn.id];
       
       if (session.document === documentId) return;
-      
-      if (session.document) {
-        unregisterDocument(session.document);
-      }
+      if (session.document) unregisterDocument(session.document);
       
       session.document = documentId;
       
