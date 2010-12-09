@@ -1,8 +1,11 @@
 {
   "couchdb": {
-    "host": "substance.cloudant.com",
+    "protocol": "http",
+    "host": "localhost",
     "db": "development",
-    "port": 80
+    "port": 5984,
+    "user": "username",
+    "password": "secret"
   },
   "host_name": "substance.quasipartikel.at",
   "server_port": 3003,
