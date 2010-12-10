@@ -160,11 +160,11 @@ var Outline = function(graph) {
   // Instance methods
   return {
     refresh: function() {
-      scene.render();
+      // scene.render();
     },
     
     render: function() {
-      scene.start();
+      // scene.start();
     }
   }
 };
