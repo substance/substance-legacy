@@ -195,17 +195,16 @@ dd
 #lpl_actions .header.save { margin-right: 40px; }
 
 #lpl_actions .right { float: right; }
-#lpl_logo { width: 540px; }
-#lpl_logo a { color: #666; }
-#lpl_logo a:hover { text-decoration: none; color: #000; }
 
 #lpl_actions {
   position:relative;
+  height:30px;
   padding:0 0 0 360px;
   font-size:10px;
   font-weight:bold;
   line-height:1.2em;
   text-transform:uppercase;
+  overflow:hidden;
 }
 
 #lpl_actions .header.button {
@@ -758,6 +757,63 @@ code { display: block; font-family: Monaco, Consolas; font-size: 12px; margin-to
   left: 260px;
   background: #f7f8f5;
 }*/
+
+#lpl_header.dashboard #lpl_logo { 
+  width: 360px;
+  background:#fefefe;
+  z-index:1000;
+}
+
+#lpl_header.document #lpl_logo { 
+  width: 360px;
+  background:#f0f1eb;
+  z-index:1000;
+}
+
+#lpl_logo a { color: #666; }
+#lpl_logo a:hover { text-decoration: none; color: #000; }
+
+#lpl_header.dashboard #dashboard_switch {
+  display:block;
+  float:left;
+  height:50px;
+  width:120px;
+  margin-top:-10px;
+  margin-right:5px;
+  margin-left:-20px;
+  padding-top:10px;
+  padding-left:20px;
+  background:#fefefe;
+  -webkit-box-shadow: 0px 0px 8px rgba(0,0,0,0.35);
+  -moz-box-shadow:    0px 0px 8px rgba(0,0,0,0.35);
+  box-shadow:         0px 0px 8px rgba(0,0,0,0.35);
+  z-index:500;
+}
+
+#lpl_header.document {
+  background:#fff;
+}
+
+#lpl_header.document #dashboard_switch {
+  display:block;
+  float:left;
+  height:50px;
+  width:120px;
+  margin-top:-10px;
+  margin-right:5px;
+  margin-left:-20px;
+  padding-top:10px;
+  padding-left:20px;
+  background:#f0f1eb;
+  -webkit-box-shadow: inset 0px 0px 8px rgba(0,0,0,0.35) !important;
+  -moz-box-shadow:    inset 0px 0px 8px rgba(0,0,0,0.35) !important;
+  box-shadow:         inset 0px 0px 8px rgba(0,0,0,0.35) !important;
+  z-index:500 !important;
+}
+
+#shelf_actions span.label { float:left;display:block;padding:5px 15px 0 15px;line-height:22px;font-weight:normal; }
+#shelf_actions span.label strong { font-weight:bold; }
+
 
 
 /*
