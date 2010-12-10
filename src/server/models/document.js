@@ -108,11 +108,14 @@ _.extend(Document, {
         var result = _.extend(doc.contents, {
           id: id,
           author: doc.author,
+          created_at: doc.created_at,
+          updated_at: doc.updated_at,
+          published_on: doc.published_on,
           name: doc.name
         });        
         options.success(JSON.parse(JSON.stringify(result)));
       } else {
-        options.error(err)
+        if (options.error) options.error(err);
       }
     });
   },
@@ -123,7 +126,10 @@ _.extend(Document, {
         author: username,
         name: name,
         contents: doc,
-        type: 'document'
+        type: 'document',
+        created_at: new Date(),
+        updated_at: new Date(),
+        published_on: null
       }, function (err, result) {
         err ? options.error(err) : options.success();
       });
@@ -139,7 +145,10 @@ _.extend(Document, {
         contents: doc,
         author: username,
         name: name,
-        type: 'document'
+        type: 'document',
+        created_at: prevdoc.created_at,
+        updated_at: new Date(),
+        published_on: doc.published_on
       }, function (err, result) {
         err ? options.error(err) : options.success();
       });

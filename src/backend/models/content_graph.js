@@ -90,6 +90,10 @@ var ContentGraph = _.inherits(ContentNode, {
     // if present
     this.id = g.id;
     this.name = g.name;
+    this.created_at = g.created_at; // new Date(g.created_at);
+    this.updated_at = g.updated_at; // new Date(g.updated_at);
+    this.published_on = g.published_on; // new Date(g.published_on);
+    
     this.author = g.author;
     
     // Meta-information that can be attached
@@ -136,6 +140,9 @@ var ContentGraph = _.inherits(ContentNode, {
       nodeCount: this.nodeCount,
       name: this.name,
       author: this.author,
+      updated_at: this.updated_at,
+      created_at: this.created_at,
+      published_on: this.published_on,
       id: this.id
     });
 

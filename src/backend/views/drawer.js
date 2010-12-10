@@ -1,19 +1,23 @@
 var Drawer = Backbone.View.extend({
-  events: {
-    'click .toggle a': 'toggle'
-  },
   
-  toggle: function(e) {
+  toggle: function(view) {
+    if (!$('#main').hasClass('drawer-opened')) {
+      // Set and render view
+      this.view = view;
+      this.renderContent();
+    }
+    
     $('#main').toggleClass('drawer-opened');
   },
   
   render: function() {
     var that = this;
     $(this.el).html(Helpers.renderTemplate('drawer', {}));
-    
-    // bind events manually since declarative events do not work here for some reason
-    this.$('.toggle a').click(function(e) {
-      that.toggle(e);
-    });
+  },
+  
+  renderContent: function() {
+    if (this.view) {
+      this.content = new window[this.view]({el: '#drawer_content'});
+    }
   }
 });

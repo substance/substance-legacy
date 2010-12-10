@@ -40,6 +40,7 @@ var DocumentView = Backbone.View.extend({
     $(document).unbind('keyup');
     $(document).keyup(function(e) {
       if (e.keyCode == 27) { that.reset(); }  // esc
+      e.stopPropagation();
     });
   },
   
@@ -60,6 +61,7 @@ var DocumentView = Backbone.View.extend({
     
     $('#document').removeClass('edit-mode');
     $('#document').removeClass('insert-mode');
+    $('.proper-commands').hide();
     
     // Reset node-editor-placeholders
     $('.node-editor-placeholder').html('');
@@ -177,7 +179,6 @@ var DocumentView = Backbone.View.extend({
     if (!app.editor.model.selectedNode || app.editor.model.selectedNode.key !== key) {
       app.editor.model.selectNode(key);
     }
-    
     e.stopPropagation();
   },
   

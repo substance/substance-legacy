@@ -5,6 +5,9 @@
 var Application = Backbone.View.extend({
   events: {
     'click a.save-document': 'saveDocument',
+    'click a.show-attributes': 'showAttributes',
+    'click a.publish-document': 'publishDocument',
+    'click a.unpublish-document': 'unpublishDocument',
     'submit #create-document-form': 'createDocument',
     'click a.delete-document': 'deleteDocument',
     'click a.logout': 'logout',
@@ -16,6 +19,24 @@ var Application = Backbone.View.extend({
   
   // Handle top level events
   // -------------
+  
+  showAttributes: function() {
+    app.editor.drawer.toggle('Attributes');
+    return false;
+  },
+  
+  publishDocument: function(e) {
+    console.log('publish document');
+    this.editor.model.published_on = (new Date()).toJSON();
+    this.editor.saveDocument();
+    return false;
+  },
+  
+  unpublishDocument: function(e) {
+    this.editor.model.published_on = null;
+    this.editor.saveDocument();
+    return false;
+  },
   
   saveDocument: function(e) {
     if (this.editor.model.id) {
