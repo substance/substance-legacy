@@ -18,6 +18,7 @@ var Editor = Backbone.View.extend({
       // Re-render shelf and drawer
       app.shelf.render();
       app.toggleView('editor'); // TODO: ugly
+      that.drawer.renderContent(); // Refresh attributes et. al
       that.drawer.render();
     });
   },
@@ -71,6 +72,7 @@ var Editor = Backbone.View.extend({
     
     this.init();
     this.trigger('document:changed');
+    $('#main').removeClass('drawer-opened');
     app.shelf.close();
     
     notifier.notify(Notifications.BLANK_DOCUMENT);
@@ -93,7 +95,8 @@ var Editor = Backbone.View.extend({
         that.trigger('document:changed');
         
         // TODO: Not exactly pretty to do this twice
-        app.toggleView('document'); 
+        app.toggleView('document');
+        $('#main').removeClass('drawer-opened');
         
         notifier.notify(Notifications.DOCUMENT_LOADED);
         remote.Session.registerDocument(id);
@@ -116,6 +119,13 @@ var Editor = Backbone.View.extend({
         that.model.id = 'users:'+app.username + ':documents:' + name;
         that.model.author = app.username;
         that.model.name = name;
+        
+        that.model.created_at = (new Date()).toJSON();
+        that.model.updated_at = (new Date()).toJSON();
+        that.model.published_on = null;
+        
+        $('#main').removeClass('drawer-opened');
+        
         that.trigger('document:changed');
         notifier.notify(Notifications.DOCUMENT_SAVED);
       },
@@ -134,6 +144,9 @@ var Editor = Backbone.View.extend({
     notifier.notify(Notifications.DOCUMENT_SAVING);
     remote.Document.update(that.model.author, that.model.name, that.model.serialize(), {
       success: function() {
+        that.model.updated_at = (new Date()).toJSON();
+        that.drawer.renderContent();
+        
         notifier.notify(Notifications.DOCUMENT_SAVED);
       },
       error: function() {
@@ -147,14 +160,12 @@ var Editor = Backbone.View.extend({
   
   deleteDocument: function(id) {
     var that = this;
-    
+
     notifier.notify(Notifications.DOCUMENT_DELETING);
     
     remote.Document.destroy(id, {
       success: function() {
-        // app.newDocument();
         app.dashboard.load(); // Reload documents at the dashboard
-        
         notifier.notify(Notifications.DOCUMENT_DELETED);
       },
       error: function() {

@@ -118,6 +118,8 @@ var Document = _.inherits(ContentGraph, {
   
   // Update attributes of selected node
   updateSelectedNode: function(attrs) {
+    if (!this.selectedNode) return;
+        
     _.extend(this.selectedNode.data, attrs);
     
     // Only set dirty if explicitly requested

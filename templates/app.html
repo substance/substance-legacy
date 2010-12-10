@@ -47,21 +47,27 @@
   
   
   <script type="text/x-handlebars-template" name="drawer">
-    <div class="toggle"><a href="#">Toggle</a></div>
+    <div class="drawer-actions">
+      <div class="drawer-action"><a href="#" class="show-attributes">ATTR</a></div>
+    </div>
+    
     <div id="drawer_content">
-      <div id="editor">
-        <h3>Welcome</h3>
-        <p>You can select some <em>Content-Nodes</em> on the left to edit the contents. You can drag <em>Nodes</em> around to arrange them. 
-        But keep in mind this is an early draft/sketch. Things will get more stable as we work on it.
-        </p>
-        <p>
-        And you can help by giving <a href="http://github.com/michael/substance/issues">feedback</a> or
-        reporting <a href="http://github.com/michael/substance/issues">bugs</a>.
-        </p>
-        <p>
-        Please have a look at the <a href="http://github.com/michael/substance">README</a> to learn more.
-        </p>
-      </div>
+    </div>
+  </script>
+  
+  <script type="text/x-handlebars-template" name="about">
+    <div id="editor">
+      <h3>Welcome</h3>
+      <p>You can select some <em>Content-Nodes</em> on the left to edit the contents. You can drag <em>Nodes</em> around to arrange them. 
+      But keep in mind this is an early draft/sketch. Things will get more stable as we work on it.
+      </p>
+      <p>
+      And you can help by giving <a href="http://github.com/michael/substance/issues">feedback</a> or
+      reporting <a href="http://github.com/michael/substance/issues">bugs</a>.
+      </p>
+      <p>
+      Please have a look at the <a href="http://github.com/michael/substance">README</a> to learn more.
+      </p>
     </div>
   </script>
   
@@ -191,7 +197,7 @@
                 <p class="meta">Created by {{value/data/author}}, 2010-12-04</p>
               </div>
             </a>
-            <a href="/" class="delete-document" document="{{value/data/id}}">x</a>
+            <a href="/" class="delete-document remove" document="{{value/data/id}}">x</a>
           </div>
         {{/documents}}
       </div>
@@ -261,10 +267,7 @@
         <div class="lpl progress-container"><div id="upload_progress" class="lpl progress-bar stripes animated" style="width:60%"></div></div>
         <div id="image_progress_legend" class="lpl legend">
       </div>
-
-      
     </form>
-    
   </script>
   
   <script type="text/x-handlebars-template" name="edit_section">
@@ -272,7 +275,41 @@
   </script>
   
   <script type="text/x-handlebars-template" name="edit_document">
-    <h3>Edit document</h3>
+    
+    {{#author}}
+    <h2>Attributes</h2>
+    <dl class="document-attributes">
+      <dt>Author:</dt>
+      <dd>{{../author}}</dd>
+      
+      <dt>Created At:</dt>
+      <dd>{{../created_at}}</dd>
+      
+      <dt>Last modified:</dt>
+      <dd>{{../updated_at}}</dd>
+      
+      <dt>Publish Date:</dt>
+      <dd>
+        {{../published_on}} 
+          
+        {{^../unpublished}}
+          <!-- TODO: this doesnt work for some reason -->
+          (<a href="/" class="unpublish-document">Unpublish</a>)
+        {{/../unpublished}}
+        
+        {{^../published_on}}
+          not published (<a href="/" class="publish-document">Publish</a>)
+        {{/../published_on}}
+      </dd>
+    </dl>
+    
+    {{/author}}
+    {{^author}}
+      <h2>Attributes</h2>
+      <p class="info">
+        You are editing a draft document. You need to <a href="#" class="save-document">save</a> it in order to to edit attributes.
+      </p>
+    {{/author}}
     
     <div class="lpl texteditor">
       {{#attributes}}
@@ -280,6 +317,7 @@
         <div id="property_{{key}}" key="{{key}}" type="{{type}}" class="attribute-editor {{#unique}} unique{{/unique}}{{^unique}} non-unique{{/unique}}"></div>
       {{/attributes}}
     </div>
+
   </script>
   
   <!-- content-node templates for the editor -->
@@ -319,7 +357,7 @@
         <img src="{{.}}"/>
       {{/node/data/url}}
       {{^node/data/url}}
-        image placeholder..
+        [Upload image]
       {{/node/data/url}}
       
       <div class="node-editor-placeholder">
@@ -335,7 +373,7 @@
     </form>
     <div class="items">
       {{#items}}
-        <span>{{.}} <a href="/" value="{{.}}" class="remove-item">x</a></span>
+        <span class="item">{{.}} <a href="/" value="{{.}}" class="remove-item">x</a></span>
       {{/items}}
     </div>
   </script>
@@ -406,6 +444,7 @@
   <script src="src/backend/views/document_view.js"></script>
   <script src="src/backend/views/shelf.js"></script>
   <script src="src/backend/views/drawer.js"></script>
+  <script src="src/backend/views/attributes.js"></script>
   
   <script src="src/shared/commands.js"></script>
   <script src="src/shared/views/document_browser.js"></script>

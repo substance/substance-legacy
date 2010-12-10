@@ -1,7 +1,7 @@
 UI.MultiStringEditor = Backbone.View.extend({
   events: {
     'submit form': 'newItem',
-    'click a.remove': 'removeItem'
+    'click a.remove-item': 'removeItem'
   },
   
   initialize: function(options) {
