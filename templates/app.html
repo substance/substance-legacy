@@ -325,7 +325,8 @@
   <!-- content-node templates for the editor -->
   <script type="text/x-handlebars-template" name="document">    
     <div id="{{node/key}}" name={{node/key}} class="content-node document">
-      <div class="content-node-info">Document</div>
+      <!--<div class="content-node-info">Document</div>-->
+      <div class="content-node-outline"></div>
       <h1 contenteditable="true" class='content'>{{node/data/title}}</h1>
       {{{content}}}
     </div>
@@ -334,7 +335,8 @@
   <script type="text/x-handlebars-template" name="section">
     <div id="{{node/key}}" name={{node/key}} draggable="false" class="content-node section">
       <a href="#" class="remove remove-node" node="{{node/key}}">X</a>
-      <div class="content-node-info" draggable="false">Section</div>
+      <!--<div class="content-node-info" draggable="false">Section</div>-->
+      <div class="content-node-outline"></div>
       
       <h2 contenteditable="true" class='content'>{{node/data/name}}</h2>
       <div class="node-editor-placeholder"></div>
@@ -345,7 +347,8 @@
   <script type="text/x-handlebars-template" name="text">
     <div id="{{node/key}}" name={{node/key}} draggable="false" class="content-node text">
       <a href="#" class="remove-node remove" node="{{node/key}}">x</a>
-      <div class="content-node-info" draggable="false">Text</div>
+      <!--<div class="content-node-info" draggable="false">Text</div>-->
+      <div class="content-node-outline"></div>
       <div class='content' contenteditable="true">{{{content}}}</div>
       <div class="node-editor-placeholder"></div>
     </div>
@@ -354,7 +357,8 @@
   <script type="text/x-handlebars-template" name="image">
     <div id="{{node/key}}" name={{node/key}} draggable="false" class="content-node image">
       <a href="#" class="remove remove-node" node="{{node/key}}">X</a>
-      <div class="content-node-info" draggable="false">Image</div>
+      <!--<div class="content-node-info" draggable="false">Image</div>-->
+      <div class="content-node-outline"></div>
       {{#node/data/url}}
         <img src="{{.}}"/>
       {{/node/data/url}}
