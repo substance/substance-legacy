@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>substance™ header styles</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  
+  <link href="../stylesheets/reset.css" media="screen" rel="stylesheet" type="text/css" />
+  
+  <style type="text/css" media="screen">
+    
+    body {
+      margin: 0; padding: 0;
+      background: #f0f1eb;
+      color: #fff; 
+      text-rendering: optimizeLegibility;
+      font-family: "HelveticaNeue", Helvetica, Arial, sans-serif;
+      font-size: 14px;
+      line-height: 1.5em; /*Übackground: #aaa;*/ /*background: #ededed; */
+    }
+    
+    a {
+      color: #222;
+    }
+    
+    #sbs_shelf {
+      position: fixed;
+      height: 0px;
+      width: 100%;
+      background: #e0e1db;
+      -webkit-box-shadow: inset 0px 2px 6px rgba(0,0,0,0.25);
+      -moz-box-shadow:    inset 0px 2px 6px rgba(0,0,0,0.25);
+      box-shadow:         inset 0px 2px 6px rgba(0,0,0,0.25);
+      z-index: 1000;
+    }
+
+    #sbs_shelf.open {
+      height: 250px;
+    }
+
+    #sbs_shelf a { color: #fff; }
+    
+    #sbs_header {
+      position: absolute;
+      height: 30px;
+      width: 100%;
+      bottom: -30px;
+      color: #585a4f;
+      font-size: 12px;
+      text-shadow: 0px 1px 0px rgba(255,255,255,0.5);
+      background: #e5e6e0;
+      -webkit-box-shadow: 0px 1px 2px rgba(0,0,0,0.25);
+      -moz-box-shadow:    0px 1px 2px rgba(0,0,0,0.25);
+      box-shadow:         0px 1px 2px rgba(0,0,0,0.25);
+      z-index: 10000;
+      overflow: hidden;
+    }
+    
+    #sbs_header .header-icon {
+      display: block;
+      float: left;
+      width: 30px;
+      height: 30px;
+      text-indent: -5000px;
+      background-color: transparent;
+      background-position: center center;
+      background-repeat: no-repeat;
+      border-left: 1px solid #eaeae5;
+      opacity:0.5;
+      -webkit-transition: all 0.15s ease-in-out;
+    }
+    
+    #sbs_header .header-icon:hover {
+      background-color: rgba(255,255,255,1);
+      opacity:1;
+    }
+    
+    #sbs_header .label {
+      display: block;
+      float: left;
+      height: 30px;
+      padding: 0 10px 0 15px;
+      color: #929292;
+      line-height: 32px;
+    }
+
+    #sbs_header .label strong {
+      color: #373737;
+    }
+    
+    #dashboard_toggle {
+      float: left;
+      height: 30px;
+      padding: 0 5px 0 0;
+      cursor:pointer;
+      -webkit-transition: all 0.15s ease-in-out;
+    }
+    
+    #dashboard_toggle:hover {
+      background-color:#f0f1eb;
+    }
+    
+    #sbs_header.dashboard #dashboard_toggle {
+      background-color: rgba(255,255,255,1);
+      -webkit-box-shadow: 0px 0px 8px rgba(0,0,0,0.35);
+      -moz-box-shadow:    0px 0px 8px rgba(0,0,0,0.35);
+      box-shadow:         0px 0px 8px rgba(0,0,0,0.35);
+    }
+    
+    #document_toggle {
+      float: left;
+      height: 30px;
+      padding: 0 5px 0 0;
+      cursor:pointer;
+      -webkit-transition: all 0.15s ease-in-out;
+    }
+    
+    #document_toggle:hover {
+      background-color:#f0f1eb;
+    }
+    
+    #sbs_header.document #document_toggle {
+      background-color: rgba(255,255,255,1);
+      -webkit-box-shadow: 0px 0px 8px rgba(0,0,0,0.35);
+      -moz-box-shadow:    0px 0px 8px rgba(0,0,0,0.35);
+      box-shadow:         0px 0px 8px rgba(0,0,0,0.35);
+    }
+    
+    #collaborators_toggle {
+      float: left;
+      height: 30px;
+      padding: 0 5px 0 0;
+      cursor:pointer;
+      -webkit-transition: all 0.15s ease-in-out;
+    }
+    
+    #collaborators_toggle:hover {
+      background-color:#f0f1eb;
+    }
+    
+    #sbs_header.collaborators #collaborators_toggle {
+      background-color: rgba(255,255,255,1);
+      -webkit-box-shadow: 0px 0px 8px rgba(0,0,0,0.35);
+      -moz-box-shadow:    0px 0px 8px rgba(0,0,0,0.35);
+      box-shadow:         0px 0px 8px rgba(0,0,0,0.35);
+    }
+    
+    #login_state {
+      float: right;
+      height: 30px;
+      cursor:pointer;
+      -webkit-transition: all 0.15s ease-in-out;
+    }
+    
+    #login_state:hover {
+      background-color:#f0f1eb;
+    }
+    
+    #sbs_header.login #login_state {
+      background-color: rgba(255,255,255,1);
+      -webkit-box-shadow: 0px 0px 8px rgba(0,0,0,0.35);
+      -moz-box-shadow:    0px 0px 8px rgba(0,0,0,0.35);
+      box-shadow:         0px 0px 8px rgba(0,0,0,0.35);
+    }
+    
+    
+    
+    #sbs_header .header-icon.dashboard {
+      border-left: none;
+      background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB4AAAAeCAYAAAA7MK6iAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAALlJREFUeNpi/P//P8NAACaGAQKjFo9aPPwsZiGkQECA/z8rKyuc//fvX4afP38Wf/36rY8YeZwAVIDgwxoaakDq/34Q/vr160EjI/3/SkoK/4mVx4UJWqyrq41sCDvIApDhxMrjwgTj+Pfv38jcn0Ds+Pv3H6LlqZq40CwjWZ6oxAVKOKqqSv8/fPgETWx8DJycXETL4wKMRNRO+3GIOxIpT7bFo/l4NB+P5uPRfDzaAhm1eIRYDBBgAAbTzjjWIfSIAAAAAElFTkSuQmCC);
+    }
+    
+    #sbs_header .header-icon.new-document {
+      background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB4AAAAeCAYAAAA7MK6iAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAW1JREFUeNpi/P//P8NAAMZRi0ctHrWYrhYLCPD/Z2VlxRD/+/cvw79//2qAZtT9+vU74vv37+uJtZiFGEVycrJAy/kwxL99+8Zw5syFhzo6mmzfv/9Yw8vLk/b585e5VLMYZKmIiDCG+Lt3TCBqiYCAwGIREWYmZmbmOfz8fPwfP37qo4rFuAAwmME0ExMjA9BCBkZGRgZgsPcChWhrMQwcOnTsAIzd1NSoRLXEZWdn9R9bUAODlOHZsxcMf/78ZmBhYWVgY2Nl+P37N8O1azcZqe5jkMGbN+8A+9DDw9lBSkoCLAYCwDhmACYu6qVq1JT8HUQ5Qhzx5z8obtGzGFUtRvYpDOzdexDM9/X1cMCWz6liMbJPkYAjVA7oc9IsZiJFsaqq0n9QKYZcooHEyMkJRPuYi4sTXIJxcnKhlGiiosJgOZpZDIpDWHDCfAmyGD1xUd1idJ/D2LSuFveTaK7jaENg1OJRi+kGAAIMADVPrcg0ppKgAAAAAElFTkSuQmCC);
+    }
+    
+    #sbs_header .header-icon.save-document {
+      background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB4AAAAeCAYAAAA7MK6iAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAfJJREFUeNpi/P//P8NAACaGAQKjFo9aPPwsZiFGkYAA/39WVlYM8b9//zL8+/evBlgW1P369Tvi+/fv66lqsZycLNByPgzxb9++MZw5c+Ghjo4m2/fvP9bw8vKkff78ZS4VfczHICIijCH+7h04ppYICAgsFhFhZmJmZp7Dz8/H//Hjpz6qWIwLAIMZklCYGBmAFjIwMjIyAIO9FyhEW4th4NChYwdg7KamRiVi9DASU0nY2Vn9xxbUwCBlePbsBcOfP78ZWFhYGdjYWBl+//7NcO3aTUaa+piTk5NBU1Pjx+vXrzhAwQyMYwZg4qJtPgaFlIKCwseFCxdvi4iIfCAoKMggKCjAwMXFSV2L//79x+Ds7PoImIK/gxKVlJT0x46OnmW8vHwxZ8+euw0KbqoXICDfSUhIfsrOzmt5+PCB59y5cyzKyio28PDwFEpKivdISUm6SkiIUd/if//+M9y4cZ1PRUXR8M6d+2lNTS2JQOFJYmKiPWJiIjmgIMZWslFsMSifcnCwA+OPKxNoGcOrV6+zREVFesXFRXMkJMQZeHi4gWqYqG8xKMWCUjDQImCwM2TKy8vaA4NWS1xcjCxLScpOIMO5ubmBiYqZQVhYUIudnR3oGA6yLCW6AAGC/SSa60gti0dbIKMWj1pMEAAEGAB8Hp2bhFXJhAAAAABJRU5ErkJggg==);
+    }
+    
+    #sbs_header .header-icon.user {
+      background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB4AAAAeCAYAAAA7MK6iAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAhtJREFUeNrslr9v01AQx89+sZ8H28WJEwllIkrV1oy0RW2zRupWGjYQQxn7J4St7OxITAiYYWFAYmBAYkcKKENbVW2VtiJWYycprn9wl8oDokFqaquLT3py9BTnc3fvvt8XIYoiuIkQ4YYiA2fg1CI3yUuMiUwUWV0QBAjDcM/3/dZVf0O4io5lWb6jKPyVoigznPOyKIrg++cwHA5bg8Fw8+zs95fEwQjMm2bhRz5vlFRVBc5luAD74Lp96HZtt9M5nsUkDhJtdbVarSuKXCoWTaocoQJQqylxTVNBkiQV95/hVzcTHa5Go2FomkaV0xmPoKOW4ZMSmZrSoVKprCQ+1Vtbz78yxsIYeMnAQa1W66Qhp+94xoNxMxEEYbS+/vBNKjqenp7ZDoLgn31KxjSLfcuy3qcCnp9f+OB555dUG4Bl3f2JH51UwGtrD14vLa0comn8Va1hFPobG09fpmaZhnFrp91ud0i7cYRhhDp2vWaz+TFx50KneiLLUl3X9dVy+XbxQstSPFRg2zbs7x/aaCKfPM9r4XG8wOTca4FRu48KBeMt6ZSMglyLtEyuFbcaYeA47mhh9dDrue+Ojo4fXwu8uLjwjfPcfV3XIJeTRnodIydcPqBnw8nJr2B3d6/kOE53ojPGKlkUBfeoWrwUxkJjAyEHowRxsbm52eWJvfr0tEft+IyLT3B7HiR2LWZ/fTJwBv5f/BFgABFM1SVgYgemAAAAAElFTkSuQmCC);
+    }
+    
+    #sbs_header .header-icon.login {
+      background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB4AAAAeCAYAAAA7MK6iAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAWtJREFUeNpi/P//P8NAACaGAQKjFg8di1lZWaV5eXlWCAkJPgFhEBskRkgfIyWpmoODQx1o2XEgFuTm5gKLff36jeHdu/fvgdjmx48f12jiY3l52T5paUlBT0+P1zt27DoKwiA2SExeXq4Pr2aQj8nFxsaGPxwcbP4/efK4E8jnBWEQ28HB9r+Rkf5PfHqZKItfZnY2NrY/0tIyLUDuZxAGsdnYWP8AxdlolriYmVkY/v79xwC1FAY+g8SYmZlpm6qxpU1i0uvIK0AI5mM+Pt69wHTixMjIiCIuIMDHICsrw/Dv3z+GO3fu7Xvy5JkzkvQWIOYGYkdc5rIQcpm0tJQTsIAAJhYm9BKLgYuLE5i4/jIA5Z3QtPkQMpegxSBLxcREGNB9DDeAhYWBl5eX+nEM8ikuS8FxBZRDD43RanFoWaylpf3u3z/cWQ4kB1JD9XwMBJ1AbEZAzSkgLqe2xaOJa9TiUYuJAgABBgAXQLEYn7/pwQAAAABJRU5ErkJggg==);
+    }
+    
+    #sbs_header .header-icon.logout {
+      background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB4AAAAeCAYAAAA7MK6iAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAVZJREFUeNrsVc1Kw0AQnmSTzU8NssUeZE2CUBDqQdqCpwrBk30iX8BLL30OH6EIHkXwAXwBcxPSQ6lE2G7ciXqzmkBCEXbgg9mZj/mYzWTWKIoCdmEm7Mi0sBbWwmDbNg+Cvdtul6UI9DFWt45RZ4G4rnuixB4VWKfjl7H1+g2ybLlUmOR5/txKx3Eczjk/ZNPp1eticfeAQB9jcRzNa7WMHVfFeDzMk2RSpOnLTJ0DBPpJclGMRmfvdWqZ9b4vcSilgvOjG3VcIdCn1BYqTlsbLkIs2GwkfIl+2wpjhJB2pjoM+b1to7Cw+v3jotc7KIE+xjCHnKr1rKpExtil53lgmiZEUQhCiM8ClgW+74OUsuQ0Lqz+V3AcCoZhAKX7Pw4pchq/akLMUnTrQlA55Ohd/X+FB4PTTMrtex1zyGnjkZgpnP/BeVK4bvx10sOlhbXwb/YhwADyY7E14g6ocwAAAABJRU5ErkJggg==);
+    }
+
+
+    
+    #sbs_shelf_content { overflow: auto; color: #444; }
+    #sbs_shelf_content a.item { position: relative; }
+    #sbs_shelf_content a.delete-document { color: red; text-decoration: none; position: absolute; top: 30px; left: 10px; }
+    
+    
+    
+  </style>
+  
+</head>
+<body>
+  
+  <div id="sbs_shelf">
+    
+    <div id="sbs_header">
+      <div id="new_document">
+        <a class="header-icon new-document" href="#new_document" title="create a new document">create a new document</a>
+      </div>
+      <div id="dashboard_toggle">
+        <a class="header-icon dashboard" href="#open_dashboard" title="open the dashboard">open the dashboard</a>
+        <span class="label">SUBSTANCE™ • demo / testify</span>
+      </div>
+      <div id="document_toggle">
+        <span class="label">Now editing: <strong>Some Dockument</strong></span>
+        <a class="header-icon save-document right" href="#save_document" title="save current document">save current document</a>
+      </div>
+      <div id="collaborators_toggle">
+        <a class="header-icon user" href="#show_collaborators" title="show collaborating users">collaborator</a>
+      </div>
+      <div id="login_state">
+        <span class="label">Signed in as: <strong>Samo Monkeykong</strong></span>
+        <a class="header-icon logout right" href="#logout" title="log out">log out</a>
+        <a class="header-icon login right" href="#login" title="log in">log in</a>
+      </div>
+    </div>
+    
+    <div id="sbs_shelf_content">
+    </div>
+    
+  </div>
+  
+  
+</body>
+</html>
