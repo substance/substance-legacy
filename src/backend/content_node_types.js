@@ -19,7 +19,7 @@ ContentNode.types = {
       {
         "key": "name",
         "name": "Section name",
-        "defaultValue": "Hooray I'm a new section "
+        "defaultValue": "Hi, I'm a new section "
       }
     ]
   },
@@ -30,7 +30,7 @@ ContentNode.types = {
       {
         "key": "content",
         "name": "Content",
-        "defaultValue": "Hooray I'm a newborn text node."
+        "defaultValue": "Hi, I'm a another text node."
       }
     ]
   },
