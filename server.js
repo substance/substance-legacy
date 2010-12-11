@@ -128,7 +128,7 @@ app.get('/documents/:id', function(req, res) {
   });
 });
 
-app.listen(config['server_port']);
+app.listen(config['server_port'], config['server_host']);
 
 
 // The DNode Server (RMI Interface for the client)
