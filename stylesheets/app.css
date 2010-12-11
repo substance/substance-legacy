@@ -24,7 +24,7 @@ body {
   font-family:"HelveticaNeue", Helvetica, Arial, sans-serif;
   font-size:14px; 
   
-  /* line-height:1.5em;*/
+  line-height:1.5em;
 }
 
 a { color: #252519; }
@@ -120,6 +120,8 @@ dd
 	margin: 0 0 0 120px;
   padding: 0;
 }
+
+
 
 
 
@@ -302,6 +304,7 @@ dd
   -moz-box-shadow:    0px 0px 8px rgba(0,0,0,0.35);
   box-shadow:         0px 0px 8px rgba(0,0,0,0.35);
 }
+
 
 
 #sbs_header .header-icon.dashboard {
