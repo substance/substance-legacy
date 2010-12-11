@@ -73,7 +73,6 @@ multiple document repositories within the same editor instance.
 
 
 
-
 API
 --------------------------------------------------------------------------------
 
@@ -178,6 +177,10 @@ Installation
 
 Updates
 --------------------------------------------------------------------------------
+
+**11th December 2010**
+
+Added a Visual Document Outline, and a whole bunch of new styles.
 
 **7th December 2010**
 

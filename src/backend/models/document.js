@@ -177,11 +177,11 @@ Document.EMPTY = {
     },
     "3": {
       "type": "text",
-      "content": "Your text goes here."
+      "content": "<p>Your text goes here.</p>"
     },
     "4": {
       "type": "text",
-      "content": "Additional text."
+      "content": "<p>Additional text.</p>"
     }
   }
 };
