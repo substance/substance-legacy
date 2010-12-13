@@ -3,6 +3,12 @@
 ----------------------
 */
 
+/** {
+  box-sizing:border-box;
+  -webkit-box-sizing:border-box;
+  -moz-box-sizing:border-box;
+}*/
+
 .clear { clear: both; }
 .hidden { display: none; }
 .invisible { opacity: 0; }
@@ -504,6 +510,12 @@ dd
 .content-node.text > .content-node-outline { border-color: #459fc9; }
 .content-node.image > .content-node-outline { border-color: #c35a3a; }
 
+.content-node.document > .content-node-outline .cursor { border-color: #747260; border-top: 5px solid transparent; border-bottom: 5px solid transparent; }
+.content-node.section > .content-node-outline .cursor { border-color: #a5c54b; border-top:  5px solid transparent; border-bottom: 5px solid transparent; }
+.content-node.text > .content-node-outline .cursor { border-color: #459fc9; border-top: 5px solid transparent; border-bottom: 5px solid transparent; }
+.content-node.image > .content-node-outline .cursor { border-color: #c35a3a; border-top: 5px solid transparent; border-bottom: 5px solid transparent; }
+
+
 .content-node-outline {
   position: absolute; 
   top: 0;
@@ -515,8 +527,48 @@ dd
   border-top: 1px solid;
 }
 
+.content-node-outline .cursor {
+  display: none;
+  position: absolute;
+  top: 49%;
+  left: 0;
+  width: 0;
+  height: 0;
+  
+  border-left: 5px solid;
+}
+
+/* Contains the username owning the cursor */
+.content-node-outline .cursor span {
+  display: none;
+  position: absolute;
+  background: #c0c1bb;
+  left: 10px;
+  color: #444;
+  -webkit-border-radius:5px;
+  -moz-border-radius:   5px;
+  border-radius:        5px;
+  opacity: 0.8;
+  padding: 5px;
+  z-index: 1000;
+}
+
+.content-node-outline:hover .cursor span { display: inline; }
+
+.content-node.selected > .content-node-outline .cursor {
+  display: block;
+}
+
+.content-node.occupied > .content-node-outline .cursor {
+  display: block;
+}
+
 .content-node.active > .content-node-outline {
   border-width: 2px;
+}
+
+.content-node.occupied > .content-node-outline {
+  border-width: 3px;
 }
 
 .content-node.selected > .content-node-outline {
@@ -918,7 +970,6 @@ code { display: block; font-family: Monaco, Consolas; font-size: 12px; margin-to
   font-size: 11px;
   color: #8a8d7d;
 }
-
 
 
 #documents .document a.delete-document {

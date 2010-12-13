@@ -353,6 +353,7 @@ DNode(function (client, conn) {
       options.success();
     },
     
+    // nodeKey=null if the cursor gets released
     selectNode: function(nodeKey) {
       var session = sessions[conn.id];
       notifyNodeSelection(session, nodeKey);
