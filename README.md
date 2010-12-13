@@ -2,9 +2,30 @@ Substance
 ================================================================================
 
 Substance is a data-driven document authoring tool based on the ContentGraph 
-document format. It's demo-ware for the moment, but we're working on it.
+document format. 
 
-![Screenshot](http://ma.zive.at/substance.png)
+Be aware this is demo-ware for the moment. However our final mission is to create a free and independent information sharing platform, available to everyone.
+
+
+Motivation
+--------------------------------------------------------------------------------
+
+* Information wants to be free
+* Information wants to be beautiful
+* Reading should be distraction-free (no noise like blinking ads etc.)
+* Favor Semantic editing, since writing is about content, not formatting
+
+
+**And that's how it looks like (at least atm):**
+
+The Substance Writer:
+
+![Screenshot](http://ma.zive.at/substance_writer.png)
+
+The Substance Reader:
+
+![Screenshot](http://ma.zive.at/substance_reader.png)
+
 
 Documents are created by adding and editing `ContentNodes` of various types. A Javascript-based editor takes
 a `ContentGraph` as JSON, and holds an internal memory representation of the current document (respectively the arrangement of `ContentNodes`). This memory representation is rendered dynamically. The user can immediately read and navigate the whole document. Everything is at one page. Every ContentNode can be modified by clicking on it. A ContentNode editor pane gets activated and the node's properties can be edited. The changes made are reflected in realtime. Users see the results as they type.
@@ -15,8 +36,8 @@ Demo
 
 You've got two options to try out the most recent work-in-progress version:
 
-* [Edit Documents](http://substance.quasipartikel.at:3003) (a.k.a. The Machineroom)
-* [Browse Documents](http://substance.quasipartikel.at:3003/documents.html) (a.k.a. The Explorer)
+* [Edit Documents](http://edge.substance.io/writer) (a.k.a. The Writer)
+* [Browse Documents](http://edge.substance.io) (a.k.a. The Reader)
 
 ContentGraph
 --------------------------------------------------------------------------------
@@ -81,7 +102,7 @@ API
 Get a list of documents available in the repository.
 
 
-Example: [http://substance.quasipartikel.at:3003/documents](http://substance.quasipartikel.at:3003/documents)
+Example: [http://edge.substance.io/documents](http://substance.quasipartikel.at:3003/documents)
 
 
 `GET /documents/:id`
@@ -89,7 +110,7 @@ Example: [http://substance.quasipartikel.at:3003/documents](http://substance.qua
 Get a document by ID.
 
 
-Example: [http://substance.quasipartikel.at:3003/documents/cc97d5a64b929a4936fce989608b081b](http://substance.quasipartikel.at:3003/documents/cc97d5a64b929a4936fce989608b081b)
+Example: [http://edge.substance.io/documents/cc97d5a64b929a4936fce989608b081b](http://substance.quasipartikel.at:3003/documents/cc97d5a64b929a4936fce989608b081b)
 
 
 
@@ -132,7 +153,7 @@ Roadmap
 5. Implement a LaTeX renderer (this allows at any time the download of a snapshot as a pretty formatted PDF, ready to be printed).
 
 
-Actually, the system aims to be an alternative to editing documents in LaTeX or Word. Since DocumentGraphs contain all the information necessary to be rendered as LaTeX markup you wouldn't need to write Latex. You can edit and share your documents online and update them at any time. 
+Actually, the system aims to be an alternative to editing documents in LaTeX or Word. Since DocumentGraphs contain all the information necessary to be rendered as LaTeX markup you wouldn't need to write LaTeX. You can edit and share your documents online and update them at any time. 
 
 Substance is being designed to work in a decentralized scenario where many
 substance-nodes exist on the web. Registered Substance nodes could then be aggregated and indexed
@@ -200,4 +221,3 @@ Contributors (so far)
 
 * Samo Korošec (User Interface)
 * Gerald Stangl (Think Tank)
-
