@@ -79,7 +79,7 @@ app.get('/documents/:id.html', function(req, res) {
 });
 
 
-// Backstage
+// The Writer
 
 app.get('/writer', function(req, res) {  
   html = fs.readFileSync(__dirname+ '/templates/app.html', 'utf-8');
