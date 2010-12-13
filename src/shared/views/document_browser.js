@@ -1,4 +1,36 @@
 var DocumentBrowser = Backbone.View.extend({
+  events: {
+    'click a.add-criterion': 'addCriterion',
+    'click a.remove-criterion': 'removeCriterion'
+  },
+  
+  addCriterion: function(e) {
+    var property = $(e.currentTarget).attr('property'),
+        operator = $(e.currentTarget).attr('operator'),
+        value = $(e.currentTarget).attr('value');
+    
+    this.applyCommand({command: 'add_criterion', options: {
+      property: property,
+      operator: operator,
+      value: value
+    }});
+    this.render();
+    return false;
+  },
+  
+  removeCriterion: function(e) {
+    var property = $(e.currentTarget).attr('property'),
+        operator = $(e.currentTarget).attr('operator'),
+        value = $(e.currentTarget).attr('value');
+
+    this.applyCommand({command: 'remove_criterion', options: {
+      property: property,
+      operator: operator,
+      value: value
+    }});
+    this.render();
+    return false;
+  },
   
   initialize: function(options) {
     var that = this;
@@ -14,7 +46,7 @@ var DocumentBrowser = Backbone.View.extend({
   
   render: function() {
     var documents = this.model.all('objects').toArray()
-    this.el.html(_.renderTemplate('document_browser', {
+    $(this.el).html(_.renderTemplate('document_browser', {
       num_documents: documents.length,
       documents: documents
     }));

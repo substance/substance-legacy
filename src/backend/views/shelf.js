@@ -55,15 +55,15 @@ var Shelf = Backbone.View.extend({
   
   toggle: function(module, e) {
     if (!$(e.target).hasClass('selected')) { // Open
-      this.shelfContent = new window[module]({el: this.$('#lpl_shelf_content')});
+      this.shelfContent = new window[module]({el: this.$('#sbs_shelf_content')});
       this.shelfContent.render();
-      $('#lpl_shelf').removeClass('closed');
-      $('#lpl_shelf').addClass('open');
-      $('#lpl_actions .header.button').removeClass('selected');
+      $('#sbs_shelf').removeClass('closed');
+      $('#sbs_shelf').addClass('open');
+      $('#sbs_actions .header.button').removeClass('selected');
       $(e.target).addClass('selected');
     } else { // Close
-      $('#lpl_shelf').removeClass('open');
-      $('#lpl_shelf').addClass('closed');
+      $('#sbs_shelf').removeClass('open');
+      $('#sbs_shelf').addClass('closed');
       $(e.target).removeClass('selected');
     }
   }

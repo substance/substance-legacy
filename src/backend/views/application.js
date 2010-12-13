@@ -4,6 +4,9 @@
 // This is the top-level piece of UI.
 var Application = Backbone.View.extend({
   events: {
+    'click .new-document': 'newDocument',
+    'click #dashboard_toggle': 'showDashboard',
+    'click #document_toggle': 'showDocument',
     'click a.save-document': 'saveDocument',
     'click a.show-attributes': 'showAttributes',
     'click a.publish-document': 'publishDocument',
@@ -17,16 +20,31 @@ var Application = Backbone.View.extend({
   
   view: 'dashboard', // init state
   
+  newDocument: function() {
+    this.editor.newDocument();
+    return false;
+  },
+  
+  showDashboard: function() {
+    this.toggleView('dashboard');
+    return false;
+  },
+  
+  showDocument: function() {
+    this.toggleView('document');
+    return false;
+  },
+  
   // Handle top level events
   // -------------
   
   showAttributes: function() {
     app.editor.drawer.toggle('Attributes');
+    $('.show-attributes').toggleClass('selected');
     return false;
   },
   
   publishDocument: function(e) {
-    console.log('publish document');
     this.editor.model.published_on = (new Date()).toJSON();
     this.editor.saveDocument();
     return false;
@@ -90,7 +108,7 @@ var Application = Backbone.View.extend({
     this.editor = new Editor({el: '#editor'});
     
     // Set up shelf
-    this.shelf = new Shelf({el: '#lpl_shelf'});
+    this.shelf = new Shelf({el: '#sbs_shelf'});
     
     this.authenticated = false;
     
@@ -130,6 +148,7 @@ var Application = Backbone.View.extend({
       Session: {
         updateStatus: function(status) {
           that.editor.status = status;
+          
           that.editor.trigger('status:changed');
         },
         
@@ -202,20 +221,21 @@ var Application = Backbone.View.extend({
   toggleView: function(view) {
     this.view = view;
     
+    $('#sbs_header').removeClass();
+    
     if (this.view === 'dashboard') {
       editor.deactivate();
+      
       $('#dashboard').show();
       $('#editor').hide();
       
-      $('#shelf_actions .document').hide();
-      $('#shelf_actions .dashboard').show();
+      $('#sbs_header').addClass('dashboard');
     } else {
       $('#editor').show();
       $('#dashboard').hide();
       
-      $('#shelf_actions .dashboard').hide();
-      $('#shelf_actions .document').show();
-    }    
+      $('#sbs_header').addClass('document');
+    }
   },
   
   // Should be rendered just once

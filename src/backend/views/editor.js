@@ -9,7 +9,8 @@ var Editor = Backbone.View.extend({
     this.bind('status:changed', function() {
       app.shelf.render();
       app.toggleView('editor'); // TODO: ugly
-      that.outline.refresh();
+      
+      that.updateCursors();
     });
     
     this.bind('document:changed', function() {
@@ -20,6 +21,14 @@ var Editor = Backbone.View.extend({
       app.toggleView('editor'); // TODO: ugly
       that.drawer.renderContent(); // Refresh attributes et. al
       that.drawer.render();
+    });
+  },
+  
+  updateCursors: function() {
+    $('.content-node.occupied').removeClass('occupied');
+    _.each(this.status.cursors, function(user, nodeKey) {
+      $('#'+nodeKey).addClass('occupied');
+      $('#'+nodeKey+' .cursor span').html(user);
     });
   },
   
@@ -50,17 +59,11 @@ var Editor = Backbone.View.extend({
       
       // Render inline Node editor
       that.documentView.renderNodeEditor(node);
-      
-      app.editor.outline.refresh();
     });
     
     // set up document view
     this.documentView = new DocumentView({el: this.$('#document'), model: this.model});
     this.documentView.render();
-    
-    // Render outline
-    this.outline = new Outline(that.model);
-    this.outline.render();
   },
   
   newDocument: function() {

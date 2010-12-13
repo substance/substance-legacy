@@ -27,12 +27,6 @@ var DocumentView = Backbone.View.extend({
     
     app.editor.model.bind('change:node', function(node) {
       that.renderNode(node);
-      
-      // Re-render outline on every node change
-      $('#outline').html('');
-      
-      app.editor.outline = new Outline(app.editor.model);
-      app.editor.outline.render();
     });
 
     // TODO: Select the document node on-init
@@ -49,9 +43,10 @@ var DocumentView = Backbone.View.extend({
     if (!noBlur) $('.content').blur();
     
     app.editor.model.selectedNode = null;
-    app.editor.outline.refresh();
     this.resetSelection()
 
+    // Broadcast
+    remote.Session.selectNode(null);
     return false;
   },
   
@@ -76,7 +71,7 @@ var DocumentView = Backbone.View.extend({
     } else if (app.editor.model.selectedNode.type === 'text') {
       this.nodeEditor = new TextEditor({el: $node});
     } else if (app.editor.model.selectedNode.type === 'section') {
-      // this.nodeEditor = new SectionEditor({el: $('#drawer_content')});
+      this.nodeEditor = new SectionEditor({el: $node});
     } else if (app.editor.model.selectedNode.type === 'image') {
       this.nodeEditor = new ImageEditor({el: $node});
     }

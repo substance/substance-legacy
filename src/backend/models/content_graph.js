@@ -90,9 +90,9 @@ var ContentGraph = _.inherits(ContentNode, {
     // if present
     this.id = g.id;
     this.name = g.name;
-    this.created_at = g.created_at; // new Date(g.created_at);
-    this.updated_at = g.updated_at; // new Date(g.updated_at);
-    this.published_on = g.published_on; // new Date(g.published_on);
+    this.created_at = g.created_at;
+    this.updated_at = g.updated_at;
+    this.published_on = g.published_on;
     
     this.author = g.author;
     

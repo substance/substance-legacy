@@ -1,0 +1,149 @@
+<!DOCTYPE html> 
+<html> 
+<head> 
+  <title>Substance™ — Browse Documents</title>
+  
+  <!-- Templates -->
+  <script type="text/x-handlebars-template" name="document_browser">
+    <div id="facets">
+      FacetsView
+    </div>
+    
+    <div id="documents">
+      <h2>{{num_documents}} Documents:</h2>
+      <div class="list">
+        {{#documents}}
+          <div class="document">
+            <a class="link load-document" href="#{{value/data/author}}/{{value/data/name}}" document="{{value/data/id}}">
+              <div class="icon"><img src="/images/document_icon.png"/></div>
+              <div class="content">
+                <h5 class="title">{{value/data/title}}</h5>
+                <p class="meta">Created by {{value/data/author}}, 2010-12-04</p>
+              </div>
+            </a>
+          </div>
+        {{/documents}}
+      </div>
+    </div>
+  </script>
+  
+  <script type="text/x-handlebars-template" name="document">
+    <div id="document">
+      
+    </div>
+    <div id="attributes">
+      <h2>Attributes</h2>
+      <dl class="document-attributes">
+        <dt>Author:</dt>
+        <dd>{{document/author}}</dd>
+
+        <dt>Created At:</dt>
+        <dd>{{created_at}}</dd>
+
+        <dt>Last modified:</dt>
+        <dd>{{updated_at}}</dd>
+
+        <dt>Publish Date:</dt>
+        <dd>
+          {{published_on}} 
+        </dd>
+      </dl>
+    </div>
+  </script>
+  
+  
+  <script type="text/x-handlebars-template" name="facets">
+    <!--<h2>{{num_documents}} Filter by attributes:</h2>-->
+    <div class="list">
+      {{#facets}}
+        <div class="facet" id="facet_{{property}}">
+          <h3>{{property_name}}</h3>
+          <ul class="facet-choices">
+            {{#selected_facet_choices}}
+              <li class="facet-choice selected"><a href="#" class="remove-criterion" property="{{../property}}" operator="CONTAINS" value="{{value}}">{{value}}<span class="item-count">{{item_count}}</span></a></li>
+            {{/selected_facet_choices}}
+            {{#facet_choices}}
+              <li class="facet-choice"><a href="#" class="add-criterion" property="{{../property}}" operator="CONTAINS" value="{{value}}">{{value}}<span class="item-count">{{item_count}}</span></a></li>
+            {{/facet_choices}}
+          </ul>
+        </div>
+      {{/facets}}
+    </div>
+  </script>
+  
+  <script type="text/x-handlebars-template" name="shelf">
+    <div id="sbs_header" class="browser">
+      <div id="logo">
+        <span class="label">SUBSTANCE™</span>
+      </div>
+      
+      <div id="browser_toggle">
+        <a class="header-icon browser" href="#toggle/browser" title="open the brower">Browser</a>
+        <span class="label">Index</span>
+      </div>
+      <div id="new_document">
+
+      </div>
+      {{#document}}
+        <div id="document_toggle">
+          <span class="label">Now viewing: <strong>{{author}} / {{#name}}{{.}}{{/name}}</strong></span>
+        </div>
+      {{/document}}
+      <div id="login_state">
+        {{#username}}
+          <span class="label">Signed in as: <strong>{{.}}</strong></span>
+
+          <a class="header-icon logout right logout" href="#logout" title="log out">log out</a>
+        {{/username}}
+        {{^username}}
+          <span class="label">Tired of reading? — Start writing!</span>
+          <a class="header-icon login right" href="/writer" title="log in">log in</a>
+        {{/username}}
+      </div>
+    </div>
+
+    <div id="sbs_shelf_content">
+
+    </div>
+  </script>
+  
+  
+  <!-- Styles --> 
+  <link href="styles.css" media="screen" rel="stylesheet" type="text/css" />
+  
+  <!-- libraries --> 
+  <script src="lib/jquery-1.4.3.min.js"></script>
+  
+  <!-- Libraries -->
+  <script src="lib/underscore.js"></script>
+  <script src="lib/data.js"></script>
+  
+  <script src="lib/handlebars.js"></script>
+  <script src="lib/backbone.js"></script>
+  
+  <!-- Source -->
+  <script src="src/shared/helpers.js"></script>
+  <script src="src/shared/commands.js"></script>
+
+
+  <script src="src/shared/renderers/html_renderer.js"></script>
+  <script src="src/shared/views/facets.js"></script>
+  <script src="src/shared/views/document_browser.js"></script>
+  <script src="src/frontend/views/shelf.js"></script>
+  <script src="src/frontend/views/document_view.js"></script>
+  <script src="src/frontend/views/application.js"></script>
+  
+</head>
+<body>
+  <div id="container">
+    <div id="sbs_shelf">
+
+    </div>
+    <div id="browser">
+    </div>
+    <div id="document_wrapper">
+      
+    </div>
+  </div>
+</body> 
+</html>

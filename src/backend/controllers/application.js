@@ -1,8 +1,7 @@
 var ApplicationController = Backbone.Controller.extend({
   routes: {
     'toggle/:view': 'toggleView',
-    'load/:username/:docname': 'loadDocument',
-    'new': 'newDocument'
+    'load/:username/:docname': 'loadDocument'
   },
 
   loadDocument: function(username, docname) {
@@ -15,10 +14,5 @@ var ApplicationController = Backbone.Controller.extend({
   // Toggle View
   toggleView: function(view) {
     app.toggleView(view);
-  },
-  
-  // Open a new document in the editor
-  newDocument: function() {
-    app.editor.newDocument();
   }
 });

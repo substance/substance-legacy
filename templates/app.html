@@ -6,51 +6,51 @@
   <!-- templates -->
   
   <script type="text/x-handlebars-template" name="shelf">
-    <div id="lpl_header" class="dashboard"><!-- menubar -->
-      <div id="lpl_logo">
-        <a href="/">SUBSTANCE™</a> {{#model}}{{#name}}— {{../author}} / {{../name}} {{/name}}{{/model}}
+    <div id="sbs_header">
+      <div id="logo">
+        <span class="label">SUBSTANCE™</span>
       </div>
-      <div id="lpl_actions">
-        <div id="dashboard_switch">
-          <a href="#toggle/dashboard" class="header button text new">Dashboard</a>
+      {{#username}}
+        <div id="dashboard_toggle">
+          <a class="header-icon dashboard" href="#toggle/dashboard" title="open the dashboard">open the dashboard</a>
+          <span class="label">Dashboard</span>
+          <a class="header-icon new-document" href="#new" title="create a new document">create a new document</a>
         </div>
-        <div class="center" id="shelf_actions">
-          <!-- Document Actions -->
-          
-          <div class="document">
-            <!-- <a href="#new" class="header button text new new-document">New</a> -->
-            {{#model}}
-            <span class="label">Currently open: <strong>{{data/title}}</strong></span>
-            {{/model}}
-            <a href="/" onclick="javascript: return false;" class="header button text save-document">Save</a>
-            <!--<a href="/" onclick="javascript: return false;" class="header button text browse-documents">Browse</a>-->
-            {{#num_collaborators}}<a href="#file_browser" class="header button text view-collaborators">{{.}} Collaborator(s)</a>{{/num_collaborators}}
-          </div>
-          <!-- Dashboard Actions -->
-          <div class="dashboard">
-            {{#model}}
-            <span class="label">Go back to editing:</span>
-            <a href="#toggle/document" class="header button text new">{{data/title}}</a>
-            {{/model}}
-          </div>
+        <div id="new_document">
+        
         </div>
-        <div class="right">
-          {{#username}}
-          <span style="float: left; margin-right: 20px; margin-top: 9px;">Signed in as: {{.}}</span>
-          <a href="#" class="header button text logout">logout</a>
-          {{/username}}
+      {{/username}}
+      {{#model}}
+        <div id="document_toggle">
+          <span class="label">Now editing: <strong>{{../username}} / {{#name}}{{.}}{{/name}}{{^name}} untitled{{/name}}</strong></span>
+          <a class="header-icon save-document right" href="#save_document" title="save current document">save current document</a>
+          {{#id}}
+            <a class="header-icon user view-collaborators" href="#show_collaborators" title="Show collaborating Users">Collaborators</a>
+          {{/id}}
         </div>
+      {{/model}}
+      <div id="login_state">
+        {{#username}}
+          <span class="label">Signed in as: <strong>{{.}}</strong></span>
+        
+          <a class="header-icon logout right logout" href="#logout" title="log out">log out</a>
+        {{/username}}
+        {{^username}}
+          <span class="label">Not logged in</span>
+          <a class="header-icon login right" href="/" title="log in">log in</a>
+        {{/username}}
       </div>
     </div>
-
-    <div id="lpl_shelf_content">
+    
+    <div id="sbs_shelf_content">
+    
     </div>
   </script>
   
   
   <script type="text/x-handlebars-template" name="drawer">
     <div class="drawer-actions">
-      <div class="drawer-action"><a href="#" class="show-attributes">ATTR</a></div>
+      <div class="drawer-action"><a href="#" class="show-attributes">a</a></div>
     </div>
     
     <div id="drawer_content">
@@ -158,7 +158,7 @@
     <div>
       <form id="create-document-form">
         <label for="document-name">File as:</label>
-        <input type="text" name="user_name" id="user-name" value="michael" disabled="disabled">
+        <input type="text" name="user_name" id="user-name" value="{{username}}" disabled="disabled">
         / <input type="text" name="document_name" id="document-name">
         <input type="submit" value="Save"/>
       </form>
@@ -214,10 +214,10 @@
           <h3>{{property_name}}</h3>
           <ul class="facet-choices">
             {{#selected_facet_choices}}
-              <li class="facet-choice selected"><a href="#remove_criterion/{{../property}}/CONTAINS/{{value}}">{{value}}<span class="item-count">{{item_count}}</span></a></li>
+              <li class="facet-choice selected"><a href="#" class="remove-criterion" property="{{../property}}" operator="CONTAINS" value="{{value}}">{{value}}<span class="item-count">{{item_count}}</span></a></li>
             {{/selected_facet_choices}}
             {{#facet_choices}}
-              <li class="facet-choice"><a href="#add_criterion/{{../property}}/CONTAINS/{{value}}">{{value}}<span class="item-count">{{item_count}}</span></a></li>
+              <li class="facet-choice"><a href="#" class="add-criterion" property="{{../property}}" operator="CONTAINS" value="{{value}}">{{value}}<span class="item-count">{{item_count}}</span></a></li>
             {{/facet_choices}}
           </ul>
         </div>
@@ -228,7 +228,7 @@
   <script type="text/x-handlebars-template" name="controls">
     <div class="controls" node="{{node/key}}" destination="{{destination}}">
       <div class="handle">
-        <a href="#">+</a>
+        <a href="#">--&gt; INSERT</a>
       </div>
       <div class="actions">
         {{#children}}
@@ -295,7 +295,6 @@
         {{../published_on}} 
           
         {{^../unpublished}}
-          <!-- TODO: this doesnt work for some reason -->
           (<a href="/" class="unpublish-document">Unpublish</a>)
         {{/../unpublished}}
         
@@ -326,7 +325,7 @@
   <script type="text/x-handlebars-template" name="document">    
     <div id="{{node/key}}" name={{node/key}} class="content-node document">
       <!--<div class="content-node-info">Document</div>-->
-      <div class="content-node-outline"></div>
+      <div class="content-node-outline"><div class="cursor"><span></span></div></div>
       <h1 contenteditable="true" class='content'>{{node/data/title}}</h1>
       {{{content}}}
     </div>
@@ -336,7 +335,7 @@
     <div id="{{node/key}}" name={{node/key}} draggable="false" class="content-node section">
       <a href="#" class="remove remove-node" node="{{node/key}}">X</a>
       <!--<div class="content-node-info" draggable="false">Section</div>-->
-      <div class="content-node-outline"></div>
+      <div class="content-node-outline"><div class="cursor"><span></span></div></div>
       
       <h2 contenteditable="true" class='content'>{{node/data/name}}</h2>
       <div class="node-editor-placeholder"></div>
@@ -348,7 +347,7 @@
     <div id="{{node/key}}" name={{node/key}} draggable="false" class="content-node text">
       <a href="#" class="remove-node remove" node="{{node/key}}">x</a>
       <!--<div class="content-node-info" draggable="false">Text</div>-->
-      <div class="content-node-outline"></div>
+      <div class="content-node-outline"><div class="cursor"><span></span></div></div>
       <div class='content' contenteditable="true">{{{content}}}</div>
       <div class="node-editor-placeholder"></div>
     </div>
@@ -358,7 +357,7 @@
     <div id="{{node/key}}" name={{node/key}} draggable="false" class="content-node image">
       <a href="#" class="remove remove-node" node="{{node/key}}">X</a>
       <!--<div class="content-node-info" draggable="false">Image</div>-->
-      <div class="content-node-outline"></div>
+      <div class="content-node-outline"><div class="cursor"><span></span></div></div>
       {{#node/data/url}}
         <img src="{{.}}"/>
       {{/node/data/url}}
@@ -463,7 +462,7 @@
 </head>
 <body>
   <div id="container">
-    <div id="lpl_shelf">
+    <div id="sbs_shelf">
     </div>
     <div id="dashboard">
     </div>

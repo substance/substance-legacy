@@ -148,7 +148,7 @@ var Document = _.inherits(ContentGraph, {
       this.trigger('select:node', this.selectedNode);
 
       // The server will respond with a status package containing my own cursor position
-      remote.Session.selectNode(nodeKey);      
+      remote.Session.selectNode(nodeKey);
     }
   }
 });
@@ -177,11 +177,11 @@ Document.EMPTY = {
     },
     "3": {
       "type": "text",
-      "content": "Your text goes here."
+      "content": "<p>Your text goes here.</p>"
     },
     "4": {
       "type": "text",
-      "content": "Additional text."
+      "content": "<p>Additional text.</p>"
     }
   }
 };
