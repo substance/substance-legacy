@@ -9,6 +9,7 @@ var SectionEditor = Backbone.View.extend({
     
     this.$node = $('#' + app.editor.model.selectedNode.key + ' > .content');
     this.$node.unbind('keydown');
+    
     this.$node.bind('keydown', function(event) {
       that.updateNode();
     });

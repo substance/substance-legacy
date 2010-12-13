@@ -148,6 +148,7 @@ var Application = Backbone.View.extend({
       Session: {
         updateStatus: function(status) {
           that.editor.status = status;
+          
           that.editor.trigger('status:changed');
         },
         
