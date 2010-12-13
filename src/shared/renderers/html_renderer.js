@@ -1,10 +1,10 @@
-var Showdown = require('../../../lib/showdown').Showdown;
+// var Showdown = require('../../../lib/showdown').Showdown;
 
 
-// FrontendRenderer
+// HTMLRenderer
 // ---------------
 
-var FrontendRenderer = function(root) {
+var HTMLRenderer = function(root) {
   
   // Implement node types
   var renderers = {
@@ -28,8 +28,9 @@ var FrontendRenderer = function(root) {
     },
     
     text: function(node) {
-      var converter = new Showdown.converter();
-      return converter.makeHtml(node.content);
+      // var converter = new Showdown.converter();
+      // return converter.makeHtml(node.content);
+      return node.content;
     },
     
     image: function(node) {
@@ -40,10 +41,11 @@ var FrontendRenderer = function(root) {
   return {
     render: function() {
       // Traverse the document
-
       return renderers['document'](root);
     }
   };
 };
 
-exports['Renderer'] = FrontendRenderer;
+if (exports) {
+  exports['Renderer'] = HTMLRenderer;
+}

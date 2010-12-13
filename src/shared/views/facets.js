@@ -2,6 +2,7 @@ var Facets = Backbone.View.extend({
   
   initialize: function(options) {
     this.browser = options.browser;
+    
     this.selectedFacet = this.browser.model.get('types', '/type/document').all('properties').first().key;
     this.facetChoices = {};
   },

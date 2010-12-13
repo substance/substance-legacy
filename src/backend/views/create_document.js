@@ -4,7 +4,9 @@ var CreateDocument = Backbone.View.extend({
     this.render();
   },
   
-  render: function() {    
-    $(this.el).html(Helpers.renderTemplate('create_document', {}));
+  render: function() {
+    $(this.el).html(Helpers.renderTemplate('create_document', {
+      username: app.username
+    }));
   }
 });

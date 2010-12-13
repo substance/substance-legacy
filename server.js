@@ -4,7 +4,7 @@ var http = require('http');
 var cradle = require('cradle');
 var fs = require('fs');
 var Handlebars = require('./lib/handlebars');
-var HTMLRenderer = require('./src/server/renderers/html_renderer').Renderer;
+var HTMLRenderer = require('./src/shared/renderers/html_renderer').Renderer;
 var DNode = require('dnode');
 var qs = require('querystring');
 var _ = require('underscore');
@@ -54,9 +54,15 @@ app.configure(function(){
 
 // The DocumentBrowser on the front-end
 
-app.get('/documents.html', function(req, res) {  
-  html = fs.readFileSync(__dirname+ '/templates/browser.html', 'utf-8');
+app.get('/', function(req, res) {  
+  html = fs.readFileSync(__dirname+ '/themes/'+config.theme+'/index.html', 'utf-8');
   res.send(html.replace('{{settings}}', JSON.stringify(config.settings)));
+});
+
+// Serve the stylesheet according to the selected theme
+app.get('/styles.css', function(req, res) {
+  css = fs.readFileSync(__dirname+ '/themes/'+config.theme+'/styles.css', 'utf-8');
+  res.send(css,  {'Content-Type': 'text/css' });
 });
 
 
@@ -73,9 +79,9 @@ app.get('/documents/:id.html', function(req, res) {
 });
 
 
-// The Engineroom
+// Backstage
 
-app.get('/', function(req, res) {  
+app.get('/writer', function(req, res) {  
   html = fs.readFileSync(__dirname+ '/templates/app.html', 'utf-8');
   res.send(html.replace('{{settings}}', JSON.stringify(config.settings)));
 });

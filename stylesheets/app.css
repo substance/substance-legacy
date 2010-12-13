@@ -58,8 +58,6 @@ h2 { font-size: 1.7em; margin-bottom: 15px; }
 
 
 
-
-
 /*
  Attribute Editor
 ----------------------
@@ -333,7 +331,6 @@ dd
 }
 
 
-
 #sbs_shelf_content { overflow: auto; color: #444; padding: 20px; }
 
 #sbs_shelf_content input { border: none; padding: 4px; }
@@ -390,8 +387,6 @@ dd
 #notifications .wrapper > p.warning      > span { float:left; width:70px; color:#fd6; font-size:11px; font-weight:bold; text-transform:uppercase; }
 #notifications .wrapper > p.notification > span { float:left; width:70px; color:#aaa; font-size:11px; font-weight:bold; text-transform:uppercase; }
 
-
-
 #container { margin: 0; padding: 0;}
 
 
@@ -419,13 +414,13 @@ dd
 }
 
 .content-node.selected { }
-
 .content-node .content-node { margin-left:-10px; padding-left: 10px; margin-right: -10px; padding-right: 10px; }
 
 
 /*#document.edit-mode { background: #f1f1ec; }*/
-
 #document.edit-mode .content-node { color: #aaa; }
+#document.edit-mode .content-node a { color: #aaa; }
+
 
 #document.edit-mode .content-node.selected {
   background: #fff;
@@ -433,10 +428,10 @@ dd
 }
 
 #document.edit-mode .content-node.selected > .content {color: #000; }
+#document.edit-mode .content-node.selected > .content a {color: #000; }
 
 /*#document.insert-mode { background: #fbfbfa; }*/
 #document.insert-mode .content-node { color: #aaa; }
-
 #document.insert-mode .content-node { background: transparent; -webkit-box-shadow: none; }
 
 #document.insert-mode .controls.active { 
@@ -851,61 +846,6 @@ code { display: block; font-family: Monaco, Consolas; font-size: 12px; margin-to
   background: #f7f8f5;
 }*/
 
-#lpl_header.dashboard #lpl_logo { 
-  width: 360px;
-  background:#fefefe;
-  z-index:1000;
-}
-
-#lpl_header.document #lpl_logo { 
-  width: 360px;
-  background:#f0f1eb;
-  z-index:1000;
-}
-
-#lpl_logo a { color: #666; }
-#lpl_logo a:hover { text-decoration: none; color: #000; }
-
-#lpl_header.dashboard #dashboard_switch {
-  display:block;
-  float:left;
-  height:50px;
-  width:120px;
-  margin-top:-10px;
-  margin-right:5px;
-  margin-left:-20px;
-  padding-top:10px;
-  padding-left:20px;
-  background:#fefefe;
-  -webkit-box-shadow: 0px 0px 8px rgba(0,0,0,0.35);
-  -moz-box-shadow:    0px 0px 8px rgba(0,0,0,0.35);
-  box-shadow:         0px 0px 8px rgba(0,0,0,0.35);
-  z-index:500;
-}
-
-#lpl_header.document {
-  background:#fff;
-}
-
-#lpl_header.document #dashboard_switch {
-  display:block;
-  float:left;
-  height:50px;
-  width:120px;
-  margin-top:-10px;
-  margin-right:5px;
-  margin-left:-20px;
-  padding-top:10px;
-  padding-left:20px;
-  background:#f0f1eb;
-  -webkit-box-shadow: inset 0px 0px 8px rgba(0,0,0,0.35) !important;
-  -moz-box-shadow:    inset 0px 0px 8px rgba(0,0,0,0.35) !important;
-  box-shadow:         inset 0px 0px 8px rgba(0,0,0,0.35) !important;
-  z-index:500 !important;
-}
-
-#shelf_actions span.label { float:left;display:block;padding:5px 15px 0 15px;line-height:22px;font-weight:normal; }
-#shelf_actions span.label strong { font-weight:bold; }
 
 
 
@@ -1002,7 +942,6 @@ code { display: block; font-family: Monaco, Consolas; font-size: 12px; margin-to
 }
 
 
-
 /* Facets */
 
 #facets {
@@ -1011,12 +950,10 @@ code { display: block; font-family: Monaco, Consolas; font-size: 12px; margin-to
 }
 
 #facets .list { overflow: auto; }
-
 #facets .facet h3 { color: #888; padding: 3px; text-transform: uppercase; font-weight: bold; font-size: 11px; margin-top: 1px; }
 #facets .facet:hover h3 { color: black; }
 
 #facets .facet { float: left; margin-right: 10px; width: 230px; }
-
 #facets .facet ul { margin: 0px; padding: 0px; }
 #facets .facet.selected ul { display: block; }
 #facets .facet li { list-style: none; margin: 0; padding: 0.25em; overflow: auto; float: left; }
@@ -1119,7 +1056,5 @@ code { display: block; font-family: Monaco, Consolas; font-size: 12px; margin-to
   box-shadow:         1px 0px 0px rgba(255,255,255,0.5);
 }
 
-
-
-
+/* A place for temporary storage of DOM nodes */
 #temp { display: none; }

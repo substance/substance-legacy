@@ -158,7 +158,7 @@
     <div>
       <form id="create-document-form">
         <label for="document-name">File as:</label>
-        <input type="text" name="user_name" id="user-name" value="michael" disabled="disabled">
+        <input type="text" name="user_name" id="user-name" value="{{username}}" disabled="disabled">
         / <input type="text" name="document_name" id="document-name">
         <input type="submit" value="Save"/>
       </form>
@@ -214,10 +214,10 @@
           <h3>{{property_name}}</h3>
           <ul class="facet-choices">
             {{#selected_facet_choices}}
-              <li class="facet-choice selected"><a href="#remove_criterion/{{../property}}/CONTAINS/{{value}}">{{value}}<span class="item-count">{{item_count}}</span></a></li>
+              <li class="facet-choice selected"><a href="#" class="remove-criterion" property="{{../property}}" operator="CONTAINS" value="{{value}}">{{value}}<span class="item-count">{{item_count}}</span></a></li>
             {{/selected_facet_choices}}
             {{#facet_choices}}
-              <li class="facet-choice"><a href="#add_criterion/{{../property}}/CONTAINS/{{value}}">{{value}}<span class="item-count">{{item_count}}</span></a></li>
+              <li class="facet-choice"><a href="#" class="add-criterion" property="{{../property}}" operator="CONTAINS" value="{{value}}">{{value}}<span class="item-count">{{item_count}}</span></a></li>
             {{/facet_choices}}
           </ul>
         </div>
@@ -295,7 +295,6 @@
         {{../published_on}} 
           
         {{^../unpublished}}
-          <!-- TODO: this doesnt work for some reason -->
           (<a href="/" class="unpublish-document">Unpublish</a>)
         {{/../unpublished}}
         
