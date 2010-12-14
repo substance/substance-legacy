@@ -1,60 +1,98 @@
+var renderControls = function(node, first, last) {
+  
+  function render(node, destination, consolidate) {
+    
+    function computeActions(node) {
+      var actions = [];
+
+      // Possible children
+      if (node.all('children').length === 0) {
+        var children = ContentNode.types[node.type].allowedChildren;
+        _.each(children, function(type) {
+          actions.push({
+            node: node.key,
+            nodeType: type,
+            insertionType: 'child'
+          });
+        });
+      }
+
+      // Possible siblings
+      if (node.parent) {
+        var siblings = ContentNode.types[node.parent.type].allowedChildren;
+        _.each(siblings, function(type) {
+          actions.push({
+            node: node.key,
+            nodeType: type,
+            insertionType: 'sibling'
+          });
+        });
+      }
+      
+      // Consolidate actions for child elements
+      if (consolidate && node.all('children').length > 0) {
+        actions = actions.concat(computeActions(node.all('children').last()));
+      }
+      
+      return actions;
+    }
+  
+    return Helpers.renderTemplate('controls', {
+      node: node.key,
+      destination: destination,
+      actions: computeActions(node)
+    });
+  }
+  
+  // Top level
+  if (!node.parent) {
+    // Cleanup
+    $('#document .controls').remove();
+    
+    if (node.all('children').length == 0) {
+      $(render(node, 'before')).appendTo($('#'+node.key));
+    }
+  } else {
+    //  Insert before, but only for starting nodes (first=true)
+    if (first) {
+      // Insert controls before node
+      $(render(node, 'before')).insertBefore($('#'+node.key));
+    }
+    
+    // Consolidate at level 1 (=section level), but only for closing nodes (last=true)
+    if (node.parent.key === 'root') {
+      $(render(node, 'after', true)).insertAfter($('#'+node.key));
+    } else if (!last) {
+      $(render(node,'after')).insertAfter($('#'+node.key));
+    }
+  }
+  
+  // Do the same for all children
+  node.all('children').each(function(child, key, index) {
+    var first = index === 0;
+    var last = index === node.all('children').length-1;
+    renderControls(child, first, last);
+  });
+};
+
+
 // HTMLRenderer
 // ---------------
 
+
 var HTMLRenderer = function(root) {
-  
-  var renderControls = function(node, destination) {
-    
-    if (destination === 'after' || (node.parent && node.parent.all('children').index(node.key) === 0)) {
-      
-      var children = destination !== 'before' && node.all('children').length === 0 ? ContentNode.types[node.type].allowedChildren : [];
-      var siblings = node.parent ? ContentNode.types[node.parent.type].allowedChildren : [];
-      
-      // Check for collapsed actions, in this case the node also takes over the actions of the parent node
-      if (node.parent && node.parent.all('children').last() === node && destination === 'after') {
-        var parentChildren = destination !== 'before' && node.parent.all('children').length === 0 ? ContentNode.types[node.parent.type].allowedChildren : [];
-        var parentSiblings = node.parent.parent ? ContentNode.types[node.parent.parent.type].allowedChildren : [];
-        // console.log(node.type+ ": "+destination+" is a collapsed node");
-      }
-      
-      return Helpers.renderTemplate('controls', {
-        destination: destination,
-        node: node,
-        children: children,
-        siblings: siblings,
-        parentChildren: parentChildren,
-        parentSiblings: parentSiblings,
-        allowedTypes: node.parent ? ContentNode.types[node.parent.type].allowedChildren.join(' ') : [],
-      });
-    } else return '';
-  };
   
   // Implement node types
   var renderers = {
     document: function(node) {
       var content = '';
       
-      if (node.all('children').length === 0) {
-        // Empty document
-        content += renderControls(node, 'after');
-      } else {
-        node.all('children').each(function(child, key, index) {
-          content += renderControls(child, 'before');
-          content += renderers[child.type](child);
-          content += renderControls(child, 'after');
-          // if (child.all('children').length === 0)
-          //   content += renderControls(child, 'after');
-          // else {
-          //   console.log('meh');
-          //   console.log(app.editor.model);
-          //   content += "<div>"+child.type+" has "+child.all('children').length+" children</div>";
-          // }
-        });
-      }
+      node.all('children').each(function(child, key, index) {
+        content += renderers[child.type](child);
+      });
       
       return Helpers.renderTemplate('document', {
         node: node,
-        hasChildren: node.all('children').length > 0,
         content: content
       });
     },
@@ -63,13 +101,9 @@ var HTMLRenderer = function(root) {
       var content = '';
       
       node.all('children').each(function(child, key, index) { 
-        content += renderControls(child, 'before');
         content += renderers[child.type](child);
-        // if (child.all('children').length === 0)
-        content += renderControls(child, 'after');
       });
       
-      // TODO: ...index(node.key) is a performance killer
       return Helpers.renderTemplate('section', {
         node: node,
         content: content

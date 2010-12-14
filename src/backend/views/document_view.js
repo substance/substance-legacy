@@ -26,6 +26,7 @@ var DocumentView = Backbone.View.extend({
     // Bind Events
     
     app.editor.model.bind('change:node', function(node) {
+      
       that.renderNode(node);
     });
 
@@ -152,10 +153,14 @@ var DocumentView = Backbone.View.extend({
   
   renderNode: function(node) {
     $('#'+node.key).replaceWith(new HTMLRenderer(node).render());
+    // Render controls
+    renderControls(app.editor.model);
   },
   
   render: function() {
     $(this.el).html(new HTMLRenderer(app.editor.model).render());
+    // Render controls
+    renderControls(app.editor.model);
   },
   
   highlightNode: function(e) {

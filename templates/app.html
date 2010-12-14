@@ -231,21 +231,9 @@
         <a href="#">--&gt; INSERT</a>
       </div>
       <div class="actions">
-        {{#children}}
-          <a href="#" type="{{.}}" node="{{../node/key}}" class="add_child">insert child {{.}}</a>
-        {{/children}}
-
-        {{#siblings}}
-          <a href="#" type="{{.}}" node="{{../node/key}}" class="add_sibling">insert {{.}}</a>
-        {{/siblings}}
-        
-        {{#parentChildren}}
-          <a href="#" type="{{.}}" node="{{../node/parent/key}}" class="add_child">insert child {{.}}</a>
-        {{/parentChildren}}
-
-        {{#parentSiblings}}
-          <a href="#" type="{{.}}" node="{{../node/parent/key}}" class="add_sibling">insert {{.}}</a>
-        {{/parentSiblings}}
+        {{#actions}}
+          <a href="#" type="{{nodeType}}" node="{{../node}}" class="add_{{insertionType}}">{{nodeType}}</a>
+        {{/actions}}
         <br class="clear"/>
       </div>
     </div>
