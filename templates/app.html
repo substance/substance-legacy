@@ -47,7 +47,6 @@
     </div>
   </script>
   
-  
   <script type="text/x-handlebars-template" name="drawer">
     <div class="drawer-actions">
       <div class="drawer-action"><a href="#" class="show-attributes">a</a></div>
@@ -192,7 +191,7 @@
       <div class="list">
         {{#documents}}
           <div class="document">
-            <a class="link" href="#load/{{value/data/author}}/{{value/data/name}}">
+            <a class="link load-document" href="#load/{{value/data/author}}/{{value/data/name}}" document="{{value/data/id}}">
               <div class="icon"><img src="/images/document_icon.png"/></div>
               <div class="content">
                 <h5 class="title">{{value/data/title}}</h5>
@@ -442,7 +441,6 @@
   <script src="src/shared/commands.js"></script>
   <script src="src/shared/views/document_browser.js"></script>
   <script src="src/shared/views/facets.js"></script>
-  <script src="src/shared/controllers/facet_controller.js"></script>
   
   <script src="src/backend/views/collaborators.js"></script>
   <script src="src/backend/views/application.js"></script>

@@ -7,6 +7,7 @@ var Application = Backbone.View.extend({
     'click .new-document': 'newDocument',
     'click #dashboard_toggle': 'showDashboard',
     'click #document_toggle': 'showDocument',
+    'click a.load-document': 'loadDocument',
     'click a.save-document': 'saveDocument',
     'click a.show-attributes': 'showAttributes',
     'click a.publish-document': 'publishDocument',
@@ -22,6 +23,14 @@ var Application = Backbone.View.extend({
   
   newDocument: function() {
     this.editor.newDocument();
+    return false;
+  },
+  
+  loadDocument: function(e) {
+    if (app.authenticated) {
+      app.editor.loadDocument($(e.currentTarget).attr('document'));
+      controller.saveLocation($(e.currentTarget).attr('href'));
+    }
     return false;
   },
   
@@ -75,14 +84,14 @@ var Application = Backbone.View.extend({
     var that = this;
     remote.Session.logout({
       success: function() {
-        // Hide shelf actions
-        $('#shelf_actions .document').hide();
-        $('#shelf_actions .dashboard').hide();
+        that.username = null;
+        app.toggleView('dashboard');
         
         that.authenticated = false;
         that.render();
       }
     });
+    return false;
   },
   
   deleteDocument: function(e) {
@@ -247,7 +256,6 @@ var Application = Backbone.View.extend({
       $(this.el).html(Helpers.renderTemplate('browser_not_supported'));
     } else {
       if (this.authenticated) {
-        
         this.dashboard.render();
         this.editor.render();
         this.shelf.render();
@@ -293,7 +301,6 @@ var remote,     // Remote handle for server-side methods
     
     // Initialize controller
     controller = new ApplicationController({app: this});
-    facetController = new FacetController();
     
     // Set up a globals instance of the Proper Richtext Editor
     editor = new Proper();
