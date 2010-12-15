@@ -75,7 +75,7 @@ app.get('/documents/:id.html', function(req, res) {
       }));
     },
     error: function(err) {
-      rs.send(err);
+      res.send(err);
     }
   });
 });
