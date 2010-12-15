@@ -11,16 +11,21 @@ var DocumentView = Backbone.View.extend({
     $.ajax({
       url: '/documents/'+id,
       dataType: 'json',
-      success: function(document) {
-        that.model = document;
-        that.render();
+      success: function(res) {
         
-        // Update shelf
-        app.shelf.render();
-        
-        setTimeout(function() {
-          app.toggleView('document');
-        }, 200);
+        if (!res.error) {
+          that.model = res;
+          that.render();
+
+          // Update shelf
+          app.shelf.render();
+
+          setTimeout(function() {
+            app.toggleView('document');
+          }, 200);          
+        } else {
+          alert(res.reason);
+        }
         
       },
       error: function() {
