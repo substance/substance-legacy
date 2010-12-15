@@ -2,15 +2,15 @@ var renderControls = function(node, first, last) {
   
   function render(node, destination, consolidate) {
     
-    function computeActions(node) {
+    function computeActions(n) {
       var actions = [];
-
+      
       // Possible children
-      if (node.all('children').length === 0) {
-        var children = ContentNode.types[node.type].allowedChildren;
+      if (n.all('children').length === 0) {
+        var children = ContentNode.types[n.type].allowedChildren;
         _.each(children, function(type) {
           actions.push({
-            node: node.key,
+            node: n.key,
             nodeType: type,
             insertionType: 'child'
           });
@@ -18,11 +18,11 @@ var renderControls = function(node, first, last) {
       }
 
       // Possible siblings
-      if (node.parent) {
-        var siblings = ContentNode.types[node.parent.type].allowedChildren;
+      if (n.parent) {
+        var siblings = ContentNode.types[n.parent.type].allowedChildren;
         _.each(siblings, function(type) {
           actions.push({
-            node: node.key,
+            node: n.key,
             nodeType: type,
             insertionType: 'sibling'
           });
@@ -30,8 +30,8 @@ var renderControls = function(node, first, last) {
       }
       
       // Consolidate actions for child elements
-      if (consolidate && node.all('children').length > 0) {
-        actions = actions.concat(computeActions(node.all('children').last()));
+      if (consolidate && n.all('children').length > 0) {
+        actions = actions.concat(computeActions(n.all('children').last()));
       }
       
       return actions;
