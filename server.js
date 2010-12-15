@@ -6,7 +6,6 @@ var fs = require('fs');
 var Handlebars = require('./lib/handlebars');
 var HTMLRenderer = require('./src/shared/renderers/html_renderer').Renderer;
 var DNode = require('dnode');
-var qs = require('querystring');
 var _ = require('underscore');
 
 // Models
@@ -74,6 +73,9 @@ app.get('/documents/:id.html', function(req, res) {
       res.send(_.renderTemplate('document', {
         document: new HTMLRenderer(doc).render()
       }));
+    },
+    error: function(err) {
+      rs.send(err);
     }
   });
 });
@@ -93,6 +95,9 @@ app.get('/documents', function(req, res) {
   Document.all({
     success: function(documents) {
       res.send(JSON.stringify(documents));
+    },
+    error: function() {
+      res.send('Error occured.');
     }
   });
 });
@@ -105,7 +110,7 @@ app.get('/documents.json', function(req, res) {
       res.send(result);
     },
     error: function() {
-      res.send('Error occured');
+      res.send('Error occured.');
     }
   });
 });
@@ -130,6 +135,9 @@ app.get('/documents/:id', function(req, res) {
     withContents: true,
     success: function(doc) {
       res.send(JSON.stringify(doc));
+    },
+    error: function(err) {
+      res.send(err);
     }
   });
 });
@@ -140,10 +148,9 @@ app.listen(config['server_port'], config['server_host']);
 // The DNode Server (RMI Interface for the client)
 // -----------
 
-var sessions = {},        // Keeps a reference to all active sessions
-    cookieSessions = {},  // Remember Client Cookie Sessions
-    users = {},           // Keeps a reference to all authenticated users
-    documents = {};       // Keeps a reference to all documents that are edited
+var sessions = {},       // Keeps a reference to all active sessions
+    cookieSessions = {}, // Remember Client Cookie Sessions (for automatic re-authentication)
+    documents = {};      // Keeps a reference to all documents that are edited
 
 
 DNode(function (client, conn) {
