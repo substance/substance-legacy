@@ -2,8 +2,7 @@ var Facets = Backbone.View.extend({
   
   initialize: function(options) {
     this.browser = options.browser;
-    
-    this.selectedFacet = this.browser.model.get('types', '/type/document').all('properties').first().key;
+    this.selectedFacet = graph.get('/type/document').all('properties').first().key;
     this.facetChoices = {};
   },
   
@@ -26,21 +25,25 @@ var Facets = Backbone.View.extend({
     var that = this;
     var view = {facets: []};
     
-    this.browser.model.get('types', '/type/document').all('properties').each(function(property, key) {
+    graph.get('/type/document').all('properties').each(function(property, key) {
+      
       if (property.type !== 'number' && property.type !== 'collection' && property.key !== 'id') {
+        
         var facet_choices = [];
         var selected_facet_choices = [];
         property.all("values").each(function(value) {
           if (that.facetChoices[key+'::CONTAINS::'+value.val] === true) {
-            selected_facet_choices.push({excaped_value: escape(value.val), value: value.val, item_count: value.all('objects').length});
+            selected_facet_choices.push({excaped_value: escape(value.val), value: value.val, item_count: value.referencedObjects.length});
           } else {
             if (value.val && value.val.length > 0) {
-              facet_choices.push({excaped_value: escape(value.val), value: value.val, item_count: value.all('objects').length});
+              facet_choices.push({excaped_value: escape(value.val), value: value.val, item_count: value.referencedObjects.length});
             }
           }
         });
         
-        if (!_.include(["title", "name"], property.key) && facet_choices.length + selected_facet_choices.length > 0) {
+        // !_.include(["title", "name", "sections"], property.key) && 
+        if (facet_choices.length + selected_facet_choices.length > 0) {
+          console.log('puink');
           view.facets.push({
             property: key,
             property_name: property.name,

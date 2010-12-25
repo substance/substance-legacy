@@ -30,7 +30,7 @@ var Application = Backbone.View.extend({
       el: '#document_wrapper',
       id: $(e.currentTarget).attr('document')
     });
-    
+        
     controller.saveLocation($(e.currentTarget).attr('href'));
     return false;
   },
@@ -46,27 +46,14 @@ var Application = Backbone.View.extend({
   initialize: function(options) {
     var that = this;
     
+    this.view = 'browser';
     this.shelf = new Shelf({el: '#sbs_shelf'});
     
-    $.ajax({
-      url: '/documents.json',
-      dataType: 'json',
-      success: function(documents) {
-        var graph = new Data.Graph(documents);
-        
-        // Init DocumentBrowser
-        that.browser = new DocumentBrowser({
-          el: '#browser',
-          model: graph
-        });
-
-        that.render();
-      },
-      error: function() {
-        alert('An error occured during fetching the documents');
-      }
-    });
     
+    // Init DocumentBrowser
+    that.browser = new DocumentBrowser({
+      el: '#browser'
+    });
   },
   
   // Toggle between document view and browser
@@ -86,18 +73,23 @@ var Application = Backbone.View.extend({
     }
   },
   
-  render: function() {    
-    this.browser.render();
+  render: function() {
     this.shelf.render();
   }
 });
 
 var app, controller;
 
+Data.setAdapter('AjaxAdapter', {});
+
+// The database
+var graph = new Data.Graph();
+
 (function() {
   $(function() {
     // Start the browser
     app = new Application({el: $('#container')});
+    app.render();
     
     // Register controller
     controller = new ApplicationController({app: app});

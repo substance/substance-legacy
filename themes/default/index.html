@@ -14,11 +14,11 @@
       <div class="list">
         {{#documents}}
           <div class="document">
-            <a class="link load-document" href="#{{value/data/author}}/{{value/data/name}}" document="{{value/data/id}}">
+            <a class="link load-document" href="#{{value/_id}}" document="{{value/_id}}">
               <div class="icon"><img src="/images/document_icon.png"/></div>
               <div class="content">
                 <h5 class="title">{{value/data/title}}</h5>
-                <p class="meta">Created by {{value/data/author}}, 2010-12-04</p>
+                <p class="meta">Created by {{value/data/user}}, 2010-12-04</p>
               </div>
             </a>
           </div>
@@ -116,6 +116,7 @@
   <!-- Libraries -->
   <script src="lib/underscore.js"></script>
   <script src="lib/data.js"></script>
+  <script src="lib/adapters/ajax_adapter.js"></script>
   
   <script src="lib/handlebars.js"></script>
   <script src="lib/backbone.js"></script>

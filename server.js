@@ -6,7 +6,18 @@ var fs = require('fs');
 var Handlebars = require('./lib/handlebars');
 var HTMLRenderer = require('./src/shared/renderers/html_renderer').Renderer;
 var DNode = require('dnode');
+var Data = require('./lib/data');
 var _ = require('underscore');
+
+
+// Setup Data.Adapter
+Data.setAdapter('couch', { url: 'http://localhost:5984/substance' });
+
+var CouchClient = require('couch-client');
+global.db2 = CouchClient('http://localhost:5984/development');
+
+var graph = new Data.Graph();
+
 
 // Models
 var Document = require('./src/server/models/document.js');
@@ -20,7 +31,9 @@ global.conn = new(cradle.Connection)(config.couchdb.host, config.couchdb.port, {
   auth: config.couchdb.user ? {user: 'michael', pass: 'test'} : null
 });
 
+
 global.db = conn.database(config.couchdb.db);
+
 
 // Helpers
 // -----------
@@ -109,8 +122,8 @@ app.get('/documents.json', function(req, res) {
     success: function(result) {
       res.send(result);
     },
-    error: function() {
-      res.send('Error occured.');
+    error: function(err) {
+      res.send(err);
     }
   });
 });
@@ -140,6 +153,17 @@ app.get('/documents/:id', function(req, res) {
       res.send(err);
     }
   });
+});
+
+
+app.get('/readgraph.json', function(req, res) {
+  Data.adapter.readGraph(JSON.parse(req.query.qry), new Data.Graph(), JSON.parse(req.query.options), function(err, g) {
+    err ? res.send(err) : res.send(JSON.stringify(g));
+  });
+});
+
+app.get('/writegraph', function(req, res) {
+  throw 'Not implemented';
 });
 
 app.listen(config['server_port'], config['server_host']);

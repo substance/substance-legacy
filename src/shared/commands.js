@@ -23,15 +23,15 @@ AddCriterion.prototype.matchesOverride = function() {
 };
 
 AddCriterion.prototype.execute = function() {
-  this.model = this.app.model;
+  this.graph = graph;
   
   var criterion = new Data.Criterion(this.options.operator, '/type/document', this.options.property, this.options.value);
-  this.app.model = this.model.filter(criterion);
+  graph = graph.filter(criterion);
   this.app.facets.addChoice(this.options.property, this.options.operator, this.options.value);
 };
 
 AddCriterion.prototype.unexecute = function() {
-  this.app.model = this.model; // restore the old state
+  graph = this.graph; // restore the old state
   this.app.facets.removeChoice(this.options.property, this.options.operator, this.options.value);
 };
 

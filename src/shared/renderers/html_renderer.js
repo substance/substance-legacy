@@ -1,6 +1,3 @@
-// var Showdown = require('../../../lib/showdown').Showdown;
-
-
 // HTMLRenderer
 // ---------------
 
@@ -10,31 +7,31 @@ var HTMLRenderer = function(root) {
   var renderers = {
     document: function(node) {
       var content = '';
-      content += '<h1>'+ node.title +'</h1>';
-      node.children.forEach(function(child) {
-        content += renderers[root.nodes[child].type](root.nodes[child]);
+      content += '<h1>'+ node.get('title') +'</h1>';
+
+      node.all('children').each(function(child) {
+        content += renderers[child.type._id.split('/')[2]](child);
       });
       return content;
     },
     
     section: function(node) {
       var content = '';
+      content += '<h2>' + node.get('name') + '</h2>';
       
-      content += '<h2>' + node.name + '</h2>';
-      node.children.forEach(function(child) {
-        content += renderers[root.nodes[child].type](root.nodes[child]);
+      node.all('children').each(function(child) {
+        content += renderers[child.type._id.split('/')[2]](child);
       });
+      
       return content;
     },
     
     text: function(node) {
-      // var converter = new Showdown.converter();
-      // return converter.makeHtml(node.content);
-      return node.content;
+      return node.get('content');
     },
     
     image: function(node) {
-      return '<image src="'+node.url+'"/>';
+      return '<image src="'+node.get('url')+'"/>';
     }
   };
 

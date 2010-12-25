@@ -36,16 +36,25 @@ var DocumentBrowser = Backbone.View.extend({
     var that = this;
     
     that.commands = [];
+    this.load();
     
-    // Initialize Facets View
-    that.facets = new Facets({el: '#facets', browser: that});
-    
-    // Finally, render
-    that.render();
+  },
+  
+  load: function() {
+    var that = this;
+    graph.fetch({'type': '/type/document'}, {expand: false}, function(err, g) {
+      
+      if (err) alert('An error occured during fetching the documents');
+      
+      // Initialize Facets View
+      that.facets = new Facets({el: '#facets', browser: that});
+      
+      that.render();
+    });
   },
   
   render: function() {
-    var documents = this.model.all('objects').toArray()
+    var documents = graph.find({'type': '/type/document'}).toArray();
     $(this.el).html(_.renderTemplate('document_browser', {
       num_documents: documents.length,
       documents: documents
