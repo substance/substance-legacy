@@ -13,7 +13,6 @@ var TextEditor = Backbone.View.extend({
     // Update node when editor commands are applied
     editor.bind('changed', function() {
       that.updateNode();
-      $('#sanitized_content').val(editor.content());
     });
   },
   
@@ -21,7 +20,7 @@ var TextEditor = Backbone.View.extend({
     var that = this;
     
     setTimeout(function() {
-      app.editor.model.updateSelectedNode({
+      app.editor.documentView.updateSelectedNode({
         content: that.$content.html()
       });
     }, 5);

@@ -7,7 +7,7 @@ var SectionEditor = Backbone.View.extend({
     var that = this;
     this.render();
     
-    this.$node = $('#' + app.editor.model.selectedNode.key + ' > .content');
+    this.$node = $('#' + app.editor.documentView.selectedNode.html_id + ' > .content');
     this.$node.unbind('keydown');
     
     this.$node.bind('keydown', function(event) {
@@ -20,11 +20,9 @@ var SectionEditor = Backbone.View.extend({
     
     setTimeout(function() {
       var sanitizedContent = _.stripTags(that.$node.html());
-
       // Update HTML with sanitized content
       that.$node.html(sanitizedContent);
-      
-      app.editor.model.updateSelectedNode({
+      app.editor.documentView.updateSelectedNode({
         name: sanitizedContent
       });
     }, 5);

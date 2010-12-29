@@ -7,10 +7,6 @@ var ImageEditor = Backbone.View.extend({
     var that = this;
     this.render();
     
-    // if (!$('#main').hasClass('drawer-opened')) {
-    //   app.editor.drawer.toggle();
-    // }
-    
     $('#upload_image').transloadit({
       modal: false,
       wait: true,
@@ -29,7 +25,7 @@ var ImageEditor = Backbone.View.extend({
       },
       onSuccess: function(assembly) {
         // This triggers a node re-render
-        app.editor.model.updateSelectedNode({
+        app.editor.documentView.updateSelectedNode({
           url: assembly.results.resize_image[0].url,
           dirty: true
         });

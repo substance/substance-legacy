@@ -6,12 +6,11 @@ var DocumentEditor = Backbone.View.extend({
   initialize: function() {
     var that = this;
     
-    this.$node = $('#' + app.editor.model.selectedNode.key + ' > .content');
+    this.$node = $('#' + app.editor.documentView.selectedNode.html_id + ' > .content');
     this.$node.unbind('keydown');
     this.$node.bind('keydown', function(event) {
       that.updateNode();
     });
-    
   },
   
   updateNode: function() {
@@ -22,7 +21,7 @@ var DocumentEditor = Backbone.View.extend({
       // Update HTML with sanitized content
       that.$node.html(sanitizedContent);
       
-      app.editor.model.updateSelectedNode({
+      app.editor.documentView.updateSelectedNode({
         title: sanitizedContent
       });
       
