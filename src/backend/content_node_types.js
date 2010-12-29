@@ -1,7 +1,7 @@
 // Register ContentNode types (including meta information).
 
 ContentNode.types = {
-  "document": {
+  "/type/document": {
     name: "Document",
     allowedChildren: ["section"],
     properties: [
@@ -12,7 +12,7 @@ ContentNode.types = {
       }
     ]
   },
-  "section": {
+  "/type/section": {
     name: "Section",
     allowedChildren: ["text", "image"],
     properties: [
@@ -23,7 +23,7 @@ ContentNode.types = {
       }
     ]
   },
-  "text": {
+  "/type/text": {
     name: "Text",
     allowedChildren: [],
     properties: [
@@ -34,7 +34,7 @@ ContentNode.types = {
       }
     ]
   },
-  "image": {
+  "/type/image": {
     name: "Image",
     allowedChildren: [],
     properties: [
