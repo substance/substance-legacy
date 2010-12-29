@@ -97,7 +97,8 @@ var HTMLRenderer = function(root) {
       
       return Helpers.renderTemplate('document', {
         node: node,
-        content: content
+        content: content,
+        title: node.get('title')
       });
     },
     
@@ -113,20 +114,22 @@ var HTMLRenderer = function(root) {
       
       return Helpers.renderTemplate('section', {
         node: node,
-        content: content
+        content: content,
+        name: node.get('name')
       });
     },
     
     text: function(node) {
       return Helpers.renderTemplate('text', {
         node: node,
-        content: node.data.content
+        content: node.get('content')
       });
     },
     
     image: function(node) {
       return Helpers.renderTemplate('image', {
         node: node,
+        url: node.get('url')
       });
     }
   };
