@@ -20,7 +20,7 @@ var graph = new Data.Graph();
 
 
 // Models
-var Document = require('./src/server/models/document.js');
+// var Document = require('./src/server/models/document.js');
 var User = require('./src/server/models/user.js');
 
 // Read Config
@@ -156,15 +156,20 @@ app.get('/documents/:id', function(req, res) {
 });
 
 
-app.get('/readgraph.json', function(req, res) {
+app.get('/readgraph', function(req, res) {
   Data.adapter.readGraph(JSON.parse(req.query.qry), new Data.Graph(), JSON.parse(req.query.options), function(err, g) {
     err ? res.send(err) : res.send(JSON.stringify(g));
   });
 });
 
-app.get('/writegraph', function(req, res) {
-  throw 'Not implemented';
+
+app.put('/writegraph', function(req, res) {
+  Data.adapter.writeGraph(req.body, function(err) {
+    err ? res.send(err) : res.send('{"status": "ok"}');
+  });
 });
+
+
 
 app.listen(config['server_port'], config['server_host']);
 
@@ -469,7 +474,7 @@ DNode(function (client, conn) {
   // Expose the Document API (document persistence)
   // -----------
   
-  this.Document = Document;
+  // this.Document = Document;
   
   // Expose the Session API (for realtime synchronization)
   // -----------
