@@ -20,7 +20,6 @@ var Shelf = Backbone.View.extend({
     } else {
       this.toggle('CreateDocument', e);
     }
-    
     return false;
   },
   
@@ -40,13 +39,14 @@ var Shelf = Backbone.View.extend({
     }
   },
   
+  
   render: function() {
     var that = this;
     
     $(this.el).html(Helpers.renderTemplate('shelf', {
       title: app.editor.model ? app.editor.model.data.title : 'Untitled',
-      id: app.editor.model ? app.editor.model.id : null,
-      model: app.editor.model,
+      id: app.editor.model ? app.editor.model._id : null,
+      document: app.editor.model ? app.editor.model.toJSON() : null,
       num_collaborators: app.editor.status ? app.editor.status.collaborators.length : null,
       username: app.username
     }));

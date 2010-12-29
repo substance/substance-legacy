@@ -20,15 +20,17 @@
         
         </div>
       {{/username}}
-      {{#model}}
+      
+      {{#document}}
         <div id="document_toggle">
           <span class="label">Now editing: <strong>{{../username}} / {{#name}}{{.}}{{/name}}{{^name}} untitled{{/name}}</strong></span>
           <a class="header-icon save-document right" href="#save_document" title="save current document">save current document</a>
-          {{#id}}
+          {{#name}}
             <a class="header-icon user view-collaborators" href="#show_collaborators" title="Show collaborating Users">Collaborators</a>
-          {{/id}}
+          {{/name}}
         </div>
-      {{/model}}
+      {{/document}}
+      
       <div id="login_state">
         {{#username}}
           <span class="label">Signed in as: <strong>{{.}}</strong></span>
@@ -198,7 +200,7 @@
                 <p class="meta">Created by {{value/data/author}}, 2010-12-04</p>
               </div>
             </a>
-            <a href="/" class="delete-document remove" document="{{value/data/id}}">x</a>
+            <a href="/" class="delete-document remove" document="{{value/_id}}">x</a>
           </div>
         {{/documents}}
       </div>
@@ -312,7 +314,7 @@
     <div id="{{node/html_id}}" name={{node/key}} class="content-node document">
       <!--<div class="content-node-info">Document</div>-->
       <div class="content-node-outline"><div class="cursor"><span></span></div></div>
-      <h1 contenteditable="true" class='content'>{{node/data/title}}</h1>
+      <h1 contenteditable="true" class='content'>{{title}}</h1>
       {{{content}}}
     </div>
   </script>
@@ -323,7 +325,7 @@
       <!--<div class="content-node-info" draggable="false">Section</div>-->
       <div class="content-node-outline"><div class="cursor"><span></span></div></div>
       
-      <h2 contenteditable="true" class='content'>{{node/data/name}}</h2>
+      <h2 contenteditable="true" class='content'>{{name}}</h2>
       <div class="node-editor-placeholder"></div>
       {{{content}}}
     </div>
@@ -344,13 +346,12 @@
       <a href="#" class="remove remove-node" node="{{node/key}}">X</a>
       <!--<div class="content-node-info" draggable="false">Image</div>-->
       <div class="content-node-outline"><div class="cursor"><span></span></div></div>
-      {{#node/data/url}}
+      {{#url}}
         <img src="{{.}}"/>
-      {{/node/data/url}}
-      {{^node/data/url}}
+      {{/url}}
+      {{^url}}
         [Upload image]
-      {{/node/data/url}}
-      
+      {{/url}}
       <div class="node-editor-placeholder">
         
       </div>

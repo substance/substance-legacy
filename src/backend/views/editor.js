@@ -68,8 +68,9 @@ var Editor = Backbone.View.extend({
   updateCursors: function() {
     $('.content-node.occupied').removeClass('occupied');
     _.each(this.status.cursors, function(user, nodeKey) {
-      $('#'+nodeKey).addClass('occupied');
-      $('#'+nodeKey+' .cursor span').html(user);
+      var n = graph.get(nodeKey);
+      $('#'+n.html_id).addClass('occupied');
+      $('#'+n.html_id+' .cursor span').html(user);
     });
   },
   
@@ -87,24 +88,24 @@ var Editor = Backbone.View.extend({
   init: function() {
     var that = this;
     
+    // set up document view
+    this.documentView = new DocumentView({el: this.$('#document'), model: this.model});
+    this.documentView.render();
+    
     // Inject node editor on every select:node
-    this.model.unbind('select:node');
-    this.model.bind('select:node', function(node) {
-      
+    this.documentView.unbind('select:node');
+    
+    this.documentView.bind('select:node', function(node) {
       that.documentView.resetSelection();
-      $('#'+node.key).addClass('selected');
-      $('#document').addClass('edit-mode');
+      $('#'+node.html_id).addClass('selected');
       
+      $('#document').addClass('edit-mode');
       // Deactivate Richtext Editor
       editor.deactivate();
       
       // Render inline Node editor
       that.documentView.renderNodeEditor(node);
     });
-    
-    // set up document view
-    this.documentView = new DocumentView({el: this.$('#document'), model: this.model});
-    this.documentView.render();
   },
   
   newDocument: function() {
@@ -175,6 +176,8 @@ var Editor = Backbone.View.extend({
     graph.save(function(err) {      
       err ? notifier.notify(Notifications.DOCUMENT_SAVING_FAILED)
           : notifier.notify(Notifications.DOCUMENT_SAVED);
+          
+      app.dashboard.render();
     });
     
     return false;
@@ -201,19 +204,19 @@ var Editor = Backbone.View.extend({
   // Delete an existing document, given that the user is authorized
   // -------------
   
-  // deleteDocument: function(id) {
-  //   var that = this;
-  // 
-  //   notifier.notify(Notifications.DOCUMENT_DELETING);
-  //   
-  //   remote.Document.destroy(id, {
-  //     success: function() {
-  //       app.dashboard.load(); // Reload documents at the dashboard
-  //       notifier.notify(Notifications.DOCUMENT_DELETED);
-  //     },
-  //     error: function() {
-  //       notifier.notify(Notifications.DOCUMENT_DELETING_FAILED);
-  //     }
-  //   });
-  // }
+  deleteDocument: function(id) {
+    var that = this;
+    
+    graph.del(id);
+    
+    notifier.notify(Notifications.DOCUMENT_DELETING);
+    graph.save(function(err) {
+      if (err) {
+        notifier.notify(Notifications.DOCUMENT_DELETING_FAILED);
+      } else {
+        app.dashboard.render();
+        notifier.notify(Notifications.DOCUMENT_DELETED);
+      }
+    });
+  }
 });

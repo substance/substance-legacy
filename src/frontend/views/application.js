@@ -49,10 +49,17 @@ var Application = Backbone.View.extend({
     this.view = 'browser';
     this.shelf = new Shelf({el: '#sbs_shelf'});
     
-    
-    // Init DocumentBrowser
-    that.browser = new DocumentBrowser({
-      el: '#browser'
+    this.loadSchema()
+  },
+  
+  loadSchema: function() {
+    var that = this;
+    graph.fetch({type: '/type/type'}, {}, function(err, g) {
+      // Init DocumentBrowser
+      that.browser = new DocumentBrowser({
+        el: '#browser'
+      });
+      that.render();
     });
   },
   
@@ -89,7 +96,7 @@ var graph = new Data.Graph();
   $(function() {
     // Start the browser
     app = new Application({el: $('#container')});
-    app.render();
+    // app.render();
     
     // Register controller
     controller = new ApplicationController({app: app});

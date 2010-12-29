@@ -25,9 +25,12 @@ var DocumentView = Backbone.View.extend({
     
     // Bind Events
     
-    app.editor.model.bind('change:node', function(node) {
+    this.bind('change:node', function(node) {
       that.renderNode(node);
     });
+    
+    // Points to the selected
+    that.selectedNode = null;
 
     // TODO: Select the document node on-init
     
@@ -63,16 +66,16 @@ var DocumentView = Backbone.View.extend({
   },
   
   renderNodeEditor: function(node) {
-    var $node = $('#'+node.key);
+    var $node = $('#'+node.html_id);
     
     // Depending on the selected node's type, render the right editor
-    if (app.editor.model.selectedNode.type === 'document') {
+    if (this.selectedNode.type._id === '/type/document') {
       this.nodeEditor = new DocumentEditor({el: $('#drawer_content')});
-    } else if (app.editor.model.selectedNode.type === 'text') {
+    } else if (this.selectedNode.type._id === '/type/text') {
       this.nodeEditor = new TextEditor({el: $node});
-    } else if (app.editor.model.selectedNode.type === 'section') {
+    } else if (this.selectedNode.type._id === '/type/section') {
       this.nodeEditor = new SectionEditor({el: $node});
-    } else if (app.editor.model.selectedNode.type === 'image') {
+    } else if (this.selectedNode.type._id === '/type/image') {
       this.nodeEditor = new ImageEditor({el: $node});
     }
   },
@@ -140,6 +143,34 @@ var DocumentView = Backbone.View.extend({
   //   return false;
   // },
   
+  updateNode: function(nodeKey, attrs) {
+    var node = graph.get(nodeKey);
+    node.set(attrs);
+    this.trigger('change:node', node);
+  },
+  
+  // Update attributes of selected node
+  updateSelectedNode: function(attrs) {
+    if (!this.selectedNode) return;
+    this.selectedNode.set(attrs);
+    
+    // Only set dirty if explicitly requested    
+    if (attrs.dirty) {
+      this.trigger('change:node', this.selectedNode);
+    }
+    
+    if (this.selectedNode.type.key === '/type/document') {
+      this.trigger('document:changed');
+    }
+    
+    // Notify all collaborators about the changed node
+    if (app.editor.status && app.editor.status.collaborators.length > 1) {
+      var serializedNode = this.selectedNode.toJSON();
+      delete serializedNode.children;
+      remote.Session.registerNodeChange(this.selectedNode._id, serializedNode);
+    }
+  },
+  
   showActions: function(e) {
     this.reset();
     
@@ -151,10 +182,10 @@ var DocumentView = Backbone.View.extend({
   },
   
   renderNode: function(node) {
-    throw 'Not implemented';
-    // $('#'+node.key).replaceWith(new HTMLRenderer(node).render());
-    // // Render controls
-    // renderControls(app.editor.model);
+    $('#'+node.html_id).replaceWith(new HTMLRenderer(node).render());
+    
+    // Render controls
+    renderControls(app.editor.model);
   },
   
   render: function() {
@@ -174,11 +205,19 @@ var DocumentView = Backbone.View.extend({
   },
   
   selectNode: function(e) {
-    var key = $(e.currentTarget).attr('id');
+    var key = $(e.currentTarget).attr('name');
     
-    if (!app.editor.model.selectedNode || app.editor.model.selectedNode.key !== key) {
-      app.editor.model.selectNode(key);
+    if (!this.selectedNode || this.selectedNode.key !== key) {
+      var node = graph.get(key);
+      if (this.selectedNode !== node) { // only if changed
+        this.selectedNode = node;
+        this.trigger('select:node', this.selectedNode);
+
+        // The server will respond with a status package containing my own cursor position
+        remote.Session.selectNode(key);
+      }
     }
+    
     e.stopPropagation();
   },
   
@@ -207,6 +246,55 @@ var DocumentView = Backbone.View.extend({
     }
     return false;
   },
+  
+  // // Create a node of a given type
+  // createSiblingAfter: function(type, predecessorKey) {
+  //   var newNode = this.createEmptyNode(type),
+  //       predecessor = this.g.get('nodes', predecessorKey);
+  //       
+  //   newNode.build();
+  //   newNode.parent = predecessor.parent;
+  // 
+  //   // Attach to ContentGraph
+  //   predecessor.parent.addChild(newNode, predecessor, 'after');
+  //   
+  //   this.trigger('change:node', predecessor.parent);
+  //   this.selectNode(newNode.key);
+  // },
+  // 
+  // createSiblingBefore: function(type, successorKey) {
+  //   var newNode = this.createEmptyNode(type),
+  //       successor = this.g.get('nodes', successorKey);
+  //       
+  //   newNode.build();
+  //   newNode.parent = successor.parent;
+  // 
+  //   // Attach to ContentGraph
+  //   successor.parent.addChild(newNode, successor, 'before');
+  //   
+  //   this.trigger('change:node', successor.parent);
+  //   this.selectNode(newNode.key);
+  // },
+  // 
+  // // Create a child node of a given type
+  // createChild: function(type, parentKey) {
+  //   var newNode = this.createEmptyNode(type),
+  //       parent = this.g.get('nodes', parentKey);
+  //   
+  //   if (parentKey === "root") {
+  //     parent = this.g;
+  //   }
+  //   
+  //   newNode.build();
+  //   newNode.parent = parent;
+  // 
+  //   // Attach to ContentGraph
+  //   parent.addChild(newNode);
+  //   
+  //   this.trigger('change:node', parent);
+  //   this.selectNode(newNode.key);
+  // },
+  
   
   removeNode: function(e) {
     app.editor.model.removeNode($(e.currentTarget).attr('node'));

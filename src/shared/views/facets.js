@@ -2,12 +2,10 @@ var Facets = Backbone.View.extend({
   
   initialize: function(options) {
     this.browser = options.browser;
-    this.selectedFacet = graph.get('/type/document').all('properties').first().key;
     this.facetChoices = {};
   },
   
   select: function(property) {
-    this.selectedFacet = property;
     $('.facet').removeClass('selected');
     $('#facet_'+property).toggleClass('selected');
   },
@@ -59,6 +57,5 @@ var Facets = Backbone.View.extend({
   render: function() {
     var that = this;
     $(this.el).html(_.renderTemplate('facets', this.buildView()));
-    this.select(this.selectedFacet);
   }
 });

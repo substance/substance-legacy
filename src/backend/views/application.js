@@ -120,10 +120,6 @@ var Application = Backbone.View.extend({
     this.dashboard = new Dashboard({el: '#dashboard'});
     this.editor = new Editor({el: '#editor'});
     
-    // Fetch schema nodes
-    graph.fetch({type: '/type/type'}, {}, function(err, g) {
-      
-    });
     
     // Set up shelf
     this.shelf = new Shelf({el: '#sbs_shelf'});
@@ -170,7 +166,7 @@ var Application = Backbone.View.extend({
         },
         
         updateNode: function(key, node) {
-          app.editor.model.updateNode(key, node);
+          app.editor.documentView.updateNode(key, node);
         },
         
         moveNode: function(sourceKey, targetKey, destination) {
@@ -304,16 +300,20 @@ var remote,                   // Remote handle for server-side methods
 
 (function() {
   $(function() {
-    // Set up a notifier for status-message communication
-    notifier = new Backbone.Notifier();
     
-    // Start the engines
-    app = new Application({el: $('#container')});
-    
-    // Initialize controller
-    controller = new ApplicationController({app: this});
-    
-    // Set up a globals instance of the Proper Richtext Editor
-    editor = new Proper();
+    // Fetch schema nodes
+    graph.fetch({type: '/type/type'}, {}, function(err, g) {
+      // Set up a notifier for status-message communication
+      notifier = new Backbone.Notifier();
+
+      // Start the engines
+      app = new Application({el: $('#container')});
+
+      // Initialize controller
+      controller = new ApplicationController({app: this});
+
+      // Set up a global instance of the Proper Richtext Editor
+      editor = new Proper();
+    });
   });
 })();
