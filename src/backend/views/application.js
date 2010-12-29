@@ -28,7 +28,11 @@ var Application = Backbone.View.extend({
   
   loadDocument: function(e) {
     if (app.authenticated) {
-      app.editor.loadDocument($(e.currentTarget).attr('document'));
+      
+      var user = $(e.currentTarget).attr('user');
+          name = $(e.currentTarget).attr('name');
+                
+      app.editor.loadDocument(user, name);
       controller.saveLocation($(e.currentTarget).attr('href'));
     }
     return false;
@@ -66,7 +70,7 @@ var Application = Backbone.View.extend({
   },
   
   saveDocument: function(e) {
-    if (this.editor.model.id) {
+    if (this.editor.model.get('name')) {
       this.editor.saveDocument();
     } else {
       this.shelf.toggle('CreateDocument', e);
@@ -116,6 +120,11 @@ var Application = Backbone.View.extend({
     this.dashboard = new Dashboard({el: '#dashboard'});
     this.editor = new Editor({el: '#editor'});
     
+    // Fetch schema nodes
+    graph.fetch({type: '/type/type'}, {}, function(err, g) {
+      
+    });
+    
     // Set up shelf
     this.shelf = new Shelf({el: '#sbs_shelf'});
     
@@ -157,7 +166,6 @@ var Application = Backbone.View.extend({
       Session: {
         updateStatus: function(status) {
           that.editor.status = status;
-          
           that.editor.trigger('status:changed');
         },
         
@@ -285,11 +293,14 @@ var Application = Backbone.View.extend({
   }
 });
 
-var remote,     // Remote handle for server-side methods
-    notifier,   // Global notifiction system
-    app,        // The Application
-    controller, // Controller responding to routes
-    editor;     // A global instance of the Proper Richtext editor
+Data.setAdapter('AjaxAdapter', {});
+
+var remote,                   // Remote handle for server-side methods
+    notifier,                 // Global notifiction system
+    app,                      // The Application
+    controller,               // Controller responding to routes
+    editor,                   // A global instance of the Proper Richtext editor
+    graph = new Data.Graph(); // The database
 
 (function() {
   $(function() {

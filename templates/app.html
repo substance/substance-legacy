@@ -191,7 +191,7 @@
       <div class="list">
         {{#documents}}
           <div class="document">
-            <a class="link load-document" href="#load/{{value/data/author}}/{{value/data/name}}" document="{{value/data/id}}">
+            <a class="link load-document" href="#load/{{username}}/{{value/data/name}}" document="{{value/_id}}" user="{{username}}" name="{{value/data/name}}">
               <div class="icon"><img src="/images/document_icon.png"/></div>
               <div class="content">
                 <h5 class="title">{{value/data/title}}</h5>
@@ -264,12 +264,11 @@
   </script>
   
   <script type="text/x-handlebars-template" name="edit_document">
-    
     {{#author}}
     <h2>Attributes</h2>
     <dl class="document-attributes">
       <dt>Author:</dt>
-      <dd>{{../author}}</dd>
+      <dd>{{data/firstname}} {{data/lastname}}</dd>
       
       <dt>Created At:</dt>
       <dd>{{../created_at}}</dd>
@@ -310,7 +309,7 @@
   
   <!-- content-node templates for the editor -->
   <script type="text/x-handlebars-template" name="document">    
-    <div id="{{node/key}}" name={{node/key}} class="content-node document">
+    <div id="{{node/html_id}}" name={{node/key}} class="content-node document">
       <!--<div class="content-node-info">Document</div>-->
       <div class="content-node-outline"><div class="cursor"><span></span></div></div>
       <h1 contenteditable="true" class='content'>{{node/data/title}}</h1>
@@ -319,7 +318,7 @@
   </script>
   
   <script type="text/x-handlebars-template" name="section">
-    <div id="{{node/key}}" name={{node/key}} draggable="false" class="content-node section">
+    <div id="{{node/html_id}}" name={{node/key}} draggable="false" class="content-node section">
       <a href="#" class="remove remove-node" node="{{node/key}}">X</a>
       <!--<div class="content-node-info" draggable="false">Section</div>-->
       <div class="content-node-outline"><div class="cursor"><span></span></div></div>
@@ -331,7 +330,7 @@
   </script>
   
   <script type="text/x-handlebars-template" name="text">
-    <div id="{{node/key}}" name={{node/key}} draggable="false" class="content-node text">
+    <div id="{{node/html_id}}" name={{node/key}} draggable="false" class="content-node text">
       <a href="#" class="remove-node remove" node="{{node/key}}">x</a>
       <!--<div class="content-node-info" draggable="false">Text</div>-->
       <div class="content-node-outline"><div class="cursor"><span></span></div></div>
@@ -341,7 +340,7 @@
   </script>
   
   <script type="text/x-handlebars-template" name="image">
-    <div id="{{node/key}}" name={{node/key}} draggable="false" class="content-node image">
+    <div id="{{node/html_id}}" name={{node/key}} draggable="false" class="content-node image">
       <a href="#" class="remove remove-node" node="{{node/key}}">X</a>
       <!--<div class="content-node-info" draggable="false">Image</div>-->
       <div class="content-node-outline"><div class="cursor"><span></span></div></div>
@@ -395,6 +394,7 @@
   <!-- Libraries -->
   <script src="lib/underscore.js"></script>
   <script src="lib/data.js"></script>
+  <script src="lib/adapters/ajax_adapter.js"></script>
   <script src="lib/unveil.js"></script>
   <script src="lib/backbone.js"></script>
   <script src="lib/sanitize.js"></script>

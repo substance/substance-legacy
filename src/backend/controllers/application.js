@@ -6,8 +6,8 @@ var ApplicationController = Backbone.Controller.extend({
 
   loadDocument: function(username, docname) {
     if (app.authenticated) {
-      app.editor.loadDocument('users:'+username+':documents:'+docname);
-    }    
+      app.editor.loadDocument(username, docname);
+    }
     return false;
   },
   

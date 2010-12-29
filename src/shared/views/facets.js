@@ -43,7 +43,6 @@ var Facets = Backbone.View.extend({
         
         // !_.include(["title", "name", "sections"], property.key) && 
         if (facet_choices.length + selected_facet_choices.length > 0) {
-          console.log('puink');
           view.facets.push({
             property: key,
             property_name: property.name,

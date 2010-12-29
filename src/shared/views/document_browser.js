@@ -55,6 +55,11 @@ var DocumentBrowser = Backbone.View.extend({
   
   render: function() {
     var documents = graph.find({'type': '/type/document'}).toArray();
+    
+    _.each(documents, function(doc) {
+      doc.username = doc.value.data.user.split('/')[2]
+    });
+    
     $(this.el).html(_.renderTemplate('document_browser', {
       num_documents: documents.length,
       documents: documents

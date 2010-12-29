@@ -3,7 +3,6 @@
 
 var DocumentView = Backbone.View.extend({
   events: {
-    
   },
   
   id: null,
@@ -12,7 +11,6 @@ var DocumentView = Backbone.View.extend({
     var that = this;
     
     this.id = id;
-    console.log(id);
     graph.fetch({_id: id}, {expand: true}, function(err) {
       that.render();
     });

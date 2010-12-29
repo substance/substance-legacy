@@ -1,3 +1,44 @@
+function addEmptyDoc() {
+  var doc = graph.set(Data.uuid('/document/'+ app.username +'/'), {
+    "type": "/type/document",
+    "title": "Untitled",
+    "user": "/user/michael",
+    "children": [
+    
+      // Section 1
+      {
+        "type": "/type/section",
+        "name": "Section 1",
+        "children": []
+      },
+      
+      // Section 2
+      {
+        "type": "/type/section",
+        "name": "Section 2",
+        "children": [
+        
+          // Text 1
+          {
+            "type": "/type/text",
+            "content": "Some text"
+          },
+          
+          // Text 2
+          {
+            "type": "/type/text",
+            "content": "Another text"            
+          }
+        ]
+      }
+    ]
+  });
+  
+  return doc;
+};
+
+
+
 // The Document Editor View
 
 var Editor = Backbone.View.extend({
@@ -67,9 +108,9 @@ var Editor = Backbone.View.extend({
   },
   
   newDocument: function() {
-    this.model = new Document(JSON.parse(JSON.stringify(Document.EMPTY)));
-    this.status = null;
+    this.model = addEmptyDoc();
     
+    this.status = null;
     $(this.el).show();
     $('#dashboard').hide();
     
@@ -82,33 +123,38 @@ var Editor = Backbone.View.extend({
     return false;
   },
   
-  loadDocument: function(id) {
+  loadDocument: function(username, docname) {
     var that = this;
     notifier.notify(Notifications.DOCUMENT_LOADING);
     
-    remote.Session.getDocument(id, {
-      success: function(doc) {    
-        that.model = new Document(doc);
-        
+    function getDocumentId(g) {
+      var id;
+      _.each(g, function(node, key) {
+        if (node.type === '/type/document') id = key;
+      });
+      return id;
+    };
+    
+    graph.fetch({user: '/user/'+username, name: docname}, {expand: true}, function(err, g) {
+      if (!err) {
+        var id = getDocumentId(g);
+        that.model = graph.get(id);
         that.render();
         
         app.toggleView('document');
         that.init();
-        
         that.trigger('document:changed');
-        
+      
         // TODO: Not exactly pretty to do this twice
         app.toggleView('document');
         $('#main').removeClass('drawer-opened');
         
         notifier.notify(Notifications.DOCUMENT_LOADED);
         remote.Session.registerDocument(id);
-      },
-      error: function() {
+      } else {
         notifier.notify(Notifications.DOCUMENT_LOADING_FAILED);
       }
     });
-    app.shelf.close();
   },
   
   // Create a new document
@@ -116,26 +162,22 @@ var Editor = Backbone.View.extend({
   
   createDocument: function(name) {
     var that = this;
-
-    remote.Document.create(app.username, name, this.model.serialize(), {
-      success: function() {
-        that.model.id = 'users:'+app.username + ':documents:' + name;
-        that.model.author = app.username;
-        that.model.name = name;
-        
-        that.model.created_at = (new Date()).toJSON();
-        that.model.updated_at = (new Date()).toJSON();
-        that.model.published_on = null;
-        
-        $('#main').removeClass('drawer-opened');
-        
-        that.trigger('document:changed');
-        notifier.notify(Notifications.DOCUMENT_SAVED);
-      },
-      error: function() {
-        notifier.notify(Notifications.DOCUMENT_SAVING_FAILED);
-      }
+    
+    this.model.set({
+      name: name,
+      created_at: new Date(),
+      updated_at: new Date(),
+      published_on: null
     });
+
+    notifier.notify(Notifications.DOCUMENT_SAVING);
+    
+    graph.save(function(err) {      
+      err ? notifier.notify(Notifications.DOCUMENT_SAVING_FAILED)
+          : notifier.notify(Notifications.DOCUMENT_SAVED);
+    });
+    
+    return false;
   },
   
   // Store an existing document
@@ -144,36 +186,34 @@ var Editor = Backbone.View.extend({
   saveDocument: function() {
     var that = this;
     
+    this.model.set({
+      updated_at: new Date()
+    });
+
     notifier.notify(Notifications.DOCUMENT_SAVING);
-    remote.Document.update(that.model.author, that.model.name, that.model.serialize(), {
-      success: function() {
-        that.model.updated_at = (new Date()).toJSON();
-        that.drawer.renderContent();
-        
-        notifier.notify(Notifications.DOCUMENT_SAVED);
-      },
-      error: function() {
-        notifier.notify(Notifications.DOCUMENT_SAVING_FAILED);
-      }
+    
+    graph.save(function(err) {      
+      err ? notifier.notify(Notifications.DOCUMENT_SAVING_FAILED)
+          : notifier.notify(Notifications.DOCUMENT_SAVED);
     });
   },
   
   // Delete an existing document, given that the user is authorized
   // -------------
   
-  deleteDocument: function(id) {
-    var that = this;
-
-    notifier.notify(Notifications.DOCUMENT_DELETING);
-    
-    remote.Document.destroy(id, {
-      success: function() {
-        app.dashboard.load(); // Reload documents at the dashboard
-        notifier.notify(Notifications.DOCUMENT_DELETED);
-      },
-      error: function() {
-        notifier.notify(Notifications.DOCUMENT_DELETING_FAILED);
-      }
-    });
-  }
+  // deleteDocument: function(id) {
+  //   var that = this;
+  // 
+  //   notifier.notify(Notifications.DOCUMENT_DELETING);
+  //   
+  //   remote.Document.destroy(id, {
+  //     success: function() {
+  //       app.dashboard.load(); // Reload documents at the dashboard
+  //       notifier.notify(Notifications.DOCUMENT_DELETED);
+  //     },
+  //     error: function() {
+  //       notifier.notify(Notifications.DOCUMENT_DELETING_FAILED);
+  //     }
+  //   });
+  // }
 });
