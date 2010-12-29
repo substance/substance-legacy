@@ -1,13 +1,13 @@
-var renderControls = function(node, first, last) {
+var renderControls = function(node, first, last, parent) {
   
   function render(node, destination, consolidate) {
     
-    function computeActions(n) {
+    function computeActions(n, parent) {
       var actions = [];
-      
+
       // Possible children
-      if (n.all('children').length === 0) {
-        var children = ContentNode.types[n.type].allowedChildren;
+      if (n.all('children') && n.all('children').length === 0) {
+        var children = ContentNode.types[n.type.key].allowedChildren;
         _.each(children, function(type) {
           actions.push({
             node: n.key,
@@ -18,8 +18,8 @@ var renderControls = function(node, first, last) {
       }
 
       // Possible siblings
-      if (n.parent) {
-        var siblings = ContentNode.types[n.parent.type].allowedChildren;
+      if (parent) {
+        var siblings = ContentNode.types[parent.type.key].allowedChildren;
         _.each(siblings, function(type) {
           actions.push({
             node: n.key,
@@ -30,8 +30,8 @@ var renderControls = function(node, first, last) {
       }
       
       // Consolidate actions for child elements
-      if (consolidate && n.all('children').length > 0) {
-        actions = actions.concat(computeActions(n.all('children').last()));
+      if (consolidate && n.all('children') && n.all('children').length > 0) {
+        actions = actions.concat(computeActions(n.all('children').last(), n));
       }
       
       return actions;
@@ -40,39 +40,40 @@ var renderControls = function(node, first, last) {
     return Helpers.renderTemplate('controls', {
       node: node.key,
       destination: destination,
-      actions: computeActions(node)
+      actions: computeActions(node, parent)
     });
   }
   
   // Top level
-  if (!node.parent) {
+  if (!parent) {
     // Cleanup
     $('#document .controls').remove();
-    
-    if (node.all('children').length == 0) {
-      $(render(node, 'before')).appendTo($('#'+node.key));
+    if (!node.all('children') || node.all('children').length === 0) {
+      $(render(node, 'before')).appendTo($('#'+node.html_id));
     }
   } else {
     //  Insert before, but only for starting nodes (first=true)
     if (first) {
       // Insert controls before node
-      $(render(node, 'before')).insertBefore($('#'+node.key));
+      $(render(node, 'before')).insertBefore($('#'+node.html_id));
     }
     
     // Consolidate at level 1 (=section level), but only for closing nodes (last=true)
-    if (node.parent.key === 'root') {
-      $(render(node, 'after', true)).insertAfter($('#'+node.key));
+    if (parent.type.key === '/type/document') {
+      $(render(node, 'after', true)).insertAfter($('#'+node.html_id));
     } else if (!last) {
-      $(render(node,'after')).insertAfter($('#'+node.key));
+      $(render(node,'after')).insertAfter($('#'+node.html_id));
     }
   }
   
-  // Do the same for all children
-  node.all('children').each(function(child, key, index) {
-    var first = index === 0;
-    var last = index === node.all('children').length-1;
-    renderControls(child, first, last);
-  });
+  if (node.all('children')) {
+    // Do the same for all children
+    node.all('children').each(function(child, key, index) {
+      var first = index === 0;
+      var last = index === node.all('children').length-1;
+      renderControls(child, first, last, node);
+    });
+  }
 };
 
 
@@ -85,11 +86,14 @@ var HTMLRenderer = function(root) {
   // Implement node types
   var renderers = {
     document: function(node) {
-      var content = '';
+      var content = '',
+          children = node.all('children');
       
-      node.all('children').each(function(child, key, index) {
-        content += renderers[child.type](child);
-      });
+      if (children) {
+        children.each(function(child, key, index) {
+          content += renderers[child.type._id.split('/')[2]](child);
+        });        
+      }
       
       return Helpers.renderTemplate('document', {
         node: node,
@@ -98,11 +102,14 @@ var HTMLRenderer = function(root) {
     },
     
     section: function(node) {
-      var content = '';
+      var content = '',
+          children = node.all('children');
       
-      node.all('children').each(function(child, key, index) { 
-        content += renderers[child.type](child);
-      });
+      if (children) {
+        node.all('children').each(function(child, key, index) { 
+          content += renderers[child.type._id.split('/')[2]](child);
+        });
+      }
       
       return Helpers.renderTemplate('section', {
         node: node,
@@ -111,11 +118,9 @@ var HTMLRenderer = function(root) {
     },
     
     text: function(node) {
-      var converter = new Showdown.converter();
-      
       return Helpers.renderTemplate('text', {
         node: node,
-        content: converter.makeHtml(node.data.content)
+        content: node.data.content
       });
     },
     
@@ -129,7 +134,7 @@ var HTMLRenderer = function(root) {
   return {
     render: function() {
       // Traverse the document
-      return renderers[root.type](root);
+      return renderers[root.type._id.split('/')[2]](root);
     }
   };
 };
