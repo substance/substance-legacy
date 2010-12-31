@@ -80,69 +80,6 @@ var DocumentView = Backbone.View.extend({
     }
   },
   
-  // dragStart: function(e) {
-  //   var dt = e.originalEvent.dataTransfer,
-  //       sourceKey = $(e.target).parent().attr('id'),
-  //       node = app.model.get('nodes', sourceKey);
-  //       
-  //   dt.setData("Text", sourceKey);
-  //   $('#document').addClass('structure-mode');
-  //   
-  //   this.draggedNode = node;
-  //   
-  //   // TODO: Hide useless placeholders
-  //   $('#document .node-placeholder[node='+sourceKey+']').addClass('invisible');
-  //   
-  //   // Hide placeholder where the dragged type can't be placed
-  //   $('.node-placeholder:not(.'+node.type+')').addClass('hidden');
-  //   
-  //   return true;
-  // },
-  // 
-  // dragEnter: function(e) {
-  //   if (!$(e.target).hasClass('node-placeholder')) return true;
-  //   $(e.target).addClass('dragover');
-  //   
-  //   // TODO: Preview node-content?
-  //   return false;
-  // },
-  
-  // dragLeave: function(e) {
-  //   if (!$(e.target).hasClass('node-placeholder')) return true;
-  //   $(e.target).removeClass('dragover');
-  //   return false;
-  // },
-  // 
-  // dragOver: function(e) {
-  //   // Allow drops within node-placeholder elements
-  //   if (!$(e.target).hasClass('node-placeholder')) return true;      
-  //   
-  //   return false;
-  // },
-  // 
-  // dragEnd: function() {
-  //   $('#document').removeClass('structure-mode');
-  //   $('#document .node-placeholder.hidden').removeClass('hidden');
-  // },
-  
-  // drop: function(e) {
-  //   var $target = $(e.target);
-  //   $('#document').removeClass('structure-mode');
-  //   $('#document .node-placeholder.hidden').removeClass('hidden');
-  //   
-  //   if (!$target.hasClass('node-placeholder')) return true;
-  //   var dt = e.originalEvent.dataTransfer;
-  //   
-  //   // Move node to new position
-  //   app.model.moveNode(dt.getData("Text"), $target.attr('node'), $target.parent().attr('destination'));
-  //   
-  //   // Broadcast move node command
-  //   remote.Session.moveNode(dt.getData("Text"), $target.attr('node'), $target.parent().attr('destination'));
-  //   
-  //   e.stopPropagation();
-  //   return false;
-  // },
-  
   updateNode: function(nodeKey, attrs) {
     var node = graph.get(nodeKey);
     node.set(attrs);
@@ -181,15 +118,21 @@ var DocumentView = Backbone.View.extend({
     return false;
   },
   
+  // Re-renders a particular node and all child nodes
   renderNode: function(node) {
-    $('#'+node.html_id).replaceWith(new HTMLRenderer(node).render());
+    var $node = $('#'+node.html_id);
+    var parent = graph.get($node.attr('parent'));
+    
+    $('#'+node.html_id).replaceWith(new HTMLRenderer(node, parent).render());
     
     // Render controls
     renderControls(app.editor.model);
   },
   
   render: function() {
+    if (!app.editor.model) return;
     $(this.el).html(new HTMLRenderer(app.editor.model).render());
+    
     // Render controls
     renderControls(app.editor.model);
   },
@@ -222,85 +165,85 @@ var DocumentView = Backbone.View.extend({
   },
   
   addChild: function(e) {
-    app.editor.model.createChild($(e.currentTarget).attr('type'), $(e.currentTarget).attr('node'));
+    if (arguments.length === 1) {
+      // Setup node
+      var type = $(e.currentTarget).attr('type');
+      var refNode = graph.get($(e.currentTarget).attr('node'));
+      var newNode = graph.set(null, {type: type});
+    } else {
+      var refNode = graph.get(arguments[1]);
+      var newNode = graph.set(arguments[0].nodeId, arguments[0]);
+    }
     
-    // Broadcast insert node command
-    remote.Session.insertNode('child', $(e.currentTarget).attr('type'), $(e.currentTarget).attr('node'), 'after');
-    return true;
-  },
-  
-  addSibling: function(e) {
-    switch($(e.currentTarget).parent().parent().attr('destination')) {
-      case 'before': 
-        app.editor.model.createSiblingBefore($(e.currentTarget).attr('type'), $(e.currentTarget).attr('node'));
-        
-        // Broadcast insert node command
-        remote.Session.insertNode('sibling', $(e.currentTarget).attr('type'), $(e.currentTarget).attr('node'), 'before');
-      break;
-      case 'after':
-        app.editor.model.createSiblingAfter($(e.currentTarget).attr('type'), $(e.currentTarget).attr('node'));
-        
-        // Broadcast insert node command
-        remote.Session.insertNode('sibling', $(e.currentTarget).attr('type'), $(e.currentTarget).attr('node'), 'after');
-      break;
+    // Connect child node
+    refNode.all('children').set(newNode._id, newNode);
+    refNode.dirty = true;
+    this.trigger('change:node', refNode);
+    
+    if (arguments.length === 1) {
+      // Broadcast insert node command
+      remote.Session.insertNode('child', newNode.toJSON(), $(e.currentTarget).attr('node'), null, 'after');
     }
     return false;
   },
   
-  // // Create a node of a given type
-  // createSiblingAfter: function(type, predecessorKey) {
-  //   var newNode = this.createEmptyNode(type),
-  //       predecessor = this.g.get('nodes', predecessorKey);
-  //       
-  //   newNode.build();
-  //   newNode.parent = predecessor.parent;
-  // 
-  //   // Attach to ContentGraph
-  //   predecessor.parent.addChild(newNode, predecessor, 'after');
-  //   
-  //   this.trigger('change:node', predecessor.parent);
-  //   this.selectNode(newNode.key);
-  // },
-  // 
-  // createSiblingBefore: function(type, successorKey) {
-  //   var newNode = this.createEmptyNode(type),
-  //       successor = this.g.get('nodes', successorKey);
-  //       
-  //   newNode.build();
-  //   newNode.parent = successor.parent;
-  // 
-  //   // Attach to ContentGraph
-  //   successor.parent.addChild(newNode, successor, 'before');
-  //   
-  //   this.trigger('change:node', successor.parent);
-  //   this.selectNode(newNode.key);
-  // },
-  // 
-  // // Create a child node of a given type
-  // createChild: function(type, parentKey) {
-  //   var newNode = this.createEmptyNode(type),
-  //       parent = this.g.get('nodes', parentKey);
-  //   
-  //   if (parentKey === "root") {
-  //     parent = this.g;
-  //   }
-  //   
-  //   newNode.build();
-  //   newNode.parent = parent;
-  // 
-  //   // Attach to ContentGraph
-  //   parent.addChild(newNode);
-  //   
-  //   this.trigger('change:node', parent);
-  //   this.selectNode(newNode.key);
-  // },
-  
-  
-  removeNode: function(e) {
-    app.editor.model.removeNode($(e.currentTarget).attr('node'));
+  // TODO: cleanup!
+  addSibling: function(e) {
+    if (arguments.length === 1) {
+      // Setup node
+      var type = $(e.currentTarget).attr('type');
+      var refNode = graph.get($(e.currentTarget).attr('node'));
+      var parentNode = graph.get($(e.currentTarget).attr('parent'));
+      var destination = $(e.currentTarget).parent().parent().attr('destination');
+      
+      // newNode gets populated with default values
+      var newNode = graph.set(null, {type: type});
+    } else {
+      var refNode = graph.get(arguments[1]);
+      var parentNode = graph.get(arguments[2]);
+      var destination = arguments[3];
+      var newNode = graph.set(arguments[0].nodeId, arguments[0]);
+    }
+
+    var targetIndex = parentNode.all('children').index(refNode._id);
     
-    // Broadcast remove node command
-    remote.Session.removeNode($(e.currentTarget).attr('node'));
+    if (destination === 'after') {
+      targetIndex += 1;
+    }
+    
+    // Connect to parent
+    parentNode.all('children').set(newNode._id, newNode, targetIndex);
+    parentNode.dirty = true;
+    this.trigger('change:node', parentNode);
+    
+    if (arguments.length === 1) {
+      // Broadcast insert node command
+      remote.Session.insertNode('sibling', newNode.toJSON(), refNode._id, parentNode._id, destination);      
+    }
+    
+    return false;
+  },
+    
+  removeNode: function(e) {
+    if (arguments.length === 1) {
+      var node = graph.get($(e.currentTarget).attr('node'));
+      var parent = graph.get($(e.currentTarget).attr('parent'));
+    } else {
+      var node = graph.get(arguments[0]);
+      var parent = graph.get(arguments[1]);
+    }
+    
+    parent.all('children').del(node._id);
+    graph.del(node._id);
+    parent.dirty = true;
+    this.trigger('change:node', parent);
+    
+
+    if (arguments.length === 1) {
+      // Broadcast insert node command
+      remote.Session.removeNode(node._id, parent._id);
+    }
+    
     return false;
   }
 });

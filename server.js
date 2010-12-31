@@ -13,26 +13,10 @@ var _ = require('underscore');
 // Setup Data.Adapter
 Data.setAdapter('couch', { url: 'http://localhost:5984/substance' });
 
-var CouchClient = require('couch-client');
-global.db2 = CouchClient('http://localhost:5984/development');
-
 var graph = new Data.Graph();
-
-
-// Models
-// var Document = require('./src/server/models/document.js');
-var User = require('./src/server/models/user.js');
 
 // Read Config
 global.config = JSON.parse(fs.readFileSync(__dirname+ '/config.json', 'utf-8'));
-
-// Init CouchDB Connection
-global.conn = new(cradle.Connection)(config.couchdb.host, config.couchdb.port, {
-  auth: config.couchdb.user ? {user: 'michael', pass: 'test'} : null
-});
-
-
-global.db = conn.database(config.couchdb.db);
 
 
 // Helpers
@@ -171,8 +155,6 @@ app.put('/writegraph', function(req, res) {
 
 
 
-app.listen(config['server_port'], config['server_host']);
-
 
 // The DNode Server (RMI Interface for the client)
 // -----------
@@ -262,30 +244,30 @@ DNode(function (client, conn) {
     });
   };
   
-  var notifyNodeInsertion = function(documentId, insertionType, type, targetKey, destination) {
+  var notifyNodeInsertion = function(documentId, insertionType, node, targetKey, parentKey, destination) {
     var document = documents[documentId];
     var session = sessions[conn.id];
     
     _.each(getCollaborators(documentId), function(sessionId) {
-      sessions[sessionId].client.Session.insertNode(insertionType, type, targetKey, destination);
+      sessions[sessionId].client.Session.insertNode(insertionType, _.extend(node, {nodeId: node._id}), targetKey, parentKey, destination);
     });
   };
   
-  var notifyNodeMovement = function(documentId, sourceKey, targetKey, destination) {
+  var notifyNodeMovement = function(documentId, sourceKey, targetKey, parentKey, destination) {
     var document = documents[documentId];
     var session = sessions[conn.id];
     
     _.each(getCollaborators(documentId), function(sessionId) {
-      sessions[sessionId].client.Session.moveNode(sourceKey, targetKey, destination);
+      sessions[sessionId].client.Session.moveNode(sourceKey, targetKey, parentKey, destination);
     });
   };
   
-  var notifyNodeDeletion = function(documentId, key) {
+  var notifyNodeDeletion = function(documentId, key, parentKey) {
     var document = documents[documentId];
     var session = sessions[conn.id];
     
     _.each(getCollaborators(documentId), function(sessionId) {
-      sessions[sessionId].client.Session.removeNode(key);
+      sessions[sessionId].client.Session.removeNode(key, parentKey);
     });
   };
   
@@ -334,35 +316,36 @@ DNode(function (client, conn) {
   
   var Session = {
     authenticate: function(username, password, options) {
-      User.get(username, {
-        success: function(user) {
-          if (username === user.username && password === user.password) {
+
+      graph.fetch({type: '/type/user'}, {}, function(err) {
+        if (!err) {
+          var user = graph.get('/user/'+username);
+          if (username === user.get('username') && password === user.get('password')) {
             makeSession(username);
             options.success(username);
           } else {
             options.error();
           }
-        },
-        error: function() {
-          options.error();
-        }
+        } else options.error();
       });
     },
     
     registerUser: function(username, email, password, options) {
-      User.create({
+      var user = graph.set('/user/'+username, {
+        type: '/type/user',
         username: username,
         email: email,
         password: password
-      }, {
-        success: function() {
-          makeSession();
-          options.success(username);
-        },
-        error: function(err) {
-          options.error();
-        }
       });
+      
+      if (user.validate()) {
+        graph.save(function(err) {
+          if (!err) {
+            makeSession();
+            options.success(username);
+          } else options.error(err);
+        });        
+      } else options.error('Not valid');
     },
     
     init: function(options) {
@@ -395,19 +378,19 @@ DNode(function (client, conn) {
       notifyNodeSelection(session, nodeKey);
     },
     
-    insertNode: function(insertionType, type, targetKey, destination) {
+    insertNode: function(insertionType, node, targetKey, parentKey, destination) {
       var session = sessions[conn.id];
-      notifyNodeInsertion(session.document, insertionType, type, targetKey, destination);
+      notifyNodeInsertion(session.document, insertionType, node, targetKey, parentKey, destination);
     },
     
-    moveNode: function(sourceKey, targetKey, destination) {
+    moveNode: function(sourceKey, targetKey, parentKey, destination) {
       var session = sessions[conn.id];
-      notifyNodeMovement(session.document, sourceKey, targetKey, destination);
+      notifyNodeMovement(session.document, sourceKey, targetKey, parentKey, destination);
     },
     
-    removeNode: function(key) {
+    removeNode: function(key, parentKey) {
       var session = sessions[conn.id];
-      notifyNodeDeletion(session.document, key);
+      notifyNodeDeletion(session.document, key, parentKey);
     },
     
     registerNodeChange: function(key, node) {
@@ -416,24 +399,36 @@ DNode(function (client, conn) {
     },
     
     // Get the current document from the swarm (including real-time changes)
-    getDocument: function(id, options) {
-      // Get document either from the database if you're the first starting to edit this doc
-      // or from one of the collaborators having the most current doc.
-      if (documents[id] && documents[id].sessions.length > 0) {
-        // You're not alone. You are getting the doc from the swarm. :)
-        sessions[documents[id].sessions[0]].client.Session.getDocument({
-          success: function(document) {
-            options.success(document);
-          }
+    getDocument: function(username, docname, callback) {
+      
+      function getDocumentId(g) {
+        var id;
+        _.each(g, function(node, key) {
+          if (node.type === '/type/document') id = key;
         });
-      } else {
-        // The client is the first collaborator (the doc is fetched from the database)
-        Document.get(id, {
-          success: function(doc) {
-            options.success(doc);
+        return id;
+      };
+      
+      graph.fetch({creator: '/user/'+username, name: docname}, {expand: true}, function(err, g) {
+        if (!err) {
+          var id = getDocumentId(g);
+          
+          // Get document either from the database if you're the first starting to edit this doc
+          // or from one of the collaborators having the most current doc.
+          if (documents[id] && documents[id].sessions.length > 0) {
+            
+            // You're not alone. You are getting the doc from the swarm.
+            sessions[documents[id].sessions[0]].client.Session.getDocument(function(err, hotdoc) {
+              err ? callback(null, id, g) : callback(null, id, hotdoc);
+            });
+          } else {
+            // The client is the first collaborator (the doc is fetched from the database)
+            callback(null, id, g);
           }
-        });
-      }
+        } else {
+          callback('Not found');
+        }
+      });
     },
     
     // Called when a client loads an existing document
@@ -471,14 +466,23 @@ DNode(function (client, conn) {
     killSession();
   });
   
-  // Expose the Document API (document persistence)
-  // -----------
-  
-  // this.Document = Document;
-  
   // Expose the Session API (for realtime synchronization)
   // -----------
   
   this.Session = Session;
   
 }).listen(app);
+
+
+// Start the engines
+// -----------
+
+console.log('Loading schema...');
+graph.fetch({type: '/type/type'}, {}, function(err) {
+  if (err) {
+    console.log("ERROR: Couldn't fetch schema")
+  } else {
+    console.log('READY: Substance is listening at http://'+(config['server_host'] || 'localhost')+':'+config['server_port']);
+    app.listen(config['server_port'], config['server_host']);
+  }
+});

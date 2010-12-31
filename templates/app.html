@@ -233,7 +233,7 @@
       </div>
       <div class="actions">
         {{#actions}}
-          <a href="#" type="{{nodeType}}" node="{{node}}" class="add_{{insertionType}}">{{nodeType}}</a>
+          <a href="#" type="{{nodeType}}" node="{{node}}" parent="{{parentNode}}" class="add_{{insertionType}}">{{nodeTypeName}}</a>
         {{/actions}}
         <br class="clear"/>
       </div>
@@ -320,8 +320,8 @@
   </script>
   
   <script type="text/x-handlebars-template" name="section">
-    <div id="{{node/html_id}}" name={{node/key}} draggable="false" class="content-node section">
-      <a href="#" class="remove remove-node" node="{{node/key}}">X</a>
+    <div id="{{node/html_id}}" name={{node/key}} parent="{{parent/_id}}" draggable="false" class="content-node section">
+      <a href="#" class="remove remove-node" node="{{node/key}}" parent="{{parent/_id}}">x</a>
       <!--<div class="content-node-info" draggable="false">Section</div>-->
       <div class="content-node-outline"><div class="cursor"><span></span></div></div>
       
@@ -332,8 +332,8 @@
   </script>
   
   <script type="text/x-handlebars-template" name="text">
-    <div id="{{node/html_id}}" name={{node/key}} draggable="false" class="content-node text">
-      <a href="#" class="remove-node remove" node="{{node/key}}">x</a>
+    <div id="{{node/html_id}}" name={{node/key}} parent="{{parent/_id}}" draggable="false" class="content-node text">
+      <a href="#" class="remove-node remove" node="{{node/key}}" parent="{{parent/_id}}">x</a>
       <!--<div class="content-node-info" draggable="false">Text</div>-->
       <div class="content-node-outline"><div class="cursor"><span></span></div></div>
       <div class='content' contenteditable="true">{{{content}}}</div>
@@ -342,8 +342,8 @@
   </script>
   
   <script type="text/x-handlebars-template" name="image">
-    <div id="{{node/html_id}}" name={{node/key}} draggable="false" class="content-node image">
-      <a href="#" class="remove remove-node" node="{{node/key}}">X</a>
+    <div id="{{node/html_id}}" name={{node/key}} parent="{{parent/_id}}" draggable="false" class="content-node image">
+      <a href="#" class="remove remove-node" node="{{node/key}}" parent="{{parent/_id}}">x</a>
       <!--<div class="content-node-info" draggable="false">Image</div>-->
       <div class="content-node-outline"><div class="cursor"><span></span></div></div>
       {{#url}}
@@ -409,17 +409,12 @@
   <script src="src/shared/helpers.js"></script>
   
   <!-- The app -->
-  <script src="src/backend/models/content_graph.js"></script>
-  <script src="src/backend/models/document.js"></script>
   
-  <script src="src/backend/content_node_types.js"></script>
   <script src="src/backend/renderers/html_renderer.js"></script>
-
   <script src="src/backend/node_editors/document_editor.js"></script>
   <script src="src/backend/node_editors/section_editor.js"></script>
   <script src="src/backend/node_editors/text_editor.js"></script>
   <script src="src/backend/node_editors/image_editor.js"></script>
-  
   <script src="src/backend/controllers/application.js"></script>
   
   <!-- UI components -->
@@ -461,8 +456,6 @@
     <div class="wrapper">
     </div>
   </div>
-  
-  <!-- for temporary storage of DOM nodes -->
-  <div id="temp"></div>
+
 </body> 
 </html>

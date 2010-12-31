@@ -1111,5 +1111,3 @@ code { font-family: Monaco, Consolas; font-size: 11px; padding: 0px 3px; backgro
   box-shadow:         1px 0px 0px rgba(255,255,255,0.5);
 }
 
-/* A place for temporary storage of DOM nodes */
-#temp { display: none; }

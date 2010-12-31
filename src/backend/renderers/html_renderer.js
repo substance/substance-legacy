@@ -6,12 +6,15 @@ var renderControls = function(node, first, last, parent) {
       var actions = [];
 
       // Possible children
-      if (n.all('children') && n.all('children').length === 0) {
-        var children = ContentNode.types[n.type.key].allowedChildren;
+      if (n.all('children') && n.all('children').length === 0 && destination === 'after') {
+        var children = n.type.get('properties', 'children').expectedTypes;
+        
         _.each(children, function(type) {
           actions.push({
-            node: n.key,
+            node: n._id,
+            parentNode: parent ? parent._id : null,
             nodeType: type,
+            nodeTypeName: type.split('/')[2],
             insertionType: 'child'
           });
         });
@@ -19,11 +22,13 @@ var renderControls = function(node, first, last, parent) {
 
       // Possible siblings
       if (parent) {
-        var siblings = ContentNode.types[parent.type.key].allowedChildren;
+        var siblings = parent.type.get('properties', 'children').expectedTypes;
         _.each(siblings, function(type) {
           actions.push({
-            node: n.key,
+            node: n._id,
+            parentNode: parent ? parent._id : null,
             nodeType: type,
+            nodeTypeName: type.split('/')[2],
             insertionType: 'sibling'
           });
         });
@@ -49,7 +54,7 @@ var renderControls = function(node, first, last, parent) {
     // Cleanup
     $('#document .controls').remove();
     if (!node.all('children') || node.all('children').length === 0) {
-      $(render(node, 'before')).appendTo($('#'+node.html_id));
+      $(render(node, 'after')).appendTo($('#'+node.html_id));
     }
   } else {
     //  Insert before, but only for starting nodes (first=true)
@@ -59,7 +64,7 @@ var renderControls = function(node, first, last, parent) {
     }
     
     // Consolidate at level 1 (=section level), but only for closing nodes (last=true)
-    if (parent.type.key === '/type/document') {
+    if (parent.type._id === '/type/document' && last) {
       $(render(node, 'after', true)).insertAfter($('#'+node.html_id));
     } else if (!last) {
       $(render(node,'after')).insertAfter($('#'+node.html_id));
@@ -81,17 +86,17 @@ var renderControls = function(node, first, last, parent) {
 // ---------------
 
 
-var HTMLRenderer = function(root) {
+var HTMLRenderer = function(root, parent) {
   
   // Implement node types
   var renderers = {
-    document: function(node) {
+    "/type/document": function(node, parent) {
       var content = '',
           children = node.all('children');
       
       if (children) {
         children.each(function(child, key, index) {
-          content += renderers[child.type._id.split('/')[2]](child);
+          content += renderers[child.type._id](child, node);
         });        
       }
       
@@ -102,33 +107,36 @@ var HTMLRenderer = function(root) {
       });
     },
     
-    section: function(node) {
+    "/type/section": function(node, parent) {
       var content = '',
           children = node.all('children');
       
       if (children) {
         node.all('children').each(function(child, key, index) { 
-          content += renderers[child.type._id.split('/')[2]](child);
+          content += renderers[child.type._id](child, node);
         });
       }
       
       return Helpers.renderTemplate('section', {
         node: node,
+        parent: parent,
         content: content,
         name: node.get('name')
       });
     },
     
-    text: function(node) {
+    "/type/text": function(node, parent) {
       return Helpers.renderTemplate('text', {
         node: node,
+        parent: parent,
         content: node.get('content')
       });
     },
     
-    image: function(node) {
+    "/type/image": function(node, parent) {
       return Helpers.renderTemplate('image', {
         node: node,
+        parent: parent,
         url: node.get('url')
       });
     }
@@ -136,8 +144,8 @@ var HTMLRenderer = function(root) {
 
   return {
     render: function() {
-      // Traverse the document
-      return renderers[root.type._id.split('/')[2]](root);
+      // Traverse the document      
+      return renderers[root.type._id](root, parent);
     }
   };
 };

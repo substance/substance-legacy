@@ -169,29 +169,42 @@ var Application = Backbone.View.extend({
           app.editor.documentView.updateNode(key, node);
         },
         
-        moveNode: function(sourceKey, targetKey, destination) {
-          app.editor.model.moveNode(sourceKey, targetKey, destination);
+        moveNode: function(sourceKey, targetKey, parentKey, destination) {
+          throw 'Not implemented';
         },
         
-        insertNode: function(insertionType, type, targetKey, destination) {
+        insertNode: function(insertionType, node, targetKey, parentKey, destination) {
           if (insertionType === 'sibling') {
-            if (destination === 'before') {
-              app.editor.model.createSiblingBefore(type, targetKey);
-            } else { // destination === 'after'
-              app.editor.model.createSiblingAfter(type, targetKey);
-            }
+            app.editor.documentView.addSibling(node, targetKey, parentKey, destination);
           } else { // inserionType === 'child'
-            app.editor.model.createChild(type, targetKey);
+            app.editor.documentView.addChild(node, targetKey, parentKey, destination);
           }
         },
         
-        removeNode: function(key) {
-          app.editor.model.removeNode(key);
+        removeNode: function(key, parentKey) {
+          app.editor.documentView.removeNode(key, parentKey);
         },
         
         // The server asks for the current (real-time) version of the document
-        getDocument: function(options) {
-          options.success(that.editor.model.serialize()); // Call em back, and deliver the stuff
+        getDocument: function(callback) {
+          var result = {};
+          function addNode(id) {
+            if (!result[id]) {
+              var n = graph.get(id);
+              result[id] = n.toJSON();
+
+              // Resolve associated Nodes
+              n.type.all('properties').each(function(p) {
+                if (p.isObjectType()) {
+                  n.all(p.key).each(function(obj) {
+                    addNode(obj._id);
+                  });
+                }
+              });
+            }
+          }
+          addNode(app.editor.model._id);
+          callback(null, result);
         }
       }
     }).connect(function (remoteHandle) {
@@ -219,6 +232,7 @@ var Application = Backbone.View.extend({
   
   registerUser: function() {
     var that = this;
+    
     remote.Session.registerUser($('#signup-user').val(), $('#signup-email').val(), $('#signup-password').val(), {
       success: function(username) { 
         notifier.notify(Notifications.AUTHENTICATED);
@@ -282,7 +296,7 @@ var Application = Backbone.View.extend({
     var that = this;
     $('#dashboard').html(Helpers.renderTemplate('signup'));
     $('#signup-form').submit(function() {
-      that.registerUser();
+       that.registerUser();
       return false;
     });
     return false;

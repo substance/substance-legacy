@@ -2,7 +2,7 @@ function addEmptyDoc() {
   var doc = graph.set(Data.uuid('/document/'+ app.username +'/'), {
     "type": "/type/document",
     "title": "Untitled",
-    "user": "/user/michael",
+    "creator": "/user/"+app.username,
     "children": [
     
       // Section 1
@@ -20,14 +20,12 @@ function addEmptyDoc() {
         
           // Text 1
           {
-            "type": "/type/text",
-            "content": "Some text"
+            "type": "/type/text"
           },
           
           // Text 2
           {
-            "type": "/type/text",
-            "content": "Another text"            
+            "type": "/type/text"      
           }
         ]
       }
@@ -36,7 +34,6 @@ function addEmptyDoc() {
   
   return doc;
 };
-
 
 
 // The Document Editor View
@@ -55,7 +52,7 @@ var Editor = Backbone.View.extend({
     });
     
     this.bind('document:changed', function() {
-      document.title = that.model.data.title;
+      document.title = that.model.get('title');
       
       // Re-render shelf and drawer
       app.shelf.render();
@@ -124,21 +121,15 @@ var Editor = Backbone.View.extend({
     return false;
   },
   
+  
   loadDocument: function(username, docname) {
     var that = this;
     notifier.notify(Notifications.DOCUMENT_LOADING);
     
-    function getDocumentId(g) {
-      var id;
-      _.each(g, function(node, key) {
-        if (node.type === '/type/document') id = key;
-      });
-      return id;
-    };
-    
-    graph.fetch({user: '/user/'+username, name: docname}, {expand: true}, function(err, g) {
+    remote.Session.getDocument(username, docname, function(err, id, g) {
       if (!err) {
-        var id = getDocumentId(g);
+        graph.merge(g, true);
+        
         that.model = graph.get(id);
         that.render();
         
@@ -152,6 +143,7 @@ var Editor = Backbone.View.extend({
         
         notifier.notify(Notifications.DOCUMENT_LOADED);
         remote.Session.registerDocument(id);
+
       } else {
         notifier.notify(Notifications.DOCUMENT_LOADING_FAILED);
       }
