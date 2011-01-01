@@ -1,6 +1,7 @@
 *.log
 config.json
 log/*
+snippets/*
 pkg/*
 doc
 cov
