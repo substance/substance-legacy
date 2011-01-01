@@ -8,7 +8,6 @@ var config = JSON.parse(fs.readFileSync(__dirname+ '/../config.json', 'utf-8'));
 // Setup Data.Adapter
 Data.setAdapter('couch', { url: config.couchdb_url });
 
-
 // Our Domain Model with some sample data
 var seedGraph = {
   
@@ -72,11 +71,20 @@ var seedGraph = {
         "type": "string",
         "default": "Untitled"
       },
+      "lead": {
+        "name": "Lead",
+        "unique": true,
+        "type": "string",
+        "default": "Document's lead"
+      },
       "creator": {
         "name": "Creator",
         "unique": true,
         "type": "/type/user",
-        "required": true
+        "required": true,
+        "meta": {
+          "facet": true
+        }
       },
       "children": {
         "name": "Sections",
@@ -100,6 +108,26 @@ var seedGraph = {
         "name": "Publication Date",
         "unique": true,
         "type": "date"
+      },
+      "topics": {
+        "name": "Topics",
+        "unique": false,
+        "type": "string",
+        "default": [],
+        "meta": {
+          "facet": true,
+          "attribute": true
+        }
+      },
+      "keywords": {
+        "name": "Keywords",
+        "unique": false,
+        "type": "string",
+        "default": [],
+        "meta": {
+          "facet": true,
+          "attribute": true
+        }
       }
     }
   },
