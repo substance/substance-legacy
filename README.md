@@ -1,19 +1,16 @@
 Substance
 ================================================================================
 
-Substance is a data-driven document authoring tool based on the ContentGraph 
-document format. 
-
-Be aware this is demo-ware for the moment. However our final mission is to create a free and independent information sharing platform, available to everyone.
+Substance is a data-driven realtime document authoring tool based on the [Data.Graph](http://github.com/michael/data) data format. Be aware this is demo-ware for the moment. However, our final mission is to create a free and independent information sharing platform, available to everyone.
 
 
 Motivation
 --------------------------------------------------------------------------------
 
 * Information wants to be free
-* Information wants to be beautiful
 * Reading should be distraction-free (no noise like blinking ads etc.)
 * Favor Semantic editing, since writing is about content, not formatting
+* Allow realtime participation of collaborators
 
 
 **And that's how it looks like (at least atm):**
@@ -27,8 +24,7 @@ The Substance Reader:
 ![Screenshot](http://ma.zive.at/substance_reader.png)
 
 
-Documents are created by adding and editing `ContentNodes` of various types. A Javascript-based editor takes
-a `ContentGraph` as JSON, and holds an internal memory representation of the current document (respectively the arrangement of `ContentNodes`). This memory representation is rendered dynamically. The user can immediately read and navigate the whole document. Everything is at one page. Every ContentNode can be modified by clicking on it. A ContentNode editor pane gets activated and the node's properties can be edited. The changes made are reflected in realtime. Users see the results as they type.
+Documents are composed of Content Nodes of various types. The Javascript-based editor takes a `Data.Graph` and picks a Document Node, which is associated with number of child nodes (Section, Text, Image, etc.). Document manipulation happens in memory, changes made are rendered dynamically. The user can immediately read and navigate the whole document. Everything is at one page. Every content node can be modified by clicking on it. A content node editor gets activated and the node's properties can be edited. The changes made are reflected in realtime. Users see the results as they type. Collaborators can join an editing session and participate in realtime too. This is made possible through the usage of WebSockets.
 
 
 Demo
@@ -39,46 +35,114 @@ You've got two options to try out the most recent work-in-progress version:
 * [Edit Documents](http://edge.substance.io/writer) (a.k.a. The Writer)
 * [Browse Documents](http://edge.substance.io) (a.k.a. The Reader)
 
-ContentGraph
+
+Based on the Data.Graph format
 --------------------------------------------------------------------------------
 
-A ContentGraph is a fundamentally different content representation format expressed as JSON. It makes only a few assumptions on the structure of a document and is meant to be used as an engine to build applications (like Substance) on top of it. A ContentGraph consists of a number of ContentNodes that are hierarchically organized. Since the basic data-structure is a graph, ContentNodes can be referred multiple times, but there are no cycles allowed. ContentNodes must have a type property (e.g. type="section" or type="image") and arbitrary many additional properties that describe the contents of a certain node with respect to its type. There are no limitations on how you store data within that nodes.
+A Data.Graph, offered by [Data.js](http://github.com/michael/data), can be used for representing arbitrary complex object graphs. Relations between objects are expressed through links that point to referred objects. This special data format is the main building block of Substance. It introduces a dynamic type system, through special `Data.Type` nodes that hold all related meta-information and can be manipulated during run-time. The Data.Graph format is highly inspired by the [Metaweb Object Model](http://www.freebase.com/docs/mql/ch02.html) that is used at Freebase.com. So if you're familiar with Freebase and MQL, you should have already gotten the basic idea.
 
-
-The JSON representation of a simple ContentGraph looks as follows:
+The JSON representation of an exemplified Data.Graph (containing the schema information and one document, with ass) looks like this:
 
 <pre>
 <code>
-  {
-    "title": "Untitled",
-    "author": "John Doe",
-    "children": ["1", "2"],
-    "nodeCount": 4,
-    "nodes": {
-      "1": {
-        "type": "section",
-        "name": "First Chapter",
-        "children": ["3"]
+
+var serializedGraph = {
+  
+  // Data.Types (Schema)
+  // --------------------
+  
+  "/type/document": {
+    "type": "/type/type",
+    "name": "Document",
+    "properties": {
+      "name": {
+        "name": "Internal name",
+        "unique": true,
+        "type": "string",
+        "required": true
       },
-      "2": {
-        "type": "section",
-        "name": "Second Chapter",
-        "children": ["4"]
+      "title": {
+        "name": "Document Title",
+        "unique": true,
+        "type": "string",
+        "default": "Untitled"
       },
-      "3": {
-        "type": "text",
-        "content": "Your text goes here."
+      "creator": {
+        "name": "Creator",
+        "unique": true,
+        "type": "/type/user",
+        "required": true
       },
-      "4": {
-        "type": "image",
-        "url": "http://tmp.vivian.transloadit.com/scratch/9a65045a69dd88c2baf281c28dbd15a7"
+      "children": {
+        "name": "Sections",
+        "unique": false,
+        "type": "/type/section",
+        "default": []
       }
     }
+  },
+  
+  "type/section/": {
+    "type": "/type/type",
+    "name": "Section",
+    "properties": {
+      "name": {
+        "name": "Name",
+        "unique": true,
+        "type": "string",
+        "default": "A new header"
+      },
+      "children": {
+        "name": "Children",
+        "unique": false,
+        "type": ["/type/text", "/type/image", "/type/quote"],
+        "default": []
+      }
+    }
+  },
+  
+  "/type/text": {
+    "type": "/type/type",
+    "name": "Text",
+    "properties": {
+      "content": {
+        "name": "Content",
+        "unique": true,
+        "type": "string",
+        "default": "Some text ..."
+      }
+    }
+  },
+  
+  
+  // Data.Objects
+  // --------------------
+  
+  "/document/demo/828812e890a1ebc6030bb7c51b3c53cd": {
+    "type": "/type/document",
+    "name": "demo_doc",
+    "title": "Demo",
+    "creator": "/user/demo",
+    "children": ["/section/efd36d3ccf4f77e735f600a3ba39f803"],
+    "created_at": "2010-12-31T17:11:22.515Z"
+  },
+  
+  "/section/efd36d3ccf4f77e735f600a3ba39f803": {
+    "type": "/type/section",
+    "name": "First chapter",
+    "children": ["/text/401db968c89917957f12afaf75bfb579"]
+  },
+  
+  "/text/401db968c89917957f12afaf75bfb579": {
+    "type": "/type/section",
+    "content": "Hello world"
   }
+}
+
 </code>
 </pre>
 
-The ContentNodes are registered in a flat map. However child nodes are referenced using their id. As already discussed cyclic graphs are not valid.
+Nodes live in a flat map, while associated nodes are referenced using their id.
 
 
 Storage
@@ -86,16 +150,17 @@ Storage
 
 Since documents are serialized as simple JSON it makes perfectly sense to store
 them in a JSON based document store, such as CouchDB. The whole process is as
-simple as storing the current serialized ContentGraph as a CouchDB document.
+simple as storing the current serialized Data.Graph as a number CouchDB documents,
+where each document corresponds to a Node in the graph.
 Multiple saves result in multiple document revisions (a CouchDB feature) which
-means we get document versioning for free. A CouchDB database functions as a
-document repository containing arbitrary many documents. You'll eventually be able to manage
-multiple document repositories within the same editor instance. 
-
+means we get document versioning for free. [Data.js](http://github.com/michael/data) takes care of all persistence related concerns.
 
 
 API
 --------------------------------------------------------------------------------
+
+In order to allow you to integrate Documents with your web application, Substance
+offers a simple REST API.
 
 `GET /documents/`
 
@@ -155,13 +220,10 @@ Roadmap
 
 Actually, the system aims to be an alternative to editing documents in LaTeX or Word. Since DocumentGraphs contain all the information necessary to be rendered as LaTeX markup you wouldn't need to write LaTeX. You can edit and share your documents online and update them at any time. 
 
-Substance is being designed to work in a decentralized scenario where many
-substance-nodes exist on the web. Registered Substance nodes could then be aggregated and indexed
-to allow users to search and navigate among all registered substance-documents.
+Substance is being designed to work in a decentralized scenario where many Substance nodes exist on the web. Registered Substance nodes could then be aggregated and indexed to allow users to search and navigate among all registered substance-documents.
 
 
-The current implementation is at an early state (roughly 2 weeks of coding work). 
-However, I really want to push this forward, in addition to Unveil.js, a browser-based visualization toolkit. Any form of contribution is highly appreciated! :)
+The current implementation is at an early state (roughly 3 month of coding work). However, I really want to push this forward, in addition to Unveil.js, a browser-based visualization toolkit. Any form of contribution is highly appreciated! :)
 
 
 
@@ -183,12 +245,13 @@ Installation
 2. Setup config.json (you can use config.json.example as a template)
 
    Fill in CouchDB Host, Port, and Database
-3. Initialize CouchDB Views
 
-   `$ cake couch:push # from the project directory`
-4. Install Libraries
+3. Install Libraries
 
-   `npm install cradle underscore express dnode`
+   `npm install underscore express dnode couch-client`
+4. Seed the DB
+
+  `$ node db/seed.js`
 5. Start the server
   
    `$ node server.js`
@@ -198,6 +261,10 @@ Installation
 
 Updates
 --------------------------------------------------------------------------------
+
+**30th December 2010**
+
+Migrated to Data.Graph based persistence for the whole system.
 
 **11th December 2010**
 
