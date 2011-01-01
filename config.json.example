@@ -1,26 +1,20 @@
 {
-  "couchdb": {
-    "protocol": "http",
-    "host": "localhost",
-    "db": "development",
-    "port": 5984,
-    "user": "username",
-    "password": "secret"
-  },
-  "host_name": "substance.quasipartikel.at",
+  "couchdb_url": "http://localhost:5984/substance",
+  "server_host": null,
   "server_port": 3003,
+  "theme": "default",
   "settings": {
     "attributes": [
       {
         "key": "topics",
-        "name": "Themen",
+        "name": "Topics",
         "type": "string", 
         "unique": false,
         "default": []
       },
       {
         "key": "keywords",
-        "name": "Schlagworte",
+        "name": "Keywords",
         "type": "string", 
         "unique": false,
         "default": []

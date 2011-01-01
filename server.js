@@ -9,15 +9,14 @@ var DNode = require('dnode');
 var Data = require('./lib/data');
 var _ = require('underscore');
 
-
-// Setup Data.Adapter
-Data.setAdapter('couch', { url: 'http://localhost:5984/substance' });
-
-var graph = new Data.Graph();
-
 // Read Config
 global.config = JSON.parse(fs.readFileSync(__dirname+ '/config.json', 'utf-8'));
 
+
+// Setup Data.Adapter
+Data.setAdapter('couch', { url: config.couchdb_url});
+
+var graph = new Data.Graph();
 
 // Helpers
 // -----------

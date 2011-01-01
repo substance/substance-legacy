@@ -3,13 +3,13 @@ var assert = require('assert');
 var Data = require('../lib/data');
 var _ = require('underscore');
 
+var config = JSON.parse(fs.readFileSync(__dirname+ '/../config.json', 'utf-8'));
 
 // Setup Data.Adapter
-Data.setAdapter('couch', { url: 'http://localhost:5984/substance' });
+Data.setAdapter('couch', { url: config.couchdb_url });
 
 
 // Our Domain Model with some sample data
-
 var seedGraph = {
   
   // User
