@@ -64,7 +64,7 @@ var renderControls = function(node, first, last, parent) {
     }
     
     // Consolidate at level 1 (=section level), but only for closing nodes (last=true)
-    if (parent.type._id === '/type/document' && last) {
+    if (parent.type._id === '/type/document') {
       $(render(node, 'after', true)).insertAfter($('#'+node.html_id));
     } else if (!last) {
       $(render(node,'after')).insertAfter($('#'+node.html_id));
