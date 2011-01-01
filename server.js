@@ -480,7 +480,8 @@ DNode(function (client, conn) {
 console.log('Loading schema...');
 graph.fetch({type: '/type/type'}, {}, function(err) {
   if (err) {
-    console.log("ERROR: Couldn't fetch schema")
+    console.log("ERROR: Couldn't fetch schema");
+    console.log(err);
   } else {
     console.log('READY: Substance is listening at http://'+(config['server_host'] || 'localhost')+':'+config['server_port']);
     app.listen(config['server_port'], config['server_host']);
