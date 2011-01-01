@@ -29,6 +29,8 @@ _.prettyDate = function(time) {
 		day_diff < 31 && Math.ceil( day_diff / 7 ) + " weeks ago";
 };
 
+
+
 _.stripTags = function(input, allowed) {
 // Strips HTML and PHP tags from a string  
 // 

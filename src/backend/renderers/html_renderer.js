@@ -103,7 +103,8 @@ var HTMLRenderer = function(root, parent) {
       return Helpers.renderTemplate('document', {
         node: node,
         content: content,
-        title: node.get('title')
+        title: node.get('title'),
+        lead: node.get('lead')
       });
     },
     
