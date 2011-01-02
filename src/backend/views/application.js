@@ -77,7 +77,7 @@ var Application = Backbone.View.extend({
   },
   
   saveDocument: function(e) {
-    if (this.editor.model.get('name')) {
+    if (this.editor.model.validate()) {
       this.editor.saveDocument();
     } else {
       this.shelf.toggle('CreateDocument', e);
@@ -87,7 +87,6 @@ var Application = Backbone.View.extend({
   
   createDocument: function(e) {
     app.editor.createDocument(this.shelf.$('#document-name').val());
-    this.shelf.close();
     return false;
   },
   

@@ -1,7 +1,6 @@
-var express = require('express@1.0.0');
+var express = require('express');
 var app = express.createServer();
 var http = require('http');
-var cradle = require('cradle');
 var fs = require('fs');
 var Handlebars = require('./lib/handlebars');
 var HTMLRenderer = require('./src/shared/renderers/html_renderer').Renderer;
@@ -343,7 +342,7 @@ DNode(function (client, conn) {
             makeSession();
             options.success(username);
           } else options.error(err);
-        });        
+        });
       } else options.error('Not valid');
     },
     

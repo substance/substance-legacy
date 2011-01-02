@@ -23,19 +23,22 @@ var seedGraph = {
         "name": "Username",
         "unique": true,
         "type": "string",
-        "required": true
+        "required": true,
+        "validator": "^[a-z_]{1}[a-z_0-9]{2,20}$"
       },
       "email": {
         "name": "Email",
         "unique": true,
         "type": "string",
-        "required": true
+        "required": true,
+        "validator": "^\\w+@[a-zA-Z_]+?\\.[a-zA-Z]{2,6}$"
       },
       "password": {
         "name": "Password",
         "unique": true,
         "type": "string",
-        "required": true
+        "required": true,
+        "validator": "^\\w{4,}$"
       },
       "firstname": {
         "name": "Firstname",
@@ -63,7 +66,8 @@ var seedGraph = {
         "name": "Internal name",
         "unique": true,
         "type": "string",
-        "required": true
+        "required": true,
+        "validator": "^[a-z_]{1}[a-z_0-9]{2,20}$"
       },
       "title": {
         "name": "Document Title",
@@ -168,7 +172,7 @@ var seedGraph = {
         "name": "Content",
         "unique": true,
         "type": "string",
-        "default": "Some text ..."
+        "default": "<p>Some text ...</p>"
       }
     }
   },
@@ -253,7 +257,8 @@ var graph = new Data.Graph(seedGraph);
 
 Data.adapter.flush(function(err) {
   err ? console.log(err)
-      : graph.save(function(err) {
+      : graph.save(function(err, invalidNodes) {
+        console.log(invalidNodes.keys());
         err ? console.log(err)
             : console.log('Couch seeded successfully.\nStart the server: $ node server.js');
       });

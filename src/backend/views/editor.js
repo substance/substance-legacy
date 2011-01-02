@@ -162,14 +162,16 @@ var Editor = Backbone.View.extend({
       updated_at: new Date(),
       published_on: null
     });
-
-    notifier.notify(Notifications.DOCUMENT_SAVING);
     
-    graph.save(function(err) {      
-      err ? notifier.notify(Notifications.DOCUMENT_SAVING_FAILED)
-          : notifier.notify(Notifications.DOCUMENT_SAVED);
-          
-      app.dashboard.render();
+    notifier.notify(Notifications.DOCUMENT_SAVING);
+    graph.save(function(err) {
+      if (err) {
+        notifier.notify(Notifications.DOCUMENT_SAVING_FAILED) 
+      } else {
+        notifier.notify(Notifications.DOCUMENT_SAVED);
+        app.shelf.close();
+        app.dashboard.render();
+      }
     });
     
     return false;
