@@ -33,13 +33,34 @@ function testObjectValidation() {
     children: [
       {
         type: "/type/section",
-        name: "PHEW"
+        name: "Foo"
       }
     ]
   });
   
   assert.ok(doc.validate()); // should work now
   assert.ok(doc.errors.length === 0);
+  
+  var user = graph.set(null, {
+    type: '/type/user',
+    username: 'john',
+    password: 'test',
+    email: 'invalid@@.email/.com'
+  });
+
+  user.validate();
+  assert.ok(user.errors.length === 1);
+
+  graph.save(function(err, invalidNodes) {
+    assert.ok(invalidNodes.length === 1)
+    
+    user.set({
+      email: "valid@email.com"
+    });
+
+    user.validate();
+    assert.ok(user.errors.length === 0);
+  });
 }
 
 var graph = new Data.Graph();
