@@ -401,6 +401,13 @@ dd
 ----------------------
 */
 
+/* The document lead */
+
+#document_lead {
+  font-style: italic;
+  font-size: 20px;
+}
+
 #document_tags { height: 50px;}
 
 #drawer_content { padding: 3px; color: #444;}

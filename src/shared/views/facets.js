@@ -25,8 +25,7 @@ var Facets = Backbone.View.extend({
     
     graph.get('/type/document').all('properties').each(function(property, key) {
       
-      if (property.type !== 'number' && property.type !== 'collection' && property.key !== 'id') {
-        
+      if (property.meta.facet) {
         var facet_choices = [];
         var selected_facet_choices = [];
         property.all("values").each(function(value) {
@@ -39,7 +38,6 @@ var Facets = Backbone.View.extend({
           }
         });
         
-        // !_.include(["title", "name", "sections"], property.key) && 
         if (facet_choices.length + selected_facet_choices.length > 0) {
           view.facets.push({
             property: key,

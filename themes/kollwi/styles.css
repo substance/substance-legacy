@@ -1,0 +1,366 @@
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, font, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  outline: 0;
+  font-weight: inherit;
+  font-style: inherit;
+  font-size: 100%;
+  font-family: inherit;
+  vertical-align: baseline;
+}
+:focus {
+  outline: 0;
+}
+body {
+  line-height: 1;
+  color: black;
+  background: white;
+}
+ol, ul {
+  list-style: none;
+}
+table {
+  border-collapse: separate;
+  border-spacing: 0;
+}
+caption, th, td {
+  text-align: left;
+  font-weight: normal;
+}
+blockquote:before, blockquote:after,
+q:before, q:after {
+  content: "";
+}
+blockquote, q {
+  quotes: "" "";
+}
+
+
+/* KOLLWI Styles */
+
+html, body {
+  height:100%;
+  color:#333;
+  font-size:14px;
+  line-height:1.5em;
+  font-family:Arial, sans-serif;
+}
+
+a { color:#000; text-decoration:none; }
+
+
+#container {
+  position:relative;
+  width:100%;
+  padding:0 0 2em 0;
+  overflow:hidden;
+}
+
+#browser {
+  position:relative;
+  float:left;
+  width:320px;
+  margin-right:140px;
+  background-color:#999;
+  z-index:1000;
+}
+
+#navigation {
+  position:absolute;
+  width:160px;
+  right:-160px;
+  margin-top:110px;
+}
+
+#navigation #facets,
+#navigation #navigieren,
+#navigation #diverses {
+  margin-bottom:20px;
+}
+
+#navigation #facets li a,
+#navigation #navigieren li a,
+#navigation #diverses li a {
+  display:block;
+  margin-bottom:1px;
+  padding:4px 10px 3px 10px;
+  color:#4d4d4d;
+}
+
+#navigation #facets li a,
+#navigation #navigieren li a {
+  font-size:16px;
+  background-color: #ccc;
+}
+
+
+#navigation #facets li.selected a,
+#navigation #navigieren li.selected a {
+  background-color: #999;
+}
+
+
+#facets li span {
+  float: right;
+  font-size: 10px;
+  width: 10px;
+  text-align: center;
+  background: #eee;
+  -webkit-border-radius:4px;
+  -moz-border-radius:   4px;
+  border-radius:        4px;
+}
+
+#navigation #diverses li a {
+  padding:1px 10px 1px 10px;
+  color:#666;
+  font-size:14px;
+}
+
+#navigation #facets li a:hover, #navigation #navigieren li a:hover, #navigation #diverses li a:hover { color:#000; background-color: #aaa;}
+
+
+#sidebar_listen {
+  position:relative;
+  float:right;
+  width:290px;
+  right:30px;
+  margin-top:110px;
+  padding-bottom:100px;
+}
+
+#sidebar_listen a {
+  display:block;
+  padding:5px 15px 5px 15px;
+  color:#fff;
+}
+
+#sidebar_listen h2 {
+  height:30px;
+  padding:25px 15px 15px 15px;
+  color:#fff;
+  font-size:24px;
+  background-color:#333;
+}
+
+#sidebar_listen ul {
+  margin:2px 0 20px 0;
+}
+
+#sidebar_listen ul li {
+  margin-bottom:2px;
+  background-color:#666;
+}
+
+#document_wrapper {
+  position:relative;
+  padding-left:500px;
+  padding-top:110px;
+  width:740px;
+  z-index:100;
+}
+
+#artikel_liste .artikel {
+  position:relative;
+  background-color:#ededed;
+  margin-bottom:1em;
+  padding:1em 0 2em 0;
+}
+
+#artikel_liste .artikel h1 {
+  font-size:30px;
+  line-height:1.2em;
+  margin-bottom:0.5em;
+  padding:0 40px 0 60px;
+}
+
+#artikel_liste .artikel h4 {
+  font-size:14px;
+  padding:0 40px 0 60px;
+}
+
+#artikel_liste .artikel p {
+  padding:0 40px 0 60px;
+}
+
+#artikel_liste .artikel_begriffe {
+  margin:1em 0 -2em 0;
+  padding:10px 0;
+  background-color:#ccc;
+  overflow:hidden;
+}
+
+#artikel_liste .artikel_begriffe a {
+  display:block;
+  float:left;
+  height:20px;
+  margin:0 2px 2px 0;
+  padding:3px 25px 2px 25px;
+  color:#fff;
+  font-size:16px;
+  background-color:#666;
+}
+
+
+#document {
+  position:relative;
+  background-color:#ededed;
+}
+
+#document a:hover { text-decoration:underline; }
+
+#document h2 {
+  padding:10px 40px 10px 60px;
+  color:#0071bc;
+  font-size:18px;
+  border-bottom:1px solid #888;
+}
+
+#kopfzeile {
+  padding:20px 40px 20px 60px;
+}
+
+#kopfzeile h1 {
+  font-size:30px;
+  line-height:1.2em;
+}
+
+#kopfzeile h4 {
+  font-size:14px;
+}
+
+#lead {
+  padding:0 40px 2em 60px;
+}
+
+#toc {
+  background-color:#e0e0e0;
+  padding-bottom:20px;
+  margin-bottom:2em;
+}
+
+#toc ul {
+  margin:1em 40px 0 60px;
+}
+
+#toc ul li {
+  margin-bottom:4px;
+}
+
+#toc ul a {
+  color:#fff;
+  background-color:#0071bc;
+  padding:2px 1.5em 2px 1em;
+}
+
+#document .segment {
+  padding-bottom:1em;
+  margin-bottom:1em;
+  background-color:#ededed;
+  clear:both;
+}
+
+#document .segment p {
+  margin:1em 40px 2em 60px;
+}
+
+#document .segment p.frage {
+  margin:1em 40px 0.5em 60px;
+  color:#0071bc;
+  font-size:18px;
+}
+
+#document .segment quote {
+  display:block;
+  color:#0071bc;
+  font-size:18px;
+  line-height:1.5em;
+  margin:1em 80px 2em 120px;
+}
+
+#document .segment dl {
+  margin:20px 40px 2em 60px;
+}
+
+#document .segment dl dt {
+  display:inline;
+  float:left;
+  margin:0 5px 0 0;
+  color:#0071bc;
+}
+
+#document .segment dl dd {
+  margin-bottom:0.5em;
+}
+
+#artikel_kategorien,
+#artikel_begriffe {
+  position:relative;
+  margin-bottom:1em;
+  padding:10px 0;
+  background-color:#ccc;
+  clear:both;
+}
+
+#artikel_begriffe a {
+  display:block;
+  float:left;
+  height:20px;
+  margin:0 2px 2px 0;
+  padding:3px 25px 2px 25px;
+  color:#fff;
+  font-size:16px;
+  background-color:#666;
+}
+
+#artikel_kategorien dl.left   { position:relative; float:left; display:block;        width:360px; }
+#artikel_kategorien dl.right  { position:relative; display:block; margin-left:380px; width:360px; }
+
+#artikel_kategorien dl dt {
+  display:block;
+  float:left;
+  width:130px;
+  margin-bottom:2px;
+  padding:2px 0 2px 50px;
+  color:#fff;
+  background-color:#666;
+}
+
+#artikel_kategorien dl dd {
+  display:block;
+  float:left;
+  width:170px;
+  margin-bottom:2px;
+  padding:2px 0 2px 10px;
+  color:#000;
+  background-color:#b3b3b3;
+}
+
+#artikel_aehnliche {}
+
+#artikel_aehnliche h2 {
+  margin-top:40px;
+  margin-left:-180px;
+  padding-left:180px;
+  color:#000;
+  font-size:16px;
+  border-bottom:1px solid #666;
+}
+
+#artikel_aehnliche .exzerpt {
+  display:block;
+  margin-top:10px;
+  padding:25px 25px 35px 70px;
+  background-color:#b3b3b3;
+}
+
+#artikel_aehnliche .exzerpt h1,
+#artikel_aehnliche .exzerpt p { color:#000; font-size:18px; }

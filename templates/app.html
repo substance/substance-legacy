@@ -4,7 +4,6 @@
   <title>Untitled — Substance™</title>
   
   <!-- templates -->
-  
   <script type="text/x-handlebars-template" name="shelf">
     <div id="sbs_header">
       <div id="logo">
@@ -265,40 +264,40 @@
     <h3>Edit section</h3>
   </script>
   
-  <script type="text/x-handlebars-template" name="edit_document">
-    {{#author}}
+  
+  <script type="text/x-handlebars-template" name="edit_unsaved_document">
     <h2>Attributes</h2>
+    <p class="info">
+      You are editing a draft document. You need to <a href="#" class="save-document">save</a> it in order to to edit attributes.
+    </p>
+  </script>
+  
+  <script type="text/x-handlebars-template" name="edit_document">
+    <h2>Attributes</h2>
+    
     <dl class="document-attributes">
       <dt>Author:</dt>
-      <dd>{{data/firstname}} {{data/lastname}}</dd>
+      <dd>{{document/author}} {{document/author}}</dd>
       
       <dt>Created At:</dt>
-      <dd>{{../created_at}}</dd>
+      <dd>{{created_at}}</dd>
       
       <dt>Last modified:</dt>
-      <dd>{{../updated_at}}</dd>
+      <dd>{{updated_at}}</dd>
       
       <dt>Publish Date:</dt>
       <dd>
-        {{../published_on}} 
+        {{published_on}} 
           
-        {{^../unpublished}}
-          (<a href="/" class="unpublish-document">Unpublish</a>)
-        {{/../unpublished}}
+        {{^unpublished}}
+          (<a href="#" class="unpublish-document">Unpublish</a>)
+        {{/unpublished}}
         
-        {{^../published_on}}
+        {{^published_on}}
           not published (<a href="/" class="publish-document">Publish</a>)
-        {{/../published_on}}
+        {{/published_on}}
       </dd>
     </dl>
-    
-    {{/author}}
-    {{^author}}
-      <h2>Attributes</h2>
-      <p class="info">
-        You are editing a draft document. You need to <a href="#" class="save-document">save</a> it in order to to edit attributes.
-      </p>
-    {{/author}}
     
     <div class="lpl texteditor">
       {{#attributes}}
@@ -306,8 +305,8 @@
         <div id="property_{{key}}" key="{{key}}" type="{{type}}" class="attribute-editor {{#unique}} unique{{/unique}}{{^unique}} non-unique{{/unique}}"></div>
       {{/attributes}}
     </div>
-
   </script>
+
   
   <!-- content-node templates for the editor -->
   <script type="text/x-handlebars-template" name="document">    
@@ -315,6 +314,8 @@
       <!--<div class="content-node-info">Document</div>-->
       <div class="content-node-outline"><div class="cursor"><span></span></div></div>
       <h1 contenteditable="true" class='content'>{{title}}</h1>
+      
+      <p class="lead content" id="document_lead" contenteditable="true">{{lead}}</p>
       {{{content}}}
     </div>
   </script>
@@ -372,11 +373,6 @@
   
   <script type="text/x-handlebars-template" name="string_editor">
     <input type="text" name="value" value="{{value}}"/>
-  </script>
-  
-  <!-- Prepare config data -->
-  <script>
-  var settings = {{settings}};
   </script>
   
   <!-- styles --> 

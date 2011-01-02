@@ -66,18 +66,18 @@ var Application = Backbone.View.extend({
   // Toggle between document view and browser
   toggleView: function(view) {
     this.view = view;
-    $('#sbs_header').removeClass();
-    
-    if (view === 'document') {
-      $('#document_wrapper').show();
-      $('#browser').hide();
-      $('#sbs_header').addClass('document');
-      
-    } else {
-      $('#browser').show();
-      $('#document_wrapper').hide();
-      $('#sbs_header').addClass('browser');
-    }
+    // $('#sbs_header').removeClass();
+    // 
+    // if (view === 'document') {
+    //   $('#document_wrapper').show();
+    //   $('#browser').hide();
+    //   $('#sbs_header').addClass('document');
+    //   
+    // } else {
+    //   $('#browser').show();
+    //   $('#document_wrapper').hide();
+    //   $('#sbs_header').addClass('browser');
+    // }
   },
   
   render: function() {
