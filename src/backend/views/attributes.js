@@ -9,28 +9,51 @@ var Attributes = Backbone.View.extend({
     var that = this; 
     var doc = app.editor.model;
     
-    $(this.el).html(Helpers.renderTemplate('edit_document', _.extend({
-      attributes: doc.get('user') ? settings.attributes : null,
-      author: doc.get('user'),
-      created_at: new Date(doc.get('created_at')).toDateString(),
-      updated_at: _.prettyDate(doc.get('updated_at')),
-      published_on: doc.get('published_on') ? new Date(doc.get('published_on')).toDateString() : null,
-      unpublished: !doc.get('published_on')
-    })));
+    var attributes = [];
     
-    //     
-    // // Initialize AttributeEditors for non-unique-strings
-    // $('.attribute-editor').each(function() {
-    //   var key = $(this).attr('key'),
-    //       unique = $(this).hasClass('unique'),
-    //       type = $(this).attr('type'),
-    //       value = app.editor.model.attributes[key]; // property value / might be an array or a single value
-    // 
-    //   var editor = that.createAttributeEditor(key, type, unique, value, $(this));
-    //   editor.bind('changed', function() {
-    //     app.editor.model.attributes[key] = editor.value();
-    //   });
-    // });
+    // Extract attributes from properties
+    doc.type.all('properties').each(function(property) {
+      if (property.meta.attribute) {
+        attributes.push({
+          "key": property.key,
+          "name": property.name,
+          "type": property.expectedTypes[0], 
+          "unique": property.unique,
+          "default": property.default
+        });
+      }
+    });
+    
+    if (doc.get('name')) {
+      $(this.el).html(Helpers.renderTemplate('edit_document', {
+        // attributes: doc.get('user') ? settings.attributes : null,
+        attributes: doc.get('name') ? attributes : null,
+        document: doc.toJSON(),
+        author: doc.get('user') ? doc.get('user').toJSON() : null,
+        created_at: doc.get('created_at') ? new Date(doc.get('created_at')).toDateString() : null,
+        updated_at: doc.get('updated_at') ? _.prettyDate(new Date(doc.get('updated_at')).toJSON()) : null,
+        published_on: doc.get('published_on') ? new Date(doc.get('published_on')).toDateString() : null,
+        unpublished: !doc.get('published_on')
+      }));
+    } else {
+      $(this.el).html(Helpers.renderTemplate('edit_unsaved_document', {}));
+    }
+    
+    // Initialize AttributeEditors for non-unique-strings
+    $('.attribute-editor').each(function() {
+      var key = $(this).attr('key'),
+          unique = $(this).hasClass('unique'),
+          type = $(this).attr('type'),
+          // property value / might be an array or a single value
+          value = unique ? app.editor.model.get(key) : app.editor.model.get(key).values();
+    
+      var editor = that.createAttributeEditor(key, type, unique, value, $(this));
+      editor.bind('changed', function() {
+        var attrs = {};
+        attrs[key] = editor.value();
+        app.editor.model.set(attrs);
+      });
+    });
   },
   
   createAttributeEditor: function(key, type, unique, value, target) {

@@ -58,13 +58,20 @@ var Application = Backbone.View.extend({
   },
   
   publishDocument: function(e) {
-    this.editor.model.published_on = (new Date()).toJSON();
+    this.editor.model.set({
+      published_on: (new Date()).toJSON()
+    });
+    this.editor.drawer.renderContent();
     this.editor.saveDocument();
     return false;
   },
   
   unpublishDocument: function(e) {
-    this.editor.model.published_on = null;
+    this.editor.model.set({
+      published_on: null
+    });
+    
+    this.editor.drawer.renderContent();
     this.editor.saveDocument();
     return false;
   },
