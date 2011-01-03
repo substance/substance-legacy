@@ -54,6 +54,14 @@ var HTMLRenderer = function(root) {
       return node.get('content');
     },
     
+    quote: function(node) {
+      return "<quote>"+node.get('content')+"</quote>";
+    },
+    
+    code: function(node) {
+      return '<pre class="code"><code>'+node.get('content')+'</code></pre>';
+    },
+    
     image: function(node) {
       return '<image src="'+node.get('url')+'"/>';
     }

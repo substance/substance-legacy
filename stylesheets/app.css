@@ -403,6 +403,15 @@ dd
 
 /* The document lead */
 
+
+quote {
+  color:#0071bc;
+  font-size:18px;
+  line-height:1.5em;
+  font-style: italic;
+  margin:1em 80px 2em 120px;
+}
+
 #document_lead {
   font-style: italic;
   font-size: 20px;
@@ -441,6 +450,9 @@ dd
 }
 
 #document.edit-mode .content-node.selected > .content {color: #000; }
+#document.edit-mode .content-node.selected pre > .content {color: #000; }
+
+
 #document.edit-mode .content-node.selected > .content a {color: #000; }
 
 /*#document.insert-mode { background: #fbfbfa; }*/
@@ -731,8 +743,9 @@ dd
 }
 
 #document:not(.structure-mode) .node-placeholder { display: none; }
-code { font-family: Monaco, Consolas; font-size: 11px; padding: 0px 3px; background: #eee; }
 
+code { font-family: Monaco, Consolas; font-size: 10px; padding: 0px 3px; }
+pre.code {border-left: 2px solid #ccc; padding-left: 20px; }
 
 
 /* The Editor 

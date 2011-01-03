@@ -342,6 +342,26 @@
     </div>
   </script>
   
+  <script type="text/x-handlebars-template" name="quote">
+    <div id="{{node/html_id}}" name={{node/key}} parent="{{parent/_id}}" draggable="false" class="content-node quote">
+      <a href="#" class="remove-node remove" node="{{node/key}}" parent="{{parent/_id}}">x</a>
+      <!--<div class="content-node-info" draggable="false">Quote</div>-->
+      <div class="content-node-outline"><div class="cursor"><span></span></div></div>
+      <quote class='content' contenteditable="true">{{{content}}}</quote>
+      <div class="node-editor-placeholder"></div>
+    </div>
+  </script>
+  
+  <script type="text/x-handlebars-template" name="code">
+    <div id="{{node/html_id}}" name={{node/key}} parent="{{parent/_id}}" draggable="false" class="content-node code">
+      <a href="#" class="remove-node remove" node="{{node/key}}" parent="{{parent/_id}}">x</a>
+      <!--<div class="content-node-info" draggable="false">Code</div>-->
+      <div class="content-node-outline"><div class="cursor"><span></span></div></div>
+      <pre><code class='content' contenteditable="true">{{{content}}}</code></pre>
+      <div class="node-editor-placeholder"></div>
+    </div>
+  </script>
+  
   <script type="text/x-handlebars-template" name="image">
     <div id="{{node/html_id}}" name={{node/key}} parent="{{parent/_id}}" draggable="false" class="content-node image">
       <a href="#" class="remove remove-node" node="{{node/key}}" parent="{{parent/_id}}">x</a>
@@ -410,6 +430,9 @@
   <script src="src/backend/node_editors/document_editor.js"></script>
   <script src="src/backend/node_editors/section_editor.js"></script>
   <script src="src/backend/node_editors/text_editor.js"></script>
+  <script src="src/backend/node_editors/quote_editor.js"></script>
+  <script src="src/backend/node_editors/code_editor.js"></script>
+  
   <script src="src/backend/node_editors/image_editor.js"></script>
   <script src="src/backend/controllers/application.js"></script>
   

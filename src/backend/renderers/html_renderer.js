@@ -134,6 +134,22 @@ var HTMLRenderer = function(root, parent) {
       });
     },
     
+    "/type/quote": function(node, parent) {
+      return Helpers.renderTemplate('quote', {
+        node: node,
+        parent: parent,
+        content: node.get('content')
+      });
+    },
+    
+    "/type/code": function(node, parent) {
+      return Helpers.renderTemplate('code', {
+        node: node,
+        parent: parent,
+        content: node.get('content')
+      });
+    },
+    
     "/type/image": function(node, parent) {
       return Helpers.renderTemplate('image', {
         node: node,

@@ -154,7 +154,7 @@ var seedGraph = {
       "children": {
         "name": "Children",
         "unique": false,
-        "type": ["/type/text", "/type/image", "/type/quote"],
+        "type": ["/type/text", "/type/image", "/type/quote", "/type/code"],
         "default": []
       }
     }
@@ -173,6 +173,41 @@ var seedGraph = {
         "unique": true,
         "type": "string",
         "default": "<p>Some text ...</p>"
+      }
+    }
+  },
+  
+  // Quote
+  // --------------------
+  
+  "/type/quote": {
+    "_id": "/type/quote",
+    "type": "/type/type",
+    "name": "Quote",
+    "properties": {
+      "content": {
+        "name": "Content",
+        "unique": true,
+        "type": "string",
+        "default": "A famous quotation"
+      }
+    }
+  },
+  
+  
+  // Code
+  // --------------------
+  
+  "/type/code": {
+    "_id": "/type/code",
+    "type": "/type/type",
+    "name": "Code",
+    "properties": {
+      "content": {
+        "name": "Content",
+        "unique": true,
+        "type": "string",
+        "default": "var foo = new Foo();"
       }
     }
   },
