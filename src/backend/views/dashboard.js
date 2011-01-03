@@ -5,7 +5,8 @@ var Dashboard = Backbone.View.extend({
     $(this.el).html(Helpers.renderTemplate('dashboard', {}));
     
     this.browser = new DocumentBrowser({
-      el: this.$('#document_browser')
+      el: this.$('#document_browser'),
+      query: {'type': '/type/document', 'creator': '/user/'+app.username }
     });
   }
 });

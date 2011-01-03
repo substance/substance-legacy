@@ -57,7 +57,8 @@ var Application = Backbone.View.extend({
     graph.fetch({type: '/type/type'}, {}, function(err, g) {
       // Init DocumentBrowser
       that.browser = new DocumentBrowser({
-        el: '#browser'
+        el: '#browser',
+        query: {'type': '/type/document', 'published!=': null}
       });
       that.render();
     });
