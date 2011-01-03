@@ -42,7 +42,7 @@ var DocumentBrowser = Backbone.View.extend({
   
   load: function() {
     var that = this;
-    graph.fetch({'type': '/type/document'}, {expand: false}, function(err, g) {
+    graph.fetch({'type': '/type/document', 'published!=': null}, {expand: false}, function(err, g) {
       
       if (err) alert('An error occured during fetching the documents');
       

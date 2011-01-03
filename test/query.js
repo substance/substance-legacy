@@ -6,7 +6,7 @@ var _ = require('underscore');
 var config = JSON.parse(fs.readFileSync(__dirname+ '/../config.json', 'utf-8'));
 
 // Setup Data.Adapter
-Data.setAdapter('couch', { url: config.couchdb_url });
+Data.setAdapter('couch', { url: 'http://localhost:5984/test' });
 
 // Our Domain Model with some sample data
 var seedGraph = {
@@ -247,13 +247,63 @@ var seedGraph = {
 };
 
 
-var graph = new Data.Graph(seedGraph);
 
-Data.adapter.flush(function(err) {
+function addExampleDoc() {
+  var doc = graph.set(Data.uuid('/document/demo/'), {
+    "type": "/type/document",
+    "title": "Untitled",
+    "creator": "/user/demo",
+    "created_at": new Date(),
+    "updated_at": new Date(),
+    "published_on": new Date(), // a published document
+    "name": "foo_doc",
+    "children": [
+    
+      // Section 1
+      {
+        "type": "/type/section",
+        "name": "Section 1",
+        "children": []
+      },
+      
+      // Section 2
+      {
+        "type": "/type/section",
+        "name": "Section 2",
+        "children": [
+        
+          // Text 1
+          {
+            "type": "/type/text",
+            "content": "Some text"
+          },
+          
+          // Text 2
+          {
+            "type": "/type/text",
+            "content": "Another text"            
+          }
+        ]
+      }
+    ]
+  });
+  
+  return doc;
+};
+
+
+var graph = new Data.Graph(seedGraph);
+addExampleDoc();
+
+Data.adapter.flush(function(err) {  
+
   err ? console.log(err)
       : graph.save(function(err, invalidNodes) {
-        console.log(invalidNodes.keys());
-        err ? console.log(err)
-            : console.log('Couch seeded successfully.\nStart the server: $ node server.js');
+        console.log('Seeded. Now querying....');
+        
+        graph.fetch({"type": "/type/document", "published_on": null}, {}, function(err, g) {
+          console.log(err);
+          console.log(g);
+        });
       });
 });
