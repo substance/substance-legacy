@@ -170,7 +170,7 @@ DNode(function (client, conn) {
   // A Session:
   //   - has an assigned user (username)
   //   - holds the connection and the client reference
-  //   - knows the document that is currently edited and participating parties.
+  //   - knows the document that is currently edited and the participating parties.
   
   // Helpers
   // -----------
@@ -182,7 +182,6 @@ DNode(function (client, conn) {
   
   var buildStatusPackage = function(documentId) {
     var document = documents[documentId];
-
     var cursors = {};
     
     _.each(document.sessions, function(sessionId) {
@@ -198,6 +197,23 @@ DNode(function (client, conn) {
       }),
       cursors: cursors
     };
+  };
+  
+  var buildSystemStatusPackage = function() {
+    var users = [];
+    
+    _.each(sessions, function(session, key) {
+      users.push(session.user);
+    });
+    return {
+      active_users: users
+    }
+  };
+  
+  var notifySystemStatus = function() {
+    _.each(sessions, function(session, sessionId) {
+      session.client.Session.updateSystemStatus(buildSystemStatusPackage());
+    });
   };
   
   // Get a list of collaborators that are actively co-editing a certain document
@@ -297,6 +313,7 @@ DNode(function (client, conn) {
     if (doc) {
       unregisterDocument(doc);
     }
+    notifySystemStatus();
   };
   
   var makeSession = function(username) {
@@ -307,6 +324,7 @@ DNode(function (client, conn) {
       document: null
     };
     cookieSessions[getSessionId()] = username;
+    notifySystemStatus();
   };
   
   // Interface for collaborative document editing sessions
@@ -320,7 +338,7 @@ DNode(function (client, conn) {
           var user = graph.get('/user/'+username);
           if (username === user.get('username') && password === user.get('password')) {
             makeSession(username);
-            options.success(username);
+            options.success(username, buildSystemStatusPackage());
           } else {
             options.error();
           }
@@ -340,7 +358,7 @@ DNode(function (client, conn) {
         graph.save(function(err) {
           if (!err) {
             makeSession();
-            options.success(username);
+            options.success(username, buildSystemStatusPackage());
           } else options.error(err);
         });
       } else options.error('Not valid');
@@ -356,7 +374,8 @@ DNode(function (client, conn) {
           client: client,
           document: null
         };
-        options.success(username);
+        options.success(username, buildSystemStatusPackage());
+        notifySystemStatus(); // notify clients about new user
       } else {
         options.error();
       }

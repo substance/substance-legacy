@@ -37,28 +37,35 @@ var DocumentBrowser = Backbone.View.extend({
     
     that.commands = [];
     this.load();
-    
   },
   
   load: function() {
     var that = this;
     graph.fetch(this.options.query, {expand: false}, function(err, g) {
-      
       if (err) alert('An error occured during fetching the documents');
       
       // Initialize Facets View
       that.facets = new Facets({el: '#facets', browser: that});
-      
       that.render();
     });
   },
   
   render: function() {
+    // TODO: use this.options.query here
     var documents = graph.find({'type': '/type/document'}).toArray();
     
     _.each(documents, function(doc) {
       doc.username = doc.value.data.creator.split('/')[2]
+      doc.last_modified = _.prettyDate(new Date(doc.value.get('updated_at')).toJSON())
     });
+    
+    var DESC_BY_UPDATED_AT = function(item1, item2) {
+      var v1 = item1.value.get('updated_at'),
+          v2 = item2.value.get('updated_at');
+      return v1 === v2 ? 0 : (v1 > v2 ? -1 : 1);
+    };
+    
+    documents = documents.sort(DESC_BY_UPDATED_AT);
     
     $(this.el).html(_.renderTemplate('document_browser', {
       num_documents: documents.length,

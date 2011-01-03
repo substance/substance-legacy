@@ -28,7 +28,6 @@ var Application = Backbone.View.extend({
   
   loadDocument: function(e) {
     if (app.authenticated) {
-      
       var user = $(e.currentTarget).attr('user');
           name = $(e.currentTarget).attr('name');
                 
@@ -118,6 +117,11 @@ var Application = Backbone.View.extend({
   // Application Setup
   // -------------
   
+  updateSystemStatus: function(status) {
+    this.activeUsers = status.active_users;
+    if (this.dashboard) this.dashboard.render();
+  },
+  
   initialize: function() {
     var that = this;
     
@@ -125,7 +129,7 @@ var Application = Backbone.View.extend({
     
     this.dashboard = new Dashboard({el: '#dashboard'});
     this.editor = new Editor({el: '#editor'});
-    
+    this.activeUsers = [];
     
     // Set up shelf
     this.shelf = new Shelf({el: '#sbs_shelf'});
@@ -139,8 +143,9 @@ var Application = Backbone.View.extend({
       notifier.notify(Notifications.CONNECTED);
       
       remote.Session.init({
-        success: function(username) { // auto-authenticated
+        success: function(username, status) { // auto-authenticated
           that.username = username;
+          that.updateSystemStatus(status);
           that.trigger('authenticated');
         },
         error: function() {
@@ -169,6 +174,10 @@ var Application = Backbone.View.extend({
         updateStatus: function(status) {
           that.editor.status = status;
           that.editor.trigger('status:changed');
+        },
+        
+        updateSystemStatus: function(status) {
+          that.updateSystemStatus(status);
         },
         
         updateNode: function(key, node) {
@@ -224,9 +233,10 @@ var Application = Backbone.View.extend({
     var that = this;
     
     remote.Session.authenticate($('#login-user').val(), $('#login-password').val(), {
-      success: function(username) { 
+      success: function(username, status) { 
         notifier.notify(Notifications.AUTHENTICATED);
         that.username = username;
+        that.updateSystemStatus(status);
         that.trigger('authenticated');
       },
       error: function() {
@@ -240,9 +250,10 @@ var Application = Backbone.View.extend({
     var that = this;
     
     remote.Session.registerUser($('#signup-user').val(), $('#signup-email').val(), $('#signup-password').val(), {
-      success: function(username) { 
+      success: function(username, status) { 
         notifier.notify(Notifications.AUTHENTICATED);
         that.username = username;
+        that.updateSystemStatus(status);
         that.trigger('authenticated');
       },
       error: function() {

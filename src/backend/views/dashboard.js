@@ -1,8 +1,11 @@
 var Dashboard = Backbone.View.extend({
   
-  render: function() {    
+  render: function() {
+    var that = this;
     // Render the stuff
-    $(this.el).html(Helpers.renderTemplate('dashboard', {}));
+    $(this.el).html(Helpers.renderTemplate('dashboard', {
+      active_users: app.activeUsers
+    }));
     
     this.browser = new DocumentBrowser({
       el: this.$('#document_browser'),
