@@ -2,23 +2,5 @@
   "couchdb_url": "http://localhost:5984/substance",
   "server_host": null,
   "server_port": 3003,
-  "theme": "default",
-  "settings": {
-    "attributes": [
-      {
-        "key": "topics",
-        "name": "Topics",
-        "type": "string", 
-        "unique": false,
-        "default": []
-      },
-      {
-        "key": "keywords",
-        "name": "Keywords",
-        "type": "string", 
-        "unique": false,
-        "default": []
-      }
-    ]
-  }
+  "theme": "default"
 }
