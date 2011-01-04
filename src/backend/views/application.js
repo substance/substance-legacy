@@ -202,24 +202,8 @@ var Application = Backbone.View.extend({
         
         // The server asks for the current (real-time) version of the document
         getDocument: function(callback) {
-          var result = {};
-          function addNode(id) {
-            if (!result[id]) {
-              var n = graph.get(id);
-              result[id] = n.toJSON();
-
-              // Resolve associated Nodes
-              n.type.all('properties').each(function(p) {
-                if (p.isObjectType()) {
-                  n.all(p.key).each(function(obj) {
-                    addNode(obj._id);
-                  });
-                }
-              });
-            }
-          }
-          addNode(app.editor.model._id);
-          callback(null, result);
+          var result = that.getFullDocument(app.editor.model._id);
+          callback(result);
         }
       }
     }).connect(function (remoteHandle) {
@@ -227,6 +211,27 @@ var Application = Backbone.View.extend({
       remote = remoteHandle;      
       that.trigger('connected');
     });
+  },
+  
+  getFullDocument: function(id) {    
+    var result = {};
+    function addNode(id) {
+      if (!result[id]) {
+        var n = graph.get(id);
+        result[id] = n.toJSON();
+
+        // Resolve associated Nodes
+        n.type.all('properties').each(function(p) {
+          if (p.isObjectType()) {
+            n.all(p.key).each(function(obj) {
+              if (obj.type) addNode(obj._id);
+            });
+          }
+        });
+      }
+    }
+    addNode(id);
+    return result;
   },
   
   authenticate: function() {
