@@ -171,6 +171,9 @@ var Editor = Backbone.View.extend({
         notifier.notify(Notifications.DOCUMENT_SAVED);
         app.shelf.close();
         app.dashboard.render();
+        
+        // update shelf
+        app.shelf.render();
       }
     });
     
