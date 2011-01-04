@@ -176,8 +176,7 @@
         <img src="/images/new-document.png"/>
       </a>
       
-      <h2>Active Users:</h2>
-      
+      <!--<h2>Active Users:</h2>
       <div id="active_users">
         {{#active_users}}
           <div class="user">
@@ -192,7 +191,8 @@
             </a>-->
           </div>
         {{/active_users}}
-      </div>
+      </div>-->
+      
     </div>
   </script>
   
@@ -201,10 +201,10 @@
       <div id="facets">
         Loading facets...
       </div>
-      <div id="document_search">
+      <!--<div id="document_search">
         <label>Search for documents</label><br/>
         <input type="text" name="searchstr" id="search_documents"/>
-      </div>
+      </div>-->
       <div id="documents" class="document-list">
         <h2>{{num_documents}} Documents:</h2>
         <div class="list">
@@ -215,10 +215,10 @@
                 <div class="content">
                   <h5 class="title">{{value/data/title}}</h5>
                   <p class="meta">Updated {{last_modified}}</p>
-                  <p class="status draft">draft</p>
+                  <p class="status {{status}}">{{status}}</p>
                 </div>
               </a>
-              <a href="/" class="delete-document remove" document="{{value/_id}}">x</a>
+              <a href="#" class="delete-document remove" document="{{value/_id}}">x</a>
             </div>
           {{/documents}}
         </div>
@@ -446,7 +446,6 @@
   <script src="src/shared/helpers.js"></script>
   
   <!-- The app -->
-  
   <script src="src/backend/renderers/html_renderer.js"></script>
   <script src="src/backend/node_editors/document_editor.js"></script>
   <script src="src/backend/node_editors/section_editor.js"></script>
