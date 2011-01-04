@@ -11,6 +11,34 @@ Data.setAdapter('couch', { url: config.couchdb_url });
 // Our Domain Model with some sample data
 var seedGraph = {
   
+  // Entity (The prototype for all objects that appear top-level)
+  // --------------------
+  
+  "/type/entity": {
+    "_id": "/type/entity",
+    "type": "/type/type",
+    "name": "Entity",
+    "properties": {
+      "name": {
+        "name": "Name",
+        "unique": true,
+        "type": "string"
+      },
+      "created_at": {
+        "name": "Created at",
+        "unique": true,
+        "type": "date",
+        "required": true
+      },
+      "updated_at": {
+        "name": "Last modified",
+        "unique": true,
+        "type": "date",
+        "required": true
+      }
+    }
+  },
+  
   // User
   // --------------------
   
@@ -154,7 +182,7 @@ var seedGraph = {
       "children": {
         "name": "Children",
         "unique": false,
-        "type": ["/type/text", "/type/image", "/type/quote", "/type/code"],
+        "type": ["/type/text", "/type/image", "/type/quote", "/type/code", "/type/question", "/type/answer"],
         "default": []
       }
     }
@@ -173,6 +201,41 @@ var seedGraph = {
         "unique": true,
         "type": "string",
         "default": "<p>Some text ...</p>"
+      }
+    }
+  },
+  
+  
+  // Question
+  // --------------------
+  
+  "/type/question": {
+    "_id": "/type/question",
+    "type": "/type/type",
+    "name": "Text",
+    "properties": {
+      "content": {
+        "name": "Content",
+        "unique": true,
+        "type": "string",
+        "default": "Question?"
+      }
+    }
+  },
+  
+  // Answer
+  // --------------------
+  
+  "/type/answer": {
+    "_id": "/type/answer",
+    "type": "/type/type",
+    "name": "Answer",
+    "properties": {
+      "content": {
+        "name": "Content",
+        "unique": true,
+        "type": "string",
+        "default": "Answer."
       }
     }
   },
@@ -249,11 +312,20 @@ var seedGraph = {
 
 var graph = new Data.Graph(seedGraph);
 
-Data.adapter.flush(function(err) {
-  err ? console.log(err)
-      : graph.save(function(err, invalidNodes) {
-        console.log(invalidNodes.keys());
-        err ? console.log(err)
-            : console.log('Couch seeded successfully.\nStart the server: $ node server.js');
-      });
-});
+if (process.argv[2] == "--flush") {
+  Data.adapter.flush(function(err) {
+    console.log('DB Flushed.');
+    err ? console.log(err)
+        : graph.save(function(err, invalidNodes) {
+          console.log(invalidNodes.keys());
+          err ? console.log(err)
+              : console.log('Couch seeded successfully.\nStart the server: $ node server.js');
+        });
+  });
+} else {
+  graph.save(function(err, invalidNodes) {
+    console.log(invalidNodes.keys());
+    err ? console.log(err)
+        : console.log('Couch seeded successfully.\nStart the server: $ node server.js');
+  });
+}

@@ -419,6 +419,17 @@ quote {
   margin:1em 80px 2em 120px;
 }
 
+p.question {
+  color:#0071bc;
+  font-size:18px;
+  line-height:1.5em;
+  font-style: italic;
+},
+
+p.answer {
+  
+}
+
 #document_lead {
 /*  font-style: italic;
   font-size: 20px;

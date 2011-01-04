@@ -150,6 +150,22 @@ var HTMLRenderer = function(root, parent) {
       });
     },
     
+    "/type/question": function(node, parent) {
+      return Helpers.renderTemplate('question', {
+        node: node,
+        parent: parent,
+        content: node.get('content')
+      });
+    },
+    
+    "/type/answer": function(node, parent) {
+      return Helpers.renderTemplate('answer', {
+        node: node,
+        parent: parent,
+        content: node.get('content')
+      });
+    },
+    
     "/type/image": function(node, parent) {
       return Helpers.renderTemplate('image', {
         node: node,
