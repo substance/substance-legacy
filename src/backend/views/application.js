@@ -4,6 +4,7 @@
 // This is the top-level piece of UI.
 var Application = Backbone.View.extend({
   events: {
+    'click .toggle-new-document': 'toggleNewDocument',
     'click .new-document': 'newDocument',
     'click #dashboard_toggle': 'showDashboard',
     'click #document_toggle': 'showDocument',
@@ -21,8 +22,14 @@ var Application = Backbone.View.extend({
   
   view: 'dashboard', // init state
   
-  newDocument: function() {
-    this.editor.newDocument();
+  toggleNewDocument: function() {
+    this.$('.document-type-selection').toggle();
+    return false;
+  },
+  
+  newDocument: function(e) {
+    
+    this.editor.newDocument($(e.currentTarget).attr('type'));
     return false;
   },
   
@@ -119,7 +126,8 @@ var Application = Backbone.View.extend({
   
   updateSystemStatus: function(status) {
     this.activeUsers = status.active_users;
-    if (this.dashboard) this.dashboard.render();
+    // Refreshing the Dashboard all the time is overkill, find a better solution
+    // if (this.dashboard) this.dashboard.render();
   },
   
   initialize: function() {
@@ -338,7 +346,8 @@ var remote,                   // Remote handle for server-side methods
   $(function() {
     
     // Fetch schema nodes
-    graph.fetch({type: '/type/type'}, {}, function(err, g) {
+    graph.fetch({"type|=": ["/type/type", "/type/config"]}, {}, function(err, g) {
+      
       // Set up a notifier for status-message communication
       notifier = new Backbone.Notifier();
 

@@ -69,7 +69,7 @@ var DocumentView = Backbone.View.extend({
     var $node = $('#'+node.html_id);
     
     // Depending on the selected node's type, render the right editor
-    if (this.selectedNode.type._id === '/type/document') {
+    if (_.include(this.selectedNode.types().keys(), '/type/document')) {
       this.nodeEditor = new DocumentEditor({el: $('#drawer_content')});
     } else if (this.selectedNode.type._id === '/type/text') {
       this.nodeEditor = new TextEditor({el: $node});

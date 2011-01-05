@@ -13,7 +13,11 @@
         <div id="dashboard_toggle">
           <a class="header-icon dashboard" href="#toggle/dashboard" title="open the dashboard">open the dashboard</a>
           <span class="label">Dashboard</span>
-          <a class="header-icon new-document" href="#new" title="create a new document">create a new document</a>
+          <a class="header-icon toggle-new-document" href="#new" title="create a new document">create a new document</a>
+          <div class="document-type-selection">
+            <a class="document-type new-document" type="story" href="#">Story</a>
+            <a class="document-type new-document" type="conversation" href="#">Conversation</a>            
+          </div>
         </div>
         <div id="new_document">
         
@@ -215,7 +219,7 @@
                 <div class="content">
                   <h5 class="title">{{value/data/title}}</h5>
                   <p class="meta">Updated {{last_modified}}</p>
-                  <p class="status {{status}}">{{status}}</p>
+                  <p class="status {{status}}">{{status}} {{document_type}}</p>
                 </div>
               </a>
               <a href="#" class="delete-document remove" document="{{value/_id}}">x</a>

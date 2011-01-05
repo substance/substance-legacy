@@ -9,7 +9,7 @@ var Dashboard = Backbone.View.extend({
     
     this.browser = new DocumentBrowser({
       el: this.$('#document_browser'),
-      query: {'type': '/type/document', 'creator': '/user/'+app.username }
+      query: {"type|=": ["/type/document"], "creator": "/user/"+app.username }
     });
   }
 });

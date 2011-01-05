@@ -419,9 +419,12 @@ DNode(function (client, conn) {
     getDocument: function(username, docname, callback) {
       
       function getDocumentId(g) {
+        
         var id;
         _.each(g, function(node, key) {
-          if (node.type === '/type/document') id = key;
+          var types = _.isArray(node.type) ? node.type : [node.type];
+          
+          if (_.include(types, '/type/document')) id = key;
         });
         return id;
       };
