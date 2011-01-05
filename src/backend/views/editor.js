@@ -1,35 +1,8 @@
-function addEmptyDoc() {
-  var doc = graph.set(Data.uuid('/document/'+ app.username +'/'), {
-    "type": "/type/document",
-    "title": "Untitled",
-    "creator": "/user/"+app.username,
-    "children": [
-    
-      // Section 1
-      {
-        "type": "/type/section",
-        "name": "Section 1",
-        "children": []
-      },
-      
-      // Section 2
-      {
-        "type": "/type/section",
-        "name": "Section 2",
-        "children": [
-        
-          // Text 1
-          {
-            "type": "/type/text"
-          },
-          
-          // Text 2
-          {
-            "type": "/type/text"      
-          }
-        ]
-      }
-    ]
+function addEmptyDoc(type) {
+  var docType = graph.get(type);
+  var doc = graph.set(Data.uuid('/document/'+ app.username +'/'), docType.meta.template);
+  doc.set({
+    creator: "/user/"+app.username,
   });
   
   return doc;
@@ -105,8 +78,10 @@ var Editor = Backbone.View.extend({
     });
   },
   
-  newDocument: function() {
-    this.model = addEmptyDoc();
+  newDocument: function(type) {
+    console.log(type);
+    
+    this.model = addEmptyDoc('/type/'+type);
     
     this.status = null;
     $(this.el).show();
@@ -129,7 +104,6 @@ var Editor = Backbone.View.extend({
     remote.Session.getDocument(username, docname, function(err, id, g) {
       if (!err) {
         graph.merge(g, true);
-        
         that.model = graph.get(id);
         that.render();
         
