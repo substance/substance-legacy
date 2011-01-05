@@ -41,7 +41,7 @@ var DocumentBrowser = Backbone.View.extend({
   
   load: function() {
     var that = this;
-    graph.fetch(this.options.query, {expand: false}, function(err, g) {
+    graph.fetch({"type|=": ["/type/document"]}, {expand: false}, function(err, g) {
       if (err) alert('An error occured during fetching the documents');
       
       // Initialize Facets View
@@ -52,12 +52,13 @@ var DocumentBrowser = Backbone.View.extend({
   
   render: function() {
     // TODO: use this.options.query here
-    var documents = graph.find({'type': '/type/document'}).toArray();
+    var documents = graph.find({'type|=': '/type/document'}).toArray();
     
     _.each(documents, function(doc) {
       doc.username = doc.value.data.creator.split('/')[2]
       doc.last_modified = _.prettyDate(new Date(doc.value.get('updated_at')).toJSON())
       doc.status = doc.value.get('published_on') ? 'published' : 'draft';
+      doc.document_type = doc.value.type.key.split('/')[2];
     });
     
     var DESC_BY_UPDATED_AT = function(item1, item2) {
