@@ -6,7 +6,7 @@ var TOCRenderer = function(root) {
   
   // Known node types
   var renderers = {
-    document: function(node) {
+    "/type/document": function(node) {
       content = '<h2>Table of contents</h2>';
       content += '<ul>';
       node.all('children').each(function(child) {
@@ -14,13 +14,21 @@ var TOCRenderer = function(root) {
       });
       content += '</ul>';
       return content;
-    }
+    },
+    
+    "/type/story": function(node) {
+      return renderers["/type/document"](node);
+    },
+    
+    "/type/conversation": function(node) {
+      return "";
+    },
   };
 
   return {
     render: function() {
       // Traverse the document
-      return renderers['document'](root);
+      return renderers[root.type._id](root);
     }
   };
 };
@@ -29,48 +37,56 @@ var HTMLRenderer = function(root) {
   
   // Implemented node types
   var renderers = {
-    document: function(node) {
+    "/type/document": function(node) {
       var content = '';
       // content += '<h1>'+ node.get('title') +'</h1>';
 
       node.all('children').each(function(child) {
-        content += renderers[child.type._id.split('/')[2]](child);
+        content += renderers[child.type._id](child);
       });
       return content;
     },
     
-    section: function(node) {
+    "/type/conversation": function(node) {
+      return renderers["/type/document"](node);
+    },
+    
+    "/type/story": function(node) {
+      return renderers["/type/document"](node);
+    },
+    
+    "/type/section": function(node) {
       var content = '';
       content += '<h2>' + node.get('name') + '</h2>';
       
       node.all('children').each(function(child) {
-        content += renderers[child.type._id.split('/')[2]](child);
+        content += renderers[child.type._id](child);
       });
       
       return content;
     },
     
-    text: function(node) {
+    "/type/text": function(node) {
       return node.get('content');
     },
     
-    question: function(node) {
+    "/type/question": function(node) {
       return '<p class="question">'+node.get('content')+'</p>';
     },
     
-    answer: function(node) {
+    "/type/answer": function(node) {
       return '<p class="answer">'+node.get('content')+'</p>';
     },
     
-    quote: function(node) {
+    "/type/quote": function(node) {
       return "<quote>"+node.get('content')+"</quote>";
     },
     
-    code: function(node) {
+    "/type/code": function(node) {
       return '<pre class="code"><code>'+node.get('content')+'</code></pre>';
     },
     
-    image: function(node) {
+    "/type/image": function(node) {
       return '<image src="'+node.get('url')+'"/>';
     }
   };
@@ -78,7 +94,7 @@ var HTMLRenderer = function(root) {
   return {
     render: function() {
       // Traverse the document
-      return renderers['document'](root);
+      return renderers[root.type._id](root);
     }
   };
 };

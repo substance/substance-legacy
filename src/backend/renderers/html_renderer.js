@@ -7,7 +7,7 @@ var renderControls = function(node, first, last, parent) {
 
       // Possible children
       if (n.all('children') && n.all('children').length === 0 && destination === 'after') {
-        var children = n.type.get('properties', 'children').expectedTypes;
+        var children = n.properties().get('children').expectedTypes;
         
         _.each(children, function(type) {
           actions.push({
@@ -22,7 +22,7 @@ var renderControls = function(node, first, last, parent) {
 
       // Possible siblings
       if (parent) {
-        var siblings = parent.type.get('properties', 'children').expectedTypes;
+        var siblings = parent.properties().get('children').expectedTypes;
         _.each(siblings, function(type) {
           actions.push({
             node: n._id,
@@ -64,7 +64,7 @@ var renderControls = function(node, first, last, parent) {
     }
     
     // Consolidate at level 1 (=section level), but only for closing nodes (last=true)
-    if (parent.type._id === '/type/document') {
+    if (parent.types().get('/type/document')) {
       $(render(node, 'after', true)).insertAfter($('#'+node.html_id));
     } else if (!last) {
       $(render(node,'after')).insertAfter($('#'+node.html_id));
@@ -84,7 +84,6 @@ var renderControls = function(node, first, last, parent) {
 
 // HTMLRenderer
 // ---------------
-
 
 var HTMLRenderer = function(root, parent) {
   
@@ -106,6 +105,14 @@ var HTMLRenderer = function(root, parent) {
         title: node.get('title'),
         lead: node.get('lead')
       });
+    },
+    
+    "/type/story": function(node, parent) {
+      return renderers["/type/document"](node, parent)
+    },
+    
+    "/type/conversation": function(node, parent) {
+      return renderers["/type/document"](node, parent)
     },
     
     "/type/section": function(node, parent) {
@@ -177,7 +184,7 @@ var HTMLRenderer = function(root, parent) {
 
   return {
     render: function() {
-      // Traverse the document      
+      // Traverse the document     
       return renderers[root.type._id](root, parent);
     }
   };
