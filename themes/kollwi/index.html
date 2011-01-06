@@ -14,9 +14,22 @@
   
   <script type="text/x-handlebars-template" name="document_browser">
     <div id="navigation">
-      <div id="facets">
+      <!--<div id="facets">
         FacetsView
-      </div>
+      </div>-->
+
+      <ul id="navigieren">
+        {{#document_types}}
+          <li{{#selected}} class="selected"{{/selected}}><a href="/" class="select-type" type="{{type}}">{{name}}</a></li>
+        {{/document_types}}
+      </ul>
+      
+      <ul id="diverses">
+        <li><a href="#nav_zusatzwissen">Zusatzwissen</a></li>
+        <li><a href="#nav_haeufige-fragen">Häufige Fragen</a></li>
+        <li><a href="#nav_das-projekt">Das Projekt</a></li>
+        <li><a href="#nav_unser-team">Unser Team</a></li>
+      </ul>
     </div>
     
     <div id="sidebar_listen">

@@ -37,6 +37,7 @@ var DocumentBrowser = Backbone.View.extend({
     
     that.commands = [];
     this.load();
+    this.documentType = "/type/document"; // default type (= all documents)
   },
   
   load: function() {
@@ -51,8 +52,10 @@ var DocumentBrowser = Backbone.View.extend({
   },
   
   render: function() {
+    var that = this;
+    
     // TODO: use this.options.query here
-    var documents = graph.find({'type|=': '/type/document'}).toArray();
+    var documents = graph.find({'type|=': this.documentType}).toArray();
     
     _.each(documents, function(doc) {
       doc.username = doc.value.data.creator.split('/')[2]
@@ -69,9 +72,27 @@ var DocumentBrowser = Backbone.View.extend({
     
     documents = documents.sort(DESC_BY_UPDATED_AT);
     
+    var documentTypes = [{
+      name: "Aktuell",
+      type: "/type/document",
+      selected: "/type/document" === that.documentType
+    }];
+    
+    graph.get('/config/substance').get('document_types').each(function(type, key) {
+      var name;
+      if (type === '/type/conversation') name = 'Gespräche';
+      if (type === '/type/story') name = 'Geschichten';
+      documentTypes.push({
+        name: name,
+        type: type,
+        selected: type === that.documentType
+      });
+    });
+    
     $(this.el).html(_.renderTemplate('document_browser', {
       num_documents: documents.length,
-      documents: documents
+      documents: documents,
+      document_types: documentTypes
     }));
     
     this.facets.render();

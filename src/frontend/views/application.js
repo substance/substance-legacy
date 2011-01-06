@@ -15,14 +15,21 @@ var ApplicationController = Backbone.Controller.extend({
   }
 });
 
-
 var Application = Backbone.View.extend({
   
   events: {
     'click a.load-document': 'loadDocument',
     'click #shelf': 'showDocument',
     'click #browser_toggle': 'showBrowser',
-    'click #document_toggle': 'showDocument'
+    'click #document_toggle': 'showDocument',
+    'click a.select-type': 'selectType'
+  },
+  
+  selectType: function(e) {
+    var type = $(e.currentTarget).attr('type');
+    this.browser.documentType = type;
+    this.browser.render();
+    return false;
   },
   
   loadDocument: function(e) {
