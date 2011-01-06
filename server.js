@@ -50,7 +50,10 @@ app.configure(function(){
 
 app.get('/', function(req, res) {  
   html = fs.readFileSync(__dirname+ '/themes/'+config.theme+'/index.html', 'utf-8');
-  res.send(html.replace('{{settings}}', JSON.stringify(config.settings)));
+  
+  graph.fetch({"type|=": ["/type/type", "/type/config"]}, {}, function(err, g) {
+    res.send(html.replace('{{seed}}', JSON.stringify(g)));
+  });
 });
 
 // Serve the stylesheet according to the selected theme
@@ -80,7 +83,10 @@ app.get('/documents/:id.html', function(req, res) {
 
 app.get('/writer', function(req, res) {  
   html = fs.readFileSync(__dirname+ '/templates/app.html', 'utf-8');
-  res.send(html.replace('{{settings}}', JSON.stringify(config.settings)));
+  
+  graph.fetch({"type|=": ["/type/type", "/type/config"]}, {}, function(err, g) {
+    res.send(html.replace('{{seed}}', JSON.stringify(g)));
+  });
 });
 
 

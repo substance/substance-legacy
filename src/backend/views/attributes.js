@@ -12,7 +12,7 @@ var Attributes = Backbone.View.extend({
     var attributes = [];
     
     // Extract attributes from properties
-    doc.type.all('properties').each(function(property) {
+    doc.properties().each(function(property) {
       if (property.meta.attribute) {
         attributes.push({
           "key": property.key,

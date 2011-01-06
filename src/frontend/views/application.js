@@ -49,18 +49,9 @@ var Application = Backbone.View.extend({
     this.view = 'browser';
     this.shelf = new Shelf({el: '#sbs_shelf'});
     
-    this.loadSchema()
-  },
-  
-  loadSchema: function() {
-    var that = this;
-    graph.fetch({type: '/type/type'}, {}, function(err, g) {
-      // Init DocumentBrowser
-      that.browser = new DocumentBrowser({
-        el: '#browser',
-        query: {'type|=': '/type/document', 'published_on!=': null}
-      });
-      that.render();
+    that.browser = new DocumentBrowser({
+      el: '#browser',
+      query: {'type|=': '/type/document', 'published_on!=': null}
     });
   },
   
@@ -91,13 +82,13 @@ var app, controller;
 Data.setAdapter('AjaxAdapter', {});
 
 // The database
-var graph = new Data.Graph();
+var graph = new Data.Graph(seed);
 
 (function() {
   $(function() {
     // Start the browser
     app = new Application({el: $('#container')});
-    // app.render();
+    app.render();
     
     // Register controller
     controller = new ApplicationController({app: app});

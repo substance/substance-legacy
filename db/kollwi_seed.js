@@ -28,7 +28,7 @@ var seedGraph = {
       },
       "document_types": {
         "name": "Supported Document Types",
-        "type": "/type/document_type",
+        "type": "string",
         "unique": false,
         "required": false
       }
@@ -41,7 +41,7 @@ var seedGraph = {
   "/config/substance": {
     "type": "/type/config",
     "theme": "default",
-    "document_types": ["/document_type/story", "/document_type/conversation"]
+    "document_types": ["/type/story", "/type/conversation"]
   },
   
   // User

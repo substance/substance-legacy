@@ -335,30 +335,26 @@ var Application = Backbone.View.extend({
 
 Data.setAdapter('AjaxAdapter', {});
 
-var remote,                   // Remote handle for server-side methods
-    notifier,                 // Global notifiction system
-    app,                      // The Application
-    controller,               // Controller responding to routes
-    editor,                   // A global instance of the Proper Richtext editor
-    graph = new Data.Graph(); // The database
+var remote,                       // Remote handle for server-side methods
+    notifier,                     // Global notifiction system
+    app,                          // The Application
+    controller,                   // Controller responding to routes
+    editor,                       // A global instance of the Proper Richtext editor
+    graph = new Data.Graph(seed); // The database
 
 (function() {
   $(function() {
     
-    // Fetch schema nodes
-    graph.fetch({"type|=": ["/type/type", "/type/config"]}, {}, function(err, g) {
-      
-      // Set up a notifier for status-message communication
-      notifier = new Backbone.Notifier();
+    // Set up a notifier for status-message communication
+    notifier = new Backbone.Notifier();
 
-      // Start the engines
-      app = new Application({el: $('#container')});
+    // Start the engines
+    app = new Application({el: $('#container')});
 
-      // Initialize controller
-      controller = new ApplicationController({app: this});
+    // Initialize controller
+    controller = new ApplicationController({app: this});
 
-      // Set up a global instance of the Proper Richtext Editor
-      editor = new Proper();
-    });
+    // Set up a global instance of the Proper Richtext Editor
+    editor = new Proper();
   });
 })();

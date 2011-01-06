@@ -79,8 +79,6 @@ var Editor = Backbone.View.extend({
   },
   
   newDocument: function(type) {
-    console.log(type);
-    
     this.model = addEmptyDoc('/type/'+type);
     
     this.status = null;

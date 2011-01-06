@@ -23,6 +23,12 @@ var Facets = Backbone.View.extend({
     var that = this;
     var view = {facets: []};
     
+    // Properties for all registered document_types
+    var properties = new Data.Hash();
+    graph.get('/config/substance').get('document_types').each(function(type, key) {
+      properties = properties.union(graph.get(type).properties());
+    });
+    
     graph.get('/type/document').all('properties').each(function(property, key) {
       
       if (property.meta.facet) {
