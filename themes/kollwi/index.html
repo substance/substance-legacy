@@ -38,7 +38,7 @@
           <h2>{{num_documents}} Documents</h2>
           <ul>
             {{#documents}}
-              <li><a class="load-document" href="#{{value/_id}}" document="{{value/_id}}">{{value/data/title}}</a></li>
+              <li><a class="load-document" href="#{{username}}/{{value/data/name}}" document="{{value/_id}}" user="{{username}}" name="{{value/data/name}}">{{value/data/title}}</a></li>
             {{/documents}}
           </ul>
         </div>

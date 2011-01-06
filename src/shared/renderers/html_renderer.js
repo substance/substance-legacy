@@ -10,7 +10,7 @@ var TOCRenderer = function(root) {
       content = '<h2>Table of contents</h2>';
       content += '<ul>';
       node.all('children').each(function(child) {
-        content += '<li><a href="#something">'+child.get('name')+'</a></li>';
+        content += '<li><a class="toc-item" node="'+child.html_id+'" href="#'+root.get('creator')._id.split('/')[2]+'/'+root.get('name')+'/'+child.html_id+'">'+child.get('name')+'</a></li>';
       });
       content += '</ul>';
       return content;
@@ -57,7 +57,7 @@ var HTMLRenderer = function(root) {
     
     "/type/section": function(node) {
       var content = '';
-      content += '<h2>' + node.get('name') + '</h2>';
+      content += '<h2 id="'+node.html_id+'">' + node.get('name') + '</h2>';
       
       node.all('children').each(function(child) {
         content += renderers[child.type._id](child);

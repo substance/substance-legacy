@@ -1,17 +1,15 @@
 var ApplicationController = Backbone.Controller.extend({
   routes: {
-    ':username/:docname': 'loadDocument'
+    ':username/:docname': 'loadDocument',
+    ':username/:docname/:node': 'loadDocument'
   },
 
   initialize: function() {
     
   },
   
-  loadDocument: function(username, docname) {
-    app.document = new DocumentView({
-      el: '#document_wrapper',
-      id: 'users:'+username+':documents:'+docname
-    });
+  loadDocument: function(username, docname, node) {
+    app.document.load(username, docname, node);
   }
 });
 
@@ -33,11 +31,7 @@ var Application = Backbone.View.extend({
   },
   
   loadDocument: function(e) {
-    this.document = new DocumentView({
-      el: '#document_wrapper',
-      id: $(e.currentTarget).attr('document')
-    });
-        
+    app.document.load($(e.currentTarget).attr('user'), $(e.currentTarget).attr('name'));
     controller.saveLocation($(e.currentTarget).attr('href'));
     return false;
   },
@@ -60,6 +54,11 @@ var Application = Backbone.View.extend({
       el: '#browser',
       query: {'type|=': '/type/document', 'published_on!=': null}
     });
+    
+    // Init document
+    that.document = new DocumentView({
+      el: '#document_wrapper'
+    });
   },
   
   // Toggle between document view and browser
@@ -71,7 +70,6 @@ var Application = Backbone.View.extend({
     //   $('#document_wrapper').show();
     //   $('#browser').hide();
     //   $('#sbs_header').addClass('document');
-    //   
     // } else {
     //   $('#browser').show();
     //   $('#document_wrapper').hide();
