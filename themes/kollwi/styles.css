@@ -51,7 +51,8 @@ html, body {
   color:#333;
   font-size:14px;
   line-height:1.5em;
-  font-family:Arial, sans-serif;
+  font-family: 'TitilliumText22LMedium', Arial, sans-serif;
+  background:url('themes/kollwi/bg.jpg');
 }
 
 a { color:#000; text-decoration:none; }
@@ -69,7 +70,10 @@ a { color:#000; text-decoration:none; }
   float:left;
   width:320px;
   margin-right:140px;
-  background-color:#999;
+  background: #5d4e42 url(themes/kollwi/bg-sidebar.jpg);
+  -webkit-box-shadow: inset -2px 0px 4px rgba(0,0,0,0.35);
+  -moz-box-shadow:    inset -2px 0px 4px rgba(0,0,0,0.35);
+  box-shadow:         inset -2px 0px 4px rgba(0,0,0,0.35);
   z-index:1000;
 }
 
@@ -90,21 +94,24 @@ a { color:#000; text-decoration:none; }
 #navigation #navigieren li a,
 #navigation #diverses li a {
   display:block;
-  margin-bottom:1px;
-  padding:4px 10px 3px 10px;
+  margin-bottom:2px;
+  padding:4px 5px 2px 15px;
   color:#4d4d4d;
 }
 
 #navigation #facets li a,
 #navigation #navigieren li a {
   font-size:16px;
+  line-height:20px;
   background-color: #ccc;
 }
 
 
 #navigation #facets li.selected a,
 #navigation #navigieren li.selected a {
-  background-color: #999;
+  color:#1e2817;
+  text-shadow:0px 1px 0px rgba(255,255,255,0.35);
+  background-color: #80ad45;
 }
 
 
@@ -139,16 +146,19 @@ a { color:#000; text-decoration:none; }
 
 #sidebar_listen a {
   display:block;
-  padding:5px 15px 5px 15px;
-  color:#fff;
+  padding:3px 15px 2px 15px;
+  color:rgb(62,51,45);
+  -webkit-box-shadow: 0px 1px 2px rgba(62,51,45,1);
+  -moz-box-shadow:    0px 1px 2px rgba(62,51,45,1);
+  box-shadow:         0px 1px 2px rgba(62,51,45,1);
 }
 
 #sidebar_listen h2 {
-  height:30px;
+  height:20px;
   padding:25px 15px 15px 15px;
   color:#fff;
   font-size:24px;
-  background-color:#333;
+  text-shadow:0px 1px 2px rgba(62,51,45,1);
 }
 
 #sidebar_listen ul {
@@ -156,9 +166,21 @@ a { color:#000; text-decoration:none; }
 }
 
 #sidebar_listen ul li {
-  margin-bottom:2px;
-  background-color:#666;
+  margin-bottom:4px;
+  background-color:#aba19a;
+  background-color:#ddd;
 }
+
+#sidebar_listen ul li a:hover {
+  background-color:#9b8b80;
+}
+
+#sidebar_listen ul li a.selected {
+  color:#1e2817;
+  text-shadow:0px 1px 0px rgba(255,255,255,0.35);
+  background-color: #80ad45;
+}
+
 
 #document_wrapper {
   position:relative;
@@ -212,16 +234,19 @@ a { color:#000; text-decoration:none; }
 
 #document {
   position:relative;
-  background-color:#ededed;
+  background-color:#fafafa;
+  -webkit-box-shadow: 0px 1px 4px rgba(0,0,0,0.35), inset 0px 0px 1px rgba(255,255,255,0.15);
+  -moz-box-shadow:    0px 1px 4px rgba(0,0,0,0.35), inset 0px 0px 1px rgba(255,255,255,0.15);
+  box-shadow:         0px 1px 4px rgba(0,0,0,0.35), inset 0px 0px 1px rgba(255,255,255,0.15);
 }
 
 #document a:hover { text-decoration:underline; }
 
 #document h2 {
   padding:10px 40px 10px 60px;
-  color:#0071bc;
+  color:#69a4ca;
   font-size:18px;
-  border-bottom:1px solid #888;
+  border-bottom:1px solid rgba(128,128,128,0.1);
 }
 
 #kopfzeile {
@@ -229,12 +254,17 @@ a { color:#000; text-decoration:none; }
 }
 
 #kopfzeile h1 {
-  font-size:30px;
+  color:#69a4ca;
+  color:#80ad45;
+  font-family: 'TitilliumText22LLight';
+  font-size:32px;
   line-height:1.2em;
 }
 
 #kopfzeile h4 {
+  text-align:right;
   font-size:14px;
+  color:#999;
 }
 
 #lead {
@@ -242,7 +272,8 @@ a { color:#000; text-decoration:none; }
 }
 
 #toc {
-  background-color:#e0e0e0;
+  font-family: 'TitilliumText22LLight';
+  background-color:rgba(255,255,255,0.15);
   padding-bottom:20px;
   margin-bottom:2em;
 }
@@ -256,20 +287,34 @@ a { color:#000; text-decoration:none; }
 }
 
 #toc ul a {
+  font-family: 'TitilliumText22LMedium';
   color:#fff;
-  background-color:#0071bc;
-  padding:2px 1.5em 2px 1em;
+  background-color:#69a4ca;
+  padding: 3px 1.5em 2px 1em;
+  text-shadow: 0px 1px 1px rgba(0,25,50,0.5);
+  -webkit-box-shadow: inset 0px 1px 2px rgba(0,25,50,0.35);
+  -moz-box-shadow:    inset 0px 1px 2px rgba(0,25,50,0.35);
+  box-shadow:         inset 0px 1px 2px rgba(0,25,50,0.35);
+}
+
+#toc ul a:active {
+  background-color:#666;
+  text-shadow: 0px 1px 1px rgba(0,0,0,0.5);
 }
 
 #document .segment {
   padding-bottom:1em;
   margin-bottom:1em;
-  background-color:#ededed;
+  background-color:rgba(255,255,255,0.5);
   clear:both;
 }
 
+#document .segment h2 {
+  margin-bottom:1em;
+}
+
 #document .segment p {
-  margin:1em 40px 2em 60px;
+  margin:0.5em 40px 1em 60px;
 }
 
 #document .segment p.frage {
@@ -364,6 +409,59 @@ a { color:#000; text-decoration:none; }
 
 #artikel_aehnliche .exzerpt h1,
 #artikel_aehnliche .exzerpt p { color:#000; font-size:18px; }
+
+/* KollWi fonts */
+
+@font-face {
+  font-family: 'TitilliumText22LThin';
+  src: url('themes/kollwi/TitilliumText22L001-webfont.eot');
+  src: local('☺'), url('themes/kollwi/TitilliumText22L001-webfont.woff') format('woff'), url('themes/kollwi/TitilliumText22L001-webfont.ttf') format('truetype'), url('themes/kollwi/TitilliumText22L001-webfont.svg#webfontEtJY7Tfo') format('svg');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'TitilliumText22LLight';
+  src: url('themes/kollwi/TitilliumText22L002-webfont.eot');
+  src: local('☺'), url('themes/kollwi/TitilliumText22L002-webfont.woff') format('woff'), url('themes/kollwi/TitilliumText22L002-webfont.ttf') format('truetype'), url('themes/kollwi/TitilliumText22L002-webfont.svg#webfontJx8AgFWg') format('svg');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'TitilliumText22LRegular';
+  src: url('themes/kollwi/TitilliumText22L003-webfont.eot');
+  src: local('☺'), url('themes/kollwi/TitilliumText22L003-webfont.woff') format('woff'), url('themes/kollwi/TitilliumText22L003-webfont.ttf') format('truetype'), url('themes/kollwi/TitilliumText22L003-webfont.svg#webfonthw2QSkaV') format('svg');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'TitilliumText22LMedium';
+  src: url('themes/kollwi/TitilliumText22L004-webfont.eot');
+  src: local('☺'), url('themes/kollwi/TitilliumText22L004-webfont.woff') format('woff'), url('themes/kollwi/TitilliumText22L004-webfont.ttf') format('truetype'), url('themes/kollwi/TitilliumText22L004-webfont.svg#webfontR8jqiKWT') format('svg');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'TitilliumText22LBold';
+  src: url('themes/kollwi/TitilliumText22L005-webfont.eot');
+  src: local('☺'), url('themes/kollwi/TitilliumText22L005-webfont.woff') format('woff'), url('themes/kollwi/TitilliumText22L005-webfont.ttf') format('truetype'), url('themes/kollwi/TitilliumText22L005-webfont.svg#webfontQJLLLQu2') format('svg');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'TitilliumText22LXBold';
+  src: url('themes/kollwi/TitilliumText22L006-webfont.eot');
+  src: local('☺'), url('themes/kollwi/TitilliumText22L006-webfont.woff') format('woff'), url('themes/kollwi/TitilliumText22L006-webfont.ttf') format('truetype'), url('themes/kollwi/TitilliumText22L006-webfont.svg#webfontw8fCAPpd') format('svg');
+  font-weight: normal;
+  font-style: normal;
+}
+
+
+/* substance™ Styles */
 
 code { font-family: Monaco, Consolas; font-size: 10px; padding: 0px 3px; }
 pre.code {margin-left: 30px; border-left: 2px solid #999; padding-left: 20px; }
