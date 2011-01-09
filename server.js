@@ -5,7 +5,7 @@ var fs = require('fs');
 var Handlebars = require('./lib/handlebars');
 var HTMLRenderer = require('./src/shared/renderers/html_renderer').Renderer;
 var DNode = require('dnode');
-var Data = require('./lib/data');
+var Data = require('./lib/data/data');
 var _ = require('underscore');
 
 // Read Config
