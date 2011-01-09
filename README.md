@@ -156,28 +156,6 @@ Multiple saves result in multiple document revisions (a CouchDB feature) which
 means we get document versioning for free. [Data.js](http://github.com/michael/data) takes care of all persistence related concerns.
 
 
-API
---------------------------------------------------------------------------------
-
-In order to allow you to integrate Documents with your web application, Substance
-offers a simple REST API.
-
-`GET /documents/`
-
-Get a list of documents available in the repository.
-
-
-Example: [http://edge.substance.io/documents](http://substance.quasipartikel.at:3003/documents)
-
-
-`GET /documents/:id`
-
-Get a document by ID.
-
-
-Example: [http://edge.substance.io/documents/cc97d5a64b929a4936fce989608b081b](http://substance.quasipartikel.at:3003/documents/cc97d5a64b929a4936fce989608b081b)
-
-
 
 Extensibility
 --------------------------------------------------------------------------------

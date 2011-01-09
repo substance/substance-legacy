@@ -46,42 +46,8 @@ app.configure(function(){
 // Web server
 // -----------
 
-// The DocumentBrowser on the front-end
 
 app.get('/', function(req, res) {  
-  html = fs.readFileSync(__dirname+ '/themes/'+config.theme+'/index.html', 'utf-8');
-  
-  graph.fetch({"type|=": ["/type/type", "/type/config"]}, {}, function(err, g) {
-    res.send(html.replace('{{seed}}', JSON.stringify(g)));
-  });
-});
-
-// Serve the stylesheet according to the selected theme
-app.get('/styles.css', function(req, res) {
-  css = fs.readFileSync(__dirname+ '/themes/'+config.theme+'/styles.css', 'utf-8');
-  res.send(css,  {'Content-Type': 'text/css' });
-});
-
-
-// Fetch a document as HTML
-
-app.get('/documents/:id.html', function(req, res) {
-  Document.get(req.params.id, {
-    success: function(doc) {
-      res.send(_.renderTemplate('document', {
-        document: new HTMLRenderer(doc).render()
-      }));
-    },
-    error: function(err) {
-      res.send(err);
-    }
-  });
-});
-
-
-// The Writer
-
-app.get('/writer', function(req, res) {  
   html = fs.readFileSync(__dirname+ '/templates/app.html', 'utf-8');
   
   graph.fetch({"type|=": ["/type/type", "/type/config"]}, {}, function(err, g) {
@@ -90,74 +56,22 @@ app.get('/writer', function(req, res) {
 });
 
 
-// Get all documents
-
-app.get('/documents', function(req, res) {
-  Document.all({
-    success: function(documents) {
-      res.send(JSON.stringify(documents));
-    },
-    error: function() {
-      res.send('Error occured.');
-    }
-  });
-});
-
-// Get all documents as a Data.Graph serialization
-
-app.get('/documents.json', function(req, res) {
-  Document.allAsGraph({
-    success: function(result) {
-      res.send(result);
-    },
-    error: function(err) {
-      res.send(err);
-    }
-  });
-});
-
-
-// Get all documents with contents
-
-app.get('/documents/full', function(req, res) {
-  Document.all({
-    withContents: true,
-    success: function(documents) {
-      res.send(JSON.stringify(documents));
-    }
-  });
-});
-
-
-// Fetch a document as JSON
-
-app.get('/documents/:id', function(req, res) {
-  Document.get(req.params.id, {
-    withContents: true,
-    success: function(doc) {
-      res.send(JSON.stringify(doc));
-    },
-    error: function(err) {
-      res.send(err);
-    }
-  });
-});
-
-
 app.get('/readgraph', function(req, res) {
+  var callback = req.query.callback,
+      query = JSON.parse(req.query.qry),
+      options = JSON.parse(req.query.options)
+  
   Data.adapter.readGraph(JSON.parse(req.query.qry), new Data.Graph(), JSON.parse(req.query.options), function(err, g) {
-    err ? res.send(err) : res.send(JSON.stringify(g));
+    err ? res.send(callback+"("+JSON.stringify(err)+");")
+        : res.send(callback+"("+JSON.stringify(g)+");");
   });
 });
-
 
 app.put('/writegraph', function(req, res) {
   Data.adapter.writeGraph(req.body, function(err) {
     err ? res.send(err) : res.send('{"status": "ok"}');
   });
 });
-
-
 
 
 // The DNode Server (RMI Interface for the client)

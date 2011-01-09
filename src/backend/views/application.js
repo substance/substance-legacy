@@ -333,7 +333,7 @@ var Application = Backbone.View.extend({
   }
 });
 
-Data.setAdapter('AjaxAdapter', {});
+Data.setAdapter('AjaxAdapter');
 
 var remote,                       // Remote handle for server-side methods
     notifier,                     // Global notifiction system
