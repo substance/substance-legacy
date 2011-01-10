@@ -1,6 +1,6 @@
 var fs = require('fs');
 var assert = require('assert');
-var Data = require('../lib/data');
+var Data = require('../lib/data/data');
 var _ = require('underscore');
 
 var config = JSON.parse(fs.readFileSync(__dirname+ '/../config.json', 'utf-8'));
@@ -229,7 +229,7 @@ var seedGraph = {
       "children": {
         "name": "Children",
         "unique": false,
-        "type": ["/type/text", "/type/image", "/type/quote", "/type/code", "/type/question", "/type/answer"],
+        "type": ["/type/text", "/type/quote"],
         "default": []
       }
     }
