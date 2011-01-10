@@ -173,37 +173,7 @@
     </div>
   </script>
   
-  <script type="text/x-handlebars-template" name="dashboard">
-    <div id="document_browser">
-    </div>
-    
-    <div id="search_panel">
-      <br/>
-      <!--<a href="#new" class="new-document">
-        <img src="/images/new-document.png"/>
-      </a>-->
-      
-      <!--<h2>Active Users:</h2>
-      <div id="active_users">
-        {{#active_users}}
-          <div class="user">
-          {{.}}
-            <!--<a class="link load-document" href="#load/{{username}}/{{value/data/name}}" document="{{value/_id}}" user="{{username}}" name="{{value/data/name}}">
-              <div class="icon"><img src="/images/document_icon.png"/></div>
-              <div class="content">
-                <h5 class="title">{{value/data/title}}</h5>
-                <p class="meta">Updated {{last_modified}}</p>
-              </div>
-            </a>-->
-          </div>
-        {{/active_users}}
-      </div>-->
-      
-    </div>
-  </script>
-  
   <script type="text/x-handlebars-template" name="document_browser">
-
       <div id="facets">
         Loading facets...
       </div>
@@ -466,55 +436,56 @@
   <script src="dnode.js"></script>
   
   <!-- Backbone Extensions -->
-  <script src="src/backend/notifier.js"></script>
+  <script src="src/client/notifier.js"></script>
   
   <!-- Shared helpers -->
-  <script src="src/shared/helpers.js"></script>
+  <script src="src/client/helpers.js"></script>
   
   <!-- The app -->
-  <script src="src/backend/renderers/html_renderer.js"></script>
-  <script src="src/backend/node_editors/document_editor.js"></script>
-  <script src="src/backend/node_editors/section_editor.js"></script>
-  <script src="src/backend/node_editors/text_editor.js"></script>
-  <script src="src/backend/node_editors/quote_editor.js"></script>
-  <script src="src/backend/node_editors/code_editor.js"></script>
-  <script src="src/backend/node_editors/question_editor.js"></script>
-  <script src="src/backend/node_editors/answer_editor.js"></script>
+  <script src="src/client/renderers/html_renderer.js"></script>
+  <script src="src/client/node_editors/document_editor.js"></script>
+  <script src="src/client/node_editors/section_editor.js"></script>
+  <script src="src/client/node_editors/text_editor.js"></script>
+  <script src="src/client/node_editors/quote_editor.js"></script>
+  <script src="src/client/node_editors/code_editor.js"></script>
+  <script src="src/client/node_editors/question_editor.js"></script>
+  <script src="src/client/node_editors/answer_editor.js"></script>
   
-  <script src="src/backend/node_editors/image_editor.js"></script>
-  <script src="src/backend/controllers/application.js"></script>
+  <script src="src/client/node_editors/image_editor.js"></script>
+  <script src="src/client/controllers/application.js"></script>
   
   <!-- UI components -->
-  <script src="src/backend/ui/common.js"></script>
-  <script src="src/backend/ui/string_editor.js"></script>
-  <script src="src/backend/ui/multi_string_editor.js"></script>
+  <script src="src/client/ui/common.js"></script>
+  <script src="src/client/ui/string_editor.js"></script>
+  <script src="src/client/ui/multi_string_editor.js"></script>
   
   <!-- Visualizations -->
-  <script src="src/backend/visualizations/outline.js"></script>
+  <script src="src/client/visualizations/outline.js"></script>
   
   <!-- Views -->
-  <script src="src/backend/views/dashboard.js"></script>
-  <script src="src/backend/views/editor.js"></script>
-  <script src="src/backend/views/create_document.js"></script>
-  <script src="src/backend/views/document_view.js"></script>
-  <script src="src/backend/views/shelf.js"></script>
-  <script src="src/backend/views/drawer.js"></script>
-  <script src="src/backend/views/attributes.js"></script>
+  <script src="src/client/views/dashboard.js"></script>
+  <script src="src/client/views/editor.js"></script>
+  <script src="src/client/views/create_document.js"></script>
+  <script src="src/client/views/document_view.js"></script>
+  <script src="src/client/views/shelf.js"></script>
+  <script src="src/client/views/drawer.js"></script>
+  <script src="src/client/views/attributes.js"></script>
   
-  <script src="src/shared/commands.js"></script>
-  <script src="src/shared/views/document_browser.js"></script>
-  <script src="src/shared/views/facets.js"></script>
-  
-  <script src="src/backend/views/collaborators.js"></script>
-  <script src="src/backend/views/application.js"></script>
+  <script src="src/client/commands.js"></script>
+  <script src="src/client/views/document_browser.js"></script>
+  <script src="src/client/views/facets.js"></script>
+  <script src="src/client/views/collaborators.js"></script>
+  <script src="src/client/views/application.js"></script>
   
 </head>
 <body>
   <div id="container">
-    <div id="sbs_shelf">
+    <!--<div id="sbs_shelf">
+    </div>-->
+    <div id="browser">
+      browse here
     </div>
-    <div id="dashboard">
-    </div>
+    
     <div id="editor">
     </div>
   </div>

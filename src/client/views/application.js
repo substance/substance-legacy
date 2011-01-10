@@ -34,13 +34,13 @@ var Application = Backbone.View.extend({
   },
   
   loadDocument: function(e) {
-    if (app.authenticated) {
+    // if (app.authenticated) {
       var user = $(e.currentTarget).attr('user');
           name = $(e.currentTarget).attr('name');
                 
       app.editor.loadDocument(user, name);
       controller.saveLocation($(e.currentTarget).attr('href'));
-    }
+    // }
     return false;
   },
   
@@ -135,7 +135,15 @@ var Application = Backbone.View.extend({
     
     _.bindAll(this, "render");
     
-    this.dashboard = new Dashboard({el: '#dashboard'});
+    // this.dashboard = new Dashboard({el: '#dashboard'});
+    
+    // Initialize browser
+    this.browser = new DocumentBrowser({
+      el: this.$('#browser'),
+      // query: {"type|=": ["/type/document"], "creator": "/user/"+app.username }
+      query: {"type|=": ["/type/document"]}
+    });
+    
     this.editor = new Editor({el: '#editor'});
     this.activeUsers = [];
     
@@ -165,9 +173,6 @@ var Application = Backbone.View.extend({
     
     this.bind('authenticated', function() {
       that.authenticated = true;
-      
-      // Start responding to routes
-      Backbone.history.start();
       
       // Re-render
       that.render();
@@ -300,24 +305,28 @@ var Application = Backbone.View.extend({
     var that = this;
     
     // Browser not supported
-    if (!window.WebSocket) {
+    if (window.WebSocket === undefined) {
       $(this.el).html(Helpers.renderTemplate('browser_not_supported'));
     } else {
-      if (this.authenticated) {
-        this.dashboard.render();
-        this.editor.render();
-        this.shelf.render();
-        
-        this.toggleView(this.view);
-        
-      } else { // Display landing page
-        $('#dashboard').html(Helpers.renderTemplate('login'));
-        this.shelf.render();
-        $('#login-form').submit(function() {
-          that.authenticate();
-          return false;
-        });
-      }
+      // if (this.authenticated) {
+      //   this.dashboard.render();
+      //   this.editor.render();
+      //   this.shelf.render();
+      //   
+      //   this.toggleView(this.view);
+      //   
+      // } else { // Display landing page
+      //   $('#dashboard').html(Helpers.renderTemplate('login'));
+      //   this.shelf.render();
+      //   $('#login-form').submit(function() {
+      //     that.authenticate();
+      //     return false;
+      //   });
+      // }
+      
+      this.editor.render();
+      this.shelf.render();
+      
     }
     return this;
   },
@@ -353,7 +362,10 @@ var remote,                       // Remote handle for server-side methods
 
     // Initialize controller
     controller = new ApplicationController({app: this});
-
+    
+    // Start responding to routes
+    Backbone.history.start();
+    
     // Set up a global instance of the Proper Richtext Editor
     editor = new Proper();
   });

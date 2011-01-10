@@ -245,7 +245,6 @@ var DocumentView = Backbone.View.extend({
     graph.del(node._id);
     parent.dirty = true;
     this.trigger('change:node', parent);
-    
 
     if (arguments.length === 1) {
       // Broadcast insert node command
