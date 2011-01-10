@@ -47,6 +47,7 @@ app.configure(function(){
 // -----------
 
 
+
 app.get('/', function(req, res) {  
   html = fs.readFileSync(__dirname+ '/templates/app.html', 'utf-8');
   
@@ -72,6 +73,7 @@ app.put('/writegraph', function(req, res) {
     err ? res.send(err) : res.send('{"status": "ok"}');
   });
 });
+
 
 
 // The DNode Server (RMI Interface for the client)
@@ -256,7 +258,7 @@ DNode(function (client, conn) {
       graph.fetch({type: '/type/user'}, {}, function(err) {
         if (!err) {
           var user = graph.get('/user/'+username);
-          if (username === user.get('username') && password === user.get('password')) {
+          if (user && username === user.get('username') && password === user.get('password')) {
             makeSession(username);
             options.success(username, buildSystemStatusPackage());
           } else {

@@ -326,7 +326,6 @@ var Application = Backbone.View.extend({
       
       this.editor.render();
       this.shelf.render();
-      
     }
     return this;
   },

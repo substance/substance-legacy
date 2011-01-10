@@ -1,6 +1,6 @@
 var fs = require('fs');
 var assert = require('assert');
-var Data = require('../lib/data');
+var Data = require('../lib/data/data');
 var _ = require('underscore');
 
 var config = JSON.parse(fs.readFileSync(__dirname+ '/../config.json', 'utf-8'));
@@ -26,6 +26,12 @@ var seedGraph = {
         "required": true,
         "default": "default"
       },
+      "allow_user_registration": {
+        "name": "Allow User registration",
+        "type": "boolean",
+        "unique": true,
+        "default": true
+      },
       "document_types": {
         "name": "Supported Document Types",
         "type": "string",
@@ -41,7 +47,8 @@ var seedGraph = {
   "/config/substance": {
     "type": "/type/config",
     "theme": "default",
-    "document_types": ["/type/story", "/type/conversation"]
+    "document_types": ["/type/story", "/type/conversation"],
+    "allow_user_registration": false
   },
   
   // User
@@ -229,7 +236,7 @@ var seedGraph = {
       "children": {
         "name": "Children",
         "unique": false,
-        "type": ["/type/text", "/type/image", "/type/quote", "/type/code", "/type/question", "/type/answer"],
+        "type": ["/type/text", "/type/quote"],
         "default": []
       }
     }
