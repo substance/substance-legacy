@@ -26,6 +26,12 @@ var seedGraph = {
         "required": true,
         "default": "default"
       },
+      "allow_user_registration": {
+        "name": "Allow User registration",
+        "type": "boolean",
+        "unique": true,
+        "default": true
+      },
       "document_types": {
         "name": "Supported Document Types",
         "type": "string",
@@ -41,7 +47,8 @@ var seedGraph = {
   "/config/substance": {
     "type": "/type/config",
     "theme": "default",
-    "document_types": ["/type/story", "/type/conversation"]
+    "document_types": ["/type/story", "/type/conversation"],
+    "allow_user_registration": false
   },
   
   // User

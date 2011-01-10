@@ -307,11 +307,13 @@ var Application = Backbone.View.extend({
         this.dashboard.render();
         this.editor.render();
         this.shelf.render();
-        
         this.toggleView(this.view);
-        
       } else { // Display landing page
-        $('#dashboard').html(Helpers.renderTemplate('login'));
+        $('#dashboard').html(Helpers.renderTemplate('login', {
+          allow_user_registration: graph.get('/config/substance').get('allow_user_registration')
+        }));
+        
+        
         this.shelf.render();
         $('#login-form').submit(function() {
           that.authenticate();

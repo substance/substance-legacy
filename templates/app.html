@@ -98,13 +98,15 @@
       <div class="lpl texteditor">
         <form id="login-form">
           <label for="login-user">username</label>
-          <input type="text" name="username" id="login-user" value="demo">
+          <input type="text" name="username" id="login-user" value="{{#allow_user_registration}}demo{{/allow_user_registration}}">
           <label for="login-password">password</label>
-          <input type="password" name="password" id="login-password" value="demo">
+          <input type="password" name="password" id="login-password" value="{{#allow_user_registration}}demo{{/allow_user_registration}}">
           <p><br/>
           <input type="submit" value="Login"/>
           </p>
-          <a href="/" class="signup">Create a free account</a>
+          {{#allow_user_registration}}
+            <a href="/" class="signup">Create a free account</a>
+          {{/allow_user_registration}}
         </form>
       </div>
     </div>
