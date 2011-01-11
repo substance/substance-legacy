@@ -33,11 +33,33 @@ var DocumentView = Backbone.View.extend({
     that.selectedNode = null;
 
     // TODO: Select the document node on-init
-    
     $(document).unbind('keyup');
     $(document).keyup(function(e) {
       if (e.keyCode == 27) { that.reset(); }  // esc
       e.stopPropagation();
+    });
+    
+    
+    // New node
+    $(document).bind('keydown', 'alt+down', function(e) {
+      console.log('alt+right pressed');
+      
+      if (that.selectedNode) {
+        var controls = $('.controls[node='+that.selectedNode._id+'][destination=after]');
+        if (controls) {
+          controls.addClass('active');
+          // Enable insert mode
+          $('#document').addClass('insert-mode');
+        }
+      }
+    });
+    
+    $(document).bind('keydown', 'right', function(e) {
+      // TODO: implement cycle through node insertion buttons
+    });
+    
+    $(document).bind('keydown', 'left', function(e) {
+      // TODO: implement cycle through node insertion buttons
     });
   },
   
@@ -118,7 +140,6 @@ var DocumentView = Backbone.View.extend({
   
   showActions: function(e) {
     this.reset();
-    
     $(e.target).parent().parent().addClass('active');
     
     // Enable insert mode
@@ -188,6 +209,11 @@ var DocumentView = Backbone.View.extend({
     refNode.dirty = true;
     this.trigger('change:node', refNode);
     
+    // Select newly created node
+    this.selectedNode = newNode;
+    this.trigger('select:node', this.selectedNode);
+    
+    
     if (arguments.length === 1) {
       // Broadcast insert node command
       remote.Session.insertNode('child', newNode.toJSON(), $(e.currentTarget).attr('node'), null, 'after');
@@ -223,6 +249,10 @@ var DocumentView = Backbone.View.extend({
     parentNode.all('children').set(newNode._id, newNode, targetIndex);
     parentNode.dirty = true;
     this.trigger('change:node', parentNode);
+
+    // Select newly created node
+    this.selectedNode = newNode;
+    this.trigger('select:node', this.selectedNode);
     
     if (arguments.length === 1) {
       // Broadcast insert node command

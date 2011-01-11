@@ -93,6 +93,8 @@ var Application = Backbone.View.extend({
   
   createDocument: function(e) {
     app.editor.createDocument(this.shelf.$('#document-name').val());
+    // Refresh drawer
+    this.editor.drawer.renderContent();
     return false;
   },
   
