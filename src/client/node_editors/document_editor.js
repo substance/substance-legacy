@@ -6,8 +6,8 @@ var DocumentEditor = Backbone.View.extend({
   initialize: function() {
     var that = this;
     
-    this.$node = $('#' + app.editor.documentView.selectedNode.html_id + ' > h1.content');
-    this.$lead = $('#' + app.editor.documentView.selectedNode.html_id + ' #document_lead');
+    this.$node = $('#' + app.document.documentView.selectedNode.html_id + ' > h1.content');
+    this.$lead = $('#' + app.document.documentView.selectedNode.html_id + ' #document_lead');
     
     this.$node.unbind('keydown');
     this.$node.bind('keydown', function(event) {

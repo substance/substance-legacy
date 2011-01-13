@@ -269,21 +269,31 @@ DNode(function (client, conn) {
     },
     
     registerUser: function(username, email, password, options) {
-      var user = graph.set('/user/'+username, {
-        type: '/type/user',
-        username: username,
-        email: email,
-        password: password
+      graph.fetch({type: '/type/user'}, {}, function(err) {
+        if (err) return options.error('Unknown error');
+        if (graph.get('/user/'+username)) return options.error('User already exists');
+        var user = graph.set('/user/'+username, {
+          type: '/type/user',
+          username: username,
+          email: email,
+          password: password
+        });
+        
+        if (user.validate()) {
+          graph.save(function(err) {
+            if (!err) {
+              makeSession();
+              
+              options.success(username, buildSystemStatusPackage());
+            } else {
+              options.error(err);
+              console.log(user.errors);
+            }
+          });
+        } else options.error('Not valid');
       });
       
-      if (user.validate()) {
-        graph.save(function(err) {
-          if (!err) {
-            makeSession();
-            options.success(username, buildSystemStatusPackage());
-          } else options.error(err);
-        });
-      } else options.error('Not valid');
+
     },
     
     init: function(options) {

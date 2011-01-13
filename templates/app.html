@@ -7,127 +7,11 @@
     var seed = {{seed}};
   </script>
   
-  <!-- templates -->
-  <script type="text/x-handlebars-template" name="shelf">
-    <div id="sbs_header">
-      <div id="logo">
-        <span class="label">SUBSTANCE™</span>
-      </div>
-      {{#username}}
-        <div id="dashboard_toggle">
-          <a class="header-icon dashboard" href="#toggle/dashboard" title="open the dashboard">open the dashboard</a>
-          <span class="label">Dashboard</span>
-          <a class="header-icon toggle-new-document" href="#new" title="create a new document">create a new document</a>
-          <div class="document-type-selection">
-            <a class="document-type new-document" type="story" href="#">Story</a>
-            <a class="document-type new-document" type="conversation" href="#">Conversation</a>            
-          </div>
-        </div>
-        <div id="new_document">
-        
-        </div>
-      {{/username}}
-      
-      {{#document}}
-        <div id="document_toggle">
-          <span class="label">Now editing: <strong>{{../username}} / {{#name}}{{.}}{{/name}}{{^name}} untitled{{/name}}</strong></span>
-          <a class="header-icon save-document right" href="#save_document" title="save current document">save current document</a>
-          {{#name}}
-            <a class="header-icon user view-collaborators" href="#show_collaborators" title="Show collaborating Users">Collaborators</a>
-          {{/name}}
-        </div>
-      {{/document}}
-      
-      <div id="login_state">
-        {{#username}}
-          <span class="label">Signed in as: <strong>{{.}}</strong></span>
-        
-          <a class="header-icon logout right logout" href="#logout" title="log out">log out</a>
-        {{/username}}
-        {{^username}}
-          <span class="label">Not logged in</span>
-          <a class="header-icon login right" href="/" title="log in">log in</a>
-        {{/username}}
-      </div>
-    </div>
-    
-    <div id="sbs_shelf_content">
-    
-    </div>
-  </script>
-  
-  <script type="text/x-handlebars-template" name="drawer">
-    <div class="drawer-actions">
-      <div class="drawer-action"><a href="#" class="show-attributes">a</a></div>
-    </div>
-    
-    <div id="drawer_content">
-    </div>
-  </script>
-  
-  <script type="text/x-handlebars-template" name="about">
-    <div id="editor">
-      <h3>Welcome</h3>
-      <p>You can select some <em>Content-Nodes</em> on the left to edit the contents. You can drag <em>Nodes</em> around to arrange them. 
-      But keep in mind this is an early draft/sketch. Things will get more stable as we work on it.
-      </p>
-      <p>
-      And you can help by giving <a href="http://github.com/michael/substance/issues">feedback</a> or
-      reporting <a href="http://github.com/michael/substance/issues">bugs</a>.
-      </p>
-      <p>
-      Please have a look at the <a href="http://github.com/michael/substance">README</a> to learn more.
-      </p>
-    </div>
-  </script>
-  
-  <script type="text/x-handlebars-template" name="editor">
-    <div id="outline"></div>
-    <div id="main">
-      <div id="drawer">
-      </div>
-      <div id="document">
-        <p>No document loaded... You can either create a <em>New Document</em> or <em>Browse</em> existing ones.</p>
-      </div>
-    </div>
-  </script>
-  
-  <script type="text/x-handlebars-template" name="login">
-    <div id="signup">
-      <h3>Login</h3>
-      <div class="lpl texteditor">
-        <form id="login-form">
-          <label for="login-user">username</label>
-          <input type="text" name="username" id="login-user" value="{{#allow_user_registration}}demo{{/allow_user_registration}}">
-          <label for="login-password">password</label>
-          <input type="password" name="password" id="login-password" value="{{#allow_user_registration}}demo{{/allow_user_registration}}">
-          <p><br/>
-          <input type="submit" value="Login"/>
-          </p>
-          {{#allow_user_registration}}
-            <a href="/" class="signup">Create a free account</a>
-          {{/allow_user_registration}}
-        </form>
-      </div>
-    </div>
-  </script>
-  
-  <script type="text/x-handlebars-template" name="signup">
-    <div id="signup">
-      <h3>Sign up</h3>
-      <div class="lpl texteditor">
-        <form id="signup-form">
-          <label for="signup-user">username</label>
-          <input type="text" name="username" id="signup-user" value="">
-          <label for="signup-email">email</label>
-          <input type="text" name="email" id="signup-email" value="">
-          <label for="signup-password">password</label>
-          <input type="text" name="password" id="signup-password" value="">
-          <p><br/>
-          <input type="submit" value="Create an account"/>
-          </p>
-        </form>
-      </div>
+  <script type="text/x-handlebars-template" name="document_wrapper">
+    <div id="document_menu">Document </div>
+    <div id="document">
+      <div id="attributes"></div>
+      <p>No document loaded... You can either create a <em>New Document</em> or <em>Browse</em> existing ones.</p>
     </div>
   </script>
   
@@ -175,38 +59,102 @@
     </div>
   </script>
   
-  <script type="text/x-handlebars-template" name="document_browser">
-      <div id="facets">
-        Loading facets...
+  <script type="text/x-handlebars-template" name="document_menu">
+    <div class="menu-group header">
+      <a class="icon browse" href="#edit" title="Edit Document">Edit document</a>
+      <span class="label">{{username}} / </span>
+      <input type="text" id="document_name" name="document_name" value="{{document_name}}"/>
+    </div>
+    
+    {{#edit}}
+      <div class="menu-group edit-document">
+        <a class="icon save-document right" href="#save_document" title="save current document">save current document</a>
       </div>
-      <!--<div id="document_search">
-        <label>Search for documents</label><br/>
-        <input type="text" name="searchstr" id="search_documents"/>
-      </div>-->
-      <div id="documents" class="document-list">
-        <h2>{{num_documents}} Documents:</h2>
-        <div class="list">
-          {{#documents}}
-            <div class="document">
-              <a class="link load-document" href="#load/{{username}}/{{value/data/name}}" document="{{value/_id}}" user="{{username}}" name="{{value/data/name}}">
-                <div class="icon"><img src="/images/document_icon.png"/></div>
-                <div class="content">
-                  <h5 class="title">{{value/data/title}}</h5>
-                  <p class="meta">Updated {{last_modified}}</p>
-                  <p class="status {{status}}">{{status}} {{document_type}}</p>
-                </div>
-              </a>
-              <a href="#" class="delete-document remove" document="{{value/_id}}">x</a>
-            </div>
-          {{/documents}}
-        </div>
-        <br class="clear"/>
-      </div>
+    {{/edit}}
   </script>
   
+  <script type="text/x-handlebars-template" name="browser_menu">
+    <div id="title">SUBSTANCE™</div>
+    <div class="menu-group header">
+      <a class="icon browse" href="#browse" title="Browse">Browse documents</a>
+      <span class="label">{{num_documents}} Documents</span>
+    </div>
+    
+    {{#username}}
+      <div class="menu-group new-document">
+        <a class="icon toggle-new-document" href="#new" title="create a new document">create a new document</a>
+        <div class="document-type-selection">
+          <a class="document-type new-document" type="story" href="#">Story</a>
+          <a class="document-type new-document" type="conversation" href="#">Conversation</a>            
+        </div>
+      </div>
+    {{/username}}
+
+    <div class="menu-group login-state right">
+      {{#username}}
+        <a class="icon logout right" href="#logout" title="log out">log out</a>
+        <span class="label right">Signed in as: <strong>{{.}}</strong></span>
+      {{/username}}
+      {{^username}}
+        <a class="icon login right" href="/" title="log in">log in</a>
+        <span class="label right">Tired of reading? Start writing!</span>
+      {{/username}}
+      <br class="clear"/>
+      <div id="login">
+        <form id="login-form">
+          <label for="login-user">username</label>
+          <input type="text" name="username" id="login-user" value="">
+          <label for="login-password">password</label>
+          <input type="password" name="password" id="login-password" value="">
+          <p>
+            <br/>
+            <input type="submit" value="Login"/>
+          </p>
+          <a href="/" class="signup">Create a free account</a>
+        </form>
+      </div>
+      
+      <div id="signup">
+        <form id="signup-form">
+          <label for="signup-user">username</label>
+          <input type="text" name="username" id="signup-user" value="">
+          <label for="signup-email">email</label>
+          <input type="text" name="email" id="signup-email" value="">
+          <label for="signup-password">password</label>
+          <input type="text" name="password" id="signup-password" value="">
+          <p><br/>
+          <input type="submit" value="Create an account"/>
+          </p>
+        </form>
+      </div>
+    </div>
+  </script>
+  
+  <script type="text/x-handlebars-template" name="document_browser">
+    <div id="browser_menu"></div>
+    
+    <div id="facets">
+      Loading facets...
+    </div>
+    
+    <div id="documents" class="document-list">
+      <div class="list">
+        {{#documents}}
+          <div class="document">
+            <a class="link load-document" href="#{{username}}/{{value/data/name}}" document="{{value/_id}}" user="{{username}}" name="{{value/data/name}}">
+              <div class="title">{{value/data/title}}</div>
+              <div class="name">michael / <span>test</span></div>
+              <p class="meta">Updated {{last_modified}}</p>
+              <p class="status {{status}}">{{status}} {{document_type}}</p>
+            </a>
+          </div>
+        {{/documents}}
+      </div>
+      <br class="clear"/>
+    </div>
+  </script>
   
   <script type="text/x-handlebars-template" name="facets">
-    <h2>{{num_documents}} Filter by attributes:</h2>
     <div class="list">
       {{#facets}}
         <div class="facet" id="facet_{{property}}">
@@ -308,12 +256,11 @@
 
   
   <!-- content-node templates for the editor -->
+  
   <script type="text/x-handlebars-template" name="document">    
     <div id="{{node/html_id}}" name={{node/key}} class="content-node document">
-      <!--<div class="content-node-info">Document</div>-->
       <div class="content-node-outline"><div class="cursor"><span></span></div></div>
       <h1 contenteditable="true" class='content'>{{title}}</h1>
-      
       <p class="lead content" id="document_lead" contenteditable="true">{{lead}}</p>
       {{{content}}}
     </div>
@@ -322,9 +269,7 @@
   <script type="text/x-handlebars-template" name="section">
     <div id="{{node/html_id}}" name={{node/key}} parent="{{parent/_id}}" draggable="false" class="content-node section">
       <a href="#" class="remove remove-node" node="{{node/key}}" parent="{{parent/_id}}">x</a>
-      <!--<div class="content-node-info" draggable="false">Section</div>-->
       <div class="content-node-outline"><div class="cursor"><span></span></div></div>
-      
       <h2 contenteditable="true" class='content'>{{name}}</h2>
       <div class="node-editor-placeholder"></div>
       {{{content}}}
@@ -334,7 +279,6 @@
   <script type="text/x-handlebars-template" name="text">
     <div id="{{node/html_id}}" name={{node/key}} parent="{{parent/_id}}" draggable="false" class="content-node text">
       <a href="#" class="remove-node remove" node="{{node/key}}" parent="{{parent/_id}}">x</a>
-      <!--<div class="content-node-info" draggable="false">Text</div>-->
       <div class="content-node-outline"><div class="cursor"><span></span></div></div>
       <div class='content' contenteditable="true">{{{content}}}</div>
       <div class="node-editor-placeholder"></div>
@@ -344,7 +288,6 @@
   <script type="text/x-handlebars-template" name="quote">
     <div id="{{node/html_id}}" name={{node/key}} parent="{{parent/_id}}" draggable="false" class="content-node quote">
       <a href="#" class="remove-node remove" node="{{node/key}}" parent="{{parent/_id}}">x</a>
-      <!--<div class="content-node-info" draggable="false">Quote</div>-->
       <div class="content-node-outline"><div class="cursor"><span></span></div></div>
       <quote class='content' contenteditable="true">{{{content}}}</quote>
       <div class="node-editor-placeholder"></div>
@@ -354,7 +297,6 @@
   <script type="text/x-handlebars-template" name="code">
     <div id="{{node/html_id}}" name={{node/key}} parent="{{parent/_id}}" draggable="false" class="content-node code">
       <a href="#" class="remove-node remove" node="{{node/key}}" parent="{{parent/_id}}">x</a>
-      <!--<div class="content-node-info" draggable="false">Code</div>-->
       <div class="content-node-outline"><div class="cursor"><span></span></div></div>
       <pre><code class='content' contenteditable="true">{{{content}}}</code></pre>
       <div class="node-editor-placeholder"></div>
@@ -364,7 +306,6 @@
   <script type="text/x-handlebars-template" name="question">
     <div id="{{node/html_id}}" name={{node/key}} parent="{{parent/_id}}" draggable="false" class="content-node question">
       <a href="#" class="remove-node remove" node="{{node/key}}" parent="{{parent/_id}}">x</a>
-      <!--<div class="content-node-info" draggable="false">Question</div>-->
       <div class="content-node-outline"><div class="cursor"><span></span></div></div>
       <p class='question content' contenteditable="true">{{{content}}}</p>
       <div class="node-editor-placeholder"></div>
@@ -415,8 +356,7 @@
   </script>
   
   <!-- styles --> 
-  <!-- <link href="stylesheets/reset.css" media="screen" rel="stylesheet" type="text/css" />-->
-  <link href="stylesheets/widgets.css" media="screen" rel="stylesheet" type="text/css" />
+  <link href="stylesheets/reset.css" media="screen" rel="stylesheet" type="text/css" />
   <link href="stylesheets/app.css" media="screen" rel="stylesheet" type="text/css" />
   
   <!-- libraries --> 
@@ -461,17 +401,9 @@
   <script src="src/client/ui/common.js"></script>
   <script src="src/client/ui/string_editor.js"></script>
   <script src="src/client/ui/multi_string_editor.js"></script>
-  
-  <!-- Visualizations -->
-  <script src="src/client/visualizations/outline.js"></script>
-  
+    
   <!-- Views -->
-  <script src="src/client/views/dashboard.js"></script>
-  <script src="src/client/views/editor.js"></script>
-  <script src="src/client/views/create_document.js"></script>
-  <script src="src/client/views/document_view.js"></script>
-  <script src="src/client/views/shelf.js"></script>
-  <script src="src/client/views/drawer.js"></script>
+  <script src="src/client/views/document.js"></script>
   <script src="src/client/views/attributes.js"></script>
   
   <script src="src/client/commands.js"></script>
@@ -483,13 +415,10 @@
 </head>
 <body>
   <div id="container">
-    <!--<div id="sbs_shelf">
-    </div>-->
     <div id="browser">
-      browse here
     </div>
     
-    <div id="editor">
+    <div id="document_wrapper">
     </div>
   </div>
   

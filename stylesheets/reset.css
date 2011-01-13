@@ -24,9 +24,9 @@ body {
   color: black;
   background: white;
 }
-ol, ul {
+/*ol, ul {
   list-style: none;
-}
+}*/
 table {
   border-collapse: separate;
   border-spacing: 0;

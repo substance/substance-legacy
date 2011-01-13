@@ -1,18 +1,11 @@
 var ApplicationController = Backbone.Controller.extend({
   routes: {
-    'toggle/:view': 'toggleView',
-    'load/:username/:docname': 'loadDocument'
+    ':username/:docname': 'loadDocument',
+    ':username/:docname/:node': 'loadDocument'
   },
 
-  loadDocument: function(username, docname) {
-    if (app.authenticated) {
-      app.editor.loadDocument(username, docname);
-    }
+  loadDocument: function(username, docname, node) {
+    app.document.loadDocument(username, docname, name);
     return false;
-  },
-  
-  // Toggle View
-  toggleView: function(view) {
-    app.toggleView(view);
   }
 });

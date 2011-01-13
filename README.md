@@ -226,7 +226,7 @@ Installation
 
 3. Install Libraries
 
-   `npm install underscore express dnode couch-client`
+   `npm install underscore express dnode couch-client async`
 4. Seed the DB
 
   `$ node db/seed.js`

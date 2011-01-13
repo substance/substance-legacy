@@ -1,13 +1,12 @@
 var Attributes = Backbone.View.extend({
   
   initialize: function() {
-    var that = this;
-    this.render();    
+    var that = this;   
   },
   
   render: function() {
     var that = this; 
-    var doc = app.editor.model;
+    var doc = app.document.model;
     
     var attributes = [];
     
@@ -45,13 +44,14 @@ var Attributes = Backbone.View.extend({
           unique = $(this).hasClass('unique'),
           type = $(this).attr('type'),
           // property value / might be an array or a single value
-          value = unique ? app.editor.model.get(key) : app.editor.model.get(key).values();
+          value = unique ? app.document.model.get(key) : app.document.model.get(key).values();
     
       var editor = that.createAttributeEditor(key, type, unique, value, $(this));
+      
       editor.bind('changed', function() {
         var attrs = {};
         attrs[key] = editor.value();
-        app.editor.model.set(attrs);
+        app.document.model.set(attrs);
       });
     });
   },

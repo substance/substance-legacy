@@ -55,9 +55,9 @@ var DocumentBrowser = Backbone.View.extend({
     var that = this;
     
     // TODO: use this.options.query here
-    var documents = graph.find({'type|=': this.documentType}).toArray();
+    this.documents = graph.find({'type|=': this.documentType}).toArray();
     
-    _.each(documents, function(doc) {
+    _.each(this.documents, function(doc) {
       doc.username = doc.value.data.creator.split('/')[2]
       doc.last_modified = _.prettyDate(new Date(doc.value.get('updated_at')).toJSON())
       doc.status = doc.value.get('published_on') ? 'published' : 'draft';
@@ -70,7 +70,7 @@ var DocumentBrowser = Backbone.View.extend({
       return v1 === v2 ? 0 : (v1 > v2 ? -1 : 1);
     };
     
-    documents = documents.sort(DESC_BY_UPDATED_AT);
+    this.documents = this.documents.sort(DESC_BY_UPDATED_AT);
     
     var documentTypes = [{
       name: "Aktuell",
@@ -90,12 +90,21 @@ var DocumentBrowser = Backbone.View.extend({
     });
     
     $(this.el).html(_.renderTemplate('document_browser', {
-      num_documents: documents.length,
-      documents: documents,
+      num_documents: this.documents.length,
+      documents: this.documents,
       document_types: documentTypes
     }));
     
     this.facets.render();
+    this.renderMenu();
+  },
+  
+  // Contains login-status
+  renderMenu: function() {
+    this.$('#browser_menu').html(_.renderTemplate('browser_menu', {
+      num_documents: this.documents.length,
+      username: app.username
+    }));
   },
   
   // Takes a command spec and applies the command

@@ -10,47 +10,55 @@ var Application = Backbone.View.extend({
     'click #document_toggle': 'showDocument',
     'click a.load-document': 'loadDocument',
     'click a.save-document': 'saveDocument',
+    'click a.login': 'toggleLogin',
+    'click a.logout': 'logout',
+    'click a.signup': 'toggleSignup',
     'click a.show-attributes': 'showAttributes',
     'click a.publish-document': 'publishDocument',
     'click a.unpublish-document': 'unpublishDocument',
     'submit #create-document-form': 'createDocument',
     'click a.delete-document': 'deleteDocument',
-    'click a.logout': 'logout',
-    'click a.signup': 'renderSignupForm',
     'click a.view-collaborators': 'viewCollaborators'
   },
   
   view: 'dashboard', // init state
+  
+  toggleLogin: function() {
+    $('#signup').hide();
+    $('#login').toggle();
+    return false;
+  },
   
   toggleNewDocument: function() {
     this.$('.document-type-selection').toggle();
     return false;
   },
   
-  newDocument: function(e) {
+  toggleSignup: function() {
+    var that = this;
     
-    this.editor.newDocument($(e.currentTarget).attr('type'));
+    $('#login').hide();
+    $('#signup').toggle();
+
+    $('#signup-form').unbind();
+    $('#signup-form').submit(function() {
+       that.registerUser();
+      return false;
+    });
+    return false;
+  },
+  
+  newDocument: function(e) {
+    this.document.newDocument($(e.currentTarget).attr('type'));
     return false;
   },
   
   loadDocument: function(e) {
-    // if (app.authenticated) {
       var user = $(e.currentTarget).attr('user');
           name = $(e.currentTarget).attr('name');
                 
-      app.editor.loadDocument(user, name);
+      app.document.loadDocument(user, name);
       controller.saveLocation($(e.currentTarget).attr('href'));
-    // }
-    return false;
-  },
-  
-  showDashboard: function() {
-    this.toggleView('dashboard');
-    return false;
-  },
-  
-  showDocument: function() {
-    this.toggleView('document');
     return false;
   },
   
@@ -58,7 +66,7 @@ var Application = Backbone.View.extend({
   // -------------
   
   showAttributes: function() {
-    app.editor.drawer.toggle('Attributes');
+    app.document.drawer.toggle('Attributes');
     $('.show-attributes').toggleClass('selected');
     return false;
   },
@@ -83,18 +91,22 @@ var Application = Backbone.View.extend({
   },
   
   saveDocument: function(e) {
-    if (this.editor.model.validate()) {
-      this.editor.saveDocument();
-    } else {
-      this.shelf.toggle('CreateDocument', e);
-    }
+    this.document.model.set({
+      name: $('#document_name').val(),
+      created_at: this.document.model.get('created_at') || new Date(),
+      updated_at: new Date(),
+      published_on: this.document.model.get('published_on') || null
+    });
+    if (this.document.model.validate())
+      this.document.saveDocument(); 
+    else 
+      console.log(this.document.model.errors);
+    
     return false;
   },
   
   createDocument: function(e) {
-    app.editor.createDocument(this.shelf.$('#document-name').val());
-    // Refresh drawer
-    this.editor.drawer.renderContent();
+    app.document.createDocument($('#document_name').val());
     return false;
   },
   
@@ -103,9 +115,8 @@ var Application = Backbone.View.extend({
     remote.Session.logout({
       success: function() {
         that.username = null;
-        app.toggleView('dashboard');
-        
         that.authenticated = false;
+        that.browser.render();
         that.render();
       }
     });
@@ -128,30 +139,23 @@ var Application = Backbone.View.extend({
   
   updateSystemStatus: function(status) {
     this.activeUsers = status.active_users;
-    // Refreshing the Dashboard all the time is overkill, find a better solution
-    // if (this.dashboard) this.dashboard.render();
   },
   
   initialize: function() {
-    var that = this;
-    
+    var that = this,
+        query = this.authenticated ? {"type|=": ["/type/document"], "creator": "/user/"+this.username }
+                                  : {"type|=": ["/type/document"]}
     _.bindAll(this, "render");
-    
-    // this.dashboard = new Dashboard({el: '#dashboard'});
     
     // Initialize browser
     this.browser = new DocumentBrowser({
       el: this.$('#browser'),
-      // query: {"type|=": ["/type/document"], "creator": "/user/"+app.username }
-      query: {"type|=": ["/type/document"]}
+      query: query
     });
     
-    this.editor = new Editor({el: '#editor'});
+    this.document = new Document({el: '#document_wrapper'});
+    
     this.activeUsers = [];
-    
-    // Set up shelf
-    this.shelf = new Shelf({el: '#sbs_shelf'});
-    
     this.authenticated = false;
     
     // Try to establish a server connection
@@ -159,6 +163,12 @@ var Application = Backbone.View.extend({
     
     this.bind('connected', function() {
       notifier.notify(Notifications.CONNECTED);
+      
+      // Initialize controller
+      controller = new ApplicationController({app: this});
+      
+      // Start responding to routes
+      Backbone.history.start();
       
       remote.Session.init({
         success: function(username, status) { // auto-authenticated
@@ -176,7 +186,8 @@ var Application = Backbone.View.extend({
     this.bind('authenticated', function() {
       that.authenticated = true;
       
-      // Re-render
+      // Re-render #browser_menu
+      that.browser.render();
       that.render();
     });
   },
@@ -187,8 +198,8 @@ var Application = Backbone.View.extend({
     DNode({
       Session: {
         updateStatus: function(status) {
-          that.editor.status = status;
-          that.editor.trigger('status:changed');
+          that.document.status = status;
+          that.document.trigger('status:changed');
         },
         
         updateSystemStatus: function(status) {
@@ -196,7 +207,7 @@ var Application = Backbone.View.extend({
         },
         
         updateNode: function(key, node) {
-          app.editor.documentView.updateNode(key, node);
+          app.document.documentView.updateNode(key, node);
         },
         
         moveNode: function(sourceKey, targetKey, parentKey, destination) {
@@ -205,19 +216,19 @@ var Application = Backbone.View.extend({
         
         insertNode: function(insertionType, node, targetKey, parentKey, destination) {
           if (insertionType === 'sibling') {
-            app.editor.documentView.addSibling(node, targetKey, parentKey, destination);
+            app.document.documentView.addSibling(node, targetKey, parentKey, destination);
           } else { // inserionType === 'child'
-            app.editor.documentView.addChild(node, targetKey, parentKey, destination);
+            app.document.documentView.addChild(node, targetKey, parentKey, destination);
           }
         },
         
         removeNode: function(key, parentKey) {
-          app.editor.documentView.removeNode(key, parentKey);
+          app.document.documentView.removeNode(key, parentKey);
         },
         
         // The server asks for the current (real-time) version of the document
         getDocument: function(callback) {
-          var result = that.getFullDocument(app.editor.model._id);
+          var result = that.getFullDocument(app.document.model._id);
           callback(result);
         }
       }
@@ -266,6 +277,13 @@ var Application = Backbone.View.extend({
     return false;
   },
   
+  // Scroll to an element
+  scrollTo: function(id) {
+    var offset = $('#'+id).offset();
+    offset ? $('html, body').animate({scrollTop: offset.top}, 'slow') : null;
+    return false;
+  },
+  
   registerUser: function() {
     var that = this;
     
@@ -277,29 +295,9 @@ var Application = Backbone.View.extend({
         that.trigger('authenticated');
       },
       error: function() {
-        notifier.notify(Notifications.AUTHENTICATION_FAILED);
+        notifier.notify(Notifications.SIGNUP_FAILED);
       }
     });
-  },
-
-  toggleView: function(view) {
-    this.view = view;
-    
-    $('#sbs_header').removeClass();
-    
-    if (this.view === 'dashboard') {
-      editor.deactivate();
-      
-      $('#dashboard').show();
-      $('#editor').hide();
-      
-      $('#sbs_header').addClass('dashboard');
-    } else {
-      $('#editor').show();
-      $('#dashboard').hide();
-      
-      $('#sbs_header').addClass('document');
-    }
   },
   
   // Should be rendered just once
@@ -309,44 +307,20 @@ var Application = Backbone.View.extend({
     // Browser not supported
     if (window.WebSocket === undefined) {
       $(this.el).html(Helpers.renderTemplate('browser_not_supported'));
-    } else {
-      // if (this.authenticated) {
-      //   this.dashboard.render();
-      //   this.editor.render();
-      //   this.shelf.render();
-      //   
-      //   this.toggleView(this.view);
-      //   
-      // } else { // Display landing page
-      //   $('#dashboard').html(Helpers.renderTemplate('login'));
-      //   this.shelf.render();
-      //   $('#login-form').submit(function() {
-      //     that.authenticate();
-      //     return false;
-      //   });
-      // }
-      
-      this.editor.render();
-      this.shelf.render();
+    } else {      
+      $('#login-form').submit(function() {
+        that.authenticate();
+        return false;
+      });
+      this.document.render();
     }
     return this;
-  },
-  
-  renderSignupForm: function() {
-    var that = this;
-    $('#dashboard').html(Helpers.renderTemplate('signup'));
-    $('#signup-form').submit(function() {
-       that.registerUser();
-      return false;
-    });
-    return false;
   }
 });
 
 Data.setAdapter('AjaxAdapter');
 
 var remote,                       // Remote handle for server-side methods
-    notifier,                     // Global notifiction system
     app,                          // The Application
     controller,                   // Controller responding to routes
     editor,                       // A global instance of the Proper Richtext editor
@@ -354,18 +328,8 @@ var remote,                       // Remote handle for server-side methods
 
 (function() {
   $(function() {
-    
-    // Set up a notifier for status-message communication
-    notifier = new Backbone.Notifier();
-
     // Start the engines
     app = new Application({el: $('#container')});
-
-    // Initialize controller
-    controller = new ApplicationController({app: this});
-    
-    // Start responding to routes
-    Backbone.history.start();
     
     // Set up a global instance of the Proper Richtext Editor
     editor = new Proper();
