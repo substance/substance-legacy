@@ -3,11 +3,11 @@
 ----------------------
 */
 
-/** {
+* {
   box-sizing:border-box;
   -webkit-box-sizing:border-box;
   -moz-box-sizing:border-box;
-}*/
+}
 
 .clear { clear: both; }
 .hidden { display: none; }
@@ -217,8 +217,13 @@ input:focus, textarea:focus {
   top: 30px;
   right: 0px;
   background: #F0F1EB;
-  width: 200px;
+  
+  width: 250px;
   z-index: 5000;
+}
+
+form.auth-form label {
+  display: block;
 }
 
 #browser_menu #signup {
@@ -229,7 +234,7 @@ input:focus, textarea:focus {
   position: absolute;
   top: 30px;
   background: #F0F1EB;
-  width: 200px;
+  width: 250px;
   z-index: 5000;
 }
 
@@ -445,12 +450,6 @@ input:focus, textarea:focus {
 #notifications .wrapper > p.error        > span { float:left; width:70px; color:#f45; font-size:11px; font-weight:bold; text-transform:uppercase; }
 #notifications .wrapper > p.warning      > span { float:left; width:70px; color:#fd6; font-size:11px; font-weight:bold; text-transform:uppercase; }
 #notifications .wrapper > p.notification > span { float:left; width:70px; color:#aaa; font-size:11px; font-weight:bold; text-transform:uppercase; }
-
-
-
-
-
-
 
 
 /* Node Types
@@ -699,13 +698,8 @@ pre.code {border-left: 2px solid #ccc; padding-left: 20px; }
 }
 
 
-
-
-
-
 /* Proper Editor
 -------------------------------------------------------------------------------*/
-
 
 .proper-commands {
   height: 30px;
