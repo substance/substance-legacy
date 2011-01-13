@@ -1,6 +1,6 @@
 var fs = require('fs');
 var assert = require('assert');
-var Data = require('../lib/data');
+var Data = require('../lib/data/data');
 var _ = require('underscore');
 
 var config = JSON.parse(fs.readFileSync(__dirname+ '/../config.json', 'utf-8'));
@@ -11,32 +11,36 @@ Data.setAdapter('couch', { url: config.couchdb_url });
 // Our Domain Model with some sample data
 var seedGraph = {
   
-  // Entity (The prototype for all objects that appear top-level)
+  // Application Configuration Type
   // --------------------
   
-  "/type/entity": {
-    "_id": "/type/entity",
+  "/type/config": {
+    "_id": "/type/config",
     "type": "/type/type",
-    "name": "Entity",
+    "name": "Configuration",
     "properties": {
-      "name": {
-        "name": "Name",
+      "allow_user_registration": {
+        "name": "Allow User registration",
+        "type": "boolean",
         "unique": true,
-        "type": "string"
+        "default": true
       },
-      "created_at": {
-        "name": "Created at",
-        "unique": true,
-        "type": "date",
-        "required": true
-      },
-      "updated_at": {
-        "name": "Last modified",
-        "unique": true,
-        "type": "date",
-        "required": true
+      "document_types": {
+        "name": "Supported Document Types",
+        "type": "string",
+        "unique": false,
+        "required": false
       }
     }
+  },
+  
+  // Substance Configuration
+  // --------------------
+  
+  "/config/substance": {
+    "type": "/type/config",
+    "document_types": ["/type/qaa", "/type/manual", "/type/article"],
+    "allow_user_registration": true
   },
   
   // User
@@ -118,12 +122,6 @@ var seedGraph = {
           "facet": true
         }
       },
-      "children": {
-        "name": "Sections",
-        "unique": false,
-        "type": "/type/section",
-        "default": []
-      },
       "created_at": {
         "name": "Created at",
         "unique": true,
@@ -141,16 +139,6 @@ var seedGraph = {
         "unique": true,
         "type": "date"
       },
-      "topics": {
-        "name": "Topics",
-        "unique": false,
-        "type": "string",
-        "default": [],
-        "meta": {
-          "facet": true,
-          "attribute": true
-        }
-      },
       "keywords": {
         "name": "Keywords",
         "unique": false,
@@ -160,6 +148,94 @@ var seedGraph = {
           "facet": true,
           "attribute": true
         }
+      }
+    }
+  },
+  
+  
+  // Schema for Conversation
+
+  "/type/qaa": {
+    "type": "/type/type",
+    "name": "Q&A",
+    "properties": {
+      "children": {
+        "name": "Children/Contents",
+        "unique": false,
+        "type": ["/type/question", "/type/answer"]
+      }
+    },
+    "meta": {
+      "template": {
+        "type": ["/type/document", "/type/qaa"],
+        "children": [
+          {
+            "type": "/type/question"
+          },
+          {
+            "type": "/type/answer"
+          }
+        ]
+      }
+    }
+  },
+
+  // Schema for Manual
+
+  "/type/manual": {
+    "type": "/type/type",
+    "name": "Manual",
+    "properties": {
+      "name": {
+        "name": "Name",
+        "unique": true,
+        "type": "string"
+      },
+      "children": {
+        "name": "Children/Contents",
+        "unique": false,
+        "type": ["/type/section"]
+      }
+    },
+    "meta": {
+      "template": {
+        "type": ["/type/document", "/type/manual"],
+        "children": [
+          {
+            "type": "/type/section",
+            "name": "First section"
+          }
+        ]
+      }
+    }
+  },
+  
+  // Schema for Article
+
+  "/type/article": {
+    "type": "/type/type",
+    "name": "Article",
+    "properties": {
+      "name": {
+        "name": "Name",
+        "unique": true,
+        "type": "string"
+      },
+      "children": {
+        "name": "Children/Contents",
+        "unique": false,
+        "type": ["/type/section"]
+      }
+    },
+    "meta": {
+      "template": {
+        "type": ["/type/document", "/type/article"],
+        "children": [
+          {
+            "type": "/type/section",
+            "name": "First section"
+          }
+        ]
       }
     }
   },
@@ -182,7 +258,7 @@ var seedGraph = {
       "children": {
         "name": "Children",
         "unique": false,
-        "type": ["/type/text", "/type/image", "/type/quote", "/type/code", "/type/question", "/type/answer"],
+        "type": ["/type/text", "/type/quote", "/type/code"],
         "default": []
       }
     }
@@ -270,7 +346,7 @@ var seedGraph = {
         "name": "Content",
         "unique": true,
         "type": "string",
-        "default": "var foo = new Foo();"
+        "default": "var foo = new Bar();"
       }
     }
   },
@@ -317,13 +393,16 @@ if (process.argv[2] == "--flush") {
     console.log('DB Flushed.');
     err ? console.log(err)
         : graph.save(function(err, invalidNodes) {
+          console.log('invalidNodes:');
           console.log(invalidNodes.keys());
+          
           err ? console.log(err)
               : console.log('Couch seeded successfully.\nStart the server: $ node server.js');
         });
   });
 } else {
   graph.save(function(err, invalidNodes) {
+    console.log('invalidNodes:');
     console.log(invalidNodes.keys());
     err ? console.log(err)
         : console.log('Couch seeded successfully.\nStart the server: $ node server.js');
