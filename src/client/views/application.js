@@ -50,6 +50,7 @@ var Application = Backbone.View.extend({
   
   newDocument: function(e) {
     this.document.newDocument($(e.currentTarget).attr('type'));
+    this.$('.document-type-selection').hide();
     return false;
   },
   
@@ -72,11 +73,11 @@ var Application = Backbone.View.extend({
   },
   
   publishDocument: function(e) {
-    this.editor.model.set({
+    this.document.model.set({
       published_on: (new Date()).toJSON()
     });
-    this.editor.drawer.renderContent();
-    this.editor.saveDocument();
+    this.document.attributes.render();
+    this.document.saveDocument();
     return false;
   },
   
@@ -85,23 +86,40 @@ var Application = Backbone.View.extend({
       published_on: null
     });
     
-    this.editor.drawer.renderContent();
-    this.editor.saveDocument();
+    this.document.attributes.render();
+    this.document.saveDocument();
     return false;
   },
   
+  // TODO: clean up this mess
   saveDocument: function(e) {
-    this.document.model.set({
-      name: $('#document_name').val(),
-      created_at: this.document.model.get('created_at') || new Date(),
-      updated_at: new Date(),
-      published_on: this.document.model.get('published_on') || null
-    });
-    if (this.document.model.validate())
-      this.document.saveDocument(); 
-    else 
-      console.log(this.document.model.errors);
+    var that = this;
+    var qry = {"type|=": "/type/document", "name": $('#document_name').val(), "creator": "/user/"+app.username};
     
+    function saveDoc() {
+      that.document.model.set({
+        name: $('#document_name').val(),
+        created_at: that.document.model.get('created_at') || new Date(),
+        updated_at: new Date(),
+        published_on: that.document.model.get('published_on') || null
+      });
+            
+      that.document.model.validate() 
+        ? that.document.saveDocument()
+        : notifier.notify(Notifications.DOCUMENT_INVALID);
+    }
+    
+    if (that.document.model.get('name') !== $('#document_name').val()) { // Name change
+      graph.fetch(qry, {}, function(err) {
+        if (graph.find(qry).length > 0) {
+          notifier.notify(Notifications.DOCUMENT_ALREADY_EXISTS);
+        } else {
+          saveDoc();
+        }
+      });
+    } else {
+      saveDoc();      
+    }
     return false;
   },
   
@@ -125,11 +143,6 @@ var Application = Backbone.View.extend({
   
   deleteDocument: function(e) {
     this.editor.deleteDocument($(e.target).attr('document'));
-    return false;
-  },
-  
-  viewCollaborators: function(e) {
-    this.shelf.toggle('Collaborators', e);
     return false;
   },
   
@@ -164,21 +177,27 @@ var Application = Backbone.View.extend({
     this.bind('connected', function() {
       notifier.notify(Notifications.CONNECTED);
       
-      // Initialize controller
-      controller = new ApplicationController({app: this});
-      
-      // Start responding to routes
-      Backbone.history.start();
-      
       remote.Session.init({
         success: function(username, status) { // auto-authenticated
           that.username = username;
           that.updateSystemStatus(status);
           that.trigger('authenticated');
+          
+          // Initialize controller
+          controller = new ApplicationController({app: this});
+
+          // Start responding to routes
+          Backbone.history.start();
         },
         error: function() {
           // Render landing page
           that.render();
+          
+          // Initialize controller
+          controller = new ApplicationController({app: this});
+
+          // Start responding to routes
+          Backbone.history.start();
         }
       });
     });
@@ -207,7 +226,7 @@ var Application = Backbone.View.extend({
         },
         
         updateNode: function(key, node) {
-          app.document.documentView.updateNode(key, node);
+          app.document.updateNode(key, node);
         },
         
         moveNode: function(sourceKey, targetKey, parentKey, destination) {
@@ -216,14 +235,14 @@ var Application = Backbone.View.extend({
         
         insertNode: function(insertionType, node, targetKey, parentKey, destination) {
           if (insertionType === 'sibling') {
-            app.document.documentView.addSibling(node, targetKey, parentKey, destination);
+            app.document.addSibling(node, targetKey, parentKey, destination);
           } else { // inserionType === 'child'
-            app.document.documentView.addChild(node, targetKey, parentKey, destination);
+            app.document.addChild(node, targetKey, parentKey, destination);
           }
         },
         
         removeNode: function(key, parentKey) {
-          app.document.documentView.removeNode(key, parentKey);
+          app.document.removeNode(key, parentKey);
         },
         
         // The server asks for the current (real-time) version of the document

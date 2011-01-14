@@ -34,7 +34,7 @@ var Document = Backbone.View.extend({
     
     this.attributes = new Attributes({el: '#attributes', model: this.model});
     
-    this.mode = 'edit';
+    this.mode = 'show';
     this.bind('status:changed', function() {
       that.updateCursors();
     });
@@ -79,19 +79,20 @@ var Document = Backbone.View.extend({
     $('#'+node.html_id).replaceWith(new HTMLRenderer(node, parent).render());
     
     // Render controls
-    renderControls(app.document.model);
+     if (this.mode === 'edit') renderControls(app.document.model);
   },
   
   renderDocument: function() {
     this.$('#document').html(new HTMLRenderer(this.model).render());
+
     // Render controls
-    renderControls(this.model);
+    if (this.mode === 'edit') renderControls(this.model);
   },
   
   renderMenu: function() {
     this.$('#document_menu').html(_.renderTemplate('document_menu', {
       edit: this.mode === 'edit',
-      username: app.username,
+      username: this.model.get('creator')._id.split('/')[2],
       document_name: this.model.get('name')
     }));
   },
@@ -156,8 +157,9 @@ var Document = Backbone.View.extend({
   },
   
   newDocument: function(type) {
-    this.model = addEmptyDoc('/type/'+type);
+    this.model = addEmptyDoc(type);
     this.status = null;
+    this.mode = 'edit';
     $(this.el).show();
     this.render();
     this.init();
@@ -179,25 +181,29 @@ var Document = Backbone.View.extend({
       if (!err) {
         graph.merge(g, true);
         that.model = graph.get(id);
-        that.render();
         
-        that.init();
-        that.trigger('document:changed');
-        
-        // Move to the actual document
-        app.scrollTo('document_wrapper');
-        
-        notifier.notify(Notifications.DOCUMENT_LOADED);
-        remote.Session.registerDocument(id);
+        if (that.model) {
+          that.mode = username === app.username ? 'edit' : 'show';
+          
+          that.render();
+          that.init();
+          that.trigger('document:changed');
 
+          // Move to the actual document
+          app.scrollTo('document_wrapper');
+
+          notifier.notify(Notifications.DOCUMENT_LOADED);
+          remote.Session.registerDocument(id);
+        } else {
+          notifier.notify(Notifications.DOCUMENT_LOADING_FAILED);
+        }
       } else {
         notifier.notify(Notifications.DOCUMENT_LOADING_FAILED);
       }
     });
   },
   
-  
-  // Store an existing document
+  // Store a document
   // -------------
   
   saveDocument: function() {
@@ -205,10 +211,13 @@ var Document = Backbone.View.extend({
     
     notifier.notify(Notifications.DOCUMENT_SAVING);
     
-    graph.save(function(err) {
-      if (err) return notifier.notify(Notifications.DOCUMENT_SAVED);      
-      notifier.notify(Notifications.DOCUMENT_SAVING_FAILED)
+    graph.save(function(err, invalidNodes) {
+      if (err) return notifier.notify(Notifications.DOCUMENT_SAVING_FAILED);
+      notifier.notify(Notifications.DOCUMENT_SAVED);
       controller.saveLocation('#'+that.model.get('creator')._id.split('/')[2]+'/'+that.model.get('name'));
+      
+      // Reload document browser
+      app.browser.render();
     });
   },
   
@@ -258,6 +267,8 @@ var Document = Backbone.View.extend({
   
   renderNodeEditor: function(node) {
     var $node = $('#'+node.html_id);
+    
+    if (this.mode !== 'edit') return;
     
     // Depending on the selected node's type, render the right editor
     if (_.include(this.selectedNode.types().keys(), '/type/document')) {
@@ -327,6 +338,8 @@ var Document = Backbone.View.extend({
   },
   
   selectNode: function(e) {
+    if (this.mode === 'show') return; // Skip for show mode
+    
     var key = $(e.currentTarget).attr('name');
     
     if (!this.selectedNode || this.selectedNode.key !== key) {
@@ -408,7 +421,6 @@ var Document = Backbone.View.extend({
       // Broadcast insert node command
       remote.Session.insertNode('sibling', newNode.toJSON(), refNode._id, parentNode._id, destination);      
     }
-    
     return false;
   },
     
