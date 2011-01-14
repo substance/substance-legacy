@@ -367,7 +367,7 @@ DNode(function (client, conn) {
           
           // Get document either from the database if you're the first starting to edit this doc
           // or from one of the collaborators having the most current doc.
-          if (documents[id] && documents[id].sessions.length > 0) {
+          if (documents[id] && documents[id].sessions.length > 1) {
             
             // You're not alone. You are getting the doc from the swarm.
             sessions[documents[id].sessions[0]].client.Session.getDocument(function(err, hotdoc) {

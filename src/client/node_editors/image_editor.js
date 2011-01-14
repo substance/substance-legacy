@@ -25,7 +25,7 @@ var ImageEditor = Backbone.View.extend({
       },
       onSuccess: function(assembly) {
         // This triggers a node re-render
-        app.editor.documentView.updateSelectedNode({
+        app.document.updateSelectedNode({
           url: assembly.results.resize_image[0].url,
           dirty: true
         });

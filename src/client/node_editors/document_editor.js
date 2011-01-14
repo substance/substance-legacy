@@ -6,8 +6,8 @@ var DocumentEditor = Backbone.View.extend({
   initialize: function() {
     var that = this;
     
-    this.$node = $('#' + app.document.documentView.selectedNode.html_id + ' > h1.content');
-    this.$lead = $('#' + app.document.documentView.selectedNode.html_id + ' #document_lead');
+    this.$node = $('#' + app.document.selectedNode.html_id + ' > h1.content').attr('contenteditable', true);
+    this.$lead = $('#' + app.document.selectedNode.html_id + ' #document_lead').attr('contenteditable', true);
     
     this.$node.unbind('keydown');
     this.$node.bind('keydown', function(event) {
@@ -32,12 +32,12 @@ var DocumentEditor = Backbone.View.extend({
       // Update HTML with sanitized content
       that.$lead.html(sanitizedLead);
       
-      app.editor.documentView.updateSelectedNode({
+      app.document.updateSelectedNode({
         title: sanitizedTitle,
         lead: sanitizedLead
       });
       
-      app.editor.trigger('document:changed');
+      app.document.trigger('document:changed');
     }, 5);
   }
 });

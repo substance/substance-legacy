@@ -22,7 +22,7 @@ var CodeEditor = Backbone.View.extend({
     var that = this;
     
     setTimeout(function() {
-      app.editor.documentView.updateSelectedNode({
+      app.document.updateSelectedNode({
         content: that.$content.html()
       });
     }, 5);

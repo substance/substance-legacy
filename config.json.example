@@ -1,6 +1,5 @@
 {
   "couchdb_url": "http://localhost:5984/substance",
   "server_host": null,
-  "server_port": 3003,
-  "theme": "default"
+  "server_port": 3003
 }

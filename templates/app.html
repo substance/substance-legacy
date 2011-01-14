@@ -63,7 +63,12 @@
     <div class="menu-group header">
       <a class="icon browse" href="#edit" title="Edit Document">Edit document</a>
       <span class="label">{{username}} / </span>
-      <input type="text" id="document_name" name="document_name" value="{{document_name}}"/>
+      {{#edit}}
+        <input type="text" id="document_name" name="document_name" value="{{../document_name}}"/>
+      {{/edit}}
+      {{^edit}}
+        {{document_name}}
+      {{/edit}}
     </div>
     
     {{#edit}}
@@ -80,15 +85,18 @@
       <span class="label">{{num_documents}} Documents</span>
     </div>
     
-    {{#username}}
-      <div class="menu-group new-document">
+    
+    <div class="menu-group new-document">
+      {{#username}}
         <a class="icon toggle-new-document" href="#new" title="create a new document">create a new document</a>
-        <div class="document-type-selection">
-          <a class="document-type new-document" type="story" href="#">Story</a>
-          <a class="document-type new-document" type="conversation" href="#">Conversation</a>            
-        </div>
+      {{/username}}
+      <div class="document-type-selection">
+        {{#document_types}}
+          <a class="document-type new-document" type="{{type}}" href="#">{{name}}</a>
+        {{/document_types}}
       </div>
-    {{/username}}
+    </div>
+    
 
     <div class="menu-group login-state right">
       {{#username}}
@@ -100,33 +108,34 @@
         <span class="label right">Tired of reading? Start writing!</span>
       {{/username}}
       <br class="clear"/>
-      <div id="login">
-        <form id="login-form">
-          <label for="login-user">username</label>
-          <input type="text" name="username" id="login-user" value="">
-          <label for="login-password">password</label>
-          <input type="password" name="password" id="login-password" value="">
-          <p>
-            <br/>
-            <input type="submit" value="Login"/>
-          </p>
-          <a href="/" class="signup">Create a free account</a>
-        </form>
-      </div>
-      
-      <div id="signup">
-        <form id="signup-form">
-          <label for="signup-user">username</label>
-          <input type="text" name="username" id="signup-user" value="">
-          <label for="signup-email">email</label>
-          <input type="text" name="email" id="signup-email" value="">
-          <label for="signup-password">password</label>
-          <input type="text" name="password" id="signup-password" value="">
-          <p><br/>
-          <input type="submit" value="Create an account"/>
-          </p>
-        </form>
-      </div>
+    </div>
+    
+    <div id="login">
+      <form id="login-form" class="auth-form">
+        <label for="login-user">username</label>
+        <input type="text" name="username" id="login-user" value="">
+        <label for="login-password">password</label>
+        <input type="password" name="password" id="login-password" value="">
+        <p>
+          <br/>
+          <input type="submit" value="Login"/>
+        </p>
+        <a href="/" class="signup">Create a free account</a>
+      </form>
+    </div>
+    
+    <div id="signup">
+      <form id="signup-form" class="auth-form">
+        <label for="signup-user">username</label>
+        <input type="text" name="username" id="signup-user" value="">
+        <label for="signup-email">email</label>
+        <input type="text" name="email" id="signup-email" value="">
+        <label for="signup-password">password</label>
+        <input type="text" name="password" id="signup-password" value="">
+        <p><br/>
+        <input type="submit" value="Create an account"/>
+        </p>
+      </form>
     </div>
   </script>
   
@@ -141,9 +150,9 @@
       <div class="list">
         {{#documents}}
           <div class="document">
-            <a class="link load-document" href="#{{username}}/{{value/data/name}}" document="{{value/_id}}" user="{{username}}" name="{{value/data/name}}">
-              <div class="title">{{value/data/title}}</div>
-              <div class="name">michael / <span>test</span></div>
+            <a class="link load-document" href="#{{username}}/{{document_name}}" document="{{value/_id}}" user="{{username}}" name="{{document_name}}">
+              <div class="title">{{title}}</div>
+              <div class="name">{{username}} / <span>{{document_name}}</span></div>
               <p class="meta">Updated {{last_modified}}</p>
               <p class="status {{status}}">{{status}} {{document_type}}</p>
             </a>
@@ -259,83 +268,79 @@
   
   <script type="text/x-handlebars-template" name="document">    
     <div id="{{node/html_id}}" name={{node/key}} class="content-node document">
-      <div class="content-node-outline"><div class="cursor"><span></span></div></div>
-      <h1 contenteditable="true" class='content'>{{title}}</h1>
-      <p class="lead content" id="document_lead" contenteditable="true">{{lead}}</p>
+      {{#edit}}<div class="content-node-outline"><div class="cursor"><span></span></div></div>{{/edit}}
+      <h1 class='content'>{{title}}</h1>
+      <p class="lead content" id="document_lead">{{lead}}</p>
       {{{content}}}
     </div>
   </script>
   
   <script type="text/x-handlebars-template" name="section">
     <div id="{{node/html_id}}" name={{node/key}} parent="{{parent/_id}}" draggable="false" class="content-node section">
-      <a href="#" class="remove remove-node" node="{{node/key}}" parent="{{parent/_id}}">x</a>
-      <div class="content-node-outline"><div class="cursor"><span></span></div></div>
-      <h2 contenteditable="true" class='content'>{{name}}</h2>
-      <div class="node-editor-placeholder"></div>
+      {{#edit}}<a href="#" class="remove remove-node" node="{{node/key}}" parent="{{parent/_id}}">x</a>{{/edit}}
+      {{#edit}}<div class="content-node-outline"><div class="cursor"><span></span></div></div>{{/edit}}
+      <h2 class='content'>{{name}}</h2>
+      {{#edit}}<div class="node-editor-placeholder"></div>{{/edit}}
       {{{content}}}
     </div>
   </script>
   
   <script type="text/x-handlebars-template" name="text">
     <div id="{{node/html_id}}" name={{node/key}} parent="{{parent/_id}}" draggable="false" class="content-node text">
-      <a href="#" class="remove-node remove" node="{{node/key}}" parent="{{parent/_id}}">x</a>
-      <div class="content-node-outline"><div class="cursor"><span></span></div></div>
-      <div class='content' contenteditable="true">{{{content}}}</div>
-      <div class="node-editor-placeholder"></div>
+      {{#edit}}<a href="#" class="remove-node remove" node="{{node/key}}" parent="{{parent/_id}}">x</a>{{/edit}}
+      {{#edit}}<div class="content-node-outline"><div class="cursor"><span></span></div></div>{{/edit}}
+      <div class='content'>{{{content}}}</div>
+      {{#edit}}<div class="node-editor-placeholder"></div>{{/edit}}
     </div>
   </script>
   
   <script type="text/x-handlebars-template" name="quote">
     <div id="{{node/html_id}}" name={{node/key}} parent="{{parent/_id}}" draggable="false" class="content-node quote">
-      <a href="#" class="remove-node remove" node="{{node/key}}" parent="{{parent/_id}}">x</a>
-      <div class="content-node-outline"><div class="cursor"><span></span></div></div>
-      <quote class='content' contenteditable="true">{{{content}}}</quote>
-      <div class="node-editor-placeholder"></div>
+      {{#edit}}<a href="#" class="remove-node remove" node="{{node/key}}" parent="{{parent/_id}}">x</a>{{/edit}}
+      {{#edit}}<div class="content-node-outline"><div class="cursor"><span></span></div></div>{{/edit}}
+      <quote class='content'>{{{content}}}</quote>
+      {{#edit}}<div class="node-editor-placeholder"></div>{{/edit}}
     </div>
   </script>
   
   <script type="text/x-handlebars-template" name="code">
     <div id="{{node/html_id}}" name={{node/key}} parent="{{parent/_id}}" draggable="false" class="content-node code">
-      <a href="#" class="remove-node remove" node="{{node/key}}" parent="{{parent/_id}}">x</a>
-      <div class="content-node-outline"><div class="cursor"><span></span></div></div>
-      <pre><code class='content' contenteditable="true">{{{content}}}</code></pre>
-      <div class="node-editor-placeholder"></div>
+      {{#edit}}<a href="#" class="remove-node remove" node="{{node/key}}" parent="{{parent/_id}}">x</a>{{/edit}}
+      {{#edit}}<div class="content-node-outline"><div class="cursor"><span></span></div></div>{{/edit}}
+      <pre><code class='content'>{{{content}}}</code></pre>
+      {{#edit}}<div class="node-editor-placeholder"></div>{{/edit}}
     </div>
   </script>
   
   <script type="text/x-handlebars-template" name="question">
     <div id="{{node/html_id}}" name={{node/key}} parent="{{parent/_id}}" draggable="false" class="content-node question">
-      <a href="#" class="remove-node remove" node="{{node/key}}" parent="{{parent/_id}}">x</a>
-      <div class="content-node-outline"><div class="cursor"><span></span></div></div>
-      <p class='question content' contenteditable="true">{{{content}}}</p>
-      <div class="node-editor-placeholder"></div>
+      {{#edit}}<a href="#" class="remove-node remove" node="{{node/key}}" parent="{{parent/_id}}">x</a>{{/edit}}
+      {{#edit}}<div class="content-node-outline"><div class="cursor"><span></span></div></div>{{/edit}}
+      <p class='question content'>{{{content}}}</p>
+      {{#edit}}<div class="node-editor-placeholder"></div>{{/edit}}
     </div>
   </script>
   
   <script type="text/x-handlebars-template" name="answer">
     <div id="{{node/html_id}}" name={{node/key}} parent="{{parent/_id}}" draggable="false" class="content-node answer">
-      <a href="#" class="remove-node remove" node="{{node/key}}" parent="{{parent/_id}}">x</a>
-      <!--<div class="content-node-info" draggable="false">Answer</div>-->
-      <div class="content-node-outline"><div class="cursor"><span></span></div></div>
-      <p class='answer content' contenteditable="true">{{{content}}}</quote>
-      <div class="node-editor-placeholder"></div>
+      {{#edit}}<a href="#" class="remove-node remove" node="{{node/key}}" parent="{{parent/_id}}">x</a>{{/edit}}
+      {{#edit}}<div class="content-node-outline"><div class="cursor"><span></span></div></div>{{/edit}}
+      <p class='answer content'>{{{content}}}</p>
+      {{#edit}}<div class="node-editor-placeholder"></div>{{/edit}}
     </div>
   </script>
   
   <script type="text/x-handlebars-template" name="image">
     <div id="{{node/html_id}}" name={{node/key}} parent="{{parent/_id}}" draggable="false" class="content-node image">
-      <a href="#" class="remove remove-node" node="{{node/key}}" parent="{{parent/_id}}">x</a>
-      <!--<div class="content-node-info" draggable="false">Image</div>-->
-      <div class="content-node-outline"><div class="cursor"><span></span></div></div>
+      {{#edit}}<a href="#" class="remove remove-node" node="{{node/key}}" parent="{{parent/_id}}">x</a>{{/edit}}
+      {{#edit}}<div class="content-node-outline"><div class="cursor"><span></span></div></div>{{/edit}}
       {{#url}}
         <img src="{{.}}"/>
       {{/url}}
       {{^url}}
         [Upload image]
       {{/url}}
-      <div class="node-editor-placeholder">
-        
-      </div>
+      {{#edit}}<div class="node-editor-placeholder"></div>{{/edit}}
     </div>
   </script>
   

@@ -115,6 +115,18 @@ var HTMLRenderer = function(root, parent) {
       return renderers["/type/document"](node, parent)
     },
     
+    "/type/article": function(node, parent) {
+      return renderers["/type/document"](node, parent)
+    },
+    
+    "/type/manual": function(node, parent) {
+      return renderers["/type/document"](node, parent)
+    },
+    
+    "/type/qaa": function(node, parent) {
+      return renderers["/type/document"](node, parent)
+    },
+    
     "/type/section": function(node, parent) {
       var content = '',
           children = node.all('children');
@@ -129,6 +141,7 @@ var HTMLRenderer = function(root, parent) {
         node: node,
         parent: parent,
         content: content,
+        edit: app.document.mode === 'edit',
         name: node.get('name')
       });
     },
@@ -137,6 +150,7 @@ var HTMLRenderer = function(root, parent) {
       return Helpers.renderTemplate('text', {
         node: node,
         parent: parent,
+        edit: app.document.mode === 'edit',
         content: node.get('content')
       });
     },
@@ -145,6 +159,7 @@ var HTMLRenderer = function(root, parent) {
       return Helpers.renderTemplate('quote', {
         node: node,
         parent: parent,
+        edit: app.document.mode === 'edit',
         content: node.get('content')
       });
     },
@@ -153,6 +168,7 @@ var HTMLRenderer = function(root, parent) {
       return Helpers.renderTemplate('code', {
         node: node,
         parent: parent,
+        edit: app.document.mode === 'edit',
         content: node.get('content')
       });
     },
@@ -161,6 +177,7 @@ var HTMLRenderer = function(root, parent) {
       return Helpers.renderTemplate('question', {
         node: node,
         parent: parent,
+        edit: app.document.mode === 'edit',
         content: node.get('content')
       });
     },
@@ -169,6 +186,7 @@ var HTMLRenderer = function(root, parent) {
       return Helpers.renderTemplate('answer', {
         node: node,
         parent: parent,
+        edit: app.document.mode === 'edit',
         content: node.get('content')
       });
     },
@@ -177,6 +195,7 @@ var HTMLRenderer = function(root, parent) {
       return Helpers.renderTemplate('image', {
         node: node,
         parent: parent,
+        edit: app.document.mode === 'edit',
         url: node.get('url')
       });
     }
@@ -186,6 +205,50 @@ var HTMLRenderer = function(root, parent) {
     render: function() {
       // Traverse the document     
       return renderers[root.type._id](root, parent);
+    }
+  };
+};
+
+
+var TOCRenderer = function(root) {
+  
+  // Known node types
+  var renderers = {
+    "/type/document": function(node) {
+      content = '<h2>Table of contents</h2>';
+      content += '<ul>';
+      node.all('children').each(function(child) {
+        content += '<li><a class="toc-item" node="'+child.html_id+'" href="#'+root.get('creator')._id.split('/')[2]+'/'+root.get('name')+'/'+child.html_id+'">'+child.get('name')+'</a></li>';
+      });
+      content += '</ul>';
+      return content;
+    },
+    
+    "/type/story": function(node) {
+      return renderers["/type/document"](node);
+    },
+    
+    "/type/conversation": function(node) {
+      return "";
+    },
+    
+    "/type/manual": function(node, parent) {
+      return renderers["/type/document"](node, parent)
+    },
+    
+    "/type/article": function(node, parent) {
+      return renderers["/type/document"](node, parent)
+    },
+    
+    "/type/qaa": function(node, parent) {
+      return renderers["/type/document"](node, parent)
+    },
+  };
+
+  return {
+    render: function() {
+      // Traverse the document
+      return renderers[root.type._id](root);
     }
   };
 };
