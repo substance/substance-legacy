@@ -70,6 +70,16 @@ var Notifications = {
     type: 'error'
   },
   
+  DOCUMENT_INVALID: {
+    message: "The document is invalid. Make sure that you've set a correct name for it.",
+    type: 'error'
+  },
+  
+  DOCUMENT_ALREADY_EXISTS: {
+    message: "This document name is already taken.",
+    type: 'error'
+  },
+  
   DOCUMENT_DELETING: {
     message: "Deleting document ...",
     type: 'info'
