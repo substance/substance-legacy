@@ -51,6 +51,18 @@ var DocumentBrowser = Backbone.View.extend({
     });
   },
   
+  // Extract available documentTypes from config
+  documentTypes: function() {
+    var result = [];
+    graph.get('/config/substance').get('document_types').each(function(type, key) {
+      result.push({
+        type: key,
+        name: graph.get(key).name
+      });
+    });
+    return result;
+  },
+  
   render: function() {
     var that = this;
     
@@ -58,10 +70,12 @@ var DocumentBrowser = Backbone.View.extend({
     this.documents = graph.find({'type|=': this.documentType}).toArray();
     
     _.each(this.documents, function(doc) {
-      doc.username = doc.value.data.creator.split('/')[2]
+      doc.username = doc.value.get('creator')._id.split('/')[2];
+      doc.document_name = doc.value.get('name');
       doc.last_modified = _.prettyDate(new Date(doc.value.get('updated_at')).toJSON())
       doc.status = doc.value.get('published_on') ? 'published' : 'draft';
       doc.document_type = doc.value.type.key.split('/')[2];
+      doc.title = doc.value.get('title');
     });
     
     var DESC_BY_UPDATED_AT = function(item1, item2) {
@@ -71,28 +85,9 @@ var DocumentBrowser = Backbone.View.extend({
     };
     
     this.documents = this.documents.sort(DESC_BY_UPDATED_AT);
-    
-    var documentTypes = [{
-      name: "Aktuell",
-      type: "/type/document",
-      selected: "/type/document" === that.documentType
-    }];
-    
-    graph.get('/config/substance').get('document_types').each(function(type, key) {
-      var name;
-      if (type === '/type/conversation') name = 'Gespräche';
-      if (type === '/type/story') name = 'Geschichten';
-      documentTypes.push({
-        name: name,
-        type: type,
-        selected: type === that.documentType
-      });
-    });
-    
     $(this.el).html(_.renderTemplate('document_browser', {
       num_documents: this.documents.length,
       documents: this.documents,
-      document_types: documentTypes
     }));
     
     this.facets.render();
@@ -103,7 +98,8 @@ var DocumentBrowser = Backbone.View.extend({
   renderMenu: function() {
     this.$('#browser_menu').html(_.renderTemplate('browser_menu', {
       num_documents: this.documents.length,
-      username: app.username
+      username: app.username,
+      document_types: this.documentTypes()
     }));
   },
   
