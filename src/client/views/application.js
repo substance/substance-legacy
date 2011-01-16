@@ -5,6 +5,7 @@
 var Application = Backbone.View.extend({
   events: {
     'click .toggle-new-document': 'toggleNewDocument',
+    'click a.scroll-to': 'triggerScrollTo',
     'click .new-document': 'newDocument',
     'click #dashboard_toggle': 'showDashboard',
     'click #document_toggle': 'showDocument',
@@ -23,9 +24,15 @@ var Application = Backbone.View.extend({
   
   view: 'dashboard', // init state
   
+  triggerScrollTo: function(e) {
+    this.scrollTo($(e.currentTarget).attr('href'));
+    return false;
+  },
+  
   toggleLogin: function() {
     $('#signup').hide();
     $('#login').toggle();
+    this.scrollTo('#container');
     return false;
   },
   
@@ -82,7 +89,7 @@ var Application = Backbone.View.extend({
   },
   
   unpublishDocument: function(e) {
-    this.editor.model.set({
+    this.document.model.set({
       published_on: null
     });
     
@@ -162,7 +169,7 @@ var Application = Backbone.View.extend({
     
     // Initialize browser
     this.browser = new DocumentBrowser({
-      el: this.$('#browser'),
+      el: this.$('#browser_wrapper'),
       query: query
     });
     
@@ -297,8 +304,8 @@ var Application = Backbone.View.extend({
   },
   
   // Scroll to an element
-  scrollTo: function(id) {
-    var offset = $('#'+id).offset();
+  scrollTo: function(selector) {
+    var offset = $(selector).offset();
     offset ? $('html, body').animate({scrollTop: offset.top}, 'slow') : null;
     return false;
   },
@@ -352,5 +359,19 @@ var remote,                       // Remote handle for server-side methods
     
     // Set up a global instance of the Proper Richtext Editor
     editor = new Proper();
+    
+    function scrollTop() {
+      return document.body.scrollTop || document.documentElement.scrollTop;
+    }
+    
+    $(window).bind('scroll', function() {
+      var document_wrapper = document.getElementById('document_wrapper');
+      var menu = $('#document_menu');
+      if (document_wrapper.offsetTop - scrollTop()-30 < 0) {
+        $('#document_menu').addClass('docked');
+      } else {
+        $('#document_menu').removeClass('docked');
+      }
+    });    
   });
 })();

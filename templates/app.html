@@ -8,9 +8,9 @@
   </script>
   
   <script type="text/x-handlebars-template" name="document_wrapper">
-    <div id="document_menu">Document </div>
+    <div id="document_menu" class="menu">Document </div>
+    <div id="attributes">attributes</div>
     <div id="document">
-      <div id="attributes"></div>
       <p>No document loaded... You can either create a <em>New Document</em> or <em>Browse</em> existing ones.</p>
     </div>
   </script>
@@ -46,22 +46,11 @@
     </p>
   </script>
   
-  <script type="text/x-handlebars-template" name="create_document">
-    <h3>Create document</h3>
-    <p>Please use a unique document identifier (e.g. "resume").</p>
-    <div>
-      <form id="create-document-form">
-        <label for="document-name">File as:</label>
-        <input type="text" name="user_name" id="user-name" value="{{username}}" disabled="disabled">
-        / <input type="text" name="document_name" id="document-name">
-        <input type="submit" value="Save"/>
-      </form>
-    </div>
-  </script>
-  
   <script type="text/x-handlebars-template" name="document_menu">
+    <div class="label"><a class="scroll-to" href="#document_wrapper">EDIT</a></div>
+    <div class="panel">Attributes</div>
     <div class="menu-group header">
-      <a class="icon browse" href="#edit" title="Edit Document">Edit document</a>
+      <!-- <a class="icon browse" href="#edit" title="Edit Document">Edit document</a>-->
       <span class="label">{{username}} / </span>
       {{#edit}}
         <input type="text" id="document_name" name="document_name" value="{{../document_name}}"/>
@@ -79,16 +68,26 @@
   </script>
   
   <script type="text/x-handlebars-template" name="browser_menu">
-    <div id="title">SUBSTANCE™</div>
+    <div class="label"><a class="scroll-to" href="#browser_wrapper">BROWSE</a></div>
+    <div class="panel">
+      {{#username}}
+        <!--<a class="icon logout right" href="#logout" title="log out">log out</a>-->
+        <span class="label">Signed in as: <strong>{{.}}</strong></span>
+         <a class="logout button" href="#logout" title="log out">Log out</a>
+      {{/username}}
+      {{^username}}
+        <span class="label">Start writing!</span>
+        <a class="login button" href="/" title="sign in">Sign in</a>
+      {{/username}}
+    </div>
+
     <div class="menu-group header">
-      <a class="icon browse" href="#browse" title="Browse">Browse documents</a>
       <span class="label">{{num_documents}} Documents</span>
     </div>
     
-    
     <div class="menu-group new-document">
       {{#username}}
-        <a class="icon toggle-new-document" href="#new" title="create a new document">create a new document</a>
+        <a class="toggle-new-document button" href="#new" title="Create a new document">New Document</a>
       {{/username}}
       <div class="document-type-selection">
         {{#document_types}}
@@ -97,73 +96,70 @@
       </div>
     </div>
     
-
-    <div class="menu-group login-state right">
-      {{#username}}
-        <a class="icon logout right" href="#logout" title="log out">log out</a>
-        <span class="label right">Signed in as: <strong>{{.}}</strong></span>
-      {{/username}}
-      {{^username}}
-        <a class="icon login right" href="/" title="log in">log in</a>
-        <span class="label right">Tired of reading? Start writing!</span>
-      {{/username}}
-      <br class="clear"/>
-    </div>
-    
-    <div id="login">
-      <form id="login-form" class="auth-form">
-        <label for="login-user">username</label>
-        <input type="text" name="username" id="login-user" value="">
-        <label for="login-password">password</label>
-        <input type="password" name="password" id="login-password" value="">
-        <p>
-          <br/>
-          <input type="submit" value="Login"/>
-        </p>
-        <a href="/" class="signup">Create a free account</a>
-      </form>
-    </div>
-    
-    <div id="signup">
-      <form id="signup-form" class="auth-form">
-        <label for="signup-user">username</label>
-        <input type="text" name="username" id="signup-user" value="">
-        <label for="signup-email">email</label>
-        <input type="text" name="email" id="signup-email" value="">
-        <label for="signup-password">password</label>
-        <input type="text" name="password" id="signup-password" value="">
-        <p><br/>
-        <input type="submit" value="Create an account"/>
-        </p>
-      </form>
-    </div>
   </script>
   
   <script type="text/x-handlebars-template" name="document_browser">
-    <div id="browser_menu"></div>
+    <div class="menu" id="browser_menu"></div>
     
-    <div id="facets">
-      Loading facets...
-    </div>
-    
-    <div id="documents" class="document-list">
-      <div class="list">
-        {{#documents}}
-          <div class="document">
-            <a class="link load-document" href="#{{username}}/{{document_name}}" document="{{value/_id}}" user="{{username}}" name="{{document_name}}">
-              <div class="title">{{title}}</div>
-              <div class="name">{{username}} / <span>{{document_name}}</span></div>
-              <p class="meta">Updated {{last_modified}}</p>
-              <p class="status {{status}}">{{status}} {{document_type}}</p>
-            </a>
-          </div>
-        {{/documents}}
+    <div id="browser">
+      <div id="login_action">
+        <div id="login">
+          <form id="login-form" class="auth-form">
+            <label for="login-user">username</label>
+            <input type="text" name="username" id="login-user" value="">
+            <label for="login-password">password</label>
+            <input type="password" name="password" id="login-password" value="">
+            <p>
+              <br/>
+              <input type="submit" value="Login"/>
+            </p>
+            <a href="/" class="signup">Create a free account</a>
+          </form>
+        </div>
+
+        <div id="signup">
+          <form id="signup-form" class="auth-form">
+            <label for="signup-user">username</label>
+            <input type="text" name="username" id="signup-user" value="">
+            <label for="signup-email">email</label>
+            <input type="text" name="email" id="signup-email" value="">
+            <label for="signup-password">password</label>
+            <input type="text" name="password" id="signup-password" value="">
+            <p><br/>
+            <input type="submit" value="Create account"/>
+            </p>
+          </form>
+        </div>
       </div>
-      <br class="clear"/>
+      
+      
+      <div id="facets">
+        Loading facets...
+      </div>
+    
+      <div id="documents" class="document-list">
+        <h2>RESULTS</h2>
+        <div class="list">
+          {{#documents}}
+            <div class="document">
+              <a class="link load-document" href="#{{username}}/{{document_name}}" document="{{value/_id}}" user="{{username}}" name="{{document_name}}">
+                <div class="title">{{title}}</div>
+                <div class="name">{{username}} / <span>{{document_name}}</span></div>
+                <p class="meta">Updated {{last_modified}}</p>
+                <p class="status {{status}}">{{status}} {{document_type}}</p>
+              </a>
+            </div>
+          {{/documents}}
+        </div>
+        <br class="clear"/>
+      </div>
+      
+      <!--<br class="clear"/>-->
     </div>
   </script>
   
   <script type="text/x-handlebars-template" name="facets">
+    <h2>FILTER</h2>
     <div class="list">
       {{#facets}}
         <div class="facet" id="facet_{{property}}">
@@ -228,12 +224,10 @@
     </p>
   </script>
   
-  <script type="text/x-handlebars-template" name="edit_document">
-    <h2>Attributes</h2>
-    
+  <script type="text/x-handlebars-template" name="edit_attributes">
     <dl class="document-attributes">
-      <dt>Author:</dt>
-      <dd>{{document/author}} {{document/author}}</dd>
+      <dt>Creator:</dt>
+      <dd>{{creator}}</dd>
       
       <dt>Created At:</dt>
       <dd>{{created_at}}</dd>
@@ -250,22 +244,52 @@
         {{/unpublished}}
         
         {{^published_on}}
-          not published (<a href="/" class="publish-document">Publish</a>)
+          Not published (<a href="#" class="publish-document">Publish</a>)
         {{/published_on}}
       </dd>
     </dl>
     
     <div class="lpl texteditor">
       {{#attributes}}
-        <h4>{{name}}</h4>
+        <h4>{{name}}:</h4>
         <div id="property_{{key}}" key="{{key}}" type="{{type}}" class="attribute-editor {{#unique}} unique{{/unique}}{{^unique}} non-unique{{/unique}}"></div>
       {{/attributes}}
     </div>
   </script>
+  
+  
+  <script type="text/x-handlebars-template" name="show_attributes">
+    <dl class="document-attributes">
+      <dt>Creator:</dt>
+      <dd>{{document/author}}</dd>
 
-  
+      <dt>Created At:</dt>
+      <dd>{{created_at}}</dd>
+
+      <dt>Last modified:</dt>
+      <dd>{{updated_at}}</dd>
+
+      {{#published_on}}
+      <dt>Publish Date:</dt>
+      <dd>
+        {{.}}
+      </dd>
+      {{/published_on}}
+    </dl>
+
+    <div class="lpl texteditor">
+      {{#attributes}}
+        <h4>{{name}}:</h4>
+        <div class="items">
+          {{#values}}
+            <span class="item">{{.}}</span>
+          {{/values}}
+        </div>
+      {{/attributes}}
+    </div>
+  </script>
+
   <!-- content-node templates for the editor -->
-  
   <script type="text/x-handlebars-template" name="document">    
     <div id="{{node/html_id}}" name={{node/key}} class="content-node document">
       {{#edit}}<div class="content-node-outline"><div class="cursor"><span></span></div></div>{{/edit}}
@@ -353,6 +377,7 @@
       {{#items}}
         <span class="item">{{.}} <a href="/" value="{{.}}" class="remove-item">x</a></span>
       {{/items}}
+      <br class="clear"/>
     </div>
   </script>
   
@@ -420,7 +445,7 @@
 </head>
 <body>
   <div id="container">
-    <div id="browser">
+    <div id="browser_wrapper">
     </div>
     
     <div id="document_wrapper">

@@ -165,7 +165,7 @@ var Document = Backbone.View.extend({
     this.init();
     
     // Move to the actual document
-    app.scrollTo('document_wrapper');
+    app.scrollTo('#document_wrapper');
     
     this.trigger('document:changed');
     notifier.notify(Notifications.BLANK_DOCUMENT);
@@ -190,7 +190,7 @@ var Document = Backbone.View.extend({
           that.trigger('document:changed');
 
           // Move to the actual document
-          app.scrollTo('document_wrapper');
+          app.scrollTo('#document_wrapper');
 
           notifier.notify(Notifications.DOCUMENT_LOADED);
           remote.Session.registerDocument(id);

@@ -1,13 +1,43 @@
 var Attributes = Backbone.View.extend({
   
   initialize: function() {
-    var that = this;   
+    var that = this;
   },
   
   render: function() {
+    app.document.mode === 'edit' ? this.renderEdit() : this.renderShow();
+  },
+  
+  renderShow: function() {
+    var doc = app.document.model;
+    var attributes = [];
+    
+    doc.properties().each(function(property) {
+      if (property.meta.attribute) {
+        attributes.push({
+          "key": property.key,
+          "name": property.name,
+          "type": property.expectedTypes[0],
+          "unique": property.unique,
+          "values": doc.get(property.key).values()
+        });
+      }
+    });
+    
+    $(this.el).html(Helpers.renderTemplate('show_attributes', {
+      attributes: attributes,
+      document: doc.toJSON(),
+      creator: doc.get('creator') ? doc.get('creator')._id.split('/')[2] : null,
+      created_at: doc.get('created_at') ? new Date(doc.get('created_at')).toDateString() : null,
+      updated_at: doc.get('updated_at') ? _.prettyDate(new Date(doc.get('updated_at')).toJSON()) : null,
+      published_on: doc.get('published_on') ? new Date(doc.get('published_on')).toDateString() : null,
+      unpublished: !doc.get('published_on')
+    }));
+  },
+  
+  renderEdit: function() {
     var that = this; 
     var doc = app.document.model;
-    
     var attributes = [];
     
     // Extract attributes from properties
@@ -22,13 +52,12 @@ var Attributes = Backbone.View.extend({
         });
       }
     });
-    
+
     if (doc.get('name')) {
-      $(this.el).html(Helpers.renderTemplate('edit_document', {
-        // attributes: doc.get('user') ? settings.attributes : null,
+      $(this.el).html(Helpers.renderTemplate('edit_attributes', {
         attributes: doc.get('name') ? attributes : null,
         document: doc.toJSON(),
-        author: doc.get('user') ? doc.get('user').toJSON() : null,
+        creator: doc.get('creator') ? doc.get('creator')._id.split('/')[2] : null,
         created_at: doc.get('created_at') ? new Date(doc.get('created_at')).toDateString() : null,
         updated_at: doc.get('updated_at') ? _.prettyDate(new Date(doc.get('updated_at')).toJSON()) : null,
         published_on: doc.get('published_on') ? new Date(doc.get('published_on')).toDateString() : null,
