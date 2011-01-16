@@ -15,6 +15,7 @@
 .right { float: right; }
 .left { float: left; }
 
+
 /* Common styles
 -------------------------------------------------------------------------------*/
 
@@ -24,7 +25,7 @@ img { border: none;}
 
 body { 
   margin: 0; padding: 0;
-  background: #e9e9e9; /* #f0f1eb; */
+  background: #EDEDED; /* #f0f1eb; */
   color:#444;
   text-rendering: optimizeLegibility;
   font: normal 13px/19px Helvetica, Arial, Verdana, sans-serif;
@@ -44,10 +45,10 @@ p.info {
 
 h1, h2, h3, h4, h5, h6 { padding: 10px 0 5px 0; }
 
-h1 { font-size: 340%; letter-spacing: -0.07em; line-height: 1.1em; padding-bottom: 0.2em; }
+h1 { font-size: 300%; letter-spacing: -0.07em; line-height: 1.1em; padding-bottom: 0.2em; }
 
 h3, h4, h5, h6 { padding-top: 20px; }
-h2 { font-size: 150%; padding-bottom: 15px; }
+h2 { font-size: 160%; padding-bottom: 15px; }
 
 :focus { outline: 0; } /* should go to reset.css */
 
@@ -55,7 +56,7 @@ h2 { font-size: 150%; padding-bottom: 15px; }
 /* Meta Data DT DD */
 
 dl { margin: 0;	padding: 0; }
-dt { position: relative; left: 0; top: 20px; width: 100px; }
+dt { position: relative; left: 0; top: 20px; width: 100px; text-transform: uppercase; font-size: 10px; }
 dd { color: rgba(0, 0, 0, 0.5); font-size: 1em;	margin: 0 0 0 105px; padding: 0; }
 
 
@@ -79,7 +80,7 @@ input {
   color: #666;
 
   border:1px solid transparent;
-  background-color:rgba(255,255,255,0.75);
+  border: 1px solid #ccc;
 }
 
 textarea {
@@ -96,11 +97,11 @@ textarea {
 }
 
 input:hover, textarea:hover { 
-  background-color:rgba(255,255,255,0.9);
+
 }
 
 input:focus, textarea:focus { 
-  background-color:rgba(255,255,255,1);
+
 }
 
 
@@ -159,7 +160,7 @@ input:focus, textarea:focus {
 /* body > #container > #browser_wrapper
 -------------------------------------------------------------------------------*/
 
-#browser_wrapper { background: #303030; padding-top: 30px; border-bottom: 1px solid #545454; }
+#browser_wrapper { padding: 50px 0; }
 
 
 #browser_wrapper h2 {
@@ -167,17 +168,11 @@ input:focus, textarea:focus {
   padding-top: 20px;
   padding-bottom: 20px;
   color: #fff;
-  font-family: "adobe-garamond-pro-1","adobe-garamond-pro-2",Georgia, Times, serif;
-  font-style: italic;
 }
 
 /* body > #container > #browser_wrapper > #browser_menu
 -------------------------------------------------------------------------------*/
 
-
-#browser_wrapper #browser_menu a {
-  color: #BBB;
-}
 
 /* commonly used */
 .menu-group {
@@ -188,7 +183,7 @@ input:focus, textarea:focus {
   -webkit-transition: all 0.15s ease-in-out;
 }
 
-.menu-group.header { padding-left: 10px; }
+.menu-group.header { padding-right: 10px; font-size: 17px; }
 .menu-group.right { float: right; }
 
 .label strong { color: #676767; }
@@ -198,18 +193,15 @@ input:focus, textarea:focus {
   top: 0px;
   left: 0px;
   right: 0px;
-  height: 30px;
-  border-bottom: 1px solid #545454;
+  height: 50px;
+  background: #EDEDED;
+/*  border-bottom: 1px solid #545454;*/
   
-  line-height: 30px;
-  background: #0C0C0C;
+  line-height: 50px;
   padding: 0 250px;
-  color: #bbb;
-  text-shadow: 0px 1px 0px rgba(0,0,0,1.0);
   z-index: 10000;
 }
 
-#browser_menu a { color: rgba(0,0,0, 0.5);}
 #browser_menu .header { }
 
 #browser_menu .document-type-selection {
@@ -223,12 +215,12 @@ input:focus, textarea:focus {
 .document-type-selection a {
   color: #929292;
   padding: 10px;
-  display: block;
   text-decoration: none;
 }
 
 .document-type-selection a:hover {
-  background: #fff;
+  background: black;
+  color: white;
 }
 
 #browser_menu #title {
@@ -245,33 +237,7 @@ input:focus, textarea:focus {
 #login_action {
   float: right;
   width: 250px;
-  
-  text-rendering:optimizeLegibility; 
-  font-family: Baskerville, "Baskerville old face", "Hoefler Text", Garamond, "Times New Roman", serif; 
   font-size: 15px;
-  font-style: italic;
-}
-
-#login_action input {
-  background: #3F3F3F;
-  color: #bbb;
-}
-
-#login_action a {
-  color: #bbb;
-  text-decoration: underline;
-}
-
-#login_action a:hover {
-  color: #eee;
-}
-
-#login_action input[type=submit] { background: #232323;}
-
-#login_action input[type=submit]:hover { background: #000; color: #eee; }
-
-#login_action input:focus {
-  background: #555;
 }
 
 #login_action label {
@@ -285,7 +251,6 @@ input:focus, textarea:focus {
   position: absolute;
   top: 30px;
   right: 0px;
-  
   width: 250px;
   z-index: 5000;
 }
@@ -309,110 +274,93 @@ form.auth-form label {
 /* body > #container > #browser_wrapper > #documents
 -------------------------------------------------------------------------------*/
 
-#documents { margin: 0px 250px; background: #1E1E1E; border-left: 1px solid #545454; border-right: 1px solid #545454; }
-#documents .list {  }
-#documents .document { float: left; position: relative; width: 240px; }
-
-.document-list .document a.link {
-  padding: 10px;
-  display: block;
-  overflow: hidden;
-  margin-right: 10px;
-  margin-bottom: 10px;
-  color: #666;
-  border-top: 1px solid #000;
-  position: relative;
-  -webkit-transition: all 0.25s ease-in-out;
+table#documents {
+  margin: 0px 250px;
 }
 
-.document-list .document a.link:hover { 
-  text-decoration: none;
-  color: #000;
-  /*background: white;*/
-  /*background: #f0f1eb;*/
+table#documents th {
+  padding: 15px 40px 15px 0px;
+  text-rendering:optimizeLegibility; 
+  font-family: Garamond, "Times New Roman", serif; 
 }
 
-
-/*.document-list .document > a.link .icon { float: left; margin-right: 10px; }
-.document-list .document > a.link .content { float: left; overflow: hidden; }
-.document-list .document > a.link .content h5 { color: #282a2a; font-size: 13px; margin: 0; padding: 0; }*/
-
-
-/*.document-list .document > a.link .content .meta {
-  margin: 0;
-  padding: 0;
-  font-size: 11px;
-  color: #8a8d7d;
-}*/
-
-.document-list .document .title {
+table#documents thead th {
+  font-style: italic;
   font-size: 16px;
-  font-weight: bold;
 }
 
-.document-list .document .name {
-  font-size: 12px;
+table#documents tbody th {
+  font-size: 25px;
+}
+
+table#documents tbody a {
+  position: relative;
+}
+
+table#documents td {
+  padding: 15px 40px 15px 0px;
+}
+
+table#documents .document-type { font-family: Helvetica; font-size: 10px; color: #aaa; position: absolute; left: 0px; top: -10px; }
+
+table tr.draft, table tr.draft a {
   color: #aaa;
 }
 
-.document-list .document .name span {
-  color: #000;
-}
-
-.document .status {
-  position: absolute;
-  top:  5px;
-  right:  5px;
-}
-
-.document .status.published { color: #76b5e5; }
-.document .status.draft { color: #e08b18; }
-
-/* Search */
-
-#document_search {
-  background: #eee;
-  position: absolute;
-  top: 20px;
-  right: 20px;
-}
 
 /* body > #container > #browser_wrapper > #facets
 -------------------------------------------------------------------------------*/
 
-#facets { margin: 0 250px; padding-bottom: 20px; background: #232323; border-left: 1px solid #545454; border-right: 1px solid #545454; border-bottom: 1px solid #545454; }
+#facets { position: fixed; top: 50px; left: 20px; width: 200px; padding-bottom: 20px; }
 
 #facets .list { overflow: auto; }
 #facets .facet h3 {
   border-bottom: 1px solid #ccc;
-  text-transform: uppercase; color: #eee; padding: 3px; margin-left: 10px; padding-left: 0px; font-weight: normal; font-size: 11px; margin-top: 1px; 
+  color: #000; padding: 3px; margin-left: 0px; padding-left: 0px; font-weight: normal; font-size: 14px; margin-top: 1px; 
 }
 
 #facets .facet { float: left; margin-right: 10px; width: 180px; }
 #facets .facet ul { margin: 0px; padding: 0px; }
 #facets .facet.selected ul { display: block; }
-#facets .facet li { list-style: none; margin: 0; padding-left: 10px; padding-top: 5px; overflow: auto; }
+#facets .facet li { list-style: none; margin: 0; padding-left: 0px; padding-top: 5px; overflow: auto; color: #888; }
 
-#facets .facet li a { 
+#facets .facet li a {
+  position: relative;
+  overflow: auto;
   display: block; 
-  color: #aaa; 
-  font-size: 11px; 
+  color: #888; 
+  font-size: 13px; 
   white-space: nowrap;
+  padding-left: 30px;
 }
 
-#facets .facet li a:hover { text-decoration: none; color: #eee; }
-#facets .facet li a span { color: #ccc; margin-left: 5px; font-size: 11px; float: right;}
+#facets .facet li a:hover { text-decoration: none; color: #000; }
+#facets .facet li a:hover .tick-icon { border-color: #000; }
+#facets .facet li a span.item-count { margin-left: 5px; font-size: 12px; float: right; }
+
+#facets .facet li a div.tick-icon { 
+  position: absolute;
+  left: 0px;
+  border: 1px solid #ccc;
+  padding: 2px;
+  width: 14px;
+  height: 14px;
+}
+
 #facets .facet .facet-choices { overflow: auto; }
 #facets .facet li.facet-choice { color: #888; }
-/*#facets .facet li.facet-choice.selected { color: white;  }*/
-#facets .facet li.facet-choice.selected a { color: white; }
+#facets .facet li.facet-choice.selected a { color: black; }
 
+#facets .facet li.facet-choice.selected a div.tick-icon {
+  border-color: #000;
+  background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAMCAYAAABWdVznAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAGZJREFUeNpi/P//PwMpgImBRECyBgYinCQAxAFwtQQ0GADxe5BakCZ0DSCTEpAUJyApBtEGyBpAis9DJUEKG6BsuGJ0JxUgKfiPTTE2P8zHpxiXp+fjUowvlPqxKYZpYCQ1aQAEGACY7lEYFmjlwgAAAABJRU5ErkJggg==);
+}
 
 /* body > #container > #document_wrapper
 -------------------------------------------------------------------------------*/
 
 
-#document_wrapper { position: relative; }
+#document_wrapper { position: relative; background: #fff; }
 
 
 /* body > #container > #document_wrapper > #document_menu
@@ -423,37 +371,33 @@ form.auth-form label {
   top: 0px;
   left: 0px;
   right: 0px;
-  
-  height: 30px;
-  line-height: 30px;
+  background: #fff;
+  height: 50px;
+  line-height: 50px;
   padding: 0 250px;
-  color: rgba(0,0,0, 0.5);
-  background: #ccc;
+  
 /*  text-shadow: 0px 1px 0px rgba(255,255,255,0.5);*/
   z-index: 3000;
 }
 
 .menu div.label {
+  font-size: 19px;
+  font-weight: bold;
   position: absolute;
   left: 0px;
-  width: 251px;
-  border-right: 1px solid #B3B3B3;
-  padding-right: 10px;
-  text-align: right;
-  color: #666;
+  width: 250px;
+  padding-left: 20px;
 }
 
 .menu div.panel {
-  text-rendering:optimizeLegibility; 
-  font-family: Baskerville, "Baskerville old face", "Hoefler Text", Garamond, "Times New Roman", serif; 
-  font-size: 15px;
-  font-style: italic;
   position: absolute;
   right: 0px;
   width: 251px;
-  border-left: 1px solid #B3B3B3;
   padding-left: 10px;
-  color: #666;
+}
+
+div.panel.attributes {
+  font-size: 17px;
 }
 
 #browser_menu div.label {
@@ -466,14 +410,14 @@ form.auth-form label {
   border-color: #545454;
 }
 
-#browser_menu a.button {
+.menu a.button {
   margin-left: 4px;
   padding: 2px 3px;
   background: #444;
   color: #eee;
 }
 
-#browser_menu a.button:hover {
+.menu a.button:hover {
   background: #333;
   text-decoration: none;
 }
@@ -481,7 +425,14 @@ form.auth-form label {
 
 #document_menu.docked {
   position: fixed;
-  top: 30px;
+  top: 50px;
+  left: 0px;
+  right: 0px;
+}
+
+#document_menu.docked-below {
+  position: fixed;
+  bottom: 0px;
   left: 0px;
   right: 0px;
 }
@@ -490,36 +441,53 @@ form.auth-form label {
 -------------------------------------------------------------------------------*/
 
 #document {
+  display: none;
   color: #333;
-  min-height: 500px;
   position
   position:relative;
   background:#fff;
-  margin: 0 250px;
-  border-left: 1px solid #D1D1D1; border-right: 1px solid #D1D1D1;
-  padding:  50px 0;
+  margin: 0 250px 0 230px;
+  padding: 0;
+  padding-top: 80px;
+  min-height: 500px;
+  
+  text-rendering:optimizeLegibility; 
+  font-family: Garamond, "Times New Roman", serif;
+  font-size: 16px;
+  line-height: 1.5em;
 }
 
+#document ol {
+  padding-left: 20px;
+}
+
+#document ul {
+  padding-left: 20px;
+}
+
+#document li {
+  
+}
 
 /* body > #container > #document_wrapper > #attributes
 -------------------------------------------------------------------------------*/
 
 #attributes {
-  text-rendering:optimizeLegibility; 
-  font-family: Baskerville, "Baskerville old face", "Hoefler Text", Garamond, "Times New Roman", serif; 
-  font-size: 15px;
-  font-style: italic;
-  line-height: 1.4286; /* 20px baseline */
+  display: none;
+  line-height: 1.6em;
   position: absolute;
-  top: 30px;
+  top: 90px;
   right:  0px;
-  width:  250px;
+  width:  240px;
   padding: 10px;
 }
 
-.attribute-editor input { width: 200px; display: inline; background: #CDCDCD; }
-.attribute-editor input:hover { background: #bbb; }
-.attribute-editor input:focus { background: #bbb; }
+#attributes h3 {
+  margin: 0; padding: 0;
+  font-size: 17px;
+}
+
+.attribute-editor input { width: 180px; display: inline;  }
 
 .attribute-editor input[type=submit] { width: 20px; font-weight: bold;}
 .attribute-editor div.items { padding: 10px 0; }
@@ -529,10 +497,10 @@ form.auth-form label {
   display: block;
   float: left;
   color: #777;
-  font-size: 13px;
+  font-size: 11px;
   white-space: nowrap;
-  background: #CDCDCD;
-  padding: 2px 7px;
+  background: #e7e7e7;
+  padding: 1px 7px;
   margin-right: 6px;
   margin-bottom: 6px;
 }
@@ -549,19 +517,19 @@ form.auth-form label {
 -------------------------------------------------------------------------------*/
 
 #notifications {
+  color: #666;
   position:fixed;
   bottom:0px;
   right:0px;
   font-size:13px;
-  z-index:1000;
+  z-index:10000;
 }
 
 #notifications .wrapper {
   margin:0 20px;
 
   padding: 0;
-  text-shadow:0px 1px 1px #000;
-  background:rgba(0,0,0,0.85);
+  background: #ddd;
   -webit-border-top-left-radius:  5px;
   -webit-border-top-right-radius: 5px;
   -moz-border-radius-topleft:     5px;
@@ -571,12 +539,11 @@ form.auth-form label {
 }
 
 #notifications .wrapper p { margin: 0; padding: 0; }
-#notifications .wrapper > p { padding:4px 12px 2px 12px; border-bottom:1px solid rgba(255,255,255,0.1); }
+#notifications .wrapper > p { padding:4px 12px 2px 12px; border-bottom:1px solid #fff }
 #notifications .wrapper > p:last-child { padding:4px 12px 6px 12px; border-bottom:none; }
 #notifications .wrapper > p.error        > span { float:left; width:70px; color:#f45; font-size:11px; font-weight:bold; text-transform:uppercase; }
 #notifications .wrapper > p.warning      > span { float:left; width:70px; color:#fd6; font-size:11px; font-weight:bold; text-transform:uppercase; }
 #notifications .wrapper > p.notification > span { float:left; width:70px; color:#aaa; font-size:11px; font-weight:bold; text-transform:uppercase; }
-
 
 /* Node Types
 -------------------------------------------------------------------------------*/
@@ -592,19 +559,18 @@ quote {
 
 p.question {
   color:#0071bc;
-  font-size:18px;
+  font-size:25px;
   line-height:1.5em;
   font-style: italic;
-},
+}
 
 p.answer {
   
 }
 
 #document_lead {
-  font-size: 120%;
-  line-height: 1.2;
-  font-family: Georgia, "Times New Roman", serif;
+  font-size: 19px;
+  line-height: 1.5;
   font-style: italic;
   color: #999;
 }
@@ -628,20 +594,25 @@ pre.code {border-left: 2px solid #ccc; padding-left: 20px; }
 
 
 
-
 /* Content Nodes
 -------------------------------------------------------------------------------*/
 
 .content-node { position: relative; padding: 20px; }
-.content-node.active { background: #fff; }
+/*.content-node.active { background: #fff; }*/
 .content-node .content-node { margin-left:-20px; padding-left: 20px; margin-right: -20px; padding-right: 20px; }
 
 #document.edit-mode .content-node { color: #aaa; }
 #document.edit-mode .content-node a { color: #aaa; }
 
-#document.edit-mode .content-node.selected {
+/*#document.edit-mode .content-node.selected {
   background: #fff;
   -webkit-box-shadow:0px 0px 4px rgba(0,0,0,0.3);
+}*/
+
+#document.edit-mode .content-node.selected {
+  background: #fff;
+  border-top: 1px dashed #ccc;
+  border-bottom: 1px dashed #ccc;
 }
 
 #document.edit-mode .content-node.selected > .content {color: #000; }
@@ -710,6 +681,10 @@ pre.code {border-left: 2px solid #ccc; padding-left: 20px; }
   border-left: 1px solid;
   border-bottom: 1px solid;
   border-top: 1px solid;
+}
+
+.content-node-outline:hover {
+
 }
 
 .content-node-outline .cursor {

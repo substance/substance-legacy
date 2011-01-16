@@ -47,10 +47,9 @@
   </script>
   
   <script type="text/x-handlebars-template" name="document_menu">
-    <div class="label"><a class="scroll-to" href="#document_wrapper">EDIT</a></div>
-    <div class="panel">Attributes</div>
+    <div class="label"><a class="scroll-to" href="#document_wrapper">{{#edit}}WRITE{{/edit}}{{^edit}}READ{{/edit}}</a></div>
+    <div class="panel attributes"></div>
     <div class="menu-group header">
-      <!-- <a class="icon browse" href="#edit" title="Edit Document">Edit document</a>-->
       <span class="label">{{username}} / </span>
       {{#edit}}
         <input type="text" id="document_name" name="document_name" value="{{../document_name}}"/>
@@ -59,19 +58,31 @@
         {{document_name}}
       {{/edit}}
     </div>
-    
-    {{#edit}}
-      <div class="menu-group edit-document">
-        <a class="icon save-document right" href="#save_document" title="save current document">save current document</a>
+        
+    <div class="menu-group edit-document">
+      {{#edit}}
+        <a class="button save-document" href="#save_document" title="Save current document">Save</a>
+      {{/edit}}
+      <a class="button toggle-new-document" href="#new-document" title="New document">Close Document</a>
+    </div>
+  </script>
+  
+  <script type="text/x-handlebars-template" name="document_menu_create">
+    <div class="label"><a class="toggle-new-document" href="#document_wrapper">NEW DOCUMENT</a></div>
+    <div class="panel attributes"></div>
+    <div class="menu-group header">
+      <div class="document-type-selection">
+        {{#document_types}}
+          <a class="document-type new-document" type="{{type}}" href="#">{{name}}</a>
+        {{/document_types}}
       </div>
-    {{/edit}}
+    </div>
   </script>
   
   <script type="text/x-handlebars-template" name="browser_menu">
     <div class="label"><a class="scroll-to" href="#browser_wrapper">BROWSE</a></div>
     <div class="panel">
       {{#username}}
-        <!--<a class="icon logout right" href="#logout" title="log out">log out</a>-->
         <span class="label">Signed in as: <strong>{{.}}</strong></span>
          <a class="logout button" href="#logout" title="log out">Log out</a>
       {{/username}}
@@ -83,17 +94,6 @@
 
     <div class="menu-group header">
       <span class="label">{{num_documents}} Documents</span>
-    </div>
-    
-    <div class="menu-group new-document">
-      {{#username}}
-        <a class="toggle-new-document button" href="#new" title="Create a new document">New Document</a>
-      {{/username}}
-      <div class="document-type-selection">
-        {{#document_types}}
-          <a class="document-type new-document" type="{{type}}" href="#">{{name}}</a>
-        {{/document_types}}
-      </div>
     </div>
     
   </script>
@@ -132,44 +132,39 @@
         </div>
       </div>
       
-      
       <div id="facets">
         Loading facets...
       </div>
-    
-      <div id="documents" class="document-list">
-        <h2>RESULTS</h2>
-        <div class="list">
-          {{#documents}}
-            <div class="document">
-              <a class="link load-document" href="#{{username}}/{{document_name}}" document="{{value/_id}}" user="{{username}}" name="{{document_name}}">
-                <div class="title">{{title}}</div>
-                <div class="name">{{username}} / <span>{{document_name}}</span></div>
-                <p class="meta">Updated {{last_modified}}</p>
-                <p class="status {{status}}">{{status}} {{document_type}}</p>
-              </a>
-            </div>
-          {{/documents}}
-        </div>
-        <br class="clear"/>
-      </div>
       
-      <!--<br class="clear"/>-->
+      <table id="documents">
+        <thead>
+          <tr><th>Title</th><th>Author</th><th>Published</th><th>Last modified</th></tr>
+        </thead>
+        <tbody>
+          {{#documents}}
+            <tr class="{{status}}">
+              <th><a class="link load-document" href="#{{username}}/{{document_name}}" document="{{value/_id}}" user="{{username}}" name="{{document_name}}">{{title}}<span class="document-type">{{document_type}}</span></a></th>
+              <td>{{username}}</td>
+              <td>{{#published_on}}{{.}}{{/published_on}}{{^published_on}}- - -{{/published_on}}</td>
+              <td>{{last_modified}}</td>
+            </tr>
+          {{/documents}}
+        </tbody>
+      </table>
     </div>
   </script>
   
   <script type="text/x-handlebars-template" name="facets">
-    <h2>FILTER</h2>
     <div class="list">
       {{#facets}}
         <div class="facet" id="facet_{{property}}">
           <h3>{{property_name}}</h3>
           <ul class="facet-choices">
             {{#selected_facet_choices}}
-              <li class="facet-choice selected"><a href="#" class="remove-criterion" property="{{../property}}" operator="CONTAINS" value="{{value}}">{{value}}<span class="item-count">{{item_count}}</span></a></li>
+              <li class="facet-choice selected"><a href="#" class="remove-criterion" property="{{../property}}" operator="CONTAINS" value="{{value}}"><div class="tick-icon ticked"/>{{value}}<span class="item-count">{{item_count}}</span></a></li>
             {{/selected_facet_choices}}
             {{#facet_choices}}
-              <li class="facet-choice"><a href="#" class="add-criterion" property="{{../property}}" operator="CONTAINS" value="{{value}}">{{value}}<span class="item-count">{{item_count}}</span></a></li>
+              <li class="facet-choice"><a href="#" class="add-criterion" property="{{../property}}" operator="CONTAINS" value="{{value}}"><div class="tick-icon"/>{{value}}<span class="item-count">{{item_count}}</span></a></li>
             {{/facet_choices}}
           </ul>
         </div>
@@ -216,9 +211,7 @@
     <h3>Edit section</h3>
   </script>
   
-  
   <script type="text/x-handlebars-template" name="edit_unsaved_document">
-    <h2>Attributes</h2>
     <p class="info">
       You are editing a draft document. You need to <a href="#" class="save-document">save</a> it in order to to edit attributes.
     </p>
@@ -261,7 +254,7 @@
   <script type="text/x-handlebars-template" name="show_attributes">
     <dl class="document-attributes">
       <dt>Creator:</dt>
-      <dd>{{document/author}}</dd>
+      <dd>{{creator}}</dd>
 
       <dt>Created At:</dt>
       <dd>{{created_at}}</dd>
@@ -449,6 +442,7 @@
     </div>
     
     <div id="document_wrapper">
+      
     </div>
   </div>
   
@@ -456,6 +450,5 @@
     <div class="wrapper">
     </div>
   </div>
-
-</body> 
+</body>
 </html>

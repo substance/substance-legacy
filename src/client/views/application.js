@@ -37,7 +37,7 @@ var Application = Backbone.View.extend({
   },
   
   toggleNewDocument: function() {
-    this.$('.document-type-selection').toggle();
+    this.document.closeDocument();
     return false;
   },
   
@@ -141,6 +141,7 @@ var Application = Backbone.View.extend({
       success: function() {
         that.username = null;
         that.authenticated = false;
+        that.document.closeDocument();
         that.browser.render();
         that.render();
       }
@@ -364,14 +365,26 @@ var remote,                       // Remote handle for server-side methods
       return document.body.scrollTop || document.documentElement.scrollTop;
     }
     
-    $(window).bind('scroll', function() {
+    window.positionDocumentMenu = function() {
       var document_wrapper = document.getElementById('document_wrapper');
       var menu = $('#document_menu');
-      if (document_wrapper.offsetTop - scrollTop()-30 < 0) {
+      
+      var val = document_wrapper.offsetTop - scrollTop()-50;
+      if (val < 0) {
         $('#document_menu').addClass('docked');
+        $('#document_menu').css('top', 50);
       } else {
-        $('#document_menu').removeClass('docked');
-      }
-    });    
+        if (val < window.innerHeight-100) {
+          $('#document_menu').removeClass('docked');
+          $('#document_menu').css('top', 0);
+        } else {
+          $('#document_menu').addClass('docked');
+          $('#document_menu').css('top', window.innerHeight-50);
+        }
+      }      
+    }
+    
+    $(window).bind('scroll', positionDocumentMenu);
+    $(window).bind('resize', positionDocumentMenu);
   });
 })();

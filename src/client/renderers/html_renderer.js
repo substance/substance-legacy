@@ -102,6 +102,7 @@ var HTMLRenderer = function(root, parent) {
       return Helpers.renderTemplate('document', {
         node: node,
         content: content,
+        edit: app.document.mode === 'edit',
         title: node.get('title'),
         lead: node.get('lead')
       });

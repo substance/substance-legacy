@@ -58,13 +58,13 @@ var Document = Backbone.View.extend({
   },
   
   render: function() {
-    if (this.model) {
-      // Render all relevant sub views
-      $(this.el).html(Helpers.renderTemplate('document_wrapper'));
+    // Render all relevant sub views
+    $(this.el).html(Helpers.renderTemplate('document_wrapper'));
+    this.renderMenu();
 
+    if (this.model) {
       // Render Attributes
       this.attributes.render();
-      this.renderMenu();
       
       // Render the acutal document
       this.renderDocument();
@@ -84,17 +84,42 @@ var Document = Backbone.View.extend({
   
   renderDocument: function() {
     this.$('#document').html(new HTMLRenderer(this.model).render());
-
+    
+    this.$('#attributes').show();
+    this.$('#document').show();
     // Render controls
     if (this.mode === 'edit') renderControls(this.model);
   },
   
+  // Extract available documentTypes from config
+  documentTypes: function() {
+    var result = [];
+    graph.get('/config/substance').get('document_types').each(function(type, key) {
+      result.push({
+        type: key,
+        name: graph.get(key).name
+      });
+    });
+    return result;
+  },
+  
   renderMenu: function() {
-    this.$('#document_menu').html(_.renderTemplate('document_menu', {
-      edit: this.mode === 'edit',
-      username: this.model.get('creator')._id.split('/')[2],
-      document_name: this.model.get('name')
-    }));
+    if (this.model) {
+      this.$('#document_menu').html(_.renderTemplate('document_menu', {
+        edit: this.mode === 'edit',
+        username: this.model.get('creator')._id.split('/')[2],
+        document_name: this.model.get('name')
+      }));
+    } else {
+      if (app.username) {
+        this.$('#document_menu').html(_.renderTemplate('document_menu_create', {
+          document_types: this.documentTypes()
+        }));
+      } else {
+        this.$('#document_menu').hide();
+      }
+    }
+    window.positionDocumentMenu();
   },
   
   init: function() {
@@ -221,6 +246,11 @@ var Document = Backbone.View.extend({
     });
   },
   
+  closeDocument: function() {
+    this.model = null;
+    this.render();
+  },
+  
   // Delete an existing document, given that the user is authorized
   // -------------
   
@@ -243,6 +273,7 @@ var Document = Backbone.View.extend({
   
   // Reset to view mode (aka unselect everything)
   reset: function(noBlur) {
+    if (!app.document.model) return;
     if (!noBlur) $('.content').blur();
     
     app.document.model.selectedNode = null;

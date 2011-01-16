@@ -15,6 +15,9 @@ var DocumentBrowser = Backbone.View.extend({
       value: value
     }});
     this.render();
+    
+    app.scrollTo('#browser_wrapper');
+    window.positionDocumentMenu();
     return false;
   },
   
@@ -51,18 +54,6 @@ var DocumentBrowser = Backbone.View.extend({
     });
   },
   
-  // Extract available documentTypes from config
-  documentTypes: function() {
-    var result = [];
-    graph.get('/config/substance').get('document_types').each(function(type, key) {
-      result.push({
-        type: key,
-        name: graph.get(key).name
-      });
-    });
-    return result;
-  },
-  
   render: function() {
     var that = this;
     
@@ -74,6 +65,7 @@ var DocumentBrowser = Backbone.View.extend({
       doc.document_name = doc.value.get('name');
       doc.last_modified = _.prettyDate(new Date(doc.value.get('updated_at')).toJSON())
       doc.status = doc.value.get('published_on') ? 'published' : 'draft';
+      doc.published_on = doc.value.get('published_on') ? new Date(doc.value.get('published_on')).toDateString() : null;
       doc.document_type = doc.value.type.key.split('/')[2];
       doc.title = doc.value.get('title');
     });
@@ -98,8 +90,7 @@ var DocumentBrowser = Backbone.View.extend({
   renderMenu: function() {
     this.$('#browser_menu').html(_.renderTemplate('browser_menu', {
       num_documents: this.documents.length,
-      username: app.username,
-      document_types: this.documentTypes()
+      username: app.username
     }));
   },
   
@@ -159,4 +150,5 @@ var DocumentBrowser = Backbone.View.extend({
       this.render();    
     }
   }
+  
 });
