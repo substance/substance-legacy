@@ -36,7 +36,7 @@ app.configure(function(){
   app.use(express.bodyDecoder());
   app.use(express.methodOverride());
   app.use(express.cookieDecoder());
-  app.use(express.session());
+  app.use(express.session({secret: config['secret']}));
   app.use(app.router);
   app.use(express.staticProvider(__dirname));
   app.use(express.logger({ format: ':method :url' }));

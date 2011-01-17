@@ -1,5 +1,6 @@
 {
   "couchdb_url": "http://localhost:5984/substance",
   "server_host": null,
-  "server_port": 3003
+  "server_port": 3003,
+  "secret": "secret option string for session security"
 }

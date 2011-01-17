@@ -18,11 +18,15 @@ var Application = Backbone.View.extend({
     'click a.publish-document': 'publishDocument',
     'click a.unpublish-document': 'unpublishDocument',
     'submit #create-document-form': 'createDocument',
+    'submit #login-form': 'login',
     'click a.delete-document': 'deleteDocument',
     'click a.view-collaborators': 'viewCollaborators'
   },
-  
-  view: 'dashboard', // init state
+
+  login: function(e) {
+    this.authenticate();
+    return false;
+  },
   
   triggerScrollTo: function(e) {
     this.scrollTo($(e.currentTarget).attr('href'));
@@ -289,7 +293,7 @@ var Application = Backbone.View.extend({
   
   authenticate: function() {
     var that = this;
-    
+
     remote.Session.authenticate($('#login-user').val(), $('#login-password').val(), {
       success: function(username, status) { 
         notifier.notify(Notifications.AUTHENTICATED);
@@ -334,11 +338,7 @@ var Application = Backbone.View.extend({
     // Browser not supported
     if (window.WebSocket === undefined) {
       $(this.el).html(Helpers.renderTemplate('browser_not_supported'));
-    } else {      
-      $('#login-form').submit(function() {
-        that.authenticate();
-        return false;
-      });
+    } else {
       this.document.render();
     }
     return this;
