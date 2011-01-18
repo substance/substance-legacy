@@ -219,8 +219,9 @@ var Application = Backbone.View.extend({
     this.bind('authenticated', function() {
       that.authenticated = true;
       
-      // Re-render #browser_menu
+      // Re-render browser
       that.render();
+      that.browser.load();
     });
   },
   

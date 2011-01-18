@@ -38,26 +38,34 @@ var DocumentBrowser = Backbone.View.extend({
   initialize: function(options) {
     var that = this;
     
+    this.documents = [];
     that.commands = [];
     this.load();
     this.documentType = "/type/document"; // default type (= all documents)
   },
   
+  query: function() {
+    return app && app.username 
+           ? { "type|=": ["/type/document"], "creator": "/user/"+app.username }
+           : { "type|=": ["/type/document"], "creator": "/user/michael" }
+  },
+  
   load: function() {
     var that = this;
-    graph.fetch({"type|=": ["/type/document"]}, {expand: false}, function(err, g) {
+    graph.fetch(this.query(), {expand: false}, function(err, g) {
       if (err) alert('An error occured during fetching the documents');
       
       // Initialize Facets View
       that.facets = new Facets({el: '#facets', browser: that});
-      that.render();
+      that.loaded = true;
+      that.render();      
     });
   },
   
   render: function() {
     var that = this;
     
-    // TODO: use this.options.query here
+    // TODO: use this.query here
     this.documents = graph.find({'type|=': this.documentType}).toArray();
     
     _.each(this.documents, function(doc) {
@@ -82,7 +90,7 @@ var DocumentBrowser = Backbone.View.extend({
       documents: this.documents,
     }));
     
-    this.facets.render();
+    if (this.loaded) this.facets.render();
     this.renderMenu();
   },
   
@@ -150,5 +158,4 @@ var DocumentBrowser = Backbone.View.extend({
       this.render();    
     }
   }
-  
 });
