@@ -80,15 +80,32 @@ var Document = Backbone.View.extend({
     
     // Render controls
      if (this.mode === 'edit') renderControls(app.document.model);
+     this.renderVisualizations();
   },
   
   renderDocument: function() {
     this.$('#document').html(new HTMLRenderer(this.model).render());
-    
     this.$('#attributes').show();
     this.$('#document').show();
+    
     // Render controls
     if (this.mode === 'edit') renderControls(this.model);
+    this.renderVisualizations();
+  },
+  
+  renderVisualizations: function() {
+    $('.visualization').each(function() {
+      // Initialize visualization
+      var c = new uv.Collection(countries_fixture);
+      
+      vis = new Linechart(c, {property: 'birth_rate', canvas: this});
+      vis.start();
+      
+      // Stop propagation of mousewheel events
+      $(this).bind('mousewheel', function() {
+        return false;
+      });
+    });
   },
   
   // Extract available documentTypes from config
@@ -108,7 +125,8 @@ var Document = Backbone.View.extend({
       this.$('#document_menu').html(_.renderTemplate('document_menu', {
         edit: this.mode === 'edit',
         username: this.model.get('creator')._id.split('/')[2],
-        document_name: this.model.get('name')
+        document_name: this.model.get('name'),
+        document: this.model.toJSON()
       }));
     } else {
       if (app.username) {
@@ -264,7 +282,7 @@ var Document = Backbone.View.extend({
       if (err) {
         notifier.notify(Notifications.DOCUMENT_DELETING_FAILED);
       } else {
-        app.dashboard.render();
+        app.browser.render();
         notifier.notify(Notifications.DOCUMENT_DELETED);
       }
     });

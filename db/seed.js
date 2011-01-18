@@ -186,11 +186,6 @@ var seedGraph = {
     "type": "/type/type",
     "name": "Manual",
     "properties": {
-      "name": {
-        "name": "Name",
-        "unique": true,
-        "type": "string"
-      },
       "children": {
         "name": "Children/Contents",
         "unique": false,
@@ -216,11 +211,6 @@ var seedGraph = {
     "type": "/type/type",
     "name": "Article",
     "properties": {
-      "name": {
-        "name": "Name",
-        "unique": true,
-        "type": "string"
-      },
       "children": {
         "name": "Children/Contents",
         "unique": false,
@@ -258,7 +248,7 @@ var seedGraph = {
       "children": {
         "name": "Children",
         "unique": false,
-        "type": ["/type/text", "/type/quote", "/type/code"],
+        "type": ["/type/text", "/type/quote", "/type/code", "/type/visualization"],
         "default": []
       }
     }
@@ -277,6 +267,31 @@ var seedGraph = {
         "unique": true,
         "type": "string",
         "default": "<p>Some text ...</p>"
+      }
+    }
+  },
+  
+  // Visualization
+  // --------------------
+  
+  "/type/visualization": {
+    "_id": "/type/visualization",
+    "type": "/type/type",
+    "name": "Visualization",
+    "properties": {
+      "data_source": {
+        "name": "Data Source",
+        "unique": true,
+        "type": "string",
+        "required": true,
+        "default": "http://dejavis.org/files/linechart/data/countries.json",
+      },
+      "visualization_type": {
+        "name": "Visualization Type",
+        "unique": true,
+        "type": "string",
+        "required": true,
+        "default": "linechart"
       }
     }
   },

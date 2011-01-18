@@ -447,8 +447,7 @@ div.panel.attributes {
   position:relative;
   background:#fff;
   margin: 0 250px 0 230px;
-  padding: 0;
-  padding-top: 80px;
+  padding: 80px 0;
   min-height: 500px;
   
   text-rendering:optimizeLegibility; 
@@ -863,3 +862,9 @@ pre.code {border-left: 2px solid #ccc; padding-left: 20px; }
   -moz-box-shadow:    1px 0px 0px rgba(255,255,255,0.5);
   box-shadow:         1px 0px 0px rgba(255,255,255,0.5);
 }
+
+
+/* Visualization Stuff
+-------------------------------------------------------------------------------*/
+
+.visualization.linechart { height: 300px; overflow: auto; }

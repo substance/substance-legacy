@@ -62,8 +62,10 @@
     <div class="menu-group edit-document">
       {{#edit}}
         <a class="button save-document" href="#save_document" title="Save current document">Save</a>
+        <a class="button delete-document" href="#delete-document" document="{{../document/_id}}" title="Delete Document">Delete</a>
       {{/edit}}
-      <a class="button toggle-new-document" href="#new-document" title="New document">Close Document</a>
+      <a class="button toggle-new-document" href="#new-document" title="New document">Close</a>
+      
     </div>
   </script>
   
@@ -361,6 +363,22 @@
     </div>
   </script>
   
+  <script type="text/x-handlebars-template" name="visualization">
+    <div id="{{node/html_id}}" name={{node/key}} parent="{{parent/_id}}" draggable="false" class="content-node image">
+      {{#edit}}<a href="#" class="remove remove-node" node="{{node/key}}" parent="{{parent/_id}}">x</a>{{/edit}}
+      {{#edit}}<div class="content-node-outline"><div class="cursor"><span></span></div></div>{{/edit}}
+      
+      {{#data_source}}
+        <div class="visualization linechart" type="Linechart" datasrc="http://foo.com/bar.json"></div>
+      {{/data_source}}
+      {{^data_source}}
+        [ Provide a data source first ]
+      {{/data_source}}
+      
+      {{#edit}}<div class="node-editor-placeholder"></div>{{/edit}}
+    </div>
+  </script>
+  
   <script type="text/x-handlebars-template" name="multi_string_editor">
     <form>
       <input type="text" name="new_value"/>
@@ -395,11 +413,19 @@
   <script src="lib/underscore.js"></script>
   <script src="lib/data/data.js"></script>
   <script src="lib/data/adapters/ajax_adapter.js"></script>
-  <script src="lib/unveil.js"></script>
+  <!--<script src="lib/unveil.js"></script>-->
   <script src="lib/backbone.js"></script>
   <script src="lib/sanitize.js"></script>
   <script src="lib/proper.js"></script>
   <script src="dnode.js"></script>
+  
+  <!-- visualizations -->
+  <script src="src/visualizations/linechart/lib/unveil.js"></script>
+  <script src="src/visualizations/linechart/data/countries.js"></script>
+  <script src="src/visualizations/linechart/lib/protovis-d3.2.js"></script>
+  <script src="src/visualizations/linechart/linechart.js"></script>
+  
+  <link href="src/visualizations/linechart/styles/linechart.css" media="screen" rel="stylesheet" type="text/css" />
   
   <!-- Backbone Extensions -->
   <script src="src/client/notifier.js"></script>
@@ -424,7 +450,7 @@
   <script src="src/client/ui/common.js"></script>
   <script src="src/client/ui/string_editor.js"></script>
   <script src="src/client/ui/multi_string_editor.js"></script>
-    
+  
   <!-- Views -->
   <script src="src/client/views/document.js"></script>
   <script src="src/client/views/attributes.js"></script>

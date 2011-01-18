@@ -199,6 +199,16 @@ var HTMLRenderer = function(root, parent) {
         edit: app.document.mode === 'edit',
         url: node.get('url')
       });
+    },
+    
+    "/type/visualization": function(node, parent) {
+      return Helpers.renderTemplate('visualization', {
+        node: node,
+        parent: parent,
+        edit: app.document.mode === 'edit',
+        visualization_type: node.get('visualization_type'),
+        data_source: node.get('data_source')
+      });
     }
   };
 
