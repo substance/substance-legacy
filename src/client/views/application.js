@@ -154,10 +154,12 @@ var Application = Backbone.View.extend({
   },
   
   deleteDocument: function(e) {
-    this.editor.deleteDocument($(e.target).attr('document'));
+    if (confirm('Are you sure to delete this document?')) {
+      this.document.deleteDocument($(e.target).attr('document'));
+      this.document.closeDocument();      
+    }
     return false;
   },
-  
   
   // Application Setup
   // -------------
@@ -218,7 +220,6 @@ var Application = Backbone.View.extend({
       that.authenticated = true;
       
       // Re-render #browser_menu
-      that.browser.render();
       that.render();
     });
   },
