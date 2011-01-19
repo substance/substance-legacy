@@ -372,7 +372,7 @@ if (process.argv[2] == "--flush") {
     err ? console.log(err)
         : graph.save(function(err, invalidNodes) {
           console.log('invalidNodes:');
-          console.log(invalidNodes.keys());
+          if (invalidNodes) console.log(invalidNodes.keys());
           
           err ? console.log(err)
               : console.log('Couch seeded successfully.\nStart the server: $ node server.js');
@@ -381,7 +381,7 @@ if (process.argv[2] == "--flush") {
 } else {
   graph.save(function(err, invalidNodes) {
     console.log('invalidNodes:');
-    console.log(invalidNodes.keys());
+    if (invalidNodes) console.log(invalidNodes.keys());
     err ? console.log(err)
         : console.log('Couch seeded successfully.\nStart the server: $ node server.js');
   });

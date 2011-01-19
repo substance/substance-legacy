@@ -292,11 +292,9 @@ DNode(function (client, conn) {
           });
         } else options.error('Not valid');
       });
-      
-
     },
     
-    init: function(options) {
+    init: function(callback) {
       // Automatic re-authentication based on cookie-data
       var username = cookieSessions[getSessionId()];
       if (username) { 
@@ -306,10 +304,11 @@ DNode(function (client, conn) {
           client: client,
           document: null
         };
-        options.success(username, buildSystemStatusPackage());
+        callback(null, username, buildSystemStatusPackage())
         notifySystemStatus(); // notify clients about new user
       } else {
-        options.error();
+        console.log('not authorized');
+        callback('Not auhenticated');
       }
     },
     

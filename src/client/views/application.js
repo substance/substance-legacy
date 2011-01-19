@@ -70,7 +70,7 @@ var Application = Backbone.View.extend({
           name = $(e.currentTarget).attr('name');
                 
       app.document.loadDocument(user, name);
-      controller.saveLocation($(e.currentTarget).attr('href'));
+      if (controller) controller.saveLocation($(e.currentTarget).attr('href'));
     return false;
   },
   
@@ -181,7 +181,6 @@ var Application = Backbone.View.extend({
     });
     
     this.document = new Document({el: '#document_wrapper'});
-    
     this.activeUsers = [];
     this.authenticated = false;
     
@@ -190,29 +189,21 @@ var Application = Backbone.View.extend({
     
     this.bind('connected', function() {
       notifier.notify(Notifications.CONNECTED);
-      
-      remote.Session.init({
-        success: function(username, status) { // auto-authenticated
+            
+      remote.Session.init(function(err, username, status) {
+        if (err) { // Landing page
+          that.render();          
+        } else { // Auto-authenticated
           that.username = username;
           that.updateSystemStatus(status);
           that.trigger('authenticated');
-          
-          // Initialize controller
-          controller = new ApplicationController({app: this});
-
-          // Start responding to routes
-          Backbone.history.start();
-        },
-        error: function() {
-          // Render landing page
-          that.render();
-          
-          // Initialize controller
-          controller = new ApplicationController({app: this});
-
-          // Start responding to routes
-          Backbone.history.start();
         }
+        
+        // Initialize controller
+        controller = new ApplicationController({app: this});
+        
+        // Start responding to routes
+        Backbone.history.start();
       });
     });
     

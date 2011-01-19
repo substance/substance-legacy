@@ -48,7 +48,7 @@ var Attributes = Backbone.View.extend({
           "name": property.name,
           "type": property.expectedTypes[0], 
           "unique": property.unique,
-          "default": property.default
+          "default": property["default"]
         });
       }
     });
