@@ -27,6 +27,7 @@ AddCriterion.prototype.execute = function() {
   
   var criterion = new Data.Criterion(this.options.operator, '/type/document', this.options.property, this.options.value);
   graph = graph.filter(criterion);
+  
   this.app.facets.addChoice(this.options.property, this.options.operator, this.options.value);
 };
 

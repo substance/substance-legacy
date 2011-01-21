@@ -491,6 +491,9 @@ div.panel.attributes {
 .attribute-editor input[type=submit] { width: 20px; font-weight: bold;}
 .attribute-editor div.items { padding: 10px 0; }
 
+.attribute-editor div.available-items { position: absolute; width: 180px; }
+.attribute-editor div.available-item { background: #eee; padding: 3px; margin-bottom: 1px; }
+.attribute-editor div.available-item.selected { background: #ccc; }
 
 #attributes .items .item {
   display: block;
@@ -589,8 +592,6 @@ pre.code {border-left: 2px solid #ccc; padding-left: 20px; }
 
 #upload_image input[type=file] { width: 240px; display: inline; }
 #upload_image input[type=submit] { width: 100px; display: inline; }
-
-
 
 
 /* Content Nodes

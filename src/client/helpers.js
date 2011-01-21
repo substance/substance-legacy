@@ -10,6 +10,14 @@ Helpers.renderTemplate = _.renderTemplate = function(tpl, view, helpers) {
   return template(view, helpers || {});
 };
 
+// Render Underscore templates
+_.tpl = function(tpl, ctx) {
+  source = $("script[name="+tpl+"]").html();
+  // var template = Handlebars.compile(source);
+  // return template(view, helpers || {});
+  return _.template(source, ctx);
+};
+
 _.prettyDate = function(time) {
 	var date = new Date((time || "").replace(/-/g,"/").replace(/[TZ]/g," ")),
 		diff = (((new Date()).getTime() - date.getTime()) / 1000),

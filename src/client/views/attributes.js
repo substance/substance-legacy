@@ -9,30 +9,14 @@ var Attributes = Backbone.View.extend({
   },
   
   renderShow: function() {
-    var doc = app.document.model;
-    var attributes = [];
-    
-    doc.properties().each(function(property) {
-      if (property.meta.attribute) {
-        attributes.push({
-          "key": property.key,
-          "name": property.name,
-          "type": property.expectedTypes[0],
-          "unique": property.unique,
-          "values": doc.get(property.key).values()
-        });
-      }
+    $(this.el).html('');
+  },
+  
+  availableAttributes: function(property) {
+    return graph.find({
+      "type|=": ['/type/attribute'],
+      member_of: '/'+ property.type._id.split('/')[2]+'/'+property.key
     });
-    
-    $(this.el).html(Helpers.renderTemplate('show_attributes', {
-      attributes: attributes,
-      document: doc.toJSON(),
-      creator: doc.get('creator') ? doc.get('creator')._id.split('/')[2] : null,
-      created_at: doc.get('created_at') ? new Date(doc.get('created_at')).toDateString() : null,
-      updated_at: doc.get('updated_at') ? _.prettyDate(new Date(doc.get('updated_at')).toJSON()) : null,
-      published_on: doc.get('published_on') ? new Date(doc.get('published_on')).toDateString() : null,
-      unpublished: !doc.get('published_on')
-    }));
   },
   
   renderEdit: function() {
@@ -40,58 +24,80 @@ var Attributes = Backbone.View.extend({
     var doc = app.document.model;
     var attributes = [];
     
-    // Extract attributes from properties
-    doc.properties().each(function(property) {
-      if (property.meta.attribute) {
-        attributes.push({
-          "key": property.key,
-          "name": property.name,
-          "type": property.expectedTypes[0], 
-          "unique": property.unique,
-          "default": property["default"]
-        });
+    var attributes = doc.properties().select(function(property) {
+      if (property.expectedTypes[0] === '/type/attribute') {
+        return true;
       }
     });
-
-    if (doc.get('name')) {
-      $(this.el).html(Helpers.renderTemplate('edit_attributes', {
-        attributes: doc.get('name') ? attributes : null,
-        document: doc.toJSON(),
-        creator: doc.get('creator') ? doc.get('creator')._id.split('/')[2] : null,
-        created_at: doc.get('created_at') ? new Date(doc.get('created_at')).toDateString() : null,
-        updated_at: doc.get('updated_at') ? _.prettyDate(new Date(doc.get('updated_at')).toJSON()) : null,
-        published_on: doc.get('published_on') ? new Date(doc.get('published_on')).toDateString() : null,
-        unpublished: !doc.get('published_on')
-      }));
-    } else {
-      $(this.el).html(Helpers.renderTemplate('edit_unsaved_document', {}));
-    }
+    
+    $(this.el).html(_.tpl('edit_attributes', {
+      attributes: attributes,
+      doc: doc
+    }));
+    
     
     // Initialize AttributeEditors for non-unique-strings
     $('.attribute-editor').each(function() {
-      var key = $(this).attr('key'),
+      var member_of = $(this).attr('property');
+      var property = graph.get('/type/'+member_of.split('/')[1]).get('properties', member_of.split('/')[2]),
+          key = $(this).attr('key'),
           unique = $(this).hasClass('unique'),
-          type = $(this).attr('type'),
+          type = $(this).attr('type');
+          
           // property value / might be an array or a single value
-          value = unique ? app.document.model.get(key) : app.document.model.get(key).values();
+          value = unique 
+                  ? app.document.model.get(key).get('name') 
+                  : _.map(app.document.model.get(key).values(), function(v) { return v.get('name'); });
     
-      var editor = that.createAttributeEditor(key, type, unique, value, $(this));
+          var availableAttributes = _.uniq(_.map(that.availableAttributes(property).values(), function(val) {
+            return val.get('name');
+          }));
+                  
+      var editor = that.createAttributeEditor(key, type, unique, value, availableAttributes, $(this));
       
-      editor.bind('changed', function() {
-        var attrs = {};
-        attrs[key] = editor.value();
-        app.document.model.set(attrs);
+      editor.bind('changed', function() {        
+        var attrs = [];
+        var availableAttributes = that.availableAttributes(property);
+        
+        _.each(editor.value(), function(val) {
+          // Find existing attribute
+          var attr = graph.find({
+            "type|=": ['/type/attribute'],
+            member_of: member_of,
+            name: val
+          }).first();
+          
+          console.log('found existing attributes?');
+          console.log(attr);
+          
+          console.log(member_of);
+          
+          if (!attr) {
+            // Create attribute as it doesn't exist
+            attr = graph.set(null, {
+              type: ["/type/attribute"],
+              member_of: member_of,
+              name: val
+            });
+          }
+          attrs.push(attr._id);
+        });
+        
+        // Update document
+        var tmp = {};
+        tmp[key] = attrs;
+        app.document.model.set(tmp);
       });
     });
   },
   
-  createAttributeEditor: function(key, type, unique, value, target) {
+  createAttributeEditor: function(key, type, unique, value, availableValues, target) {
     switch (type) {
       case 'string':
         if (unique) {
-          return this.createStringEditor(key, value, target);
+          return this.createStringEditor(key, value, availableValues, target);
         } else {
-          return this.createMultiStringEditor(key, value, target);
+          return this.createMultiStringEditor(key, value, availableValues, target);
         }
       break;
       case 'number':
@@ -101,20 +107,22 @@ var Attributes = Backbone.View.extend({
     }
   },
   
-  createMultiStringEditor: function(key, value, target) {
+  createMultiStringEditor: function(key, value, availableValues, target) {
     var that = this;
     var editor = new UI.MultiStringEditor({
       el: target,
-      items: value
+      items: value,
+      availableItems: availableValues
     });
     return editor;
   },
   
-  createStringEditor: function(key, value, target) {
+  createStringEditor: function(key, availableValues, target) {
     var that = this;
     var editor = new UI.StringEditor({
       el: target,
-      value: value
+      value: value,
+      availableItems: availableValues
     });
     return editor;
   }

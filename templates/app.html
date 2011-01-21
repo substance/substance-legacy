@@ -7,6 +7,35 @@
     var seed = {{seed}};
   </script>
   
+  <script type="text/x-ejs-template" name="edit_attributes">
+    <dl class="document-attributes">
+      
+      <dt>Creator:</dt>
+      <dd><%= doc.get('creator').get('username') %></dd>
+      
+      <dt>Created At:</dt>
+      <dd><%= doc.get('created_at') %></dd>
+      
+      <dt>Last modified:</dt>
+      <dd><%= doc.get('created_at') %></dd>
+      
+      <dt>Publish Date:</dt>
+      <dd>
+        <% if (doc.get('published_on')) { %>
+          <%= doc.get('published_on') %>
+          (<a href="#" class="unpublish-document">Unpublish</a>)
+        <% } else { %>
+          Not published (<a href="#" class="publish-document">Publish</a>)
+        <% } %>
+      </dd>
+    </dl>
+    
+    <% attributes.each(function(attribute) { %>
+      <h4><%= attribute.name %></h4>
+      <div id="property_<%= attribute.key %>" property="/<%= attribute.type._id.split('/')[2] %>/<%= attribute.key %>" key="<%= attribute.key %>" type="string" class="attribute-editor <%= attribute.unique ? "unique" : "non-unique"%>"></div>
+    <% }); %>
+  </script>
+  
   <script type="text/x-handlebars-template" name="document_wrapper">
     <div id="document_menu" class="menu">Document </div>
     <div id="attributes">attributes</div>
@@ -163,10 +192,10 @@
           <h3>{{property_name}}</h3>
           <ul class="facet-choices">
             {{#selected_facet_choices}}
-              <li class="facet-choice selected"><a href="#" class="remove-criterion" property="{{../property}}" operator="CONTAINS" value="{{value}}"><div class="tick-icon ticked"/>{{value}}<span class="item-count">{{item_count}}</span></a></li>
+              <li class="facet-choice selected"><a href="#" class="remove-criterion" property="{{../property}}" operator="CONTAINS" value="{{key}}"><div class="tick-icon ticked"/>{{value}}<span class="item-count">{{item_count}}</span></a></li>
             {{/selected_facet_choices}}
             {{#facet_choices}}
-              <li class="facet-choice"><a href="#" class="add-criterion" property="{{../property}}" operator="CONTAINS" value="{{value}}"><div class="tick-icon"/>{{value}}<span class="item-count">{{item_count}}</span></a></li>
+              <li class="facet-choice"><a href="#" class="add-criterion" property="{{../property}}" operator="CONTAINS" value="{{key}}"><div class="tick-icon"/>{{value}}<span class="item-count">{{item_count}}</span></a></li>
             {{/facet_choices}}
           </ul>
         </div>
@@ -217,39 +246,6 @@
     <p class="info">
       You are editing a draft document. You need to <a href="#" class="save-document">save</a> it in order to to edit attributes.
     </p>
-  </script>
-  
-  <script type="text/x-handlebars-template" name="edit_attributes">
-    <dl class="document-attributes">
-      <dt>Creator:</dt>
-      <dd>{{creator}}</dd>
-      
-      <dt>Created At:</dt>
-      <dd>{{created_at}}</dd>
-      
-      <dt>Last modified:</dt>
-      <dd>{{updated_at}}</dd>
-      
-      <dt>Publish Date:</dt>
-      <dd>
-        {{published_on}} 
-          
-        {{^unpublished}}
-          (<a href="#" class="unpublish-document">Unpublish</a>)
-        {{/unpublished}}
-        
-        {{^published_on}}
-          Not published (<a href="#" class="publish-document">Publish</a>)
-        {{/published_on}}
-      </dd>
-    </dl>
-    
-    <div class="lpl texteditor">
-      {{#attributes}}
-        <h4>{{name}}:</h4>
-        <div id="property_{{key}}" key="{{key}}" type="{{type}}" class="attribute-editor {{#unique}} unique{{/unique}}{{^unique}} non-unique{{/unique}}"></div>
-      {{/attributes}}
-    </div>
   </script>
   
   
@@ -380,16 +376,20 @@
   </script>
   
   <script type="text/x-handlebars-template" name="multi_string_editor">
-    <form>
-      <input type="text" name="new_value"/>
-      <input type="submit" value="+"/>
-    </form>
     <div class="items">
       {{#items}}
         <span class="item">{{.}} <a href="/" value="{{.}}" class="remove-item">x</a></span>
       {{/items}}
       <br class="clear"/>
     </div>
+    <form>
+      <input type="text" name="new_value"/>
+      <input type="submit" value="+"/>
+    </form>
+    
+    <div class="available-items">
+    </div>
+
   </script>
   
   <script type="text/x-handlebars-template" name="string_editor">

@@ -255,7 +255,11 @@ var Document = Backbone.View.extend({
     notifier.notify(Notifications.DOCUMENT_SAVING);
     
     graph.save(function(err, invalidNodes) {
-      if (err) return notifier.notify(Notifications.DOCUMENT_SAVING_FAILED);
+      if (err) {
+        console.log(err);
+        return notifier.notify(Notifications.DOCUMENT_SAVING_FAILED);
+        
+      }
       notifier.notify(Notifications.DOCUMENT_SAVED);
       controller.saveLocation('#'+that.model.get('creator')._id.split('/')[2]+'/'+that.model.get('name'));
       

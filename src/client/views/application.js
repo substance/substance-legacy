@@ -68,7 +68,7 @@ var Application = Backbone.View.extend({
   loadDocument: function(e) {
       var user = $(e.currentTarget).attr('user');
           name = $(e.currentTarget).attr('name');
-                
+
       app.document.loadDocument(user, name);
       if (controller) controller.saveLocation($(e.currentTarget).attr('href'));
     return false;
@@ -324,6 +324,18 @@ var Application = Backbone.View.extend({
     });
   },
   
+  sync: function() {
+    graph.save(function(err, invalidNodes) {
+      if (err) {
+        console.log(invalidNodes);
+        notifier.notify(Notifications.DOCUMENT_SAVING_FAILED);
+      } else {
+        notifier.notify(Notifications.DOCUMENT_SAVED);
+      }
+      
+    });
+  },
+  
   // Should be rendered just once
   render: function() {
     var that = this;
@@ -374,7 +386,7 @@ var remote,                       // Remote handle for server-side methods
           $('#document_menu').addClass('docked');
           $('#document_menu').css('top', window.innerHeight-50);
         }
-      }      
+      }
     }
     
     $(window).bind('scroll', positionDocumentMenu);

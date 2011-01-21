@@ -360,7 +360,36 @@ var seedGraph = {
     "password": "demo",
     "firstname": "Demo",
     "lastname": "User"
+  },
+  
+  // Predefined Attributes
+  // --------------------
+  
+  "/attribute/customer": {
+    "name": "Kunden",
+    "member_of": "/conversation/cooperation"
+  },
+  
+  "/attribute/partner": {
+    "name": "Partner",
+    "member_of": "/conversation/cooperation"
+  },
+  
+  "/attribute/employees": {
+    "name": "Mitarbeiter",
+    "member_of": "/conversation/cooperation"
+  },
+  
+  "/attribute/values": {
+    "name": "Werte",
+    "member_of": "/conversation/organization"
+  },
+  
+  "/attribute/continuing": {
+    "name": "Weiterbildung",
+    "member_of": "/conversation/organization"
   }
+  
 };
 
 

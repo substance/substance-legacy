@@ -46,16 +46,14 @@ app.configure(function(){
 // Web server
 // -----------
 
-
-
 app.get('/', function(req, res) {  
   html = fs.readFileSync(__dirname+ '/templates/app.html', 'utf-8');
   
-  graph.fetch({"type|=": ["/type/type", "/type/config"]}, {}, function(err, g) {
+  // Client seed
+  graph.fetch({"type|=": ["/type/type", "/type/config", "/type/attribute"]}, {}, function(err, g) {
     res.send(html.replace('{{seed}}', JSON.stringify(g)));
   });
 });
-
 
 app.get('/readgraph', function(req, res) {
   var callback = req.query.callback,
@@ -73,7 +71,6 @@ app.put('/writegraph', function(req, res) {
     err ? res.send(err) : res.send('{"status": "ok"}');
   });
 });
-
 
 
 // The DNode Server (RMI Interface for the client)

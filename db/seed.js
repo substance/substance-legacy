@@ -86,6 +86,29 @@ var seedGraph = {
   },
   
   
+  // Attribute
+  // --------------------
+  
+  "/type/attribute": {
+    "_id": "/type/attribute",
+    "type": "/type/type",
+    "name": "Attribute",
+    "properties": {
+      "name": {
+        "name": "Attribute Value",
+        "unique": true,
+        "type": "string",
+        "required": true
+      },
+      "member_of": {
+        "name": "Member of Property",
+        "unique": true,
+        "type": "string",
+        "required": true,
+      }
+    }
+  },
+  
   // Document
   // --------------------
   
@@ -119,7 +142,6 @@ var seedGraph = {
         "type": "/type/user",
         "required": true,
         "meta": {
-          "facet": true
         }
       },
       "created_at": {
@@ -139,14 +161,13 @@ var seedGraph = {
         "unique": true,
         "type": "date"
       },
-      "keywords": {
-        "name": "Keywords",
+      "subjects": {
+        "type": ["/type/attribute"],
+        "name": "Subjects",
         "unique": false,
-        "type": "string",
         "default": [],
         "meta": {
-          "facet": true,
-          "attribute": true
+          "facet": true
         }
       }
     }
@@ -409,7 +430,7 @@ if (process.argv[2] == "--flush") {
     err ? console.log(err)
         : graph.save(function(err, invalidNodes) {
           console.log('invalidNodes:');
-          console.log(invalidNodes.keys());
+          if (invalidNodes) console.log(invalidNodes.keys());
           
           err ? console.log(err)
               : console.log('Couch seeded successfully.\nStart the server: $ node server.js');
@@ -418,7 +439,7 @@ if (process.argv[2] == "--flush") {
 } else {
   graph.save(function(err, invalidNodes) {
     console.log('invalidNodes:');
-    console.log(invalidNodes.keys());
+    if (invalidNodes) console.log(invalidNodes.keys());
     err ? console.log(err)
         : console.log('Couch seeded successfully.\nStart the server: $ node server.js');
   });
