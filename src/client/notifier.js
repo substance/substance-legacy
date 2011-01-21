@@ -76,12 +76,12 @@ var Notifications = {
   },
   
   SYNCHRONIZED: {
-    message: "Successfully synchronized",
-    type: 'error'
+    message: "Successfully synchronized with server",
+    type: 'info'
   },
   
   SYNCHRONIZING_FAILED: {
-    message: "Successfully synchronized",
+    message: "Failed to synchronize with server",
     type: 'error'
   },
   
