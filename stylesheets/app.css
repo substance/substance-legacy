@@ -441,6 +441,8 @@ div.panel.attributes {
   display: none;
 }
 
+#create_document input.error { border: 2px solid red; }
+
 /* body > #container > #document_wrapper > #document
 -------------------------------------------------------------------------------*/
 
