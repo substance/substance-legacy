@@ -277,7 +277,7 @@ DNode(function (client, conn) {
         });
         
         if (user.validate()) {
-          graph.save(function(err) {
+          graph.sync(function(err) {
             if (!err) {
               makeSession();
               

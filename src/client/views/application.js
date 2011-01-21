@@ -17,7 +17,7 @@ var Application = Backbone.View.extend({
     'click a.show-attributes': 'showAttributes',
     'click a.publish-document': 'publishDocument',
     'click a.unpublish-document': 'unpublishDocument',
-    'submit #create-document-form': 'createDocument',
+    'submit #create_document': 'createDocument',
     'submit #login-form': 'login',
     'click a.delete-document': 'deleteDocument',
     'click a.view-collaborators': 'viewCollaborators'
@@ -60,8 +60,17 @@ var Application = Backbone.View.extend({
   },
   
   newDocument: function(e) {
-    this.document.newDocument($(e.currentTarget).attr('type'));
-    this.$('.document-type-selection').hide();
+    $('#create_document input[name=document_type]').val($(e.currentTarget).attr('type'));
+    $('#document_type_selection').hide();
+    $('#create_document').show();
+    return false;
+  },
+  
+  createDocument: function(e) {
+    var name = $('#create_document input[name=new_document_name]').val();
+    var type = $('#create_document input[name=document_type]').val();
+
+    this.document.newDocument(type, name);
     return false;
   },
   
@@ -88,7 +97,6 @@ var Application = Backbone.View.extend({
       published_on: (new Date()).toJSON()
     });
     this.document.attributes.render();
-    this.document.saveDocument();
     return false;
   },
   
@@ -98,44 +106,6 @@ var Application = Backbone.View.extend({
     });
     
     this.document.attributes.render();
-    this.document.saveDocument();
-    return false;
-  },
-  
-  // TODO: clean up this mess
-  saveDocument: function(e) {
-    var that = this;
-    var qry = {"type|=": "/type/document", "name": $('#document_name').val(), "creator": "/user/"+app.username};
-    
-    function saveDoc() {
-      that.document.model.set({
-        name: $('#document_name').val(),
-        created_at: that.document.model.get('created_at') || new Date(),
-        updated_at: new Date(),
-        published_on: that.document.model.get('published_on') || null
-      });
-            
-      that.document.model.validate() 
-        ? that.document.saveDocument()
-        : notifier.notify(Notifications.DOCUMENT_INVALID);
-    }
-    
-    if (that.document.model.get('name') !== $('#document_name').val()) { // Name change
-      graph.fetch(qry, {}, function(err) {
-        if (graph.find(qry).length > 0) {
-          notifier.notify(Notifications.DOCUMENT_ALREADY_EXISTS);
-        } else {
-          saveDoc();
-        }
-      });
-    } else {
-      saveDoc();      
-    }
-    return false;
-  },
-  
-  createDocument: function(e) {
-    app.document.createDocument($('#document_name').val());
     return false;
   },
   
@@ -325,7 +295,7 @@ var Application = Backbone.View.extend({
   },
   
   sync: function() {
-    graph.save(function(err, invalidNodes) {
+    graph.sync(function(err, invalidNodes) {
       if (err) {
         console.log(invalidNodes);
         notifier.notify(Notifications.DOCUMENT_SAVING_FAILED);
@@ -388,6 +358,23 @@ var remote,                       // Remote handle for server-side methods
         }
       }
     }
+    
+    var pendingSync = false;
+    graph.bind('dirty', function() {
+      // Reload document browser
+      app.browser.render();
+      
+      if (!pendingSync) {
+        pendingSync = true;
+        setTimeout(function() {
+          notifier.notify(Notifications.SYNCHRONIZING);
+          graph.sync(function(err, invalidNodes) {
+            notifier.notify(Notifications.SYNCHRONIZED);
+            pendingSync = false;
+          });
+        }, 3000);
+      }
+    });
     
     $(window).bind('scroll', positionDocumentMenu);
     $(window).bind('resize', positionDocumentMenu);

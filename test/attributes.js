@@ -50,7 +50,7 @@ graph.fetch({"type|=": ["/type/type", "/type/document"]}, {}, function(err) {
   console.log(graph.toJSON());
   createAttributes();
   console.log('saving...');
-  graph.save(function(err, invalidNodes) {
+  graph.sync(function(err, invalidNodes) {
     console.log(err);
     
     findAttributesForPropery();

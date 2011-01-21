@@ -437,6 +437,10 @@ div.panel.attributes {
   right: 0px;
 }
 
+#create_document {
+  display: none;
+}
+
 /* body > #container > #document_wrapper > #document
 -------------------------------------------------------------------------------*/
 

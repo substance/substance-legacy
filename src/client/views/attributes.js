@@ -67,11 +67,6 @@ var Attributes = Backbone.View.extend({
             name: val
           }).first();
           
-          console.log('found existing attributes?');
-          console.log(attr);
-          
-          console.log(member_of);
-          
           if (!attr) {
             // Create attribute as it doesn't exist
             attr = graph.set(null, {

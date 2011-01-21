@@ -70,6 +70,21 @@ var Notifications = {
     type: 'error'
   },
   
+  SYNCHRONIZING: {
+    message: "Synchronizing with server ...",
+    type: 'info'
+  },
+  
+  SYNCHRONIZED: {
+    message: "Successfully synchronized",
+    type: 'error'
+  },
+  
+  SYNCHRONIZING_FAILED: {
+    message: "Successfully synchronized",
+    type: 'error'
+  },
+  
   DOCUMENT_INVALID: {
     message: "The document is invalid. Make sure that you've set a correct name for it.",
     type: 'error'

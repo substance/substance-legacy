@@ -51,7 +51,7 @@ function testObjectValidation() {
   user.validate();
   assert.ok(user.errors.length === 1);
 
-  graph.save(function(err, invalidNodes) {
+  graph.sync(function(err, invalidNodes) {
     assert.ok(invalidNodes.length === 1)
     
     user.set({

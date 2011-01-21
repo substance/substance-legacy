@@ -1,8 +1,9 @@
-function addEmptyDoc(type) {
+function addEmptyDoc(type, name) {
   var docType = graph.get(type);
   var doc = graph.set(Data.uuid('/document/'+ app.username +'/'), docType.meta.template);
   doc.set({
     creator: "/user/"+app.username,
+    name: name
   });
   
   return doc;
@@ -29,6 +30,8 @@ var Document = Backbone.View.extend({
     'drop': 'drop'
   },
   
+  loadedDocuments: {},
+  
   initialize: function() {
     var that = this;
     
@@ -38,14 +41,6 @@ var Document = Backbone.View.extend({
     this.bind('status:changed', function() {
       that.updateCursors();
     });
-    
-    // this.bind('document:changed', function() {
-    //   document.title = that.model.get('title');
-    //   
-    //   // app.toggleView('editor'); // TODO: ugly
-    //   // that.drawer.renderContent(); // Refresh attributes et. al
-    //   // that.drawer.render();
-    // });
   },
   
   updateCursors: function() {
@@ -131,7 +126,8 @@ var Document = Backbone.View.extend({
     } else {
       if (app.username) {
         this.$('#document_menu').html(_.renderTemplate('document_menu_create', {
-          document_types: this.documentTypes()
+          document_types: this.documentTypes(),
+          username: app.username
         }));
       } else {
         this.$('#document_menu').hide();
@@ -199,8 +195,8 @@ var Document = Backbone.View.extend({
     });
   },
   
-  newDocument: function(type) {
-    this.model = addEmptyDoc(type);
+  newDocument: function(type, name) {
+    this.model = addEmptyDoc(type, name);
     this.status = null;
     this.mode = 'edit';
     $(this.el).show();
@@ -209,7 +205,7 @@ var Document = Backbone.View.extend({
     
     // Move to the actual document
     app.scrollTo('#document_wrapper');
-    
+    controller.saveLocation('#'+app.username+'/'+name);
     this.trigger('document:changed');
     notifier.notify(Notifications.BLANK_DOCUMENT);
     return false;
@@ -220,56 +216,47 @@ var Document = Backbone.View.extend({
     var that = this;
     notifier.notify(Notifications.DOCUMENT_LOADING);
     
+    
+    function init(id) {
+      that.model = graph.get(id);
+      
+      if (that.model) {
+        that.mode = username === app.username ? 'edit' : 'show';
+        
+        that.render();
+        that.init();
+        that.trigger('document:changed');
+
+        // Move to the actual document
+        app.scrollTo('#document_wrapper');
+        
+        that.loadedDocuments[username+"/"+docname] = id;
+        notifier.notify(Notifications.DOCUMENT_LOADED);
+        remote.Session.registerDocument(id);
+      } else {
+        notifier.notify(Notifications.DOCUMENT_LOADING_FAILED);
+      }
+    }
+    
+    var id = that.loadedDocuments[username+"/"+docname];
+    // Already loaded - no need to fetch it
+    if (id) {
+      init();
+    }
+    
     remote.Session.getDocument(username, docname, function(err, id, g) {
       if (!err) {
         graph.merge(g, true);
-        that.model = graph.get(id);
-        
-        if (that.model) {
-          that.mode = username === app.username ? 'edit' : 'show';
-          
-          that.render();
-          that.init();
-          that.trigger('document:changed');
-
-          // Move to the actual document
-          app.scrollTo('#document_wrapper');
-
-          notifier.notify(Notifications.DOCUMENT_LOADED);
-          remote.Session.registerDocument(id);
-        } else {
-          notifier.notify(Notifications.DOCUMENT_LOADING_FAILED);
-        }
+        init(id);
       } else {
         notifier.notify(Notifications.DOCUMENT_LOADING_FAILED);
       }
     });
   },
   
-  // Store a document
-  // -------------
-  
-  saveDocument: function() {
-    var that = this;
-    
-    notifier.notify(Notifications.DOCUMENT_SAVING);
-    
-    graph.save(function(err, invalidNodes) {
-      if (err) {
-        console.log(err);
-        return notifier.notify(Notifications.DOCUMENT_SAVING_FAILED);
-        
-      }
-      notifier.notify(Notifications.DOCUMENT_SAVED);
-      controller.saveLocation('#'+that.model.get('creator')._id.split('/')[2]+'/'+that.model.get('name'));
-      
-      // Reload document browser
-      app.browser.render();
-    });
-  },
-  
   closeDocument: function() {
     this.model = null;
+    controller.saveLocation('#'+app.username);
     this.render();
   },
   
@@ -278,18 +265,8 @@ var Document = Backbone.View.extend({
   
   deleteDocument: function(id) {
     var that = this;
-    
     graph.del(id);
-    
-    notifier.notify(Notifications.DOCUMENT_DELETING);
-    graph.save(function(err) {
-      if (err) {
-        notifier.notify(Notifications.DOCUMENT_DELETING_FAILED);
-      } else {
-        app.browser.render();
-        notifier.notify(Notifications.DOCUMENT_DELETED);
-      }
-    });
+    notifier.notify(Notifications.DOCUMENT_DELETED);
   },
   
   

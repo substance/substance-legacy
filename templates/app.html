@@ -76,7 +76,7 @@
   </script>
   
   <script type="text/x-handlebars-template" name="document_menu">
-    <div class="label"><a class="scroll-to" href="#document_wrapper">{{#edit}}WRITE{{/edit}}{{^edit}}READ{{/edit}}</a></div>
+    <div class="label"><a class="scroll-to" href="#document_wrapper">{{#edit}}WRITE{{/edit}}{{^edit}}READ{{/edit}}</a> <a class="button toggle-new-document" href="#new-document" title="Close">X</a></div>
     <div class="panel attributes"></div>
     <div class="menu-group header">
       <span class="label">{{username}} / </span>
@@ -90,10 +90,9 @@
         
     <div class="menu-group edit-document">
       {{#edit}}
-        <a class="button save-document" href="#save_document" title="Save current document">Save</a>
+        <!--<a class="button save-document" href="#save_document" title="Save current document">Save</a>-->
         <a class="button delete-document" href="#delete-document" document="{{../document/_id}}" title="Delete Document">Delete</a>
       {{/edit}}
-      <a class="button toggle-new-document" href="#new-document" title="New document">Close</a>
       
     </div>
   </script>
@@ -102,11 +101,19 @@
     <div class="label"><a class="toggle-new-document" href="#document_wrapper">NEW DOCUMENT</a></div>
     <div class="panel attributes"></div>
     <div class="menu-group header">
-      <div class="document-type-selection">
+      <div id="document_type_selection" class="document-type-selection">
         {{#document_types}}
           <a class="document-type new-document" type="{{type}}" href="#">{{name}}</a>
         {{/document_types}}
       </div>
+      
+      <form id="create_document">
+        Document name: 
+        {{username}} / 
+        <input type="hidden" name="document_type" value=""/>
+        <input type="text" name="new_document_name"/>
+        <input type="submit" value="Create"/>
+      </form>
     </div>
   </script>
   
@@ -241,13 +248,6 @@
   <script type="text/x-handlebars-template" name="edit_section">
     <h3>Edit section</h3>
   </script>
-  
-  <script type="text/x-handlebars-template" name="edit_unsaved_document">
-    <p class="info">
-      You are editing a draft document. You need to <a href="#" class="save-document">save</a> it in order to to edit attributes.
-    </p>
-  </script>
-  
   
   <script type="text/x-handlebars-template" name="show_attributes">
     <dl class="document-attributes">
