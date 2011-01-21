@@ -279,8 +279,7 @@ DNode(function (client, conn) {
         if (user.validate()) {
           graph.sync(function(err) {
             if (!err) {
-              makeSession();
-              
+              makeSession(username);
               options.success(username, buildSystemStatusPackage());
             } else {
               options.error(err);
