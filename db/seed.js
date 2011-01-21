@@ -122,7 +122,7 @@ var seedGraph = {
         "unique": true,
         "type": "string",
         "required": true,
-        "validator": "^[a-z_]{1}[a-z_0-9]{2,20}$"
+        "validator": "^[a-z_0-9]{1}[a-z_0-9-]{2,20}$"
       },
       "title": {
         "name": "Document Title",
@@ -428,7 +428,7 @@ if (process.argv[2] == "--flush") {
   Data.adapter.flush(function(err) {
     console.log('DB Flushed.');
     err ? console.log(err)
-        : graph.save(function(err, invalidNodes) {
+        : graph.sync(function(err, invalidNodes) {
           console.log('invalidNodes:');
           if (invalidNodes) console.log(invalidNodes.keys());
           
@@ -437,7 +437,7 @@ if (process.argv[2] == "--flush") {
         });
   });
 } else {
-  graph.save(function(err, invalidNodes) {
+  graph.sync(function(err, invalidNodes) {
     console.log('invalidNodes:');
     if (invalidNodes) console.log(invalidNodes.keys());
     err ? console.log(err)
