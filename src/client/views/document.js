@@ -3,6 +3,8 @@ function addEmptyDoc(type, name) {
   var doc = graph.set(Data.uuid('/document/'+ app.username +'/'), docType.meta.template);
   doc.set({
     creator: "/user/"+app.username,
+    created_at: new Date(),
+    updated_at: new Date(),
     name: name
   });
   

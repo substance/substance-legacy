@@ -123,6 +123,7 @@ var Application = Backbone.View.extend({
         that.document.closeDocument();
         that.browser.render();
         that.render();
+        controller.saveLocation('');
       }
     });
     return false;
@@ -369,7 +370,7 @@ var remote,                       // Remote handle for server-side methods
       // Reload document browser
       app.browser.render();
       
-      if (!pendingSync) {
+      if (!pendingSync && app.username) {
         pendingSync = true;
         setTimeout(function() {
           notifier.notify(Notifications.SYNCHRONIZING);
