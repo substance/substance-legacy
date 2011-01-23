@@ -5,6 +5,7 @@
   
   <script>
     var seed = {{seed}};
+    var session = {{session}};
   </script>
   
   <script type="text/x-ejs-template" name="edit_attributes">
@@ -200,11 +201,13 @@
 
         <div id="signup">
           <form id="signup-form" class="auth-form">
-            <label for="signup-user">username</label>
+            <label for="signup-user">Username</label>
             <input type="text" name="username" id="signup-user" value="">
-            <label for="signup-email">email</label>
+            <label for="signup-name">Full Name</label>
+            <input type="text" name="name" id="signup-name" value="">
+            <label for="signup-email">Email</label>
             <input type="text" name="email" id="signup-email" value="">
-            <label for="signup-password">password</label>
+            <label for="signup-password">Password</label>
             <input type="password" name="password" id="signup-password" value="">
             <p><br/>
             <input type="submit" value="Create account"/>
@@ -426,11 +429,10 @@
   <script src="lib/underscore.js"></script>
   <script src="lib/data/data.js"></script>
   <script src="lib/data/adapters/ajax_adapter.js"></script>
-  <!--<script src="lib/unveil.js"></script>-->
   <script src="lib/backbone.js"></script>
   <script src="lib/sanitize.js"></script>
   <script src="lib/proper.js"></script>
-  <script src="dnode.js"></script>
+  <!-- <script src="dnode.js"></script> -->
   
   <!-- visualizations -->
   <script src="src/visualizations/linechart/lib/unveil.js"></script>

@@ -130,8 +130,12 @@ var Application = Backbone.View.extend({
   
   logout: function() {
     var that = this;
-    remote.Session.logout({
-      success: function() {
+    
+    $.ajax({
+      type: "POST",
+      url: "/logout",
+      dataType: "json",
+      success: function(res) {
         that.username = null;
         that.authenticated = false;
         that.document.closeDocument();
@@ -158,51 +162,49 @@ var Application = Backbone.View.extend({
     this.activeUsers = status.active_users;
   },
   
+  query: function() {
+    return this.authenticated ? {"type|=": ["/type/document"], "creator": "/user/"+this.username }
+                              : {"type|=": ["/type/document"], "creator": "/user/demo"}
+  },
+  
   initialize: function() {
-    var that = this,
-        query = this.authenticated ? {"type|=": ["/type/document"], "creator": "/user/"+this.username }
-                                  : {"type|=": ["/type/document"]}
-    _.bindAll(this, "render");
+    var that = this;
     
     // Initialize browser
     this.browser = new DocumentBrowser({
       el: this.$('#browser_wrapper'),
-      query: query
+      app: this
     });
     
-    this.document = new Document({el: '#document_wrapper'});
+    // Initialize document
+    this.document = new Document({el: '#document_wrapper', app: this});
     this.activeUsers = [];
-    this.authenticated = false;
+    
+    // Cookie-based auto-authentication
+    if (session.username) {
+      graph.merge(session.seed);
+      this.authenticated = true;
+      this.username = session.username;
+      this.trigger('authenticated');
+    } else {
+      this.authenticated = false;
+    }
     
     // Try to establish a server connection
-    this.connect();
+    // this.connect();
+    // this.bind('connected', function() {
+    //   notifier.notify(Notifications.CONNECTED);
+    // });
     
-    this.bind('connected', function() {
-      notifier.notify(Notifications.CONNECTED);
-            
-      remote.Session.init(function(err, username, status) {
-        if (err) { // Landing page
-          that.render();          
-        } else { // Auto-authenticated
-          that.username = username;
-          that.updateSystemStatus(status);
-          that.trigger('authenticated');
-        }
-        
-        // Initialize controller
-        controller = new ApplicationController({app: this});
-        
-        // Start responding to routes
-        Backbone.history.start();
-      });
-    });
-    
+    that.render();
+
     this.bind('authenticated', function() {
       that.authenticated = true;
-      
       // Re-render browser
       that.render();
-      that.browser.load();
+      that.document.closeDocument();
+      that.browser.load(that.query());
+      controller.saveLocation('#'+that.username);
     });
   },
   
@@ -276,15 +278,26 @@ var Application = Backbone.View.extend({
   
   authenticate: function() {
     var that = this;
-
-    remote.Session.authenticate($('#login-user').val(), $('#login-password').val(), {
-      success: function(username, status) { 
-        notifier.notify(Notifications.AUTHENTICATED);
-        that.username = username;
-        that.updateSystemStatus(status);
-        that.trigger('authenticated');
+    
+    $.ajax({
+      type: "POST",
+      url: "/login",
+      data: {
+        username: $('#login-user').val(),
+        password: $('#login-password').val()
       },
-      error: function() {
+      dataType: "json",
+      success: function(res) {
+        if (res.status === 'error') {
+          return notifier.notify(Notifications.AUTHENTICATION_FAILED);
+        } else {
+          graph.merge(res.seed);
+          notifier.notify(Notifications.AUTHENTICATED);
+          that.username = res.username;
+          that.trigger('authenticated');
+        }
+      },
+      error: function(err) {
         notifier.notify(Notifications.AUTHENTICATION_FAILED);
       }
     });
@@ -301,15 +314,32 @@ var Application = Backbone.View.extend({
   registerUser: function() {
     var that = this;
     
-    remote.Session.registerUser($('#signup-user').val(), $('#signup-email').val(), $('#signup-password').val(), {
-      success: function(username, status) { 
-        notifier.notify(Notifications.AUTHENTICATED);
-        that.username = username;
-        that.updateSystemStatus(status);
-        that.trigger('authenticated');
+    $.ajax({
+      type: "POST",
+      url: "/register",
+      data: {
+        username: $('#signup-user').val(),
+        name: $('#signup-name').val(),
+        email: $('#signup-email').val(),
+        password: $('#signup-password').val()
       },
-      error: function() {
-        notifier.notify(Notifications.SIGNUP_FAILED);
+      dataType: "json",
+      success: function(res) {
+        if (res.status === 'error') {
+          notifier.notify({
+            message: res.message,
+            type: 'error'
+          });
+          // return notifier.notify(Notifications.AUTHENTICATION_FAILED);
+        } else {
+          graph.merge(res.seed);
+          notifier.notify(Notifications.AUTHENTICATED);
+          that.username = res.username;
+          that.trigger('authenticated');
+        }
+      },
+      error: function(err) {
+        notifier.notify(Notifications.AUTHENTICATION_FAILED);
       }
     });
   },
@@ -317,12 +347,10 @@ var Application = Backbone.View.extend({
   sync: function() {
     graph.sync(function(err, invalidNodes) {
       if (err) {
-        console.log(invalidNodes);
         notifier.notify(Notifications.DOCUMENT_SAVING_FAILED);
       } else {
         notifier.notify(Notifications.DOCUMENT_SAVED);
       }
-      
     });
   },
   
@@ -342,19 +370,15 @@ var Application = Backbone.View.extend({
 
 Data.setAdapter('AjaxAdapter');
 
-var remote,                       // Remote handle for server-side methods
-    app,                          // The Application
-    controller,                   // Controller responding to routes
-    editor,                       // A global instance of the Proper Richtext editor
-    graph = new Data.Graph(seed); // The database
+var remote,                              // Remote handle for server-side methods
+    app,                                 // The Application
+    controller,                          // Controller responding to routes
+    editor,                              // A global instance of the Proper Richtext editor
+    graph = new Data.Graph(seed, false); // The database
+
 
 (function() {
   $(function() {
-    // Start the engines
-    app = new Application({el: $('#container')});
-    
-    // Set up a global instance of the Proper Richtext Editor
-    editor = new Proper();
     
     function scrollTop() {
       return document.body.scrollTop || document.documentElement.scrollTop;
@@ -379,6 +403,21 @@ var remote,                       // Remote handle for server-side methods
       }
     }
     
+    $(window).bind('scroll', positionDocumentMenu);
+    $(window).bind('resize', positionDocumentMenu);
+    
+    // Start the engines
+    app = new Application({el: $('#container'), session: session});
+    
+    // Set up a global instance of the Proper Richtext Editor
+    editor = new Proper();
+    
+    // Initialize controller
+    controller = new ApplicationController({app: this});
+    
+    // Start responding to routes
+    Backbone.history.start();
+    
     var pendingSync = false;
     graph.bind('dirty', function() {
       // Reload document browser
@@ -395,8 +434,5 @@ var remote,                       // Remote handle for server-side methods
         }, 3000);
       }
     });
-    
-    $(window).bind('scroll', positionDocumentMenu);
-    $(window).bind('resize', positionDocumentMenu);
   });
 })();

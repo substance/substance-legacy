@@ -36,9 +36,9 @@ var Document = Backbone.View.extend({
   
   initialize: function() {
     var that = this;
-    
     this.attributes = new Attributes({el: '#attributes', model: this.model});
     
+    this.app = this.options.app;
     this.mode = 'show';
     this.bind('status:changed', function() {
       that.updateCursors();
@@ -76,7 +76,7 @@ var Document = Backbone.View.extend({
     $('#'+node.html_id).replaceWith(new HTMLRenderer(node, parent).render());
     
     // Render controls
-     if (this.mode === 'edit') renderControls(app.document.model);
+     if (this.mode === 'edit') renderControls(this.app.document.model);
      this.renderVisualizations();
   },
   
@@ -126,10 +126,10 @@ var Document = Backbone.View.extend({
         document: this.model.toJSON()
       }));
     } else {
-      if (app.username) {
+      if (this.app.username) {
         this.$('#document_menu').html(_.renderTemplate('document_menu_create', {
           document_types: this.documentTypes(),
-          username: app.username
+          username: this.app.username
         }));
       } else {
         this.$('#document_menu').hide();
@@ -173,8 +173,6 @@ var Document = Backbone.View.extend({
     
     // New node
     $(document).bind('keydown', 'alt+down', function(e) {
-      console.log('alt+right pressed');
-      
       if (that.selectedNode) {
         var controls = $('.controls[node='+that.selectedNode._id+'][destination=after]');
         if (controls) {
@@ -203,13 +201,12 @@ var Document = Backbone.View.extend({
     this.init();
     
     // Move to the actual document
-    app.scrollTo('#document_wrapper');
-    controller.saveLocation('#'+app.username+'/'+name);
+    this.app.scrollTo('#document_wrapper');
+    controller.saveLocation('#'+this.app.username+'/'+name);
     this.trigger('document:changed');
     notifier.notify(Notifications.BLANK_DOCUMENT);
     return false;
   },
-  
   
   loadDocument: function(username, docname, nodeid, mode) {
     var that = this;
@@ -218,17 +215,19 @@ var Document = Backbone.View.extend({
       that.model = graph.get(id);
       
       if (that.model) {
-        that.mode = mode || (username === app.username ? 'edit' : 'show');
+        that.mode = mode || (username === this.app.username ? 'edit' : 'show');
         that.render();
         that.init();
         that.trigger('document:changed');
 
         // Move to the actual document
-        app.scrollTo('#document_wrapper');
+        this.app.scrollTo('#document_wrapper');
         
         that.loadedDocuments[username+"/"+docname] = id;
         notifier.notify(Notifications.DOCUMENT_LOADED);
-        remote.Session.registerDocument(id);
+        
+        // TODO: register document for realtime sessions
+        // remote.Session.registerDocument(id);
       } else {
         notifier.notify(Notifications.DOCUMENT_LOADING_FAILED);
       }
@@ -241,12 +240,24 @@ var Document = Backbone.View.extend({
       init(id);
     } else {
       notifier.notify(Notifications.DOCUMENT_LOADING);
-      remote.Session.getDocument(username, docname, function(err, id, g) {
-        if (!err) {
-          
-          graph.merge(g, true);
-          init(id);
-        } else {
+      
+      $.ajax({
+        type: "GET",
+        url: "/readdocument",
+        data: {
+          creator: username,
+          name: docname
+        },
+        dataType: "json",
+        success: function(res) {
+          if (res.status === 'error') {
+            notifier.notify(Notifications.DOCUMENT_LOADING_FAILED);
+          } else {
+            graph.merge(res.graph);
+            init(res.id);
+          }
+        },
+        error: function(err) {
           notifier.notify(Notifications.DOCUMENT_LOADING_FAILED);
         }
       });
@@ -255,7 +266,7 @@ var Document = Backbone.View.extend({
   
   closeDocument: function() {
     this.model = null;
-    controller.saveLocation('#'+app.username);
+    controller.saveLocation('#'+this.app.username);
     this.render();
   },
   
@@ -268,17 +279,16 @@ var Document = Backbone.View.extend({
     notifier.notify(Notifications.DOCUMENT_DELETED);
   },
   
-  
   // Reset to view mode (aka unselect everything)
   reset: function(noBlur) {
-    if (!app.document.model) return;
+    if (!this.model) return;
     if (!noBlur) $('.content').blur();
     
-    app.document.selectedNode = null;
+    this.app.document.selectedNode = null;
     this.resetSelection()
 
     // Broadcast
-    remote.Session.selectNode(null);
+    // remote.Session.selectNode(null);
     return false;
   },
   
@@ -339,10 +349,10 @@ var Document = Backbone.View.extend({
     }
     
     // Notify all collaborators about the changed node
-    if (app.document.status && app.document.status.collaborators.length > 1) {
+    if (this.status && this.status.collaborators.length > 1) {
       var serializedNode = this.selectedNode.toJSON();
       delete serializedNode.children;
-      remote.Session.registerNodeChange(this.selectedNode._id, serializedNode);
+      // remote.Session.registerNodeChange(this.selectedNode._id, serializedNode);
     }
   },
   
@@ -376,7 +386,7 @@ var Document = Backbone.View.extend({
       this.trigger('select:node', this.selectedNode);
 
       // The server will respond with a status package containing my own cursor position
-      remote.Session.selectNode(key);
+      // remote.Session.selectNode(key);
     }
     
     e.stopPropagation();
@@ -405,7 +415,7 @@ var Document = Backbone.View.extend({
     
     if (arguments.length === 1) {
       // Broadcast insert node command
-      remote.Session.insertNode('child', newNode.toJSON(), $(e.currentTarget).attr('node'), null, 'after');
+      // remote.Session.insertNode('child', newNode.toJSON(), $(e.currentTarget).attr('node'), null, 'after');
     }
     return false;
   },
@@ -445,7 +455,7 @@ var Document = Backbone.View.extend({
     
     if (arguments.length === 1) {
       // Broadcast insert node command
-      remote.Session.insertNode('sibling', newNode.toJSON(), refNode._id, parentNode._id, destination);      
+      // remote.Session.insertNode('sibling', newNode.toJSON(), refNode._id, parentNode._id, destination);      
     }
     return false;
   },
@@ -466,7 +476,7 @@ var Document = Backbone.View.extend({
 
     if (arguments.length === 1) {
       // Broadcast insert node command
-      remote.Session.removeNode(node._id, parent._id);
+      // remote.Session.removeNode(node._id, parent._id);
     }
     
     return false;

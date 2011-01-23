@@ -65,6 +65,12 @@ var seedGraph = {
         "required": true,
         "validator": "^\\w+@[a-zA-Z_]+?\\.[a-zA-Z]{2,6}$"
       },
+      "name": {
+        "name": "Name",
+        "unique": true,
+        "type": "string",
+        "required": true
+      },
       "password": {
         "name": "Password",
         "unique": true,
@@ -316,7 +322,6 @@ var seedGraph = {
     }
   },
   
-  
   // Question
   // --------------------
   
@@ -368,7 +373,6 @@ var seedGraph = {
     }
   },
   
-  
   // Code
   // --------------------
   
@@ -413,6 +417,7 @@ var seedGraph = {
   "/user/demo": {
     "type": "/type/user",
     "username": "demo",
+    "name": "Demo User",
     "email": "demo@substance.io",
     "password": "demo",
     "firstname": "Demo",

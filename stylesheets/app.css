@@ -492,6 +492,7 @@ div.panel.attributes {
 -------------------------------------------------------------------------------*/
 
 #attributes {
+  display: none;
   background: #fff;
   padding-bottom: 100px;
   margin-left: 250px;

@@ -38,21 +38,17 @@ var DocumentBrowser = Backbone.View.extend({
   initialize: function(options) {
     var that = this;
     
+    this.app = options.app;
+    
     this.documents = [];
     that.commands = [];
-    this.load();
-    this.documentType = "/type/document"; // default type (= all documents)
   },
   
-  query: function() {
-    return app && app.username 
-           ? { "type|=": ["/type/document"], "creator": "/user/"+app.username }
-           : { "type|=": ["/type/document"], "creator": "/user/michael" }
-  },
-  
-  load: function() {
+  load: function(query) {
     var that = this;
-    graph.fetch(this.query(), {expand: false}, function(err, g) {
+    
+    this.query = query;
+    graph.fetch(this.query, {expand: false}, function(err, g) {
       if (err) alert('An error occured during fetching the documents');
       
       // Initialize Facets View
@@ -66,7 +62,7 @@ var DocumentBrowser = Backbone.View.extend({
     var that = this;
     
     // TODO: use this.query here
-    this.documents = graph.find({'type|=': this.documentType}).toArray();
+    this.documents = graph.find(this.query).toArray();
     
     _.each(this.documents, function(doc) {
       doc.username = doc.value.get('creator')._id.split('/')[2];
