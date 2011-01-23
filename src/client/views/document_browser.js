@@ -73,7 +73,7 @@ var DocumentBrowser = Backbone.View.extend({
       doc.document_name = doc.value.get('name');
       doc.last_modified = _.prettyDate(new Date(doc.value.get('updated_at')).toJSON())
       doc.status = doc.value.get('published_on') ? 'published' : 'draft';
-      doc.published_on = doc.value.get('published_on') ? new Date(doc.value.get('published_on')).toDateString() : null;
+      doc.published_on = doc.value.get('published_on') ? _.date(doc.value.get('published_on')) : null;
       doc.document_type = doc.value.type.key.split('/')[2];
       doc.title = doc.value.get('title');
     });
