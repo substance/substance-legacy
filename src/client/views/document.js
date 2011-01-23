@@ -156,9 +156,7 @@ var Document = Backbone.View.extend({
       that.renderNodeEditor(node);
     });
     
-    
-    // Former DocumentView
-    
+    // Former DocumentView stuff
     this.bind('change:node', function(node) {
       that.renderNode(node);
     });
@@ -172,7 +170,6 @@ var Document = Backbone.View.extend({
       if (e.keyCode == 27) { that.reset(); }  // esc
       e.stopPropagation();
     });
-    
     
     // New node
     $(document).bind('keydown', 'alt+down', function(e) {
@@ -216,9 +213,8 @@ var Document = Backbone.View.extend({
   
   loadDocument: function(username, docname) {
     var that = this;
-    notifier.notify(Notifications.DOCUMENT_LOADING);
     
-    
+
     function init(id) {
       that.model = graph.get(id);
       
@@ -243,17 +239,20 @@ var Document = Backbone.View.extend({
     var id = that.loadedDocuments[username+"/"+docname];
     // Already loaded - no need to fetch it
     if (id) {
-      init();
+      // TODO: check if there are changes from a realtime session
+      init(id);
+    } else {
+      notifier.notify(Notifications.DOCUMENT_LOADING);
+      remote.Session.getDocument(username, docname, function(err, id, g) {
+        if (!err) {
+          
+          graph.merge(g, true);
+          init(id);
+        } else {
+          notifier.notify(Notifications.DOCUMENT_LOADING_FAILED);
+        }
+      });
     }
-    
-    remote.Session.getDocument(username, docname, function(err, id, g) {
-      if (!err) {
-        graph.merge(g, true);
-        init(id);
-      } else {
-        notifier.notify(Notifications.DOCUMENT_LOADING_FAILED);
-      }
-    });
   },
   
   closeDocument: function() {
@@ -277,7 +276,7 @@ var Document = Backbone.View.extend({
     if (!app.document.model) return;
     if (!noBlur) $('.content').blur();
     
-    app.document.model.selectedNode = null;
+    app.document.selectedNode = null;
     this.resetSelection()
 
     // Broadcast
@@ -299,7 +298,6 @@ var Document = Backbone.View.extend({
   
   renderNodeEditor: function(node) {
     var $node = $('#'+node.html_id);
-    
     if (this.mode !== 'edit') return;
     
     // Depending on the selected node's type, render the right editor
@@ -376,13 +374,11 @@ var Document = Backbone.View.extend({
     
     if (!this.selectedNode || this.selectedNode.key !== key) {
       var node = graph.get(key);
-      if (this.selectedNode !== node) { // only if changed
-        this.selectedNode = node;
-        this.trigger('select:node', this.selectedNode);
+      this.selectedNode = node;
+      this.trigger('select:node', this.selectedNode);
 
-        // The server will respond with a status package containing my own cursor position
-        remote.Session.selectNode(key);
-      }
+      // The server will respond with a status package containing my own cursor position
+      remote.Session.selectNode(key);
     }
     
     e.stopPropagation();

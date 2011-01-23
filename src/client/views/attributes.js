@@ -9,7 +9,20 @@ var Attributes = Backbone.View.extend({
   },
   
   renderShow: function() {
-    $(this.el).html('');
+    var that = this; 
+    var doc = app.document.model;
+    var attributes = [];
+    
+    var attributes = doc.properties().select(function(property) {
+      if (property.expectedTypes[0] === '/type/attribute') {
+        return true;
+      }
+    });
+    
+    $(this.el).html(_.tpl('show_attributes', {
+      attributes: attributes,
+      doc: doc
+    }));
   },
   
   availableAttributes: function(property) {

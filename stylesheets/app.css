@@ -56,8 +56,8 @@ h2 { font-size: 160%; padding-bottom: 15px; }
 /* Meta Data DT DD */
 
 dl { margin: 0;	padding: 0; }
-dt { position: relative; left: 0; top: 20px; width: 100px; text-transform: uppercase; font-size: 10px; }
-dd { color: rgba(0, 0, 0, 0.5); font-size: 1em;	margin: 0 0 0 105px; padding: 0; }
+dt { background: #000; color: #eee; padding-left: 5px; position: relative; left: 0; top: 20px; width: 100px; text-transform: uppercase; font-size: 10px; }
+dd { color: rgba(0, 0, 0, 0.5); font-size: 1em;	margin: 0 0 0 105px; padding: 0; padding-left: 20px; }
 
 
 /* Webkit Animation Settings */
@@ -454,7 +454,6 @@ div.panel.attributes {
   background:#fff;
   margin: 0 250px 0 230px;
   padding: 80px 0;
-  min-height: 500px;
   
   text-rendering:optimizeLegibility; 
   font-family: Garamond, "Times New Roman", serif;
@@ -478,13 +477,11 @@ div.panel.attributes {
 -------------------------------------------------------------------------------*/
 
 #attributes {
-  display: none;
+  background: #fff;
+  padding-bottom: 100px;
+  margin-left: 250px;
+  margin-right: 250px;
   line-height: 1.6em;
-  position: absolute;
-  top: 90px;
-  right:  0px;
-  width:  240px;
-  padding: 10px;
 }
 
 #attributes h3 {
@@ -492,12 +489,13 @@ div.panel.attributes {
   font-size: 17px;
 }
 
-.attribute-editor input { width: 180px; display: inline;  }
+.attribute-editor form { float: left; }
+.attribute-editor input { width: 120px; display: inline; }
 
 .attribute-editor input[type=submit] { width: 20px; font-weight: bold;}
-.attribute-editor div.items { padding: 10px 0; }
+.attribute-editor div.items { padding: 0; }
 
-.attribute-editor div.available-items { position: absolute; width: 180px; }
+.attribute-editor div.available-items { position: absolute; width: 120px; }
 .attribute-editor div.available-item { background: #eee; padding: 3px; margin-bottom: 1px; }
 .attribute-editor div.available-item.selected { background: #ccc; }
 

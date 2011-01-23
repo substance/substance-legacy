@@ -82,7 +82,7 @@ UI.MultiStringEditor = Backbone.View.extend({
     }
         
     var val = this.$('input[name=new_value]').val();
-    if (!_.include(this._items, val)) {
+    if (!_.include(this._items, val) && val.length > 0) {
       this._items.push(val); 
       this.trigger('changed');
       this.render(); // re-render

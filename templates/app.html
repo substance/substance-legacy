@@ -10,37 +10,72 @@
   <script type="text/x-ejs-template" name="edit_attributes">
     <dl class="document-attributes">
       
-      <dt>Creator:</dt>
+      <dt>Creator</dt>
       <dd><%= doc.get('creator').get('username') %></dd>
       
-      <dt>Created At:</dt>
-      <dd><%= doc.get('created_at') %></dd>
+      <dt>Created On</dt>
+      <dd><%= _.date(doc.get('created_at')) %></dd>
       
-      <dt>Last modified:</dt>
-      <dd><%= doc.get('created_at') %></dd>
+      <dt>Last modified</dt>
+      <dd><%= _.prettyDate(new Date(doc.get('updated_at')).toJSON()) %></dd>
       
       <dt>Publish Date:</dt>
       <dd>
         <% if (doc.get('published_on')) { %>
-          <%= doc.get('published_on') %>
+          <%= _.date(doc.get('published_on')) %>
           (<a href="#" class="unpublish-document">Unpublish</a>)
         <% } else { %>
           Not published (<a href="#" class="publish-document">Publish</a>)
         <% } %>
       </dd>
+      
+      <% attributes.each(function(attribute) { %>
+        <dt><%= attribute.name %></dt>
+        <dd id="property_<%= attribute.key %>" property="/<%= attribute.type._id.split('/')[2] %>/<%= attribute.key %>" key="<%= attribute.key %>" type="string" class="attribute-editor <%= attribute.unique ? "unique" : "non-unique"%>"></dd>
+      <% }); %>
     </dl>
-    
-    <% attributes.each(function(attribute) { %>
-      <h4><%= attribute.name %></h4>
-      <div id="property_<%= attribute.key %>" property="/<%= attribute.type._id.split('/')[2] %>/<%= attribute.key %>" key="<%= attribute.key %>" type="string" class="attribute-editor <%= attribute.unique ? "unique" : "non-unique"%>"></div>
-    <% }); %>
+  </script>
+  
+  
+  <script type="text/x-ejs-template" name="show_attributes">
+    <dl class="document-attributes">
+      <dt>Creator</dt>
+      <dd><%= doc.get('creator').get('username') %></dd>
+      
+      <dt>Created On</dt>
+      <dd><%= _.date(doc.get('created_at')) %></dd>
+      
+      <dt>Last modified</dt>
+      <dd><%= _.prettyDate(new Date(doc.get('updated_at')).toJSON()) %></dd>
+
+      <% if (doc.get('published_on')) { %>
+        <dt>Publish Date:</dt>
+        <dd>
+        <%= _.date(doc.get('published_on')) %>
+        </dd>
+      <% } %>
+
+      <% attributes.each(function(attribute) { %>
+        <dt><%= attribute.name %></dt>
+        <dd>
+          <div class="items">
+            <% doc.get(attribute.key).each(function(v) { %>
+              <div class="item"><%= v.get('name') %></div>
+            <% }); %>
+          </div>
+        </dd>
+      <% }); %>
+    </dl>
   </script>
   
   <script type="text/x-handlebars-template" name="document_wrapper">
     <div id="document_menu" class="menu">Document </div>
-    <div id="attributes">attributes</div>
+    
     <div id="document">
       <p>No document loaded... You can either create a <em>New Document</em> or <em>Browse</em> existing ones.</p>
+    </div>
+    
+    <div id="attributes">
     </div>
   </script>
   
@@ -248,37 +283,6 @@
   <script type="text/x-handlebars-template" name="edit_section">
     <h3>Edit section</h3>
   </script>
-  
-  <script type="text/x-handlebars-template" name="show_attributes">
-    <dl class="document-attributes">
-      <dt>Creator:</dt>
-      <dd>{{creator}}</dd>
-
-      <dt>Created At:</dt>
-      <dd>{{created_at}}</dd>
-
-      <dt>Last modified:</dt>
-      <dd>{{updated_at}}</dd>
-
-      {{#published_on}}
-      <dt>Publish Date:</dt>
-      <dd>
-        {{.}}
-      </dd>
-      {{/published_on}}
-    </dl>
-
-    <div class="lpl texteditor">
-      {{#attributes}}
-        <h4>{{name}}:</h4>
-        <div class="items">
-          {{#values}}
-            <span class="item">{{.}}</span>
-          {{/values}}
-        </div>
-      {{/attributes}}
-    </div>
-  </script>
 
   <!-- content-node templates for the editor -->
   <script type="text/x-handlebars-template" name="document">    
@@ -380,14 +384,15 @@
       {{#items}}
         <span class="item">{{.}} <a href="/" value="{{.}}" class="remove-item">x</a></span>
       {{/items}}
+      <form>
+        <input type="text" name="new_value"/>
+        <input type="submit" value="+"/>
+        <div class="available-items">
+          
+        </div>
+      </form>
+      
       <br class="clear"/>
-    </div>
-    <form>
-      <input type="text" name="new_value"/>
-      <input type="submit" value="+"/>
-    </form>
-    
-    <div class="available-items">
     </div>
 
   </script>
