@@ -20,11 +20,18 @@ var Application = Backbone.View.extend({
     'submit #create_document': 'createDocument',
     'submit #login-form': 'login',
     'click a.delete-document': 'deleteDocument',
-    'click a.view-collaborators': 'viewCollaborators'
+    'click a.view-collaborators': 'viewCollaborators',
+    'click a.toggle-document-views': 'toggleDocumentViews',
+    'click a.toggle-mode': 'toggleMode',
   },
 
   login: function(e) {
     this.authenticate();
+    return false;
+  },
+  
+  toggleDocumentViews: function(e) {
+    this.$('#document_view_selection').slideToggle();
     return false;
   },
   
@@ -76,6 +83,13 @@ var Application = Backbone.View.extend({
     else {
       $('#create_document input[name=new_document_name]').addClass('error');
     }
+    return false;
+  },
+  
+  toggleMode: function(e) {
+    var user = app.document.model.get('creator').get('username');
+    var name = app.document.model.get('name');
+    app.document.loadDocument(user, name, null, app.document.mode === 'show' ? 'edit' : 'show');
     return false;
   },
   

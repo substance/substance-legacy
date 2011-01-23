@@ -211,16 +211,14 @@ var Document = Backbone.View.extend({
   },
   
   
-  loadDocument: function(username, docname) {
+  loadDocument: function(username, docname, nodeid, mode) {
     var that = this;
     
-
     function init(id) {
       that.model = graph.get(id);
       
       if (that.model) {
-        that.mode = username === app.username ? 'edit' : 'show';
-        
+        that.mode = mode || (username === app.username ? 'edit' : 'show');
         that.render();
         that.init();
         that.trigger('document:changed');

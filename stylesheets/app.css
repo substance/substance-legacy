@@ -356,6 +356,7 @@ table tr.draft, table tr.draft a {
   background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAMCAYAAABWdVznAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAGZJREFUeNpi/P//PwMpgImBRECyBgYinCQAxAFwtQQ0GADxe5BakCZ0DSCTEpAUJyApBtEGyBpAis9DJUEKG6BsuGJ0JxUgKfiPTTE2P8zHpxiXp+fjUowvlPqxKYZpYCQ1aQAEGACY7lEYFmjlwgAAAABJRU5ErkJggg==);
 }
 
+
 /* body > #container > #document_wrapper
 -------------------------------------------------------------------------------*/
 
@@ -375,9 +376,23 @@ table tr.draft, table tr.draft a {
   height: 50px;
   line-height: 50px;
   padding: 0 250px;
-  
-/*  text-shadow: 0px 1px 0px rgba(255,255,255,0.5);*/
   z-index: 3000;
+}
+
+#document_menu a.toggle-document-views {
+  position: absolute;
+  top: 15px;
+  right: 40px;
+  width: 15px;
+  height: 17px;
+  background: transparent;
+  background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA0AAAAPCAYAAAA/I0V3AAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAALNJREFUeNpi/P//PwOpgImBDECWJgaQ80BYSV5+PxAL4FIHkgOpAalFtukgEJ8HShhg0QASOw9Vg6JpAhArADHIRgckDSD2fqgcSA0DIyz0GBkZQQrmA5kJUPWJUHo+lF5w7+HDRJB6dE0g0+7j8JYiUNMDdD8xgARBJmLRsAEqhzPIF2IRm4g3noAmHgBSB5CEDkDFCEbuRLw2wyIXS9zcB2Fs6lnwJJZGXBKM5KRygAADAC9jUGpv9HahAAAAAElFTkSuQmCC);
+}
+
+
+#document_view_selection {
+  display: none;
+  background: #fff;
 }
 
 .menu div.label {
@@ -453,7 +468,7 @@ div.panel.attributes {
   position:relative;
   background:#fff;
   margin: 0 250px 0 230px;
-  padding: 80px 0;
+  padding: 80px 0 20px 0;
   
   text-rendering:optimizeLegibility; 
   font-family: Garamond, "Times New Roman", serif;

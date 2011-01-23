@@ -5,7 +5,7 @@ var ApplicationController = Backbone.Controller.extend({
   },
 
   loadDocument: function(username, docname, node) {
-    app.document.loadDocument(username, docname, name);
+    app.document.loadDocument(username, docname, node);
     return false;
   }
 });
