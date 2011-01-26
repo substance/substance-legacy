@@ -173,8 +173,8 @@ app.get('/readgraph', function(req, res) {
 });
 
 app.put('/writegraph', function(req, res) {
-  Data.adapter.writeGraph(req.body, function(err) {
-    err ? res.send(err) : res.send('{"status": "ok"}');
+  Data.adapter.writeGraph(req.body, function(err, g) {
+    err ? res.send(err) : res.send(JSON.stringify({"status": "ok", "graph": g}));
   });
 });
 

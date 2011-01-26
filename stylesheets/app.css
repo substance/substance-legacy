@@ -597,10 +597,14 @@ p.answer {
   color: #999;
 }
 
-code { font-family: Monaco, Consolas; font-size: 10px; padding: 0px 3px; }
-pre.code {border-left: 2px solid #ccc; padding-left: 20px; }
+pre { line-height: 1.0em; }
 
-
+pre code {
+  color: #666;
+  font-size: 12px;
+  font-family: Monaco, Consolas, "Lucida Console", monospace;
+  margin: 0; padding: 0;
+}
 
 
 /* Editors

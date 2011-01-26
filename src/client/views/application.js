@@ -428,11 +428,36 @@ var remote,                              // Remote handle for server-side method
         setTimeout(function() {
           notifier.notify(Notifications.SYNCHRONIZING);
           graph.sync(function(err, invalidNodes) {
-            notifier.notify(Notifications.SYNCHRONIZED);
-            pendingSync = false;
+            if (!err && invalidNodes.length === 0) {
+              notifier.notify(Notifications.SYNCHRONIZED);
+              pendingSync = false;
+            } else {
+              if (invalidNodes) console.log(invalidNodes.keys());
+              console.log(err);
+              notifier.notify({
+                message: err || 'Not all nodes could be saved successfully.',
+                type: 'error'
+              });
+            }
           });
         }, 3000);
       }
+    });
+    
+    graph.bind('conflicted', function() {
+      if (!app.document.model) return;
+      graph.fetch({
+        creator: app.document.model.get('creator')._id,
+        name: app.document.model.get('name')
+      }, {expand: true}, function(err) {
+        app.document.render();
+        app.scrollTo('#document_wrapper');
+      });
+      notifier.notify({
+        message: 'There are conflicting nodes. The Document will be reset for your own safety.',
+        type: 'error'
+      });
+
     });
   });
 })();

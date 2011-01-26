@@ -412,7 +412,6 @@ var Document = Backbone.View.extend({
     this.selectedNode = newNode;
     this.trigger('select:node', this.selectedNode);
     
-    
     if (arguments.length === 1) {
       // Broadcast insert node command
       // remote.Session.insertNode('child', newNode.toJSON(), $(e.currentTarget).attr('node'), null, 'after');
