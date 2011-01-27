@@ -15,6 +15,7 @@ global.config = JSON.parse(fs.readFileSync(__dirname+ '/config.json', 'utf-8'));
 // Setup Data.Adapter
 Data.setAdapter('couch', { url: config.couchdb_url});
 
+var seed;
 
 // WriteGraph Filters
 Data.middleware.writegraph = [
@@ -86,11 +87,7 @@ app.configure(function(){
 
 app.get('/', function(req, res) {  
   html = fs.readFileSync(__dirname+ '/templates/app.html', 'utf-8');
-  
-  // Client seed
-  graph.fetch({"type|=": ["/type/type", "/type/config", "/type/attribute"]}, {}, function(err, g) {
-    res.send(html.replace('{{seed}}', JSON.stringify(g)).replace('{{session}}', JSON.stringify(req.session)));
-  });
+  res.send(html.replace('{{seed}}', JSON.stringify(seed)).replace('{{session}}', JSON.stringify(req.session)));
 });
 
 
@@ -464,12 +461,14 @@ app.put('/writegraph', function(req, res) {
 // Start the engines
 // -----------
 
+
 console.log('Loading schema...');
-graph.fetch({type: '/type/type'}, {}, function(err) {
+graph.fetch({"type|=": ["/type/type", "/type/config", "/type/attribute"]}, {}, function(err, g) {
   if (err) {
     console.log("ERROR: Couldn't fetch schema");
     console.log(err);
   } else {
+    seed = g;
     console.log('READY: Substance is listening at http://'+(config['server_host'] || 'localhost')+':'+config['server_port']);
     app.listen(config['server_port'], config['server_host']);
   }
