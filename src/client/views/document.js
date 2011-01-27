@@ -123,6 +123,8 @@ var Document = Backbone.View.extend({
         edit: this.mode === 'edit',
         username: this.model.get('creator')._id.split('/')[2],
         document_name: this.model.get('name'),
+        authorized: this.model.get('creator')._id.split('/')[2] === app.username,
+        authenticated: !!app.username,
         document: this.model.toJSON()
       }));
     } else {
@@ -218,6 +220,7 @@ var Document = Backbone.View.extend({
         that.mode = mode || (username === this.app.username ? 'edit' : 'show');
         that.render();
         that.init();
+        that.reset();
         that.trigger('document:changed');
 
         // Move to the actual document
@@ -397,7 +400,7 @@ var Document = Backbone.View.extend({
       // Setup node
       var type = $(e.currentTarget).attr('type');
       var refNode = graph.get($(e.currentTarget).attr('node'));
-      var newNode = graph.set(null, {type: type});
+      var newNode = graph.set(null, {"type": type, "document": this.model._id});
     } else {
       var refNode = graph.get(arguments[1]);
       var newNode = graph.set(arguments[0].nodeId, arguments[0]);
@@ -429,7 +432,7 @@ var Document = Backbone.View.extend({
       var destination = $(e.currentTarget).parent().parent().attr('destination');
       
       // newNode gets populated with default values
-      var newNode = graph.set(null, {type: type});
+      var newNode = graph.set(null, {"type": type, "document": this.model._id});
     } else {
       var refNode = graph.get(arguments[1]);
       var parentNode = graph.get(arguments[2]);

@@ -1,6 +1,7 @@
 var express = require('express');
 var app = express.createServer();
 var http = require('http');
+var crypto = require('crypto');
 var fs = require('fs');
 var Handlebars = require('./lib/handlebars');
 var HTMLRenderer = require('./src/client/renderers/frontend_renderer').Renderer;
@@ -14,12 +15,50 @@ global.config = JSON.parse(fs.readFileSync(__dirname+ '/config.json', 'utf-8'));
 // Setup Data.Adapter
 Data.setAdapter('couch', { url: config.couchdb_url});
 
+
+// WriteGraph Filters
+Data.middleware.writegraph = [
+  function ensureAuthorized(node, ctx) {
+    if (_.include(node.type, "/type/document")) {
+      // console.log("saving a document...."+node._id);
+      if (node.creator !== "/user/"+ctx.session.username) return null;
+      // TODO: Make sure that document deletion can only be done by the creator, not the collaborators.
+    } else if (_.intersect(node.type, ["/type/section", "/type/visualization", "/type/text",
+                                       "/type/question", "/type/answer", "/type/quote", "/type/image"]).length > 0) {
+      var creator = graph.get(node.document).get('creator')._id;
+      if (creator !== "/user/"+ctx.session.username) return null;
+    } else if (_.include(node.type, "/type/user")) {
+      // Ensure username can't be changed for existing users
+      if (node._rev) node.username = graph.get(node._id).get('username');
+      if (node._id === "/user/"+ctx.session.username) return null;
+    }
+    return node;
+  }
+];
+
+// ReadGraph Filters
+Data.middleware.readgraph = [
+  function hidePasswords(node, ctx) {
+    // if (!ctx.session.username) return false;
+    if (_.include(node.type, "/type/user")) {
+      delete node.password;
+    }
+    return node;
+  }
+];
+
 var graph = new Data.Graph();
 
 // Helpers
 // -----------
 
 var Helpers = {};
+
+var encryptPassword = function (password) {
+  var hash = crypto.createHash('sha256');
+  hash.update(password);
+  return hash.digest('hex');
+}
 
 // Templates for the moment are recompiled every time
 _.renderTemplate = function(tpl, view, helpers) {
@@ -62,7 +101,7 @@ app.post('/login', function(req, res) {
   graph.fetch({type: '/type/user'}, {}, function(err) {
     if (!err) {
       var user = graph.get('/user/'+username);
-      if (user && username === user.get('username') && password === user.get('password')) {
+      if (user && username === user.get('username') && encryptPassword(password) === user.get('password')) {
         var seed = {};
         seed[user._id] = user.toJSON();
         delete seed[user._id].password;
@@ -90,7 +129,6 @@ app.post('/logout', function(req, res) {
   res.send({status: "ok"});
 });
 
-
 app.post('/register', function(req, res) {
   var username = req.body.username,
       password = req.body.password,
@@ -106,7 +144,7 @@ app.post('/register', function(req, res) {
       username: username,
       name: name,
       email: email,
-      password: password
+      password: encryptPassword(password)
     });
     
     if (user.validate()) {
@@ -128,7 +166,6 @@ app.post('/register', function(req, res) {
       });
     } else return res.send({"status": "error", "message": "Not valid"});
   });
-
 });
 
 // Returns the most recent version of the requested doc
@@ -165,20 +202,21 @@ app.get('/readgraph', function(req, res) {
   var callback = req.query.callback,
       query = JSON.parse(req.query.qry),
       options = JSON.parse(req.query.options)
-  
   Data.adapter.readGraph(JSON.parse(req.query.qry), new Data.Graph(), JSON.parse(req.query.options), function(err, g) {
     err ? res.send(callback+"("+JSON.stringify(err)+");")
         : res.send(callback+"("+JSON.stringify(g)+");");
-  });
+  }, req);
 });
 
 app.put('/writegraph', function(req, res) {
   Data.adapter.writeGraph(req.body, function(err, g) {
     err ? res.send(err) : res.send(JSON.stringify({"status": "ok", "graph": g}));
-  });
+  }, req);
 });
 
+
 // The DNode Server (RMI Interface for the client)
+// NOTICE: Real time authoring is disabled for the moment
 // -----------
 
 // var sessions = {},       // Keeps a reference to all active sessions

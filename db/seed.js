@@ -271,6 +271,12 @@ var seedGraph = {
         "type": "string",
         "default": "A new header"
       },
+      "document": {
+        "name": "Document Membership",
+        "unique": true,
+        "required": true,
+        "type": ["/type/document"]
+      },
       "children": {
         "name": "Children",
         "unique": false,
@@ -293,6 +299,12 @@ var seedGraph = {
         "unique": true,
         "type": "string",
         "default": "<p>Some text ...</p>"
+      },
+      "document": {
+        "name": "Document Membership",
+        "unique": true,
+        "required": true,
+        "type": ["/type/document"]
       }
     }
   },
@@ -318,6 +330,12 @@ var seedGraph = {
         "type": "string",
         "required": true,
         "default": "linechart"
+      },
+      "document": {
+        "name": "Document Membership",
+        "unique": true,
+        "required": true,
+        "type": ["/type/document"]
       }
     }
   },
@@ -335,6 +353,12 @@ var seedGraph = {
         "unique": true,
         "type": "string",
         "default": "Question?"
+      },
+      "document": {
+        "name": "Document Membership",
+        "unique": true,
+        "required": true,
+        "type": ["/type/document"]
       }
     }
   },
@@ -352,6 +376,12 @@ var seedGraph = {
         "unique": true,
         "type": "string",
         "default": "Answer."
+      },
+      "document": {
+        "name": "Document Membership",
+        "unique": true,
+        "required": true,
+        "type": ["/type/document"]
       }
     }
   },
@@ -369,6 +399,12 @@ var seedGraph = {
         "unique": true,
         "type": "string",
         "default": "A famous quotation"
+      },
+      "document": {
+        "name": "Document Membership",
+        "unique": true,
+        "required": true,
+        "type": ["/type/document"]
       }
     }
   },
@@ -386,6 +422,12 @@ var seedGraph = {
         "unique": true,
         "type": "string",
         "default": "var foo = new Bar();"
+      },
+      "document": {
+        "name": "Document Membership",
+        "unique": true,
+        "required": true,
+        "type": ["/type/document"]
       }
     }
   },
@@ -407,6 +449,12 @@ var seedGraph = {
         "name": "Image URL",
         "unique": true,
         "type": "string"
+      },
+      "document": {
+        "name": "Document Membership",
+        "unique": true,
+        "required": true,
+        "type": ["/type/document"]
       }
     }
   },
@@ -426,7 +474,7 @@ var seedGraph = {
 };
 
 
-var graph = new Data.Graph(seedGraph);
+var graph = new Data.Graph(seedGraph, true);
 
 if (process.argv[2] == "--flush") {
   Data.adapter.flush(function(err) {

@@ -114,11 +114,12 @@
   <script type="text/x-handlebars-template" name="document_menu">
     <div class="label">
       <a class="scroll-to" href="#document_wrapper">{{#edit}}WRITE{{/edit}}{{^edit}}READ{{/edit}}</a>
-      <!--<a class="button toggle-new-document" href="#new-document" title="Close">X</a>-->
-      <a class="button toggle-document-views" href="#" title="Actions"></a>
+      {{#authenticated}}<a class="button toggle-document-views" href="#" title="Actions"></a>{{/authenticated}}
+      
       <div id="document_view_selection">
-        <div><a class="toggle-mode" href="#toggle-mode">{{#edit}}READ{{/edit}}{{^edit}}WRITE{{/edit}}</a></div>
-        <div><a class="toggle-new-document" href="#toggle-new-document">NEW</a></div>
+        <!-- {{#edit}}READ{{/edit}}{{^edit}}WRITE{{/edit}} -->
+        <div><a class="toggle-mode{{^authorized}} hidden{{/authorized}}" href="#toggle-mode">{{#edit}}READ{{/edit}}{{^edit}}WRITE{{/edit}}</a></div>
+        <div><a class="toggle-new-document" href="#toggle-new-document">NEW DOCUMENT</a></div>
       </div>
     </div>
     <div class="panel attributes"></div>

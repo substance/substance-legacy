@@ -423,7 +423,7 @@ var remote,                              // Remote handle for server-side method
       // Reload document browser
       app.browser.render();
       
-      if (!pendingSync && app.username) {
+      if (!pendingSync) {
         pendingSync = true;
         setTimeout(function() {
           notifier.notify(Notifications.SYNCHRONIZING);
