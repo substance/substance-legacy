@@ -188,20 +188,13 @@ var seedGraph = {
       "children": {
         "name": "Children/Contents",
         "unique": false,
-        "type": ["/type/question", "/type/answer"]
+        "type": ["/type/question", "/type/answer"],
+        "default": []
       }
     },
     "meta": {
       "template": {
-        "type": ["/type/document", "/type/qaa"],
-        "children": [
-          {
-            "type": "/type/question"
-          },
-          {
-            "type": "/type/answer"
-          }
-        ]
+        "type": ["/type/document", "/type/qaa"]
       }
     }
   },
@@ -215,18 +208,13 @@ var seedGraph = {
       "children": {
         "name": "Children/Contents",
         "unique": false,
-        "type": ["/type/section"]
+        "type": ["/type/section"],
+        "default": []
       }
     },
     "meta": {
       "template": {
-        "type": ["/type/document", "/type/manual"],
-        "children": [
-          {
-            "type": "/type/section",
-            "name": "First section"
-          }
-        ]
+        "type": ["/type/document", "/type/manual"]
       }
     }
   },
@@ -240,18 +228,13 @@ var seedGraph = {
       "children": {
         "name": "Children/Contents",
         "unique": false,
-        "type": ["/type/section"]
+        "type": ["/type/section"],
+        "default": []
       }
     },
     "meta": {
       "template": {
-        "type": ["/type/document", "/type/article"],
-        "children": [
-          {
-            "type": "/type/section",
-            "name": "First section"
-          }
-        ]
+        "type": ["/type/document", "/type/article"]
       }
     }
   },
