@@ -226,6 +226,14 @@
           <tr><th>Title</th><th>Author</th><th>Published</th><th>Last modified</th></tr>
         </thead>
         <tbody>
+          {{^documents}}
+            <tr class="{{status}}">
+              <th>No documents found.</th>
+              <td></td>
+              <td></td>
+              <td></td>
+            </tr>
+          {{/documents}}
           {{#documents}}
             <tr class="{{status}}">
               <th><a class="link load-document" href="#{{username}}/{{document_name}}" document="{{value/_id}}" user="{{username}}" name="{{document_name}}">{{title}}<span class="document-type">{{document_type}}</span></a></th>
