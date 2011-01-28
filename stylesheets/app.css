@@ -19,9 +19,8 @@
 /* Common styles
 -------------------------------------------------------------------------------*/
 
-html { margin: 0; padding: 0;}
-
-img { border: none;}
+html { margin: 0; padding: 0; }
+img { border: none; }
 
 body { 
   margin: 0; padding: 0;
@@ -97,7 +96,7 @@ textarea {
 }
 
 input:hover, textarea:hover { 
-
+  
 }
 
 input:focus, textarea:focus { 
@@ -476,6 +475,10 @@ div.panel.attributes {
   line-height: 1.5em;
 }
 
+#document a { text-decoration: underline; }
+#document p {
+  padding-bottom: 20px;
+}
 #document ol {
   padding-left: 20px;
 }
