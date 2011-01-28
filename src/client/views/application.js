@@ -359,11 +359,7 @@ var Application = Backbone.View.extend({
     var that = this;
     
     // Browser not supported
-    if (window.WebSocket === undefined) {
-      $(this.el).html(Helpers.renderTemplate('browser_not_supported'));
-    } else {
-      this.document.render();
-    }
+    this.document.render();
     return this;
   }
 });
@@ -387,6 +383,8 @@ var remote,                              // Remote handle for server-side method
     window.positionDocumentMenu = function() {
       var document_wrapper = document.getElementById('document_wrapper');
       var menu = $('#document_menu');
+      
+      console.log(document_wrapper);
       
       var val = document_wrapper.offsetTop - scrollTop()-50;
       if (val < 0) {
