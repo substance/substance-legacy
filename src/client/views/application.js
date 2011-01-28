@@ -384,8 +384,6 @@ var remote,                              // Remote handle for server-side method
       var document_wrapper = document.getElementById('document_wrapper');
       var menu = $('#document_menu');
       
-      console.log(document_wrapper);
-      
       var val = document_wrapper.offsetTop - scrollTop()-50;
       if (val < 0) {
         $('#document_menu').addClass('docked');
@@ -430,8 +428,6 @@ var remote,                              // Remote handle for server-side method
               notifier.notify(Notifications.SYNCHRONIZED);
               pendingSync = false;
             } else {
-              if (invalidNodes) console.log(invalidNodes.keys());
-              console.log(err);
               notifier.notify({
                 message: err || 'Not all nodes could be saved successfully.',
                 type: 'error'
