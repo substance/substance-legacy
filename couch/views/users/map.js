@@ -1,6 +1,6 @@
 function(doc) {
-  if (doc.type == 'user') {
-    // emits username as the key
-    emit(doc._id.split(':')[1], doc);
+  if (doc.type.indexOf("/type/user") >= 0) {
+    emit(doc.username, doc);
+    emit(doc.name, doc);
   }
 }

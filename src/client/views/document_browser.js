@@ -15,9 +15,6 @@ var DocumentBrowser = Backbone.View.extend({
       value: value
     }});
     this.render();
-    
-    app.scrollTo('#browser_wrapper');
-    window.positionDocumentMenu();
     return false;
   },
   
@@ -37,24 +34,31 @@ var DocumentBrowser = Backbone.View.extend({
   
   initialize: function(options) {
     var that = this;
-    
     this.app = options.app;
-    
+    this.browserTab = new BrowserTab({el: '#browser_tab', browser: this});
     this.documents = [];
-    that.commands = [];
+    this.commands = [];
   },
   
+  // Modfies query state (reflected in the BrowserTab)
   load: function(query) {
     var that = this;
-    
     this.query = query;
-    graph.fetch(this.query, {expand: false}, function(err, g) {
-      if (err) alert('An error occured during fetching the documents');
-      
-      // Initialize Facets View
-      that.facets = new Facets({el: '#facets', browser: that});
-      that.loaded = true;
-      that.render();      
+    this.graph = new Data.Graph(seed);
+    
+    $('#browser_tab').show().html('&nbsp;&nbsp;&nbsp;Loading documents...');
+    $('#browser_wrapper').html('');
+    $.ajax({
+      type: "GET",
+      url: "/documents/"+query.type+"/"+encodeURI(query.value),
+      dataType: "json",
+      success: function(res) {
+        that.graph.merge(res.graph);
+        that.facets = new Facets({el: '#facets', browser: that});
+        that.loaded = true;
+        that.render();
+      },
+      error: function(err) {}
     });
   },
   
@@ -62,40 +66,22 @@ var DocumentBrowser = Backbone.View.extend({
     var that = this;
     
     // TODO: use this.query here
-    this.documents = graph.find(this.query).toArray();
+    this.documents = this.graph.find({"type|=": "/type/document"});
     
-    _.each(this.documents, function(doc) {
-      doc.username = doc.value.get('creator')._id.split('/')[2];
-      doc.document_name = doc.value.get('name');
-      doc.last_modified = _.prettyDate(new Date(doc.value.get('updated_at')).toJSON())
-      doc.status = doc.value.get('published_on') ? 'published' : 'draft';
-      doc.published_on = doc.value.get('published_on') ? _.date(doc.value.get('published_on')) : null;
-      doc.document_type = doc.value.type.key.split('/')[2];
-      doc.title = doc.value.get('title');
-    });
+    // var DESC_BY_UPDATED_AT = function(item1, item2) {
+    //   var v1 = item1.value.get('updated_at'),
+    //       v2 = item2.value.get('updated_at');
+    //   return v1 === v2 ? 0 : (v1 > v2 ? -1 : 1);
+    // };
+    // 
+    // this.documents = this.documents.sort(DESC_BY_UPDATED_AT);
     
-    var DESC_BY_UPDATED_AT = function(item1, item2) {
-      var v1 = item1.value.get('updated_at'),
-          v2 = item2.value.get('updated_at');
-      return v1 === v2 ? 0 : (v1 > v2 ? -1 : 1);
-    };
-    
-    this.documents = this.documents.sort(DESC_BY_UPDATED_AT);
-    $(this.el).html(_.renderTemplate('document_browser', {
-      num_documents: this.documents.length,
+    $(this.el).html(_.tpl('document_browser', {
       documents: this.documents,
     }));
     
     if (this.loaded) this.facets.render();
-    this.renderMenu();
-  },
-  
-  // Contains login-status
-  renderMenu: function() {
-    this.$('#browser_menu').html(_.renderTemplate('browser_menu', {
-      num_documents: this.documents.length,
-      username: app.username
-    }));
+    this.browserTab.render(); //renderMenu();
   },
   
   // Takes a command spec and applies the command

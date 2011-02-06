@@ -1,7 +1,7 @@
 <!DOCTYPE html> 
 <html> 
 <head> 
-  <title>Untitled — Substance™</title>
+  <title>Substance (Developer Preview)</title>
   
   <script>
     var seed = {{seed}};
@@ -69,15 +69,116 @@
     </dl>
   </script>
   
+  <script type="text/x-ejs-template" name="startpage">
+    <div id="new_user" class="page-content">
+      <h1>Welcome to Substance</h1>
+      <p>
+        Substance is a data-driven document authoring tool, developed in the open and available to
+        everyone. Eventually we want to provide a completely free service at substance.io for collaborative document authoring, 
+        indexing and search.
+      </p>
+    
+      <h1>Start writing</h1>
+      <form id="signup-form" class="auth-form">
+        <div>
+          <label for="signup-user">Username:<span>http://substance.io/#USERNAME</span></label>
+          <input type="text" id="signup-user" name="username"/>
+        </div>
+        
+        <div>
+          <label for="signup-name">Full Name:<span>Your real name</span></label>
+          <input type="text" id="signup-name" name="name"/>
+        </div>
+        
+        <div>
+          <label for="signup-email">Email:<span></span></label>
+          <input type="text" id="signup-email" name="email"/>
+        </div>
+        
+        <div>
+          <label for="signup-password">Password:<span></span></label>
+          <input type="text" id="signup-password" name="password"/>
+        </div>
+        
+        <div>
+          <label for="">&nbsp;</label>
+          <input type="submit" value="Create Account"/>
+        </div>
+      </form>
+    </div>
+  </script>
+  
+  <script type="text/x-ejs-template" name="header">
+    <div class="title">
+      Substance
+    </div>
+    <div id="sync_state"></div>
+    <div id="login_state">
+      <div id="login">
+        <% if (username) { %>
+          <div>Logged in as: <%= username %>
+          <a href="#" class="toggle-user-settings"></a></div>
+          <a class="logout icon" href="#logout"/>
+        <% } else { %>
+          <form id="login-form" class="auth-form">
+            <input type="text" name="username" class="hint" id="login-user" value="username">
+            <input type="password" name="password" class="hint" id="login-password" value="password">
+            <input type="submit" class="login" value=""/>
+          </form>
+        <% } %>
+      </div>
+    </div>
+
+  </script>
+
+  <script type="text/x-ejs-template" name="user_settings">
+    
+    <div id="content">
+      <h1>User Settings</h1>
+      <p>
+        Not yet implemented.
+      </p>
+    </div>
+  </script>
+  
+  <script type="text/x-ejs-template" name="new_document">
+    <div id="new_document" class="page-content">
+      <h1>New Document</h1>
+      <form id="create_document">
+        <div>
+          <label for="document_type">Document Type:<span>Choose from various document types</span></label>
+          <select id="documen_type" name="document_type">
+            <option value="/type/article">Article</option>
+            <option value="/type/manual">Manual</option>
+            <option value="/type/qaa">Interview</option>
+          </select>
+        </div>
+        
+        <div>
+          <label for="new_document_name">Document Name:<span>http://substance.io/#USERNAME/NAME</span></label>
+          <input type="text" id="new_document_name" name="new_document_name"/>
+        </div>
+        
+        <div>
+          <label for="">&nbsp;</label>
+          <input type="submit" id="document_name" value="Create Document"/>
+        </div>
+      </form>
+    </div>
+  </script>
+  
   <script type="text/x-handlebars-template" name="document_wrapper">
-    <div id="document_menu" class="menu">Document </div>
+    <div id="document_actions" class="view-actions">
+      <a href="#" title="Read Document" class="toggle-mode view-action-icon read<%= mode !== 'edit' ? ' active' : '' %>"><span>Read</span></a>
+      <a href="#" title="Write Document" class="toggle-mode view-action-icon write<%= mode === 'edit' ? ' active' : '' %>"><span>Write</span></a>
+      <a href="#" title="Delete Document" class="delete-document view-action-icon delete"><span>Delete</span></a>
+    </div>
     
     <div id="document">
       <p>No document loaded... You can either create a <em>New Document</em> or <em>Browse</em> existing ones.</p>
     </div>
     
-    <div id="attributes">
-    </div>
+    <div id="attributes"></div>
   </script>
   
   <script type="text/x-handlebars-template" name="browser_not_supported">
@@ -111,140 +212,56 @@
     </p>
   </script>
   
-  <script type="text/x-handlebars-template" name="document_menu">
-    <div class="label">
-      <a class="scroll-to" href="#document_wrapper">{{#edit}}WRITE{{/edit}}{{^edit}}READ{{/edit}}</a>
-      {{#authenticated}}<a class="button toggle-document-views" href="#" title="Actions"></a>{{/authenticated}}
-      
-      <div id="document_view_selection">
-        <!-- {{#edit}}READ{{/edit}}{{^edit}}WRITE{{/edit}} -->
-        <div><a class="toggle-mode{{^authorized}} hidden{{/authorized}}" href="#toggle-mode">{{#edit}}READ{{/edit}}{{^edit}}WRITE{{/edit}}</a></div>
-        <div><a class="toggle-new-document" href="#toggle-new-document">NEW DOCUMENT</a></div>
-      </div>
+  <script type="text/x-ejs-template" name="browser_tab">
+    <div class="icon browse"></div>
+    <div class="tab-label">Browser</div>
+    <form id="search_form"><input type="text" id="search" name="search" value="<%= query_descr %>" autocomplete="off"/></form>
+    <div class="count"><%= documents.length %></div>
+    <br class="clear"/>
+    <div class="results"></div>
+  </script>
+  
+  <script type="text/x-ejs-template" name="document_tab">
+    <div class="icon read"></div>
+    <div class="tab-label">Document</div>
+    <div class="user-name">
+      <%= username %> / <%= document_name %>
     </div>
-    <div class="panel attributes"></div>
-    <div class="menu-group header">
-      <span class="label">{{username}} / </span>
-      {{#edit}}
-        {{document_name}} <!--<input type="text" id="document_name" name="document_name" value="{{../document_name}}"/>-->
-      {{/edit}}
-      {{^edit}}
-        {{document_name}}
-      {{/edit}}
-    </div>
+    <!--<input type="text" id="document_name" name="document_name" value="foo"/>-->
+  </script>
+  
+  <script type="text/x-ejs-template" name="document_browser">      
+    <% if (documents.length > 0) { %>
+      <div id="browser">
+        <div id="facets">
+          Loading facets...
+        </div>
         
-    <div class="menu-group edit-document">
-      {{#edit}}
-        <!--<a class="button save-document" href="#save_document" title="Save current document">Save</a>-->
-        <a class="button delete-document" href="#delete-document" document="{{../document/_id}}" title="Delete Document">Delete</a>
-      {{/edit}}
-      
-    </div>
-  </script>
-  
-  <script type="text/x-handlebars-template" name="document_menu_create">
-    <div class="label"><a class="toggle-new-document" href="#document_wrapper">NEW DOCUMENT</a></div>
-    <div class="panel attributes"></div>
-    <div class="menu-group header">
-      <div id="document_type_selection" class="document-type-selection">
-        {{#document_types}}
-          <a class="document-type new-document" type="{{type}}" href="#">{{name}}</a>
-        {{/document_types}}
-      </div>
-      
-      <form id="create_document">
-        Document name: 
-        {{username}} / 
-        <input type="hidden" name="document_type" value=""/>
-        <input type="text" name="new_document_name"/>
-        <input type="submit" value="Create"/>
-      </form>
-    </div>
-  </script>
-  
-  <script type="text/x-handlebars-template" name="browser_menu">
-    <div class="label"><a class="scroll-to" href="#browser_wrapper">BROWSE</a></div>
-    <div class="panel">
-      {{#username}}
-        <span class="label">Signed in as: <strong>{{.}}</strong></span>
-         <a class="logout button" href="#logout" title="log out">Log out</a>
-      {{/username}}
-      {{^username}}
-        <span class="label">Start writing!</span>
-        <a class="login button" href="/" title="sign in">Sign in</a>
-      {{/username}}
-    </div>
-
-    <div class="menu-group header">
-      <span class="label">{{num_documents}} Documents</span>
-    </div>
-    
-  </script>
-  
-  <script type="text/x-handlebars-template" name="document_browser">
-    <div class="menu" id="browser_menu"></div>
-    
-    <div id="browser">
-      <div id="login_action">
-        <div id="login">
-          <form id="login-form" class="auth-form">
-            <label for="login-user">username</label>
-            <input type="text" name="username" id="login-user" value="">
-            <label for="login-password">password</label>
-            <input type="password" name="password" id="login-password" value="">
-            <p>
-              <br/>
-              <input type="submit" value="Login"/>
-            </p>
-            <a href="/" class="signup">Create a free account</a>
-          </form>
-        </div>
-
-        <div id="signup">
-          <form id="signup-form" class="auth-form">
-            <label for="signup-user">Username</label>
-            <input type="text" name="username" id="signup-user" value="">
-            <label for="signup-name">Full Name</label>
-            <input type="text" name="name" id="signup-name" value="">
-            <label for="signup-email">Email</label>
-            <input type="text" name="email" id="signup-email" value="">
-            <label for="signup-password">Password</label>
-            <input type="password" name="password" id="signup-password" value="">
-            <p><br/>
-            <input type="submit" value="Create account"/>
-            </p>
-          </form>
-        </div>
-      </div>
-      
-      <div id="facets">
-        Loading facets...
-      </div>
-      
-      <table id="documents">
-        <thead>
-          <tr><th>Title</th><th>Author</th><th>Published</th><th>Last modified</th></tr>
-        </thead>
-        <tbody>
-          {{^documents}}
-            <tr class="{{status}}">
-              <th>No documents found.</th>
-              <td></td>
-              <td></td>
-              <td></td>
+        <table id="documents">
+          <thead>
+            <tr><th>Title</th><th>Author</th><th>Published</th><th>Last modified</th></tr>
+          </thead>
+          <tbody>
+          <% documents.each(function(doc) { %> 
+            <tr class="<%= doc.get('published_on') ? 'draft' : 'draft' %>">
+              <th><a class="link load-document" href="#<%= doc.get('creator').get('username') %>/<%= doc.get('name') %>" document="<%= doc._id %>" user="<%= doc.get('creator').get('username') %>" name="<%= doc.get('name') %>"><%= doc.get('title') %><span class="document-type"><%= doc.type.key.split('/')[2] %></span></a></th>
+              <td><%= doc.get('creator').get('name') %></td>
+              <td>
+                <% if (doc.get('published_on')) { %>
+                  <%= doc.get('published_on') %>
+                <% } else { %>
+                  - - -
+                <% } %>
+              </td>
+              <td><%= doc.get('last_modified') %></td>
             </tr>
-          {{/documents}}
-          {{#documents}}
-            <tr class="{{status}}">
-              <th><a class="link load-document" href="#{{username}}/{{document_name}}" document="{{value/_id}}" user="{{username}}" name="{{document_name}}">{{title}}<span class="document-type">{{document_type}}</span></a></th>
-              <td>{{username}}</td>
-              <td>{{#published_on}}{{.}}{{/published_on}}{{^published_on}}- - -{{/published_on}}</td>
-              <td>{{last_modified}}</td>
-            </tr>
-          {{/documents}}
-        </tbody>
-      </table>
-    </div>
+          <% }); %>
+          </tbody>
+        </table>
+      </div>
+    <% } else { %>
+      <div>No Documents found.</div>
+    <% } %>
   </script>
   
   <script type="text/x-handlebars-template" name="facets">
@@ -405,16 +422,14 @@
         <span class="item">{{.}} <a href="/" value="{{.}}" class="remove-item">x</a></span>
       {{/items}}
       <form>
-        <input type="text" name="new_value"/>
+        <input type="text" name="new_value" autocomplete="off"/>
         <input type="submit" value="+"/>
         <div class="available-items">
           
         </div>
       </form>
-      
       <br class="clear"/>
     </div>
-
   </script>
   
   <script type="text/x-handlebars-template" name="string_editor">
@@ -466,7 +481,6 @@
   <script src="src/client/node_editors/code_editor.js"></script>
   <script src="src/client/node_editors/question_editor.js"></script>
   <script src="src/client/node_editors/answer_editor.js"></script>
-  
   <script src="src/client/node_editors/image_editor.js"></script>
   <script src="src/client/controllers/application.js"></script>
   
@@ -483,15 +497,44 @@
   <script src="src/client/views/document_browser.js"></script>
   <script src="src/client/views/facets.js"></script>
   <script src="src/client/views/collaborators.js"></script>
+  <script src="src/client/views/user_settings.js"></script>
+  <script src="src/client/views/new_document.js"></script>
+  <script src="src/client/views/browser_tab.js"></script>
+  <script src="src/client/views/header.js"></script>
   <script src="src/client/views/application.js"></script>
   
 </head>
 <body>
   <div id="container">
-    <div id="browser_wrapper">
+    <div id="header">
+      
     </div>
     
-    <div id="document_wrapper">
+    <div id="tabs" class="hidden">
+      <div id="browser_tab" class="tab hidden" view="browser">
+
+      </div>
+      
+      <div id="document_tab" class="tab hidden" view="document">
+
+      </div>
+      
+      <a title="create a new document" href="#" class="action new-document">
+        <div class="view-action-icon new"></div>
+      </a>
+    </div>
+    
+    <!-- Various content (used for user settings dialogue etc.) -->  
+    <div id="content_wrapper" class="view hidden">
+      
+    </div>
+    
+    <!-- The document browser -->
+    <div id="browser_wrapper" class="view hidden">
+    </div>
+    
+    <!-- The document browser -->
+    <div id="document_wrapper" class="view hidden">
       
     </div>
   </div>

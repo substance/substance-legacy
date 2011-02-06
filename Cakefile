@@ -15,7 +15,7 @@ reset = '\033[0m'
 
 # Commands
 compressionCmd = 'java -jar ./lib/compiler.jar --js substance.js --js_output_file substance.min.js'
-couchPushCmd = "cd couch && couchapp push #{config.couchdb.protocol}://#{config.couchdb.user}:#{config.couchdb.password}@#{config.couchdb.host}:#{config.couchdb.port}/#{config.couchdb.db} && cd .."
+couchPushCmd = "cd couch && couchapp push #{config.couchdb_url} && cd .."
 
 
 # Substance source files

@@ -23,16 +23,16 @@ AddCriterion.prototype.matchesOverride = function() {
 };
 
 AddCriterion.prototype.execute = function() {
-  this.graph = graph;
+  this.graph = app.browser.graph;
   
   var criterion = new Data.Criterion(this.options.operator, '/type/document', this.options.property, this.options.value);
-  graph = graph.filter(criterion);
+  app.browser.graph = app.browser.graph.filter(criterion);
   
   this.app.facets.addChoice(this.options.property, this.options.operator, this.options.value);
 };
 
 AddCriterion.prototype.unexecute = function() {
-  graph = this.graph; // restore the old state
+  app.browser.graph = this.graph; // restore the old state
   this.app.facets.removeChoice(this.options.property, this.options.operator, this.options.value);
 };
 

@@ -25,11 +25,11 @@ var Facets = Backbone.View.extend({
     
     // Properties for all registered document_types
     var properties = new Data.Hash();
-    graph.get('/config/substance').get('document_types').each(function(type, key) {
-      properties = properties.union(graph.get(type).properties());
+    app.browser.graph.get('/config/substance').get('document_types').each(function(type, key) {
+      properties = properties.union(app.browser.graph.get(type).properties());
     });
     
-    graph.get('/type/document').all('properties').each(function(property, key) {
+    app.browser.graph.get('/type/document').all('properties').each(function(property, key) {
       if (property.meta.facet) {
         var facet_choices = [];
         var selected_facet_choices = [];

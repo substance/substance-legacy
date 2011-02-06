@@ -7,7 +7,6 @@ function addEmptyDoc(type, name) {
     updated_at: new Date(),
     name: name
   });
-  
   return doc;
 };
 
@@ -56,7 +55,10 @@ var Document = Backbone.View.extend({
   
   render: function() {
     // Render all relevant sub views
-    $(this.el).html(Helpers.renderTemplate('document_wrapper'));
+    $(this.el).html(_.tpl('document_wrapper', {
+      mode: this.mode
+    }));
+    
     this.renderMenu();
 
     if (this.model) {
@@ -119,25 +121,12 @@ var Document = Backbone.View.extend({
   
   renderMenu: function() {
     if (this.model) {
-      this.$('#document_menu').html(_.renderTemplate('document_menu', {
-        edit: this.mode === 'edit',
+      $('#document_tab').show();
+      $('#document_tab').html(_.tpl('document_tab', {
         username: this.model.get('creator')._id.split('/')[2],
-        document_name: this.model.get('name'),
-        authorized: this.model.get('creator')._id.split('/')[2] === app.username,
-        authenticated: !!app.username,
-        document: this.model.toJSON()
+        document_name: this.model.get('name')
       }));
-    } else {
-      if (this.app.username) {
-        this.$('#document_menu').html(_.renderTemplate('document_menu_create', {
-          document_types: this.documentTypes(),
-          username: this.app.username
-        }));
-      } else {
-        this.$('#document_menu').hide();
-      }
     }
-    window.positionDocumentMenu();
   },
   
   init: function() {
@@ -196,14 +185,17 @@ var Document = Backbone.View.extend({
   
   newDocument: function(type, name) {
     this.model = addEmptyDoc(type, name);
+    
     this.status = null;
     this.mode = 'edit';
     $(this.el).show();
     this.render();
+    this.loadedDocuments[app.username+"/"+name] = this.model._id;
     this.init();
     
     // Move to the actual document
-    this.app.scrollTo('#document_wrapper');
+    app.toggleView('document');
+    
     controller.saveLocation('#'+this.app.username+'/'+name);
     this.trigger('document:changed');
     notifier.notify(Notifications.BLANK_DOCUMENT);
@@ -213,6 +205,7 @@ var Document = Backbone.View.extend({
   loadDocument: function(username, docname, nodeid, mode) {
     var that = this;
     
+    $('#tabs').show();
     function init(id) {
       that.model = graph.get(id);
       
@@ -222,28 +215,27 @@ var Document = Backbone.View.extend({
         that.init();
         that.reset();
         that.trigger('document:changed');
-
-        // Move to the actual document
-        this.app.scrollTo('#document_wrapper');
         
         that.loadedDocuments[username+"/"+docname] = id;
-        notifier.notify(Notifications.DOCUMENT_LOADED);
-        
+        app.toggleView('document');
+                
         // TODO: register document for realtime sessions
         // remote.Session.registerDocument(id);
       } else {
-        notifier.notify(Notifications.DOCUMENT_LOADING_FAILED);
+        $('#document_wrapper').html('Document loading failed');
       }
     }
     
     var id = that.loadedDocuments[username+"/"+docname];
+    $('#document_tab').show();
+    
+    
     // Already loaded - no need to fetch it
     if (id) {
       // TODO: check if there are changes from a realtime session
       init(id);
     } else {
-      notifier.notify(Notifications.DOCUMENT_LOADING);
-      
+      $('#document_tab').html('&nbsp;&nbsp;&nbsp;Loading...');
       $.ajax({
         type: "GET",
         url: "/readdocument",
@@ -254,14 +246,14 @@ var Document = Backbone.View.extend({
         dataType: "json",
         success: function(res) {
           if (res.status === 'error') {
-            notifier.notify(Notifications.DOCUMENT_LOADING_FAILED);
+            $('#document_wrapper').html('Document loading failed');
           } else {
             graph.merge(res.graph);
             init(res.id);
           }
         },
         error: function(err) {
-          notifier.notify(Notifications.DOCUMENT_LOADING_FAILED);
+          $('#document_wrapper').html('Document loading failed');
         }
       });
     }
@@ -270,6 +262,7 @@ var Document = Backbone.View.extend({
   closeDocument: function() {
     this.model = null;
     controller.saveLocation('#'+this.app.username);
+    app.toggleView('content');
     this.render();
   },
   
@@ -279,6 +272,12 @@ var Document = Backbone.View.extend({
   deleteDocument: function(id) {
     var that = this;
     graph.del(id);
+    app.browser.graph.del(id);
+    app.browser.render();
+    $('#document_tab').hide();
+    setTimeout(function() {
+      app.toggleView('browser');
+    }, 300);
     notifier.notify(Notifications.DOCUMENT_DELETED);
   },
   
@@ -480,7 +479,6 @@ var Document = Backbone.View.extend({
       // Broadcast insert node command
       // remote.Session.removeNode(node._id, parent._id);
     }
-    
     return false;
   }
 });

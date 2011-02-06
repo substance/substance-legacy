@@ -11,7 +11,7 @@ var Application = Backbone.View.extend({
     'click #document_toggle': 'showDocument',
     'click a.load-document': 'loadDocument',
     'click a.save-document': 'saveDocument',
-    'click a.login': 'toggleLogin',
+    'click .tab': 'switchTab',
     'click a.logout': 'logout',
     'click a.signup': 'toggleSignup',
     'click a.show-attributes': 'showAttributes',
@@ -23,6 +23,8 @@ var Application = Backbone.View.extend({
     'click a.view-collaborators': 'viewCollaborators',
     'click a.toggle-document-views': 'toggleDocumentViews',
     'click a.toggle-mode': 'toggleMode',
+    'click a.toggle-user-settings': 'toggleUserSettings',
+    'submit #signup-form': 'registerUser'
   },
 
   login: function(e) {
@@ -30,9 +32,15 @@ var Application = Backbone.View.extend({
     return false;
   },
   
-  toggleDocumentViews: function(e) {
-    this.$('#document_view_selection').slideToggle();
+  toggleUserSettings: function() {
+    this.content = new UserSettings({el: '#content_wrapper'});
+    this.content.render();
+    this.toggleView('content');    
     return false;
+  },
+  
+  switchTab: function(e) {
+    this.toggleView($(e.currentTarget).attr('view'));
   },
   
   triggerScrollTo: function(e) {
@@ -40,47 +48,30 @@ var Application = Backbone.View.extend({
     return false;
   },
   
-  toggleLogin: function() {
-    $('#signup').hide();
-    $('#login').toggle();
-    this.scrollTo('#container');
-    return false;
-  },
-  
-  toggleNewDocument: function() {
-    this.document.closeDocument();
-    return false;
-  },
-  
-  toggleSignup: function() {
-    var that = this;
+  newDocument: function() {
+    this.content = new NewDocument({el: '#content_wrapper'});
+    this.content.render();
     
-    $('#login').hide();
-    $('#signup').toggle();
-
-    $('#signup-form').unbind();
-    $('#signup-form').submit(function() {
-       that.registerUser();
-      return false;
-    });
+    this.toggleView('content');
     return false;
   },
   
-  newDocument: function(e) {
-    $('#create_document input[name=document_type]').val($(e.currentTarget).attr('type'));
-    $('#document_type_selection').hide();
-    $('#create_document').show();
-    return false;
+  toggleView: function(view) {
+    $('.view').hide();
+    $('#'+view+'_wrapper').show();
+    $('.tab').removeClass('active');
+    $('#'+view+'_tab').addClass('active');
   },
   
   createDocument: function(e) {
     var name = $('#create_document input[name=new_document_name]').val();
-    var type = $('#create_document input[name=document_type]').val();
+    var type = $('#create_document select[name=document_type]').val();
     
-    
-    if (new RegExp(graph.get('/type/document').get('properties', 'name').validator).test(name))
+    if (new RegExp(graph.get('/type/document').get('properties', 'name').validator).test(name)) {
       this.document.newDocument(type, name);
-    else {
+      // TODO: check if name does not exist!
+      return false;
+    } else {
       $('#create_document input[name=new_document_name]').addClass('error');
     }
     return false;
@@ -141,6 +132,7 @@ var Application = Backbone.View.extend({
         that.document.closeDocument();
         that.browser.render();
         that.render();
+        $('#tabs').hide();
         controller.saveLocation('');
       }
     });
@@ -149,8 +141,8 @@ var Application = Backbone.View.extend({
   
   deleteDocument: function(e) {
     if (confirm('Are you sure to delete this document?')) {
-      this.document.deleteDocument($(e.target).attr('document'));
-      this.document.closeDocument();      
+      this.document.deleteDocument(app.document.model._id);
+      this.document.closeDocument();
     }
     return false;
   },
@@ -163,8 +155,8 @@ var Application = Backbone.View.extend({
   },
   
   query: function() {
-    return this.authenticated ? {"type|=": ["/type/document"], "creator": "/user/"+this.username }
-                              : {"type|=": ["/type/document"], "creator": "/user/demo"}
+    return this.authenticated ? { "type": "user", "value": this.username }
+                              : { "type": "user", "value": "demo" }
   },
   
   initialize: function() {
@@ -178,17 +170,8 @@ var Application = Backbone.View.extend({
     
     // Initialize document
     this.document = new Document({el: '#document_wrapper', app: this});
+    this.header = new Header({el: '#header', app: this});
     this.activeUsers = [];
-    
-    // Cookie-based auto-authentication
-    if (session.username) {
-      graph.merge(session.seed);
-      this.authenticated = true;
-      this.username = session.username;
-      this.trigger('authenticated');
-    } else {
-      this.authenticated = false;
-    }
     
     // Try to establish a server connection
     // this.connect();
@@ -196,16 +179,30 @@ var Application = Backbone.View.extend({
     //   notifier.notify(Notifications.CONNECTED);
     // });
     
-    that.render();
-
+    // Cookie-based auto-authentication
+    if (session.username) {
+      graph.merge(session.seed);
+      this.authenticated = true;
+      this.username = session.username;
+      this.trigger('authenticated');
+      $('#tabs').show();
+    } else {
+      this.authenticated = false;
+    }
+    
+    
     this.bind('authenticated', function() {
       that.authenticated = true;
       // Re-render browser
+      $('#tabs').show();
       that.render();
       that.document.closeDocument();
       that.browser.load(that.query());
+      that.toggleView('browser');
       controller.saveLocation('#'+that.username);
     });
+    
+    that.render();
   },
   
   connect: function() {
@@ -292,7 +289,6 @@ var Application = Backbone.View.extend({
           return notifier.notify(Notifications.AUTHENTICATION_FAILED);
         } else {
           graph.merge(res.seed);
-          notifier.notify(Notifications.AUTHENTICATED);
           that.username = res.username;
           that.trigger('authenticated');
         }
@@ -313,7 +309,6 @@ var Application = Backbone.View.extend({
   
   registerUser: function() {
     var that = this;
-    
     $.ajax({
       type: "POST",
       url: "/register",
@@ -326,6 +321,7 @@ var Application = Backbone.View.extend({
       dataType: "json",
       success: function(res) {
         if (res.status === 'error') {
+          console.log(res);
           notifier.notify({
             message: res.message,
             type: 'error'
@@ -342,24 +338,27 @@ var Application = Backbone.View.extend({
         notifier.notify(Notifications.AUTHENTICATION_FAILED);
       }
     });
+    
+    return false;
   },
   
-  sync: function() {
-    graph.sync(function(err, invalidNodes) {
-      if (err) {
-        notifier.notify(Notifications.DOCUMENT_SAVING_FAILED);
-      } else {
-        notifier.notify(Notifications.DOCUMENT_SAVED);
-      }
-    });
-  },
+  // sync: function() {
+  //   graph.sync(function(err, invalidNodes) {
+  //     if (err) {
+  //       notifier.notify(Notifications.DOCUMENT_SAVING_FAILED);
+  //     } else {
+  //       console.log('sychronized...');
+  //       // notifier.notify(Notifications.DOCUMENT_SAVED);
+  //     }
+  //   });
+  // },
   
   // Should be rendered just once
   render: function() {
     var that = this;
-    
-    // Browser not supported
     this.document.render();
+    this.header.render();
+    
     return this;
   }
 });
@@ -372,35 +371,12 @@ var remote,                              // Remote handle for server-side method
     editor,                              // A global instance of the Proper Richtext editor
     graph = new Data.Graph(seed, false); // The database
 
-
 (function() {
   $(function() {
     
     function scrollTop() {
       return document.body.scrollTop || document.documentElement.scrollTop;
     }
-    
-    window.positionDocumentMenu = function() {
-      var document_wrapper = document.getElementById('document_wrapper');
-      var menu = $('#document_menu');
-      
-      var val = document_wrapper.offsetTop - scrollTop()-50;
-      if (val < 0) {
-        $('#document_menu').addClass('docked');
-        $('#document_menu').css('top', 50);
-      } else {
-        if (val < window.innerHeight-100) {
-          $('#document_menu').removeClass('docked');
-          $('#document_menu').css('top', 0);
-        } else {
-          $('#document_menu').addClass('docked');
-          $('#document_menu').css('top', window.innerHeight-50);
-        }
-      }
-    }
-    
-    $(window).bind('scroll', positionDocumentMenu);
-    $(window).bind('resize', positionDocumentMenu);
     
     // Start the engines
     app = new Application({el: $('#container'), session: session});
@@ -422,16 +398,16 @@ var remote,                              // Remote handle for server-side method
       if (!pendingSync) {
         pendingSync = true;
         setTimeout(function() {
-          notifier.notify(Notifications.SYNCHRONIZING);
+          $('#sync_state').html('Synchronizing...');
           graph.sync(function(err, invalidNodes) {
             if (!err && invalidNodes.length === 0) {
-              notifier.notify(Notifications.SYNCHRONIZED);
+              $('#sync_state').html('Successfully synced.');
+              setTimeout(function() {
+                $('#sync_state').html('');
+              }, 3000);
               pendingSync = false;
             } else {
-              notifier.notify({
-                message: err || 'Not all nodes could be saved successfully.',
-                type: 'error'
-              });
+              $('#sync_state').html(err || 'Error during sync. Reload!.');
             }
           });
         }, 3000);

@@ -1,11 +1,6 @@
 function(doc) {
-  if (doc.type === "document") {
-    emit(doc._id, {
-      id: doc._id,
-      name: doc.name,
-      title: doc.contents.title,
-      attributes: doc.contents.attributes,
-      author: doc.author
-    });
+  if (doc.type.indexOf("/type/document") >= 0) {
+    emit(doc.title, doc);
+    emit(doc.name, doc);
   }
 }

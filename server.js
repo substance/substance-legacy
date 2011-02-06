@@ -8,6 +8,9 @@ var HTMLRenderer = require('./src/client/renderers/frontend_renderer').Renderer;
 // var DNode = require('dnode');
 var Data = require('./lib/data/data');
 var _ = require('underscore');
+var CouchClient = require('couch-client');
+var async = require('async');
+
 
 // Read Config
 global.config = JSON.parse(fs.readFileSync(__dirname+ '/config.json', 'utf-8'));
@@ -16,6 +19,8 @@ global.config = JSON.parse(fs.readFileSync(__dirname+ '/config.json', 'utf-8'));
 Data.setAdapter('couch', { url: config.couchdb_url});
 
 var seed;
+var db = CouchClient(config.couchdb_url);
+
 
 // WriteGraph Filters
 Data.middleware.writegraph = [
@@ -47,6 +52,94 @@ Data.middleware.readgraph = [
     return node;
   }
 ];
+
+
+function fetchNode(id, callback) {
+  db.get(id, function(err, node) {
+    if (err) return callback(err);
+    
+    // Attach to result graph
+    callback(null, node);
+  });
+}
+
+
+function findUsers(searchstr, callback) {
+  db.view(db.uri.pathname+'/_design/substance/_view/users', function(err, res) {
+    // Bug-workarount related to https://github.com/creationix/couch-client/issues#issue/3
+    // Normally we'd just use the err object in an error case
+  
+    if (res.error || !res.rows) {
+      callback(res.error);
+    } else {
+      var result = {};
+      var count = 0;
+      
+      _.each(res.rows, function(row) {
+        if (row.key && row.key.match(new RegExp("("+searchstr+")", "i"))) {
+          // Add to result set
+          if (count < 200) { // 200 Users maximum
+            count += 1;
+            result[row.value._id] = row.value;
+            delete result[row.value._id].password
+            delete result[row.value._id].email
+          }
+        }
+      });
+      
+      callback(null, result);
+    }
+  });
+}
+
+
+// We are aware that this is not a performant solution.
+// But search functionality needed to be there, quickly.
+// We'll replace it with a speedy fulltext search asap.
+function findDocuments(searchstr, type, callback) {
+  db.view(db.uri.pathname+'/_design/substance/_view/documents', function(err, res) {
+    // Bug-workarount related to https://github.com/creationix/couch-client/issues#issue/3
+    // Normally we'd just use the err object in an error case
+  
+    if (res.error || !res.rows && _.include(["user", "search"], type)) {
+      callback(res.error);
+    } else {
+      var result = {};
+      var associatedItems = [];
+      var count = 0;
+      var matched;
+      _.each(res.rows, function(row) {
+        if (type === "search") {
+          matched = row.key && row.key.match(new RegExp("("+searchstr+")", "i"));
+        } else {
+          matched = row.value.creator.match(new RegExp("/user/("+searchstr+")$", "i"));
+        }
+        if (matched) {
+          // Add to result set
+          count += 1;
+          
+          if (count < 200) { // 200 Documents maximum
+            result[row.value._id] = row.value;
+            // Include associated objects like attributes and users
+            
+            associatedItems = associatedItems.concat([row.value.creator]);
+            if (row.value.subjects) associatedItems = associatedItems.concat(row.value.subjects);
+          }
+        }
+      });
+
+      // Fetch associated items
+      // TODO: make dynamic
+      async.forEach(_.uniq(associatedItems), function(nodeId, callback) {
+        fetchNode(nodeId, function(err, node) {
+          if (err) return callback(err);
+          result[node._id] = node;
+          callback();
+        });
+      }, function(err) { callback(err, result, count); });
+    }
+  });
+}
 
 var graph = new Data.Graph();
 
@@ -85,11 +178,29 @@ app.configure(function(){
 // Web server
 // -----------
 
-app.get('/', function(req, res) {  
+app.get('/', function(req, res) {
   html = fs.readFileSync(__dirname+ '/templates/app.html', 'utf-8');
   res.send(html.replace('{{seed}}', JSON.stringify(seed)).replace('{{session}}', JSON.stringify(req.session)));
 });
 
+
+// Quick search interface (returns found users and a documentset)
+app.get('/search/:search_str', function(req, res) {
+  findDocuments(req.params.search_str, 'search', function(err, graph, count) {
+    findUsers(req.params.search_str, function(err, users) {
+      res.send(JSON.stringify({document_count: count, users: users}));
+    });
+  });
+});
+
+
+// Find documents by search string (full text search in future)
+// Or find by user
+app.get('/documents/:type/:search_str', function(req, res) {
+  findDocuments(req.params.search_str, req.params.type, function(err, graph, count) {
+    res.send(JSON.stringify({graph: graph, count: count}));
+  });
+});
 
 app.post('/login', function(req, res) {  
   var username = req.body.username,
@@ -131,9 +242,14 @@ app.post('/register', function(req, res) {
       password = req.body.password,
       email = req.body.email,
       name = req.body.name;
-      
+  
+  if (username+"".length == 0) {
+    return res.send({"status": "error", "message": "Please choose a username"});
+  }
+  
   graph.fetch({type: '/type/user'}, {}, function(err) {
     if (err) return res.send({"status": "error"});
+    
     if (graph.get('/user/'+username)) return res.send({"status": "error", "message": "User already exists"});
     
     var user = graph.set('/user/'+username, {
