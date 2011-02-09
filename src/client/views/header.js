@@ -43,9 +43,10 @@ var Header = Backbone.View.extend({
   },
 
   render: function() {
+    var username = this.options.app.username;
     // Render login-state
     $(this.el).html(_.tpl('header', {
-      username: this.options.app.username
+      user: graph.get('/user/'+username)
     }));
   }
 });

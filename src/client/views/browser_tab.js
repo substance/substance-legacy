@@ -14,24 +14,20 @@ var BrowserTab = Backbone.View.extend({
   },
   
   blurSearch: function(e) {
+    console.log('jess');
     var that = this;
     this.active = false;
     setTimeout(function() {
       that.render();
-    }, 100);
+    }, 200);
   },
   
   // Performs a search on the document repository based on a search string
   // Returns a list of matching user names and one entry for matching documents
-  // Eg. Search: "Jo"
-  // - 10 matching documents for "Jo"
-  // - Johannes (20 documents)
-  // - Mojo (50 documents)
   search: function(e) {
     
     if (e.keyCode === 27) return this.blurSearch();
     var that = this;
-    
     if ($('#search').val() === '') return;
     
     if (!that.pendingSearch) {
@@ -48,10 +44,10 @@ var BrowserTab = Backbone.View.extend({
              success: function(res) {               
                // Render results
                that.$('.results').html('');
-               that.$('.results').append($('<div class="result-item documents"><a href="#search/'+encodeURI($('#search').val())+'">'+res.document_count+' matching Documents</div></div>'));
+               that.$('.results').append($('<a href="#search/'+encodeURI($('#search').val())+'" class="result-item documents">'+res.document_count+' matching Documents</a>'));
                
                _.each(res.users, function(user, key) {
-                 that.$('.results').append($('<div class="result-item user"><div class="username">'+user.username+'</div><div class="full-name">'+(user.name ? user.name : '')+'</div><div class="count">User</div></div>'));
+                 that.$('.results').append($('<a href="#'+user.username+'" class="result-item user"><div class="username">'+user.username+'</div><div class="full-name">'+(user.name ? user.name : '')+'</div><div class="count">User</div></a>'));
                });
                
                $('#browser_tab .results').show();
@@ -66,9 +62,10 @@ var BrowserTab = Backbone.View.extend({
   
   // Finally perform a real search
   loadDocuments: function() {
+    var searchstr = $('#search').val();
     app.browser.load({"type": "search", "value": $('#search').val()});
     app.toggleView('browser');
-    controller.saveLocation('#search/'+encodeURI($('#search').val()));
+    controller.saveLocation('#search/'+encodeURI(searchstr));
     this.active = false;
     return false;
   },
@@ -82,10 +79,16 @@ var BrowserTab = Backbone.View.extend({
   },
   
   render: function() {
-    var queryDescr = this.browser.query.type === 'user'
-                     ? this.browser.query.value+"'s documents"
-                     : 'Documents for &quot;'+this.browser.query.value+'&quot;';
-      
+    var queryDescr;
+    
+    if (this.browser.query) {
+      queryDescr = this.browser.query.type === 'user'
+                       ? this.browser.query.value+"'s documents"
+                       : 'Documents for &quot;'+this.browser.query.value+'&quot;';
+    } else {
+      queryDescr = 'Type to search ...';
+    }
+    
     $(this.el).html(_.tpl('browser_tab', {
       documents: this.browser.documents,
       query_descr: queryDescr

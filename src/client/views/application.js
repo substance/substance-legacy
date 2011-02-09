@@ -130,9 +130,10 @@ var Application = Backbone.View.extend({
         that.username = null;
         that.authenticated = false;
         that.document.closeDocument();
+        that.browser.loaded = false;
         that.browser.render();
         that.render();
-        $('#tabs').hide();
+        that.toggleView('browser');
         controller.saveLocation('');
       }
     });
@@ -357,6 +358,7 @@ var Application = Backbone.View.extend({
   render: function() {
     var that = this;
     this.document.render();
+    this.browser.render();
     this.header.render();
     
     return this;
@@ -393,6 +395,7 @@ var remote,                              // Remote handle for server-side method
     var pendingSync = false;
     graph.bind('dirty', function() {
       // Reload document browser
+      // TODO: Sync local brower graph with real graph
       app.browser.render();
       
       if (!pendingSync) {

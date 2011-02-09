@@ -64,24 +64,28 @@ var DocumentBrowser = Backbone.View.extend({
   
   render: function() {
     var that = this;
-    
-    // TODO: use this.query here
-    this.documents = this.graph.find({"type|=": "/type/document"});
-    
-    // var DESC_BY_UPDATED_AT = function(item1, item2) {
-    //   var v1 = item1.value.get('updated_at'),
-    //       v2 = item2.value.get('updated_at');
-    //   return v1 === v2 ? 0 : (v1 > v2 ? -1 : 1);
-    // };
-    // 
-    // this.documents = this.documents.sort(DESC_BY_UPDATED_AT);
-    
-    $(this.el).html(_.tpl('document_browser', {
-      documents: this.documents,
-    }));
-    
-    if (this.loaded) this.facets.render();
-    this.browserTab.render(); //renderMenu();
+  
+    if (this.loaded) {
+      this.documents = this.graph.find({"type|=": "/type/document"});
+
+      // var DESC_BY_UPDATED_AT = function(item1, item2) {
+      //   var v1 = item1.value.get('updated_at'),
+      //       v2 = item2.value.get('updated_at');
+      //   return v1 === v2 ? 0 : (v1 > v2 ? -1 : 1);
+      // };
+      // 
+      // this.documents = this.documents.sort(DESC_BY_UPDATED_AT);
+
+      $(this.el).html(_.tpl('document_browser', {
+        documents: this.documents,
+      }));
+
+      if (this.loaded) this.facets.render();
+      this.browserTab.render();
+    } else { // Render start page
+      this.browserTab.render();
+      $('#browser_wrapper').html(_.tpl('startpage'));
+    }
   },
   
   // Takes a command spec and applies the command
