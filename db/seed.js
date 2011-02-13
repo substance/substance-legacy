@@ -263,7 +263,7 @@ var seedGraph = {
       "children": {
         "name": "Children",
         "unique": false,
-        "type": ["/type/text", "/type/quote", "/type/code", "/type/visualization"],
+        "type": ["/type/text", "/type/quote", "/type/code"],
         "default": []
       }
     }
