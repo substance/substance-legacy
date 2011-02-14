@@ -56,7 +56,6 @@ var Application = Backbone.View.extend({
   },
   
   toggleSignup: function() {
-    console.log('JOJOJ');
     app.browser.browserTab.render();
     $('#content_wrapper').html(_.tpl('signup'));
     app.toggleView('content');
@@ -75,7 +74,6 @@ var Application = Backbone.View.extend({
     $('#browser_wrapper').attr('url', '#search/'+encodeURI(searchstr));
     
     app.browser.bind('loaded', function() {
-      console.log('HAHA');
       app.toggleView('browser');
     });
   },

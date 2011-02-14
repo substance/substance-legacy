@@ -13,8 +13,6 @@ UI.MultiStringEditor = Backbone.View.extend({
     this._items = options.items || [];
     this._availableItems = options.availableItems;
     
-    // console.log(this._availableItems);
-    
     // Re-render on every change
     this.bind('changed', function() {
       that.render();
@@ -36,11 +34,9 @@ UI.MultiStringEditor = Backbone.View.extend({
     var suggestions = this.$('.available-item');
     if (e.keyCode === 40) { // down-key
       if (this.selectedIndex < suggestions.length-1) this.selectedIndex += 1;
-      // console.log(this.selectedIndex);
       this.teaseSuggestion();
     } else if (e.keyCode === 38){ // up-key
       if (this.selectedIndex>=0) this.selectedIndex -= 1;
-      // console.log(this.selectedIndex);
       this.teaseSuggestion();
     } else {
       this.updateSuggestions();
@@ -58,8 +54,6 @@ UI.MultiStringEditor = Backbone.View.extend({
   // Update matched suggestions
   updateSuggestions: function() {
     var that = this;
-    console.log('updating suggestions');
-
     setTimeout(function() {
       if (this.$('input[name=new_value]').val().length === 0) {
         that.$('.available-items').empty();
@@ -118,8 +112,7 @@ UI.MultiStringEditor = Backbone.View.extend({
   // Render the editor, including the display of values
   render: function() {
     $(this.el).html(_.renderTemplate('multi_string_editor', {
-      items: this._items//,
-      // available_items: this._availableItems
+      items: this._items
     }));
   }
 });

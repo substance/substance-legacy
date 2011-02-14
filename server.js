@@ -36,7 +36,7 @@ Data.middleware.writegraph = [
     } else if (_.include(node.type, "/type/user")) {
       // Ensure username can't be changed for existing users
       if (node._rev) node.username = graph.get(node._id).get('username');
-      if (node._id === "/user/"+ctx.session.username) return null;
+      if (node._id !== "/user/"+ctx.session.username) return null;
     }
     return node;
   }
@@ -53,7 +53,7 @@ Data.middleware.readgraph = [
   }
 ];
 
-
+// Fetch a single node from the graph
 function fetchNode(id, callback) {
   db.get(id, function(err, node) {
     if (err) return callback(err);
@@ -86,12 +86,10 @@ function findUsers(searchstr, callback) {
           }
         }
       });
-      
       callback(null, result);
     }
   });
 }
-
 
 // We are aware that this is not a performant solution.
 // But search functionality needed to be there, quickly.
@@ -117,11 +115,9 @@ function findDocuments(searchstr, type, callback) {
         if (matched) {
           // Add to result set
           count += 1;
-          
           if (count < 200) { // 200 Documents maximum
             result[row.value._id] = row.value;
             // Include associated objects like attributes and users
-            
             associatedItems = associatedItems.concat([row.value.creator]);
             if (row.value.subjects) associatedItems = associatedItems.concat(row.value.subjects);
           }
@@ -132,8 +128,9 @@ function findDocuments(searchstr, type, callback) {
       // TODO: make dynamic
       async.forEach(_.uniq(associatedItems), function(nodeId, callback) {
         fetchNode(nodeId, function(err, node) {
-          if (err) return callback(err);
+          if (err) { console.log('BROKEN REFERENCE!'); console.log(err); return callback(); }
           result[node._id] = node;
+          delete result[node._id].password;
           callback();
         });
       }, function(err) { callback(err, result, count); });
@@ -278,6 +275,49 @@ app.post('/register', function(req, res) {
         }
       });
     } else return res.send({"status": "error", "message": "Not valid"});
+  });
+});
+
+
+app.post('/updateuser', function(req, res) {
+  var username = req.body.username;
+  
+  graph.fetch({type: '/type/user'}, {}, function(err) {
+    var user = graph.get('/user/'+username);
+    user.set({
+      name: req.body.name,
+      email: req.body.email,
+      location: req.body.location,
+      website: req.body.website,
+      company: req.body.company,
+      location: req.body.location
+    });
+    
+    // Change password
+    if (req.body.password) {
+      user.set({
+        password: encryptPassword(req.body.password)
+      });
+    }
+
+    if (user.validate()) {
+      graph.sync(function(err) {
+        if (!err) {
+          var seed = {};
+          seed[user._id] = user.toJSON();
+          delete seed[user._id].password;
+          res.send({
+            status: "ok",
+            username: username,
+            seed: seed
+          });
+          req.session.username = username;
+          req.session.seed = seed;
+        } else {
+          return res.send({"status": "error"});
+        }
+      });
+    } else return res.send({"status": "error", "message": "Not valid", "errors": user.errors});
   });
 });
 

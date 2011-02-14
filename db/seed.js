@@ -66,10 +66,25 @@ var seedGraph = {
         "validator": "^\\w+@[a-zA-Z_]+?\\.[a-zA-Z]{2,6}$"
       },
       "name": {
-        "name": "Name",
+        "name": "Full Name",
         "unique": true,
         "type": "string",
         "required": true
+      },
+      "website": {
+        "name": "Website",
+        "unique": true,
+        "type": "string"
+      },
+      "company": {
+        "name": "Company",
+        "unique": true,
+        "type": "string"
+      },
+      "location": {
+        "name": "Location",
+        "unique": true,
+        "type": "string"
       },
       "password": {
         "name": "Password",
@@ -77,16 +92,6 @@ var seedGraph = {
         "type": "string",
         "required": true,
         "validator": "^\\w{4,}$"
-      },
-      "firstname": {
-        "name": "Firstname",
-        "unique": true,
-        "type": "string"
-      },
-      "lastname": {
-        "name": "Lastname",
-        "unique": true,
-        "type": "string"
       }
     }
   },

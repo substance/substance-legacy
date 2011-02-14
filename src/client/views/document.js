@@ -268,6 +268,7 @@ var Document = Backbone.View.extend({
     this.model = null;
     controller.saveLocation('#'+this.app.username);
     $('#document_wrapper').attr('url', '#'+this.app.username);
+    $('#document_tab').hide();
     app.toggleView('content');
     this.render();
   },
