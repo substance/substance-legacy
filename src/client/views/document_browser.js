@@ -69,13 +69,13 @@ var DocumentBrowser = Backbone.View.extend({
     if (this.loaded) {
       this.documents = this.graph.find({"type|=": "/type/document"});
 
-      // var DESC_BY_UPDATED_AT = function(item1, item2) {
-      //   var v1 = item1.value.get('updated_at'),
-      //       v2 = item2.value.get('updated_at');
-      //   return v1 === v2 ? 0 : (v1 > v2 ? -1 : 1);
-      // };
-      // 
-      // this.documents = this.documents.sort(DESC_BY_UPDATED_AT);
+      var DESC_BY_UPDATED_AT = function(item1, item2) {
+        var v1 = item1.value.get('updated_at'),
+            v2 = item2.value.get('updated_at');
+        return v1 === v2 ? 0 : (v1 > v2 ? -1 : 1);
+      };
+      
+      this.documents = this.documents.sort(DESC_BY_UPDATED_AT);
 
       $(this.el).html(_.tpl('document_browser', {
         documents: this.documents,
