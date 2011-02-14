@@ -8,13 +8,11 @@ var BrowserTab = Backbone.View.extend({
   
   focusSearch: function(e) {
     this.searchValue = $(e.currentTarget).val();
-    
     this.active = true;
     $(e.currentTarget).val('');
   },
   
   blurSearch: function(e) {
-    console.log('jess');
     var that = this;
     this.active = false;
     setTimeout(function() {
@@ -62,10 +60,11 @@ var BrowserTab = Backbone.View.extend({
   
   // Finally perform a real search
   loadDocuments: function() {
-    var searchstr = $('#search').val();
-    app.browser.load({"type": "search", "value": $('#search').val()});
-    app.toggleView('browser');
-    controller.saveLocation('#search/'+encodeURI(searchstr));
+    app.searchDocs($('#search').val());
+    // var searchstr = $('#search').val();
+    // app.browser.load({"type": "search", "value": $('#search').val()});
+    // app.toggleView('browser');
+    // controller.saveLocation('#search/'+encodeURI(searchstr));
     this.active = false;
     return false;
   },

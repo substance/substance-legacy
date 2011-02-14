@@ -56,6 +56,7 @@ var DocumentBrowser = Backbone.View.extend({
         that.graph.merge(res.graph);
         that.facets = new Facets({el: '#facets', browser: that});
         that.loaded = true;
+        that.trigger('loaded');
         that.render();
       },
       error: function(err) {}
@@ -82,9 +83,7 @@ var DocumentBrowser = Backbone.View.extend({
 
       if (this.loaded) this.facets.render();
       this.browserTab.render();
-    } else { // Render start page
-      this.browserTab.render();
-      $('#browser_wrapper').html(_.tpl('startpage'));
+      
     }
   },
   

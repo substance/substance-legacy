@@ -9,8 +9,8 @@
   </script>
   
   <script type="text/x-ejs-template" name="edit_attributes">
+    <h1>Attributes</h1>
     <dl class="document-attributes">
-      
       <dt>Creator</dt>
       <dd><%= doc.get('creator').get('username') %></dd>
       
@@ -20,15 +20,12 @@
       <dt>Last modified</dt>
       <dd><%= _.prettyDate(new Date(doc.get('updated_at')).toJSON()) %></dd>
       
-      <dt>Publish Date:</dt>
+      <!--<dt>Publish Date:</dt>
       <dd>
         <% if (doc.get('published_on')) { %>
           <%= _.date(doc.get('published_on')) %>
-          (<a href="#" class="unpublish-document">Unpublish</a>)
-        <% } else { %>
-          Not published (<a href="#" class="publish-document">Publish</a>)
         <% } %>
-      </dd>
+      </dd>-->
       
       <% attributes.each(function(attribute) { %>
         <dt><%= attribute.name %></dt>
@@ -39,9 +36,10 @@
   
   
   <script type="text/x-ejs-template" name="show_attributes">
+    <h1>Attributes</h1>
     <dl class="document-attributes">
       <dt>Creator</dt>
-      <dd><%= doc.get('creator').get('username') %></dd>
+      <dd><%= doc.get('creator').get('name') || doc.get('creator').get('username') %></dd>
       
       <dt>Created On</dt>
       <dd><%= _.date(doc.get('created_at')) %></dd>
@@ -49,89 +47,159 @@
       <dt>Last modified</dt>
       <dd><%= _.prettyDate(new Date(doc.get('updated_at')).toJSON()) %></dd>
 
-      <% if (doc.get('published_on')) { %>
-        <dt>Publish Date:</dt>
-        <dd>
-        <%= _.date(doc.get('published_on')) %>
-        </dd>
-      <% } %>
-
       <% attributes.each(function(attribute) { %>
-        <dt><%= attribute.name %></dt>
-        <dd>
-          <div class="items">
-            <% doc.get(attribute.key).each(function(v) { %>
-              <div class="item"><%= v.get('name') %></div>
-            <% }); %>
-          </div>
-        </dd>
+        <% if (doc.get(attribute.key).length > 0) { %>
+          <dt><%= attribute.name %></dt>
+          <dd>
+            <div class="items">
+              <% doc.get(attribute.key).each(function(v) { %>
+                <div class="item"><%= v.get('name') %></div>
+              <% }); %>
+            </div>
+          </dd>
+        <% } %>
       <% }); %>
     </dl>
   </script>
   
+  <script type="text/x-ejs-template" name="signup">
+    <div id="signup" class="page-content">
+      <h1>Start writing.</h1>
+      <form id="signup-form" class="auth-form">
+        <div>
+          <label for="signup-user">Username:<span>http://substance.io/#USERNAME</span></label>
+          <input type="text" id="signup-user" name="username"/>
+        </div>
+    
+        <div>
+          <label for="signup-name">Full Name:<span>Your real name</span></label>
+          <input type="text" id="signup-name" name="name"/>
+        </div>
+    
+        <div>
+          <label for="signup-email">Email:<span></span></label>
+          <input type="text" id="signup-email" name="email"/>
+        </div>
+    
+        <div>
+          <label for="signup-password">Password:<span></span></label>
+          <input type="password" id="signup-password" name="password"/>
+        </div>
+    
+        <div>
+          <label for="">&nbsp;</label>
+          <input type="submit" value="Create Account"/>
+        </div>
+      </form>
+    </div>
+  </script>
+  
   <script type="text/x-ejs-template" name="startpage">
-    <div id="browser_inner_wrapper">
-      <div id="startpage" class="page-content">
-        <div class="intro"><b>Substance</b> is a web-based document authoring and publishing engine.</div>
-      
-        <h1>Register</h1>
-        <form id="signup-form" class="auth-form">
-          <div>
-            <label for="signup-user">Username:<span>http://substance.io/#USERNAME</span></label>
-            <input type="text" id="signup-user" name="username"/>
+    <div id="startpage">
+      <div class="intro"><b>Substance</b> is a web-based document authoring and publishing platform. <a href="#signup" class="toggle-signup">Create an Account</a> or <a href="#substance/substance">learn more</a>.</div>
+      <!-- Features -->
+      <div id="features">
+        <div class="feature write">
+          <div class="feature-wrapper">
+            <h1 class="feature-title">
+              Write
+            </h1>
+            <p class="feature-descr">
+              <b>Write</b> and <b>annotate</b> documents right in the <b>browser</b>.
+            </p> 
+            <ul class="feature-properties">
+              <li>
+                <div>Semantic Editing</div>
+                <div class="descr">Focus is on Content not Formatting</div>
+              </li>
+              <li>
+                <div>Collaboration</div>
+                <div class="descr">Collaborative Editing in a Team</div>
+              </li>
+              <li>
+                <div>Multiple Document Types</div>
+                <div class="descr">Article, Manual, Interview</div>
+              </li>
+            </ul>
           </div>
+        </div>
         
-          <div>
-            <label for="signup-name">Full Name:<span>Your real name</span></label>
-            <input type="text" id="signup-name" name="name"/>
+        <div class="feature browse">
+          <div class="feature-wrapper">
+            <h1 class="feature-title">
+              Browse
+            </h1>
+            <p class="feature-descr">
+              <b>Find</b> and <b>read</b> relevant
+              documents by using novel navigation techniques.
+            </p> 
+            <p class="feature-descr">
+              Use the Browser Tab above to get started.
+            </p>
+            <ul class="feature-properties">
+              <li>
+                <div>Search by Keyword</div>
+                <div class="descr">Find relevant documents based on keywords</div>
+              </li>
+              <li>
+                <div>Faceted Browsing</div>
+                <div class="descr">Filter matched documents using faceted navigation</div>
+              </li>
+            </ul>
           </div>
+        </div>
         
-          <div>
-            <label for="signup-email">Email:<span></span></label>
-            <input type="text" id="signup-email" name="email"/>
+        <div class="feature contribute">
+          <div class="feature-wrapper">
+            <h1 class="feature-title">
+              Contribute
+            </h1>
+            <p class="feature-descr">
+              In order to <b>improve</b> the system
+              and keep it <b>open</b> and <b>free</b>, we
+              need your help!
+            </p><p class="feature-descr">
+              With your donations we ‘ll
+              be able to add new features
+              such as <b>Realtime Collaboration</b>,
+              <b>User Comments</b> and <b>PDF Export</b>.
+            </p>
+            <div>
+              <div id="donations-total">$ 0.00<span>contributed so far</span></div>
+              <a href="#contribute" onclick="javascript: alert('Available soon!'); return false;" id="contribute_button" class="button contribute">Contribute</a>
+              <br class="clear"/>
+            </div>
           </div>
-        
-          <div>
-            <label for="signup-password">Password:<span></span></label>
-            <input type="password" id="signup-password" name="password"/>
-          </div>
-        
-          <div>
-            <label for="">&nbsp;</label>
-            <input type="submit" value="Create Account"/>
-          </div>
-        </form>
+        </div>
       </div>
     </div>
   </script>
   
   <script type="text/x-ejs-template" name="header">
     <div class="title">
-      Substance
+      <a href="#" class="toggle-startpage">Substance</a>
     </div>
     <div id="sync_state"></div>
     <div id="login_state">
       <div id="login">
         <% if (user) { %>
           <div>
-            <a href="#<%= user.get('username') %>"><%= user.get('username') %></a>
-            <!--<a href="#" class="toggle-user-settings"></a>-->
+            <a href="#<%= user.get('username') %>"><b><%= user.get('name') || user.get('username') %></b></a>
+            <a href="#" class="toggle-user-settings">Account Settings</a>
+            <a href="#logout" class="logout">Logout</a>
           </div>
-          <a class="logout icon" href="#logout"/>
         <% } else { %>
           <form id="login-form" class="auth-form">
             <input type="text" name="username" class="hint" id="login-user" value="username">
             <input type="password" name="password" class="hint" id="login-password" value="password">
-            <input type="submit" class="login" value=""/>
+            <input type="submit" value="Login"/>
           </form>
         <% } %>
       </div>
     </div>
-
   </script>
 
   <script type="text/x-ejs-template" name="user_settings">
-    
     <div id="content">
       <h1>User Settings</h1>
       <p>
@@ -168,23 +236,22 @@
   
   <script type="text/x-handlebars-template" name="document_wrapper">
     <div id="document_actions" class="view-actions">
-      <a href="#" title="Read Document" class="toggle-mode view-action-icon read<%= mode !== 'edit' ? ' active' : '' %>"><span>Read</span></a>
-      <a href="#" title="Write Document" class="toggle-mode view-action-icon write<%= mode === 'edit' ? ' active' : '' %>"><span>Write</span></a>
-      <a href="#" title="Delete Document" class="delete-document view-action-icon delete"><span>Delete</span></a>
+      <a href="#" title="Read Document" class="toggle-show-mode view-action-icon read<%= mode !== 'edit' ? ' active' : '' %>"><span>Read</span></a>
+      <% if (doc && doc.get('creator')._id === '/user/'+app.username) { %>
+        <a href="#" title="Write Document" class="toggle-edit-mode view-action-icon write<%= mode === 'edit' ? ' active' : '' %>"><span>Write</span></a>
+        <a href="#" title="Delete Document" class="delete-document view-action-icon delete"><span>Delete</span></a>
+      <% } %>
     </div>
-    
     <div id="document_inner_wrapper">
-
       <div id="document">
         <p>No document loaded... You can either create a <em>New Document</em> or <em>Browse</em> existing ones.</p>
       </div>
-    
       <div id="attributes"></div>
     </div>
   </script>
   
   <script type="text/x-handlebars-template" name="browser_not_supported">
-    <div id="signup">
+    <div>
       <h3>Your Browser is currently not supported</h3>
       <div class="lpl texteditor">
         <p>
@@ -227,7 +294,7 @@
     <div class="icon read"></div>
     <div class="tab-label">Document</div>
     <div class="user-name">
-      <%= username %> / <%= document_name %>
+      <%= username %> / <b><%= document_name %></b>
     </div>
     <!--<input type="text" id="document_name" name="document_name" value="foo"/>-->
   </script>
@@ -236,19 +303,22 @@
     <div id="browser_inner_wrapper">
       <% if (documents.length > 0) { %>
         <div id="browser">
+          
           <div id="facets">
             Loading facets...
           </div>
-        
-          <table id="documents">
+          
+          <div id="documents">
+          <h2>15 Documents</h2>
+          <table>
             <thead>
-              <tr><th>Title</th><th>Author</th><th>Published</th><th>Last modified</th></tr>
+              <tr><th>Title</th><th>Author</th><th>Published</th><th class="right-align">Last modified</th></tr>
             </thead>
             <tbody>
             <% documents.each(function(doc) { %> 
-              <tr class="<%= doc.get('published_on') ? 'draft' : 'draft' %>">
+              <tr class="<%= doc.get('published_on') ? 'published' : 'draft' %>">
                 <th><a class="link load-document" href="#<%= doc.get('creator').get('username') %>/<%= doc.get('name') %>" document="<%= doc._id %>" user="<%= doc.get('creator').get('username') %>" name="<%= doc.get('name') %>"><%= doc.get('title') %><span class="document-type"><%= doc.type.key.split('/')[2] %></span></a></th>
-                <td><%= doc.get('creator').get('name') %></td>
+                <td><%= doc.get('creator').get('name') || doc.get('creator').get('username') %></td>
                 <td>
                   <% if (doc.get('published_on')) { %>
                     <%= _.date(doc.get('published_on')) %>
@@ -256,11 +326,12 @@
                     - - -
                   <% } %>
                 </td>
-                <td><%= _.prettyDate(doc.get('updated_at')) %></td>
+                <td class="right-align"><%= _.prettyDate(doc.get('updated_at')) %></td>
               </tr>
             <% }); %>
             </tbody>
           </table>
+          </div>
         </div>
       <% } else { %>
         <div id="documents">
@@ -271,7 +342,12 @@
   </script>
   
   <script type="text/x-handlebars-template" name="facets">
+    <h2>Filter</h2>
     <div class="list">
+      {{^facets}}
+        <p class="no-filters">No filters available</p>
+      {{/facets}}
+      
       {{#facets}}
         <div class="facet" id="facet_{{property}}">
           <h3>{{property_name}}</h3>
@@ -328,12 +404,24 @@
   </script>
 
   <!-- content-node templates for the editor -->
-  <script type="text/x-handlebars-template" name="document">    
-    <div id="{{node/html_id}}" name={{node/key}} class="content-node document">
-      {{#edit}}<div class="content-node-outline"><div class="cursor"><span></span></div></div>{{/edit}}
-      <h1 class='content'>{{title}}</h1>
-      <p class="lead content" id="document_lead">{{lead}}</p>
-      {{{content}}}
+  <script type="text/x-ejs-template" name="document">
+    <div id="<%= node.html_id %>" name=<%= node.key %> class="content-node document">
+      <% if (edit) { %><div class="content-node-outline"><div class="cursor"><span></span></div></div><% } %>
+      <h1 class='content'><%= title %></h1>
+      <p class="author"><%= node.get('creator').get('name') || node.get('creator').get('username') %></p>
+      <p class="published">
+        <% if (node.get('published_on') && edit) { %>
+          <%= _.date(node.get('published_on')) %>
+          — <a href="#unpublish" class="unpublish-document">Unpublish</a>
+        <% } else if (edit) { %>
+          Not published yet — <a href="#" class="publish-document">Publish</a>
+        <% } else if (node.get('published_on')) { %>
+          <%= _.date(node.get('published_on')) %>
+        <% } %>
+      </p>
+      <p class="lead content" id="document_lead"><%= lead %></p>
+      <div class="document-separator"></div>
+      <%= content %>
     </div>
   </script>
   
@@ -429,7 +517,7 @@
       {{/items}}
       <form>
         <input type="text" name="new_value" autocomplete="off"/>
-        <input type="submit" value="+"/>
+        <input type="submit" value="Add"/>
         <div class="available-items">
           
         </div>
@@ -525,23 +613,27 @@
         
       </div>
       
-      <a href="#" class="action new-document" title="Create a new document">
+      <a href="#" class="action new-document hidden" title="Create a new document">
         <div class="view-action-icon new"></div>
       </a>
     </div>
     
     <!-- Various content (used for user settings dialogue etc.) -->  
-    <div id="content_wrapper" class="view hidden">
+    <div id="content_wrapper" class="view">
       
     </div>
     
     <!-- The document browser -->
-    <div id="browser_wrapper" class="view content-wrapper">
+    <div id="browser_wrapper" class="view hidden">
     </div>
     
     <!-- The document browser -->
-    <div id="document_wrapper" class="view content-wrapper hidden">
+    <div id="document_wrapper" class="view hidden">
       
+    </div>
+    <div id="footer">
+      <div class="credits">A <a href="http://quasipartikel.at" target="_new">Quasipartikel</a> production</div>
+      <div class="version"><a href="#substance/release_notes">Release 0.1</a> | <a href="#substance/substance">About</a></div>
     </div>
   </div>
   

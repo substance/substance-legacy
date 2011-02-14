@@ -99,7 +99,7 @@ var HTMLRenderer = function(root, parent) {
         });        
       }
       
-      return Helpers.renderTemplate('document', {
+      return _.tpl('document', {
         node: node,
         content: content,
         edit: app.document.mode === 'edit',

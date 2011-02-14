@@ -4,7 +4,8 @@ UI.MultiStringEditor = Backbone.View.extend({
     'click a.remove-item': 'removeItem',
     'click .available-item a': 'selectAvailableItem',
     'keydown input': 'inputChange',
-    'click input': 'initInput'
+    'click input': 'initInput',
+    'blur input': 'reset'
   },
   
   initialize: function(options) {
@@ -24,7 +25,11 @@ UI.MultiStringEditor = Backbone.View.extend({
   },
   
   initInput: function() {
-    this.updateSuggestions();
+    // this.updateSuggestions();
+  },
+  
+  reset: function() {
+    this.$('.available-items').empty();
   },
   
   inputChange: function(e) {
@@ -53,14 +58,18 @@ UI.MultiStringEditor = Backbone.View.extend({
   // Update matched suggestions
   updateSuggestions: function() {
     var that = this;
+    console.log('updating suggestions');
 
-    
     setTimeout(function() {
+      if (this.$('input[name=new_value]').val().length === 0) {
+        that.$('.available-items').empty();
+        return;
+      }
+      
       var regexp = new RegExp('^'+this.$('input[name=new_value]').val().toLowerCase()+'(.)*')
       
       that.$('.available-items').empty();
       _.each(that._availableItems, function(item) {
-        
         if (regexp.test(item.toLowerCase())) {
           that.$('.available-items').append($('<div class="available-item"><a href="#" value="'+item+'">'+item+'</a></div>'));
         }

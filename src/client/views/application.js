@@ -11,9 +11,9 @@ var Application = Backbone.View.extend({
     'click #document_toggle': 'showDocument',
     'click a.load-document': 'loadDocument',
     'click a.save-document': 'saveDocument',
-    'click .tab': 'switchTab',
     'click a.logout': 'logout',
     'click a.signup': 'toggleSignup',
+    'click .tab': 'switchTab',
     'click a.show-attributes': 'showAttributes',
     'click a.publish-document': 'publishDocument',
     'click a.unpublish-document': 'unpublishDocument',
@@ -22,7 +22,10 @@ var Application = Backbone.View.extend({
     'click a.delete-document': 'deleteDocument',
     'click a.view-collaborators': 'viewCollaborators',
     'click a.toggle-document-views': 'toggleDocumentViews',
-    'click a.toggle-mode': 'toggleMode',
+    'click a.toggle-signup': 'toggleSignup',
+    'click a.toggle-startpage': 'toggleStartpage',
+    'click a.toggle-edit-mode': 'toggleEditMode',
+    'click a.toggle-show-mode': 'toggleShowMode',
     'click a.toggle-user-settings': 'toggleUserSettings',
     'submit #signup-form': 'registerUser'
   },
@@ -30,17 +33,6 @@ var Application = Backbone.View.extend({
   login: function(e) {
     this.authenticate();
     return false;
-  },
-  
-  toggleUserSettings: function() {
-    this.content = new UserSettings({el: '#content_wrapper'});
-    this.content.render();
-    this.toggleView('content');    
-    return false;
-  },
-  
-  switchTab: function(e) {
-    this.toggleView($(e.currentTarget).attr('view'));
   },
   
   triggerScrollTo: function(e) {
@@ -56,11 +48,50 @@ var Application = Backbone.View.extend({
     return false;
   },
   
+  toggleUserSettings: function() {
+    this.content = new UserSettings({el: '#content_wrapper'});
+    this.content.render();
+    this.toggleView('content');    
+    return false;
+  },
+  
+  toggleSignup: function() {
+    console.log('JOJOJ');
+    app.browser.browserTab.render();
+    $('#content_wrapper').html(_.tpl('signup'));
+    app.toggleView('content');
+    return false;
+  },
+  
+  toggleStartpage: function() {
+    app.browser.browserTab.render();
+    $('#content_wrapper').html(_.tpl('startpage'));
+    app.toggleView('content');
+    return false;
+  },
+  
+  searchDocs: function(searchstr) {
+    app.browser.load({"type": "search", "value": encodeURI(searchstr)});
+    $('#browser_wrapper').attr('url', '#search/'+encodeURI(searchstr));
+    
+    app.browser.bind('loaded', function() {
+      console.log('HAHA');
+      app.toggleView('browser');
+    });
+  },
+  
+  switchTab: function(e) {
+    this.toggleView($(e.currentTarget).attr('view'));
+  },
+  
   toggleView: function(view) {
-    $('.view').hide();
-    $('#'+view+'_wrapper').show();
     $('.tab').removeClass('active');
     $('#'+view+'_tab').addClass('active');
+    if (view === 'browser' && !this.browser.loaded) return;
+    $('.view').hide();
+    $('#'+view+'_wrapper').show();
+    controller.saveLocation($('#'+view+'_wrapper').attr('url'));
+    return false;
   },
   
   createDocument: function(e) {
@@ -77,10 +108,19 @@ var Application = Backbone.View.extend({
     return false;
   },
   
-  toggleMode: function(e) {
+  toggleEditMode: function(e) {
     var user = app.document.model.get('creator').get('username');
     var name = app.document.model.get('name');
-    app.document.loadDocument(user, name, null, app.document.mode === 'show' ? 'edit' : 'show');
+    
+    app.document.loadDocument(user, name, null, 'edit');
+    return false;
+  },
+  
+  toggleShowMode: function(e) {
+    var user = app.document.model.get('creator').get('username');
+    var name = app.document.model.get('name');
+    
+    app.document.loadDocument(user, name, null, 'show');
     return false;
   },
   
@@ -89,7 +129,10 @@ var Application = Backbone.View.extend({
           name = $(e.currentTarget).attr('name');
 
       app.document.loadDocument(user, name);
-      if (controller) controller.saveLocation($(e.currentTarget).attr('href'));
+      if (controller) {
+        controller.saveLocation($(e.currentTarget).attr('href'));
+        $('#document_wrapper').attr('url', $(e.currentTarget).attr('href'));
+      }
     return false;
   },
   
@@ -99,23 +142,6 @@ var Application = Backbone.View.extend({
   showAttributes: function() {
     app.document.drawer.toggle('Attributes');
     $('.show-attributes').toggleClass('selected');
-    return false;
-  },
-  
-  publishDocument: function(e) {
-    this.document.model.set({
-      published_on: (new Date()).toJSON()
-    });
-    this.document.attributes.render();
-    return false;
-  },
-  
-  unpublishDocument: function(e) {
-    this.document.model.set({
-      published_on: null
-    });
-    
-    this.document.attributes.render();
     return false;
   },
   
@@ -133,8 +159,10 @@ var Application = Backbone.View.extend({
         that.browser.loaded = false;
         that.browser.render();
         that.render();
+        $('#document_tab').hide();
         that.toggleView('browser');
         controller.saveLocation('');
+        $('.new-document').hide();
       }
     });
     return false;
@@ -187,6 +215,7 @@ var Application = Backbone.View.extend({
       this.username = session.username;
       this.trigger('authenticated');
       $('#tabs').show();
+      $('.new-document').show();
     } else {
       this.authenticated = false;
     }
@@ -196,10 +225,15 @@ var Application = Backbone.View.extend({
       that.authenticated = true;
       // Re-render browser
       $('#tabs').show();
+      $('.new-document').show();
       that.render();
       that.document.closeDocument();
       that.browser.load(that.query());
-      that.toggleView('browser');
+      
+      that.browser.bind('loaded', function() {
+        that.toggleView('browser');
+      });
+      
       controller.saveLocation('#'+that.username);
     });
     

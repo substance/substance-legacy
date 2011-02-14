@@ -18,6 +18,8 @@ var Document = Backbone.View.extend({
     'mouseout .content-node': 'unhighlightNode',
     'click .content-node': 'selectNode',
     'click .controls .handle': 'showActions',
+    'click a.unpublish-document': 'unpublishDocument',
+    'click a.publish-document': 'publishDocument',
     
     // Actions
     'click a.add_child': 'addChild',
@@ -56,7 +58,8 @@ var Document = Backbone.View.extend({
   render: function() {
     // Render all relevant sub views
     $(this.el).html(_.tpl('document_wrapper', {
-      mode: this.mode
+      mode: this.mode,
+      doc: this.model
     }));
     
     this.renderMenu();
@@ -197,6 +200,8 @@ var Document = Backbone.View.extend({
     app.toggleView('document');
     
     controller.saveLocation('#'+this.app.username+'/'+name);
+    $('#document_wrapper').attr('url', '#'+this.app.username+'/'+name);
+    
     this.trigger('document:changed');
     notifier.notify(Notifications.BLANK_DOCUMENT);
     return false;
@@ -262,6 +267,7 @@ var Document = Backbone.View.extend({
   closeDocument: function() {
     this.model = null;
     controller.saveLocation('#'+this.app.username);
+    $('#document_wrapper').attr('url', '#'+this.app.username);
     app.toggleView('content');
     this.render();
   },
@@ -391,7 +397,27 @@ var Document = Backbone.View.extend({
       // remote.Session.selectNode(key);
     }
     
+    // console.log(e);
+    // $(e.target==)
+    
     e.stopPropagation();
+    return false;
+  },
+  
+  publishDocument: function(e) {
+    this.model.set({
+      published_on: (new Date()).toJSON()
+    });
+    this.render();
+    return false;
+  },
+  
+  unpublishDocument: function() {
+    this.model.set({
+      published_on: null
+    });
+    this.render();
+    return false;
   },
   
   addChild: function(e) {
