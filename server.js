@@ -284,6 +284,8 @@ app.post('/updateuser', function(req, res) {
   
   graph.fetch({type: '/type/user'}, {}, function(err) {
     var user = graph.get('/user/'+username);
+    if (!user) return res.send({"status": "error"});
+    
     user.set({
       name: req.body.name,
       email: req.body.email,
