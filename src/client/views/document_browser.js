@@ -65,10 +65,8 @@ var DocumentBrowser = Backbone.View.extend({
   
   render: function() {
     var that = this;
-  
     if (this.loaded) {
       this.documents = this.graph.find({"type|=": "/type/document"});
-
       var DESC_BY_UPDATED_AT = function(item1, item2) {
         var v1 = item1.value.get('updated_at'),
             v2 = item2.value.get('updated_at');
@@ -76,14 +74,12 @@ var DocumentBrowser = Backbone.View.extend({
       };
       
       this.documents = this.documents.sort(DESC_BY_UPDATED_AT);
-
       $(this.el).html(_.tpl('document_browser', {
         documents: this.documents,
       }));
-
+      
       if (this.loaded) this.facets.render();
       this.browserTab.render();
-      
     }
   },
   

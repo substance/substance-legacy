@@ -217,11 +217,10 @@ a.button:active {
 .tab input {
   padding-left: 0px;
   padding-right: 0px;
-  /*  font-family: 'Adobe Garamond Pro'; font-size: 18px; font-style: italic;*/
+  /* font-family: 'Adobe Garamond Pro'; font-size: 18px; font-style: italic;*/
 }
 
 .tab .tab-label {
-  display: none;
   position: absolute;
   font-style: normal;
   font-family: 'Palatino Linotype', 'Book Antiqua', Palatino, FreeSerif, serif;
@@ -233,9 +232,9 @@ a.button:active {
   color: #888;
 }
 
-.tab:hover .tab-label {
+/*.tab:hover .tab-label {
   display: block;
-}
+}*/
 
 #browser_tab.active, #browser_tab:hover {
   background: rgba(88,108,114, 1.0);
@@ -287,7 +286,7 @@ a.button:active {
 
 #browser_tab .results {
   position: absolute;
-  top: 50px;
+  top: 57px;
   left: 0px;
   width: 350px;
   display: none;
@@ -339,7 +338,7 @@ a.button:active {
 /*#tabs .tab:not(.active) input { cursor: pointer; }*/
 
 #document_tab { background: rgba(99,88,73, 0.7); /* background: #635849; */ }
-#document_tab .user-name {padding-left: 10px;}
+#document_tab .user-name {padding-left: 10px; max-width: 210px; overflow: hidden; white-space: nowrap; }
 #document_tab > div {height: 26px; float: left; line-height: 26px;}
 
 #document_tab input { float: left; border: 1px solid transparent; width: 100px; margin-left: 5px; height: 26px; background: rgba(0,0,0, 0); color: rgba(255,255,255, 0.7); }
@@ -397,7 +396,6 @@ a.button:active {
 -------------------------------------------------------------------------------*/
 
 .page-content {
-  /*  padding: 20px;*/
   font-family: 'Palatino Linotype', 'Book Antiqua', Palatino, FreeSerif, serif;
   padding: 0px 0 50px 0;
   border-bottom: 1px solid #CCC;
@@ -408,7 +406,9 @@ a.button:active {
   border-top: 1px solid #ccc;
   border-bottom: 1px solid #ccc;
 }
-.page-content input {background: rgba(255,255,255, 0.6); }
+
+.page-content select { float: left;  }
+.page-content input { float: left; background: rgba(255,255,255, 0.6); width: 250px; }
 .page-content input:hover { background :#fff; }
 .page-content input:focus { background :#fff; }
 .page-content input.error { border: 2px solid red; }
@@ -417,6 +417,18 @@ a.button:active {
 .page-content div { padding: 20px 0; overflow: auto }
 .page-content input[type=submit] { background: #A2C44E; color: white; border: none; }
 
+/* Messages for input fields */
+.page-content .input-message { float: left; padding: 0 20px; margin: 0; 
+  font-family: Helvetica;
+  font-size: 12px;
+}
+
+.page-content #registration_error_message {
+  font-size: 20px;
+  padding: 0;
+  margin: 0;
+  overflow: hidden;
+}
 
 /* body > #container > #browser_wrapper
 -------------------------------------------------------------------------------*/
@@ -883,17 +895,22 @@ table tr.draft, table tr.draft a {
 #document h1, #document h2, #document h3 {
 /*  color: #8E870D;*/
   font-weight: bold;
+  margin-bottom: 10px;
 }
 
 #document strong, #document b {
   font-weight: bold;
 }
 
+.content-node.section {
+  margin-bottom: 10px;
+}
+
 
 #document a.remove { border: none; }
-#document p {  padding-bottom: 10px; }
-#document ol {  padding-left: 20px; }
-#document ul { padding-left: 20px; }
+#document p {  margin-bottom: 10px; }
+#document ol {  padding-left: 20px; margin-bottom: 10px;}
+#document ul { padding-left: 20px; margin-bottom: 10px;}
 #document li { }
 
 #document .document-separator { background: #000; margin: auto; width: 300px; height: 1px; margin-top: 50px; margin-bottom: 50px; }
@@ -1003,13 +1020,37 @@ table tr.draft, table tr.draft a {
 -------------------------------------------------------------------------------*/
 
 
-quote {
-  color:#0071bc;
-  font-size:18px;
+/*blockquote {
+  font-size:26px;
   line-height:1.5em;
   font-style: italic;
-  margin:1em 80px 2em 120px;
+  margin:1em 0px 2em 120px;
+}*/
+
+blockquote p {
+  padding: 0px 20px 0px 0px;
+  font-size: 1.2em;
+  font-style: italic;
+  float: left;
+  
+  background: url(../images/icons/black/right_quote_16x16.png) bottom right no-repeat;
 }
+
+blockquote {
+  float: left;
+  padding: 20px;
+  font-size: 1.8em;
+  line-height: 1.4em;
+  background: url(../images/icons/black/left_quote_16x16.png) top left no-repeat;
+  margin-bottom: 10px;
+}
+
+cite {
+  font-size:16px;
+  float: right;
+  clear: both;
+}
+
 
 p.question {
   color:#0071bc;
@@ -1080,10 +1121,11 @@ pre code {
   position: absolute;
 }
 
-
 #document.edit-mode .content-node.selected > .content {color: #000; }
+#document.edit-mode .content-node.selected blockquote > .content {color: #000; }
 #document.edit-mode .content-node.selected pre > .content {color: #000; }
 #document.edit-mode .content-node.selected > .content a {color: #000; }
+#document.edit-mode .content-node.selected blockquote > .content a {color: #000; }
 #document.insert-mode .content-node { color: #aaa; }
 #document.insert-mode .content-node { background: transparent; -webkit-box-shadow: none; }
 
@@ -1418,6 +1460,7 @@ div.intro {
   list-style-image:url("../images/icons/black/pen_12x12.png");
   padding-left: 20px;
 }
+
 
 .feature-properties li {
   margin-bottom: 5px;

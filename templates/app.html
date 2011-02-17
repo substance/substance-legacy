@@ -20,13 +20,6 @@
       <dt>Last modified</dt>
       <dd><%= _.prettyDate(new Date(doc.get('updated_at')).toJSON()) %></dd>
       
-      <!--<dt>Publish Date:</dt>
-      <dd>
-        <% if (doc.get('published_on')) { %>
-          <%= _.date(doc.get('published_on')) %>
-        <% } %>
-      </dd>-->
-      
       <% attributes.each(function(attribute) { %>
         <dt><%= attribute.name %></dt>
         <dd id="property_<%= attribute.key %>" property="/<%= attribute.type._id.split('/')[2] %>/<%= attribute.key %>" key="<%= attribute.key %>" type="string" class="attribute-editor <%= attribute.unique ? "unique" : "non-unique"%>"></dd>
@@ -67,26 +60,30 @@
       <h1>Start writing.</h1>
       <form id="signup-form" class="auth-form">
         <div>
-          <label for="signup-user">Username:<span>http://substance.io/#USERNAME</span></label>
-          <input type="text" id="signup-user" name="username"/>
+          <label for="signup_user">Username:<span>http://substance.io/#USERNAME</span></label>
+          <input type="text" id="signup_user" name="username"/>
+          <div class="input-message" id="signup_user_message"></div>
         </div>
     
         <div>
-          <label for="signup-name">Full Name:<span>Your real name</span></label>
-          <input type="text" id="signup-name" name="name"/>
+          <label for="signup_name">Full Name:<span>Your real name</span></label>
+          <input type="text" id="signup_name" name="name"/>
         </div>
     
         <div>
-          <label for="signup-email">Email:<span></span></label>
-          <input type="text" id="signup-email" name="email"/>
+          <label for="signup_email">Email:<span></span></label>
+          <input type="text" id="signup_email" name="email"/>
         </div>
     
         <div>
-          <label for="signup-password">Password:<span></span></label>
-          <input type="password" id="signup-password" name="password"/>
+          <label for="signup_password">Password:<span></span></label>
+          <input type="password" id="signup_password" name="password"/>
         </div>
-    
+        
+        <div id="registration_error_message"></div>
+        <br/>
         <div>
+        
           <label for="">&nbsp;</label>
           <input type="submit" value="Create Account"/>
         </div>
@@ -267,11 +264,13 @@
             <option value="/type/manual">Manual</option>
             <option value="/type/qaa">Interview</option>
           </select>
+          <div class="input-messages"></div>
         </div>
         
         <div>
           <label for="new_document_name">Document Name:<span>http://substance.io/#USERNAME/NAME</span></label>
           <input type="text" id="new_document_name" name="new_document_name"/>
+          <div class="input-message" id="new_document_name_message"></div>
         </div>
         
         <div>
@@ -359,28 +358,28 @@
           </div>
           
           <div id="documents">
-          <h2><%= documents.length %> Document<%= documents.length > 1 ? 's' : '' %></h2>
-          <table>
-            <thead>
-              <tr><th>Title</th><th>Author</th><th>Published</th><th class="right-align">Last modified</th></tr>
-            </thead>
-            <tbody>
-            <% documents.each(function(doc) { %> 
-              <tr class="<%= doc.get('published_on') ? 'published' : 'draft' %>">
-                <th><a class="link load-document" href="#<%= doc.get('creator').get('username') %>/<%= doc.get('name') %>" document="<%= doc._id %>" user="<%= doc.get('creator').get('username') %>" name="<%= doc.get('name') %>"><%= doc.get('title') %><span class="document-type"><%= doc.type.key.split('/')[2] %></span></a></th>
-                <td><%= doc.get('creator').get('name') || doc.get('creator').get('username') %></td>
-                <td>
-                  <% if (doc.get('published_on')) { %>
-                    <%= _.date(doc.get('published_on')) %>
-                  <% } else { %>
-                    - - -
-                  <% } %>
-                </td>
-                <td class="right-align"><%= _.prettyDate(doc.get('updated_at')) %></td>
-              </tr>
-            <% }); %>
-            </tbody>
-          </table>
+            <h2><%= documents.length %> Document<%= documents.length > 1 ? 's' : '' %></h2>
+            <table>
+              <thead>
+                <tr><th>Title</th><th>Author</th><th>Published</th><th class="right-align">Last modified</th></tr>
+              </thead>
+              <tbody>
+              <% documents.each(function(doc) { %> 
+                <tr class="<%= doc.get('published_on') ? 'published' : 'draft' %>">
+                  <th><a class="link load-document" href="#<%= doc.get('creator').get('username') %>/<%= doc.get('name') %>" document="<%= doc._id %>" user="<%= doc.get('creator').get('username') %>" name="<%= doc.get('name') %>"><%= doc.get('title') %><span class="document-type"><%= doc.type.key.split('/')[2] %></span></a></th>
+                  <td><%= doc.get('creator').get('name') || doc.get('creator').get('username') %></td>
+                  <td>
+                    <% if (doc.get('published_on')) { %>
+                      <%= _.date(doc.get('published_on')) %>
+                    <% } else { %>
+                      - - -
+                    <% } %>
+                  </td>
+                  <td class="right-align"><%= _.prettyDate(doc.get('updated_at')) %></td>
+                </tr>
+              <% }); %>
+              </tbody>
+            </table>
           </div>
         </div>
       <% } else { %>
@@ -457,7 +456,7 @@
   <script type="text/x-ejs-template" name="document">
     <div id="<%= node.html_id %>" name=<%= node.key %> class="content-node document">
       <% if (edit) { %><div class="content-node-outline"><div class="cursor"><span></span></div></div><% } %>
-      <h1 class='content'><%= title %></h1>
+      <h1 class='content' title="Click to edit Document Title"><%= title %></h1>
       <p class="author"><%= node.get('creator').get('name') || node.get('creator').get('username') %></p>
       <p class="published">
         <% if (node.get('published_on') && edit) { %>
@@ -469,7 +468,7 @@
           <%= _.date(node.get('published_on')) %>
         <% } %>
       </p>
-      <p class="lead content" id="document_lead"><%= lead %></p>
+      <p class="lead content" id="document_lead" title="Click to edit Document Lead"><%= lead %></p>
       <div class="document-separator"></div>
       <%= content %>
     </div>
@@ -479,7 +478,7 @@
     <div id="{{node/html_id}}" name={{node/key}} parent="{{parent/_id}}" draggable="false" class="content-node section">
       {{#edit}}<a href="#" class="remove remove-node" node="{{node/key}}" parent="{{parent/_id}}">x</a>{{/edit}}
       {{#edit}}<div class="content-node-outline"><div class="cursor"><span></span></div></div>{{/edit}}
-      <h2 class='content'>{{name}}</h2>
+      <h2 class="content" title="Click to edit Section Name">{{name}}</h2>
       {{#edit}}<div class="node-editor-placeholder"></div>{{/edit}}
       {{{content}}}
     </div>
@@ -489,7 +488,7 @@
     <div id="{{node/html_id}}" name={{node/key}} parent="{{parent/_id}}" draggable="false" class="content-node text">
       {{#edit}}<a href="#" class="remove-node remove" node="{{node/key}}" parent="{{parent/_id}}">x</a>{{/edit}}
       {{#edit}}<div class="content-node-outline"><div class="cursor"><span></span></div></div>{{/edit}}
-      <div class='content'>{{{content}}}</div>
+      <div class="content" title="Click to edit Text">{{{content}}}</div>
       {{#edit}}<div class="node-editor-placeholder"></div>{{/edit}}
     </div>
   </script>
@@ -498,7 +497,11 @@
     <div id="{{node/html_id}}" name={{node/key}} parent="{{parent/_id}}" draggable="false" class="content-node quote">
       {{#edit}}<a href="#" class="remove-node remove" node="{{node/key}}" parent="{{parent/_id}}">x</a>{{/edit}}
       {{#edit}}<div class="content-node-outline"><div class="cursor"><span></span></div></div>{{/edit}}
-      <quote class='content'>{{{content}}}</quote>
+      <blockquote>
+        <p class="content quote-content" title="Click to edit Quote">{{{content}}}</p>
+        <cite class="content quote-author" title="Click to edit Quote Author">{{{author}}}Quote Author</cite>
+      </blockquote>
+      <br class="clear"/>
       {{#edit}}<div class="node-editor-placeholder"></div>{{/edit}}
     </div>
   </script>
@@ -507,7 +510,7 @@
     <div id="{{node/html_id}}" name={{node/key}} parent="{{parent/_id}}" draggable="false" class="content-node code">
       {{#edit}}<a href="#" class="remove-node remove" node="{{node/key}}" parent="{{parent/_id}}">x</a>{{/edit}}
       {{#edit}}<div class="content-node-outline"><div class="cursor"><span></span></div></div>{{/edit}}
-      <pre><code class='content'>{{{content}}}</code></pre>
+      <pre><code class="content" title="Click to edit Code">{{{content}}}</code></pre>
       {{#edit}}<div class="node-editor-placeholder"></div>{{/edit}}
     </div>
   </script>
@@ -516,7 +519,7 @@
     <div id="{{node/html_id}}" name={{node/key}} parent="{{parent/_id}}" draggable="false" class="content-node question">
       {{#edit}}<a href="#" class="remove-node remove" node="{{node/key}}" parent="{{parent/_id}}">x</a>{{/edit}}
       {{#edit}}<div class="content-node-outline"><div class="cursor"><span></span></div></div>{{/edit}}
-      <p class='question content'>{{{content}}}</p>
+      <p class="question content" title="Click to edit Question">{{{content}}}</p>
       {{#edit}}<div class="node-editor-placeholder"></div>{{/edit}}
     </div>
   </script>
@@ -525,7 +528,7 @@
     <div id="{{node/html_id}}" name={{node/key}} parent="{{parent/_id}}" draggable="false" class="content-node answer">
       {{#edit}}<a href="#" class="remove-node remove" node="{{node/key}}" parent="{{parent/_id}}">x</a>{{/edit}}
       {{#edit}}<div class="content-node-outline"><div class="cursor"><span></span></div></div>{{/edit}}
-      <p class='answer content'>{{{content}}}</p>
+      <p class="answer content">{{{content}}}</p>
       {{#edit}}<div class="node-editor-placeholder"></div>{{/edit}}
     </div>
   </script>
@@ -548,14 +551,12 @@
     <div id="{{node/html_id}}" name={{node/key}} parent="{{parent/_id}}" draggable="false" class="content-node image">
       {{#edit}}<a href="#" class="remove remove-node" node="{{node/key}}" parent="{{parent/_id}}">x</a>{{/edit}}
       {{#edit}}<div class="content-node-outline"><div class="cursor"><span></span></div></div>{{/edit}}
-      
       {{#data_source}}
         <div class="visualization linechart" type="Linechart" datasrc="http://foo.com/bar.json"></div>
       {{/data_source}}
       {{^data_source}}
         [ Provide a data source first ]
       {{/data_source}}
-      
       {{#edit}}<div class="node-editor-placeholder"></div>{{/edit}}
     </div>
   </script>
@@ -569,7 +570,6 @@
         <input type="text" name="new_value" autocomplete="off"/>
         <input type="submit" value="Add"/>
         <div class="available-items">
-          
         </div>
       </form>
       <br class="clear"/>

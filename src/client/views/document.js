@@ -41,8 +41,15 @@ var Document = Backbone.View.extend({
     
     this.app = this.options.app;
     this.mode = 'show';
+    
     this.bind('status:changed', function() {
       that.updateCursors();
+    });
+    
+    this.bind('changed', function() {
+      document.title = that.model.get('title');
+      // Re-render Document browser
+      that.app.browser.render();
     });
   },
   
@@ -196,13 +203,20 @@ var Document = Backbone.View.extend({
     this.loadedDocuments[app.username+"/"+name] = this.model._id;
     this.init();
     
+    // Update browser graph
+    if (app.browser && app.browser.query && app.browser.query.type === "user" && app.browser.query.value === app.username) {
+      console.log(this.model);
+      console.log(type);
+      app.browser.graph.set('objects', this.model._id, this.model);
+    }
+    
     // Move to the actual document
     app.toggleView('document');
     
     controller.saveLocation('#'+this.app.username+'/'+name);
     $('#document_wrapper').attr('url', '#'+this.app.username+'/'+name);
     
-    this.trigger('document:changed');
+    this.trigger('changed');
     notifier.notify(Notifications.BLANK_DOCUMENT);
     return false;
   },
@@ -219,10 +233,13 @@ var Document = Backbone.View.extend({
         that.render();
         that.init();
         that.reset();
-        that.trigger('document:changed');
+        that.trigger('changed');
         
         that.loadedDocuments[username+"/"+docname] = id;
         app.toggleView('document');
+        
+        // Update browser graph reference
+        app.browser.graph.set('objects', id, that.model);
                 
         // TODO: register document for realtime sessions
         // remote.Session.registerDocument(id);
@@ -354,7 +371,7 @@ var Document = Backbone.View.extend({
     }
     
     if (this.selectedNode.type.key === '/type/document') {
-      this.trigger('document:changed');
+      this.trigger('changed');
     }
     
     // Notify all collaborators about the changed node
@@ -397,9 +414,6 @@ var Document = Backbone.View.extend({
       // The server will respond with a status package containing my own cursor position
       // remote.Session.selectNode(key);
     }
-    
-    // console.log(e);
-    // $(e.target==)
     
     e.stopPropagation();
     return false;

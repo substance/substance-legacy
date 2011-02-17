@@ -37,7 +37,7 @@ var DocumentEditor = Backbone.View.extend({
         lead: sanitizedLead
       });
       
-      app.document.trigger('document:changed');
+      app.document.trigger('changed');
     }, 5);
   }
 });

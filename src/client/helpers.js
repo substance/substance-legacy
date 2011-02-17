@@ -46,6 +46,7 @@ _.tpl = function(tpl, ctx) {
 };
 
 _.prettyDate = function(time) {
+  if (time instanceof Date) time = time.toJSON();
 	var date = new Date((time || "").replace(/-/g,"/").replace(/[TZ]/g," ")),
 		diff = (((new Date()).getTime() - date.getTime()) / 1000),
 		day_diff = Math.floor(diff / 86400);

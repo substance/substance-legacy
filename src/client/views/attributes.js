@@ -95,6 +95,7 @@ var Attributes = Backbone.View.extend({
         var tmp = {};
         tmp[key] = attrs;
         app.document.model.set(tmp);
+        app.document.trigger('changed');
       });
     });
   },

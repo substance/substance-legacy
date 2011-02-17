@@ -93,15 +93,38 @@ var Application = Backbone.View.extend({
   },
   
   createDocument: function(e) {
+    var that = this;
     var name = $('#create_document input[name=new_document_name]').val();
     var type = $('#create_document select[name=document_type]').val();
     
     if (new RegExp(graph.get('/type/document').get('properties', 'name').validator).test(name)) {
-      this.document.newDocument(type, name);
-      // TODO: check if name does not exist!
+      
+      // TODO: find a more efficient way to check for existing docs.
+      $.ajax({
+        type: "GET",
+        url: "/readdocument",
+        data: {
+          creator: app.username,
+          name: name
+        },
+        dataType: "json",
+        success: function(res) {
+          if (res.status === 'error') {
+            $('#create_document input[name=new_document_name]').addClass('error');
+            $('#new_document_name_message').html('This document name is already taken.');
+          } else {
+            that.document.newDocument(type, name);
+          }
+        },
+        error: function(err) {
+          $('#document_wrapper').html('Document loading failed');
+        }
+      });
+      
       return false;
     } else {
       $('#create_document input[name=new_document_name]').addClass('error');
+      $('#new_document_name_message').html('Invalid document name. No spaces or special characters allowed.');
     }
     return false;
   },
@@ -342,24 +365,29 @@ var Application = Backbone.View.extend({
   
   registerUser: function() {
     var that = this;
+    
+    $('.page-content .input-message').empty();
+    $('#registration_error_message').empty();
+    $('.page-content input').removeClass('error');
+    
     $.ajax({
       type: "POST",
       url: "/register",
       data: {
-        username: $('#signup-user').val(),
-        name: $('#signup-name').val(),
-        email: $('#signup-email').val(),
-        password: $('#signup-password').val()
+        username: $('#signup_user').val(),
+        name: $('#signup_name').val(),
+        email: $('#signup_email').val(),
+        password: $('#signup_password').val()
       },
       dataType: "json",
       success: function(res) {
         if (res.status === 'error') {
-          console.log(res);
-          notifier.notify({
-            message: res.message,
-            type: 'error'
-          });
-          // return notifier.notify(Notifications.AUTHENTICATION_FAILED);
+          if (res.field === "username") {
+            $('#signup_user').addClass('error');
+            $('#signup_user_message').html(res.message);
+          } else {
+            $('#registration_error_message').html(res.message);
+          }
         } else {
           graph.merge(res.seed);
           notifier.notify(Notifications.AUTHENTICATED);
@@ -368,23 +396,12 @@ var Application = Backbone.View.extend({
         }
       },
       error: function(err) {
-        notifier.notify(Notifications.AUTHENTICATION_FAILED);
+        $('#registration_error_message').html('Unknown error.');
       }
     });
     
     return false;
   },
-  
-  // sync: function() {
-  //   graph.sync(function(err, invalidNodes) {
-  //     if (err) {
-  //       notifier.notify(Notifications.DOCUMENT_SAVING_FAILED);
-  //     } else {
-  //       console.log('sychronized...');
-  //       // notifier.notify(Notifications.DOCUMENT_SAVED);
-  //     }
-  //   });
-  // },
   
   // Should be rendered just once
   render: function() {
@@ -426,10 +443,7 @@ var remote,                              // Remote handle for server-side method
     
     var pendingSync = false;
     graph.bind('dirty', function() {
-      // Reload document browser
-      // TODO: Sync local brower graph with real graph
-      app.browser.render();
-      
+      // Reload document browser      
       if (!pendingSync) {
         pendingSync = true;
         setTimeout(function() {

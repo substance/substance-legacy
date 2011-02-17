@@ -94,7 +94,7 @@ function findUsers(searchstr, callback) {
 // We are aware that this is not a performant solution.
 // But search functionality needed to be there, quickly.
 // We'll replace it with a speedy fulltext search asap.
-function findDocuments(searchstr, type, callback) {
+function findDocuments(searchstr, type, username, callback) {
   db.view(db.uri.pathname+'/_design/substance/_view/documents', function(err, res) {
     // Bug-workarount related to https://github.com/creationix/couch-client/issues#issue/3
     // Normally we'd just use the err object in an error case
@@ -112,9 +112,10 @@ function findDocuments(searchstr, type, callback) {
         } else {
           matched = row.value.creator.match(new RegExp("/user/("+searchstr+")$", "i"));
         }
-        if (matched) {
+        
+        if (matched && (row.value.published_on || row.value.creator === '/user/'+username)) {
           // Add to result set
-          count += 1;
+          if (!result[row.value._id]) count += 1;
           if (count < 200) { // 200 Documents maximum
             result[row.value._id] = row.value;
             // Include associated objects like attributes and users
@@ -180,10 +181,9 @@ app.get('/', function(req, res) {
   res.send(html.replace('{{seed}}', JSON.stringify(seed)).replace('{{session}}', JSON.stringify(req.session)));
 });
 
-
 // Quick search interface (returns found users and a documentset)
 app.get('/search/:search_str', function(req, res) {
-  findDocuments(req.params.search_str, 'search', function(err, graph, count) {
+  findDocuments(req.params.search_str, 'search', req.session.username, function(err, graph, count) {
     findUsers(req.params.search_str, function(err, users) {
       res.send(JSON.stringify({document_count: count, users: users}));
     });
@@ -194,7 +194,7 @@ app.get('/search/:search_str', function(req, res) {
 // Find documents by search string (full text search in future)
 // Or find by user
 app.get('/documents/:type/:search_str', function(req, res) {
-  findDocuments(req.params.search_str, req.params.type, function(err, graph, count) {
+  findDocuments(req.params.search_str, req.params.type, req.session.username, function(err, graph, count) {
     res.send(JSON.stringify({graph: graph, count: count}));
   });
 });
@@ -239,15 +239,16 @@ app.post('/register', function(req, res) {
       password = req.body.password,
       email = req.body.email,
       name = req.body.name;
-  
-  if (username+"".length == 0) {
-    return res.send({"status": "error", "message": "Please choose a username"});
+      
+  if (!username || username.length === 0) {
+    return res.send({"status": "error", "field": "username", "message": "Please choose a username."});
   }
   
-  graph.fetch({type: '/type/user'}, {}, function(err) {
-    if (err) return res.send({"status": "error"});
-    
-    if (graph.get('/user/'+username)) return res.send({"status": "error", "message": "User already exists"});
+  db.view(db.uri.pathname+'/_design/substance/_view/users', {key: username}, function(err, result) {
+    // Bug-workarount related to https://github.com/creationix/couch-client/issues#issue/3
+    // Normally we'd just use the err object in an error case
+    if (result.error || !result.rows) return res.send({"status": "error", "field": "all", "message": "Unknown error."});
+    if (result.rows.length > 0) return res.send({"status": "error", "field": "username", "message": "Username is already taken."});
     
     var user = graph.set('/user/'+username, {
       type: '/type/user',
@@ -257,7 +258,7 @@ app.post('/register', function(req, res) {
       password: encryptPassword(password)
     });
     
-    if (user.validate()) {
+    if (user.validate() && password.length > 4) {
       graph.sync(function(err) {
         if (!err) {
           var seed = {};
@@ -271,10 +272,13 @@ app.post('/register', function(req, res) {
           req.session.username = username;
           req.session.seed = seed;
         } else {
-          return res.send({"status": "error"});
+          return res.send({"status": "error", "field": "all", "message": "Unknown error."});
         }
       });
-    } else return res.send({"status": "error", "message": "Not valid"});
+    } else {
+      console.log(user.errors);
+      return res.send({"status": "error", "errors": user.errors, "field": "all", "message": "Validation error."});
+    }
   });
 });
 
