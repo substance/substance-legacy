@@ -8,7 +8,7 @@ var HTMLRenderer = require('./src/client/renderers/frontend_renderer').Renderer;
 // var DNode = require('dnode');
 var Data = require('./lib/data/data');
 var _ = require('underscore');
-var CouchClient = require('couch-client');
+var CouchClient = require('./lib/data/lib/couch-client');
 var async = require('async');
 
 
