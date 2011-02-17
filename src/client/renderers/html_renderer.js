@@ -14,7 +14,7 @@ var renderControls = function(node, first, last, parent) {
             node: n._id,
             parentNode: parent ? parent._id : null,
             nodeType: type,
-            nodeTypeName: type.split('/')[2],
+            nodeTypeName: graph.get(type).name,
             insertionType: 'child'
           });
         });
@@ -28,7 +28,7 @@ var renderControls = function(node, first, last, parent) {
             node: n._id,
             parentNode: parent ? parent._id : null,
             nodeType: type,
-            nodeTypeName: type.split('/')[2],
+            nodeTypeName: graph.get(type).name,
             insertionType: 'sibling'
           });
         });

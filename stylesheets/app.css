@@ -854,8 +854,7 @@ table tr.draft, table tr.draft a {
 
 #document {
   display: none;
-  color: #252519;
-/*  color: #333;*/
+  color: #000;
   position:relative;
   margin: 0 30px 0px 30px;
   padding: 20px 0 20px 0;
@@ -1242,6 +1241,7 @@ pre code {
 
 .controls .handle {
   position: absolute;
+  display: none;
   top: -20px;
   left: -30px;
   width: 25px;
@@ -1281,10 +1281,18 @@ pre code {
 }
 
 .controls .actions {
-  display: none;
-  margin-left: 0px;
+  border: 1px dashed #ddd;
+  -webkit-border-radius: 5px;
+  -moz-border-radius: 5px;
+  border-radius: 5px;
+  
+  margin: 15px 0px;
   padding: 4px;
   padding-left: 0px;
+}
+
+.controls .actions:hover {
+  border-color: #bbb;
 }
 
 .controls.active .actions {
@@ -1292,22 +1300,19 @@ pre code {
 }
 
 #document .controls .actions a {
-  color: #666;
   font-family: Helvetica;
-  text-transform: uppercase;
-  font-size: 10px;
-  background: #eee;
-  -webkit-border-radius: 4px;
-  -moz-border-radius: 4px;
-  border-radius: 4px;
+/*  text-transform: uppercase;*/
+  font-size: 14px;
+  border: none;
+  color: #aaa;
   margin: 0 5px;
-  padding: 0 4px;
+  padding: 0 2px;
   display: block;
   float: left;
   text-decoration: none;
 }
 
-#document .controls .actions a:hover { color: white; background: #444; }
+#document .controls .actions a:hover { color: #666; }
 
 /* Proper Editor
 -------------------------------------------------------------------------------*/

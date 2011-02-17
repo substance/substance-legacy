@@ -110,10 +110,10 @@ var Application = Backbone.View.extend({
         dataType: "json",
         success: function(res) {
           if (res.status === 'error') {
-            $('#create_document input[name=new_document_name]').addClass('error');
-            $('#new_document_name_message').html('This document name is already taken.');
-          } else {
             that.document.newDocument(type, name);
+          } else {
+            $('#create_document input[name=new_document_name]').addClass('error');
+            $('#new_document_name_message').html('This document name is already taken.');            
           }
         },
         error: function(err) {
