@@ -92,6 +92,12 @@ var seedGraph = {
         "type": "string",
         "required": true,
         "validator": "^\\w{4,}$"
+      },
+      "created_at": {
+        "name": "Created at",
+        "unique": true,
+        "type": "date",
+        "required": true
       }
     }
   },
@@ -175,6 +181,15 @@ var seedGraph = {
       "subjects": {
         "type": ["/type/attribute"],
         "name": "Subjects",
+        "unique": false,
+        "default": [],
+        "meta": {
+          "facet": true
+        }
+      },
+      "entities": {
+        "type": ["/type/attribute"],
+        "name": "Entities mentioned",
         "unique": false,
         "default": [],
         "meta": {
@@ -382,6 +397,12 @@ var seedGraph = {
     "type": "/type/type",
     "name": "Quote",
     "properties": {
+      "author": {
+        "name": "Quote Author",
+        "unique": true,
+        "type": "string",
+        "default": "Konfuzius"
+      },
       "content": {
         "name": "Content",
         "unique": true,
@@ -457,7 +478,8 @@ var seedGraph = {
     "email": "demo@substance.io",
     "password": "demo",
     "firstname": "Demo",
-    "lastname": "User"
+    "lastname": "User",
+    "created_at": new Date()
   }
 };
 
