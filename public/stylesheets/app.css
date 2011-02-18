@@ -680,7 +680,7 @@ table tr.draft, table tr.draft a {
 -------------------------------------------------------------------------------*/
 
 #facets { 
-  margin-top: 0px; margin-right: 10px; float: left; width: 260px; padding: 0 0 20px 0; color: #000; 
+  margin-top: 0px; margin-right: 10px; float: left; width: 260px; padding: 0 0 20px 0;
 }
 
 #facets .no-filters {
@@ -698,7 +698,7 @@ table tr.draft, table tr.draft a {
   font-weight: lighter;
   font-style: italic;
   font-size: 16px;
-  color: #000; padding: 1px; padding-top: 9px; margin-bottom: 13px; margin-left: 0px; padding-left: 0px; font-weight: normal; margin-top: 1px; 
+  padding: 1px; padding-top: 9px; margin-bottom: 13px; margin-left: 0px; padding-left: 0px; font-weight: normal; margin-top: 1px; 
 }
 
 #facets .facet { }
@@ -1071,16 +1071,22 @@ p.answer {
   padding: 0 100px 0 100px;
 }
 
-pre {
-  line-height: 1.0em;
-  margin-bottom: 20px;
+code, pre {
+  font-family: Monaco, Consolas, "Lucida Console", monospace;
+  font-size: 12px;
 }
 
-pre code {
-  color: #666;
-  font-size: 12px;
-  font-family: Monaco, Consolas, "Lucida Console", monospace;
-  margin: 0; padding: 0;
+code {
+  padding: 0px 3px;
+  background: white;
+  border: 1px solid #DDD;
+  zoom: 1;
+}
+
+pre {
+  padding: 2px 0 2px 15px;
+  border-left: 4px solid #BBB;
+  margin: 0px 0 30px;
   margin-bottom: 20px;
 }
 
@@ -1530,8 +1536,8 @@ div.intro {
 
 /* JavaScript Syntax Highlighting */
 
-code .keyword              { color: #954121; }
-code .string, code .regexp { color: #219161 }
+pre .keyword              { color: #954121; }
+pre .string, pre .regexp { color: #219161 }
 /*code .class, code .special { font-weight: bold; }*/
 /*code .number               { color: pink }*/
-code .comment              { color: #888 }
+pre .comment              { color: #888 }

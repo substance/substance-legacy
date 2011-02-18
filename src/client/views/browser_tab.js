@@ -51,7 +51,7 @@ var BrowserTab = Backbone.View.extend({
            });
         }
         // Sanitize on every registered change
-      }, 1000);
+      }, 500);
     }
   },
   

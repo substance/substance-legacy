@@ -90,7 +90,7 @@ var Document = Backbone.View.extend({
     if (this.mode === 'edit') {
       renderControls(this.app.document.model);
     } else {
-      hijs('#'+node.html_id+' .content-node.code code');
+      hijs('#'+node.html_id+' .content-node.code pre');
     }
   },
   
@@ -103,7 +103,7 @@ var Document = Backbone.View.extend({
     if (this.mode === 'edit') {
       renderControls(this.model);
     } else {
-      hijs('.content-node.code code');
+      hijs('.content-node.code pre');
     }
   },
   
