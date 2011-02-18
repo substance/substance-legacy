@@ -366,8 +366,8 @@
               <tbody>
               <% documents.each(function(doc) { %> 
                 <tr class="<%= doc.get('published_on') ? 'published' : 'draft' %>">
-                  <th><a class="link load-document" href="#<%= doc.get('creator').get('username') %>/<%= doc.get('name') %>" document="<%= doc._id %>" user="<%= doc.get('creator').get('username') %>" name="<%= doc.get('name') %>"><%= doc.get('title') %><span class="document-type"><%= doc.type.key.split('/')[2] %></span></a></th>
-                  <td><%= doc.get('creator').get('name') || doc.get('creator').get('username') %></td>
+                  <th><a class="link load-document" href="#<%= doc.get('creator')._id.split('/')[2] %>/<%= doc.get('name') %>" document="<%= doc._id %>" user="<%= doc.get('creator')._id.split('/')[2] %>" name="<%= doc.get('name') %>"><%= doc.get('title') %><span class="document-type"><%= doc.type.key.split('/')[2] %></span></a></th>
+                  <td><%= doc.get('creator').get('name') || doc.get('creator').get('username') || doc.get('creator')._id.split('/')[2]%></td>
                   <td>
                     <% if (doc.get('published_on')) { %>
                       <%= _.date(doc.get('published_on')) %>
@@ -499,7 +499,7 @@
       {{#edit}}<div class="content-node-outline"><div class="cursor"><span></span></div></div>{{/edit}}
       <blockquote>
         <p class="content quote-content"{{#edit}} title="Click To Edit Quote"{{/edit}}>{{{content}}}</p>
-        <cite class="content quote-author" title="Click To Edit Quote Author">{{{author}}}Quote Author</cite>
+        <cite class="content quote-author" contenteditable="true" title="Click To Edit Quote Author">{{{author}}}</cite>
       </blockquote>
       <br class="clear"/>
       {{#edit}}<div class="node-editor-placeholder"></div>{{/edit}}

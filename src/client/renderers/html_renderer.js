@@ -161,7 +161,8 @@ var HTMLRenderer = function(root, parent) {
         node: node,
         parent: parent,
         edit: app.document.mode === 'edit',
-        content: node.get('content')
+        content: node.get('content'),
+        author: node.get('author')
       });
     },
     

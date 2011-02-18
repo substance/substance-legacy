@@ -253,7 +253,8 @@ app.post('/register', function(req, res) {
       username: username,
       name: name,
       email: email,
-      password: encryptPassword(password)
+      password: encryptPassword(password),
+      created_at: new Date()
     });
     
     if (user.validate() && password.length > 4) {

@@ -7,8 +7,16 @@ var QuoteEditor = Backbone.View.extend({
     var that = this;
     this.render();
     
-    this.$content = this.$('.content');
-    editor.activate(this.$content);
+    this.$content = this.$('.quote-content');
+    this.$author = this.$('.quote-author');
+    
+    editor.activate(that.$content);
+    
+    this.$author.unbind('keydown');
+    this.$author.bind('keydown', function(e) {
+      return e.keyCode !== 13 ? that.updateNode() : false;
+    });
+
     $('.proper-commands').hide(); // Quickfix
     
     // Update node when editor commands are applied
@@ -22,7 +30,8 @@ var QuoteEditor = Backbone.View.extend({
     
     setTimeout(function() {
       app.document.updateSelectedNode({
-        content: that.$content.html()
+        content: that.$content.html(),
+        author: that.$author.html()
       });
     }, 5);
   },
