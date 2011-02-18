@@ -2370,7 +2370,9 @@ var Application = Backbone.View.extend({
         that.browser.render();
         that.render();
         $('#document_tab').hide();
-        that.toggleView('browser');
+        
+        app.toggleStartpage();
+        
         controller.saveLocation('');
         $('.new-document').hide();
       }
@@ -2429,7 +2431,6 @@ var Application = Backbone.View.extend({
     } else {
       this.authenticated = false;
     }
-    
     
     this.bind('authenticated', function() {
       that.authenticated = true;
