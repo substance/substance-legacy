@@ -1,6 +1,6 @@
 UI.StringEditor = Backbone.View.extend({
   events: {
-    'change input': 'updateValue',
+    'change input': 'updateValue'
   },
   
   initialize: function(options) {

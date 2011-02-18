@@ -3,14 +3,10 @@ var app = express.createServer();
 var http = require('http');
 var crypto = require('crypto');
 var fs = require('fs');
-var Handlebars = require('./lib/handlebars');
-var HTMLRenderer = require('./src/client/renderers/frontend_renderer').Renderer;
-// var DNode = require('dnode');
 var Data = require('./lib/data/data');
 var _ = require('underscore');
 var CouchClient = require('./lib/data/lib/couch-client');
 var async = require('async');
-
 
 // Read Config
 global.config = JSON.parse(fs.readFileSync(__dirname+ '/config.json', 'utf-8'));
@@ -168,7 +164,7 @@ app.configure(function(){
   app.use(express.cookieDecoder());
   app.use(express.session({secret: config['secret']}));
   app.use(app.router);
-  app.use(express.staticProvider(__dirname));
+  app.use(express.staticProvider(__dirname+"/public"));
   app.use(express.logger({ format: ':method :url' }));
 });
 
@@ -176,9 +172,15 @@ app.configure(function(){
 // Web server
 // -----------
 
+var indexHTML;
+
 app.get('/', function(req, res) {
-  html = fs.readFileSync(__dirname+ '/templates/app.html', 'utf-8');
-  res.send(html.replace('{{seed}}', JSON.stringify(seed)).replace('{{session}}', JSON.stringify(req.session)));
+  indexHTML = indexHTML || fs.readFileSync(__dirname+ '/templates/app.html', 'utf-8')
+               .replace('{{{{seed}}}}', JSON.stringify(seed))
+               .replace('{{{{session}}}}', JSON.stringify(req.session))
+               .replace(/\{\{\{\{min\}\}\}\}/g, process.argv[2] == "--production" ? '.min' : '')
+  
+  res.send(indexHTML);
 });
 
 // Quick search interface (returns found users and a documentset)

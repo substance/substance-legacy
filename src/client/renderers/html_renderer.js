@@ -244,16 +244,16 @@ var TOCRenderer = function(root) {
     },
     
     "/type/manual": function(node, parent) {
-      return renderers["/type/document"](node, parent)
+      return renderers["/type/document"](node, parent);
     },
     
     "/type/article": function(node, parent) {
-      return renderers["/type/document"](node, parent)
+      return renderers["/type/document"](node, parent);
     },
     
     "/type/qaa": function(node, parent) {
-      return renderers["/type/document"](node, parent)
-    },
+      return renderers["/type/document"](node, parent);
+    }
   };
 
   return {

@@ -4,8 +4,8 @@
   <title>Substance (Developer Preview)</title>
   
   <script>
-    var seed = {{seed}};
-    var session = {{session}};
+    var seed = {{{{seed}}}};
+    var session = {{{{session}}}};
   </script>
   
   <script type="text/x-ejs-template" name="edit_attributes">
@@ -110,12 +110,12 @@
                 <div class="descr">Focus is on Content not Formatting</div>
               </li>
               <li>
-                <div>Collaboration</div>
-                <div class="descr">Collaborative Editing in a Team</div>
-              </li>
-              <li>
                 <div>Multiple Document Types</div>
                 <div class="descr">Article, Manual, Interview</div>
+              </li>
+              <li>
+                <div>Collaboration (soon!)</div>
+                <div class="descr">Collaborative Editing in a team</div>
               </li>
             </ul>
           </div>
@@ -174,7 +174,7 @@
   
   <script type="text/x-ejs-template" name="header">
     <div class="title">
-      <a href="#" class="toggle-startpage">Substance</a>
+      <a href="#" class="toggle-startpage">Substance.</a>
     </div>
     <div id="sync_state"></div>
     <div id="login_state">
@@ -584,69 +584,21 @@
   <link href="stylesheets/reset.css" media="screen" rel="stylesheet" type="text/css" />
   <link href="stylesheets/app.css" media="screen" rel="stylesheet" type="text/css" />
   
-  <!-- libraries --> 
-  <script src="lib/jquery-1.4.3.min.js"></script>
-  <script src="lib/handlebars.js"></script>
-  <script src="lib/showdown.js"></script>
-
-  <!-- transloadit.com file processing service -->
-  <script src="lib/jquery.transloadit2.js"></script>
+  <script src="/javascripts/head.min.js"></script>
   
-  <!-- Libraries -->
-  <script src="lib/jquery.hotkeys.js"></script>
-  <script src="lib/underscore.js"></script>
-  <script src="lib/data/data.js"></script>
-  <script src="lib/data/adapters/ajax_adapter.js"></script>
-  <script src="lib/backbone.js"></script>
-  <script src="lib/sanitize.js"></script>
-  <script src="lib/proper.js"></script>
-  <!-- <script src="dnode.js"></script> -->
-  
-  <!-- visualizations -->
-  <script src="src/visualizations/linechart/lib/unveil.js"></script>
-  <script src="src/visualizations/linechart/data/countries.js"></script>
-  <script src="src/visualizations/linechart/lib/protovis-d3.2.js"></script>
-  <script src="src/visualizations/linechart/linechart.js"></script>
-  
-  <link href="src/visualizations/linechart/styles/linechart.css" media="screen" rel="stylesheet" type="text/css" />
-  
-  <!-- Backbone Extensions -->
-  <script src="src/client/notifier.js"></script>
-  
-  <!-- Shared helpers -->
-  <script src="src/client/helpers.js"></script>
-  
-  <!-- The app -->
-  <script src="src/client/renderers/html_renderer.js"></script>
-  <script src="src/client/node_editors/document_editor.js"></script>
-  <script src="src/client/node_editors/section_editor.js"></script>
-  <script src="src/client/node_editors/text_editor.js"></script>
-  <script src="src/client/node_editors/quote_editor.js"></script>
-  <script src="src/client/node_editors/code_editor.js"></script>
-  <script src="src/client/node_editors/question_editor.js"></script>
-  <script src="src/client/node_editors/answer_editor.js"></script>
-  <script src="src/client/node_editors/image_editor.js"></script>
-  <script src="src/client/controllers/application.js"></script>
-  
-  <!-- UI components -->
-  <script src="src/client/ui/common.js"></script>
-  <script src="src/client/ui/string_editor.js"></script>
-  <script src="src/client/ui/multi_string_editor.js"></script>
-  
-  <!-- Views -->
-  <script src="src/client/views/document.js"></script>
-  <script src="src/client/views/attributes.js"></script>
-  
-  <script src="src/client/commands.js"></script>
-  <script src="src/client/views/document_browser.js"></script>
-  <script src="src/client/views/facets.js"></script>
-  <script src="src/client/views/collaborators.js"></script>
-  <script src="src/client/views/user_settings.js"></script>
-  <script src="src/client/views/new_document.js"></script>
-  <script src="src/client/views/browser_tab.js"></script>
-  <script src="src/client/views/header.js"></script>
-  <script src="src/client/views/application.js"></script>
-  
+  <script>
+    head.js("javascripts/sanitize.js",
+            "javascripts/jquery-1.5.min.js",
+            "javascripts/handlebars.js",
+            "javascripts/showdown.js",
+            "javascripts/jquery.transloadit2.js",
+            "javascripts/jquery.hotkeys.js",
+            "javascripts/underscore{{{{min}}}}.js",
+            "javascripts/data{{{{min}}}}.js",
+            "javascripts/backbone{{{{min}}}}.js",
+            "javascripts/proper.js",
+            "javascripts/substance{{{{min}}}}.js");
+  </script>  
 </head>
 <body>
   <div id="container">

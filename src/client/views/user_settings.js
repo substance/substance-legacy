@@ -24,11 +24,19 @@ var UserSettings = Backbone.View.extend({
               message: 'An error occured. Check your input',
               type: 'error'
             });
-            console.log(res);
           } else {
             graph.merge(res.seed);
             app.username = res.username;
             app.render();
+            
+            app.document.closeDocument();
+            app.browser.load(app.query());
+
+            app.browser.bind('loaded', function() {
+              app.toggleView('browser');
+            });
+
+            controller.saveLocation('#'+app.username);
           }
         },
         error: function(err) {

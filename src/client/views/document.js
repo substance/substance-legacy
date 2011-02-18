@@ -89,7 +89,7 @@ var Document = Backbone.View.extend({
     
     // Render controls
      if (this.mode === 'edit') renderControls(this.app.document.model);
-     this.renderVisualizations();
+     // this.renderVisualizations();
   },
   
   renderDocument: function() {
@@ -99,23 +99,23 @@ var Document = Backbone.View.extend({
     
     // Render controls
     if (this.mode === 'edit') renderControls(this.model);
-    this.renderVisualizations();
+    // this.renderVisualizations();
   },
   
-  renderVisualizations: function() {
-    $('.visualization').each(function() {
-      // Initialize visualization
-      var c = new uv.Collection(countries_fixture);
-      
-      vis = new Linechart(c, {property: 'birth_rate', canvas: this});
-      vis.start();
-      
-      // Stop propagation of mousewheel events
-      $(this).bind('mousewheel', function() {
-        return false;
-      });
-    });
-  },
+  // renderVisualizations: function() {
+  //   $('.visualization').each(function() {
+  //     // Initialize visualization
+  //     var c = new uv.Collection(countries_fixture);
+  //     
+  //     vis = new Linechart(c, {property: 'birth_rate', canvas: this});
+  //     vis.start();
+  //     
+  //     // Stop propagation of mousewheel events
+  //     $(this).bind('mousewheel', function() {
+  //       return false;
+  //     });
+  //   });
+  // },
   
   // Extract available documentTypes from config
   documentTypes: function() {
@@ -205,8 +205,6 @@ var Document = Backbone.View.extend({
     
     // Update browser graph
     if (app.browser && app.browser.query && app.browser.query.type === "user" && app.browser.query.value === app.username) {
-      console.log(this.model);
-      console.log(type);
       app.browser.graph.set('objects', this.model._id, this.model);
     }
     
