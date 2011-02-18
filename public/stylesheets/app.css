@@ -1071,13 +1071,17 @@ p.answer {
   padding: 0 100px 0 100px;
 }
 
-pre { line-height: 1.0em; }
+pre {
+  line-height: 1.0em;
+  margin-bottom: 20px;
+}
 
 pre code {
   color: #666;
   font-size: 12px;
   font-family: Monaco, Consolas, "Lucida Console", monospace;
   margin: 0; padding: 0;
+  margin-bottom: 20px;
 }
 
 
@@ -1522,3 +1526,12 @@ div.intro {
 -------------------------------------------------------------------------------*/
 
 .visualization.linechart { height: 300px; overflow: auto; }
+
+
+/* JavaScript Syntax Highlighting */
+
+code .keyword              { color: #954121; }
+code .string, code .regexp { color: #219161 }
+/*code .class, code .special { font-weight: bold; }*/
+/*code .number               { color: pink }*/
+code .comment              { color: #888 }

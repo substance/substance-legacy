@@ -172,15 +172,11 @@ app.configure(function(){
 // Web server
 // -----------
 
-var indexHTML;
-
 app.get('/', function(req, res) {
-  indexHTML = indexHTML || fs.readFileSync(__dirname+ '/templates/app.html', 'utf-8')
-               .replace('{{{{seed}}}}', JSON.stringify(seed))
+  html = fs.readFileSync(__dirname+ '/templates/app.html', 'utf-8');
+  res.send(html.replace('{{{{seed}}}}', JSON.stringify(seed))
                .replace('{{{{session}}}}', JSON.stringify(req.session))
-               .replace(/\{\{\{\{min\}\}\}\}/g, process.argv[2] == "--production" ? '.min' : '')
-  
-  res.send(indexHTML);
+               .replace(/\{\{\{\{min\}\}\}\}/g, process.argv[2] == "--production" ? '.min' : ''));
 });
 
 // Quick search interface (returns found users and a documentset)

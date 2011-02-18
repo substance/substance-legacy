@@ -87,9 +87,11 @@ var Document = Backbone.View.extend({
     
     $('#'+node.html_id).replaceWith(new HTMLRenderer(node, parent).render());
     
-    // Render controls
-     if (this.mode === 'edit') renderControls(this.app.document.model);
-     // this.renderVisualizations();
+    if (this.mode === 'edit') {
+      renderControls(this.app.document.model);
+    } else {
+      hijs('#'+node.html_id+' .content-node.code code');
+    }
   },
   
   renderDocument: function() {
@@ -98,8 +100,11 @@ var Document = Backbone.View.extend({
     this.$('#document').show();
     
     // Render controls
-    if (this.mode === 'edit') renderControls(this.model);
-    // this.renderVisualizations();
+    if (this.mode === 'edit') {
+      renderControls(this.model);
+    } else {
+      hijs('.content-node.code code');
+    }
   },
   
   // renderVisualizations: function() {
