@@ -456,7 +456,7 @@
   <script type="text/x-ejs-template" name="document">
     <div id="<%= node.html_id %>" name=<%= node.key %> class="content-node document">
       <% if (edit) { %><div class="content-node-outline"><div class="cursor"><span></span></div></div><% } %>
-      <h1 class='content' title="Click To Edit Document Title"><%= title %></h1>
+      <h1 class='content'<% if (edit) { %> title="Click To Edit Document Title"<% } %>><%= title %></h1>
       <p class="author"><%= node.get('creator').get('name') || node.get('creator').get('username') %></p>
       <p class="published">
         <% if (node.get('published_on') && edit) { %>
@@ -478,7 +478,7 @@
     <div id="{{node/html_id}}" name={{node/key}} parent="{{parent/_id}}" draggable="false" class="content-node section">
       {{#edit}}<a href="#" class="remove remove-node" node="{{node/key}}" parent="{{parent/_id}}">x</a>{{/edit}}
       {{#edit}}<div class="content-node-outline"><div class="cursor"><span></span></div></div>{{/edit}}
-      <h2 class="content" title="Click To Edit Section Name">{{name}}</h2>
+      <h2 class="content"{{#edit}} title="Click To Edit Section Name"{{/edit}}>{{name}}</h2>
       {{#edit}}<div class="node-editor-placeholder"></div>{{/edit}}
       {{{content}}}
     </div>
@@ -488,7 +488,7 @@
     <div id="{{node/html_id}}" name={{node/key}} parent="{{parent/_id}}" draggable="false" class="content-node text">
       {{#edit}}<a href="#" class="remove-node remove" node="{{node/key}}" parent="{{parent/_id}}">x</a>{{/edit}}
       {{#edit}}<div class="content-node-outline"><div class="cursor"><span></span></div></div>{{/edit}}
-      <div class="content" title="Click To Edit Text">{{{content}}}</div>
+      <div class="content"{{#edit}} title="Click To Edit Text"{{/edit}}>{{{content}}}</div>
       {{#edit}}<div class="node-editor-placeholder"></div>{{/edit}}
     </div>
   </script>
@@ -498,7 +498,7 @@
       {{#edit}}<a href="#" class="remove-node remove" node="{{node/key}}" parent="{{parent/_id}}">x</a>{{/edit}}
       {{#edit}}<div class="content-node-outline"><div class="cursor"><span></span></div></div>{{/edit}}
       <blockquote>
-        <p class="content quote-content" title="Click To Edit Quote">{{{content}}}</p>
+        <p class="content quote-content"{{#edit}} title="Click To Edit Quote"{{/edit}}>{{{content}}}</p>
         <cite class="content quote-author" title="Click To Edit Quote Author">{{{author}}}Quote Author</cite>
       </blockquote>
       <br class="clear"/>
@@ -510,7 +510,7 @@
     <div id="{{node/html_id}}" name={{node/key}} parent="{{parent/_id}}" draggable="false" class="content-node code">
       {{#edit}}<a href="#" class="remove-node remove" node="{{node/key}}" parent="{{parent/_id}}">x</a>{{/edit}}
       {{#edit}}<div class="content-node-outline"><div class="cursor"><span></span></div></div>{{/edit}}
-      <pre class="content" title="Click To Edit Code">{{{content}}}</pre>
+      <pre class="content"{{#edit}} title="Click To Edit Code"{{/edit}}>{{{content}}}</pre>
       {{#edit}}<div class="node-editor-placeholder"></div>{{/edit}}
     </div>
   </script>
@@ -519,7 +519,7 @@
     <div id="{{node/html_id}}" name={{node/key}} parent="{{parent/_id}}" draggable="false" class="content-node question">
       {{#edit}}<a href="#" class="remove-node remove" node="{{node/key}}" parent="{{parent/_id}}">x</a>{{/edit}}
       {{#edit}}<div class="content-node-outline"><div class="cursor"><span></span></div></div>{{/edit}}
-      <p class="question content" title="Click To Edit Question">{{{content}}}</p>
+      <p class="question content"{{#edit}} title="Click To Edit Question"{{/edit}}>{{{content}}}</p>
       {{#edit}}<div class="node-editor-placeholder"></div>{{/edit}}
     </div>
   </script>
@@ -527,8 +527,8 @@
   <script type="text/x-handlebars-template" name="answer">
     <div id="{{node/html_id}}" name={{node/key}} parent="{{parent/_id}}" draggable="false" class="content-node answer">
       {{#edit}}<a href="#" class="remove-node remove" node="{{node/key}}" parent="{{parent/_id}}">x</a>{{/edit}}
-      {{#edit}}<div class="content-node-outline"><div class="cursor"><span></span></div></div>{{/edit}}
-      <p class="answer content">{{{content}}}</p>
+      {{#edit}}<div class="content-node-outline"{{#edit}} title="Click To Edit Question"{{/edit}}><div class="cursor"><span></span></div></div>{{/edit}}
+      <p class="answer content" >{{{content}}}</p>
       {{#edit}}<div class="node-editor-placeholder"></div>{{/edit}}
     </div>
   </script>
