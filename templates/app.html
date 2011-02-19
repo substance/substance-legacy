@@ -468,7 +468,7 @@
           <%= _.date(node.get('published_on')) %>
         <% } %>
       </p>
-      <p class="lead content" id="document_lead" title="Click To Edit Document Lead"><%= lead %></p>
+      <p class="lead content" id="document_lead"<% if (edit) { %> title="Click To Edit Document Lead"<% } %>><%= lead %></p>
       <div class="document-separator"></div>
       <%= content %>
     </div>
