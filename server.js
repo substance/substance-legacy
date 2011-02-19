@@ -60,6 +60,31 @@ function fetchNode(id, callback) {
 }
 
 
+function findAttributes(member, searchstr, callback) {
+  db.view(db.uri.pathname+'/_design/substance/_view/attributes', {key: member}, function(err, res) {
+    // Bug-workarount related to https://github.com/creationix/couch-client/issues#issue/3
+    // Normally we'd just use the err object in an error case
+    if (res.error || !res.rows) {
+      callback(res.error);
+    } else {
+      var result = {};
+      var count = 0;
+      
+      _.each(res.rows, function(row) {
+        if (row.value.name && row.value.name.match(new RegExp("("+searchstr+")", "i"))) {
+          // Add to result set
+          if (count < 50) { // 200 Attributes at the most
+            count += 1;
+            result[row.value._id] = row.value;
+          }
+        }
+      });
+      callback(null, result);
+    }
+  });
+}
+
+
 function findUsers(searchstr, callback) {
   db.view(db.uri.pathname+'/_design/substance/_view/users', function(err, res) {
     // Bug-workarount related to https://github.com/creationix/couch-client/issues#issue/3
@@ -117,6 +142,7 @@ function findDocuments(searchstr, type, username, callback) {
             // Include associated objects like attributes and users
             associatedItems = associatedItems.concat([row.value.creator]);
             if (row.value.subjects) associatedItems = associatedItems.concat(row.value.subjects);
+            if (row.value.entities) associatedItems = associatedItems.concat(row.value.entities);
           }
         }
       });
@@ -194,6 +220,15 @@ app.get('/search/:search_str', function(req, res) {
 app.get('/documents/:type/:search_str', function(req, res) {
   findDocuments(req.params.search_str, req.params.type, req.session.username, function(err, graph, count) {
     res.send(JSON.stringify({graph: graph, count: count}));
+  });
+});
+
+
+// Find documents by search string (full text search in future)
+// Or find by user
+app.get('/attributes', function(req, res) {
+  findAttributes(req.query.member, req.query.search_str, function(err, graph) {
+    res.send(JSON.stringify({graph: graph}));
   });
 });
 
@@ -625,7 +660,7 @@ app.put('/writegraph', function(req, res) {
 
 
 console.log('Loading schema...');
-graph.fetch({"type|=": ["/type/type", "/type/config", "/type/attribute"]}, {}, function(err, g) {
+graph.fetch({"type|=": ["/type/type", "/type/config"]}, {}, function(err, g) {
   if (err) {
     console.log("ERROR: Couldn't fetch schema");
     console.log(err);

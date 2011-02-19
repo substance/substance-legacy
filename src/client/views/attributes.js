@@ -48,7 +48,6 @@ var Attributes = Backbone.View.extend({
       doc: doc
     }));
     
-    
     // Initialize AttributeEditors for non-unique-strings
     $('.attribute-editor').each(function() {
       var member_of = $(this).attr('property');
@@ -62,16 +61,26 @@ var Attributes = Backbone.View.extend({
                   ? app.document.model.get(key).get('name') 
                   : _.map(app.document.model.get(key).values(), function(v) { return v.get('name'); });
     
-          var availableAttributes = _.uniq(_.map(that.availableAttributes(property).values(), function(val) {
-            return val.get('name');
-          }));
-                  
-      var editor = that.createAttributeEditor(key, type, unique, value, availableAttributes, $(this));
+      var editor = that.createAttributeEditor(key, type, unique, value, $(this));
+      editor.bind('input:changed', function(value) {
+        if (value.length < 2) return editor.updateSuggestions({});
+        $.ajax({
+          type: "GET",
+          data: {
+            member: member_of,
+            search_str: value
+          },
+          url: "/attributes",
+          dataType: "json"
+        }).success(function(res) {
+          graph.merge(res.graph);
+          editor.updateSuggestions(res.graph);
+        });
+      });
       
       editor.bind('changed', function() {        
         var attrs = [];
-        var availableAttributes = that.availableAttributes(property);
-        
+
         _.each(editor.value(), function(val) {
           // Find existing attribute
           var attr = graph.find({
@@ -100,13 +109,13 @@ var Attributes = Backbone.View.extend({
     });
   },
   
-  createAttributeEditor: function(key, type, unique, value, availableValues, target) {
+  createAttributeEditor: function(key, type, unique, value, target) {
     switch (type) {
       case 'string':
         if (unique) {
-          return this.createStringEditor(key, value, availableValues, target);
+          return this.createStringEditor(key, value, target);
         } else {
-          return this.createMultiStringEditor(key, value, availableValues, target);
+          return this.createMultiStringEditor(key, value, target);
         }
       break;
       case 'number':
@@ -116,22 +125,20 @@ var Attributes = Backbone.View.extend({
     }
   },
   
-  createMultiStringEditor: function(key, value, availableValues, target) {
+  createMultiStringEditor: function(key, value, target) {
     var that = this;
     var editor = new UI.MultiStringEditor({
       el: target,
-      items: value,
-      availableItems: availableValues
+      items: value
     });
     return editor;
   },
   
-  createStringEditor: function(key, availableValues, target) {
+  createStringEditor: function(key, value, target) {
     var that = this;
     var editor = new UI.StringEditor({
       el: target,
-      value: value,
-      availableItems: availableValues
+      value: value
     });
     return editor;
   }

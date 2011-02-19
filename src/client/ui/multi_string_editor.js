@@ -31,6 +31,8 @@ UI.MultiStringEditor = Backbone.View.extend({
   },
   
   inputChange: function(e) {
+    var that = this;
+    
     var suggestions = this.$('.available-item');
     if (e.keyCode === 40) { // down-key
       if (this.selectedIndex < suggestions.length-1) this.selectedIndex += 1;
@@ -39,7 +41,9 @@ UI.MultiStringEditor = Backbone.View.extend({
       if (this.selectedIndex>=0) this.selectedIndex -= 1;
       this.teaseSuggestion();
     } else {
-      this.updateSuggestions();
+      setTimeout(function() {
+        that.trigger('input:changed', that.$('input[name=new_value]').val());
+      }, 200);
     }
   },
   
@@ -52,24 +56,13 @@ UI.MultiStringEditor = Backbone.View.extend({
   },
   
   // Update matched suggestions
-  updateSuggestions: function() {
+  updateSuggestions: function(suggestions) {
     var that = this;
-    setTimeout(function() {
-      if (this.$('input[name=new_value]').val().length === 0) {
-        that.$('.available-items').empty();
-        return;
-      }
-      
-      var regexp = new RegExp('^'+this.$('input[name=new_value]').val().toLowerCase()+'(.)*')
-      
-      that.$('.available-items').empty();
-      _.each(that._availableItems, function(item) {
-        if (regexp.test(item.toLowerCase())) {
-          that.$('.available-items').append($('<div class="available-item"><a href="#" value="'+item+'">'+item+'</a></div>'));
-        }
-      });
-      that.selectedIndex = -1;
-    }, 200);
+    that.$('.available-items').empty();
+    _.each(suggestions, function(item, key) {
+      that.$('.available-items').append($('<div class="available-item"><a href="#" id="'+item._id+'" name="'+item.name+'" value="'+item.name+'">'+item.name+'</a></div>'));
+    });
+    this.selectedIndex = -1;
   },
   
   selectAvailableItem: function(e) {
