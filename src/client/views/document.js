@@ -263,11 +263,7 @@ var Document = Backbone.View.extend({
       $('#document_tab').html('&nbsp;&nbsp;&nbsp;Loading...');
       $.ajax({
         type: "GET",
-        url: "/readdocument",
-        data: {
-          creator: username,
-          name: docname
-        },
+        url: "/documents/"+username+"/"+docname,
         dataType: "json",
         success: function(res) {
           if (res.status === 'error') {

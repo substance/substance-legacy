@@ -50,7 +50,7 @@ var DocumentBrowser = Backbone.View.extend({
     $('#browser_wrapper').html('');
     $.ajax({
       type: "GET",
-      url: "/documents/"+query.type+"/"+encodeURI(query.value),
+      url: "/documents/search/"+query.type+"/"+encodeURI(query.value),
       dataType: "json",
       success: function(res) {
         that.graph.merge(res.graph);

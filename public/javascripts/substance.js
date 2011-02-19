@@ -1291,11 +1291,7 @@ var Document = Backbone.View.extend({
       $('#document_tab').html('&nbsp;&nbsp;&nbsp;Loading...');
       $.ajax({
         type: "GET",
-        url: "/readdocument",
-        data: {
-          creator: username,
-          name: docname
-        },
+        url: "/documents/"+username+"/"+docname,
         dataType: "json",
         success: function(res) {
           if (res.status === 'error') {
@@ -1807,7 +1803,7 @@ var DocumentBrowser = Backbone.View.extend({
     $('#browser_wrapper').html('');
     $.ajax({
       type: "GET",
-      url: "/documents/"+query.type+"/"+encodeURI(query.value),
+      url: "/documents/search/"+query.type+"/"+encodeURI(query.value),
       dataType: "json",
       success: function(res) {
         that.graph.merge(res.graph);
@@ -2269,7 +2265,7 @@ var Application = Backbone.View.extend({
   },
   
   searchDocs: function(searchstr) {
-    app.browser.load({"type": "search", "value": encodeURI(searchstr)});
+    app.browser.load({"type": "keyword", "value": encodeURI(searchstr)});
     $('#browser_wrapper').attr('url', '#search/'+encodeURI(searchstr));
     
     app.browser.bind('loaded', function() {
@@ -2301,11 +2297,7 @@ var Application = Backbone.View.extend({
       // TODO: find a more efficient way to check for existing docs.
       $.ajax({
         type: "GET",
-        url: "/readdocument",
-        data: {
-          creator: app.username,
-          name: name
-        },
+        url: "/documents/"+app.username+"/"+name,
         dataType: "json",
         success: function(res) {
           if (res.status === 'error') {

@@ -59,7 +59,6 @@ function fetchNode(id, callback) {
   });
 }
 
-
 function findAttributes(member, searchstr, callback) {
   db.view(db.uri.pathname+'/_design/substance/_view/attributes', {key: member}, function(err, res) {
     // Bug-workarount related to https://github.com/creationix/couch-client/issues#issue/3
@@ -112,15 +111,70 @@ function findUsers(searchstr, callback) {
   });
 }
 
+
+// Get a single document from the database, including all associated content nodes
+function getDocument(username, docname, callback) {
+  db.view(db.uri.pathname+'/_design/substance/_view/documents', {key: username+'/'+docname}, function(err, res) {
+    // Bug-workarount related to https://github.com/creationix/couch-client/issues#issue/3
+    // Normally we'd just use the err object in an error case
+    if (res.error || !res.rows) {
+      callback(res.error);
+    } else {
+      var result = {};
+      var count = 0;
+      
+      if (res.rows.length >0) {
+        var doc = res.rows[0].value;
+        result[doc._id] = doc;
+        
+        // Fetches associated objects
+        function fetchAssociated(node, callback) {
+          
+          // Fetch children
+          if (!node.children) return callback(null);
+          async.forEach(node.children, function(child, callback) {
+            fetchNode(child, function(err, node) {
+              if (err) callback(err);
+              result[node._id] = node;
+              fetchAssociated(node, function(err) {
+                callback(null);
+              });
+            });
+          }, function(err) {
+            callback(null);
+          });
+        }
+        
+        fetchAssociated(res.rows[0].value, function(err) {
+          
+          // Fetch attributes and user
+          async.forEach(doc.subjects.concat(doc.entities).concat([doc.creator]), function(nodeId, callback) {
+            fetchNode(nodeId, function(err, node) {
+              if (err) { console.log('FATAL: BROKEN REFERENCE!'); console.log(err); return callback(); }
+              result[node._id] = node;
+              callback(null);
+            });
+          }, function(err) { 
+            callback(err, result, doc._id); 
+          });
+        });
+        
+      } else {
+        callback('not found');
+      }
+    }
+  });
+}
+
 // We are aware that this is not a performant solution.
 // But search functionality needed to be there, quickly.
 // We'll replace it with a speedy fulltext search asap.
 function findDocuments(searchstr, type, username, callback) {
-  db.view(db.uri.pathname+'/_design/substance/_view/documents', function(err, res) {
+  db.view(db.uri.pathname+'/_design/substance/_view/documents_by_keyword', function(err, res) {
     // Bug-workarount related to https://github.com/creationix/couch-client/issues#issue/3
     // Normally we'd just use the err object in an error case
   
-    if (res.error || !res.rows && _.include(["user", "search"], type)) {
+    if (res.error || !res.rows && _.include(["user", "keyword"], type)) {
       callback(res.error);
     } else {
       var result = {};
@@ -128,7 +182,7 @@ function findDocuments(searchstr, type, username, callback) {
       var count = 0;
       var matched;
       _.each(res.rows, function(row) {
-        if (type === "search") {
+        if (type === "keyword") {
           matched = row.key && row.key.match(new RegExp("("+searchstr+")", "i"));
         } else {
           matched = row.value.creator.match(new RegExp("/user/("+searchstr+")$", "i"));
@@ -207,7 +261,7 @@ app.get('/', function(req, res) {
 
 // Quick search interface (returns found users and a documentset)
 app.get('/search/:search_str', function(req, res) {
-  findDocuments(req.params.search_str, 'search', req.session.username, function(err, graph, count) {
+  findDocuments(req.params.search_str, 'keyword', req.session.username, function(err, graph, count) {
     findUsers(req.params.search_str, function(err, users) {
       res.send(JSON.stringify({document_count: count, users: users}));
     });
@@ -217,7 +271,7 @@ app.get('/search/:search_str', function(req, res) {
 
 // Find documents by search string (full text search in future)
 // Or find by user
-app.get('/documents/:type/:search_str', function(req, res) {
+app.get('/documents/search/:type/:search_str', function(req, res) {
   findDocuments(req.params.search_str, req.params.type, req.session.username, function(err, graph, count) {
     res.send(JSON.stringify({graph: graph, count: count}));
   });
@@ -236,6 +290,7 @@ app.post('/login', function(req, res) {
   var username = req.body.username,
       password = req.body.password;
   
+  var graph = new Data.Graph(seed);
   graph.fetch({type: '/type/user'}, {}, function(err) {
     if (!err) {
       var user = graph.get('/user/'+username);
@@ -272,7 +327,8 @@ app.post('/register', function(req, res) {
       password = req.body.password,
       email = req.body.email,
       name = req.body.name;
-      
+  
+  var graph = new Data.Graph(seed);
   if (!username || username.length === 0) {
     return res.send({"status": "error", "field": "username", "message": "Please choose a username."});
   }
@@ -292,7 +348,7 @@ app.post('/register', function(req, res) {
       created_at: new Date()
     });
     
-    if (user.validate() && password.length > 4) {
+    if (user.validate() && password.length >= 3) {
       graph.sync(function(err) {
         if (!err) {
           var seed = {};
@@ -311,7 +367,7 @@ app.post('/register', function(req, res) {
       });
     } else {
       console.log(user.errors);
-      return res.send({"status": "error", "errors": user.errors, "field": "all", "message": "Validation error."});
+      return res.send({"status": "error", "errors": user.errors, "field": "all", "message": "Validation error. Check your input."});
     }
   });
 });
@@ -320,6 +376,7 @@ app.post('/register', function(req, res) {
 app.post('/updateuser', function(req, res) {
   var username = req.body.username;
   
+  var graph = new Data.Graph(seed);
   graph.fetch({type: '/type/user'}, {}, function(err) {
     var user = graph.get('/user/'+username);
     if (!user) return res.send({"status": "error"});
@@ -361,35 +418,15 @@ app.post('/updateuser', function(req, res) {
   });
 });
 
-// Returns the most recent version of the requested doc
-app.get('/readdocument', function(req, res) {
-  var creator = req.query.creator,
-      name = req.query.name;
-  
-  function getDocumentId(g) {
-    var id;
-    _.each(g, function(node, key) {
-      var types = _.isArray(node.type) ? node.type : [node.type];
-      
-      if (_.include(types, '/type/document')) id = key;
-    });
-    return id;
-  };
 
-  graph.fetch({creator: '/user/'+creator, name: name}, {expand: true}, function(err, g) {
-    if (!err) {
-      var id = getDocumentId(g);        
-      // The client is the first collaborator (the doc is fetched from the database)
-      if (id) {
-        res.send({status: "ok", id: id, graph: g});
-      } else {
-        res.send({status: "error"});
-      }
-    } else {
-      res.send({status: "error"});
-    }
+// Returns the most recent version of the requested doc
+app.get('/documents/:username/:name', function(req, res) {
+  getDocument(req.params.username, req.params.name, function(err, graph, id) {
+    if (err) return res.send({status: "error", error: err});
+    res.send({status: "ok", graph: graph, id: id});
   });
 });
+
 
 app.get('/readgraph', function(req, res) {
   var callback = req.query.callback,

@@ -424,9 +424,11 @@ a.button:active {
 }
 
 .page-content #registration_error_message {
-  font-size: 20px;
+  font-size: 18px;
   padding: 0;
   margin: 0;
+  color: darkred;
+  margin-top: 20px;
   overflow: hidden;
 }
 
@@ -954,7 +956,7 @@ table tr.draft, table tr.draft a {
 }
 .attribute-editor div.items { padding: 0; }
 
-.attribute-editor div.available-items { position: absolute; width: 150px; }
+.attribute-editor div.available-items { position: absolute; width: 150px; z-index: 50000; }
 .attribute-editor div.available-item { background: #443C33; padding: 3px; border-bottom: 1px solid #777; }
 .attribute-editor div.available-item a { color: #ddd; }
 .attribute-editor div.available-item a { color: white; }
