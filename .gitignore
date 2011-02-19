@@ -15,3 +15,5 @@ _Yardoc
 .yardoc
 tmp/*
 
+
+/.settings.xml
