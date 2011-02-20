@@ -15,21 +15,18 @@ var ApplicationController = Backbone.Controller.extend({
     return false;
   },
   
-  userDocs: function(username) {
-    // username = username.length > 0 ? username : app.username;
-    
+  userDocs: function(username) {    
     if (!username) { // startpage rendering
       return app.toggleStartpage();
     }
     
     app.browser.load({"type": "user", "value": username});
-    
     $('#browser_wrapper').attr('url', '#'+username);
     
     app.browser.bind('loaded', function() {
       app.toggleView('browser');
+      app.browser.unbind('loaded');
     });
-    
     return false;
   },
   

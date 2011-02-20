@@ -847,21 +847,18 @@ var ApplicationController = Backbone.Controller.extend({
     return false;
   },
   
-  userDocs: function(username) {
-    // username = username.length > 0 ? username : app.username;
-    
+  userDocs: function(username) {    
     if (!username) { // startpage rendering
       return app.toggleStartpage();
     }
     
     app.browser.load({"type": "user", "value": username});
-    
     $('#browser_wrapper').attr('url', '#'+username);
     
     app.browser.bind('loaded', function() {
       app.toggleView('browser');
+      app.browser.unbind('loaded');
     });
-    
     return false;
   },
   
@@ -1267,11 +1264,12 @@ var Document = Backbone.View.extend({
         that.trigger('changed');
         
         that.loadedDocuments[username+"/"+docname] = id;
-        app.toggleView('document');
         
         // Update browser graph reference
         app.browser.graph.set('objects', id, that.model);
-                
+        
+        app.toggleView('document');
+        
         // TODO: register document for realtime sessions
         // remote.Session.registerDocument(id);
       } else {
@@ -2283,7 +2281,11 @@ var Application = Backbone.View.extend({
     if (view === 'browser' && !this.browser.loaded) return;
     $('.view').hide();
     $('#'+view+'_wrapper').show();
-    controller.saveLocation($('#'+view+'_wrapper').attr('url'));
+
+    // Wait until url update got injected
+    setTimeout(function() {
+      controller.saveLocation($('#'+view+'_wrapper').attr('url'));
+    }, 200);
     return false;
   },
   

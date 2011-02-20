@@ -88,7 +88,11 @@ var Application = Backbone.View.extend({
     if (view === 'browser' && !this.browser.loaded) return;
     $('.view').hide();
     $('#'+view+'_wrapper').show();
-    controller.saveLocation($('#'+view+'_wrapper').attr('url'));
+
+    // Wait until url update got injected
+    setTimeout(function() {
+      controller.saveLocation($('#'+view+'_wrapper').attr('url'));
+    }, 200);
     return false;
   },
   

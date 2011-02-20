@@ -239,11 +239,12 @@ var Document = Backbone.View.extend({
         that.trigger('changed');
         
         that.loadedDocuments[username+"/"+docname] = id;
-        app.toggleView('document');
         
         // Update browser graph reference
         app.browser.graph.set('objects', id, that.model);
-                
+        
+        app.toggleView('document');
+        
         // TODO: register document for realtime sessions
         // remote.Session.registerDocument(id);
       } else {
