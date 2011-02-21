@@ -762,7 +762,7 @@ table tr.draft, table tr.draft a {
   box-shadow:         0px 1px 4px rgba(0,0,0,0.35), inset 0px 0px 1px rgba(255,255,255,0.15);
 */  
   background: #fff;
-  
+  position: relative;
   margin: 0 180px 20px 100px;
 }
 
@@ -780,8 +780,8 @@ table tr.draft, table tr.draft a {
 
 .view-actions {
   position: absolute;
-  left: 30px;
-  top: 135px;
+  left: -70px;
+  top: 0px;
   width: 60px;
   height: 200px;
 }
@@ -815,6 +815,10 @@ table tr.draft, table tr.draft a {
 .view-action-icon.write { background: url(../images/icons/black/pen_32x32.png) center no-repeat; }
 .view-action-icon.delete { background: url(../images/icons/black/x_28x28.png) center no-repeat; }
 .view-action-icon.new { background: url(../images/icons/black/document_stroke_32x32.png) center no-repeat; }
+
+.view-action-icon.browse-user { background: url(../images/icons/black/document_stroke_32x32.png) center no-repeat; }
+.view-action-icon.browse-recent { background: url(../images/icons/black/document_stroke_32x32.png) center no-repeat; }
+.view-action-icon.browse-search { background: url(../images/icons/black/document_stroke_32x32.png) center no-repeat; }
 
 
 /* body > #container > #document_wrapper > #document_menu
@@ -886,8 +890,6 @@ table tr.draft, table tr.draft a {
   text-align: center;
   margin-bottom: 50px;
 }
-
-
 
 #document .author {
   text-align: center;

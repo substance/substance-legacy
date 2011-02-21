@@ -181,7 +181,9 @@
   
   <script type="text/x-ejs-template" name="header">
     <div class="title">
-      <a href="#" class="toggle-startpage">Substance.</a>
+      
+      <a href="#recent"<% if (!user) { %> class="toggle-startpage"<% } %>>Substance.</a>
+      
     </div>
     <div id="sync_state"></div>
     <div id="login_state">
@@ -356,6 +358,9 @@
   </script>
   
   <script type="text/x-ejs-template" name="document_browser">
+    <div id="browser_actions" class="view-actions">
+    </div>
+  
     <div id="browser_inner_wrapper">
       <% if (documents.length > 0) { %>
         <div id="browser">

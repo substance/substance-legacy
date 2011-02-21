@@ -166,6 +166,46 @@ function getDocument(username, docname, callback) {
   });
 }
 
+
+function recentDocuments(limit, username, callback) {
+  db.view(db.uri.pathname+'/_design/substance/_view/recent_documents', {limit: parseInt(limit)}, function(err, res) {
+    // Bug-workarount related to https://github.com/creationix/couch-client/issues#issue/3
+    // Normally we'd just use the err object in an error case
+  
+    if (res.error || !res.rows) {
+      callback(res.error);
+    } else {
+      var result = {};
+      var associatedItems = [];
+      var count = 0;
+      var matched;
+      _.each(res.rows, function(row) {
+        // Add to result set
+        if (!result[row.value._id]) count += 1;
+        result[row.value._id] = row.value;
+        // Include associated objects like attributes and users
+        associatedItems = associatedItems.concat([row.value.creator]);
+        if (row.value.subjects) associatedItems = associatedItems.concat(row.value.subjects);
+        if (row.value.entities) associatedItems = associatedItems.concat(row.value.entities);
+      });
+
+      // Fetch associated items
+      // TODO: make dynamic
+      async.forEach(_.uniq(associatedItems), function(nodeId, callback) {
+        fetchNode(nodeId, function(err, node) {
+          if (err) { console.log('BROKEN REFERENCE!'); console.log(err); return callback(); }
+          result[node._id] = node;
+          delete result[node._id].password;
+          callback();
+        });
+      }, function(err) { callback(err, result, count); });
+    }
+  });
+}
+
+
+
+
 // We are aware that this is not a performant solution.
 // But search functionality needed to be there, quickly.
 // We'll replace it with a speedy fulltext search asap.
@@ -272,9 +312,15 @@ app.get('/search/:search_str', function(req, res) {
 // Find documents by search string (full text search in future)
 // Or find by user
 app.get('/documents/search/:type/:search_str', function(req, res) {
-  findDocuments(req.params.search_str, req.params.type, req.session.username, function(err, graph, count) {
-    res.send(JSON.stringify({graph: graph, count: count}));
-  });
+  if (req.params.type == 'recent') {
+    recentDocuments(req.params.search_str, req.session.username, function(err, graph, count) {
+      res.send(JSON.stringify({graph: graph, count: count}));
+    });
+  } else {
+    findDocuments(req.params.search_str, req.params.type, req.session.username, function(err, graph, count) {
+      res.send(JSON.stringify({graph: graph, count: count}));
+    });
+  }
 });
 
 
