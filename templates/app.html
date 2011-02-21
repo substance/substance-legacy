@@ -362,9 +362,44 @@
     </div>
   
     <div id="browser_inner_wrapper">
+      <% if (user) { %>
+        <div id="user_profile">
+          <h2><%= user.get('name') %></h2>
+          <div class="container">
+            <div class="avatar">
+              <img<% if (user.get('username') === app.username) { %> title="Change your avatar at Gravatar.com"<% } %> class="left" src="<%= _.gravatar(user.get('email'), 200) %>"/>
+            </div>
+            
+            <dl class="document-attributes left">
+              <dt>Username</dt>
+              <dd><%= user.get('username') %></dd>
+              
+              <% if (user.get('website')) { %>
+                <dt>Website</dt>
+                <dd><a target="_blank" href="<%= user.get('website') %>"><%= user.get('website') %></a></dd>
+              <% } %>
+              
+              <% if (user.get('company')) { %>
+                <dt>Company</dt>
+                <dd><%= user.get('company') %></dd>
+              <% } %>
+              
+              <% if (user.get('location')) { %>
+                <dt>Location</dt>
+                <dd><%= user.get('location') %></dd>
+              <% } %>
+                            
+              <dt>Member since</dt>
+              <dd><%= _.date(user.get('created_at')) %></dd>
+            </dl>
+            <br class="clear"/>
+          </div>
+          
+        </div>
+      <% } %>
+    
       <% if (documents.length > 0) { %>
         <div id="browser">
-          
           <div id="facets">
             Loading facets...
           </div>
@@ -396,7 +431,7 @@
         </div>
       <% } else { %>
         <div id="documents">
-          <h1 class="serif italic">No Documents found.</h1>
+          <h2>No Documents ...</h2>
         </div>
       <% } %>
     </div>

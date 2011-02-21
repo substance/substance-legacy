@@ -240,6 +240,10 @@ function findDocuments(searchstr, type, username, callback) {
           }
         }
       });
+      
+      if (type === 'user') {
+        associatedItems.push('/user/'+searchstr);
+      }
 
       // Fetch associated items
       // TODO: make dynamic

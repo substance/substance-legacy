@@ -455,6 +455,34 @@ a.button:active {
   margin: 0px 0px 0px 0px;
 }
 
+#user_profile {
+  overflow: auto;
+  margin: 0px 0px 20px 0px;
+}
+
+#user_profile .avatar {
+  width: 260px;
+  float: left;
+}
+
+#user_profile img {
+/*  background: blue;*/
+  padding: 10px 0;
+  margin: 10px 0;
+}
+
+#user_profile dl {
+  margin-left: 10px;
+}
+
+#user_profile dt {
+  color: #666;
+}
+
+#user_profile dd {
+  color: black;
+}
+
 
 /* body > #container > .menu
 -------------------------------------------------------------------------------*/

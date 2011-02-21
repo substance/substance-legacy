@@ -96,8 +96,8 @@ var seedGraph = {
       "created_at": {
         "name": "Created at",
         "unique": true,
-        "type": "date",
-        "required": true
+        "type": "date"
+        // "required": true
       }
     }
   },
