@@ -17,7 +17,7 @@ var ImageEditor = Backbone.View.extend({
         $('#image_progress_legend').html('<strong>Uploading:</strong> ' + percentage + '% complete</div>');
       },
       onError: function(assembly) {
-        alert(assembly.error+': '+assembly.message);
+        console.log(assembly.error+': '+assembly.message);
         $('#progress_container').hide();
       },
       onStart: function() {

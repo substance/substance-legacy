@@ -183,6 +183,15 @@ notifier.bind('message:arrived', function(message) {
 }());
 
 
+// A fake console to calm down some browsers.
+if (!window.console) {
+  window.console = {
+    log: function(msg) {
+      // No-op
+    }
+  }
+}
+
 var Helpers = {};
 
 // Templates for the moment are recompiled every time
@@ -796,12 +805,10 @@ var QuoteEditor = Backbone.View.extend({
     this.$author.bind('focus', makeSelection);
     
     this.$content.bind('blur', function() {
-      console.log('blurred from quote');
       that.updateState('$content');
     });
     
     this.$author.bind('blur', function() {
-      console.log('blurred from Author');
       that.updateState('$author');
     });
     
@@ -1046,7 +1053,7 @@ var ImageEditor = Backbone.View.extend({
         $('#image_progress_legend').html('<strong>Uploading:</strong> ' + percentage + '% complete</div>');
       },
       onError: function(assembly) {
-        alert(assembly.error+': '+assembly.message);
+        console.log(assembly.error+': '+assembly.message);
         $('#progress_container').hide();
       },
       onStart: function() {
@@ -2898,14 +2905,15 @@ var remote,                              // Remote handle for server-side method
         setTimeout(function() {
           $('#sync_state').html('Synchronizing...');
           graph.sync(function(err, invalidNodes) {
+            pendingSync = false;
             if (!err && invalidNodes.length === 0) {
               $('#sync_state').html('Successfully synced.');
               setTimeout(function() {
                 $('#sync_state').html('');
               }, 3000);
-              pendingSync = false;
             } else {
-              $('#sync_state').html(err || 'Error during sync. Reload!.');
+              confirm('There was an error during synchronization. The workspace will be reset for your own safety');
+              window.location.reload(true);
             }
           });
         }, 3000);
@@ -2925,7 +2933,6 @@ var remote,                              // Remote handle for server-side method
         message: 'There are conflicting nodes. The Document will be reset for your own safety.',
         type: 'error'
       });
-
     });
   });
 })();

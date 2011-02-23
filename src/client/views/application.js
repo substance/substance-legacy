@@ -450,14 +450,15 @@ var remote,                              // Remote handle for server-side method
         setTimeout(function() {
           $('#sync_state').html('Synchronizing...');
           graph.sync(function(err, invalidNodes) {
+            pendingSync = false;
             if (!err && invalidNodes.length === 0) {
               $('#sync_state').html('Successfully synced.');
               setTimeout(function() {
                 $('#sync_state').html('');
               }, 3000);
-              pendingSync = false;
             } else {
-              $('#sync_state').html(err || 'Error during sync. Reload!.');
+              confirm('There was an error during synchronization. The workspace will be reset for your own safety');
+              window.location.reload(true);
             }
           });
         }, 3000);
@@ -477,7 +478,6 @@ var remote,                              // Remote handle for server-side method
         message: 'There are conflicting nodes. The Document will be reset for your own safety.',
         type: 'error'
       });
-
     });
   });
 })();

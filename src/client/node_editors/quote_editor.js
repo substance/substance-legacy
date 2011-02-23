@@ -28,12 +28,10 @@ var QuoteEditor = Backbone.View.extend({
     this.$author.bind('focus', makeSelection);
     
     this.$content.bind('blur', function() {
-      console.log('blurred from quote');
       that.updateState('$content');
     });
     
     this.$author.bind('blur', function() {
-      console.log('blurred from Author');
       that.updateState('$author');
     });
     
