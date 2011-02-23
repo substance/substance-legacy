@@ -468,8 +468,9 @@
         <a href="#">--&gt; INSERT</a>
       </div>
       <div class="actions">
+        <div class="placeholder">Insert Content</div>
         {{#actions}}
-          <a href="#" type="{{nodeType}}" node="{{node}}" parent="{{parentNode}}" class="add_{{insertionType}}">Insert {{nodeTypeName}}</a>
+          <a href="#" type="{{nodeType}}" node="{{node}}" parent="{{parentNode}}" class="add_{{insertionType}}">{{nodeTypeName}}</a>
         {{/actions}}
         <br class="clear"/>
       </div>
