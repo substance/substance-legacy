@@ -28,6 +28,15 @@
 }());
 
 
+// A fake console to calm down some browsers.
+if (!window.console) {
+  window.console = {
+    log: function(msg) {
+      // No-op
+    }
+  }
+}
+
 var Helpers = {};
 
 // Templates for the moment are recompiled every time
