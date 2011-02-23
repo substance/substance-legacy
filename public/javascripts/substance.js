@@ -652,8 +652,8 @@ var DocumentEditor = Backbone.View.extend({
   updateNode: function() {
     var that = this;
     setTimeout(function() {
-      var sanitizedTitle = that.$node.hasClass('empty') ? "" : _.stripTags(that.$node.html());      
-      var sanitizedLead = that.$lead.hasClass('empty') ? "" : _.stripTags(that.$lead.html());
+      var sanitizedTitle = that.$node.hasClass('empty') && document.activeElement !== that.$node[0] ? "" : _.stripTags(that.$node.html());      
+      var sanitizedLead = that.$lead.hasClass('empty') && document.activeElement !== that.$lead[0] ? "" : _.stripTags(that.$lead.html());
       
       app.document.updateSelectedNode({
         title: sanitizedTitle,
@@ -846,9 +846,9 @@ var QuoteEditor = Backbone.View.extend({
   updateNode: function() {
     var that = this;
     
-    setTimeout(function() {      
-      var sanitizedQuote = that.$content.hasClass('empty') ? "" : _.stripTags(that.$content.html());
-      var sanitizedAuthor = that.$author.hasClass('empty') ? "" : _.stripTags(that.$author.html());
+    setTimeout(function() {
+      var sanitizedQuote = that.$content.hasClass('empty') && document.activeElement !== that.$content[0] ? "" : _.stripTags(that.$content.html());
+      var sanitizedAuthor = that.$author.hasClass('empty') && document.activeElement !== that.$author[0] ? "" : _.stripTags(that.$author.html());
       
       app.document.updateSelectedNode({
         content: sanitizedQuote,

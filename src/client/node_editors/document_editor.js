@@ -69,8 +69,8 @@ var DocumentEditor = Backbone.View.extend({
   updateNode: function() {
     var that = this;
     setTimeout(function() {
-      var sanitizedTitle = that.$node.hasClass('empty') ? "" : _.stripTags(that.$node.html());      
-      var sanitizedLead = that.$lead.hasClass('empty') ? "" : _.stripTags(that.$lead.html());
+      var sanitizedTitle = that.$node.hasClass('empty') && document.activeElement !== that.$node[0] ? "" : _.stripTags(that.$node.html());      
+      var sanitizedLead = that.$lead.hasClass('empty') && document.activeElement !== that.$lead[0] ? "" : _.stripTags(that.$lead.html());
       
       app.document.updateSelectedNode({
         title: sanitizedTitle,
