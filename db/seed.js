@@ -145,13 +145,13 @@ var seedGraph = {
         "name": "Document Title",
         "unique": true,
         "type": "string",
-        "default": "Untitled"
+        "default": ""
       },
       "lead": {
         "name": "Lead",
         "unique": true,
         "type": "string",
-        "default": "Document's lead"
+        "default": ""
       },
       "creator": {
         "name": "Creator",
@@ -272,7 +272,7 @@ var seedGraph = {
         "name": "Name",
         "unique": true,
         "type": "string",
-        "default": "A new header"
+        "default": ""
       },
       "document": {
         "name": "Document Membership",
@@ -301,7 +301,7 @@ var seedGraph = {
         "name": "Content",
         "unique": true,
         "type": "string",
-        "default": "<p>Some text ...</p>"
+        "default": ""
       },
       "document": {
         "name": "Document Membership",
@@ -349,13 +349,13 @@ var seedGraph = {
   "/type/question": {
     "_id": "/type/question",
     "type": "/type/type",
-    "name": "Text",
+    "name": "Question",
     "properties": {
       "content": {
         "name": "Content",
         "unique": true,
         "type": "string",
-        "default": "Question?"
+        "default": ""
       },
       "document": {
         "name": "Document Membership",
@@ -378,7 +378,7 @@ var seedGraph = {
         "name": "Content",
         "unique": true,
         "type": "string",
-        "default": "Answer."
+        "default": ""
       },
       "document": {
         "name": "Document Membership",
@@ -401,13 +401,13 @@ var seedGraph = {
         "name": "Quote Author",
         "unique": true,
         "type": "string",
-        "default": "Konfuzius"
+        "default": ""
       },
       "content": {
         "name": "Content",
         "unique": true,
         "type": "string",
-        "default": "A famous quotation"
+        "default": ""
       },
       "document": {
         "name": "Document Membership",
@@ -430,7 +430,7 @@ var seedGraph = {
         "name": "Content",
         "unique": true,
         "type": "string",
-        "default": "var foo = new Bar();"
+        "default": ""
       },
       "document": {
         "name": "Document Membership",
