@@ -104,7 +104,9 @@ var HTMLRenderer = function(root, parent) {
         content: content,
         edit: app.document.mode === 'edit',
         title: node.get('title'),
-        lead: node.get('lead')
+        lead: node.get('lead'),
+        empty_lead: app.document.mode === 'edit' && (!node.get('lead') || node.get('lead') === ''),
+        empty_title: app.document.mode === 'edit' && (!node.get('title') || node.get('title') === '')
       });
     },
     
@@ -143,7 +145,8 @@ var HTMLRenderer = function(root, parent) {
         parent: parent,
         content: content,
         edit: app.document.mode === 'edit',
-        name: node.get('name')
+        name: node.get('name'),
+        empty: app.document.mode === 'edit' && (!node.get('name') || node.get('name') === '')
       });
     },
     
@@ -152,7 +155,8 @@ var HTMLRenderer = function(root, parent) {
         node: node,
         parent: parent,
         edit: app.document.mode === 'edit',
-        content: node.get('content')
+        content: node.get('content'),
+        empty: app.document.mode === 'edit' && (!node.get('content') || node.get('content') === '')
       });
     },
     
@@ -162,7 +166,9 @@ var HTMLRenderer = function(root, parent) {
         parent: parent,
         edit: app.document.mode === 'edit',
         content: node.get('content'),
-        author: node.get('author')
+        author: node.get('author'),
+        empty_content: app.document.mode === 'edit' && (!node.get('content') || node.get('content') === ''),
+        empty_author: app.document.mode === 'edit' && (!node.get('author') || node.get('author') === '')
       });
     },
     
@@ -171,7 +177,8 @@ var HTMLRenderer = function(root, parent) {
         node: node,
         parent: parent,
         edit: app.document.mode === 'edit',
-        content: node.get('content')
+        content: node.get('content'),
+        empty: app.document.mode === 'edit' && (!node.get('content') || node.get('content') === '')
       });
     },
     
@@ -180,7 +187,8 @@ var HTMLRenderer = function(root, parent) {
         node: node,
         parent: parent,
         edit: app.document.mode === 'edit',
-        content: node.get('content')
+        content: node.get('content'),
+        empty: app.document.mode === 'edit' && (!node.get('content') || node.get('content') === '')
       });
     },
     
@@ -189,7 +197,8 @@ var HTMLRenderer = function(root, parent) {
         node: node,
         parent: parent,
         edit: app.document.mode === 'edit',
-        content: node.get('content')
+        content: node.get('content'),
+        empty: app.document.mode === 'edit' && (!node.get('content') || node.get('content') === '')
       });
     },
     

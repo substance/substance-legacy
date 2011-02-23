@@ -131,7 +131,7 @@
               documents by using novel navigation techniques.
             </p> 
             <p class="feature-descr">
-              Use the Browser Tab above to get started.
+              Use the Browser Tab to search for a keyword or show <a href="#recent">Recent Documents</a>.
             </p>
             <ul class="feature-properties">
               <li>
@@ -162,8 +162,10 @@
               <b>User Comments</b> and <b>PDF Export</b>.
             </p>
             <div>
-              <div id="donations-total">$ 0.00<span>contributed so far</span></div>
-              
+              <a href="#substance/contributions">
+                <div id="donations_total">$ 50.00</div>
+                <div id="donations_total_label">contributed so far</div>
+              </a>
               <form id="contribute_form" action="https://www.paypal.com/cgi-bin/webscr" method="post">
                 <input type="hidden" name="cmd" value="_s-xclick">
                 <input type="hidden" name="hosted_button_id" value="WAP9SGX5H29HS">
@@ -367,7 +369,7 @@
           <h2><%= user.get('name') %></h2>
           <div class="container">
             <div class="avatar">
-              <img<% if (user.get('username') === app.username) { %> title="Change your avatar at Gravatar.com"<% } %> class="left" src="<%= _.gravatar(user.get('email'), 200) %>"/>
+              <img<% if (user.get('username') === app.username) { %> title="Change your avatar at Gravatar.com"<% } %> class="left" src="<%= _.gravatar(user.get('email'), 120) %>"/>
             </div>
             
             <dl class="document-attributes left">
@@ -413,7 +415,7 @@
               <tbody>
               <% documents.each(function(doc) { %> 
                 <tr class="<%= doc.get('published_on') ? 'published' : 'draft' %>">
-                  <th><a class="link load-document" href="#<%= doc.get('creator')._id.split('/')[2] %>/<%= doc.get('name') %>" document="<%= doc._id %>" user="<%= doc.get('creator')._id.split('/')[2] %>" name="<%= doc.get('name') %>"><%= doc.get('title') %><span class="document-type"><%= doc.type.key.split('/')[2] %></span></a></th>
+                  <th><a class="link load-document" href="#<%= doc.get('creator')._id.split('/')[2] %>/<%= doc.get('name') %>" document="<%= doc._id %>" user="<%= doc.get('creator')._id.split('/')[2] %>" name="<%= doc.get('name') %>"><%= doc.get('title') || 'Untitled' %><span class="document-type"><%= doc.type.key.split('/')[2] %></span></a></th>
                   <td><%= doc.get('creator').get('name') || doc.get('creator').get('username') || doc.get('creator')._id.split('/')[2]%></td>
                   <td>
                     <% if (doc.get('published_on')) { %>
@@ -503,7 +505,13 @@
   <script type="text/x-ejs-template" name="document">
     <div id="<%= node.html_id %>" name=<%= node.key %> class="content-node document">
       <% if (edit) { %><div class="content-node-outline"><div class="cursor"><span></span></div></div><% } %>
-      <h1 class='content'<% if (edit) { %> title="Click To Edit Document Title"<% } %>><%= title %></h1>
+      <h1 class="content<%= empty_title ? ' empty' : '' %>"<% if (edit) { %> contenteditable="true" title="Click To Edit Document Title"<% } %>>
+        <% if (!empty_title) { %>
+          <%= title %>
+        <% } else { %>
+          &laquo; Enter Title &raquo;
+        <% } %>
+      </h1>
       <p class="author"><%= node.get('creator').get('name') || node.get('creator').get('username') %></p>
       <p class="published">
         <% if (node.get('published_on') && edit) { %>
@@ -515,7 +523,13 @@
           <%= _.date(node.get('published_on')) %>
         <% } %>
       </p>
-      <p class="lead content" id="document_lead"<% if (edit) { %> title="Click To Edit Document Lead"<% } %>><%= lead %></p>
+      <p class="lead content<%= empty_lead ? ' empty' : '' %>" id="document_lead"<% if (edit) { %> contenteditable="true" title="Click To Edit Document Lead"<% } %>>
+        <% if (!empty_lead) { %>
+          <%= lead %>
+        <% } else { %>
+          &laquo; Enter Lead &raquo;
+        <% } %>
+      </p>
       <div class="document-separator"></div>
       <%= content %>
     </div>
@@ -525,7 +539,12 @@
     <div id="{{node/html_id}}" name={{node/key}} parent="{{parent/_id}}" draggable="false" class="content-node section">
       {{#edit}}<a href="#" class="remove remove-node" node="{{node/key}}" parent="{{parent/_id}}">x</a>{{/edit}}
       {{#edit}}<div class="content-node-outline"><div class="cursor"><span></span></div></div>{{/edit}}
-      <h2 class="content"{{#edit}} title="Click To Edit Section Name"{{/edit}}>{{name}}</h2>
+      
+      <h2 class="content{{#empty}} empty{{/empty}}"{{#edit}} title="Click To Edit Section Name"{{/edit}}>
+        {{^empty}}{{{name}}}{{/empty}}
+        {{#empty}}&laquo; Enter Section Name &raquo;{{/empty}}        
+      </h2>
+      
       {{#edit}}<div class="node-editor-placeholder"></div>{{/edit}}
       {{{content}}}
     </div>
@@ -535,7 +554,10 @@
     <div id="{{node/html_id}}" name={{node/key}} parent="{{parent/_id}}" draggable="false" class="content-node text">
       {{#edit}}<a href="#" class="remove-node remove" node="{{node/key}}" parent="{{parent/_id}}">x</a>{{/edit}}
       {{#edit}}<div class="content-node-outline"><div class="cursor"><span></span></div></div>{{/edit}}
-      <div class="content"{{#edit}} title="Click To Edit Text"{{/edit}}>{{{content}}}</div>
+      <div class="content{{#empty}} empty{{/empty}}"{{#edit}} title="Click To Edit Text"{{/edit}}>
+        {{^empty}}{{{content}}}{{/empty}}
+        {{#empty}}&laquo; Enter Text &raquo;{{/empty}}
+      </div>
       {{#edit}}<div class="node-editor-placeholder"></div>{{/edit}}
     </div>
   </script>
@@ -545,8 +567,15 @@
       {{#edit}}<a href="#" class="remove-node remove" node="{{node/key}}" parent="{{parent/_id}}">x</a>{{/edit}}
       {{#edit}}<div class="content-node-outline"><div class="cursor"><span></span></div></div>{{/edit}}
       <blockquote>
-        <p class="content quote-content"{{#edit}} title="Click To Edit Quote"{{/edit}}>{{{content}}}</p>
-        <cite class="content quote-author" contenteditable="true" title="Click To Edit Quote Author">{{{author}}}</cite>
+        <p class="content quote-content{{#empty_content}} empty{{/empty_content}}"{{#edit}} contenteditable="true" title="Click To Edit Quote"{{/edit}}>
+          {{^empty_content}}{{{content}}}{{/empty_content}}
+          {{#empty_content}}&laquo; Enter Quote &raquo;{{/empty_content}}
+        </p>
+        <br clear="both"/>
+        <cite class="content quote-author{{#empty_author}} empty{{/empty_author}}"{{#edit}} contenteditable="true" title="Click To Edit Quote Author"{{/edit}}>
+          {{^empty_author}}{{{author}}}{{/empty_author}}
+          {{#empty_author}}&laquo; Enter Author &raquo;{{/empty_author}}
+        </cite>
       </blockquote>
       <br class="clear"/>
       {{#edit}}<div class="node-editor-placeholder"></div>{{/edit}}
@@ -557,7 +586,7 @@
     <div id="{{node/html_id}}" name={{node/key}} parent="{{parent/_id}}" draggable="false" class="content-node code">
       {{#edit}}<a href="#" class="remove-node remove" node="{{node/key}}" parent="{{parent/_id}}">x</a>{{/edit}}
       {{#edit}}<div class="content-node-outline"><div class="cursor"><span></span></div></div>{{/edit}}
-      <pre class="content"{{#edit}} title="Click To Edit Code"{{/edit}}>{{{content}}}</pre>
+      <pre class="content{{#empty}} empty{{/empty}}"{{#edit}} title="Click To Edit Code"{{/edit}}>{{^empty}}{{{content}}}{{/empty}}{{#empty}}&laquo; Enter code &raquo;{{/empty}}</pre>
       {{#edit}}<div class="node-editor-placeholder"></div>{{/edit}}
     </div>
   </script>
@@ -566,7 +595,10 @@
     <div id="{{node/html_id}}" name={{node/key}} parent="{{parent/_id}}" draggable="false" class="content-node question">
       {{#edit}}<a href="#" class="remove-node remove" node="{{node/key}}" parent="{{parent/_id}}">x</a>{{/edit}}
       {{#edit}}<div class="content-node-outline"><div class="cursor"><span></span></div></div>{{/edit}}
-      <p class="question content"{{#edit}} title="Click To Edit Question"{{/edit}}>{{{content}}}</p>
+      <p class="question content{{#empty}} empty{{/empty}}"{{#edit}} title="Click To Edit Question"{{/edit}}>
+        {{^empty}}{{{content}}}{{/empty}}
+        {{#empty}}&laquo; Enter Question &raquo;{{/empty}}
+      </p>
       {{#edit}}<div class="node-editor-placeholder"></div>{{/edit}}
     </div>
   </script>
@@ -575,7 +607,10 @@
     <div id="{{node/html_id}}" name={{node/key}} parent="{{parent/_id}}" draggable="false" class="content-node answer">
       {{#edit}}<a href="#" class="remove-node remove" node="{{node/key}}" parent="{{parent/_id}}">x</a>{{/edit}}
       {{#edit}}<div class="content-node-outline"{{#edit}} title="Click To Edit Question"{{/edit}}><div class="cursor"><span></span></div></div>{{/edit}}
-      <p class="answer content" >{{{content}}}</p>
+      <p class="answer content{{#empty}} empty{{/empty}}">
+        {{^empty}}{{{content}}}{{/empty}}
+        {{#empty}}&laquo; Enter Answer &raquo;{{/empty}}
+      </p>
       {{#edit}}<div class="node-editor-placeholder"></div>{{/edit}}
     </div>
   </script>

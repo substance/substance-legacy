@@ -78,7 +78,7 @@ h2 { font-size: 160%; padding-bottom: 15px; }
 dl { margin: 0;	padding: 0; }
 dt { 
 
-  color: rgba(255,255,255, 0.5); padding-left: 5px; position: relative; left: 0; top: 20px; width: 150px; font-size: 16px; font-style: italic;
+  color: rgba(255,255,255, 0.5); padding-left: 5px; position: relative; left: 0; top: 20px; width: 150px; font-size: 16px; font-style: italic; margin: 0; padding: 0;
 }
 dd { color: #fff; font-size: 1em;	margin: 0 0 0 155px; padding: 0; padding-left: 20px; }
 
@@ -217,7 +217,6 @@ a.button:active {
 .tab input {
   padding-left: 0px;
   padding-right: 0px;
-  /* font-family: 'Adobe Garamond Pro'; font-size: 18px; font-style: italic;*/
 }
 
 .tab .tab-label {
@@ -802,14 +801,13 @@ table tr.draft, table tr.draft a {
   position: fixed; 
 }
 
-
 /* body > #container > .view-actions
 -------------------------------------------------------------------------------*/
 
 .view-actions {
-  position: absolute;
-  left: -70px;
-  top: 0px;
+  position: fixed;
+  left: 20px;
+  top: 140px;
   width: 60px;
   height: 200px;
 }
@@ -1051,40 +1049,30 @@ table tr.draft, table tr.draft a {
 -------------------------------------------------------------------------------*/
 
 
-/*blockquote {
-  font-size:26px;
-  line-height:1.5em;
-  font-style: italic;
-  margin:1em 0px 2em 120px;
-}*/
-
 blockquote p {
-  padding: 0px 20px 0px 0px;
+  padding: 0px 20px 10px 0px;
   font-size: 1.2em;
   font-style: italic;
   float: left;
-  
   background: url(../images/icons/black/right_quote_16x16.png) bottom right no-repeat;
 }
 
 blockquote {
   float: left;
   padding: 20px;
-  font-size: 1.8em;
-  line-height: 1.4em;
+  font-size: 1.4em;
+  line-height: 1.3em;
   background: url(../images/icons/black/left_quote_16x16.png) top left no-repeat;
   margin-bottom: 10px;
 }
 
-cite {
+cite.quote-author {
+  display: block;
   font-size:16px;
-  float: right;
-  clear: both;
+  text-align: right;
 }
 
-
 p.question {
-  color:#0071bc;
   font-size:25px;
   line-height:1.5em;
   font-style: italic;
@@ -1155,6 +1143,10 @@ pre {
 
 .content {
   
+}
+
+.content.empty {
+  /*  color: red;*/
 }
 
 .tooltip {
@@ -1263,8 +1255,10 @@ pre {
 }
 
 .content-node-outline:hover .cursor span { display: inline; }
-.content-node.selected > .content-node-outline .cursor { display: block; }
+
+/*.content-node.selected > .content-node-outline .cursor { display: block; }
 .content-node.occupied > .content-node-outline .cursor { display: block; }
+*/
 .content-node.active > .content-node-outline { border-width: 2px; }
 .content-node.occupied > .content-node-outline { border-width: 3px; }
 .content-node.selected > .content-node-outline { border-width: 3px; }
@@ -1360,7 +1354,11 @@ pre {
 -------------------------------------------------------------------------------*/
 
 .proper-commands {
-  height: 30px;
+  position: fixed;
+  left: 20px;
+  top: 300px;
+/*  height: 30px;*/
+  width: 100px;
   margin-left: -10px;
   margin-right: -10px;
   margin-top: 0px;
@@ -1519,7 +1517,7 @@ div.intro {
   font-size: 12px;
 }
 
-#donations-total {
+#donations_total {
   margin-top: 40px;
   font-size: 45px;
   font-family: 'Palatino Linotype', 'Book Antiqua', Palatino, FreeSerif, serif;
@@ -1527,11 +1525,11 @@ div.intro {
   font-style: italic;
 }
 
-#donations-total span {
+#donations_total_label {
   font-size: 17px;
   position: relative;
-  top: -10px;
-  left: 20px;
+  top: 10px;
+  left: 0px;
 }
 
 #new_document {

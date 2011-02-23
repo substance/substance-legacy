@@ -1,37 +1,83 @@
 var QuoteEditor = Backbone.View.extend({
   events: {
-
+    
   },
   
   initialize: function() {
     var that = this;
-    this.render();
+
+    this.$content = this.$('.quote-content').unbind();
+    this.$author = this.$('.quote-author').unbind();
     
-    this.$content = this.$('.quote-content');
-    this.$author = this.$('.quote-author');
+    function makeSelection() {
+      if (document.activeElement === that.$author[0]) {
+        if (that.$author.hasClass('empty')) {
+          that.$author.html('');
+          _.fullSelection(that.$author[0]);
+        }
+      } else {
+        if (that.$content.hasClass('empty')) {
+          that.$content.html('');
+          _.fullSelection(that.$content[0]);
+        }
+      }
+    }
     
-    editor.activate(that.$content);
+    makeSelection();
+    this.$content.bind('focus', makeSelection);
+    this.$author.bind('focus', makeSelection);
+    
+    this.$content.bind('blur', function() {
+      console.log('blurred from quote');
+      that.updateState('$content');
+    });
+    
+    this.$author.bind('blur', function() {
+      console.log('blurred from Author');
+      that.updateState('$author');
+    });
+    
+    this.$content.unbind('keydown');
+    this.$content.bind('keydown', function(e) {
+      return e.keyCode !== 13 ? that.updateNode() : false;
+    });
     
     this.$author.unbind('keydown');
     this.$author.bind('keydown', function(e) {
       return e.keyCode !== 13 ? that.updateNode() : false;
     });
+  },
+  
+  updateState: function(property) {
+    if (this[property].text().trim().length === 0) {
+      if (property === '$content') {
+        this[property].html('&laquo; Enter Quote &raquo;');
+        app.document.updateSelectedNode({
+          content: ""
+        });
+      } else {
+        this[property].html('&laquo; Enter Author &raquo;');
+        app.document.updateSelectedNode({
+          author: ""
+        });
+      }
+      this[property].addClass('empty');
 
-    $('.proper-commands').hide(); // Quickfix
-    
-    // Update node when editor commands are applied
-    editor.bind('changed', function() {
-      that.updateNode();
-    });
+    } else if (this[property].hasClass('empty') && this[property].text().trim().length > 0) {
+      this[property].removeClass('empty');
+    }
   },
   
   updateNode: function() {
     var that = this;
     
-    setTimeout(function() {
+    setTimeout(function() {      
+      var sanitizedQuote = that.$content.hasClass('empty') ? "" : _.stripTags(that.$content.html());
+      var sanitizedAuthor = that.$author.hasClass('empty') ? "" : _.stripTags(that.$author.html());
+      
       app.document.updateSelectedNode({
-        content: that.$content.html(),
-        author: that.$author.html()
+        content: sanitizedQuote,
+        author: sanitizedAuthor
       });
     }, 5);
   },

@@ -195,8 +195,6 @@ Helpers.renderTemplate = _.renderTemplate = function(tpl, view, helpers) {
 // Render Underscore templates
 _.tpl = function(tpl, ctx) {
   source = $("script[name="+tpl+"]").html();
-  // var template = Handlebars.compile(source);
-  // return template(view, helpers || {});
   return _.template(source, ctx);
 };
 
@@ -209,6 +207,27 @@ _.gravatar = function (email, size) {
   var size = size || 80;    
   return 'http://www.gravatar.com/avatar/' + MD5(email) + '.jpg?s=' + size;
 };
+
+_.fullSelection = function(contentEditableElement)
+{
+  var range,selection;
+  if(document.createRange)//Firefox, Chrome, Opera, Safari, IE 9+
+  {
+      range = document.createRange();//Create a range (a range is a like the selection but invisible)
+      range.selectNodeContents(contentEditableElement);//Select the entire contents of the element with the range
+      //range.collapse(false);//collapse the range to the end point. false means collapse to end rather than the start
+      selection = window.getSelection();//get the selection object (allows you to change selection)
+      selection.removeAllRanges();//remove any selections already made
+      selection.addRange(range);//make the range you have just created the visible selection
+  }
+  else if(document.selection)//IE 8 and lower
+  { 
+      range = document.body.createTextRange();//Create a range (a range is a like the selection but invisible)
+      range.moveToElementText(contentEditableElement);//Select the entire contents of the element with the range
+      range.collapse(false);//collapse the range to the end point. false means collapse to end rather than the start
+      range.select();//Select the range (make it the visible selection
+  }
+}
 
 _.prettyDate = function(time) {
   if (time instanceof Date) time = time.toJSON();
@@ -384,7 +403,9 @@ var HTMLRenderer = function(root, parent) {
         content: content,
         edit: app.document.mode === 'edit',
         title: node.get('title'),
-        lead: node.get('lead')
+        lead: node.get('lead'),
+        empty_lead: app.document.mode === 'edit' && (!node.get('lead') || node.get('lead') === ''),
+        empty_title: app.document.mode === 'edit' && (!node.get('title') || node.get('title') === '')
       });
     },
     
@@ -423,7 +444,8 @@ var HTMLRenderer = function(root, parent) {
         parent: parent,
         content: content,
         edit: app.document.mode === 'edit',
-        name: node.get('name')
+        name: node.get('name'),
+        empty: app.document.mode === 'edit' && (!node.get('name') || node.get('name') === '')
       });
     },
     
@@ -432,7 +454,8 @@ var HTMLRenderer = function(root, parent) {
         node: node,
         parent: parent,
         edit: app.document.mode === 'edit',
-        content: node.get('content')
+        content: node.get('content'),
+        empty: app.document.mode === 'edit' && (!node.get('content') || node.get('content') === '')
       });
     },
     
@@ -442,7 +465,9 @@ var HTMLRenderer = function(root, parent) {
         parent: parent,
         edit: app.document.mode === 'edit',
         content: node.get('content'),
-        author: node.get('author')
+        author: node.get('author'),
+        empty_content: app.document.mode === 'edit' && (!node.get('content') || node.get('content') === ''),
+        empty_author: app.document.mode === 'edit' && (!node.get('author') || node.get('author') === '')
       });
     },
     
@@ -451,7 +476,8 @@ var HTMLRenderer = function(root, parent) {
         node: node,
         parent: parent,
         edit: app.document.mode === 'edit',
-        content: node.get('content')
+        content: node.get('content'),
+        empty: app.document.mode === 'edit' && (!node.get('content') || node.get('content') === '')
       });
     },
     
@@ -460,7 +486,8 @@ var HTMLRenderer = function(root, parent) {
         node: node,
         parent: parent,
         edit: app.document.mode === 'edit',
-        content: node.get('content')
+        content: node.get('content'),
+        empty: app.document.mode === 'edit' && (!node.get('content') || node.get('content') === '')
       });
     },
     
@@ -469,7 +496,8 @@ var HTMLRenderer = function(root, parent) {
         node: node,
         parent: parent,
         edit: app.document.mode === 'edit',
-        content: node.get('content')
+        content: node.get('content'),
+        empty: app.document.mode === 'edit' && (!node.get('content') || node.get('content') === '')
       });
     },
     
@@ -552,8 +580,34 @@ var DocumentEditor = Backbone.View.extend({
   initialize: function() {
     var that = this;
     
-    this.$node = $('#' + app.document.selectedNode.html_id + ' > h1.content').attr('contenteditable', true);
-    this.$lead = $('#' + app.document.selectedNode.html_id + ' #document_lead').attr('contenteditable', true);
+    this.$node = $('#' + app.document.selectedNode.html_id + ' > h1.content').unbind();
+    this.$lead = $('#' + app.document.selectedNode.html_id + ' #document_lead').unbind();
+    
+    function makeSelection() {
+      if (document.activeElement === that.$node[0]) {
+        if (that.$node.hasClass('empty')) {
+          that.$node.html('');
+          _.fullSelection(that.$node[0]);
+        }
+      } else {
+        if (that.$lead.hasClass('empty')) {
+          that.$lead.html('');
+          _.fullSelection(that.$lead[0]);
+        }
+      }
+    }
+    
+    makeSelection();
+    this.$node.bind('focus', makeSelection);
+    this.$lead.bind('focus', makeSelection);
+    
+    this.$node.bind('blur', function() {
+      that.updateState('$node');
+    });
+    
+    this.$lead.bind('blur', function() {
+      that.updateState('$lead');
+    });
     
     this.$node.unbind('keydown');
     this.$node.bind('keydown', function(e) {
@@ -563,20 +617,34 @@ var DocumentEditor = Backbone.View.extend({
     this.$lead.bind('keydown', function(e) {
       return e.keyCode !== 13 ? that.updateNode() : false;
     });
+    return true;
+  },
+  
+  updateState: function(property) {
+    if (this[property].text().trim().length === 0) {
+      if (property === '$node') {
+        this[property].html('&laquo; Enter Title &raquo;');
+        app.document.updateSelectedNode({
+          title: ""
+        });
+      } else {
+        this[property].html('&laquo; Enter Lead &raquo;');
+        app.document.updateSelectedNode({
+          lead: ""
+        });
+      }
+      this[property].addClass('empty');
+
+    } else if (this[property].hasClass('empty') && this[property].text().trim().length > 0) {
+      this[property].removeClass('empty');
+    }
   },
   
   updateNode: function() {
     var that = this;
     setTimeout(function() {
-      var sanitizedTitle = _.stripTags(that.$node.html());
-
-      // Update HTML with sanitized content
-      // that.$node.html(sanitizedTitle);
-      
-      var sanitizedLead = _.stripTags(that.$lead.html());
-
-      // Update HTML with sanitized content
-      // that.$lead.html(sanitizedLead);
+      var sanitizedTitle = that.$node.hasClass('empty') ? "" : _.stripTags(that.$node.html());      
+      var sanitizedLead = that.$lead.hasClass('empty') ? "" : _.stripTags(that.$lead.html());
       
       app.document.updateSelectedNode({
         title: sanitizedTitle,
@@ -595,13 +663,34 @@ var SectionEditor = Backbone.View.extend({
   initialize: function() {
     var that = this;
     this.render();
-    
-    this.$node = $('#' + app.document.selectedNode.html_id + ' > .content').attr('contenteditable', true);
+    this.$node = $('#' + app.document.selectedNode.html_id + ' > .content').attr('contenteditable', true).unbind();
+
+    // Make selection    
+    if (this.$node.hasClass('empty')) {
+      this.$node.html('');
+      _.fullSelection(this.$node[0]);
+    };
+
     this.$node.unbind('keydown');
-    
     this.$node.bind('keydown', function(e) {
       return e.keyCode !== 13 ? that.updateNode() : false;
     });
+    
+    this.$node.bind('blur', function() {
+      that.updateState();
+    });
+  },
+  
+  updateState: function() {
+    if (this.$node.text().trim().length === 0) {
+      this.$node.html('&laquo; Enter Section Name &raquo;');
+      this.$node.addClass('empty');
+      app.document.updateSelectedNode({
+        content: ""
+      });
+    } else if (this.$node.hasClass('empty') && this.$node.text().trim().length > 0) {
+      this.$node.removeClass('empty');
+    }
   },
   
   updateNode: function(e) {
@@ -633,10 +722,33 @@ var TextEditor = Backbone.View.extend({
     this.$content = this.$('div.content');
     editor.activate(this.$content);
     
+    // Make selection    
+    if (this.$content.hasClass('empty')) {
+      this.$content.html('');
+      _.fullSelection(this.$content[0]);
+    };
+    
     // Update node when editor commands are applied
     editor.bind('changed', function() {
       that.updateNode();
     });
+    
+    this.$content.bind('blur', function() {
+      that.updateState();
+      that.$content.unbind('blur');
+    });
+  },
+  
+  updateState: function() {
+    if (this.$content.text().trim().length === 0) {
+      this.$content.html('&laquo; Enter Text &raquo;');
+      this.$content.addClass('empty');
+      app.document.updateSelectedNode({
+        content: ""
+      });
+    } else if (this.$content.hasClass('empty') && this.$content.text().trim().length > 0) {
+      this.$content.removeClass('empty');
+    }
   },
   
   updateNode: function() {
@@ -656,38 +768,84 @@ var TextEditor = Backbone.View.extend({
 
 var QuoteEditor = Backbone.View.extend({
   events: {
-
+    
   },
   
   initialize: function() {
     var that = this;
-    this.render();
+
+    this.$content = this.$('.quote-content').unbind();
+    this.$author = this.$('.quote-author').unbind();
     
-    this.$content = this.$('.quote-content');
-    this.$author = this.$('.quote-author');
+    function makeSelection() {
+      if (document.activeElement === that.$author[0]) {
+        if (that.$author.hasClass('empty')) {
+          that.$author.html('');
+          _.fullSelection(that.$author[0]);
+        }
+      } else {
+        if (that.$content.hasClass('empty')) {
+          that.$content.html('');
+          _.fullSelection(that.$content[0]);
+        }
+      }
+    }
     
-    editor.activate(that.$content);
+    makeSelection();
+    this.$content.bind('focus', makeSelection);
+    this.$author.bind('focus', makeSelection);
+    
+    this.$content.bind('blur', function() {
+      console.log('blurred from quote');
+      that.updateState('$content');
+    });
+    
+    this.$author.bind('blur', function() {
+      console.log('blurred from Author');
+      that.updateState('$author');
+    });
+    
+    this.$content.unbind('keydown');
+    this.$content.bind('keydown', function(e) {
+      return e.keyCode !== 13 ? that.updateNode() : false;
+    });
     
     this.$author.unbind('keydown');
     this.$author.bind('keydown', function(e) {
       return e.keyCode !== 13 ? that.updateNode() : false;
     });
+  },
+  
+  updateState: function(property) {
+    if (this[property].text().trim().length === 0) {
+      if (property === '$content') {
+        this[property].html('&laquo; Enter Quote &raquo;');
+        app.document.updateSelectedNode({
+          content: ""
+        });
+      } else {
+        this[property].html('&laquo; Enter Author &raquo;');
+        app.document.updateSelectedNode({
+          author: ""
+        });
+      }
+      this[property].addClass('empty');
 
-    $('.proper-commands').hide(); // Quickfix
-    
-    // Update node when editor commands are applied
-    editor.bind('changed', function() {
-      that.updateNode();
-    });
+    } else if (this[property].hasClass('empty') && this[property].text().trim().length > 0) {
+      this[property].removeClass('empty');
+    }
   },
   
   updateNode: function() {
     var that = this;
     
-    setTimeout(function() {
+    setTimeout(function() {      
+      var sanitizedQuote = that.$content.hasClass('empty') ? "" : _.stripTags(that.$content.html());
+      var sanitizedAuthor = that.$author.hasClass('empty') ? "" : _.stripTags(that.$author.html());
+      
       app.document.updateSelectedNode({
-        content: that.$content.html(),
-        author: that.$author.html()
+        content: sanitizedQuote,
+        author: sanitizedAuthor
       });
     }, 5);
   },
@@ -711,10 +869,33 @@ var CodeEditor = Backbone.View.extend({
     
     $('.proper-commands').hide(); // Quickfix
     
+    // Make selection    
+    if (this.$content.hasClass('empty')) {
+      this.$content.html('');
+      _.fullSelection(this.$content[0]);
+    };
+    
     // Update node when editor commands are applied
     editor.bind('changed', function() {
       that.updateNode();
     });
+    
+    this.$content.bind('blur', function() {
+      that.updateState();
+      that.$content.unbind('blur');
+    });
+  },
+  
+  updateState: function() {
+    if (this.$content.text().trim().length === 0) {
+      this.$content.html('&laquo; Enter code &raquo;');
+      this.$content.addClass('empty');
+      app.document.updateSelectedNode({
+        content: ""
+      });
+    } else if (this.$content.hasClass('empty') && this.$content.text().trim().length > 0) {
+      this.$content.removeClass('empty');
+    }
   },
   
   updateNode: function() {
@@ -745,10 +926,33 @@ var QuestionEditor = Backbone.View.extend({
     editor.activate(this.$content);
     $('.proper-commands').hide(); // Quickfix
     
+    // Make selection    
+    if (this.$content.hasClass('empty')) {
+      this.$content.html('');
+      _.fullSelection(this.$content[0]);
+    };
+    
     // Update node when editor commands are applied
     editor.bind('changed', function() {
       that.updateNode();
     });
+    
+    this.$content.bind('blur', function() {
+      that.updateState();
+      that.$content.unbind('blur');
+    });
+  },
+  
+  updateState: function() {
+    if (this.$content.text().trim().length === 0) {
+      this.$content.html('&laquo; Enter Question &raquo;');
+      this.$content.addClass('empty');
+      app.document.updateSelectedNode({
+        content: ""
+      });
+    } else if (this.$content.hasClass('empty') && this.$content.text().trim().length > 0) {
+      this.$content.removeClass('empty');
+    }
   },
   
   updateNode: function() {
@@ -779,10 +983,33 @@ var AnswerEditor = Backbone.View.extend({
     editor.activate(this.$content);
     $('.proper-commands').hide(); // Quickfix
     
+    // Make selection    
+    if (this.$content.hasClass('empty')) {
+      this.$content.html('');
+      _.fullSelection(this.$content[0]);
+    };
+    
     // Update node when editor commands are applied
     editor.bind('changed', function() {
       that.updateNode();
     });
+    
+    this.$content.bind('blur', function() {
+      that.updateState();
+      that.$content.unbind('blur');
+    });
+  },
+  
+  updateState: function() {
+    if (this.$content.text().trim().length === 0) {
+      this.$content.html('&laquo; Enter Answer &raquo;');
+      this.$content.addClass('empty');
+      app.document.updateSelectedNode({
+        content: ""
+      });
+    } else if (this.$content.hasClass('empty') && this.$content.text().trim().length > 0) {
+      this.$content.removeClass('empty');
+    }
   },
   
   updateNode: function() {
@@ -859,7 +1086,11 @@ var ApplicationController = Backbone.Controller.extend({
   
   userDocs: function(username) {    
     if (!username) { // startpage rendering
-      return app.toggleStartpage();
+      if (app.username) {
+        username = app.username;
+      } else {
+        return app.toggleStartpage();
+      }
     }
     
     if (username === 'recent') {
@@ -1094,12 +1325,12 @@ var Document = Backbone.View.extend({
   },
   
   updateCursors: function() {
-    $('.content-node.occupied').removeClass('occupied');
-    _.each(this.status.cursors, function(user, nodeKey) {
-      var n = graph.get(nodeKey);
-      $('#'+n.html_id).addClass('occupied');
-      $('#'+n.html_id+' .cursor span').html(user);
-    });
+    // $('.content-node.occupied').removeClass('occupied');
+    // _.each(this.status.cursors, function(user, nodeKey) {
+    //   var n = graph.get(nodeKey);
+    //   $('#'+n.html_id).addClass('occupied');
+    //   $('#'+n.html_id+' .cursor span').html(user);
+    // });
   },
   
   render: function() {
@@ -1195,6 +1426,7 @@ var Document = Backbone.View.extend({
       $('#'+node.html_id).addClass('selected');
       
       $('#document').addClass('edit-mode');
+      
       // Deactivate Richtext Editor
       editor.deactivate();
       
@@ -1348,10 +1580,12 @@ var Document = Backbone.View.extend({
   // Reset to view mode (aka unselect everything)
   reset: function(noBlur) {
     if (!this.model) return;
-    if (!noBlur) $('.content').blur();
+    
+    // if (!noBlur) $('.content').blur();
+    $(document.activeElement).blur();
     
     this.app.document.selectedNode = null;
-    this.resetSelection()
+    this.resetSelection();
 
     // Broadcast
     // remote.Session.selectNode(null);
@@ -1446,9 +1680,12 @@ var Document = Backbone.View.extend({
     
     var key = $(e.currentTarget).attr('name');
     
+    this.$lead = $('#document_lead'); //.attr('contenteditable', true);
+    
     if (!this.selectedNode || this.selectedNode.key !== key) {
       var node = graph.get(key);
       this.selectedNode = node;
+      // console.log(e.target);
       this.trigger('select:node', this.selectedNode);
 
       // The server will respond with a status package containing my own cursor position

@@ -54,12 +54,12 @@ var Document = Backbone.View.extend({
   },
   
   updateCursors: function() {
-    $('.content-node.occupied').removeClass('occupied');
-    _.each(this.status.cursors, function(user, nodeKey) {
-      var n = graph.get(nodeKey);
-      $('#'+n.html_id).addClass('occupied');
-      $('#'+n.html_id+' .cursor span').html(user);
-    });
+    // $('.content-node.occupied').removeClass('occupied');
+    // _.each(this.status.cursors, function(user, nodeKey) {
+    //   var n = graph.get(nodeKey);
+    //   $('#'+n.html_id).addClass('occupied');
+    //   $('#'+n.html_id+' .cursor span').html(user);
+    // });
   },
   
   render: function() {
@@ -155,6 +155,7 @@ var Document = Backbone.View.extend({
       $('#'+node.html_id).addClass('selected');
       
       $('#document').addClass('edit-mode');
+      
       // Deactivate Richtext Editor
       editor.deactivate();
       
@@ -308,10 +309,12 @@ var Document = Backbone.View.extend({
   // Reset to view mode (aka unselect everything)
   reset: function(noBlur) {
     if (!this.model) return;
-    if (!noBlur) $('.content').blur();
+    
+    // if (!noBlur) $('.content').blur();
+    $(document.activeElement).blur();
     
     this.app.document.selectedNode = null;
-    this.resetSelection()
+    this.resetSelection();
 
     // Broadcast
     // remote.Session.selectNode(null);
@@ -406,9 +409,12 @@ var Document = Backbone.View.extend({
     
     var key = $(e.currentTarget).attr('name');
     
+    this.$lead = $('#document_lead'); //.attr('contenteditable', true);
+    
     if (!this.selectedNode || this.selectedNode.key !== key) {
       var node = graph.get(key);
       this.selectedNode = node;
+      // console.log(e.target);
       this.trigger('select:node', this.selectedNode);
 
       // The server will respond with a status package containing my own cursor position

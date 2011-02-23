@@ -6,8 +6,34 @@ var DocumentEditor = Backbone.View.extend({
   initialize: function() {
     var that = this;
     
-    this.$node = $('#' + app.document.selectedNode.html_id + ' > h1.content').attr('contenteditable', true);
-    this.$lead = $('#' + app.document.selectedNode.html_id + ' #document_lead').attr('contenteditable', true);
+    this.$node = $('#' + app.document.selectedNode.html_id + ' > h1.content').unbind();
+    this.$lead = $('#' + app.document.selectedNode.html_id + ' #document_lead').unbind();
+    
+    function makeSelection() {
+      if (document.activeElement === that.$node[0]) {
+        if (that.$node.hasClass('empty')) {
+          that.$node.html('');
+          _.fullSelection(that.$node[0]);
+        }
+      } else {
+        if (that.$lead.hasClass('empty')) {
+          that.$lead.html('');
+          _.fullSelection(that.$lead[0]);
+        }
+      }
+    }
+    
+    makeSelection();
+    this.$node.bind('focus', makeSelection);
+    this.$lead.bind('focus', makeSelection);
+    
+    this.$node.bind('blur', function() {
+      that.updateState('$node');
+    });
+    
+    this.$lead.bind('blur', function() {
+      that.updateState('$lead');
+    });
     
     this.$node.unbind('keydown');
     this.$node.bind('keydown', function(e) {
@@ -17,20 +43,34 @@ var DocumentEditor = Backbone.View.extend({
     this.$lead.bind('keydown', function(e) {
       return e.keyCode !== 13 ? that.updateNode() : false;
     });
+    return true;
+  },
+  
+  updateState: function(property) {
+    if (this[property].text().trim().length === 0) {
+      if (property === '$node') {
+        this[property].html('&laquo; Enter Title &raquo;');
+        app.document.updateSelectedNode({
+          title: ""
+        });
+      } else {
+        this[property].html('&laquo; Enter Lead &raquo;');
+        app.document.updateSelectedNode({
+          lead: ""
+        });
+      }
+      this[property].addClass('empty');
+
+    } else if (this[property].hasClass('empty') && this[property].text().trim().length > 0) {
+      this[property].removeClass('empty');
+    }
   },
   
   updateNode: function() {
     var that = this;
     setTimeout(function() {
-      var sanitizedTitle = _.stripTags(that.$node.html());
-
-      // Update HTML with sanitized content
-      // that.$node.html(sanitizedTitle);
-      
-      var sanitizedLead = _.stripTags(that.$lead.html());
-
-      // Update HTML with sanitized content
-      // that.$lead.html(sanitizedLead);
+      var sanitizedTitle = that.$node.hasClass('empty') ? "" : _.stripTags(that.$node.html());      
+      var sanitizedLead = that.$lead.hasClass('empty') ? "" : _.stripTags(that.$lead.html());
       
       app.document.updateSelectedNode({
         title: sanitizedTitle,

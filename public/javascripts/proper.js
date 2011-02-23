@@ -96,13 +96,11 @@
       <a href="#" title="Emphasis" class="command em" command="em"><div>Emphasis</div></a> \
       <a href="#" title="Strong" class="command strong" command="strong"><div>Strong</div></a> \
       <a href="#" title="Code" class="command code" command="code"><div>Code</div></a> \
-      <div class="separator">|</div> \
       <a href="#" title="Bullet List" class="command ul" command="ul"><div>Bullets List</div></a> \
       <a href="#" title="Numbered List" class="command ol" command="ol"><div>Numbered List</div></a> \
       <a href="#" title="Indent" class="command indent" command="indent"><div>Indent</div></a> \
       <a href="#" title="Outdent" class="command outdent" command="outdent"><div>Outdent</div></a> \
-      <div class="separator">|</div> \
-      <a title="List" href="#" class="command link" command="link"><div>Link</div></a> \
+      <a title="Link" href="#" class="command link" command="link"><div>Link</div></a> \
       <br class="clear"/> \
     </div> \
   ';
