@@ -1646,6 +1646,11 @@ var Document = Backbone.View.extend({
     if (!this.selectedNode) return;
     this.selectedNode.set(attrs);
     
+    // Update modification date on original document
+    this.model.set({
+      updated_at: new Date()
+    });
+    
     // Only set dirty if explicitly requested    
     if (attrs.dirty) {
       this.trigger('change:node', this.selectedNode);
