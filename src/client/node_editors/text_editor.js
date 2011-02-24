@@ -12,7 +12,7 @@ var TextEditor = Backbone.View.extend({
     
     // Make selection    
     if (this.$content.hasClass('empty')) {
-      this.$content.html('');
+      this.$content.html('<p></p>');
       _.fullSelection(this.$content[0]);
     };
     
@@ -32,7 +32,7 @@ var TextEditor = Backbone.View.extend({
       this.$content.html('&laquo; Enter Text &raquo;');
       this.$content.addClass('empty');
       app.document.updateSelectedNode({
-        content: ""
+        content: "<p></p>"
       });
     } else if (this.$content.hasClass('empty') && this.$content.text().trim().length > 0) {
       this.$content.removeClass('empty');

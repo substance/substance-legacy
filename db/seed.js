@@ -301,7 +301,7 @@ var seedGraph = {
         "name": "Content",
         "unique": true,
         "type": "string",
-        "default": ""
+        "default": "<p></p>"
       },
       "document": {
         "name": "Document Membership",

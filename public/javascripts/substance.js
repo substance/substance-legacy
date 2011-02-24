@@ -464,7 +464,7 @@ var HTMLRenderer = function(root, parent) {
         parent: parent,
         edit: app.document.mode === 'edit',
         content: node.get('content'),
-        empty: app.document.mode === 'edit' && (!node.get('content') || node.get('content') === '')
+        empty: app.document.mode === 'edit' && (!node.get('content') || node.get('content') === '<p></p>')
       });
     },
     
@@ -733,7 +733,7 @@ var TextEditor = Backbone.View.extend({
     
     // Make selection    
     if (this.$content.hasClass('empty')) {
-      this.$content.html('');
+      this.$content.html('<p></p>');
       _.fullSelection(this.$content[0]);
     };
     
@@ -753,7 +753,7 @@ var TextEditor = Backbone.View.extend({
       this.$content.html('&laquo; Enter Text &raquo;');
       this.$content.addClass('empty');
       app.document.updateSelectedNode({
-        content: ""
+        content: "<p></p>"
       });
     } else if (this.$content.hasClass('empty') && this.$content.text().trim().length > 0) {
       this.$content.removeClass('empty');
@@ -2889,6 +2889,25 @@ var remote,                              // Remote handle for server-side method
     function scrollTop() {
       return document.body.scrollTop || document.documentElement.scrollTop;
     }
+
+    window.positionViewActions = function() {
+      var main = document.getElementById('main');
+      // var menu = $('.view-actions');
+
+      var val = document_wrapper.offsetTop - scrollTop();
+      // console.log(val);
+      
+      if (val < 0) {
+        $('.view-actions').addClass('docked');
+      } else {
+        $('.view-actions').removeClass('docked');
+      }
+    }
+    
+    positionViewActions();
+    
+    $(window).bind('scroll', positionViewActions);
+    $(window).bind('resize', positionViewActions);
     
     // Start the engines
     app = new Application({el: $('#container'), session: session});

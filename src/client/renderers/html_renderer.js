@@ -156,7 +156,7 @@ var HTMLRenderer = function(root, parent) {
         parent: parent,
         edit: app.document.mode === 'edit',
         content: node.get('content'),
-        empty: app.document.mode === 'edit' && (!node.get('content') || node.get('content') === '')
+        empty: app.document.mode === 'edit' && (!node.get('content') || node.get('content') === '<p></p>')
       });
     },
     
