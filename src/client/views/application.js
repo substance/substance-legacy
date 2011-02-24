@@ -432,12 +432,8 @@ var remote,                              // Remote handle for server-side method
 
     window.positionViewActions = function() {
       var main = document.getElementById('main');
-      // var menu = $('.view-actions');
 
-      var val = document_wrapper.offsetTop - scrollTop();
-      // console.log(val);
-      
-      if (val < 0) {
+      if (main.offsetTop - scrollTop() < 0) {
         $('.view-actions').addClass('docked');
       } else {
         $('.view-actions').removeClass('docked');
@@ -445,7 +441,6 @@ var remote,                              // Remote handle for server-side method
     }
     
     positionViewActions();
-    
     $(window).bind('scroll', positionViewActions);
     $(window).bind('resize', positionViewActions);
     
