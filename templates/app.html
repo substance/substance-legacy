@@ -538,8 +538,9 @@
   
   <script type="text/x-handlebars-template" name="section">
     <div id="{{node/html_id}}" name={{node/key}} parent="{{parent/_id}}" draggable="false" class="content-node section">
-      {{#edit}}<a href="#" class="remove remove-node" node="{{node/key}}" parent="{{parent/_id}}">x</a>{{/edit}}
+      {{#edit}}<a href="#" class="remove remove-node" title="Remove Section and all child elements" node="{{node/key}}" parent="{{parent/_id}}">x</a>{{/edit}}
       {{#edit}}<div class="content-node-outline"><div class="cursor"><span></span></div></div>{{/edit}}
+      {{#edit}}<div class="pilcrow">&#182;</div>{{/edit}}
       
       <h2 class="content{{#empty}} empty{{/empty}}"{{#edit}} title="Click To Edit Section Name"{{/edit}}>
         {{^empty}}{{{name}}}{{/empty}}
@@ -553,8 +554,9 @@
   
   <script type="text/x-handlebars-template" name="text">
     <div id="{{node/html_id}}" name={{node/key}} parent="{{parent/_id}}" draggable="false" class="content-node text">
-      {{#edit}}<a href="#" class="remove-node remove" node="{{node/key}}" parent="{{parent/_id}}">x</a>{{/edit}}
+      {{#edit}}<a href="#" class="remove-node remove" title="Remove Text" node="{{node/key}}" parent="{{parent/_id}}">x</a>{{/edit}}
       {{#edit}}<div class="content-node-outline"><div class="cursor"><span></span></div></div>{{/edit}}
+      {{#edit}}<div class="pilcrow">&#182;</div>{{/edit}}
       <div class="content{{#empty}} empty{{/empty}}"{{#edit}} title="Click To Edit Text"{{/edit}}>
         {{^empty}}{{{content}}}{{/empty}}
         {{#empty}}&laquo; Enter Text &raquo;{{/empty}}
@@ -565,8 +567,9 @@
   
   <script type="text/x-handlebars-template" name="quote">
     <div id="{{node/html_id}}" name={{node/key}} parent="{{parent/_id}}" draggable="false" class="content-node quote">
-      {{#edit}}<a href="#" class="remove-node remove" node="{{node/key}}" parent="{{parent/_id}}">x</a>{{/edit}}
+      {{#edit}}<a href="#" class="remove-node remove" title="Remove Quote" node="{{node/key}}" parent="{{parent/_id}}">x</a>{{/edit}}
       {{#edit}}<div class="content-node-outline"><div class="cursor"><span></span></div></div>{{/edit}}
+      {{#edit}}<div class="pilcrow">&#182;</div>{{/edit}}
       <blockquote>
         <p class="content quote-content{{#empty_content}} empty{{/empty_content}}"{{#edit}} contenteditable="true" title="Click To Edit Quote"{{/edit}}>
           {{^empty_content}}{{{content}}}{{/empty_content}}
@@ -585,8 +588,9 @@
   
   <script type="text/x-handlebars-template" name="code">
     <div id="{{node/html_id}}" name={{node/key}} parent="{{parent/_id}}" draggable="false" class="content-node code">
-      {{#edit}}<a href="#" class="remove-node remove" node="{{node/key}}" parent="{{parent/_id}}">x</a>{{/edit}}
+      {{#edit}}<a href="#" class="remove-node remove" title="Remove Code" node="{{node/key}}" parent="{{parent/_id}}">x</a>{{/edit}}
       {{#edit}}<div class="content-node-outline"><div class="cursor"><span></span></div></div>{{/edit}}
+      {{#edit}}<div class="pilcrow">&#182;</div>{{/edit}}
       <pre class="content{{#empty}} empty{{/empty}}"{{#edit}} title="Click To Edit Code"{{/edit}}>{{^empty}}{{{content}}}{{/empty}}{{#empty}}&laquo; Enter code &raquo;{{/empty}}</pre>
       {{#edit}}<div class="node-editor-placeholder"></div>{{/edit}}
     </div>
@@ -594,8 +598,9 @@
   
   <script type="text/x-handlebars-template" name="question">
     <div id="{{node/html_id}}" name={{node/key}} parent="{{parent/_id}}" draggable="false" class="content-node question">
-      {{#edit}}<a href="#" class="remove-node remove" node="{{node/key}}" parent="{{parent/_id}}">x</a>{{/edit}}
+      {{#edit}}<a href="#" class="remove-node remove" title="Remove Question" node="{{node/key}}" parent="{{parent/_id}}">x</a>{{/edit}}
       {{#edit}}<div class="content-node-outline"><div class="cursor"><span></span></div></div>{{/edit}}
+      {{#edit}}<div class="pilcrow">&#182;</div>{{/edit}}
       <p class="question content{{#empty}} empty{{/empty}}"{{#edit}} title="Click To Edit Question"{{/edit}}>
         {{^empty}}{{{content}}}{{/empty}}
         {{#empty}}&laquo; Enter Question &raquo;{{/empty}}
@@ -606,8 +611,9 @@
   
   <script type="text/x-handlebars-template" name="answer">
     <div id="{{node/html_id}}" name={{node/key}} parent="{{parent/_id}}" draggable="false" class="content-node answer">
-      {{#edit}}<a href="#" class="remove-node remove" node="{{node/key}}" parent="{{parent/_id}}">x</a>{{/edit}}
+      {{#edit}}<a href="#" class="remove-node remove" title="Remove Answer" node="{{node/key}}" parent="{{parent/_id}}">x</a>{{/edit}}
       {{#edit}}<div class="content-node-outline"{{#edit}} title="Click To Edit Question"{{/edit}}><div class="cursor"><span></span></div></div>{{/edit}}
+      {{#edit}}<div class="pilcrow">&#182;</div>{{/edit}}
       <p class="answer content{{#empty}} empty{{/empty}}">
         {{^empty}}{{{content}}}{{/empty}}
         {{#empty}}&laquo; Enter Answer &raquo;{{/empty}}
@@ -618,8 +624,9 @@
   
   <script type="text/x-handlebars-template" name="image">
     <div id="{{node/html_id}}" name={{node/key}} parent="{{parent/_id}}" draggable="false" class="content-node image">
-      {{#edit}}<a href="#" class="remove remove-node" node="{{node/key}}" parent="{{parent/_id}}">x</a>{{/edit}}
+      {{#edit}}<a href="#" class="remove remove-node" title="Remove Image" node="{{node/key}}" parent="{{parent/_id}}">x</a>{{/edit}}
       {{#edit}}<div class="content-node-outline"><div class="cursor"><span></span></div></div>{{/edit}}
+      {{#edit}}<div class="pilcrow">&#182;</div>{{/edit}}
       {{#url}}
         <img src="{{.}}"/>
       {{/url}}
@@ -632,8 +639,9 @@
   
   <script type="text/x-handlebars-template" name="visualization">
     <div id="{{node/html_id}}" name={{node/key}} parent="{{parent/_id}}" draggable="false" class="content-node image">
-      {{#edit}}<a href="#" class="remove remove-node" node="{{node/key}}" parent="{{parent/_id}}">x</a>{{/edit}}
+      {{#edit}}<a href="#" class="remove remove-node" title="Remove Visualization" node="{{node/key}}" parent="{{parent/_id}}">x</a>{{/edit}}
       {{#edit}}<div class="content-node-outline"><div class="cursor"><span></span></div></div>{{/edit}}
+      {{#edit}}<div class="pilcrow">&#182;</div>{{/edit}}
       {{#data_source}}
         <div class="visualization linechart" type="Linechart" datasrc="http://foo.com/bar.json"></div>
       {{/data_source}}
@@ -704,18 +712,20 @@
       </a>
     </div>
     
-    <!-- Various content (used for user settings dialogue etc.) -->  
-    <div id="content_wrapper" class="view">
+    <div id="main">
+      <!-- Various content (used for user settings dialogue etc.) -->  
+      <div id="content_wrapper" class="view">
       
-    </div>
+      </div>
     
-    <!-- The document browser -->
-    <div id="browser_wrapper" class="view hidden">
-    </div>
+      <!-- The document browser -->
+      <div id="browser_wrapper" class="view hidden">
+      </div>
     
-    <!-- The document browser -->
-    <div id="document_wrapper" class="view hidden">
+      <!-- The document browser -->
+      <div id="document_wrapper" class="view hidden">
       
+      </div>
     </div>
     <div id="footer">
       <div class="credits">A <a href="http://quasipartikel.at" target="_new">Quasipartikel</a> production</div>

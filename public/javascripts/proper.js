@@ -241,7 +241,8 @@
         
         // Setup controls
         $controls = $(controlsTpl); 
-        $controls.insertBefore(el);        
+        $controls.appendTo($('#document_actions'));
+                
         $('.proper-commands a.command').click(function(e) {
           commands['exec'+ $(e.currentTarget).attr('command').toUpperCase()]();
           setTimeout(function() {

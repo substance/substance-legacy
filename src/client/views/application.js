@@ -429,6 +429,25 @@ var remote,                              // Remote handle for server-side method
     function scrollTop() {
       return document.body.scrollTop || document.documentElement.scrollTop;
     }
+
+    window.positionViewActions = function() {
+      var main = document.getElementById('main');
+      // var menu = $('.view-actions');
+
+      var val = document_wrapper.offsetTop - scrollTop();
+      // console.log(val);
+      
+      if (val < 0) {
+        $('.view-actions').addClass('docked');
+      } else {
+        $('.view-actions').removeClass('docked');
+      }
+    }
+    
+    positionViewActions();
+    
+    $(window).bind('scroll', positionViewActions);
+    $(window).bind('resize', positionViewActions);
     
     // Start the engines
     app = new Application({el: $('#container'), session: session});
