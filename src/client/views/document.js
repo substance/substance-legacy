@@ -227,13 +227,19 @@ var Document = Backbone.View.extend({
   
   loadDocument: function(username, docname, nodeid, mode) {
     var that = this;
+    that.mode = mode || (username === this.app.username ? 'edit' : 'show');
+    
+    if (that.mode === 'edit' && !head.browser.webkit) {
+      alert("You need to use a Webkit-based browser (Google Chrome, Safari) in order to write documents. In future, other browers will be supported too.");
+      that.mode = 'show';
+    }
     
     $('#tabs').show();
     function init(id) {
       that.model = graph.get(id);
       
       if (that.model) {
-        that.mode = mode || (username === this.app.username ? 'edit' : 'show');
+        
         that.render();
         that.init();
         that.reset();

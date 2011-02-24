@@ -41,6 +41,10 @@ var Application = Backbone.View.extend({
   },
   
   newDocument: function() {
+    if (!head.browser.webkit) {
+      alert("You need to use a Webkit based browser (Google Chrome, Safari) in order to write documents. In future, other browers will be supported too.");
+      return false;
+    }
     this.content = new NewDocument({el: '#content_wrapper'});
     this.content.render();
     
