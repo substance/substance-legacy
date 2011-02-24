@@ -20,6 +20,7 @@ var db = CouchClient(config.couchdb_url);
 
 // WriteGraph Filters
 Data.middleware.writegraph = [
+  // TODO make middleware asynchronous!
   function ensureAuthorized(node, ctx) {
     if (_.include(node.type, "/type/document")) {
       // console.log("saving a document...."+node._id);
@@ -27,8 +28,10 @@ Data.middleware.writegraph = [
       // TODO: Make sure that document deletion can only be done by the creator, not the collaborators.
     } else if (_.intersect(node.type, ["/type/section", "/type/visualization", "/type/text",
                                        "/type/question", "/type/answer", "/type/quote", "/type/image"]).length > 0) {
-      var creator = graph.get(node.document).get('creator')._id;
-      if (creator !== "/user/"+ctx.session.username) return null;
+                                         
+      // We need a CouchDB lookup here! It's unsave right now!
+      var document = graph.get(node.document);
+      if (document && document.get('creator')._id !== "/user/"+ctx.session.username) return null;
     } else if (_.include(node.type, "/type/user")) {
       // Ensure username can't be changed for existing users
       if (node._rev) node.username = graph.get(node._id).get('username');
@@ -490,7 +493,7 @@ app.get('/readgraph', function(req, res) {
 
 app.put('/writegraph', function(req, res) {
   Data.adapter.writeGraph(req.body, function(err, g) {
-    graph.merge(g);
+    graph.merge(g); // TODO: memory leakin?
     err ? res.send(err) : res.send(JSON.stringify({"status": "ok", "graph": g}));
   }, req);
 });
