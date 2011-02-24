@@ -488,10 +488,10 @@ a.button:active {
 }
 
 #user_profile .attributes span {
-  padding-right: 20px;
+  padding-right: 10px;
 }
 
-#user_profile .attributes em {
+#user_profile em {
   color: #888;
 }
 
@@ -1146,7 +1146,12 @@ pre {
 /* Content Nodes
 -------------------------------------------------------------------------------*/
 
-.content-node { position: relative; }
+.content-node { 
+  position: relative; 
+}
+
+/* Overthink this */
+#document .content-node.text .content {padding-right: 25px;}
 /*.content-node.active { background: #fff; }*/
 
 .content-node .content-node { 
@@ -1214,7 +1219,7 @@ pre {
   display:none;
   position: absolute;
   top: 0px;
-  right: 10px;
+  right: 0px;
   width:22px;
   height:22px;
 }
