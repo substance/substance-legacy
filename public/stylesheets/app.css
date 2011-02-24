@@ -455,32 +455,46 @@ a.button:active {
 }
 
 #user_profile {
+  border-top: 1px solid #ccc;
   overflow: auto;
-  margin: 0px 0px 20px 0px;
+  margin: 0px 0px 0px 0px;
+}
+
+#user_profile h1 {
+  font-family: 'Palatino Linotype', 'Book Antiqua', Palatino, FreeSerif, serif;
+  margin-top: 20px;
+  padding-bottom: 0;
 }
 
 #user_profile .avatar {
-  width: 260px;
+  width: 120px;
   float: left;
 }
 
 #user_profile img {
-/*  background: blue;*/
   padding: 10px 0;
-  margin: 10px 0;
+  margin: 3px 0;
 }
 
-#user_profile dl {
-  margin-left: 10px;
+#user_profile .username {
+  float: left;
 }
 
-#user_profile dt {
-  color: #666;
+#user_profile .attributes {
+  margin-top: 40px;
+  float: right;
+  width: 330px;
+  text-align: right;
 }
 
-#user_profile dd {
-  color: black;
+#user_profile .attributes span {
+  padding-right: 20px;
 }
+
+#user_profile .attributes em {
+  color: #888;
+}
+
 
 
 /* body > #container > .menu

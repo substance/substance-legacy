@@ -162,8 +162,8 @@
               <b>User Comments</b> and <b>PDF Export</b>.
             </p>
             <div>
-              <a href="#substance/contributions">
-                <div id="donations_total">$ 50.00</div>
+              <a href="#substance/contribute">
+                <div id="donations_total">$ 70.00</div>
                 <div id="donations_total_label">contributed so far</div>
               </a>
               <form id="contribute_form" action="https://www.paypal.com/cgi-bin/webscr" method="post">
@@ -366,37 +366,28 @@
     <div id="browser_inner_wrapper">
       <% if (user) { %>
         <div id="user_profile">
-          <h2><%= user.get('name') %></h2>
           <div class="container">
             <div class="avatar">
-              <img<% if (user.get('username') === app.username) { %> title="Change your avatar at Gravatar.com"<% } %> class="left" src="<%= _.gravatar(user.get('email'), 120) %>"/>
+              <img<% if (user.get('username') === app.username) { %> title="Change your avatar at Gravatar.com"<% } %> class="left" src="<%= _.gravatar(user.get('email'), 100) %>"/>
             </div>
-            
-            <dl class="document-attributes left">
-              <dt>Username</dt>
-              <dd><%= user.get('username') %></dd>
-              
-              <% if (user.get('website')) { %>
-                <dt>Website</dt>
-                <dd><a target="_blank" href="<%= user.get('website') %>"><%= user.get('website') %></a></dd>
+            <div class="username">
+              <h1><%= user.get('name') %></h1>
+              <p><em>as</em> <b><%= user.get('username') %></b> <em>since</em> <%= _.date(user.get('created_at')) %></p>
+            </div>
+            <div class="attributes">
+              <% if (user.get('location')) { %>
+                <span><em>Lives in</em> <%= user.get('location') %></span>
               <% } %>
               
               <% if (user.get('company')) { %>
-                <dt>Company</dt>
-                <dd><%= user.get('company') %></dd>
+                <span><em>Works at</em> <%= user.get('company') %></span>
               <% } %>
               
-              <% if (user.get('location')) { %>
-                <dt>Location</dt>
-                <dd><%= user.get('location') %></dd>
+              <% if (user.get('website')) { %>
+                <span><em>Website at</em> <a target="_blank" href="<%= user.get('website') %>"><%= user.get('website') %></a></span>
               <% } %>
-                            
-              <dt>Member since</dt>
-              <dd><%= _.date(user.get('created_at')) %></dd>
-            </dl>
-            <br class="clear"/>
+            </div>
           </div>
-          
         </div>
       <% } %>
     
