@@ -27,7 +27,6 @@
     </dl>
   </script>
   
-  
   <script type="text/x-ejs-template" name="show_attributes">
     <h1>Attributes</h1>
     <dl class="document-attributes">
@@ -162,7 +161,7 @@
               <b>User Comments</b> and <b>PDF Export</b>.
             </p>
             <div>
-              <a href="#substance/contribute">
+              <a href="http://substance.io#substance/contribute">
                 <div id="donations_total">$ 70.00</div>
                 <div id="donations_total_label">contributed so far</div>
               </a>
@@ -172,7 +171,6 @@
                 <a href="#contribute" onclick="javascript: $('#contribute_form').submit(); return false;" id="contribute_button" class="button contribute">Contribute</a>
                 <img alt="" border="0" src="https://www.paypal.com/de_DE/i/scr/pixel.gif" width="1" height="1">
               </form>
-              
               <br class="clear"/>
             </div>
           </div>
@@ -376,7 +374,7 @@
             </div>
             <div class="attributes">
               <% if (user.get('location')) { %>
-                <span><em>Lives in</em> <%= user.get('location') %></span>
+                <span><em>Located in</em> <%= user.get('location') %></span>
               <% } %>
               
               <% if (user.get('company')) { %>
@@ -721,7 +719,7 @@
     </div>
     <div id="footer">
       <div class="credits">A <a href="http://quasipartikel.at" target="_new">Quasipartikel</a> production</div>
-      <div class="version"><a href="#substance/substance">About</a> | <a href="http://twitter.com/_substance">Twitter</a> | <a href="#substance/release_notes">Release 0.1</a></div>
+      <div class="version"><a href="http://substance.io#substance/substance">About</a> | <a href="http://twitter.com/_substance">Twitter</a> | <a href="http://substance.io#substance/release-notes">Release 0.1</a></div>
     </div>
   </div>
   
