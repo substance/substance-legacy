@@ -2345,7 +2345,7 @@ var BrowserTab = Backbone.View.extend({
              success: function(res) {               
                // Render results
                that.$('.results').html('');
-               that.$('.results').append($('<a href="#search/'+encodeURI($('#search').val())+'" class="result-item documents">'+res.document_count+' Documents / '+Object.keys(res.users).length+' Users</a>'));
+               that.$('.results').append($('<a href="#search/'+encodeURI($('#search').val())+'" class="result-item documents">'+res.document_count+' Documents / '+_.keys(res.users).length+' Users</a>'));
                _.each(res.users, function(user, key) {
                  that.$('.results').append($('<a href="#'+user.username+'" class="result-item user"><div class="username">'+user.username+'</div><div class="full-name">'+(user.name ? user.name : '')+'</div><div class="count">User</div></a>'));
                });
