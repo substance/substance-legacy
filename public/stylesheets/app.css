@@ -634,8 +634,8 @@ a.button:active {
   line-height: 50px;
   right: 0px;
   z-index: 5000;
-  height: 60px;
-  overflow: auto;
+  height: 60px;  
+  overflow: hidden;
 }
 
 #login .signup {
@@ -656,6 +656,9 @@ a.button:active {
 #login div a {
   margin-left: 10px;
 }
+
+
+#login #login-form { float: right; }
 
 #login input {
   float: left;
