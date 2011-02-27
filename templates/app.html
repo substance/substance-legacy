@@ -1,7 +1,7 @@
 <!DOCTYPE html> 
 <html> 
 <head> 
-  <title>Substance (Developer Preview)</title>
+  <title>Substance — Open Documents for the Web</title>
   
   <script>
     var seed = {{{{seed}}}};
@@ -106,7 +106,11 @@
             <ul class="feature-properties">
               <li>
                 <div>Semantic Editing</div>
-                <div class="descr">Focus is on Content not Formatting</div>
+                <div class="descr">Focus is on Content not Layout</div>
+              </li>
+              <li>
+                <div>Publish</div>
+                <div class="descr">Publish and instantly share your articles</div>
               </li>
               <li>
                 <div>Multiple Document Types</div>
@@ -182,7 +186,7 @@
   <script type="text/x-ejs-template" name="header">
     <div class="title">
       
-      <a href="#recent"<% if (!user) { %> class="toggle-startpage"<% } %>>Substance.</a>
+      <a href="#recent"<% if (!user) { %> class="toggle-startpage"<% } %>>Substance.io</a>
       
     </div>
     <div id="sync_state"></div>
@@ -200,6 +204,9 @@
             <input type="password" name="password" class="hint" id="login-password" value="password">
             <input type="submit" value="Login"/>
           </form>
+          <div class="signup">
+            New to Substance? <a href="#signup" class="toggle-signup">Create an Account</a>
+          </div>
         <% } %>
       </div>
     </div>
@@ -718,8 +725,8 @@
       </div>
     </div>
     <div id="footer">
-      <div class="credits">A <a href="http://quasipartikel.at" target="_new">Quasipartikel</a> production</div>
-      <div class="version"><a href="http://substance.io#substance/substance">About</a> | <a href="http://twitter.com/_substance">Twitter</a> | <a href="http://substance.io#substance/release-notes">Release 0.1</a></div>
+      <div class="credits"><a href="http://substance.io#substance/substance">About</a> | <a href="http://twitter.com/_substance">Twitter</a> | <a href="http://github.com/michael/substance/issues">Report Bugs</a> | <a href="http://news.ycombinator.com/item?id=2260865">Discuss</a></div>
+      <div class="version"><a href="http://substance.io#substance/release-notes">Substance 0.1.0</a></div>
     </div>
   </div>
   

@@ -634,7 +634,18 @@ a.button:active {
   line-height: 50px;
   right: 0px;
   z-index: 5000;
+  height: 60px;
   overflow: auto;
+}
+
+#login .signup {
+  position: absolute;
+  top: 34px;
+  color: #888;
+  right: 0px;
+  height: 5px;
+  font-size: 14px;
+  font-family: 'Palatino Linotype', 'Book Antiqua', Palatino, FreeSerif, serif;
 }
 
 #login a {
