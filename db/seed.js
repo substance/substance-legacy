@@ -56,7 +56,7 @@ var seedGraph = {
         "unique": true,
         "type": "string",
         "required": true,
-        "validator": "^[a-z_]{1}[a-z_0-9]{2,20}$"
+        "validator": "^[a-zA-Z_]{1}[a-zA-Z_0-9-]{2,20}$"
       },
       "email": {
         "name": "Email",

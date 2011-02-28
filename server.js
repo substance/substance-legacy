@@ -245,7 +245,7 @@ function findDocuments(searchstr, type, username, callback) {
       });
       
       if (type === 'user') {
-        associatedItems.push('/user/'+searchstr);
+        associatedItems.push('/user/'+searchstr.toLowerCase());
       }
 
       // Fetch associated items
@@ -340,14 +340,14 @@ app.get('/attributes', function(req, res) {
 });
 
 app.post('/login', function(req, res) {  
-  var username = req.body.username,
+  var username = req.body.username.toLowerCase(),
       password = req.body.password;
   
   var graph = new Data.Graph(seed);
   graph.fetch({type: '/type/user'}, {}, function(err) {
     if (!err) {
       var user = graph.get('/user/'+username);
-      if (user && username === user.get('username') && encryptPassword(password) === user.get('password')) {
+      if (user && username === user.get('username').toLowerCase() && encryptPassword(password) === user.get('password')) {
         var seed = {};
         seed[user._id] = user.toJSON();
         delete seed[user._id].password;
@@ -386,13 +386,13 @@ app.post('/register', function(req, res) {
     return res.send({"status": "error", "field": "username", "message": "Please choose a username."});
   }
   
-  db.view(db.uri.pathname+'/_design/substance/_view/users', {key: username}, function(err, result) {
+  db.view(db.uri.pathname+'/_design/substance/_view/users', {key: username.toLowerCase()}, function(err, result) {
     // Bug-workarount related to https://github.com/creationix/couch-client/issues#issue/3
     // Normally we'd just use the err object in an error case
     if (result.error || !result.rows) return res.send({"status": "error", "field": "all", "message": "Unknown error."});
     if (result.rows.length > 0) return res.send({"status": "error", "field": "username", "message": "Username is already taken."});
     
-    var user = graph.set('/user/'+username, {
+    var user = graph.set('/user/'+username.toLowerCase(), {
       type: '/type/user',
       username: username,
       name: name,
@@ -409,10 +409,11 @@ app.post('/register', function(req, res) {
           delete seed[user._id].password;
           res.send({
             status: "ok",
-            username: username,
+            username: username.toLowerCase(),
             seed: seed
           });
-          req.session.username = username;
+          
+          req.session.username = username.toLowerCase();
           req.session.seed = seed;
         } else {
           return res.send({"status": "error", "field": "all", "message": "Unknown error."});
@@ -748,6 +749,10 @@ app.put('/writegraph', function(req, res) {
 // Start the engines
 // -----------
 
+
+// process.on('uncaughtException',function(error){
+// // process error
+// })
 
 console.log('Loading schema...');
 graph.fetch({"type|=": ["/type/type", "/type/config"]}, {}, function(err, g) {

@@ -2845,7 +2845,7 @@ var Application = Backbone.View.extend({
         } else {
           graph.merge(res.seed);
           notifier.notify(Notifications.AUTHENTICATED);
-          that.username = res.username;
+          that.username = res.username;          
           that.trigger('authenticated');
         }
       },
