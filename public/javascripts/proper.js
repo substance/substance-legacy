@@ -94,14 +94,14 @@
 
   controlsTpl = ' \
     <div class="proper-commands"> \
-      <a href="#" title="Emphasis" class="command em" command="em"><div>Emphasis</div></a> \
-      <a href="#" title="Strong" class="command strong" command="strong"><div>Strong</div></a> \
-      <a href="#" title="Code" class="command code" command="code"><div>Code</div></a> \
-      <a href="#" title="Bullet List" class="command ul" command="ul"><div>Bullets List</div></a>\
-      <a href="#" title="Numbered List" class="command ol" command="ol"><div>Numbered List</div></a>\
-      <a href="#" title="Indent" class="command indent" command="indent"><div>Indent</div></a>\
-      <a href="#" title="Outdent" class="command outdent" command="outdent"><div>Outdent</div></a>\
-      <a title="Link" href="#" class="command link" command="link"><div>Link</div></a>\
+      <a href="#" title="Emphasis (CTRL+SHIFT+E)" class="command em" command="em"><div>Emphasis</div></a> \
+      <a href="#" title="Strong (CTRL+SHIFT+S)" class="command strong" command="strong"><div>Strong</div></a> \
+      <a href="#" title="Inline Code (CTRL+SHIFT+D)" class="command code" command="code"><div>Code</div></a> \
+      <a title="Link (CTRL+SHIFT+L)" href="#" class="command link" command="link"><div>Link</div></a>\
+      <a href="#" title="Bullet List (CTRL+SHIFT+B)" class="command ul" command="ul"><div>Bullets List</div></a>\
+      <a href="#" title="Numbered List (CTRL+SHIFT+N)" class="command ol" command="ol"><div>Numbered List</div></a>\
+      <a href="#" title="Indent (TAB)" class="command indent" command="indent"><div>Indent</div></a>\
+      <a href="#" title="Outdent (SHIFT+TAB)" class="command outdent" command="outdent"><div>Outdent</div></a>\
       <br class="clear"/>\
     </div>';
   
@@ -218,6 +218,7 @@
         alert($(this.el).html());
       }
     };
+    
     
     function sanitize() {
       var rawContent = document.getElementById('proper_raw_content');
@@ -364,6 +365,7 @@
     self.deactivate = function() {
       // $(activeElement).attr('contenteditable', 'false');
       $(activeElement).unbind('paste');
+      $(activeElement).unbind('keydown');
       // $(activeElement).unbind();
       $('.proper-commands').remove();
       self.unbind('changed');
@@ -386,6 +388,18 @@
       if (options.markup) {
         $controls = $(controlsTpl); 
         $controls.appendTo($(options.controlsTarget));          
+      }
+      
+      // Keyboard bindings
+      if (options.markup) {
+        $(activeElement).bind('keydown', 'ctrl+shift+e', commands.execEM);
+        $(activeElement).bind('keydown', 'ctrl+shift+s', commands.execSTRONG);
+        $(activeElement).bind('keydown', 'ctrl+shift+c', commands.execCODE);
+        $(activeElement).bind('keydown', 'ctrl+shift+l', commands.execLINK);
+        $(activeElement).bind('keydown', 'ctrl+shift+b', commands.execUL);
+        $(activeElement).bind('keydown', 'ctrl+shift+n', commands.execOL);
+        $(activeElement).bind('keydown', 'tab', commands.execINDENT);
+        $(activeElement).bind('keydown', 'shift+tab', commands.execOUTDENT);
       }
       
       updateCommandState();
