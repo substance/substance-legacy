@@ -411,7 +411,12 @@
       if (options.markup) {
         return activeElement ? semantify($(activeElement).html()).trim() : '';
       } else {
-        return $(activeElement).text().trim();
+        if (options.multiline) {
+          return _.stripTags($(activeElement).html().replace(/<div>/g, '\n')
+                                             .replace(/<\/div>/g, '')).trim();
+        } else {
+          return _.stripTags($(activeElement).html()).trim();
+        }
       }
     };
     
