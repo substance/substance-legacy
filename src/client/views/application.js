@@ -439,7 +439,9 @@ var remote,                              // Remote handle for server-side method
 
       if (main.offsetTop - scrollTop() < 0) {
         $('.view-actions').addClass('docked');
+        $('.view-actions').css('left', ($('#document_wrapper').offset().left-60)+'px')
       } else {
+        $('.view-actions').css('left', '');
         $('.view-actions').removeClass('docked');
       }
     }

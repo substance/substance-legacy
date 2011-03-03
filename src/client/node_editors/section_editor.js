@@ -8,42 +8,22 @@ var SectionEditor = Backbone.View.extend({
     this.render();
     this.$node = $('#' + app.document.selectedNode.html_id + ' > .content').attr('contenteditable', true).unbind();
 
-    // Make selection    
-    if (this.$node.hasClass('empty')) {
-      this.$node.html('');
-      _.fullSelection(this.$node[0]);
-    };
-
-    this.$node.unbind('keydown');
-    this.$node.bind('keydown', function(e) {
-      return e.keyCode !== 13 ? that.updateNode() : false;
+    editor.activate(this.$node, {
+      multiline: false,
+      markup: false
     });
     
-    this.$node.bind('blur', function() {
-      that.updateState();
+    editor.bind('changed', function() {
+      that.updateNode();
     });
-  },
-  
-  updateState: function() {
-    if (this.$node.text().trim().length === 0) {
-      this.$node.html('&laquo; Enter Section Name &raquo;');
-      this.$node.addClass('empty');
-      app.document.updateSelectedNode({
-        content: ""
-      });
-    } else if (this.$node.hasClass('empty') && this.$node.text().trim().length > 0) {
-      this.$node.removeClass('empty');
-    }
   },
   
   updateNode: function(e) {
     var that = this;
     
     setTimeout(function() {
-      var sanitizedContent = _.stripTags(that.$node.html());
-      // Update HTML with sanitized content
       app.document.updateSelectedNode({
-        name: sanitizedContent
+        name: editor.content()
       });
     }, 5);
   },

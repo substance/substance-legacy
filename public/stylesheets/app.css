@@ -1093,6 +1093,7 @@ blockquote p {
 }
 
 blockquote {
+  min-width: 200px;
   float: left;
   margin: 20px 0 10px 0;
   padding: 0px 20px;

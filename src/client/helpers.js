@@ -1,8 +1,6 @@
 // Helpers
 // ---------------
 
-
-
 /**
  * Date.parse with progressive enhancement for ISO-8601, version 2
  * © 2010 Colin Snover <http://zetafleet.com>
@@ -53,7 +51,6 @@ _.tpl = function(tpl, ctx) {
 };
 
 _.gravatar = function (email, size) {
-
   // MD5 (Message-Digest Algorithm) by WebToolkit
   // http://www.webtoolkit.info/javascript-md5.html
   

@@ -8,43 +8,21 @@ var TextEditor = Backbone.View.extend({
     this.render();
     
     this.$content = this.$('div.content');
-    editor.activate(this.$content);
-    
-    // Make selection    
-    if (this.$content.hasClass('empty')) {
-      this.$content.html('<p></p>');
-      _.fullSelection(this.$content[0]);
-    };
-    
+    editor.activate(this.$content, {
+      placeholder: 'Enter Text',
+      controlsTarget: $('#document_actions')
+    });
     // Update node when editor commands are applied
     editor.bind('changed', function() {
       that.updateNode();
     });
-    
-    this.$content.bind('blur', function() {
-      that.updateState();
-      that.$content.unbind('blur');
-    });
-  },
-  
-  updateState: function() {
-    if (this.$content.text().trim().length === 0) {
-      this.$content.html('&laquo; Enter Text &raquo;');
-      this.$content.addClass('empty');
-      app.document.updateSelectedNode({
-        content: "<p></p>"
-      });
-    } else if (this.$content.hasClass('empty') && this.$content.text().trim().length > 0) {
-      this.$content.removeClass('empty');
-    }
   },
   
   updateNode: function() {
     var that = this;
-    
     setTimeout(function() {
       app.document.updateSelectedNode({
-        content: that.$content.html()
+        content: editor.content()
       });
     }, 5);
   },

@@ -156,8 +156,6 @@ notifier.bind('message:arrived', function(message) {
 // Helpers
 // ---------------
 
-
-
 /**
  * Date.parse with progressive enhancement for ISO-8601, version 2
  * © 2010 Colin Snover <http://zetafleet.com>
@@ -208,7 +206,6 @@ _.tpl = function(tpl, ctx) {
 };
 
 _.gravatar = function (email, size) {
-
   // MD5 (Message-Digest Algorithm) by WebToolkit
   // http://www.webtoolkit.info/javascript-md5.html
   
@@ -575,76 +572,45 @@ var DocumentEditor = Backbone.View.extend({
     this.$node = $('#' + app.document.selectedNode.html_id + ' > h1.content').unbind();
     this.$lead = $('#' + app.document.selectedNode.html_id + ' #document_lead').unbind();
     
-    function makeSelection() {
-      if (document.activeElement === that.$node[0]) {
-        if (that.$node.hasClass('empty')) {
-          that.$node.html('');
-          _.fullSelection(that.$node[0]);
-        }
-      } else {
-        if (that.$lead.hasClass('empty')) {
-          that.$lead.html('');
-          _.fullSelection(that.$lead[0]);
-        }
-      }
+    function activateTitleEditor() {
+      editor.activate(that.$node, {
+        multiline: false,
+        markup: false,
+        placeholder: 'Enter Title'
+      });
+      editor.bind('changed', function() {
+        that.updateNode({title: editor.content()});
+      });
     }
     
+    function activateLeadEditor() {
+      editor.activate(that.$lead, {
+        multiline: false,
+        markup: false,
+        placeholder: 'Enter lead'
+      });
+      editor.bind('changed', function() {
+        that.updateNode({lead: editor.content()});
+      });
+    }
+    
+    that.$node.bind('click', activateTitleEditor);
+    that.$lead.bind('click', activateLeadEditor);
+    
+    function makeSelection() {
+      if (document.activeElement === that.$node[0]) {
+        activateTitleEditor();
+      } else {
+        activateLeadEditor();
+      }
+    }
     makeSelection();
-    this.$node.bind('focus', makeSelection);
-    this.$lead.bind('focus', makeSelection);
-    
-    this.$node.bind('blur', function() {
-      that.updateState('$node');
-    });
-    
-    this.$lead.bind('blur', function() {
-      that.updateState('$lead');
-    });
-    
-    this.$node.unbind('keydown');
-    this.$node.bind('keydown', function(e) {
-      return e.keyCode !== 13 ? that.updateNode() : false;
-    });
-    this.$lead.unbind('keydown');
-    this.$lead.bind('keydown', function(e) {
-      return e.keyCode !== 13 ? that.updateNode() : false;
-    });
     return true;
   },
   
-  updateState: function(property) {
-    if (this[property].text().trim().length === 0) {
-      if (property === '$node') {
-        this[property].html('&laquo; Enter Title &raquo;');
-        app.document.updateSelectedNode({
-          title: ""
-        });
-      } else {
-        this[property].html('&laquo; Enter Lead &raquo;');
-        app.document.updateSelectedNode({
-          lead: ""
-        });
-      }
-      this[property].addClass('empty');
-
-    } else if (this[property].hasClass('empty') && this[property].text().trim().length > 0) {
-      this[property].removeClass('empty');
-    }
-  },
-  
-  updateNode: function() {
-    var that = this;
-    setTimeout(function() {
-      var sanitizedTitle = that.$node.hasClass('empty') && document.activeElement !== that.$node[0] ? "" : _.stripTags(that.$node.html());      
-      var sanitizedLead = that.$lead.hasClass('empty') && document.activeElement !== that.$lead[0] ? "" : _.stripTags(that.$lead.html());
-      
-      app.document.updateSelectedNode({
-        title: sanitizedTitle,
-        lead: sanitizedLead
-      });
-      
-      app.document.trigger('changed');
-    }, 5);
+  updateNode: function(attrs) {
+    app.document.updateSelectedNode(attrs);
+    app.document.trigger('changed');
   }
 });
 var SectionEditor = Backbone.View.extend({
@@ -657,42 +623,22 @@ var SectionEditor = Backbone.View.extend({
     this.render();
     this.$node = $('#' + app.document.selectedNode.html_id + ' > .content').attr('contenteditable', true).unbind();
 
-    // Make selection    
-    if (this.$node.hasClass('empty')) {
-      this.$node.html('');
-      _.fullSelection(this.$node[0]);
-    };
-
-    this.$node.unbind('keydown');
-    this.$node.bind('keydown', function(e) {
-      return e.keyCode !== 13 ? that.updateNode() : false;
+    editor.activate(this.$node, {
+      multiline: false,
+      markup: false
     });
     
-    this.$node.bind('blur', function() {
-      that.updateState();
+    editor.bind('changed', function() {
+      that.updateNode();
     });
-  },
-  
-  updateState: function() {
-    if (this.$node.text().trim().length === 0) {
-      this.$node.html('&laquo; Enter Section Name &raquo;');
-      this.$node.addClass('empty');
-      app.document.updateSelectedNode({
-        content: ""
-      });
-    } else if (this.$node.hasClass('empty') && this.$node.text().trim().length > 0) {
-      this.$node.removeClass('empty');
-    }
   },
   
   updateNode: function(e) {
     var that = this;
     
     setTimeout(function() {
-      var sanitizedContent = _.stripTags(that.$node.html());
-      // Update HTML with sanitized content
       app.document.updateSelectedNode({
-        name: sanitizedContent
+        name: editor.content()
       });
     }, 5);
   },
@@ -712,43 +658,21 @@ var TextEditor = Backbone.View.extend({
     this.render();
     
     this.$content = this.$('div.content');
-    editor.activate(this.$content);
-    
-    // Make selection    
-    if (this.$content.hasClass('empty')) {
-      this.$content.html('<p></p>');
-      _.fullSelection(this.$content[0]);
-    };
-    
+    editor.activate(this.$content, {
+      placeholder: 'Enter Text',
+      controlsTarget: $('#document_actions')
+    });
     // Update node when editor commands are applied
     editor.bind('changed', function() {
       that.updateNode();
     });
-    
-    this.$content.bind('blur', function() {
-      that.updateState();
-      that.$content.unbind('blur');
-    });
-  },
-  
-  updateState: function() {
-    if (this.$content.text().trim().length === 0) {
-      this.$content.html('&laquo; Enter Text &raquo;');
-      this.$content.addClass('empty');
-      app.document.updateSelectedNode({
-        content: "<p></p>"
-      });
-    } else if (this.$content.hasClass('empty') && this.$content.text().trim().length > 0) {
-      this.$content.removeClass('empty');
-    }
   },
   
   updateNode: function() {
     var that = this;
-    
     setTimeout(function() {
       app.document.updateSelectedNode({
-        content: that.$content.html()
+        content: editor.content()
       });
     }, 5);
   },
@@ -769,75 +693,46 @@ var QuoteEditor = Backbone.View.extend({
     this.$content = this.$('.quote-content').unbind();
     this.$author = this.$('.quote-author').unbind();
     
+    function activateContentEditor() {
+      editor.activate(that.$content, {
+        multiline: false,
+        markup: false,
+        placeholder: 'Enter Quote'
+      });
+      editor.bind('changed', function() {
+        that.updateNode({content: editor.content()});
+      });
+    }
+    
+    function activateAuthorEditor() {
+      editor.activate(that.$author, {
+        multiline: false,
+        markup: false,
+        placeholder: 'Enter Author'
+      });
+      editor.bind('changed', function() {
+        that.updateNode({author: editor.content()});
+      });
+    }
+    
+    that.$content.bind('click', activateContentEditor);
+    that.$author.bind('click', activateAuthorEditor);
+    
     function makeSelection() {
       if (document.activeElement === that.$author[0]) {
-        if (that.$author.hasClass('empty')) {
-          that.$author.html('');
-          _.fullSelection(that.$author[0]);
-        }
+        activateAuthorEditor();
       } else {
-        if (that.$content.hasClass('empty')) {
-          that.$content.html('');
-          _.fullSelection(that.$content[0]);
-        }
+        activateContentEditor();
       }
     }
     
     makeSelection();
-    this.$content.bind('focus', makeSelection);
-    this.$author.bind('focus', makeSelection);
-    
-    this.$content.bind('blur', function() {
-      that.updateState('$content');
-    });
-    
-    this.$author.bind('blur', function() {
-      that.updateState('$author');
-    });
-    
-    this.$content.unbind('keydown');
-    this.$content.bind('keydown', function(e) {
-      return e.keyCode !== 13 ? that.updateNode() : false;
-    });
-    
-    this.$author.unbind('keydown');
-    this.$author.bind('keydown', function(e) {
-      return e.keyCode !== 13 ? that.updateNode() : false;
-    });
+    return true;
   },
   
-  updateState: function(property) {
-    if (this[property].text().trim().length === 0) {
-      if (property === '$content') {
-        this[property].html('&laquo; Enter Quote &raquo;');
-        app.document.updateSelectedNode({
-          content: ""
-        });
-      } else {
-        this[property].html('&laquo; Enter Author &raquo;');
-        app.document.updateSelectedNode({
-          author: ""
-        });
-      }
-      this[property].addClass('empty');
-
-    } else if (this[property].hasClass('empty') && this[property].text().trim().length > 0) {
-      this[property].removeClass('empty');
-    }
-  },
-  
-  updateNode: function() {
-    var that = this;
-    
-    setTimeout(function() {
-      var sanitizedQuote = that.$content.hasClass('empty') && document.activeElement !== that.$content[0] ? "" : _.stripTags(that.$content.html());
-      var sanitizedAuthor = that.$author.hasClass('empty') && document.activeElement !== that.$author[0] ? "" : _.stripTags(that.$author.html());
-      
-      app.document.updateSelectedNode({
-        content: sanitizedQuote,
-        author: sanitizedAuthor
-      });
-    }, 5);
+  updateNode: function(attrs) {
+    app.document.updateSelectedNode(attrs);
+    app.document.trigger('changed');
   },
   
   render: function() {
@@ -853,49 +748,20 @@ var CodeEditor = Backbone.View.extend({
   initialize: function() {
     var that = this;
     this.render();
-    
+        
     this.$content = this.$('.content');
-    editor.activate(this.$content);
-    
-    $('.proper-commands').hide(); // Quickfix
-    
-    // Make selection    
-    if (this.$content.hasClass('empty')) {
-      this.$content.html('');
-      _.fullSelection(this.$content[0]);
-    };
+    editor.activate(this.$content, {
+      placeholder: 'Enter Code',
+      controlsTarget: $('#document_actions'),
+      markup: false
+    });
     
     // Update node when editor commands are applied
     editor.bind('changed', function() {
-      that.updateNode();
-    });
-    
-    this.$content.bind('blur', function() {
-      that.updateState();
-      that.$content.unbind('blur');
-    });
-  },
-  
-  updateState: function() {
-    if (this.$content.text().trim().length === 0) {
-      this.$content.html('&laquo; Enter code &raquo;');
-      this.$content.addClass('empty');
       app.document.updateSelectedNode({
-        content: ""
+        content: editor.content()
       });
-    } else if (this.$content.hasClass('empty') && this.$content.text().trim().length > 0) {
-      this.$content.removeClass('empty');
-    }
-  },
-  
-  updateNode: function() {
-    var that = this;
-    
-    setTimeout(function() {
-      app.document.updateSelectedNode({
-        content: that.$content.html()
-      });
-    }, 5);
+    });
   },
   
   render: function() {
@@ -913,46 +779,18 @@ var QuestionEditor = Backbone.View.extend({
     this.render();
     
     this.$content = this.$('.content');
-    editor.activate(this.$content);
-    $('.proper-commands').hide(); // Quickfix
     
-    // Make selection    
-    if (this.$content.hasClass('empty')) {
-      this.$content.html('');
-      _.fullSelection(this.$content[0]);
-    };
+    editor.activate(this.$content, {
+      multiline: false,
+      markup: false
+    });
     
     // Update node when editor commands are applied
     editor.bind('changed', function() {
-      that.updateNode();
-    });
-    
-    this.$content.bind('blur', function() {
-      that.updateState();
-      that.$content.unbind('blur');
-    });
-  },
-  
-  updateState: function() {
-    if (this.$content.text().trim().length === 0) {
-      this.$content.html('&laquo; Enter Question &raquo;');
-      this.$content.addClass('empty');
       app.document.updateSelectedNode({
-        content: ""
+        content: editor.content()
       });
-    } else if (this.$content.hasClass('empty') && this.$content.text().trim().length > 0) {
-      this.$content.removeClass('empty');
-    }
-  },
-  
-  updateNode: function() {
-    var that = this;
-    
-    setTimeout(function() {
-      app.document.updateSelectedNode({
-        content: that.$content.html()
-      });
-    }, 5);
+    });
   },
   
   render: function() {
@@ -970,44 +808,23 @@ var AnswerEditor = Backbone.View.extend({
     this.render();
     
     this.$content = this.$('.content');
-    editor.activate(this.$content);
-    $('.proper-commands').hide(); // Quickfix
-    
-    // Make selection    
-    if (this.$content.hasClass('empty')) {
-      this.$content.html('');
-      _.fullSelection(this.$content[0]);
-    };
+    editor.activate(this.$content, {
+      placeholder: 'Enter Answer',
+      controlsTarget: $('#document_actions')
+    });
     
     // Update node when editor commands are applied
     editor.bind('changed', function() {
       that.updateNode();
     });
-    
-    this.$content.bind('blur', function() {
-      that.updateState();
-      that.$content.unbind('blur');
-    });
   },
-  
-  updateState: function() {
-    if (this.$content.text().trim().length === 0) {
-      this.$content.html('&laquo; Enter Answer &raquo;');
-      this.$content.addClass('empty');
-      app.document.updateSelectedNode({
-        content: ""
-      });
-    } else if (this.$content.hasClass('empty') && this.$content.text().trim().length > 0) {
-      this.$content.removeClass('empty');
-    }
-  },
-  
+
   updateNode: function() {
     var that = this;
     
     setTimeout(function() {
       app.document.updateSelectedNode({
-        content: that.$content.html()
+        content: editor.content()
       });
     }, 5);
   },
@@ -2888,7 +2705,9 @@ var remote,                              // Remote handle for server-side method
 
       if (main.offsetTop - scrollTop() < 0) {
         $('.view-actions').addClass('docked');
+        $('.view-actions').css('left', ($('#document_wrapper').offset().left-60)+'px')
       } else {
+        $('.view-actions').css('left', '');
         $('.view-actions').removeClass('docked');
       }
     }
