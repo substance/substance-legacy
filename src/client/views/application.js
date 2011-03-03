@@ -428,7 +428,24 @@ var remote,                              // Remote handle for server-side method
     graph = new Data.Graph(seed, false); // The database
 
 (function() {
-  $(function() {
+  $(function() {    
+    function browserSupported() {
+      if (head.browser.mozilla && head.browser.version > "1.9.2") {
+        return true;
+      }
+      if (head.browser.webkit && head.browser.version > "533.0") {
+        return true;
+      }
+      return false;
+    }
+    
+    if (!browserSupported()) {
+      $('#container').html(_.tpl('browser_not_supported'));
+      $('#container').show();
+      return;
+    }
+    
+    $('#container').show();
     
     function scrollTop() {
       return document.body.scrollTop || document.documentElement.scrollTop;

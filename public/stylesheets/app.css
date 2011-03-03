@@ -344,10 +344,61 @@ a.button:active {
 #document_tab input:focus {border-bottom: 1px dotted #fff; color: rgba(255,255,255, 1); }
 
 
+/* Browser not supported view
+-------------------------------------------------------------------------------*/
+
+div.browser-not-supported {
+  font-family: 'Palatino Linotype', 'Book Antiqua', Palatino, FreeSerif, serif;
+  margin-top: 20px;
+  position: absolute;
+  top: 40px;
+  left: 200px;
+  right: 200px;
+  text-align: center;
+}
+
+div.browser-not-supported h1 p {
+  position: relative;
+  font-family: Helvetica, Arial;
+  color: #777;
+  top: -20px;
+  font-size: 15px;
+  padding: 0;
+  margin: 0;
+}
+
+div.browser-not-supported p {
+  font-size: 18px;
+  margin: 10px;
+}
+
+div.browser-not-supported p.recommendation {
+  color: #666;
+  font-size: 14px;
+  margin-top: 40px;
+  font-style: italic;
+  margin-bottom: 20px;
+}
+
+div.browser-not-supported h2 {
+  font-style: italic;
+  font-size: 30px;
+}
+
+div.browser-not-supported a {
+  opacity: 0.5;
+  border: none;
+  text-decoration: none;
+}
+
+div.browser-not-supported a:hover {
+  opacity: 1.0;
+}
+
 /* body > #container
 -------------------------------------------------------------------------------*/
 
-#container { margin: auto; padding: 0; max-width: 1200px;}
+#container { margin: auto; padding: 0; max-width: 1200px; display:none; }
 
 /* body > #container > #header
 -------------------------------------------------------------------------------*/
