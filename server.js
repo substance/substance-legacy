@@ -18,6 +18,7 @@ var seed;
 var db = CouchClient(config.couchdb_url);
 
 
+
 // WriteGraph Filters
 Data.middleware.writegraph = [
   // TODO make middleware asynchronous!
@@ -291,7 +292,7 @@ app.configure(function(){
   app.use(express.cookieDecoder());
   app.use(express.session({secret: config['secret']}));
   app.use(app.router);
-  app.use(express.staticProvider(__dirname+"/public"));
+  app.use(express.staticProvider(__dirname+"/public", { maxAge: 41 })); // 
   app.use(express.logger({ format: ':method :url' }));
 });
 
