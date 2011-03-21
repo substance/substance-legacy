@@ -466,7 +466,7 @@ var remote,                              // Remote handle for server-side method
     positionViewActions();
     $(window).bind('scroll', positionViewActions);
     $(window).bind('resize', positionViewActions);
-    
+
     // Start the engines
     app = new Application({el: $('#container'), session: session});
     
@@ -478,6 +478,21 @@ var remote,                              // Remote handle for server-side method
     
     // Start responding to routes
     Backbone.history.start();
+    
+    // Reset document when window gets out of focus
+    document.body.onblur = function() {  if (app.document) app.document.reset(); }
+    
+    // TODO: Prevent leaving page by pressing backspace
+    // $('body').bind('keydown', function(e) {
+    //   if (!currently_editing && e.keyCode === 8 ) e.preventDefault();
+    // });
+    
+    // Prevent exit when there are unsaved changes
+    window.onbeforeunload = confirmExit;
+    function confirmExit()
+    {
+      if (graph.dirtyNodes().length>0) return "You have unsynced changes, which will be lost. Are you sure you want to leave this page?";
+    }
     
     var pendingSync = false;
     graph.bind('dirty', function() {
