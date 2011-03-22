@@ -24,13 +24,7 @@ var Document = Backbone.View.extend({
     // Actions
     'click a.add_child': 'addChild',
     'click a.add_sibling': 'addSibling',
-    'click a.remove-node': 'removeNode',
-    'dragstart': 'dragStart',
-    'dragend': 'dragEnd',
-    'dragenter': 'dragEnter',
-    'dragover': 'dragOver',
-    'dragleave': 'dragLeave',
-    'drop': 'drop'
+    'click a.remove-node': 'removeNode'
   },
   
   loadedDocuments: {},
@@ -84,24 +78,24 @@ var Document = Backbone.View.extend({
   renderNode: function(node) {
     var $node = $('#'+node.html_id);
     var parent = graph.get($node.attr('parent'));
+    var level = parseInt($node.attr('level'));
     
-    $('#'+node.html_id).replaceWith(new HTMLRenderer(node, parent).render());
-    
+    $('#'+node.html_id).replaceWith(new HTMLRenderer(node, parent, level).render());
     if (this.mode === 'edit') {
-      renderControls(this.app.document.model);
+      renderControls(this.model, null, null, null, 0);
     } else {
       hijs('#'+node.html_id+' .content-node.code pre');
     }
   },
   
   renderDocument: function() {
-    this.$('#document').html(new HTMLRenderer(this.model).render());
+    this.$('#document').html(new HTMLRenderer(this.model, null, 0).render());
     this.$('#attributes').show();
     this.$('#document').show();
     
     // Render controls
     if (this.mode === 'edit') {
-      renderControls(this.model);
+      renderControls(this.model, null, null, null, 0);
     } else {
       hijs('.content-node.code pre');
     }
@@ -153,7 +147,6 @@ var Document = Backbone.View.extend({
     this.bind('select:node', function(node) {
       that.resetSelection();
       $('#'+node.html_id).addClass('selected');
-      
       $('#document').addClass('edit-mode');
       
       // Deactivate Richtext Editor
@@ -239,17 +232,14 @@ var Document = Backbone.View.extend({
       that.model = graph.get(id);
       
       if (that.model) {
-        
         that.render();
         that.init();
         that.reset();
         that.trigger('changed');
-        
         that.loadedDocuments[username+"/"+docname] = id;
         
         // Update browser graph reference
         app.browser.graph.set('objects', id, that.model);
-        
         app.toggleView('document');
         
         // TODO: register document for realtime sessions
@@ -396,15 +386,6 @@ var Document = Backbone.View.extend({
     }
   },
   
-  showActions: function(e) {
-    this.reset();
-    $(e.target).parent().parent().addClass('active');
-    
-    // Enable insert mode
-    $('#document').addClass('insert-mode');
-    return false;
-  },
-  
   highlightNode: function(e) {
     $(e.currentTarget).addClass('active');
     return false;
@@ -486,7 +467,7 @@ var Document = Backbone.View.extend({
       var type = $(e.currentTarget).attr('type');
       var refNode = graph.get($(e.currentTarget).attr('node'));
       var parentNode = graph.get($(e.currentTarget).attr('parent'));
-      var destination = $(e.currentTarget).parent().parent().attr('destination');
+      var destination = $(e.currentTarget).attr('destination');
       
       // newNode gets populated with default values
       var newNode = graph.set(null, {"type": type, "document": this.model._id});
@@ -498,9 +479,23 @@ var Document = Backbone.View.extend({
     }
 
     var targetIndex = parentNode.all('children').index(refNode._id);
+    if (destination === 'after') targetIndex += 1;
     
-    if (destination === 'after') {
-      targetIndex += 1;
+    if (type === '/type/section') {
+      // Move all successors inside the new section
+      var successors = parentNode.get('children').rest(targetIndex);
+      
+      var predecessors = parentNode.get('children').select(function(c, key, index) {
+        return index < targetIndex;
+      });
+      
+      // Update parent node's children
+      parentNode.set({children: predecessors.keys()});
+      
+      // Append successors to the new node
+      newNode.set({
+        children: successors.keys()
+      });
     }
     
     // Connect to parent
