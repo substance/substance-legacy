@@ -78,7 +78,7 @@
   Sanitize.Config = {}
   Sanitize.Config.BASIC = {
     elements: [
-       'a', 'b', 'br', 'em', 'i', 'li', 'ol', 'p', 'strong', 'code', 'ul'],
+       'a', 'b', 'br', 'em', 'i', 'li', 'ol', 'strong', 'code', 'ul'],
 
      attributes: {
        'a': ['href'],
@@ -219,16 +219,23 @@
       }
     };
     
-    
     function sanitize() {
+      // var content = $('#proper_raw_content').html()
+      //                 .replace(/<\/p><p>/, '<br/><br/>'); // first p
+      //                 // .replace('</p>$', ''); // remove last p
+      // $('#proper_raw_content').html(content);
+      
       var rawContent = document.getElementById('proper_raw_content');
-      if (options.markup) {
-        var s = new Sanitize(Sanitize.Config.BASIC);
-        var content = s.clean_node(rawContent);
-        $('#proper_content').html(content);
-      } else {
-        $('#proper_content').html($(rawContent).text());
-      }
+      
+      // if (options.markup) {
+      //   var s = new Sanitize(Sanitize.Config.BASIC);
+      //   var content = s.clean_node(rawContent);
+      //   $('#proper_content').html(content);
+      // } else {
+      //   $('#proper_content').html($(rawContent).text());
+      // }
+      console.log('Jojo');
+      $('#proper_content').html($(rawContent).text());
     }
     
     function updateCommandState() {
@@ -303,17 +310,29 @@
       $(el).unbind('keydown');
       $(el).unbind('keyup');
       $(el).unbind('blur');
+      
       $(el).bind('paste', function() {
         var selection = saveSelection();
         $('#proper_raw_content').focus();
+        
+        console.log('pasting...');
         
         // Immediately sanitize pasted content
         setTimeout(function() {
           sanitize();
           restoreSelection(selection);
-            $(el).focus();
-            document.execCommand('insertHTML', false, $('#proper_content').html().trim());
-            $('#proper_raw_content').html('');
+          
+          $(el).focus();
+          
+          // Avoid nested paragraph correction resulting from paste
+
+          var content = $('#proper_content').html().trim();
+          //                 .replace(/^<p>/, '') // remove first p
+          //                 .replace(/<\/p>$/, ''); // remove last p
+
+          // For some reason last </p> gets injected anyway
+          document.execCommand('insertHTML', false, content);
+          $('#proper_raw_content').html('');
         }, 1);
       });
       
@@ -331,10 +350,10 @@
       });
       
       $(el).bind('blur', checkEmpty);
+      $(el).bind('click', updateCommandState);
       
       $(el).bind('keyup', function(e) {        
         updateCommandState();
-        
         if ($(activeElement).text().trim().length > 0) {
           $(activeElement).removeClass('empty');
         } else {
@@ -423,7 +442,9 @@
       if ($(activeElement).hasClass('empty')) return '';
       
       if (options.markup) {
-        return activeElement ? semantify($(activeElement).html()).trim() : '';
+        return activeElement ? semantify($(activeElement).html()).trim()
+                               .replace(/<\/p><\/p>/g, '</p>')
+                             : '';
       } else {
         if (options.multiline) {
           return _.stripTags($(activeElement).html().replace(/<div>/g, '\n')
