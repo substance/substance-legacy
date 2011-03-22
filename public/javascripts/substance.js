@@ -167,15 +167,15 @@ notifier.bind('message:arrived', function(message) {
         if (isNaN(timestamp) && (struct = /^(\d{4}|[+\-]\d{6})-(\d{2})-(\d{2})(?:[T ](\d{2}):(\d{2})(?::(\d{2})(?:\.(\d{3,}))?)?(?:(Z)|([+\-])(\d{2})(?::?(\d{2}))?))?/.exec(date))) {
             if (struct[8] !== 'Z') {
                 minutesOffset = +struct[10] * 60 + (+struct[11]);
-                
+
                 if (struct[9] === '+') {
                     minutesOffset = 0 - minutesOffset;
                 }
             }
-            
+
             timestamp = Date.UTC(+struct[1], +struct[2] - 1, +struct[3], +struct[4], +struct[5] + minutesOffset, +struct[6], +struct[7].substr(0, 3));
         }
-        
+
         return new Date(timestamp).toDateString();
     };
 }());
@@ -208,10 +208,10 @@ _.tpl = function(tpl, ctx) {
 _.gravatar = function (email, size) {
   // MD5 (Message-Digest Algorithm) by WebToolkit
   // http://www.webtoolkit.info/javascript-md5.html
-  
+
   var MD5=function(s){function L(k,d){return(k<<d)|(k>>>(32-d))}function K(G,k){var I,d,F,H,x;F=(G&2147483648);H=(k&2147483648);I=(G&1073741824);d=(k&1073741824);x=(G&1073741823)+(k&1073741823);if(I&d){return(x^2147483648^F^H)}if(I|d){if(x&1073741824){return(x^3221225472^F^H)}else{return(x^1073741824^F^H)}}else{return(x^F^H)}}function r(d,F,k){return(d&F)|((~d)&k)}function q(d,F,k){return(d&k)|(F&(~k))}function p(d,F,k){return(d^F^k)}function n(d,F,k){return(F^(d|(~k)))}function u(G,F,aa,Z,k,H,I){G=K(G,K(K(r(F,aa,Z),k),I));return K(L(G,H),F)}function f(G,F,aa,Z,k,H,I){G=K(G,K(K(q(F,aa,Z),k),I));return K(L(G,H),F)}function D(G,F,aa,Z,k,H,I){G=K(G,K(K(p(F,aa,Z),k),I));return K(L(G,H),F)}function t(G,F,aa,Z,k,H,I){G=K(G,K(K(n(F,aa,Z),k),I));return K(L(G,H),F)}function e(G){var Z;var F=G.length;var x=F+8;var k=(x-(x%64))/64;var I=(k+1)*16;var aa=Array(I-1);var d=0;var H=0;while(H<F){Z=(H-(H%4))/4;d=(H%4)*8;aa[Z]=(aa[Z]|(G.charCodeAt(H)<<d));H++}Z=(H-(H%4))/4;d=(H%4)*8;aa[Z]=aa[Z]|(128<<d);aa[I-2]=F<<3;aa[I-1]=F>>>29;return aa}function B(x){var k="",F="",G,d;for(d=0;d<=3;d++){G=(x>>>(d*8))&255;F="0"+G.toString(16);k=k+F.substr(F.length-2,2)}return k}function J(k){k=k.replace(/\r\n/g,"\n");var d="";for(var F=0;F<k.length;F++){var x=k.charCodeAt(F);if(x<128){d+=String.fromCharCode(x)}else{if((x>127)&&(x<2048)){d+=String.fromCharCode((x>>6)|192);d+=String.fromCharCode((x&63)|128)}else{d+=String.fromCharCode((x>>12)|224);d+=String.fromCharCode(((x>>6)&63)|128);d+=String.fromCharCode((x&63)|128)}}}return d}var C=Array();var P,h,E,v,g,Y,X,W,V;var S=7,Q=12,N=17,M=22;var A=5,z=9,y=14,w=20;var o=4,m=11,l=16,j=23;var U=6,T=10,R=15,O=21;s=J(s);C=e(s);Y=1732584193;X=4023233417;W=2562383102;V=271733878;for(P=0;P<C.length;P+=16){h=Y;E=X;v=W;g=V;Y=u(Y,X,W,V,C[P+0],S,3614090360);V=u(V,Y,X,W,C[P+1],Q,3905402710);W=u(W,V,Y,X,C[P+2],N,606105819);X=u(X,W,V,Y,C[P+3],M,3250441966);Y=u(Y,X,W,V,C[P+4],S,4118548399);V=u(V,Y,X,W,C[P+5],Q,1200080426);W=u(W,V,Y,X,C[P+6],N,2821735955);X=u(X,W,V,Y,C[P+7],M,4249261313);Y=u(Y,X,W,V,C[P+8],S,1770035416);V=u(V,Y,X,W,C[P+9],Q,2336552879);W=u(W,V,Y,X,C[P+10],N,4294925233);X=u(X,W,V,Y,C[P+11],M,2304563134);Y=u(Y,X,W,V,C[P+12],S,1804603682);V=u(V,Y,X,W,C[P+13],Q,4254626195);W=u(W,V,Y,X,C[P+14],N,2792965006);X=u(X,W,V,Y,C[P+15],M,1236535329);Y=f(Y,X,W,V,C[P+1],A,4129170786);V=f(V,Y,X,W,C[P+6],z,3225465664);W=f(W,V,Y,X,C[P+11],y,643717713);X=f(X,W,V,Y,C[P+0],w,3921069994);Y=f(Y,X,W,V,C[P+5],A,3593408605);V=f(V,Y,X,W,C[P+10],z,38016083);W=f(W,V,Y,X,C[P+15],y,3634488961);X=f(X,W,V,Y,C[P+4],w,3889429448);Y=f(Y,X,W,V,C[P+9],A,568446438);V=f(V,Y,X,W,C[P+14],z,3275163606);W=f(W,V,Y,X,C[P+3],y,4107603335);X=f(X,W,V,Y,C[P+8],w,1163531501);Y=f(Y,X,W,V,C[P+13],A,2850285829);V=f(V,Y,X,W,C[P+2],z,4243563512);W=f(W,V,Y,X,C[P+7],y,1735328473);X=f(X,W,V,Y,C[P+12],w,2368359562);Y=D(Y,X,W,V,C[P+5],o,4294588738);V=D(V,Y,X,W,C[P+8],m,2272392833);W=D(W,V,Y,X,C[P+11],l,1839030562);X=D(X,W,V,Y,C[P+14],j,4259657740);Y=D(Y,X,W,V,C[P+1],o,2763975236);V=D(V,Y,X,W,C[P+4],m,1272893353);W=D(W,V,Y,X,C[P+7],l,4139469664);X=D(X,W,V,Y,C[P+10],j,3200236656);Y=D(Y,X,W,V,C[P+13],o,681279174);V=D(V,Y,X,W,C[P+0],m,3936430074);W=D(W,V,Y,X,C[P+3],l,3572445317);X=D(X,W,V,Y,C[P+6],j,76029189);Y=D(Y,X,W,V,C[P+9],o,3654602809);V=D(V,Y,X,W,C[P+12],m,3873151461);W=D(W,V,Y,X,C[P+15],l,530742520);X=D(X,W,V,Y,C[P+2],j,3299628645);Y=t(Y,X,W,V,C[P+0],U,4096336452);V=t(V,Y,X,W,C[P+7],T,1126891415);W=t(W,V,Y,X,C[P+14],R,2878612391);X=t(X,W,V,Y,C[P+5],O,4237533241);Y=t(Y,X,W,V,C[P+12],U,1700485571);V=t(V,Y,X,W,C[P+3],T,2399980690);W=t(W,V,Y,X,C[P+10],R,4293915773);X=t(X,W,V,Y,C[P+1],O,2240044497);Y=t(Y,X,W,V,C[P+8],U,1873313359);V=t(V,Y,X,W,C[P+15],T,4264355552);W=t(W,V,Y,X,C[P+6],R,2734768916);X=t(X,W,V,Y,C[P+13],O,1309151649);Y=t(Y,X,W,V,C[P+4],U,4149444226);V=t(V,Y,X,W,C[P+11],T,3174756917);W=t(W,V,Y,X,C[P+2],R,718787259);X=t(X,W,V,Y,C[P+9],O,3951481745);Y=K(Y,h);X=K(X,E);W=K(W,v);V=K(V,g)}var i=B(Y)+B(X)+B(W)+B(V);return i.toLowerCase()};
-  var size = size || 80;    
-  return 'http://www.gravatar.com/avatar/' + MD5(email) + '.jpg?s=' + size;
+  var size = size || 80;
+  return 'http://www.gravatar.com/avatar/' + MD5(email.toLowerCase()) + '.jpg?s=' + size;
 };
 
 _.fullSelection = function(contentEditableElement)
@@ -227,7 +227,7 @@ _.fullSelection = function(contentEditableElement)
       selection.addRange(range);//make the range you have just created the visible selection
   }
   else if(document.selection)//IE 8 and lower
-  { 
+  {
       range = document.body.createTextRange();//Create a range (a range is a like the selection but invisible)
       range.moveToElementText(contentEditableElement);//Select the entire contents of the element with the range
       range.collapse(false);//collapse the range to the end point. false means collapse to end rather than the start
@@ -241,8 +241,8 @@ _.prettyDate = function(time) {
 
 
 _.stripTags = function(input, allowed) {
-// Strips HTML and PHP tags from a string  
-// 
+// Strips HTML and PHP tags from a string
+//
 // version: 1009.2513
 // discuss at: http://phpjs.org/functions/strip_tags
 // +   original by: Kevin van Zonneveld (http://kevin.vanzonneveld.net)
@@ -286,24 +286,41 @@ _.stripTags = function(input, allowed) {
       return allowed.indexOf('<' + $1.toLowerCase() + '>') > -1 ? $0 : '';
    });
 }
-var renderControls = function(node, first, last, parent) {
+
+var renderControls = function(node, first, last, parent, level) {
   
   function render(node, destination, consolidate) {
+    var actions = new Data.Hash();
     
     function computeActions(n, parent) {
-      var actions = [];
-
+      function registerAction(action) {
+        if (action.nodeType === '/type/section' && action.level > 3) return;
+        
+        if (actions.get(action.nodeType)) {
+          if (action.nodeType === '/type/section') {
+            actions.get(action.nodeType).push(action);
+          } else if (action.level > actions.get(action.nodeType)[0].level) {
+            actions.set(action.nodeType, [action]);
+          }
+        } else {
+          actions.set(action.nodeType, [action]);
+        }
+      }
+      
+      var nlevel = parseInt($('#'+n.html_id).attr('level'));
+      
       // Possible children
       if (n.all('children') && n.all('children').length === 0 && destination === 'after') {
         var children = n.properties().get('children').expectedTypes;
         
         _.each(children, function(type) {
-          actions.push({
+          registerAction({
             node: n._id,
             parentNode: parent ? parent._id : null,
             nodeType: type,
             nodeTypeName: graph.get(type).name,
-            insertionType: 'child'
+            insertionType: 'child',
+            level: nlevel+1
           });
         });
       }
@@ -312,25 +329,25 @@ var renderControls = function(node, first, last, parent) {
       if (parent) {
         var siblings = parent.properties().get('children').expectedTypes;
         _.each(siblings, function(type) {
-          actions.push({
+          registerAction({
             node: n._id,
             parentNode: parent ? parent._id : null,
             nodeType: type,
             nodeTypeName: graph.get(type).name,
-            insertionType: 'sibling'
+            insertionType: 'sibling',
+            level: nlevel
           });
         });
       }
       
       // Consolidate actions for child elements
       if (consolidate && n.all('children') && n.all('children').length > 0) {
-        actions = actions.concat(computeActions(n.all('children').last(), n));
+        computeActions(n.all('children').last(), n);
       }
-      
       return actions;
     }
-  
-    return Helpers.renderTemplate('controls', {
+    
+    return _.tpl('controls', {
       node: node.key,
       destination: destination,
       actions: computeActions(node, parent)
@@ -364,7 +381,7 @@ var renderControls = function(node, first, last, parent) {
     node.all('children').each(function(child, key, index) {
       var first = index === 0;
       var last = index === node.all('children').length-1;
-      renderControls(child, first, last, node);
+      renderControls(child, first, last, node, level + 1);
     });
   }
 };
@@ -373,17 +390,17 @@ var renderControls = function(node, first, last, parent) {
 // HTMLRenderer
 // ---------------
 
-var HTMLRenderer = function(root, parent) {
+var HTMLRenderer = function(root, parent, lvl) {
   
   // Implement node types
   var renderers = {
-    "/type/document": function(node, parent) {
+    "/type/document": function(node, parent, level) {
       var content = '',
           children = node.all('children');
       
       if (children) {
         children.each(function(child, key, index) {
-          content += renderers[child.type._id](child, node);
+          content += renderers[child.type._id](child, node, level+1);
         });        
       }
       
@@ -394,37 +411,38 @@ var HTMLRenderer = function(root, parent) {
         title: node.get('title'),
         lead: node.get('lead'),
         empty_lead: app.document.mode === 'edit' && (!node.get('lead') || node.get('lead') === ''),
-        empty_title: app.document.mode === 'edit' && (!node.get('title') || node.get('title') === '')
+        empty_title: app.document.mode === 'edit' && (!node.get('title') || node.get('title') === ''),
+        level: level
       });
     },
     
-    "/type/story": function(node, parent) {
-      return renderers["/type/document"](node, parent)
+    "/type/story": function(node, parent, level) {
+      return renderers["/type/document"](node, parent, level)
     },
     
-    "/type/conversation": function(node, parent) {
-      return renderers["/type/document"](node, parent)
+    "/type/conversation": function(node, parent, level) {
+      return renderers["/type/document"](node, parent, level)
     },
     
-    "/type/article": function(node, parent) {
-      return renderers["/type/document"](node, parent)
+    "/type/article": function(node, parent, level) {
+      return renderers["/type/document"](node, parent, level)
     },
     
-    "/type/manual": function(node, parent) {
-      return renderers["/type/document"](node, parent)
+    "/type/manual": function(node, parent, level) {
+      return renderers["/type/document"](node, parent, level)
     },
     
-    "/type/qaa": function(node, parent) {
-      return renderers["/type/document"](node, parent)
+    "/type/qaa": function(node, parent, level) {
+      return renderers["/type/document"](node, parent, level)
     },
     
-    "/type/section": function(node, parent) {
+    "/type/section": function(node, parent, level) {
       var content = '',
           children = node.all('children');
       
       if (children) {
         node.all('children').each(function(child, key, index) { 
-          content += renderers[child.type._id](child, node);
+          content += renderers[child.type._id](child, node, level+1);
         });
       }
       
@@ -432,23 +450,26 @@ var HTMLRenderer = function(root, parent) {
         node: node,
         parent: parent,
         content: content,
+        heading_level: level+1,
+        level: level,
         edit: app.document.mode === 'edit',
         name: node.get('name'),
         empty: app.document.mode === 'edit' && (!node.get('name') || node.get('name') === '')
       });
     },
     
-    "/type/text": function(node, parent) {
+    "/type/text": function(node, parent, level) {
       return Helpers.renderTemplate('text', {
         node: node,
         parent: parent,
         edit: app.document.mode === 'edit',
         content: node.get('content'),
-        empty: app.document.mode === 'edit' && (!node.get('content') || node.get('content') === '<p></p>')
+        empty: app.document.mode === 'edit' && (!node.get('content') || node.get('content') === '<p></p>'),
+        level: level
       });
     },
     
-    "/type/quote": function(node, parent) {
+    "/type/quote": function(node, parent, level) {
       return Helpers.renderTemplate('quote', {
         node: node,
         parent: parent,
@@ -456,64 +477,70 @@ var HTMLRenderer = function(root, parent) {
         content: node.get('content'),
         author: node.get('author'),
         empty_content: app.document.mode === 'edit' && (!node.get('content') || node.get('content') === ''),
-        empty_author: app.document.mode === 'edit' && (!node.get('author') || node.get('author') === '')
+        empty_author: app.document.mode === 'edit' && (!node.get('author') || node.get('author') === ''),
+        level: level
       });
     },
     
-    "/type/code": function(node, parent) {
+    "/type/code": function(node, parent, level) {
       return Helpers.renderTemplate('code', {
         node: node,
         parent: parent,
         edit: app.document.mode === 'edit',
         content: node.get('content'),
-        empty: app.document.mode === 'edit' && (!node.get('content') || node.get('content') === '')
+        empty: app.document.mode === 'edit' && (!node.get('content') || node.get('content') === ''),
+        level: level
       });
     },
     
-    "/type/question": function(node, parent) {
+    "/type/question": function(node, parent, level) {
       return Helpers.renderTemplate('question', {
         node: node,
         parent: parent,
         edit: app.document.mode === 'edit',
         content: node.get('content'),
-        empty: app.document.mode === 'edit' && (!node.get('content') || node.get('content') === '')
+        empty: app.document.mode === 'edit' && (!node.get('content') || node.get('content') === ''),
+        level: level
       });
     },
     
-    "/type/answer": function(node, parent) {
+    "/type/answer": function(node, parent, level) {
       return Helpers.renderTemplate('answer', {
         node: node,
         parent: parent,
         edit: app.document.mode === 'edit',
         content: node.get('content'),
-        empty: app.document.mode === 'edit' && (!node.get('content') || node.get('content') === '')
+        empty: app.document.mode === 'edit' && (!node.get('content') || node.get('content') === ''),
+        level: level
       });
     },
     
-    "/type/image": function(node, parent) {
+    "/type/image": function(node, parent, level) {
       return Helpers.renderTemplate('image', {
         node: node,
         parent: parent,
         edit: app.document.mode === 'edit',
-        url: node.get('url')
+        url: node.get('url'),
+        level: level
       });
     },
     
-    "/type/visualization": function(node, parent) {
+    "/type/visualization": function(node, parent, level) {
       return Helpers.renderTemplate('visualization', {
         node: node,
         parent: parent,
         edit: app.document.mode === 'edit',
         visualization_type: node.get('visualization_type'),
-        data_source: node.get('data_source')
+        data_source: node.get('data_source'),
+        level: level
       });
     }
   };
 
   return {
     render: function() {
-      // Traverse the document     
-      return renderers[root.type._id](root, parent);
+      // Traverse the document
+      return renderers[root.type._id](root, parent, parseInt(lvl));
     }
   };
 };
@@ -622,29 +649,21 @@ var SectionEditor = Backbone.View.extend({
     var that = this;
     this.render();
     this.$node = $('#' + app.document.selectedNode.html_id + ' > .content').attr('contenteditable', true).unbind();
-
+    
     editor.activate(this.$node, {
+      placeholder: 'Enter Section Name',
       multiline: false,
       markup: false
     });
     
     editor.bind('changed', function() {
-      that.updateNode();
-    });
-  },
-  
-  updateNode: function(e) {
-    var that = this;
-    
-    setTimeout(function() {
       app.document.updateSelectedNode({
         name: editor.content()
       });
-    }, 5);
+    });
   },
   
   render: function() {
-    // $(this.el).html(Helpers.renderTemplate('edit_section', app.editor.model.selectedNode.data));
   }
 });
 
@@ -662,23 +681,16 @@ var TextEditor = Backbone.View.extend({
       placeholder: 'Enter Text',
       controlsTarget: $('#document_actions')
     });
+    
     // Update node when editor commands are applied
     editor.bind('changed', function() {
-      that.updateNode();
-    });
-  },
-  
-  updateNode: function() {
-    var that = this;
-    setTimeout(function() {
       app.document.updateSelectedNode({
         content: editor.content()
       });
-    }, 5);
+    });
   },
   
   render: function() {
-    // $(this.el).html(Helpers.renderTemplate('edit_text', app.editor.model.selectedNode.data));
   }
 });
 
@@ -1102,13 +1114,7 @@ var Document = Backbone.View.extend({
     // Actions
     'click a.add_child': 'addChild',
     'click a.add_sibling': 'addSibling',
-    'click a.remove-node': 'removeNode',
-    'dragstart': 'dragStart',
-    'dragend': 'dragEnd',
-    'dragenter': 'dragEnter',
-    'dragover': 'dragOver',
-    'dragleave': 'dragLeave',
-    'drop': 'drop'
+    'click a.remove-node': 'removeNode'
   },
   
   loadedDocuments: {},
@@ -1162,24 +1168,24 @@ var Document = Backbone.View.extend({
   renderNode: function(node) {
     var $node = $('#'+node.html_id);
     var parent = graph.get($node.attr('parent'));
+    var level = parseInt($node.attr('level'));
     
-    $('#'+node.html_id).replaceWith(new HTMLRenderer(node, parent).render());
-    
+    $('#'+node.html_id).replaceWith(new HTMLRenderer(node, parent, level).render());
     if (this.mode === 'edit') {
-      renderControls(this.app.document.model);
+      renderControls(this.model, null, null, null, 0);
     } else {
       hijs('#'+node.html_id+' .content-node.code pre');
     }
   },
   
   renderDocument: function() {
-    this.$('#document').html(new HTMLRenderer(this.model).render());
+    this.$('#document').html(new HTMLRenderer(this.model, null, 0).render());
     this.$('#attributes').show();
     this.$('#document').show();
     
     // Render controls
     if (this.mode === 'edit') {
-      renderControls(this.model);
+      renderControls(this.model, null, null, null, 0);
     } else {
       hijs('.content-node.code pre');
     }
@@ -1231,7 +1237,6 @@ var Document = Backbone.View.extend({
     this.bind('select:node', function(node) {
       that.resetSelection();
       $('#'+node.html_id).addClass('selected');
-      
       $('#document').addClass('edit-mode');
       
       // Deactivate Richtext Editor
@@ -1317,17 +1322,14 @@ var Document = Backbone.View.extend({
       that.model = graph.get(id);
       
       if (that.model) {
-        
         that.render();
         that.init();
         that.reset();
         that.trigger('changed');
-        
         that.loadedDocuments[username+"/"+docname] = id;
         
         // Update browser graph reference
         app.browser.graph.set('objects', id, that.model);
-        
         app.toggleView('document');
         
         // TODO: register document for realtime sessions
@@ -1474,15 +1476,6 @@ var Document = Backbone.View.extend({
     }
   },
   
-  showActions: function(e) {
-    this.reset();
-    $(e.target).parent().parent().addClass('active');
-    
-    // Enable insert mode
-    $('#document').addClass('insert-mode');
-    return false;
-  },
-  
   highlightNode: function(e) {
     $(e.currentTarget).addClass('active');
     return false;
@@ -1564,7 +1557,7 @@ var Document = Backbone.View.extend({
       var type = $(e.currentTarget).attr('type');
       var refNode = graph.get($(e.currentTarget).attr('node'));
       var parentNode = graph.get($(e.currentTarget).attr('parent'));
-      var destination = $(e.currentTarget).parent().parent().attr('destination');
+      var destination = $(e.currentTarget).attr('destination');
       
       // newNode gets populated with default values
       var newNode = graph.set(null, {"type": type, "document": this.model._id});
@@ -1576,9 +1569,23 @@ var Document = Backbone.View.extend({
     }
 
     var targetIndex = parentNode.all('children').index(refNode._id);
+    if (destination === 'after') targetIndex += 1;
     
-    if (destination === 'after') {
-      targetIndex += 1;
+    if (type === '/type/section') {
+      // Move all successors inside the new section
+      var successors = parentNode.get('children').rest(targetIndex);
+      
+      var predecessors = parentNode.get('children').select(function(c, key, index) {
+        return index < targetIndex;
+      });
+      
+      // Update parent node's children
+      parentNode.set({children: predecessors.keys()});
+      
+      // Append successors to the new node
+      newNode.set({
+        children: successors.keys()
+      });
     }
     
     // Connect to parent
@@ -2732,7 +2739,7 @@ var remote,                              // Remote handle for server-side method
     positionViewActions();
     $(window).bind('scroll', positionViewActions);
     $(window).bind('resize', positionViewActions);
-    
+
     // Start the engines
     app = new Application({el: $('#container'), session: session});
     
@@ -2744,6 +2751,21 @@ var remote,                              // Remote handle for server-side method
     
     // Start responding to routes
     Backbone.history.start();
+    
+    // Reset document when window gets out of focus
+    document.body.onblur = function() {  if (app.document) app.document.reset(); }
+    
+    // TODO: Prevent leaving page by pressing backspace
+    // $('body').bind('keydown', function(e) {
+    //   if (!currently_editing && e.keyCode === 8 ) e.preventDefault();
+    // });
+    
+    // Prevent exit when there are unsaved changes
+    window.onbeforeunload = confirmExit;
+    function confirmExit()
+    {
+      if (graph.dirtyNodes().length>0) return "You have unsynced changes, which will be lost. Are you sure you want to leave this page?";
+    }
     
     var pendingSync = false;
     graph.bind('dirty', function() {
