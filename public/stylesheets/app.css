@@ -1010,14 +1010,23 @@ table tr.draft, table tr.draft a {
   text-align: center;
 }
 
-#document h1, #document h2, #document h3 {
+#document h1, #document h2, #document h3, #document h4, #document h5 {
 /*  color: #8E870D;*/
+  padding-top: 0px;
   font-weight: bold;
   margin-bottom: 10px;
 }
 
+#document h3 { font-size: 20px; }
+
+#document h4 { font-weight: bold; }
+
 #document strong, #document b {
   font-weight: bold;
+}
+
+#document em {
+  font-style: italic;
 }
 
 .content-node.section {
@@ -1367,10 +1376,13 @@ pre {
 .content-node.active > .content-node-outline { border-width: 2px; }
 .content-node.occupied > .content-node-outline { border-width: 3px; }
 .content-node.selected > .content-node-outline { border-width: 3px; }
-.content-node.document > .content-node-outline { right: -90px; }
-.content-node > .content-node > .content-node-outline { right: -70px; }
 
-.content-node > .content-node > .content-node > .content-node-outline { right: -50px;  }
+
+.content-node.document > .content-node-outline { right: -130px; }
+.content-node > .content-node.level-1 > .content-node-outline { right: -110px; }
+.content-node > .content-node.level-2 > .content-node-outline { right: -90px; }
+.content-node > .content-node.level-3 > .content-node-outline { right: -70px; }
+.content-node > .content-node.level-4 > .content-node-outline { right: -50px; }
 
 #document.structure-mode .node-actions { display: none; }
 #document.structure-mode { background: #eee;}
@@ -1432,6 +1444,27 @@ pre {
   padding-left: 130px;
 }
 
+/* Multiselect */
+
+.controls .actions span.container {
+  position: relative;
+  cursor: pointer;
+}
+
+.controls .actions span.container div {
+  position: absolute;
+  left: -5px;
+  top: 20px;
+  background: #fff;
+  width: 100px;
+  z-index: 50000;
+  display: none;
+}
+
+.controls .actions span.container:hover div {
+  display: block;
+}
+
 .controls .actions:hover {
   border-color: #bbb;
 }
@@ -1440,7 +1473,7 @@ pre {
   display: block;
 }
 
-#document .controls .actions a {
+#document .controls .actions a, #document .controls .actions span.container {
   font-family: Helvetica;
   text-transform: uppercase;
   font-size: 11px;
@@ -1454,6 +1487,7 @@ pre {
 }
 
 #document .controls:hover .actions a { color: #888; }
+#document .controls:hover .actions span.container { color: #888; }
 
 #document .controls .actions .placeholder {
   font-family: 'Palatino Linotype', 'Book Antiqua', Palatino, FreeSerif, serif;
@@ -1465,6 +1499,8 @@ pre {
 }
 
 #document .controls:hover .actions .placeholder { color: #000; }
+
+#document .controls .actions span.container:hover { color: #000; }
 
 #document .controls:hover a {
   display: block;
