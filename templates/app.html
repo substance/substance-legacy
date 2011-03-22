@@ -465,15 +465,30 @@
   </script>
   
   <script type="text/x-handlebars-template" name="controls">
-    <div class="controls" node="{{node}}" destination="{{destination}}">
+    <div class="controls" node="<%= node %>" destination="<%= destination %>">
       <div class="handle">
         <a href="#">--&gt; INSERT</a>
       </div>
       <div class="actions">
         <div class="placeholder">Insert Content</div>
-        {{#actions}}
-          <a href="#" type="{{nodeType}}" node="{{node}}" parent="{{parentNode}}" class="add_{{insertionType}}">{{nodeTypeName}}</a>
-        {{/actions}}
+        <% actions.each(function(action) { %>
+            <% if (action.length === 1) { %>
+              <% _.each(action, function(v) { %>
+                <span>
+                <a href="#" type="<%= v.nodeType %>" destination="<%= destination %>" node="<%= v.node %>" parent="<%= v.parentNode %>" class="add_<%= v.insertionType %>"><%= v.nodeTypeName %></a>
+                </span>
+              <% }); %>
+            <% } else { %>
+              <span class="container">
+              <%= action[0].nodeTypeName %>
+              <div>
+                <% _.each(action, function(v) { %>
+                  <a href="#" type="<%= v.nodeType %>" destination="<%= destination %>" node="<%= v.node %>" parent="<%= v.parentNode %>" class="add_<%= v.insertionType %>">Level <%= v.level %></a>
+                <% }); %>
+              </div>
+              </span>
+            <% } %>
+        <% }); %>
         <br class="clear"/>
       </div>
     </div>
@@ -506,7 +521,7 @@
 
   <!-- content-node templates for the editor -->
   <script type="text/x-ejs-template" name="document">
-    <div id="<%= node.html_id %>" name=<%= node.key %> class="content-node document">
+    <div id="<%= node.html_id %>" name=<%= node.key %> level="<%= level %>" class="content-node document level-{{level}}">
       <% if (edit) { %><div class="content-node-outline"><div class="cursor"><span></span></div></div><% } %>
       <h1 class="content<%= empty_title ? ' empty' : '' %>"<% if (edit) { %> contenteditable="true" title="Click To Edit Document Title"<% } %>>
         <% if (!empty_title) { %>
@@ -539,15 +554,15 @@
   </script>
   
   <script type="text/x-handlebars-template" name="section">
-    <div id="{{node/html_id}}" name={{node/key}} parent="{{parent/_id}}" draggable="false" class="content-node section">
+    <div id="{{node/html_id}}" name={{node/key}} parent="{{parent/_id}}" level="{{level}}" draggable="false" class="content-node section level-{{level}}">
       {{#edit}}<a href="#" class="remove remove-node" title="Remove Section and all child elements" node="{{node/key}}" parent="{{parent/_id}}">x</a>{{/edit}}
       {{#edit}}<div class="content-node-outline"><div class="cursor"><span></span></div></div>{{/edit}}
       {{#edit}}<div class="pilcrow">&#182;</div>{{/edit}}
       
-      <h2 class="content{{#empty}} empty{{/empty}}"{{#edit}} title="Click To Edit Section Name"{{/edit}}>
+      <h{{heading_level}} class="content{{#empty}} empty{{/empty}}"{{#edit}} title="Click To Edit Section Name"{{/edit}}>
         {{^empty}}{{{name}}}{{/empty}}
-        {{#empty}}&laquo; Enter Section Name &raquo;{{/empty}}        
-      </h2>
+        {{#empty}}&laquo; Enter Section Name &raquo;{{/empty}}
+      </h{{heading_level}}>
       
       {{#edit}}<div class="node-editor-placeholder"></div>{{/edit}}
       {{{content}}}
@@ -555,7 +570,7 @@
   </script>
   
   <script type="text/x-handlebars-template" name="text">
-    <div id="{{node/html_id}}" name={{node/key}} parent="{{parent/_id}}" draggable="false" class="content-node text">
+    <div id="{{node/html_id}}" name={{node/key}} parent="{{parent/_id}}" level="{{level}}" draggable="false" class="content-node text level-{{level}}">
       {{#edit}}<a href="#" class="remove-node remove" title="Remove Text" node="{{node/key}}" parent="{{parent/_id}}">x</a>{{/edit}}
       {{#edit}}<div class="content-node-outline"><div class="cursor"><span></span></div></div>{{/edit}}
       {{#edit}}<div class="pilcrow">&#182;</div>{{/edit}}
@@ -568,7 +583,7 @@
   </script>
   
   <script type="text/x-handlebars-template" name="quote">
-    <div id="{{node/html_id}}" name={{node/key}} parent="{{parent/_id}}" draggable="false" class="content-node quote">
+    <div id="{{node/html_id}}" name={{node/key}} parent="{{parent/_id}}" level="{{level}}" draggable="false" class="content-node quote level-{{level}}">
       {{#edit}}<a href="#" class="remove-node remove" title="Remove Quote" node="{{node/key}}" parent="{{parent/_id}}">x</a>{{/edit}}
       {{#edit}}<div class="content-node-outline"><div class="cursor"><span></span></div></div>{{/edit}}
       {{#edit}}<div class="pilcrow">&#182;</div>{{/edit}}
@@ -589,7 +604,7 @@
   </script>
   
   <script type="text/x-handlebars-template" name="code">
-    <div id="{{node/html_id}}" name={{node/key}} parent="{{parent/_id}}" draggable="false" class="content-node code">
+    <div id="{{node/html_id}}" name={{node/key}} parent="{{parent/_id}}" level="{{level}}" draggable="false" class="content-node code level-{{level}}">
       {{#edit}}<a href="#" class="remove-node remove" title="Remove Code" node="{{node/key}}" parent="{{parent/_id}}">x</a>{{/edit}}
       {{#edit}}<div class="content-node-outline"><div class="cursor"><span></span></div></div>{{/edit}}
       {{#edit}}<div class="pilcrow">&#182;</div>{{/edit}}
@@ -599,7 +614,7 @@
   </script>
   
   <script type="text/x-handlebars-template" name="question">
-    <div id="{{node/html_id}}" name={{node/key}} parent="{{parent/_id}}" draggable="false" class="content-node question">
+    <div id="{{node/html_id}}" name={{node/key}} parent="{{parent/_id}}" level="{{level}}" draggable="false" class="content-node question level-{{level}}">
       {{#edit}}<a href="#" class="remove-node remove" title="Remove Question" node="{{node/key}}" parent="{{parent/_id}}">x</a>{{/edit}}
       {{#edit}}<div class="content-node-outline"><div class="cursor"><span></span></div></div>{{/edit}}
       {{#edit}}<div class="pilcrow">&#182;</div>{{/edit}}
@@ -612,7 +627,7 @@
   </script>
   
   <script type="text/x-handlebars-template" name="answer">
-    <div id="{{node/html_id}}" name={{node/key}} parent="{{parent/_id}}" draggable="false" class="content-node answer">
+    <div id="{{node/html_id}}" name={{node/key}} parent="{{parent/_id}}" level="{{level}}" draggable="false" class="content-node answer level-{{level}}">
       {{#edit}}<a href="#" class="remove-node remove" title="Remove Answer" node="{{node/key}}" parent="{{parent/_id}}">x</a>{{/edit}}
       {{#edit}}<div class="content-node-outline"{{#edit}} title="Click To Edit Question"{{/edit}}><div class="cursor"><span></span></div></div>{{/edit}}
       {{#edit}}<div class="pilcrow">&#182;</div>{{/edit}}
@@ -625,7 +640,7 @@
   </script>
   
   <script type="text/x-handlebars-template" name="image">
-    <div id="{{node/html_id}}" name={{node/key}} parent="{{parent/_id}}" draggable="false" class="content-node image">
+    <div id="{{node/html_id}}" name={{node/key}} parent="{{parent/_id}}" level="{{level}}" draggable="false" class="content-node image level-{{level}}">
       {{#edit}}<a href="#" class="remove remove-node" title="Remove Image" node="{{node/key}}" parent="{{parent/_id}}">x</a>{{/edit}}
       {{#edit}}<div class="content-node-outline"><div class="cursor"><span></span></div></div>{{/edit}}
       {{#edit}}<div class="pilcrow">&#182;</div>{{/edit}}
@@ -640,7 +655,7 @@
   </script>
   
   <script type="text/x-handlebars-template" name="visualization">
-    <div id="{{node/html_id}}" name={{node/key}} parent="{{parent/_id}}" draggable="false" class="content-node image">
+    <div id="{{node/html_id}}" name={{node/key}} parent="{{parent/_id}}" level="{{level}}" draggable="false" class="content-node image level-{{level}}">
       {{#edit}}<a href="#" class="remove remove-node" title="Remove Visualization" node="{{node/key}}" parent="{{parent/_id}}">x</a>{{/edit}}
       {{#edit}}<div class="content-node-outline"><div class="cursor"><span></span></div></div>{{/edit}}
       {{#edit}}<div class="pilcrow">&#182;</div>{{/edit}}
@@ -678,7 +693,6 @@
   <link href="stylesheets/app.css" media="screen" rel="stylesheet" type="text/css" />
   
   <script src="/javascripts/head.min.js"></script>
-  
   <script>
     head.js("javascripts/sanitize.js",
             "javascripts/hi.js",
@@ -693,7 +707,7 @@
             "javascripts/backbone{{{{min}}}}.js",
             "javascripts/proper.js",
             "javascripts/substance{{{{min}}}}.js");
-  </script>  
+  </script>
 </head>
 <body>
   <div id="container">
@@ -703,11 +717,9 @@
     
     <div id="tabs">
       <div id="browser_tab" class="tab" view="browser">
-        
       </div>
       
       <div id="document_tab" class="tab hidden" view="document">
-        
       </div>
       
       <a href="#" class="action new-document hidden" title="Create a new document">
