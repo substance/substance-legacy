@@ -1,9 +1,9 @@
-//     (c) 2010 Michael Aufreiter
+//     (c) 2011 Michael Aufreiter
 //     Data.js is freely distributable under the MIT license.
-//     Portions of Daja.js are inspired or borrowed from Underscore.js,
+//     Portions of Data.js are inspired or borrowed from Underscore.js,
 //     Backbone.js and Google's Visualization API.
 //     For all details and documentation:
-//     http://github.com/michael/data
+//     http://substance.io/#michael/data-js
 
 (function(){
 
@@ -20,7 +20,7 @@
   }
   
   // Current version of the library. Keep in sync with `package.json`.
-  Data.VERSION = '0.2.0';
+  Data.VERSION = '0.2.1';
 
   // Require Underscore, if we're on the server, and it's not already present.
   var _ = this._;
@@ -251,17 +251,18 @@
     
     // Set a value at a given *key*
     set: function (key, value, targetIndex) {
+      var index;
       if (key === undefined)
         return this;
-
+      
       if (!this.data[key]) {
         if (targetIndex !== undefined) { // insert at a given index
-          var front = this.select(function(item, key, index) {
-            return index < targetIndex;
+          var front = this.select(function(item, key, i) {
+            return i < targetIndex;
           });
 
-          var back = this.select(function(item, key, index) {
-            return index >= targetIndex;
+          var back = this.select(function(item, key, i) {
+            return i >= targetIndex;
           });
 
           this.keyOrder = [].concat(front.keyOrder);
@@ -270,10 +271,13 @@
         } else {
           this.keyOrder.push(key);
         }
+        index = this.length;
         this.length += 1;
+      } else {
+        index = this.index(key);
       }
-
       this.data[key] = value;
+      this[index] = this.data[key];
       
       this.trigger('set', key);
       return this;
@@ -282,9 +286,12 @@
     // Delete entry at given *key*
     del: function (key) {
       if (this.data[key]) {
+        var l = this.length;
+        var index = this.index(key);
         delete this.data[key];
-        this.keyOrder.splice(this.index(key), 1);
-        this.length -= 1;
+        this.keyOrder.splice(index, 1);
+        Array.prototype.splice.call(this, index, 1);
+        this.length = l-1;
         this.trigger('del', key);
       }
       return this;
@@ -304,6 +311,14 @@
     // Get first item
     first: function () {
       return this.at(0);
+    },
+    
+    // Returns the rest of the elements. 
+    // Pass an index to return the items from that index onward.
+    rest: function(index) {
+      return this.select(function(value, key, i) {
+        return i >= index;
+      });
     },
     
     // Get last item
@@ -361,7 +376,7 @@
       var result = {};
       
       this.each(function(value, key) {
-        result[key] = value.toJSON();
+        result[key] = value.toJSON ? value.toJSON() : value;
       });
       return result;
     },
@@ -404,8 +419,8 @@
     // Performs an intersection with the given *hash*
     intersect: function(hash) {
       var that = this,
-      result = new Data.Hash();
-    
+          result = new Data.Hash();
+          
       this.each(function(value, key) {
         hash.each(function(value2, key2) {
           if (key === key2) result.set(key, value);
@@ -417,8 +432,8 @@
     // Performs an union with the given *hash*
     union: function(hash) {
       var that = this,
-      result = new Data.Hash();
-    
+          result = new Data.Hash();
+          
       this.each(function(value, key) {
         if (!result.get(key))
           result.set(key, value);
@@ -428,8 +443,20 @@
           result.set(key, value);
       });
       return result;
+    },
+    
+    // Computes the difference between the current *hash* and a given *hash*
+    difference: function(hash) {
+      var that = this,
+          result = this.clone();
+          
+      hash.each(function(value, key) {
+        if (result.get(key)) result.del(key);
+      });
+      return result;
     }
   });
+  
   
   // Data.Comparators
   // --------------
@@ -483,6 +510,95 @@
   Data.Aggregators.COUNT = function (values) {
     return values.length;
   };
+  
+  
+  // Data.Modifiers
+  // --------------
+  
+  Data.Modifiers = {};
+
+  // The default modifier simply does nothing
+  Data.Modifiers.DEFAULT = function (attribute) {
+    return attribute;
+  };
+
+  Data.Modifiers.MONTH = function (attribute) {
+    return attribute.getMonth();
+  };
+
+  Data.Modifiers.QUARTER = function (attribute) {
+    return Math.floor(attribute.getMonth() / 3) + 1;
+  };
+  
+  
+  // Data.Transformers
+  // --------------
+  
+  Data.Transformers = {
+    group: function(g, type, keys, properties) {
+      var gspec = {},
+          type = g.get(type),
+          groups = {},
+          count = 0;
+      
+      gspec[type._id] = {"type": "/type/type", "properties": {}};
+
+      // Include group keys to the output graph
+      _.each(keys, function(key) {
+        gspec[type._id].properties[key] = type.properties().get(key).toJSON();
+      });
+      
+      // Include additional properties
+      _.each(properties, function(options, key) {
+        var p = type.properties().get(key).toJSON();
+        if (options.name) p.name = options.name;
+        gspec[type._id].properties[key] = p;
+      });
+
+      // Compute group memberships
+      _.each(keys, function(key) {
+        groups[key] = type.properties().get(key).all('values');
+      });
+
+      function aggregate(key) {
+        var members = new Data.Hash();
+        _.each(keys, function(k, index) {
+          var objects = groups[keys[index]].get(key[index]).referencedObjects;
+          members = index === 0 ? members.union(objects) : members.intersect(objects);
+        });
+        
+        
+        var res = {type: type._id};
+        _.each(gspec[type._id].properties, function(p, pk) {
+          if (_.include(keys, pk)) {
+            res[pk] = key[_.indexOf(keys, pk)];
+          } else {
+            var numbers = members.map(function(obj) {
+              return obj.get(pk);
+            });
+            var aggregator = properties[pk].aggregator || Data.Aggregators.SUM
+            res[pk] = aggregator(numbers);
+          }
+        });
+        return res;
+      }
+
+      function extractGroups(keyIndex, key) {
+        if (keyIndex === keys.length-1) {
+          gspec[key.join('::')] = aggregate(key);
+        } else {
+          keyIndex += 1;
+          groups[keys[keyIndex]].each(function(grp, grpkey) {
+            extractGroups(keyIndex, key.concat([grpkey]));
+          });
+        }
+      }
+
+      extractGroups(-1, []);
+      return new Data.Graph(gspec);
+    }
+  };
+  
   
   // Data.Node
   // --------------
@@ -625,7 +741,7 @@
       this.type = type;
       this.unique = options.unique;
       this.name = options.name;
-      this.meta = options.meta || {};
+      this.meta = options.meta || {};
       this.validator = options.validator;
       this.required = options["required"];
       this["default"] = options["default"];
@@ -669,6 +785,19 @@
     // Aggregates the property's values
     aggregate: function (fn) {
       return fn(this.values("values"));
+    },
+    
+    // Serialize a propery definition
+    toJSON: function() {
+      return {
+        name: this.name,
+        type: this.expectedTypes,
+        unique: this.unique,
+        meta: this.meta,
+        valiate: this.validator,
+        required: this.required,
+        "default": this["default"]
+      }
     }
   });
   
@@ -686,24 +815,29 @@
       var that = this;
       Data.Node.call(this);
   
-      this.g = g; // belongs to the DataGraph
+      this.g = g; // Belongs to the DataGraph
       this.key = id;
       this._id = id;
       this._rev = type._rev;
       this._conflicted = type._conflicted;
       this.type = type.type;
       this.name = type.name;
-      this.meta = type.meta || {};
+      this.meta = type.meta || {};
   
-      // extract properties
+      // Extract properties
       _.each(type.properties, function(property, key) {
         that.set('properties', key, new Data.Property(that, key, property));
       });
     },
     
     // Convenience function for accessing properties
-    properties: function() {
+    properties: function() {
       return this.all('properties');
+    },
+    
+    // Objects of this type
+    objects: function() {
+      return this.all('objects');
     },
     
     // Serialize a single type node
@@ -797,7 +931,7 @@
     },
     
     toString: function() {
-      return this.get('name') || this.val || this._id;
+      return this.get('name') || this.val || this._id;
     },
     
     // Properties from all associated types
@@ -805,7 +939,7 @@
       var properties = new Data.Hash();
       // Prototypal inheritance in action: overriden properties belong to the last type specified
       this._types.each(function(type) {
-        type.all('properties').each(function(property) {
+        type.all('properties').each(function(property) {
           properties.set(property.key, property);
         });
       });
@@ -861,7 +995,7 @@
       this.errors = [];
       this.properties().each(function(property, key) {
         // Required property?
-        if ((that.get(key) === undefined || that.get(key) === null) || that.get(key) === "") {
+        if ((that.get(key) === undefined || that.get(key) === null) || that.get(key) === "") {
           if (property.required) {
             that.errors.push({property: key, message: "Property \"" + property.name + "\" is required"});
           }
@@ -898,7 +1032,7 @@
         }
         
         if (property.validator) {
-          if (!validValue()) {
+          if (!validValue()) {
             that.errors.push({property: key, message: "Invalid value for property \"" + property.name + "\""});
           }
         }
@@ -1139,26 +1273,6 @@
       });
     },
     
-    // API method for accessing objects in the graph space
-    // TODO: Ask the datastore if the node is not known in the local graph
-    //       use async method queues for this!
-    get: function(id) {
-      if (arguments.length === 1) {
-        return this.get('objects', id);
-      } else {
-        return Data.Node.prototype.get.call(this, arguments[0], arguments[1]);
-      }
-    },
-    
-    // Delete node by id, referenced nodes remain untouched
-    del: function(id) {
-      var node = this.get(id);
-      if (!node) return;
-      node._deleted = true;
-      node.dirty = true;
-      this.trigger('dirty');
-    },
-    
     // Set (add) a new node on the graph
     set: function(id, properties) {
       var that = this;
@@ -1179,6 +1293,17 @@
       }
     },
     
+    // API method for accessing objects in the graph space
+    // TODO: Ask the datastore if the node is not known in the local graph
+    //       use async method queues for this!
+    get: function(id) {
+      if (arguments.length === 1) {
+        return this.get('objects', id);
+      } else {
+        return Data.Node.prototype.get.call(this, arguments[0], arguments[1]);
+      }
+    },
+    
     // Get a node asynchronously
     // Handles cases where an object is not yet there and needs to be fetched from
     // the server first
@@ -1196,19 +1321,55 @@
       }
     },
     
-    // Serializes the graph to the JSON-based exchange format
-    toJSON: function() {
-      var result = {};
-      
-      // Serialize object nodes
-      this.all('objects').each(function(obj, key) {
-        // Only serialize fetched nodes
-        if (obj.data || obj instanceof Data.Type) {
-          result[key] = obj.toJSON();
-        }
+    // Delete node by id, referenced nodes remain untouched
+    del: function(id) {
+      var node = this.get(id);
+      if (!node) return;
+      node._deleted = true;
+      node.dirty = true;
+      this.trigger('dirty');
+    },
+    
+    // Find objects that match a particular query
+    find: function(qry) {
+      return this.objects().select(function(o) {
+        var so = o.toJSON();
+        var rejected = false;
+        _.each(qry, function(value, key) {
+          var condition;
+          // Extract operator
+          var matches = key.match(/^([a-z_]{1,30})(!=|>|>=|<|<=|\|=|&=)?$/),
+              property = matches[1],
+              operator = matches[2] || '==';
+          
+          if (operator === "|=") { // one of operator
+            var values = _.isArray(value) ? value : [value];
+            var objectValues = _.isArray(so[property]) ? so[property] : [so[property]];
+            condition = false;
+            _.each(values, function(val) {
+              if (_.include(objectValues, val)) {
+                condition = true;
+              }
+            });
+          } else if (operator === "&=") {
+            var values = _.isArray(value) ? value : [value];
+            var objectValues = _.isArray(so[property]) ? so[property] : [so[property]];
+            condition = _.intersect(objectValues, values).length === values.length;
+          } else { // regular operators
+            switch (operator) {
+              case "!=": condition = !_.isEqual(so[property], value); break;
+              case ">": condition = so[property] > value; break;
+              case ">=": condition = so[property] >= value; break;
+              case "<": condition = so[property] < value; break;
+              case "<=": condition = so[property] <= value; break;
+              default : condition = _.isEqual(so[property], value);
+            }
+          }
+          
+          if (!condition) rejected = true;
+        });
+        return !rejected;
       });
-      
-      return result;
     },
     
     // Fetches a new subgraph from the adapter and either merges the new nodes
@@ -1225,40 +1386,10 @@
         err ? callback(err) : callback(null, graph);
       });
     },
-    
-    
-    // Only == and |= operators are yet implemented
-    // TODO: Should support the same qry interface as Data.Graph#fetch
-    find: function(qry) {
-      return this.objects().select(function(o) {
-        var so = o.toJSON();
-        var rejected = false;
-        _.each(qry, function(value, key) {
-          var condition;
-          // Extract operator
-          var matches = key.match(/^([a-z_]{1,30})(!=|>|>=|<|<=|\|=)?$/),
-              property = matches[1],
-              operator = matches[2] || '==';
-          
-          if (operator === "|=") { // one of operator
-            var values = _.isArray(value) ? value : [value];
-            condition = false;
-            _.each(values, function(val) {
-              if (_.include(so[property], val)) condition = true;
-            });
-          } else { // regular operators
-            condition = so[property] === value;
-          }
-          
-          if (!condition) rejected = true;
-        });
-        return !rejected;
-      });
-    },
-    
-    // Synchronize all new and dirty, as well as deleted nodes to the server
+
+    // Synchronize dirty nodes with the database
     sync: function(callback) {
-      callback = callback || function() {};
+      callback = callback || function() {};
       var that = this,
           nodes = that.dirtyNodes();
       
@@ -1295,6 +1426,7 @@
     
     // Perform a filter on the graph. Expects `Data.Criterion` object
     // describing the filter conditions
+    // DEPRECATED, will be removed with 0.3.0
     filter: function(criteria) {
       var g2 = {};
       
@@ -1304,6 +1436,8 @@
       });
       
       // Include all other objects that do not match the target type
+      // KNOWN BUG: this assumes that all type properties on all nested criterion
+      // objects have the same type
       this.objects().each(function(obj, key) {
         if (!_.include(obj.types().keys(), criteria.type)) g2[key] = obj.toJSON();
       });
@@ -1314,6 +1448,13 @@
       });
 
       return new Data.Graph(g2);
+    },
+    
+    // Perform a group operation on a Data.Graph
+    group: function(type, keys, properties) {
+      var res = new Data.Collection();
+      res.g = Data.Transformers.group(this, type, keys, properties);
+      return res;
     },
     
     // Type nodes
@@ -1330,24 +1471,41 @@
       });
     },
     
-    // Dirty and volatile nodes
-    // Used by Data.Graph#save
+    // Get dirty nodes
+    // Used by Data.Graph#sync
     dirtyNodes: function() {
       return this.all('objects').select(function(obj, key) {
         return (obj.dirty && (obj.data || obj instanceof Data.Type));
       });
     },
     
+    // Get invalid nodes
     invalidNodes: function() {
       return this.all('objects').select(function(obj, key) {
         return (obj.errors && obj.errors.length > 0);
       });
     },
     
+    // Get conflicted nodes
     conflictedNodes: function() {
       return this.all('objects').select(function(obj, key) {
         return obj._conflicted;
       });
+    },
+    
+    // Serializes the graph to the JSON-based exchange format
+    toJSON: function() {
+      var result = {};
+      
+      // Serialize object nodes
+      this.all('objects').each(function(obj, key) {
+        // Only serialize fetched nodes
+        if (obj.data || obj instanceof Data.Type) {
+          result[key] = obj.toJSON();
+        }
+      });
+      
+      return result;
     }
   });
   
@@ -1367,7 +1525,7 @@
   Data.Collection = function(spec) {
     var that = this,
         gspec = { "/type/item": {"type": "/type/type", "properties": {}}};
-
+        
     // Convert to Data.Graph serialization format
     if (spec) {
       _.each(spec.properties, function(property, key) {
@@ -1386,19 +1544,52 @@
   };
   
   _.extend(Data.Collection.prototype, {
-    get: function(property, key) {
-      if (property === 'properties') {
-        return this.g.get('objects', '/type/item').get('properties', key);
-      } else if (property === 'items') {
-        return this.g.get('objects', key);
-      }
+
+    // Get an object (item) from the collection
+    get: function(key) {
+      return this.g.get.apply(this.g, arguments);
     },
     
-    all: function() {
-      if (property === 'properties') {
-        return this.g.get('objects', '/type/item').all('properties');
-      } else if (property === 'items') {
-        return this.g.all('objects', key);
+    // Set (add) a new object to the collection
+    set: function(id, properties) {
+      this.g.set(id, _.extend(properties, {type: "/type/item"}));
+    },
+    
+    // Find objects that match a particular query
+    find: function(qry) {
+      return this.g.find(qry);
+    },
+    
+    // Returns a filtered collection containing only items that match a certain query
+    filter: function(qry) {
+      return new Data.Collection({
+        properties: this.properties().toJSON(),
+        items: this.find(qry).toJSON()
+      });
+    },
+        
+    // Perform a group operation on the collection
+    group: function(keys, properties) {
+      var res = new Data.Collection();
+      res.g = Data.Transformers.group(this.g, "/type/item", keys, properties);
+      return res;
+    },
+    
+    // Convenience function for accessing properties
+    properties: function() {
+      return this.g.get('objects', '/type/item').all('properties');
+    },
+    
+    // Convenience function for accessing items
+    items: function() {
+      return this.g.objects();
+    },
+    
+    // Serialize
+    toJSON: function() {
+      return {
+        properties: this.g.toJSON()["/type/item"].properties,
+        items: this.g.objects().toJSON()
       }
     }
   });
@@ -1406,7 +1597,9 @@
   
   // Data.Criterion
   // --------------
-
+  
+  // Deprecated. Will be removed with 0.3.0. Use Data.Graph.find instead
+  
   Data.Criterion = function (operator, type, property, value) {
     this.operator = operator;
     this.type = type;
