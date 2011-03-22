@@ -165,7 +165,7 @@ var HTMLRenderer = function(root, parent, lvl) {
         level: level,
         edit: app.document.mode === 'edit',
         name: node.get('name'),
-        empty: app.document.mode === 'edit' && (!node.get('name') || node.get('name') === ''),
+        empty: app.document.mode === 'edit' && (!node.get('name') || node.get('name') === '')
       });
     },
     
