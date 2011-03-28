@@ -17,8 +17,6 @@ Data.setAdapter('couch', { url: config.couchdb_url});
 var seed;
 var db = CouchClient(config.couchdb_url);
 
-
-
 // WriteGraph Filters
 Data.middleware.writegraph = [
   // TODO make middleware asynchronous!
@@ -283,6 +281,10 @@ _.renderTemplate = function(tpl, view, helpers) {
   return template(view, helpers || {});
 };
 
+_.escapeHTML = function(string) {
+  return string.replace(/&(?!\w+;)/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+};
+
 // Express.js Configuration
 // -----------
 
@@ -297,6 +299,14 @@ app.configure(function(){
 });
 
 
+
+
+function clientConfig() {
+  return {
+    "transloadit": _.escapeHTML(JSON.stringify(config.transloadit))
+  };
+}
+
 // Web server
 // -----------
 
@@ -304,6 +314,7 @@ app.get('/', function(req, res) {
   html = fs.readFileSync(__dirname+ '/templates/app.html', 'utf-8');
   res.send(html.replace('{{{{seed}}}}', JSON.stringify(seed))
                .replace('{{{{session}}}}', JSON.stringify(req.session))
+               .replace('{{{{config}}}}', JSON.stringify(clientConfig()))
                .replace(/\{\{\{\{min\}\}\}\}/g, process.argv[2] == "--production" ? '.min' : ''));
 });
 
@@ -345,7 +356,7 @@ app.post('/login', function(req, res) {
       password = req.body.password;
   
   var graph = new Data.Graph(seed);
-  graph.fetch({type: '/type/user'}, {}, function(err) {
+  graph.fetch({type: '/type/user'}, function(err) {
     if (!err) {
       var user = graph.get('/user/'+username);
       if (user && username === user.get('username').toLowerCase() && encryptPassword(password) === user.get('password')) {
@@ -432,7 +443,7 @@ app.post('/updateuser', function(req, res) {
   var username = req.body.username;
   
   var graph = new Data.Graph(seed);
-  graph.fetch({type: '/type/user'}, {}, function(err) {
+  graph.fetch({type: '/type/user'}, function(err) {
     var user = graph.get('/user/'+username);
     if (!user) return res.send({"status": "error"});
     
@@ -756,12 +767,13 @@ app.put('/writegraph', function(req, res) {
 // })
 
 console.log('Loading schema...');
-graph.fetch({"type|=": ["/type/type", "/type/config"]}, {}, function(err, g) {
+graph.fetch({"type|=": ["/type/type", "/type/config"]}, function(err, nodes) {
+  
   if (err) {
     console.log("ERROR: Couldn't fetch schema");
     console.log(err);
   } else {
-    seed = g;
+    seed = nodes.toJSON();
     console.log('READY: Substance is listening at http://'+(config['server_host'] || 'localhost')+':'+config['server_port']);
     app.listen(config['server_port'], config['server_host']);
   }
