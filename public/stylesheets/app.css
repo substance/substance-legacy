@@ -1211,12 +1211,130 @@ pre {
   margin-bottom: 20px;
 }
 
-
-/* Editors
+/* Image Editor
 -------------------------------------------------------------------------------*/
 
+.content-node.image {
+  text-align: center;
+}
+
+.image-content img {
+  padding: 0;
+  margin: 0;
+  max-width: 860px;
+  display: block;
+}
+
+.image-content .caption {
+/*  position: absolute;
+  bottom: -30px;*/
+  padding-top: 40px;
+  position: relative;
+  bottom: 20px;
+  background: blue;
+}
+
+.image-content.placeholder {
+  width: 500px;
+  height: 200px;
+  background: #eee;
+  border: 1px dotted #ccc;
+}
+
+.image-content {
+  display: inline-block;
+  position: relative;
+  text-align: center;
+  padding: 0;
+  margin: 0;
+}
+
+#document .image-editor {
+  display: none;
+  position: absolute;
+  margin: 0 auto;
+  top: 0px;
+  bottom: 0px;
+  right: 0px;
+  left: 0px;
+}
+
+#document .content-node.image.selected .image-editor {
+  display: block;
+}
+
+#document .content-node.image.selected img {
+  opacity: 0.1;
+}
+
+#document .image-editor .image-drop-area {
+  position: absolute;
+  top: 20px; right: 20px; left: 20px; bottom: 20px;
+  
+  border: 2px dashed #aaa;
+  -webkit-border-radius:10px;
+  -moz-border-radius:   10px;
+  border-radius:        10px;
+}
+
+#document .image-editor .image-drop-area .info {
+  color: #666;
+  text-align: center;
+  line-height: 45px;
+  font-style: italic;
+}
+
+#document .image-editor .image-file {
+  display: block;
+  position: absolute;
+  top: 0px;
+  bottom: 0px;
+  left: 0px;
+  right: 0px;
+  opacity: 0;
+  padding: 0;
+  margin: 0;
+}
+
+
+
+#document .image-editor .image-url-area {
+  padding-top: 40px;
+}
+
+#document .image-editor .image-url-area input {
+  width: 100%;
+  background: #fff;
+  border: 1px solid #ccc;
+}
+
+.image-content .image-editor .heading {
+  font-size: 20px;
+  text-align: center;
+  font-family: 'Palatino Linotype', 'Book Antiqua', Palatino, FreeSerif, serif;
+}
+
+.image-progress {
+  display: none;
+}
+
+.image-progress .label {
+  padding: 10px;
+}
+
 /* ImageEditor Widget */
-#progress_container { display: none; }
+.progress-container {
+  margin: 0 10px;
+  background: #ccc;
+  height: 10px;
+  max-width: 200px;
+  margin: 0 auto;
+}
+
+.progress-bar {
+  background: green;
+  height: 10px;
+}
 
 #upload_image input[type=file] { width: 240px; display: inline; }
 #upload_image input[type=submit] { width: 100px; display: inline; }
