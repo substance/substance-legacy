@@ -283,7 +283,7 @@ var seedGraph = {
       "children": {
         "name": "Children",
         "unique": false,
-        "type": ["/type/text", "/type/quote", "/type/code", "/type/section"],
+        "type": ["/type/text", "/type/image", "/type/quote", "/type/code", "/type/section"],
         "default": []
       }
     }
@@ -449,8 +449,8 @@ var seedGraph = {
     "type": "/type/type",
     "name": "Image",
     "properties": {
-      "title": {
-        "name": "Image Title",
+      "caption": {
+        "name": "Image Caption",
         "unique": true,
         "type": "string",
       },
