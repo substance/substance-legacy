@@ -480,7 +480,7 @@ var remote,                              // Remote handle for server-side method
     Backbone.history.start();
     
     // Reset document when window gets out of focus
-    document.body.onblur = function() {  if (app.document) app.document.reset(); }
+    // document.body.onblur = function() {  if (app.document) app.document.reset(); }
     
     // TODO: Prevent leaving page by pressing backspace
     // $('body').bind('keydown', function(e) {
