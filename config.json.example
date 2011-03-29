@@ -2,5 +2,12 @@
   "couchdb_url": "http://localhost:5984/substance",
   "server_host": null,
   "server_port": 3003,
-  "secret": "secret option string for session security"
+  "secret": "secret option string for session security",
+  "transloadit": {
+    "auth": {
+      "key": "your_api_key"
+    },
+    "template_id": "your_template_id",
+    "redirect_url": "http://substance.io"
+  }
 }
