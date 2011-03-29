@@ -287,12 +287,12 @@ _.renderTemplate = function(tpl, view, helpers) {
 // -----------
 
 app.configure(function(){
-  app.use(express.bodyDecoder());
+  app.use(express.bodyParser());
   app.use(express.methodOverride());
-  app.use(express.cookieDecoder());
+  app.use(express.cookieParser());
   app.use(express.session({secret: config['secret']}));
   app.use(app.router);
-  app.use(express.staticProvider(__dirname+"/public", { maxAge: 41 })); // 
+  app.use(express.static(__dirname+"/public", { maxAge: 41 })); // 
   app.use(express.logger({ format: ':method :url' }));
 });
 
