@@ -398,23 +398,17 @@ var Document = Backbone.View.extend({
   
   selectNode: function(e) {
     if (this.mode === 'show') return; // Skip for show mode
-    
     var key = $(e.currentTarget).attr('name');
-    
-    this.$lead = $('#document_lead'); //.attr('contenteditable', true);
-    
-    if (!this.selectedNode || this.selectedNode.key !== key) {
+    if (!e.stopProp && (!this.selectedNode || this.selectedNode.key !== key)) {
       var node = graph.get(key);
       this.selectedNode = node;
-      // console.log(e.target);
       this.trigger('select:node', this.selectedNode);
-
+      e.stopProp = true;
       // The server will respond with a status package containing my own cursor position
       // remote.Session.selectNode(key);
     }
-    
     e.stopPropagation();
-    return false;
+    // return false;
   },
   
   publishDocument: function(e) {
