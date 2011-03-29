@@ -232,7 +232,10 @@ var HTMLRenderer = function(root, parent, lvl) {
         parent: parent,
         edit: app.document.mode === 'edit',
         url: node.get('url'),
-        level: level
+        level: level,
+        empty: app.document.mode === 'edit' && (!node.get('caption') || node.get('caption') === ''),
+        caption: node.get('caption'),
+        transloadit_params: config.transloadit
       });
     },
     
