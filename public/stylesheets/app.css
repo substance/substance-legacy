@@ -1223,22 +1223,14 @@ pre {
   margin: 0;
   max-width: 860px;
   display: block;
+  padding: 5px 0;
 }
 
 .image-content .caption {
-/*  position: absolute;
-  bottom: -30px;*/
   padding-top: 40px;
   position: relative;
   bottom: 20px;
   background: blue;
-}
-
-.image-content.placeholder {
-  width: 500px;
-  height: 200px;
-  background: #eee;
-  border: 1px dotted #ccc;
 }
 
 .image-content {
@@ -1284,6 +1276,20 @@ pre {
   font-style: italic;
 }
 
+#document .image-editor .image-drop-area .credits {
+  display: none;
+  color: #666;
+  font-style: italic;
+  font-size: 12px;
+  text-align: center;
+  position: absolute;
+  left: -150px;
+  right: -150px;
+  bottom: 5px;
+}
+
+#document .image-content.placeholder .image-drop-area .credits { display: block; }
+
 #document .image-editor .image-file {
   display: block;
   position: absolute;
@@ -1296,7 +1302,7 @@ pre {
   margin: 0;
 }
 
-
+#document .image-content.placeholder .image-file { bottom: 30px; }
 
 #document .image-editor .image-url-area {
   padding-top: 40px;
