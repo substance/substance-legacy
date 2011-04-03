@@ -283,7 +283,7 @@ var seedGraph = {
       "children": {
         "name": "Children",
         "unique": false,
-        "type": ["/type/text", "/type/image", "/type/quote", "/type/code", "/type/section"],
+        "type": ["/type/text", "/type/image", "/type/resource", "/type/quote", "/type/code", "/type/section"],
         "default": []
       }
     }
@@ -456,6 +456,33 @@ var seedGraph = {
       },
       "url": {
         "name": "Image URL",
+        "unique": true,
+        "type": "string"
+      },
+      "document": {
+        "name": "Document Membership",
+        "unique": true,
+        "required": true,
+        "type": ["/type/document"]
+      }
+    }
+  },
+  
+  // Resource
+  // --------------------
+  
+  "/type/resource": {
+    "_id": "/type/image",
+    "type": "/type/type",
+    "name": "Resource",
+    "properties": {
+      "caption": {
+        "name": "Caption",
+        "unique": true,
+        "type": "string",
+      },
+      "url": {
+        "name": "Resource URL",
         "unique": true,
         "type": "string"
       },
