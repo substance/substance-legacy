@@ -408,7 +408,7 @@ var HTMLRenderer = function(root, parent, lvl) {
         node: node,
         content: content,
         edit: app.document.mode === 'edit',
-        title: node.get('title'),
+        title: app.document.mode === 'edit' ? node.get('title') : node.get('title') || 'Untitled',
         lead: node.get('lead'),
         empty_lead: app.document.mode === 'edit' && (!node.get('lead') || node.get('lead') === ''),
         empty_title: app.document.mode === 'edit' && (!node.get('title') || node.get('title') === ''),
@@ -517,6 +517,19 @@ var HTMLRenderer = function(root, parent, lvl) {
     
     "/type/image": function(node, parent, level) {
       return Helpers.renderTemplate('image', {
+        node: node,
+        parent: parent,
+        edit: app.document.mode === 'edit',
+        url: node.get('url'),
+        level: level,
+        empty: app.document.mode === 'edit' && (!node.get('caption') || node.get('caption') === ''),
+        caption: node.get('caption'),
+        transloadit_params: config.transloadit
+      });
+    },
+    
+    "/type/resource": function(node, parent, level) {
+      return Helpers.renderTemplate('resource', {
         node: node,
         parent: parent,
         edit: app.document.mode === 'edit',
@@ -855,7 +868,6 @@ var ImageEditor = Backbone.View.extend({
   },
   
   upload: function() {
-    console.log(this.$('.upload-image-form'));
     this.$('.upload-image-form').submit();
   },
   
@@ -882,21 +894,25 @@ var ImageEditor = Backbone.View.extend({
       autoSubmit: false,
       onProgress: function(bytesReceived, bytesExpected) {
         var percentage = parseInt(bytesReceived / bytesExpected * 100);
-        that.$('.image-progress').show();
         if (!(percentage >= 0)) percentage = 0;
-        
-        console.log('upload complete: '+percentage);
+        that.$('.image-progress .label').html('Uploading ... '+ percentage+'%');
         that.$('.progress-bar').attr('style', 'width:' + percentage +'%');
-        // $('#image_progress_legend').html('<strong>Uploading:</strong> ' + percentage + '% complete</div>');
       },
       onError: function(assembly) {
-        console.log(assembly.error+': '+assembly.message);
-        alert(assembly.error+': '+assembly.message);
+        that.$('.image-progress .label').html('Invalid image. Skipping ...');
         that.$('.progress-container').hide();
+
+        setTimeout(function() {
+          app.document.reset();
+          that.$('.info').show();
+        }, 3000);                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
       },
-      // onStart: function() {
-      //   that.$('.image-progress').show();
-      // },
+      onStart: function() {
+        that.$('.image-progress').show();
+        that.$('.info').hide();
+        that.$('.image-progress .label').html('Uploading ...');
+        that.$('.progress-bar').attr('style', 'width: 0%');
+      },
       onSuccess: function(assembly) {
         // This triggers a node re-render
         if (assembly.results.resize_image && assembly.results.resize_image[0] && assembly.results.resize_image[0].url) {
@@ -906,14 +922,78 @@ var ImageEditor = Backbone.View.extend({
           });
           app.document.reset();
           that.$('.progress-container').hide();
+          that.$('.info').show();
+        } else {
+          that.$('.image-progress .label').html('Invalid image. Skipping ...');
+          that.$('.progress-container').hide();
+
+          setTimeout(function() {
+            app.document.reset();
+            that.$('.info').show();
+          }, 3000);
         }
-        
       }
     });
   },
   
   render: function() {
     // this.$('.node-editor-placeholder').html(Helpers.renderTemplate('edit_image', app.document.selectedNode.data));
+  }
+});
+var ResourceEditor = Backbone.View.extend({
+  events: {
+    'change .image-file': 'upload',
+    'keydown .resource-url': 'update'
+  },
+  
+  resourceExists: function(url, callback) {
+    var img = new Image();
+    img.onload = function() { callback(null); }
+    img.onerror = function() { callback('not found'); }
+    img.src = url;
+  },
+  
+  update: function() {
+    var that = this;
+    
+    function perform() {
+      var url = that.$('.resource-url').val();
+      that.resourceExists(url, function(err) {
+        if (!err) {
+          that.$('img').attr('src', url);
+          that.$('.status').replaceWith('<div class="status image">Image</div>');
+          app.document.updateSelectedNode({
+            url: url
+          });
+        } else {
+          that.$('.status').replaceWith('<div class="status">Invalid URL</div>');
+        }
+      });      
+    }
+    
+    setTimeout(perform, 500);
+  },
+  
+  initialize: function() {
+    var that = this;
+    
+    this.pendingCheck = false;
+    this.$caption = this.$('.caption');
+    editor.activate(this.$caption, {
+      placeholder: 'Enter Caption',
+      multiline: false,
+      markup: false
+    });
+    
+    editor.bind('changed', function() {
+      app.document.updateSelectedNode({
+        caption: editor.content()
+      });
+    });
+  },
+  
+  render: function() {
+    
   }
 });
 var ApplicationController = Backbone.Controller.extend({
@@ -1161,7 +1241,7 @@ var Document = Backbone.View.extend({
     });
     
     this.bind('changed', function() {
-      document.title = that.model.get('title');
+      document.title = that.model.get('title') || 'Untitled';
       // Re-render Document browser
       that.app.browser.render();
     });
@@ -1462,6 +1542,8 @@ var Document = Backbone.View.extend({
       this.nodeEditor = new SectionEditor({el: $node});
     } else if (this.selectedNode.type._id === '/type/image') {
       this.nodeEditor = new ImageEditor({el: $node});
+    } else if (this.selectedNode.type._id === '/type/resource') {
+      this.nodeEditor = new ResourceEditor({el: $node});
     } else if (this.selectedNode.type._id === '/type/quote') {
       this.nodeEditor = new QuoteEditor({el: $node});
     } else if (this.selectedNode.type._id === '/type/code') {
