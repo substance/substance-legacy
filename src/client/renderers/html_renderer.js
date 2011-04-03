@@ -119,7 +119,7 @@ var HTMLRenderer = function(root, parent, lvl) {
         node: node,
         content: content,
         edit: app.document.mode === 'edit',
-        title: node.get('title'),
+        title: app.document.mode === 'edit' ? node.get('title') : node.get('title') || 'Untitled',
         lead: node.get('lead'),
         empty_lead: app.document.mode === 'edit' && (!node.get('lead') || node.get('lead') === ''),
         empty_title: app.document.mode === 'edit' && (!node.get('title') || node.get('title') === ''),

@@ -41,7 +41,7 @@ var Document = Backbone.View.extend({
     });
     
     this.bind('changed', function() {
-      document.title = that.model.get('title');
+      document.title = that.model.get('title') || 'Untitled';
       // Re-render Document browser
       that.app.browser.render();
     });
