@@ -641,6 +641,34 @@
     </div>
   </script>
   
+  <script type="text/x-handlebars-template" name="resource">
+    <div id="{{node/html_id}}" name={{node/key}} parent="{{parent/_id}}" level="{{level}}" draggable="false" class="content-node resource level-{{level}}">
+      {{#edit}}<a href="#" class="remove remove-node" title="Remove Resource" node="{{node/key}}" parent="{{parent/_id}}">x</a>{{/edit}}
+      {{#edit}}<div class="content-node-outline"><div class="cursor"><span></span></div></div>{{/edit}}
+      {{#edit}}<div class="pilcrow">&#182;</div>{{/edit}}
+      
+      <div class="resource-content{{^url}} placeholder{{/url}}">
+        {{#url}}<img src="{{.}}"/>{{/url}}
+        {{^url}}<img src="images/image_placeholder.png"/>{{/url}}
+        
+        <div class="resource-editor">
+          <div class="resource-url-area">
+            <div class="url-label">Resource URL</div>
+            <div class="url-container">
+              <input class="resource-url" type="text" name="url" value="{{url}}"/>
+              <div class="status image">Image</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="caption content{{#empty}} empty{{/empty}}">
+        {{^empty}}{{{caption}}}{{/empty}}
+        {{#empty}}&laquo; Enter Caption &raquo;{{/empty}}
+      </div>
+    </div>
+  </script>
+  
   <script type="text/x-handlebars-template" name="image">
     <div id="{{node/html_id}}" name={{node/key}} parent="{{parent/_id}}" level="{{level}}" draggable="false" class="content-node image level-{{level}}">
       {{#edit}}<a href="#" class="remove remove-node" title="Remove Image" node="{{node/key}}" parent="{{parent/_id}}">x</a>{{/edit}}

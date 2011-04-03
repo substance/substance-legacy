@@ -239,6 +239,19 @@ var HTMLRenderer = function(root, parent, lvl) {
       });
     },
     
+    "/type/resource": function(node, parent, level) {
+      return Helpers.renderTemplate('resource', {
+        node: node,
+        parent: parent,
+        edit: app.document.mode === 'edit',
+        url: node.get('url'),
+        level: level,
+        empty: app.document.mode === 'edit' && (!node.get('caption') || node.get('caption') === ''),
+        caption: node.get('caption'),
+        transloadit_params: config.transloadit
+      });
+    },
+    
     "/type/visualization": function(node, parent, level) {
       return Helpers.renderTemplate('visualization', {
         node: node,

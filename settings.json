@@ -41,6 +41,7 @@
       "client/node_editors/question_editor.js",
       "client/node_editors/answer_editor.js",
       "client/node_editors/image_editor.js",
+      "client/node_editors/resource_editor.js",
       "client/controllers/application.js",
       "client/ui/common.js",
       "client/ui/string_editor.js",

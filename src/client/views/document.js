@@ -342,6 +342,8 @@ var Document = Backbone.View.extend({
       this.nodeEditor = new SectionEditor({el: $node});
     } else if (this.selectedNode.type._id === '/type/image') {
       this.nodeEditor = new ImageEditor({el: $node});
+    } else if (this.selectedNode.type._id === '/type/resource') {
+      this.nodeEditor = new ResourceEditor({el: $node});
     } else if (this.selectedNode.type._id === '/type/quote') {
       this.nodeEditor = new QuoteEditor({el: $node});
     } else if (this.selectedNode.type._id === '/type/code') {
