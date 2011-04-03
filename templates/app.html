@@ -7,6 +7,7 @@
     var seed = {{{{seed}}}};
     var config = {{{{config}}}};
     var session = {{{{session}}}};
+    var scripts = {{{{scripts}}}};
   </script>
   
   <script type="text/x-ejs-template" name="edit_attributes">
@@ -712,19 +713,7 @@
   
   <script src="/javascripts/head.min.js"></script>
   <script>
-    head.js("javascripts/sanitize.js",
-            "javascripts/hi.js",
-            "javascripts/jquery-1.5.min.js",
-            "javascripts/handlebars.js",
-            "javascripts/showdown.js",
-            "javascripts/jquery.transloadit2.js",
-            "javascripts/jquery.hotkeys.js",
-            "javascripts/jquery.timeago.js",
-            "javascripts/underscore{{{{min}}}}.js",
-            "javascripts/data{{{{min}}}}.js",
-            "javascripts/backbone{{{{min}}}}.js",
-            "javascripts/proper.js",
-            "javascripts/substance{{{{min}}}}.js");
+    head.js.apply(this, scripts);
   </script>
 </head>
 <body>

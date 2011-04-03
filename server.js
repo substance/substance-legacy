@@ -8,8 +8,11 @@ var _ = require('underscore');
 var CouchClient = require('./lib/data/lib/couch-client');
 var async = require('async');
 
-// Read Config
+// App Config
 global.config = JSON.parse(fs.readFileSync(__dirname+ '/config.json', 'utf-8'));
+
+// App Settings
+global.settings = JSON.parse(fs.readFileSync(__dirname+ '/settings.json', 'utf-8'));
 
 // Setup Data.Adapter
 Data.setAdapter('couch', { url: config.couchdb_url});
@@ -288,21 +291,33 @@ _.escapeHTML = function(string) {
 // Express.js Configuration
 // -----------
 
-app.configure(function(){
+app.configure(function() {
   app.use(express.bodyParser());
   app.use(express.methodOverride());
   app.use(express.cookieParser());
   app.use(express.session({secret: config['secret']}));
   app.use(app.router);
-  app.use(express.static(__dirname+"/public", { maxAge: 41 })); // 
+  app.use(express.static(__dirname+"/public", { maxAge: 41 }));
   app.use(express.logger({ format: ':method :url' }));
 });
 
+app.configure('development', function() {
+  // Expose source file in development mode
+  app.use(express.static(__dirname+"/src", { maxAge: 41 }));
+});
 
 function clientConfig() {
   return {
     "transloadit": _.escapeHTML(JSON.stringify(config.transloadit))
   };
+}
+
+function scripts() {
+  if (process.env.NODE_ENV === 'production') {
+    return settings.scripts.production;
+  } else {
+    return settings.scripts.development.concat(settings.scripts.source);
+  }
 }
 
 // Web server
@@ -313,7 +328,7 @@ app.get('/', function(req, res) {
   res.send(html.replace('{{{{seed}}}}', JSON.stringify(seed))
                .replace('{{{{session}}}}', JSON.stringify(req.session))
                .replace('{{{{config}}}}', JSON.stringify(clientConfig()))
-               .replace(/\{\{\{\{min\}\}\}\}/g, process.argv[2] == "--production" ? '.min' : ''));
+               .replace('{{{{scripts}}}}', JSON.stringify(scripts())));
 });
 
 // Quick search interface (returns found users and a documentset)
