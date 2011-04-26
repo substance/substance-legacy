@@ -141,9 +141,8 @@ function getDocument(username, docname, callback) {
   });
 }
 
-
 function recentDocuments(limit, username, callback) {
-  db.view('substance/recent_documents', {limit: parseInt(limit)}, function(err, res) {
+  db.view('substance/recent_documents', {limit: parseInt(limit), descending: true}, function(err, res) {
     if (err) {
       callback(err);
     } else {
