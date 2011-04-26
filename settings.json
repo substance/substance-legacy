@@ -11,6 +11,7 @@
       "javascripts/jquery.timeago.js",
       "javascripts/underscore.js",
       "datajs/data.js",
+      "javascripts/data-0.2.0.js",
       "javascripts/backbone.js",
       "javascripts/proper.js"
     ],
@@ -25,6 +26,7 @@
       "javascripts/jquery.timeago.js",
       "javascripts/underscore.min.js",
       "datajs/data.js",
+      "javascripts/data-0.2.0.js",
       "javascripts/backbone.min.js",
       "javascripts/proper.js",
       "javascripts/substance.min.js"
