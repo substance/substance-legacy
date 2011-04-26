@@ -414,18 +414,15 @@ var Application = Backbone.View.extend({
     this.document.render();
     this.browser.render();
     this.header.render();
-    
     return this;
   }
 });
-
-Data.setAdapter('AjaxAdapter');
 
 var remote,                              // Remote handle for server-side methods
     app,                                 // The Application
     controller,                          // Controller responding to routes
     editor,                              // A global instance of the Proper Richtext editor
-    graph = new Data.Graph(seed, false); // The database
+    graph = new Data.Graph(seed, false).setAdapter('ajax'); // The database
 
 (function() {
   $(function() {    
@@ -494,6 +491,11 @@ var remote,                              // Remote handle for server-side method
       if (graph.dirtyNodes().length>0) return "You have unsynced changes, which will be lost. Are you sure you want to leave this page?";
     }
     
+    function resetWorkspace() {
+      confirm('There are conflicted or rejected nodes since the last sync. The workspace will be reset for your own safety');
+      window.location.reload(true);
+    }
+    
     var pendingSync = false;
     graph.bind('dirty', function() {
       // Reload document browser      
@@ -509,27 +511,14 @@ var remote,                              // Remote handle for server-side method
                 $('#sync_state').html('');
               }, 3000);
             } else {
-              confirm('There was an error during synchronization. The workspace will be reset for your own safety');
-              window.location.reload(true);
+              resetWorkspace();
             }
           });
         }, 3000);
       }
     });
     
-    graph.bind('conflicted', function() {
-      if (!app.document.model) return;
-      graph.fetch({
-        creator: app.document.model.get('creator')._id,
-        name: app.document.model.get('name')
-      }, {expand: true}, function(err) {
-        app.document.render();
-        app.scrollTo('#document_wrapper');
-      });
-      notifier.notify({
-        message: 'There are conflicting nodes. The Document will be reset for your own safety.',
-        type: 'error'
-      });
-    });
+    graph.bind('conflicted', resetWorkspace);
+    graph.bind('rejected', resetWorkspace);
   });
 })();
