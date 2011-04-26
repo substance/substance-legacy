@@ -232,7 +232,6 @@ Filters.ensureAuthorized = function() {
   return {
     read: function(node, next, session) {
       // Hide all password properties
-      console.log('hiding passwords');
       delete node.password;      
       next(node);
     },
@@ -245,10 +244,9 @@ Filters.ensureAuthorized = function() {
         // TODO: Make sure that document deletion can only be done by the creator, not the collaborators.
       } else if (_.intersect(node.type, ["/type/section", "/type/visualization", "/type/text",
                                          "/type/question", "/type/answer", "/type/quote", "/type/image", "/type/reference"]).length > 0) {
-                                         
-        // var document = graph.get(node.document);
+
         that.db.get(node.document, function(err, document) {
-          if (err) return next(null);
+          if (err) return next(node); // if the document does not yet exist
           return document.creator !== "/user/"+session.username ? next(null) : next(node);
         });
       } else if (_.include(node.type, "/type/user")) {
@@ -260,7 +258,7 @@ Filters.ensureAuthorized = function() {
           next(node);
         });
       } else {
-        next(node); // no-op
+        next(node);
       }
     }
   };
