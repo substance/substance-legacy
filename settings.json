@@ -10,7 +10,7 @@
       "javascripts/jquery.hotkeys.js",
       "javascripts/jquery.timeago.js",
       "javascripts/underscore.js",
-      "javascripts/data.js",
+      "datajs/data.js",
       "javascripts/backbone.js",
       "javascripts/proper.js"
     ],
@@ -24,7 +24,7 @@
       "javascripts/jquery.hotkeys.js",
       "javascripts/jquery.timeago.js",
       "javascripts/underscore.min.js",
-      "javascripts/data.min.js",
+      "datajs/data.js",
       "javascripts/backbone.min.js",
       "javascripts/proper.js",
       "javascripts/substance.min.js"
