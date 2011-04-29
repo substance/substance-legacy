@@ -481,6 +481,16 @@ var Document = Backbone.View.extend({
       // Move all successors inside the new section
       var successors = parentNode.get('children').rest(targetIndex);
       
+      var done = false;
+      successors = successors.select(function(node) {
+        if (!done && node.type.key !== "/type/section") {
+          return true;
+        } else {
+          done = true;
+          return false;
+        }
+      });
+      
       var predecessors = parentNode.get('children').select(function(c, key, index) {
         return index < targetIndex;
       });
