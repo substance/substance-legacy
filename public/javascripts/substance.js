@@ -516,11 +516,12 @@ var HTMLRenderer = function(root, parent, lvl) {
     },
     
     "/type/image": function(node, parent, level) {
-      return Helpers.renderTemplate('image', {
+      return _.tpl('image', {
         node: node,
         parent: parent,
         edit: app.document.mode === 'edit',
         url: node.get('url'),
+        original_url: node.get('original_url'),
         level: level,
         empty: app.document.mode === 'edit' && (!node.get('caption') || node.get('caption') === ''),
         caption: node.get('caption'),
@@ -898,15 +899,16 @@ var ImageEditor = Backbone.View.extend({
         that.$('.image-progress .label').html('Uploading ... '+ percentage+'%');
         that.$('.progress-bar').attr('style', 'width:' + percentage +'%');
       },
-      onError: function(assembly) {
-        that.$('.image-progress .label').html('Invalid image. Skipping ...');
-        that.$('.progress-container').hide();
-
-        setTimeout(function() {
-          app.document.reset();
-          that.$('.info').show();
-        }, 3000);                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
-      },
+      // onError: function(assembly) {
+      //   alert(JSON.stringify(assembly));
+      //   that.$('.image-progress .label').html('Invalid image. Skipping ...');
+      //   that.$('.progress-container').hide();
+      // 
+      //   setTimeout(function() {
+      //     app.document.reset();
+      //     that.$('.info').show();
+      //   }, 3000);                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
+      // },
       onStart: function() {
         that.$('.image-progress').show();
         that.$('.info').hide();
@@ -918,8 +920,10 @@ var ImageEditor = Backbone.View.extend({
         if (assembly.results.resize_image && assembly.results.resize_image[0] && assembly.results.resize_image[0].url) {
           app.document.updateSelectedNode({
             url: assembly.results.resize_image[0].url,
+            original_url: assembly.uploads[0].url,
             dirty: true
           });
+          
           app.document.reset();
           that.$('.progress-container').hide();
           that.$('.info').show();
@@ -1680,6 +1684,16 @@ var Document = Backbone.View.extend({
     if (type === '/type/section') {
       // Move all successors inside the new section
       var successors = parentNode.get('children').rest(targetIndex);
+      
+      var done = false;
+      successors = successors.select(function(node) {
+        if (!done && node.type.key !== "/type/section") {
+          return true;
+        } else {
+          done = true;
+          return false;
+        }
+      });
       
       var predecessors = parentNode.get('children').select(function(c, key, index) {
         return index < targetIndex;
@@ -2793,18 +2807,15 @@ var Application = Backbone.View.extend({
     this.document.render();
     this.browser.render();
     this.header.render();
-    
     return this;
   }
 });
-
-Data.setAdapter('AjaxAdapter');
 
 var remote,                              // Remote handle for server-side methods
     app,                                 // The Application
     controller,                          // Controller responding to routes
     editor,                              // A global instance of the Proper Richtext editor
-    graph = new Data.Graph(seed, false); // The database
+    graph = new Data.Graph(seed, false).connect('ajax'); // The database
 
 (function() {
   $(function() {    
@@ -2873,6 +2884,11 @@ var remote,                              // Remote handle for server-side method
       if (graph.dirtyNodes().length>0) return "You have unsynced changes, which will be lost. Are you sure you want to leave this page?";
     }
     
+    function resetWorkspace() {
+      confirm('There are conflicted or rejected nodes since the last sync. The workspace will be reset for your own safety');
+      window.location.reload(true);
+    }
+    
     var pendingSync = false;
     graph.bind('dirty', function() {
       // Reload document browser      
@@ -2888,27 +2904,14 @@ var remote,                              // Remote handle for server-side method
                 $('#sync_state').html('');
               }, 3000);
             } else {
-              confirm('There was an error during synchronization. The workspace will be reset for your own safety');
-              window.location.reload(true);
+              resetWorkspace();
             }
           });
         }, 3000);
       }
     });
     
-    graph.bind('conflicted', function() {
-      if (!app.document.model) return;
-      graph.fetch({
-        creator: app.document.model.get('creator')._id,
-        name: app.document.model.get('name')
-      }, {expand: true}, function(err) {
-        app.document.render();
-        app.scrollTo('#document_wrapper');
-      });
-      notifier.notify({
-        message: 'There are conflicting nodes. The Document will be reset for your own safety.',
-        type: 'error'
-      });
-    });
+    graph.bind('conflicted', resetWorkspace);
+    graph.bind('rejected', resetWorkspace);
   });
 })();
