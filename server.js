@@ -8,50 +8,32 @@ var _ = require('underscore');
 var CouchClient = require('./lib/data/lib/couch-client');
 var async = require('async');
 
-// Read Config
+// App Config
 global.config = JSON.parse(fs.readFileSync(__dirname+ '/config.json', 'utf-8'));
+global.seed = JSON.parse(fs.readFileSync(__dirname+ '/db/schema.json', 'utf-8'));
 
-// Setup Data.Adapter
-Data.setAdapter('couch', { url: config.couchdb_url});
+// App Settings
+global.settings = JSON.parse(fs.readFileSync(__dirname+ '/settings.json', 'utf-8'));
 
-var seed;
 var db = CouchClient(config.couchdb_url);
 
+// Express.js Configuration
+// -----------
 
+app.configure(function() {
+  app.use(express.bodyParser());
+  app.use(express.methodOverride());
+  app.use(express.cookieParser());
+  app.use(express.session({secret: config['secret']}));
+  app.use(app.router);
+  app.use(express.static(__dirname+"/public", { maxAge: 41 }));
+  app.use(express.logger({ format: ':method :url' }));
+});
 
-// WriteGraph Filters
-Data.middleware.writegraph = [
-  // TODO make middleware asynchronous!
-  function ensureAuthorized(node, ctx) {
-    if (_.include(node.type, "/type/document")) {
-      // console.log("saving a document...."+node._id);
-      if (node.creator !== "/user/"+ctx.session.username) return null;
-      // TODO: Make sure that document deletion can only be done by the creator, not the collaborators.
-    } else if (_.intersect(node.type, ["/type/section", "/type/visualization", "/type/text",
-                                       "/type/question", "/type/answer", "/type/quote", "/type/image"]).length > 0) {
-                                         
-      // We need a CouchDB lookup here! It's unsave right now!
-      var document = graph.get(node.document);
-      if (document && document.get('creator')._id !== "/user/"+ctx.session.username) return null;
-    } else if (_.include(node.type, "/type/user")) {
-      // Ensure username can't be changed for existing users
-      if (node._rev) node.username = graph.get(node._id).get('username');
-      if (node._id !== "/user/"+ctx.session.username) return null;
-    }
-    return node;
-  }
-];
-
-// ReadGraph Filters
-Data.middleware.readgraph = [
-  function hidePasswords(node, ctx) {
-    // if (!ctx.session.username) return false;
-    if (_.include(node.type, "/type/user")) {
-      delete node.password;
-    }
-    return node;
-  }
-];
+app.configure('development', function() {
+  // Expose source file in development mode
+  app.use(express.static(__dirname+"/src", { maxAge: 41 }));
+});
 
 // Fetch a single node from the graph
 function fetchNode(id, callback) {
@@ -64,15 +46,12 @@ function fetchNode(id, callback) {
 }
 
 function findAttributes(member, searchstr, callback) {
-  db.view(db.uri.pathname+'/_design/substance/_view/attributes', {key: member}, function(err, res) {
-    // Bug-workarount related to https://github.com/creationix/couch-client/issues#issue/3
-    // Normally we'd just use the err object in an error case
-    if (res.error || !res.rows) {
-      callback(res.error);
+  db.view('substance/attributes', {key: member}, function(err, res) {
+    if (err) {
+      callback(err);
     } else {
       var result = {};
       var count = 0;
-      
       _.each(res.rows, function(row) {
         if (row.value.name && row.value.name.match(new RegExp("("+searchstr+")", "i"))) {
           // Add to result set
@@ -89,12 +68,12 @@ function findAttributes(member, searchstr, callback) {
 
 
 function findUsers(searchstr, callback) {
-  db.view(db.uri.pathname+'/_design/substance/_view/users', function(err, res) {
+  db.view('substance/users', function(err, res) {
     // Bug-workarount related to https://github.com/creationix/couch-client/issues#issue/3
     // Normally we'd just use the err object in an error case
   
-    if (res.error || !res.rows) {
-      callback(res.error);
+    if (err) {
+      callback(err);
     } else {
       var result = {};
       var count = 0;
@@ -118,11 +97,9 @@ function findUsers(searchstr, callback) {
 
 // Get a single document from the database, including all associated content nodes
 function getDocument(username, docname, callback) {
-  db.view(db.uri.pathname+'/_design/substance/_view/documents', {key: username+'/'+docname}, function(err, res) {
-    // Bug-workarount related to https://github.com/creationix/couch-client/issues#issue/3
-    // Normally we'd just use the err object in an error case
-    if (res.error || !res.rows) {
-      callback(res.error);
+  db.view('substance/documents', {key: username+'/'+docname}, function(err, res) {
+    if (err) {
+      callback(err);
     } else {
       var result = {};
       var count = 0;
@@ -150,7 +127,6 @@ function getDocument(username, docname, callback) {
         }
         
         fetchAssociated(res.rows[0].value, function(err) {
-          
           // Fetch attributes and user
           async.forEach(doc.subjects.concat(doc.entities).concat([doc.creator]), function(nodeId, callback) {
             fetchNode(nodeId, function(err, node) {
@@ -170,14 +146,10 @@ function getDocument(username, docname, callback) {
   });
 }
 
-
 function recentDocuments(limit, username, callback) {
-  db.view(db.uri.pathname+'/_design/substance/_view/recent_documents', {limit: parseInt(limit)}, function(err, res) {
-    // Bug-workarount related to https://github.com/creationix/couch-client/issues#issue/3
-    // Normally we'd just use the err object in an error case
-  
-    if (res.error || !res.rows) {
-      callback(res.error);
+  db.view('substance/recent_documents', {limit: parseInt(limit), descending: true}, function(err, res) {
+    if (err) {
+      callback(err);
     } else {
       var result = {};
       var associatedItems = [];
@@ -208,18 +180,13 @@ function recentDocuments(limit, username, callback) {
 }
 
 
-
-
 // We are aware that this is not a performant solution.
 // But search functionality needed to be there, quickly.
 // We'll replace it with a speedy fulltext search asap.
 function findDocuments(searchstr, type, username, callback) {
-  db.view(db.uri.pathname+'/_design/substance/_view/documents_by_keyword', function(err, res) {
-    // Bug-workarount related to https://github.com/creationix/couch-client/issues#issue/3
-    // Normally we'd just use the err object in an error case
-  
-    if (res.error || !res.rows && _.include(["user", "keyword"], type)) {
-      callback(res.error);
+  db.view('substance/documents_by_keyword', function(err, res) {
+    if (err && _.include(["user", "keyword"], type)) {
+      callback(err);
     } else {
       var result = {};
       var associatedItems = [];
@@ -263,7 +230,53 @@ function findDocuments(searchstr, type, username, callback) {
   });
 }
 
-var graph = new Data.Graph();
+// Middleware for graph read and write operations
+var Filters = {};
+Filters.ensureAuthorized = function() {
+  return {
+    read: function(node, next, session) {
+      // Hide all password properties
+      delete node.password;      
+      next(node);
+    },
+
+    write: function(node, next, session) {
+      var that = this;
+      
+      if (_.include(node.type, "/type/document")) {
+        return node.creator !== "/user/"+session.username ? next(null) : next(node);
+        // TODO: Make sure that document deletion can only be done by the creator, not the collaborators.
+      } else if (_.intersect(node.type, ["/type/section", "/type/visualization", "/type/text",
+                                         "/type/question", "/type/answer", "/type/quote", "/type/image", "/type/reference"]).length > 0) {
+
+        that.db.get(node.document, function(err, document) {
+          if (err) return next(node); // if the document does not yet exist
+          return document.creator !== "/user/"+session.username ? next(null) : next(node);
+        });
+      } else if (_.include(node.type, "/type/user")) {
+        // Ensure username can't be changed for existing users
+        that.db.get(node._id, function(err, user) {
+          if (err) return next(null);
+          
+          if (node._rev) node.username = user.username;
+          next(node);
+        });
+      } else {
+        next(node);
+      }
+    }
+  };
+};
+
+
+var graph = new Data.Graph(seed);
+graph.connect('couch', {
+  url: config.couchdb_url,
+  filters: [Filters.ensureAuthorized()]
+});
+
+// Serve Data.js backend along with an express server
+graph.serve(app);
 
 // Helpers
 // -----------
@@ -283,19 +296,24 @@ _.renderTemplate = function(tpl, view, helpers) {
   return template(view, helpers || {});
 };
 
-// Express.js Configuration
-// -----------
+_.escapeHTML = function(string) {
+  return string.replace(/&(?!\w+;)/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+};
 
-app.configure(function(){
-  app.use(express.bodyParser());
-  app.use(express.methodOverride());
-  app.use(express.cookieParser());
-  app.use(express.session({secret: config['secret']}));
-  app.use(app.router);
-  app.use(express.static(__dirname+"/public", { maxAge: 41 })); // 
-  app.use(express.logger({ format: ':method :url' }));
-});
 
+function clientConfig() {
+  return {
+    "transloadit": _.escapeHTML(JSON.stringify(config.transloadit))
+  };
+}
+
+function scripts() {
+  if (process.env.NODE_ENV === 'production') {
+    return settings.scripts.production;
+  } else {
+    return settings.scripts.development.concat(settings.scripts.source);
+  }
+}
 
 // Web server
 // -----------
@@ -304,7 +322,8 @@ app.get('/', function(req, res) {
   html = fs.readFileSync(__dirname+ '/templates/app.html', 'utf-8');
   res.send(html.replace('{{{{seed}}}}', JSON.stringify(seed))
                .replace('{{{{session}}}}', JSON.stringify(req.session))
-               .replace(/\{\{\{\{min\}\}\}\}/g, process.argv[2] == "--production" ? '.min' : ''));
+               .replace('{{{{config}}}}', JSON.stringify(clientConfig()))
+               .replace('{{{{scripts}}}}', JSON.stringify(scripts())));
 });
 
 // Quick search interface (returns found users and a documentset)
@@ -320,8 +339,8 @@ app.get('/search/:search_str', function(req, res) {
 // Find documents by search string (full text search in future)
 // Or find by user
 app.get('/documents/search/:type/:search_str', function(req, res) {
-  if (req.params.type == 'recent') {
-    recentDocuments(req.params.search_str, req.session.username, function(err, graph, count) {
+  if (req.params.type == 'recent') {
+    recentDocuments(req.params.search_str, req.session.username, function(err, graph, count) {
       res.send(JSON.stringify({graph: graph, count: count}));
     });
   } else {
@@ -344,8 +363,8 @@ app.post('/login', function(req, res) {
   var username = req.body.username.toLowerCase(),
       password = req.body.password;
   
-  var graph = new Data.Graph(seed);
-  graph.fetch({type: '/type/user'}, {}, function(err) {
+  var graph = new Data.Graph(seed).connect('couch', {url: config.couchdb_url});
+  graph.fetch({type: '/type/user'}, function(err) {
     if (!err) {
       var user = graph.get('/user/'+username);
       if (user && username === user.get('username').toLowerCase() && encryptPassword(password) === user.get('password')) {
@@ -382,15 +401,13 @@ app.post('/register', function(req, res) {
       email = req.body.email,
       name = req.body.name;
   
-  var graph = new Data.Graph(seed);
+  var graph = new Data.Graph(seed).connect('couch', {url: config.couchdb_url});
   if (!username || username.length === 0) {
     return res.send({"status": "error", "field": "username", "message": "Please choose a username."});
   }
   
-  db.view(db.uri.pathname+'/_design/substance/_view/users', {key: username.toLowerCase()}, function(err, result) {
-    // Bug-workarount related to https://github.com/creationix/couch-client/issues#issue/3
-    // Normally we'd just use the err object in an error case
-    if (result.error || !result.rows) return res.send({"status": "error", "field": "all", "message": "Unknown error."});
+  db.view('substance/users', {key: username.toLowerCase()}, function(err, result) {
+    if (err) return res.send({"status": "error", "field": "all", "message": "Unknown error."});
     if (result.rows.length > 0) return res.send({"status": "error", "field": "username", "message": "Username is already taken."});
     
     var user = graph.set('/user/'+username.toLowerCase(), {
@@ -431,8 +448,8 @@ app.post('/register', function(req, res) {
 app.post('/updateuser', function(req, res) {
   var username = req.body.username;
   
-  var graph = new Data.Graph(seed);
-  graph.fetch({type: '/type/user'}, {}, function(err) {
+  var graph = new Data.Graph(seed).connect('couch', {url: config.couchdb_url});
+  graph.fetch({type: '/type/user'}, function(err) {
     var user = graph.get('/user/'+username);
     if (!user) return res.send({"status": "error"});
     
@@ -483,286 +500,5 @@ app.get('/documents/:username/:name', function(req, res) {
 });
 
 
-app.get('/readgraph', function(req, res) {
-  var callback = req.query.callback,
-      query = JSON.parse(req.query.qry),
-      options = JSON.parse(req.query.options)
-  Data.adapter.readGraph(JSON.parse(req.query.qry), new Data.Graph(), JSON.parse(req.query.options), function(err, g) {
-    err ? res.send(callback+"("+JSON.stringify(err)+");")
-        : res.send(callback+"("+JSON.stringify(g)+");");
-  }, req);
-});
-
-app.put('/writegraph', function(req, res) {
-  Data.adapter.writeGraph(req.body, function(err, g) {
-    graph.merge(g); // TODO: memory leakin?
-    err ? res.send(err) : res.send(JSON.stringify({"status": "ok", "graph": g}));
-  }, req);
-});
-
-
-// The DNode Server (RMI Interface for the client)
-// NOTICE: Real time authoring is disabled for the moment
-// -----------
-
-// var sessions = {},       // Keeps a reference to all active sessions
-//     cookieSessions = {}, // Remember Client Cookie Sessions (for automatic re-authentication)
-//     documents = {};      // Keeps a reference to all documents that are edited
-// 
-// 
-// DNode(function (client, conn) {
-//   
-//   // Session API
-//   // -----------
-//   // 
-//   // A Session:
-//   //   - has an assigned user (username)
-//   //   - holds the connection and the client reference
-//   //   - knows the document that is currently edited and the participating parties.
-//   
-//   // Helpers
-//   // -----------
-//   
-//   var getSessionId = function() {
-//     var cookie = conn.stream.socketio.request.headers.cookie;
-//     return cookie.match(/connect.sid=([^; ]+)/)[1];
-//   };
-//   
-//   var buildStatusPackage = function(documentId) {
-//     var document = documents[documentId];
-//     var cursors = {};
-//     
-//     _.each(document.sessions, function(sessionId) {
-//       var session = sessions[sessionId];
-//       if (session.cursor) {
-//         cursors[session.cursor] = session.user
-//       }
-//     });
-//     
-//     return {
-//       collaborators: _.map(document.sessions, function(session) {
-//         return sessions[session].user;
-//       }),
-//       cursors: cursors
-//     };
-//   };
-//   
-//   var buildSystemStatusPackage = function() {
-//     var users = [];
-//     
-//     _.each(sessions, function(session, key) {
-//       users.push(session.user);
-//     });
-//     return {
-//       active_users: users
-//     }
-//   };
-//   
-//   var notifySystemStatus = function() {
-//     _.each(sessions, function(session, sessionId) {
-//       session.client.Session.updateSystemStatus(buildSystemStatusPackage());
-//     });
-//   };
-//   
-//   // Get a list of collaborators that are actively co-editing a certain document
-//   var getCollaborators = function(documentId) {
-//     var document = documents[documentId];
-//     
-//     return _.select(document.sessions, function(session) {
-//       return session !== conn.id;
-//     });
-//   };
-//   
-//   // Notify all collaborators about the current state of a document editing session
-//   var notifyCollaborators = function(documentId) {
-//     var document = documents[documentId];
-//     var session = sessions[conn.id];
-//     
-//     if (document.sessions.length <= 1) return;
-//     
-//     // A list of session id that are actively co-editing a certain document
-//     _.each(getCollaborators(documentId), function(sessionId) {
-//       sessions[sessionId].client.Session.updateStatus(buildStatusPackage(documentId));
-//     });
-//   };
-//   
-//   var notifyNodeChange = function(documentId, key, node) {
-//     var document = documents[documentId];
-//     var session = sessions[conn.id];
-//     
-//     _.each(getCollaborators(documentId), function(sessionId) {
-//       sessions[sessionId].client.Session.updateNode(key, node);
-//     });
-//   };
-//   
-//   var notifyNodeSelection = function(session, key) {
-//     var document = documents[session.document];
-//     var user = session.user;
-//     
-//     session.cursor = key; // reverse lookup of the sessions cursor key
-//     
-//     _.each(document.sessions, function(sessionId) {
-//       sessions[sessionId].client.Session.updateStatus(buildStatusPackage(session.document));
-//     });
-//   };
-//   
-//   var notifyNodeInsertion = function(documentId, insertionType, node, targetKey, parentKey, destination) {
-//     var document = documents[documentId];
-//     var session = sessions[conn.id];
-//     
-//     _.each(getCollaborators(documentId), function(sessionId) {
-//       sessions[sessionId].client.Session.insertNode(insertionType, _.extend(node, {nodeId: node._id}), targetKey, parentKey, destination);
-//     });
-//   };
-//   
-//   var notifyNodeMovement = function(documentId, sourceKey, targetKey, parentKey, destination) {
-//     var document = documents[documentId];
-//     var session = sessions[conn.id];
-//     
-//     _.each(getCollaborators(documentId), function(sessionId) {
-//       sessions[sessionId].client.Session.moveNode(sourceKey, targetKey, parentKey, destination);
-//     });
-//   };
-//   
-//   var notifyNodeDeletion = function(documentId, key, parentKey) {
-//     var document = documents[documentId];
-//     var session = sessions[conn.id];
-//     
-//     _.each(getCollaborators(documentId), function(sessionId) {
-//       sessions[sessionId].client.Session.removeNode(key, parentKey);
-//     });
-//   };
-//   
-//   var unregisterDocument = function(documentId) {
-//     var session = sessions[conn.id];
-//     // Unregister the document if no one is editing it any longer
-//     if (documents[documentId].sessions.length <= 1) {
-//       // Remove the session from the list of contributors if he's currently editing a doc
-//       documents[documentId].sessions.splice(documents[documentId].sessions.indexOf(conn.id), 1);
-//       delete documents[documentId];
-//     } else {
-//       // Remove the session from the list of contributors if he's currently editing a doc
-//       documents[documentId].sessions.splice(documents[documentId].sessions.indexOf(conn.id), 1);
-//       // Fore some reason this doesn't work properly when calling notifyCollaborators
-//       _.each(getCollaborators(documentId), function(sessionId) {
-//         sessions[sessionId].client.Session.updateStatus(buildStatusPackage(documentId));
-//       });
-//     }
-//   };
-//   
-//   // Kill the current session (happens on logout or disconnect)
-//   var killSession = function() {
-//     var session = sessions[conn.id];
-//     if (session) var doc = session.document;
-//     
-//     delete sessions[conn.id];
-//     
-//     // Unregister document
-//     if (doc) {
-//       unregisterDocument(doc);
-//     }
-//     notifySystemStatus();
-//   };
-//   
-//   var makeSession = function(username) {
-//     sessions[conn.id] = {
-//       conn: conn,
-//       user: username,
-//       client: client,
-//       document: null
-//     };
-//     cookieSessions[getSessionId()] = username;
-//     notifySystemStatus();
-//   };
-//   
-//   // Interface for collaborative document editing sessions
-//   // ------------
-//   
-//   var Session = {
-//     // nodeKey=null if the cursor gets released
-//     selectNode: function(nodeKey) {
-//       var session = sessions[conn.id];
-//       notifyNodeSelection(session, nodeKey);
-//     },
-//     
-//     insertNode: function(insertionType, node, targetKey, parentKey, destination) {
-//       var session = sessions[conn.id];
-//       notifyNodeInsertion(session.document, insertionType, node, targetKey, parentKey, destination);
-//     },
-//     
-//     moveNode: function(sourceKey, targetKey, parentKey, destination) {
-//       var session = sessions[conn.id];
-//       notifyNodeMovement(session.document, sourceKey, targetKey, parentKey, destination);
-//     },
-//     
-//     removeNode: function(key, parentKey) {
-//       var session = sessions[conn.id];
-//       notifyNodeDeletion(session.document, key, parentKey);
-//     },
-//     
-//     registerNodeChange: function(key, node) {
-//       var session = sessions[conn.id];
-//       notifyNodeChange(session.document, key, node);
-//     },
-//     
-//     // Called when a client loads an existing document
-//     registerDocument: function(documentId) {
-//       var session = sessions[conn.id];
-//       
-//       if (session.document === documentId) return;
-//       if (session.document) unregisterDocument(session.document);
-//       
-//       session.document = documentId;
-//       
-//       if (documents[documentId]) { // Document is already registered
-//         documents[documentId].sessions.push(conn.id);
-//         
-//         // Synchronizes the session with the client
-//         notifyCollaborators(documentId);
-//       } else {
-//         documents[documentId] = {
-//           sessions: [ conn.id ],
-//           cursors: {}
-//         };
-//       }
-//       
-//       // Send Status update package
-//       client.Session.updateStatus(buildStatusPackage(documentId));
-//     }
-//   };
-//   
-//   // On connect (initiated by client, calling Session.initialize)
-//   conn.on('connect', function() {
-//     
-//   });
-//   
-//   conn.on('end', function() {
-//     killSession();
-//   });
-//   
-//   // Expose the Session API (for realtime synchronization)
-//   // -----------
-//   
-//   this.Session = Session;
-//   
-// }).listen(app);
-
-// Start the engines
-// -----------
-
-
-// process.on('uncaughtException',function(error){
-// // process error
-// })
-
-console.log('Loading schema...');
-graph.fetch({"type|=": ["/type/type", "/type/config"]}, {}, function(err, g) {
-  if (err) {
-    console.log("ERROR: Couldn't fetch schema");
-    console.log(err);
-  } else {
-    seed = g;
-    console.log('READY: Substance is listening at http://'+(config['server_host'] || 'localhost')+':'+config['server_port']);
-    app.listen(config['server_port'], config['server_host']);
-  }
-});
+console.log('READY: Substance is listening http://'+config['server_host']+':'+config['server_port']);
+app.listen(config['server_port'], config['server_host']);

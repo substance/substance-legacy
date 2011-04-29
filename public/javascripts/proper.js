@@ -1,9 +1,7 @@
-//     (c) 2010 Michael Aufreiter
+//     (c) 2011 Michael Aufreiter
 //     Proper is freely distributable under the MIT license.
 //     For all details and documentation:
 //     http://github.com/michael/proper
-
-
 
 (function(){
   
@@ -74,19 +72,21 @@
       return this;
     }
   };
-
-  Sanitize.Config = {}
-  Sanitize.Config.BASIC = {
-    elements: [
-       'a', 'b', 'br', 'em', 'i', 'li', 'ol', 'p', 'strong', 'code', 'ul'],
-
-     attributes: {
-       'a': ['href'],
-     },
-
-     protocols: {
-       'a': {'href': ['ftp', 'http', 'https', 'mailto', Sanitize.RELATIVE]}
-     }
+  
+  _.stripTags = function(input, allowed) {
+  // Strips HTML and PHP tags from a string
+  //
+  // version: 1009.2513
+  // discuss at: http://phpjs.org/functions/strip_tags
+     allowed = (((allowed || "") + "")
+        .toLowerCase()
+        .match(/<[a-z][a-z0-9]*>/g) || [])
+        .join(''); // making sure the allowed arg is a string containing only tags in lowercase (<a><b><c>)
+     var tags = /<\/?([a-z][a-z0-9]*)\b[^>]*>/gi,
+         commentsAndPhpTags = /<!--[\s\S]*?-->|<\?(?:php)?[\s\S]*?\?>/gi;
+     return input.replace(commentsAndPhpTags, '').replace(tags, function($0, $1){
+        return allowed.indexOf('<' + $1.toLowerCase() + '>') > -1 ? $0 : '';
+     });
   };
 
   // Initial Setup
@@ -109,10 +109,8 @@
     "em": "italic",
     "strong": "bold",
     "ul": "insertUnorderedList",
-    "ol": "insertOrderedList",
-    "indent": "indent",
-    "outdent": "outdent",
-    "link": "createLink"
+    "ol": "insertOrderedList"
+    // "link": "createLink" // for some reason Firefox can't work with that
   }
   
   // Proper
@@ -127,7 +125,8 @@
         options = {},
         defaultOptions = { // default options
           multiline: true,
-          markup: true
+          markup: true,
+          placeholder: 'Enter Text'
         };
     
     // Setup temporary hidden DOM Node, for sanitization
@@ -157,54 +156,54 @@
       if (sel+"".length == 0) return;
       
       if (tagActive(tag)) {
-        document.execCommand('removeFormat');
+        document.execCommand('removeFormat', false, true);
       } else {
         var sel = window.getSelection();
         var range = sel.getRangeAt(0);
-        document.execCommand('removeFormat');
+        document.execCommand('removeFormat', false, true);
         document.execCommand('insertHTML', false, '<'+tag+'>'+window.getSelection()+'</'+tag+'>');
       }
     }
     
     var commands = {
       execEM: function() {
-        if (!document.queryCommandState('italic')) document.execCommand('removeFormat');
+        if (!document.queryCommandState('italic', false, true)) document.execCommand('removeFormat', false, true);
         document.execCommand('italic', false, true);
         return false;
       },
 
       execSTRONG: function() {
-        if (!document.queryCommandState('bold')) document.execCommand('removeFormat');
-        document.execCommand('bold', true, true);
+        if (!document.queryCommandState('bold', false, true)) document.execCommand('removeFormat', false, true);
+        document.execCommand('bold', false, true);
         return false;
       },
       
       execCODE: function() {
-        if (!tagActive('code')) document.execCommand('removeFormat');
+        if (!tagActive('code')) document.execCommand('removeFormat', false, true);
         toggleTag('code');
         return false;
       },
 
       execUL: function() {
-        document.execCommand('insertUnorderedList', true, null);
+        document.execCommand('insertUnorderedList', false, true);
         return false;
       },
 
       execOL: function() {
-        document.execCommand('insertOrderedList', true, null);
+        document.execCommand('insertOrderedList', false, true);
         return false;
       },
 
       execINDENT: function() {
-        if (document.queryCommandState('insertOrderedList') || document.queryCommandState('insertUnorderedList')) {
-          document.execCommand('indent', false, null);
+        if (document.queryCommandState('insertOrderedList', false, true) || document.queryCommandState('insertUnorderedList', false, true)) {
+          document.execCommand('indent', false, true);
         }
         return false;
       },
 
       execOUTDENT: function() {
-        if (document.queryCommandState('insertOrderedList') || document.queryCommandState('insertUnorderedList')) {
-          document.execCommand('outdent', false, null);
+        if (document.queryCommandState('insertOrderedList', false, true) || document.queryCommandState('insertUnorderedList', false, true)) {
+          document.execCommand('outdent', false, true);
         }
         return false;
       },
@@ -219,16 +218,10 @@
       }
     };
     
-    
-    function sanitize() {
+    // TODO: enable proper sanitizing that allows markup to be pasted too
+    function sanitize() {      
       var rawContent = document.getElementById('proper_raw_content');
-      if (options.markup) {
-        var s = new Sanitize(Sanitize.Config.BASIC);
-        var content = s.clean_node(rawContent);
-        $('#proper_content').html(content);
-      } else {
-        $('#proper_content').html($(rawContent).text());
-      }
+      $('#proper_content').html($(rawContent).text());
     }
     
     function updateCommandState() {
@@ -237,7 +230,7 @@
       
       $controls.find('.command').removeClass('selected');
       _.each(COMMANDS, function(command, key) {
-        if (document.queryCommandState(command)) {
+        if (document.queryCommandState(command, false, true)) {
           $controls.find('.command.'+key).addClass('selected');
         }
         if (tagActive('code')) {
@@ -303,6 +296,7 @@
       $(el).unbind('keydown');
       $(el).unbind('keyup');
       $(el).unbind('blur');
+      
       $(el).bind('paste', function() {
         var selection = saveSelection();
         $('#proper_raw_content').focus();
@@ -311,9 +305,14 @@
         setTimeout(function() {
           sanitize();
           restoreSelection(selection);
-            $(el).focus();
-            document.execCommand('insertHTML', false, $('#proper_content').html().trim());
-            $('#proper_raw_content').html('');
+          $(el).focus();
+          
+          // Avoid nested paragraph correction resulting from paste
+          var content = $('#proper_content').html().trim();
+
+          // For some reason last </p> gets injected anyway
+          document.execCommand('insertHTML', false, content);
+          $('#proper_raw_content').html('');
         }, 1);
       });
       
@@ -331,16 +330,16 @@
       });
       
       $(el).bind('blur', checkEmpty);
+      $(el).bind('click', updateCommandState);
       
       $(el).bind('keyup', function(e) {        
         updateCommandState();
-        
         if ($(activeElement).text().trim().length > 0) {
           $(activeElement).removeClass('empty');
         } else {
-          // Todo: problematic when hitting enter on an empty div
+          // TODO: problematic when hitting enter on an empty div
           selectAll();
-          document.execCommand('insertHTML', false, "");
+          document.execCommand('delete', false, "");
           $(activeElement).addClass('empty');
         }
         
@@ -363,10 +362,9 @@
     // -----------
 
     self.deactivate = function() {
-      // $(activeElement).attr('contenteditable', 'false');
+      $(activeElement).attr('contenteditable', 'false');
       $(activeElement).unbind('paste');
       $(activeElement).unbind('keydown');
-      // $(activeElement).unbind();
       $('.proper-commands').remove();
       self.unbind('changed');
     };
@@ -405,7 +403,7 @@
       updateCommandState();
       if (el.hasClass('empty')) {
         selectAll();
-        document.execCommand('insertHTML', false, "");
+        document.execCommand('delete', false, "");
       }
       
       $('.proper-commands a.command').click(function(e) {

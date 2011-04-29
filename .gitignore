@@ -17,3 +17,5 @@ tmp/*
 
 
 /.settings.xml
+/config.json.edge
+/edge.config.json

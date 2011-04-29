@@ -414,18 +414,15 @@ var Application = Backbone.View.extend({
     this.document.render();
     this.browser.render();
     this.header.render();
-    
     return this;
   }
 });
-
-Data.setAdapter('AjaxAdapter');
 
 var remote,                              // Remote handle for server-side methods
     app,                                 // The Application
     controller,                          // Controller responding to routes
     editor,                              // A global instance of the Proper Richtext editor
-    graph = new Data.Graph(seed, false); // The database
+    graph = new Data.Graph(seed, false).connect('ajax'); // The database
 
 (function() {
   $(function() {    
@@ -466,7 +463,7 @@ var remote,                              // Remote handle for server-side method
     positionViewActions();
     $(window).bind('scroll', positionViewActions);
     $(window).bind('resize', positionViewActions);
-    
+
     // Start the engines
     app = new Application({el: $('#container'), session: session});
     
@@ -478,6 +475,26 @@ var remote,                              // Remote handle for server-side method
     
     // Start responding to routes
     Backbone.history.start();
+    
+    // Reset document when window gets out of focus
+    // document.body.onblur = function() {  if (app.document) app.document.reset(); }
+    
+    // TODO: Prevent leaving page by pressing backspace
+    // $('body').bind('keydown', function(e) {
+    //   if (!currently_editing && e.keyCode === 8 ) e.preventDefault();
+    // });
+    
+    // Prevent exit when there are unsaved changes
+    window.onbeforeunload = confirmExit;
+    function confirmExit()
+    {
+      if (graph.dirtyNodes().length>0) return "You have unsynced changes, which will be lost. Are you sure you want to leave this page?";
+    }
+    
+    function resetWorkspace() {
+      confirm('There are conflicted or rejected nodes since the last sync. The workspace will be reset for your own safety');
+      window.location.reload(true);
+    }
     
     var pendingSync = false;
     graph.bind('dirty', function() {
@@ -494,27 +511,14 @@ var remote,                              // Remote handle for server-side method
                 $('#sync_state').html('');
               }, 3000);
             } else {
-              confirm('There was an error during synchronization. The workspace will be reset for your own safety');
-              window.location.reload(true);
+              resetWorkspace();
             }
           });
         }, 3000);
       }
     });
     
-    graph.bind('conflicted', function() {
-      if (!app.document.model) return;
-      graph.fetch({
-        creator: app.document.model.get('creator')._id,
-        name: app.document.model.get('name')
-      }, {expand: true}, function(err) {
-        app.document.render();
-        app.scrollTo('#document_wrapper');
-      });
-      notifier.notify({
-        message: 'There are conflicting nodes. The Document will be reset for your own safety.',
-        type: 'error'
-      });
-    });
+    graph.bind('conflicted', resetWorkspace);
+    graph.bind('rejected', resetWorkspace);
   });
 })();

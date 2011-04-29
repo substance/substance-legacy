@@ -5,7 +5,9 @@
   
   <script>
     var seed = {{{{seed}}}};
+    var config = {{{{config}}}};
     var session = {{{{session}}}};
+    var scripts = {{{{scripts}}}};
   </script>
   
   <script type="text/x-ejs-template" name="edit_attributes">
@@ -109,15 +111,15 @@
                 <div class="descr">Focus is on Content not Layout</div>
               </li>
               <li>
+                <div>Images <small style="color: #bd0a0a;">NEW!</small></div>
+                <div class="descr">Embed images in your document</div>
+              </li>
+              <li>
                 <div>Publish</div>
                 <div class="descr">Publish and instantly share your articles</div>
               </li>
               <li>
-                <div>Multiple Document Types</div>
-                <div class="descr">Article, Manual, Interview</div>
-              </li>
-              <li>
-                <div>Collaboration (soon!)</div>
+                <div>Soon: Collaboration</div>
                 <div class="descr">Collaborative Editing in a team</div>
               </li>
             </ul>
@@ -465,15 +467,30 @@
   </script>
   
   <script type="text/x-handlebars-template" name="controls">
-    <div class="controls" node="{{node}}" destination="{{destination}}">
+    <div class="controls" node="<%= node %>" destination="<%= destination %>">
       <div class="handle">
         <a href="#">--&gt; INSERT</a>
       </div>
       <div class="actions">
         <div class="placeholder">Insert Content</div>
-        {{#actions}}
-          <a href="#" type="{{nodeType}}" node="{{node}}" parent="{{parentNode}}" class="add_{{insertionType}}">{{nodeTypeName}}</a>
-        {{/actions}}
+        <% actions.each(function(action) { %>
+            <% if (action.length === 1) { %>
+              <% _.each(action, function(v) { %>
+                <span>
+                <a href="#" type="<%= v.nodeType %>" destination="<%= destination %>" node="<%= v.node %>" parent="<%= v.parentNode %>" class="add_<%= v.insertionType %>"><%= v.nodeTypeName %></a>
+                </span>
+              <% }); %>
+            <% } else { %>
+              <span class="container">
+              <%= action[0].nodeTypeName %>
+              <div>
+                <% _.each(action, function(v) { %>
+                  <a href="#" type="<%= v.nodeType %>" destination="<%= destination %>" node="<%= v.node %>" parent="<%= v.parentNode %>" class="add_<%= v.insertionType %>">Level <%= v.level %></a>
+                <% }); %>
+              </div>
+              </span>
+            <% } %>
+        <% }); %>
         <br class="clear"/>
       </div>
     </div>
@@ -486,18 +503,18 @@
   </script>
   
   <script type="text/x-handlebars-template" name="edit_image">
-    <form id="upload_image" action="http://api2.transloadit.com/assemblies" enctype="multipart/form-data" method="POST">
+    <!--<form id="upload_image" action="http://api2.transloadit.com/assemblies" enctype="multipart/form-data" method="POST">
       <div class="lpl texteditor">
           <label for="my_file">select file</label>
           <input type="file" name="my_file" id="my_file" />
           <input type="hidden" name="params" value="{&quot;auth&quot;:{&quot;key&quot;:&quot;4ccca6b9de144af4882760af72ec3211&quot;},&quot;steps&quot;:{&quot;resize_image&quot;:{&quot;robot&quot;:&quot;\/image\/resize&quot;,&quot;width&quot;:320,&quot;height&quot;:240,&quot;result&quot;:true}},&quot;redirect_url&quot;:&quot;http:\/\/example.com\/upload&quot;}" />
-          <input type="submit" value="Upload">
+          <input type="submit" class="upload-image" value="Upload">
       </div>
       <div id="progress_container">
         <div class="lpl progress-container"><div id="upload_progress" class="lpl progress-bar stripes animated" style="width:60%"></div></div>
         <div id="image_progress_legend" class="lpl legend">
       </div>
-    </form>
+    </form>-->
   </script>
   
   <script type="text/x-handlebars-template" name="edit_section">
@@ -506,7 +523,7 @@
 
   <!-- content-node templates for the editor -->
   <script type="text/x-ejs-template" name="document">
-    <div id="<%= node.html_id %>" name=<%= node.key %> class="content-node document">
+    <div id="<%= node.html_id %>" name=<%= node.key %> level="<%= level %>" class="content-node document level-{{level}}">
       <% if (edit) { %><div class="content-node-outline"><div class="cursor"><span></span></div></div><% } %>
       <h1 class="content<%= empty_title ? ' empty' : '' %>"<% if (edit) { %> contenteditable="true" title="Click To Edit Document Title"<% } %>>
         <% if (!empty_title) { %>
@@ -539,15 +556,15 @@
   </script>
   
   <script type="text/x-handlebars-template" name="section">
-    <div id="{{node/html_id}}" name={{node/key}} parent="{{parent/_id}}" draggable="false" class="content-node section">
+    <div id="{{node/html_id}}" name={{node/key}} parent="{{parent/_id}}" level="{{level}}" draggable="false" class="content-node section level-{{level}}">
       {{#edit}}<a href="#" class="remove remove-node" title="Remove Section and all child elements" node="{{node/key}}" parent="{{parent/_id}}">x</a>{{/edit}}
       {{#edit}}<div class="content-node-outline"><div class="cursor"><span></span></div></div>{{/edit}}
       {{#edit}}<div class="pilcrow">&#182;</div>{{/edit}}
       
-      <h2 class="content{{#empty}} empty{{/empty}}"{{#edit}} title="Click To Edit Section Name"{{/edit}}>
+      <h{{heading_level}} class="content{{#empty}} empty{{/empty}}"{{#edit}} title="Click To Edit Section Name"{{/edit}}>
         {{^empty}}{{{name}}}{{/empty}}
-        {{#empty}}&laquo; Enter Section Name &raquo;{{/empty}}        
-      </h2>
+        {{#empty}}&laquo; Enter Section Name &raquo;{{/empty}}
+      </h{{heading_level}}>
       
       {{#edit}}<div class="node-editor-placeholder"></div>{{/edit}}
       {{{content}}}
@@ -555,7 +572,7 @@
   </script>
   
   <script type="text/x-handlebars-template" name="text">
-    <div id="{{node/html_id}}" name={{node/key}} parent="{{parent/_id}}" draggable="false" class="content-node text">
+    <div id="{{node/html_id}}" name={{node/key}} parent="{{parent/_id}}" level="{{level}}" draggable="false" class="content-node text level-{{level}}">
       {{#edit}}<a href="#" class="remove-node remove" title="Remove Text" node="{{node/key}}" parent="{{parent/_id}}">x</a>{{/edit}}
       {{#edit}}<div class="content-node-outline"><div class="cursor"><span></span></div></div>{{/edit}}
       {{#edit}}<div class="pilcrow">&#182;</div>{{/edit}}
@@ -568,7 +585,7 @@
   </script>
   
   <script type="text/x-handlebars-template" name="quote">
-    <div id="{{node/html_id}}" name={{node/key}} parent="{{parent/_id}}" draggable="false" class="content-node quote">
+    <div id="{{node/html_id}}" name={{node/key}} parent="{{parent/_id}}" level="{{level}}" draggable="false" class="content-node quote level-{{level}}">
       {{#edit}}<a href="#" class="remove-node remove" title="Remove Quote" node="{{node/key}}" parent="{{parent/_id}}">x</a>{{/edit}}
       {{#edit}}<div class="content-node-outline"><div class="cursor"><span></span></div></div>{{/edit}}
       {{#edit}}<div class="pilcrow">&#182;</div>{{/edit}}
@@ -589,7 +606,7 @@
   </script>
   
   <script type="text/x-handlebars-template" name="code">
-    <div id="{{node/html_id}}" name={{node/key}} parent="{{parent/_id}}" draggable="false" class="content-node code">
+    <div id="{{node/html_id}}" name={{node/key}} parent="{{parent/_id}}" level="{{level}}" draggable="false" class="content-node code level-{{level}}">
       {{#edit}}<a href="#" class="remove-node remove" title="Remove Code" node="{{node/key}}" parent="{{parent/_id}}">x</a>{{/edit}}
       {{#edit}}<div class="content-node-outline"><div class="cursor"><span></span></div></div>{{/edit}}
       {{#edit}}<div class="pilcrow">&#182;</div>{{/edit}}
@@ -599,7 +616,7 @@
   </script>
   
   <script type="text/x-handlebars-template" name="question">
-    <div id="{{node/html_id}}" name={{node/key}} parent="{{parent/_id}}" draggable="false" class="content-node question">
+    <div id="{{node/html_id}}" name={{node/key}} parent="{{parent/_id}}" level="{{level}}" draggable="false" class="content-node question level-{{level}}">
       {{#edit}}<a href="#" class="remove-node remove" title="Remove Question" node="{{node/key}}" parent="{{parent/_id}}">x</a>{{/edit}}
       {{#edit}}<div class="content-node-outline"><div class="cursor"><span></span></div></div>{{/edit}}
       {{#edit}}<div class="pilcrow">&#182;</div>{{/edit}}
@@ -612,7 +629,7 @@
   </script>
   
   <script type="text/x-handlebars-template" name="answer">
-    <div id="{{node/html_id}}" name={{node/key}} parent="{{parent/_id}}" draggable="false" class="content-node answer">
+    <div id="{{node/html_id}}" name={{node/key}} parent="{{parent/_id}}" level="{{level}}" draggable="false" class="content-node answer level-{{level}}">
       {{#edit}}<a href="#" class="remove-node remove" title="Remove Answer" node="{{node/key}}" parent="{{parent/_id}}">x</a>{{/edit}}
       {{#edit}}<div class="content-node-outline"{{#edit}} title="Click To Edit Question"{{/edit}}><div class="cursor"><span></span></div></div>{{/edit}}
       {{#edit}}<div class="pilcrow">&#182;</div>{{/edit}}
@@ -624,23 +641,80 @@
     </div>
   </script>
   
-  <script type="text/x-handlebars-template" name="image">
-    <div id="{{node/html_id}}" name={{node/key}} parent="{{parent/_id}}" draggable="false" class="content-node image">
-      {{#edit}}<a href="#" class="remove remove-node" title="Remove Image" node="{{node/key}}" parent="{{parent/_id}}">x</a>{{/edit}}
+  <script type="text/x-handlebars-template" name="resource">
+    <div id="{{node/html_id}}" name={{node/key}} parent="{{parent/_id}}" level="{{level}}" draggable="false" class="content-node resource level-{{level}}">
+      {{#edit}}<a href="#" class="remove remove-node" title="Remove Resource" node="{{node/key}}" parent="{{parent/_id}}">x</a>{{/edit}}
       {{#edit}}<div class="content-node-outline"><div class="cursor"><span></span></div></div>{{/edit}}
       {{#edit}}<div class="pilcrow">&#182;</div>{{/edit}}
-      {{#url}}
-        <img src="{{.}}"/>
-      {{/url}}
-      {{^url}}
-        [Upload image]
-      {{/url}}
-      {{#edit}}<div class="node-editor-placeholder"></div>{{/edit}}
+      
+      <div class="resource-content{{^url}} placeholder{{/url}}">
+        {{#url}}<img src="{{.}}"/>{{/url}}
+        {{^url}}<img src="images/image_placeholder.png"/>{{/url}}
+        
+        <div class="resource-editor">
+          <div class="resource-url-area">
+            <div class="url-label">Resource URL</div>
+            <div class="url-container">
+              <input class="resource-url" type="text" name="url" value="{{url}}"/>
+              <div class="status">Enter URL</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="caption content{{#empty}} empty{{/empty}}">
+        {{^empty}}{{{caption}}}{{/empty}}
+        {{#empty}}&laquo; Enter Caption &raquo;{{/empty}}
+      </div>
+    </div>
+  </script>
+  
+  <script type="text/x-handlebars-template" name="image">
+    <div id="<%= node.html_id %>" name=<%= node.key %> parent="<%= parent._id %>" level="<%= level %>" draggable="false" class="content-node image level-<%= level %>">
+      
+      <% if (edit) { %>
+        <a href="#" class="remove remove-node" title="Remove Image" node="<%= node.key %>" parent="<%= parent._id %>">x</a>
+        <div class="content-node-outline"><div class="cursor"><span></span></div></div>
+        <div class="pilcrow">&#182;</div>
+      <% } %>
+      
+      <div class="image-content<%= !url ? " placehoder" : ""%>">
+        <% if (url) { %>
+          <% if (edit) { %>
+            <img src="<%= url %>"/>
+          <% } else { %>
+            <a href="<%= original_url %>" target="_blank"><img src="<%= url %>"/></a>
+          <% } %>
+        <% } else { %>
+          <img src="images/image_placeholder.png"/>
+        <% } %>
+        
+        <div class="image-editor">
+          <form class="upload-image-form" action="http://api2.transloadit.com/assemblies" enctype="multipart/form-data" method="POST">
+            <div class="image-drop-area">
+              <div class="info">Drop image here or <a href="#">choose a file</a></div>
+              <div class="image-progress">
+                <div class="label">Uploading image ...</div>
+                <div class="progress-container">
+                  <div class="progress-bar" style="width:60%"></div>
+                </div>
+              </div>
+              <div class="credits">Image hosting sponsored by <a href="http://transloadit.com" target="_new">Transloadit</a></div>
+              <input type="file" class="image-file" name="image-file" />
+              <input type="hidden" name="params" value="<%= transloadit_params %>" />
+            </div>
+          </form>
+        </div>
+      </div>
+      
+      <div class="caption content<%= empty ? " empty" : "" %>">
+        <%= !empty ? caption : "&laquo; Enter Caption &raquo;" %>
+      </div>
     </div>
   </script>
   
   <script type="text/x-handlebars-template" name="visualization">
-    <div id="{{node/html_id}}" name={{node/key}} parent="{{parent/_id}}" draggable="false" class="content-node image">
+    <div id="{{node/html_id}}" name={{node/key}} parent="{{parent/_id}}" level="{{level}}" draggable="false" class="content-node image level-{{level}}">
       {{#edit}}<a href="#" class="remove remove-node" title="Remove Visualization" node="{{node/key}}" parent="{{parent/_id}}">x</a>{{/edit}}
       {{#edit}}<div class="content-node-outline"><div class="cursor"><span></span></div></div>{{/edit}}
       {{#edit}}<div class="pilcrow">&#182;</div>{{/edit}}
@@ -678,22 +752,9 @@
   <link href="stylesheets/app.css" media="screen" rel="stylesheet" type="text/css" />
   
   <script src="/javascripts/head.min.js"></script>
-  
   <script>
-    head.js("javascripts/sanitize.js",
-            "javascripts/hi.js",
-            "javascripts/jquery-1.5.min.js",
-            "javascripts/handlebars.js",
-            "javascripts/showdown.js",
-            "javascripts/jquery.transloadit2.js",
-            "javascripts/jquery.hotkeys.js",
-            "javascripts/jquery.timeago.js",
-            "javascripts/underscore{{{{min}}}}.js",
-            "javascripts/data{{{{min}}}}.js",
-            "javascripts/backbone{{{{min}}}}.js",
-            "javascripts/proper.js",
-            "javascripts/substance{{{{min}}}}.js");
-  </script>  
+    head.js.apply(this, scripts);
+  </script>
 </head>
 <body>
   <div id="container">
@@ -703,11 +764,9 @@
     
     <div id="tabs">
       <div id="browser_tab" class="tab" view="browser">
-        
       </div>
       
       <div id="document_tab" class="tab hidden" view="document">
-        
       </div>
       
       <a href="#" class="action new-document hidden" title="Create a new document">
@@ -732,7 +791,7 @@
     </div>
     <div id="footer">
       <div class="credits"><a href="http://substance.io#substance/substance">About</a> &middot; <a href="http://twitter.com/_substance" target="_new">Twitter</a> &middot; <a href="http://github.com/michael/substance" target="_new">Source Code</a> &middot; <a href="http://github.com/michael/substance/issues" target="_new">Report Bugs</a> &middot; <a href="http://news.ycombinator.com/item?id=2260865" target="_new">Discuss</a></div>
-      <div class="version"><a href="http://substance.io#substance/release-notes">Substance 0.1.0</a></div>
+      <div class="version"><a href="http://substance.io#substance/release-notes">Substance 0.2.0</a></div>
     </div>
   </div>
   
