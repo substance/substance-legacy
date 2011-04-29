@@ -30,6 +30,11 @@ app.configure(function() {
   app.use(express.logger({ format: ':method :url' }));
 });
 
+app.configure('development', function() {
+  // Expose source file in development mode
+  app.use(express.static(__dirname+"/src", { maxAge: 41 }));
+});
+
 // Fetch a single node from the graph
 function fetchNode(id, callback) {
   db.get(id, function(err, node) {
@@ -248,7 +253,7 @@ Filters.ensureAuthorized = function() {
           if (err) return next(node); // if the document does not yet exist
           return document.creator !== "/user/"+session.username ? next(null) : next(node);
         });
-      } else if (_.include(node.type, "/type/user")) {
+      } else if (_.include(node.type, "/type/user")) {
         // Ensure username can't be changed for existing users
         that.db.get(node._id, function(err, user) {
           if (err) return next(null);
@@ -296,13 +301,7 @@ _.escapeHTML = function(string) {
 };
 
 
-
-app.configure('development', function() {
-  // Expose source file in development mode
-  app.use(express.static(__dirname+"/src", { maxAge: 41 }));
-});
-
-function clientConfig() {
+function clientConfig() {
   return {
     "transloadit": _.escapeHTML(JSON.stringify(config.transloadit))
   };
@@ -311,7 +310,7 @@ function clientConfig() {
 function scripts() {
   if (process.env.NODE_ENV === 'production') {
     return settings.scripts.production;
-  } else {
+  } else {
     return settings.scripts.development.concat(settings.scripts.source);
   }
 }
@@ -340,8 +339,8 @@ app.get('/search/:search_str', function(req, res) {
 // Find documents by search string (full text search in future)
 // Or find by user
 app.get('/documents/search/:type/:search_str', function(req, res) {
-  if (req.params.type == 'recent') {
-    recentDocuments(req.params.search_str, req.session.username, function(err, graph, count) {
+  if (req.params.type == 'recent') {
+    recentDocuments(req.params.search_str, req.session.username, function(err, graph, count) {
       res.send(JSON.stringify({graph: graph, count: count}));
     });
   } else {
