@@ -399,6 +399,11 @@
         "unique": true,
         "type": "string"
       },
+      "original_url": {
+        "name": "Original Image URL",
+        "unique": true,
+        "type": "string"
+      },
       "document": {
         "name": "Document Membership",
         "unique": true,

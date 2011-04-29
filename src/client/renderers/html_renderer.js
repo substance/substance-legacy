@@ -227,11 +227,12 @@ var HTMLRenderer = function(root, parent, lvl) {
     },
     
     "/type/image": function(node, parent, level) {
-      return Helpers.renderTemplate('image', {
+      return _.tpl('image', {
         node: node,
         parent: parent,
         edit: app.document.mode === 'edit',
         url: node.get('url'),
+        original_url: node.get('original_url'),
         level: level,
         empty: app.document.mode === 'edit' && (!node.get('caption') || node.get('caption') === ''),
         caption: node.get('caption'),

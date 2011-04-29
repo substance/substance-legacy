@@ -34,15 +34,16 @@ var ImageEditor = Backbone.View.extend({
         that.$('.image-progress .label').html('Uploading ... '+ percentage+'%');
         that.$('.progress-bar').attr('style', 'width:' + percentage +'%');
       },
-      onError: function(assembly) {
-        that.$('.image-progress .label').html('Invalid image. Skipping ...');
-        that.$('.progress-container').hide();
-
-        setTimeout(function() {
-          app.document.reset();
-          that.$('.info').show();
-        }, 3000);                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
-      },
+      // onError: function(assembly) {
+      //   alert(JSON.stringify(assembly));
+      //   that.$('.image-progress .label').html('Invalid image. Skipping ...');
+      //   that.$('.progress-container').hide();
+      // 
+      //   setTimeout(function() {
+      //     app.document.reset();
+      //     that.$('.info').show();
+      //   }, 3000);                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
+      // },
       onStart: function() {
         that.$('.image-progress').show();
         that.$('.info').hide();
@@ -54,8 +55,10 @@ var ImageEditor = Backbone.View.extend({
         if (assembly.results.resize_image && assembly.results.resize_image[0] && assembly.results.resize_image[0].url) {
           app.document.updateSelectedNode({
             url: assembly.results.resize_image[0].url,
+            original_url: assembly.uploads[0].url,
             dirty: true
           });
+          
           app.document.reset();
           that.$('.progress-container').hide();
           that.$('.info').show();

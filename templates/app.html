@@ -111,15 +111,15 @@
                 <div class="descr">Focus is on Content not Layout</div>
               </li>
               <li>
+                <div>Images <small style="color: #bd0a0a;">NEW!</small></div>
+                <div class="descr">Embed images in your document</div>
+              </li>
+              <li>
                 <div>Publish</div>
                 <div class="descr">Publish and instantly share your articles</div>
               </li>
               <li>
-                <div>Multiple Document Types</div>
-                <div class="descr">Article, Manual, Interview</div>
-              </li>
-              <li>
-                <div>Collaboration (soon!)</div>
+                <div>Soon: Collaboration</div>
                 <div class="descr">Collaborative Editing in a team</div>
               </li>
             </ul>
@@ -670,14 +670,25 @@
   </script>
   
   <script type="text/x-handlebars-template" name="image">
-    <div id="{{node/html_id}}" name={{node/key}} parent="{{parent/_id}}" level="{{level}}" draggable="false" class="content-node image level-{{level}}">
-      {{#edit}}<a href="#" class="remove remove-node" title="Remove Image" node="{{node/key}}" parent="{{parent/_id}}">x</a>{{/edit}}
-      {{#edit}}<div class="content-node-outline"><div class="cursor"><span></span></div></div>{{/edit}}
-      {{#edit}}<div class="pilcrow">&#182;</div>{{/edit}}
+    <div id="<%= node.html_id %>" name=<%= node.key %> parent="<%= parent._id %>" level="<%= level %>" draggable="false" class="content-node image level-<%= level %>">
       
-      <div class="image-content{{^url}} placeholder{{/url}}">
-        {{#url}}<img src="{{.}}"/>{{/url}}
-        {{^url}}<img src="images/image_placeholder.png"/>{{/url}}
+      <% if (edit) { %>
+        <a href="#" class="remove remove-node" title="Remove Image" node="<%= node.key %>" parent="<%= parent._id %>">x</a>
+        <div class="content-node-outline"><div class="cursor"><span></span></div></div>
+        <div class="pilcrow">&#182;</div>
+      <% } %>
+      
+      <div class="image-content<%= !url ? " placehoder" : ""%>">
+        <% if (url) { %>
+          <% if (edit) { %>
+            <img src="<%= url %>"/>
+          <% } else { %>
+            <a href="<%= original_url %>" target="_blank"><img src="<%= url %>"/></a>
+          <% } %>
+        <% } else { %>
+          <img src="images/image_placeholder.png"/>
+        <% } %>
+        
         <div class="image-editor">
           <form class="upload-image-form" action="http://api2.transloadit.com/assemblies" enctype="multipart/form-data" method="POST">
             <div class="image-drop-area">
@@ -689,17 +700,15 @@
                 </div>
               </div>
               <div class="credits">Image hosting sponsored by <a href="http://transloadit.com" target="_new">Transloadit</a></div>
-
               <input type="file" class="image-file" name="image-file" />
-              <input type="hidden" name="params" value="{{{transloadit_params}}}" />
+              <input type="hidden" name="params" value="<%= transloadit_params %>" />
             </div>
           </form>
         </div>
       </div>
       
-      <div class="caption content{{#empty}} empty{{/empty}}">
-        {{^empty}}{{{caption}}}{{/empty}}
-        {{#empty}}&laquo; Enter Caption &raquo;{{/empty}}
+      <div class="caption content<%= empty ? " empty" : "" %>">
+        <%= !empty ? caption : "&laquo; Enter Caption &raquo;" %>
       </div>
     </div>
   </script>
@@ -782,7 +791,7 @@
     </div>
     <div id="footer">
       <div class="credits"><a href="http://substance.io#substance/substance">About</a> &middot; <a href="http://twitter.com/_substance" target="_new">Twitter</a> &middot; <a href="http://github.com/michael/substance" target="_new">Source Code</a> &middot; <a href="http://github.com/michael/substance/issues" target="_new">Report Bugs</a> &middot; <a href="http://news.ycombinator.com/item?id=2260865" target="_new">Discuss</a></div>
-      <div class="version"><a href="http://substance.io#substance/release-notes">Substance 0.2.0-dev</a></div>
+      <div class="version"><a href="http://substance.io#substance/release-notes">Substance 0.2.0</a></div>
     </div>
   </div>
   
