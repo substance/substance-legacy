@@ -484,19 +484,14 @@ var Document = Backbone.View.extend({
       var done = false;
       successors = successors.select(function(node) {
         if (!done && node.type.key !== "/type/section") {
+          // Remove non-section successors from parent node
+          parentNode.all('children').del(node._id);
           return true;
         } else {
           done = true;
           return false;
         }
       });
-      
-      var predecessors = parentNode.get('children').select(function(c, key, index) {
-        return index < targetIndex;
-      });
-      
-      // Update parent node's children
-      parentNode.set({children: predecessors.keys()});
       
       // Append successors to the new node
       newNode.set({
