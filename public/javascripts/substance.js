@@ -450,7 +450,7 @@ var HTMLRenderer = function(root, parent, lvl) {
         node: node,
         parent: parent,
         content: content,
-        heading_level: level+1,
+        heading_level: level,
         level: level,
         edit: app.document.mode === 'edit',
         name: node.get('name'),

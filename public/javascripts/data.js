@@ -1481,6 +1481,7 @@
     
     // Find objects that match a particular query
     find: function(query) {
+      query["type|="] = "/type/item";
       return this.g.find(query);
     },
     
