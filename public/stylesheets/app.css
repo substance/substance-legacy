@@ -989,11 +989,60 @@ table tr.draft, table tr.draft a {
   line-height: 1.4em;
 }
 
-#document h1 {
+
+#document .document-title {
   margin-top: 40px;
   font-size: 60px;
+  line-height: 70px;
+  font-weight: bold;
   text-align: center;
+  margin-bottom: 20px;
 }
+
+#document h1 { }
+
+
+/* Numbering */
+
+#document {
+  counter-reset: section;
+}
+
+#document h1 {
+  /* counter-reset: subsection; */
+  font-size: 30px;
+  counter-reset: figure;
+}
+
+#document h2 {
+  counter-increment: subsection;
+  counter-reset: subsubsection;
+}
+
+#document h1:before {
+  counter-increment: section;
+  content: counter(section) " ";
+}
+
+#document h2:before {
+  content:counter(section) "." counter(subsection) " ";
+}
+
+#document h3:before {
+  counter-increment: subsubsection;
+  content:counter(section) "." counter(subsection) "." counter(subsubsection) " ";
+}
+
+/* Increment Figure Counter */
+
+.content-node.image {
+  counter-increment: figure;
+}
+
+.caption:before {
+  content: "Figure " counter(section) "." counter(figure) " ";
+}
+
 
 #document .author {
   margin-top: 30px;
@@ -1015,8 +1064,10 @@ table tr.draft, table tr.draft a {
 /*  color: #8E870D;*/
   padding-top: 0px;
   font-weight: bold;
+  padding-bottom: 0;
   margin-bottom: 10px;
 }
+
 
 #document h3 { font-size: 20px; }
 
