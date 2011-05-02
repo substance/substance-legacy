@@ -65,9 +65,11 @@ p.info {
 
 h1, h2, h3, h4, h5, h6 { padding: 10px 0 5px 0; }
 
-h1 { font-size: 300%; /*letter-spacing: -0.07em;*/ line-height: 1.1em; padding-bottom: 0.2em; }
+
+/*h1 { font-size: 300%; line-height: 1.1em; padding-bottom: 0.2em; }*/
 
 h3, h4, h5, h6 { padding-top: 20px; }
+
 h2 { font-size: 160%; padding-bottom: 15px; }
 
 :focus { outline: 0; } /* should go to reset.css */
@@ -994,7 +996,6 @@ table tr.draft, table tr.draft a {
   margin-top: 40px;
   font-size: 60px;
   line-height: 70px;
-  font-weight: bold;
   text-align: center;
   margin-bottom: 20px;
 }
@@ -1021,14 +1022,20 @@ table tr.draft, table tr.draft a {
 
 #document h1:before {
   counter-increment: section;
+  font-weight: bold;
+  margin-right: 20px;
   content: counter(section) " ";
 }
 
 #document h2:before {
+  margin-right: 20px;
+  font-weight: bold;
   content:counter(section) "." counter(subsection) " ";
 }
 
 #document h3:before {
+  margin-right: 20px;
+  font-weight: bold;
   counter-increment: subsubsection;
   content:counter(section) "." counter(subsection) "." counter(subsubsection) " ";
 }
@@ -1042,6 +1049,96 @@ table tr.draft, table tr.draft a {
 .caption:before {
   content: "Figure " counter(section) "." counter(figure) " ";
 }
+
+
+/* body > #container > #document_wrapper > #document > #toc
+-------------------------------------------------------------------------------*/
+
+.toc-header {
+  font-size: 30px;
+  margin-top: 90px;
+  text-align: center;
+  margin-bottom: 70px;
+}
+
+#toc ol {
+    margin: 2em;
+    padding: .5em;
+    list-style: none;
+    counter-reset: item;
+}
+
+#toc a {
+  border: none;
+  padding: 0 4px;
+}
+
+#document #toc > ol {
+  margin: 30px 0;
+  padding: 0;
+  margin-bottom: 30px;
+}
+
+#toc ol li {
+    display: block
+    margin: .5em 0;
+    padding-left: 3em;
+    font-size: 16px;
+}
+
+#toc ol ol > li {
+  display: block
+  margin: .5em 0;
+  font-size: 16px;
+}
+
+#toc > ol > li {
+  font-size: 23px;
+}
+
+#toc > ol > li a {
+  margin-bottom: 10px;
+  margin-top: 10px;
+}
+
+#toc ol li:before {
+  display: inline-block; 
+  margin-left: -3em;
+  margin-right: 20px;
+  font-weight: bold;
+  content: counters(item, ".") " ";
+  counter-increment: item;
+}
+
+/*resets from parent OL*/
+#toc ol ol {
+  width: auto;
+  margin: 0;
+  padding: .5em 0;
+}
+
+#toc ol ol {
+  padding-top: 30px;
+}
+
+
+/*remove the trailing period*/
+#toc ol li li:before {
+  content: counters(item, ".") " ";
+}
+
+#toc ol ol ol {
+  padding: .5em 0 0;
+}
+
+#toc ol li li { }
+
+#toc ol li li li{ }
+
+/*target third level*/
+#toc ol li li li:before { 
+}
+
 
 
 #document .author {
@@ -1061,17 +1158,22 @@ table tr.draft, table tr.draft a {
 }
 
 #document h1, #document h2, #document h3, #document h4, #document h5 {
-/*  color: #8E870D;*/
+  font-weight: normal;
+  margin-top: 2em;
+  padding-bottom: 1em;
+}
+
+
+#document .edit h1, #document .edit h2, #document .edit h3 {
   padding-top: 0px;
-  font-weight: bold;
+  margin-top: 0px;
   padding-bottom: 0;
   margin-bottom: 10px;
 }
 
+#document h2 { font-size: 20px; }
+#document h3 { font-size: 16px; }
 
-#document h3 { font-size: 20px; }
-
-#document h4 { font-weight: bold; }
 
 #document strong, #document b {
   font-weight: bold;

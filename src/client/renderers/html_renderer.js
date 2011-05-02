@@ -117,6 +117,7 @@ var HTMLRenderer = function(root, parent, lvl) {
       
       return _.tpl('document', {
         node: node,
+        toc: new TOCRenderer(node).render(),
         content: content,
         edit: app.document.mode === 'edit',
         title: app.document.mode === 'edit' ? node.get('title') : node.get('title') || 'Untitled',
@@ -279,12 +280,15 @@ var TOCRenderer = function(root) {
   // Known node types
   var renderers = {
     "/type/document": function(node) {
-      content = '<h2>Table of contents</h2>';
-      content += '<ul>';
+      content = '<ol>';
       node.all('children').each(function(child) {
-        content += '<li><a class="toc-item" node="'+child.html_id+'" href="#'+root.get('creator')._id.split('/')[2]+'/'+root.get('name')+'/'+child.html_id+'">'+child.get('name')+'</a></li>';
+        if (child.type.key !== '/type/section') return;
+        content += '<li><a class="toc-item" node="'+child.html_id+'" href="#'+root.get('creator')._id.split('/')[2]+'/'+root.get('name')+'/'+child.html_id+'">'+child.get('name')+'</a>';
+        
+        content += renderers["/type/document"](child);
+        content += '</li>';
       });
-      content += '</ul>';
+      content += '</ol>';
       return content;
     },
     

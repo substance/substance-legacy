@@ -20,6 +20,7 @@ var Document = Backbone.View.extend({
     'click .controls .handle': 'showActions',
     'click a.unpublish-document': 'unpublishDocument',
     'click a.publish-document': 'publishDocument',
+    'click .toc-item': 'scrollTo',
     
     // Actions
     'click a.add_child': 'addChild',
@@ -45,6 +46,13 @@ var Document = Backbone.View.extend({
       // Re-render Document browser
       that.app.browser.render();
     });
+  },
+  
+  scrollTo: function(e) {
+    var node = $(e.currentTarget).attr('node');
+    app.scrollTo(node);
+    controller.saveLocation($(e.currentTarget).attr('href'));
+    return false;
   },
   
   updateCursors: function() {
@@ -231,16 +239,19 @@ var Document = Backbone.View.extend({
     function init(id) {
       that.model = graph.get(id);
       
+      
       if (that.model) {
         that.render();
         that.init();
         that.reset();
+        
         that.trigger('changed');
         that.loadedDocuments[username+"/"+docname] = id;
         
         // Update browser graph reference
         app.browser.graph.set('objects', id, that.model);
         app.toggleView('document');
+        if (nodeid) app.scrollTo(nodeid);
         
         // TODO: register document for realtime sessions
         // remote.Session.registerDocument(id);
@@ -251,7 +262,6 @@ var Document = Backbone.View.extend({
     
     var id = that.loadedDocuments[username+"/"+docname];
     $('#document_tab').show();
-    
     
     // Already loaded - no need to fetch it
     if (id) {

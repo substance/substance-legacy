@@ -523,7 +523,7 @@
 
   <!-- content-node templates for the editor -->
   <script type="text/x-ejs-template" name="document">
-    <div id="<%= node.html_id %>" name=<%= node.key %> level="<%= level %>" class="content-node document level-{{level}}">
+    <div id="<%= node.html_id %>" name=<%= node.key %> level="<%= level %>" class="content-node document level-<%= level %><%= edit ? " edit" : "" %>">
       <% if (edit) { %><div class="content-node-outline"><div class="cursor"><span></span></div></div><% } %>
       <div class="document-title content<%= empty_title ? ' empty' : '' %>"<% if (edit) { %> contenteditable="true" title="Click To Edit Document Title"<% } %>>
         <% if (!empty_title) { %>
@@ -551,6 +551,12 @@
         <% } %>
       </p>
       <div class="document-separator"></div>
+      <% if (!edit) { %>
+        <div class="toc-header">Table Of Contents</div>
+        <div id="toc">
+          <%= toc %>
+        </div>
+      <% } %>
       <%= content %>
     </div>
   </script>

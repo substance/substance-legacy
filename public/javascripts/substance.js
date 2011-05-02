@@ -406,6 +406,7 @@ var HTMLRenderer = function(root, parent, lvl) {
       
       return _.tpl('document', {
         node: node,
+        toc: new TOCRenderer(node).render(),
         content: content,
         edit: app.document.mode === 'edit',
         title: app.document.mode === 'edit' ? node.get('title') : node.get('title') || 'Untitled',
@@ -568,12 +569,15 @@ var TOCRenderer = function(root) {
   // Known node types
   var renderers = {
     "/type/document": function(node) {
-      content = '<h2>Table of contents</h2>';
-      content += '<ul>';
+      content = '<ol>';
       node.all('children').each(function(child) {
-        content += '<li><a class="toc-item" node="'+child.html_id+'" href="#'+root.get('creator')._id.split('/')[2]+'/'+root.get('name')+'/'+child.html_id+'">'+child.get('name')+'</a></li>';
+        if (child.type.key !== '/type/section') return;
+        content += '<li><a class="toc-item" node="'+child.html_id+'" href="#'+root.get('creator')._id.split('/')[2]+'/'+root.get('name')+'/'+child.html_id+'">'+child.get('name')+'</a>';
+        
+        content += renderers["/type/document"](child);
+        content += '</li>';
       });
-      content += '</ul>';
+      content += '</ol>';
       return content;
     },
     
@@ -1002,8 +1006,8 @@ var ResourceEditor = Backbone.View.extend({
 });
 var ApplicationController = Backbone.Controller.extend({
   routes: {
-    '^(?!search)(.*)\/(.*)$': 'loadDocument',
     '^(?!search)(.*)\/(.*)\/(.*)$': 'loadDocument',
+    '^(?!search)(.*)\/(.*)$': 'loadDocument',
     ':username': 'userDocs',
     '^search\/(.*)$': 'searchDocs'
   },
@@ -1012,7 +1016,7 @@ var ApplicationController = Backbone.Controller.extend({
     app.browser.load({"type": "user", "value": username});
     app.document.loadDocument(username, docname, node);
     
-    $('#document_wrapper').attr('url', '#'+username+'/'+docname);
+    $('#document_wrapper').attr('url', '#'+username+'/'+docname+(node ? "/"+node : ""));
     $('#browser_wrapper').attr('url', '#'+username);
     return false;
   },
@@ -1042,6 +1046,7 @@ var ApplicationController = Backbone.Controller.extend({
   },
   
   searchDocs: function(searchstr) {
+    
     app.searchDocs(searchstr);
     return false;
   }
@@ -1224,6 +1229,7 @@ var Document = Backbone.View.extend({
     'click .controls .handle': 'showActions',
     'click a.unpublish-document': 'unpublishDocument',
     'click a.publish-document': 'publishDocument',
+    'click .toc-item': 'scrollTo',
     
     // Actions
     'click a.add_child': 'addChild',
@@ -1249,6 +1255,13 @@ var Document = Backbone.View.extend({
       // Re-render Document browser
       that.app.browser.render();
     });
+  },
+  
+  scrollTo: function(e) {
+    var node = $(e.currentTarget).attr('node');
+    app.scrollTo(node);
+    controller.saveLocation($(e.currentTarget).attr('href'));
+    return false;
   },
   
   updateCursors: function() {
@@ -1435,16 +1448,19 @@ var Document = Backbone.View.extend({
     function init(id) {
       that.model = graph.get(id);
       
+      
       if (that.model) {
         that.render();
         that.init();
         that.reset();
+        
         that.trigger('changed');
         that.loadedDocuments[username+"/"+docname] = id;
         
         // Update browser graph reference
         app.browser.graph.set('objects', id, that.model);
         app.toggleView('document');
+        if (nodeid) app.scrollTo(nodeid);
         
         // TODO: register document for realtime sessions
         // remote.Session.registerDocument(id);
@@ -1455,7 +1471,6 @@ var Document = Backbone.View.extend({
     
     var id = that.loadedDocuments[username+"/"+docname];
     $('#document_tab').show();
-    
     
     // Already loaded - no need to fetch it
     if (id) {
@@ -2393,7 +2408,6 @@ var Header = Backbone.View.extend({
 var Application = Backbone.View.extend({
   events: {
     'click .toggle-new-document': 'toggleNewDocument',
-    'click a.scroll-to': 'triggerScrollTo',
     'click .new-document': 'newDocument',
     'click #dashboard_toggle': 'showDashboard',
     'click #document_toggle': 'showDocument',
@@ -2423,11 +2437,6 @@ var Application = Backbone.View.extend({
     return false;
   },
   
-  triggerScrollTo: function(e) {
-    this.scrollTo($(e.currentTarget).attr('href'));
-    return false;
-  },
-  
   newDocument: function() {
     if (!head.browser.webkit) {
       alert("You need to use a Webkit based browser (Google Chrome, Safari) in order to write documents. In future, other browers will be supported too.");
@@ -2437,6 +2446,12 @@ var Application = Backbone.View.extend({
     this.content.render();
     
     this.toggleView('content');
+    return false;
+  },
+  
+  scrollTo: function(id) {
+    var offset = $('#'+id).offset();                             
+    offset ? $('html, body').animate({scrollTop: offset.top}, 'slow') : null;
     return false;
   },
   
@@ -2746,13 +2761,6 @@ var Application = Backbone.View.extend({
         notifier.notify(Notifications.AUTHENTICATION_FAILED);
       }
     });
-    return false;
-  },
-  
-  // Scroll to an element
-  scrollTo: function(selector) {
-    var offset = $(selector).offset();
-    offset ? $('html, body').animate({scrollTop: offset.top}, 'slow') : null;
     return false;
   },
   
