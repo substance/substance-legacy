@@ -1005,43 +1005,46 @@ table tr.draft, table tr.draft a {
 
 /* Numbering */
 
-#document {
-  counter-reset: section;
-}
+
+#document {counter-reset: section}
 
 #document h1 {
-  /* counter-reset: subsection; */
-  font-size: 30px;
   counter-reset: figure;
+  counter-reset: sub-section;
+  
+  font-size: 30px;
 }
 
 #document h2 {
-  counter-increment: subsection;
-  counter-reset: subsubsection;
+  counter-reset: composite
 }
 
-#document h1:before {
+#document h1:before{
   counter-increment: section;
-  font-weight: bold;
-  margin-right: 20px;
   content: counter(section) " ";
+ 
+  font-weight: bold;
+  margin-right: 20px;
 }
 
-#document h2:before {
+#document h2:before{
+  counter-increment: sub-section;
+  content: counter(section) "." counter(sub-section) " ";
+  
   margin-right: 20px;
   font-weight: bold;
-  content:counter(section) "." counter(subsection) " ";
 }
 
-#document h3:before {
+#document h3:before{
+  counter-increment: composite;
+  content: counter(section) "." counter(sub-section) "." counter(composite) " ";
+
   margin-right: 20px;
   font-weight: bold;
-  counter-increment: subsubsection;
-  content:counter(section) "." counter(subsection) "." counter(subsubsection) " ";
 }
+
 
 /* Increment Figure Counter */
-
 .content-node.image {
   counter-increment: figure;
 }
@@ -1062,10 +1065,10 @@ table tr.draft, table tr.draft a {
 }
 
 #toc ol {
-    margin: 2em;
-    padding: .5em;
-    list-style: none;
-    counter-reset: item;
+  margin: 2em;
+  padding: .5em;
+  list-style: none;
+  counter-reset: item;
 }
 
 #toc a {
@@ -1118,7 +1121,7 @@ table tr.draft, table tr.draft a {
 }
 
 #toc ol ol {
-  padding-top: 30px;
+  padding-top: 15px;
 }
 
 
