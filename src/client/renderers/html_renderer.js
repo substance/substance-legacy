@@ -2,6 +2,8 @@ var renderControls = function(node, first, last, parent, level) {
   
   function render(node, destination, consolidate) {
     var actions = new Data.Hash();
+    var innerNode = null;
+    var path = [];
     
     function computeActions(n, parent) {
       function registerAction(action) {
@@ -11,6 +13,7 @@ var renderControls = function(node, first, last, parent, level) {
           if (action.nodeType === '/type/section') {
             actions.get(action.nodeType).push(action);
           } else if (action.level > actions.get(action.nodeType)[0].level) {
+            // Always use deepest level for leave nodes!
             actions.set(action.nodeType, [action]);
           }
         } else {
@@ -19,6 +22,7 @@ var renderControls = function(node, first, last, parent, level) {
       }
       
       var nlevel = parseInt($('#'+n.html_id).attr('level'));
+      innerNode = n;
       
       // Possible children
       if (n.all('children') && n.all('children').length === 0 && destination === 'after') {
@@ -57,11 +61,26 @@ var renderControls = function(node, first, last, parent, level) {
       }
       return actions;
     }
+    computeActions(node, parent);
+    
+    function computePath(node) {
+      if (!node || node.get('creator')) return;
+      path.push(node);
+      computePath(app.document.getParent(node));
+    }
+    
+    computePath(innerNode);
+    
+    // Move insertion type for leaf nodes
+    var moveInsertionType = innerNode.all('children') && innerNode.all('children').length === 0 && destination === 'after' ? "child" : "sibling";
     
     return _.tpl('controls', {
-      node: node.key,
+      node: innerNode._id,
+      insertion_type: moveInsertionType,
       destination: destination,
-      actions: computeActions(node, parent)
+      actions: actions,
+      drop_options: [],
+      path: path
     });
   }
   
@@ -74,16 +93,10 @@ var renderControls = function(node, first, last, parent, level) {
     }
   } else {
     //  Insert before, but only for starting nodes (first=true)
-    if (first) {
-      // Insert controls before node
-      $(render(node, 'before')).insertBefore($('#'+node.html_id));
-    }
+    if (first) $(render(node, 'before')).insertBefore($('#'+node.html_id));
     
-    // Consolidate at level 1 (=section level), but only for closing nodes (last=true)
-    if (parent.types().get('/type/document')) {
+    if (!last || parent.types().get('/type/document')) {
       $(render(node, 'after', true)).insertAfter($('#'+node.html_id));
-    } else if (!last) {
-      $(render(node,'after')).insertAfter($('#'+node.html_id));
     }
   }
   
@@ -96,7 +109,6 @@ var renderControls = function(node, first, last, parent, level) {
     });
   }
 };
-
 
 // HTMLRenderer
 // ---------------

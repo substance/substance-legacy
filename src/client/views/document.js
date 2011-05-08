@@ -17,10 +17,11 @@ var Document = Backbone.View.extend({
     'mouseover .content-node': 'highlightNode',
     'mouseout .content-node': 'unhighlightNode',
     'click .content-node': 'selectNode',
-    'click .controls .handle': 'showActions',
     'click a.unpublish-document': 'unpublishDocument',
     'click a.publish-document': 'publishDocument',
     'click .toc-item': 'scrollTo',
+    'click a.move-node': 'moveNode',
+    'click a.toggle-move-node': 'toggleMoveNode',
     
     // Actions
     'click a.add_child': 'addChild',
@@ -29,6 +30,73 @@ var Document = Backbone.View.extend({
   },
   
   loadedDocuments: {},
+  
+  toggleMoveNode: function(e) {
+    var that = this;
+    
+    // Hide other move-node controls
+    $('.move-node').hide();
+    var $controls = $(e.currentTarget).parent().parent().parent();
+    var node = this.selectedNode;
+    var nodeType = this.selectedNode.type.key == "/type/section" ? "container-node" : "leaf-node";
+    
+    var count = 0;
+    var depth = 0;
+    
+    function calcDepth(node) {
+      if (!node.get('children')) return;
+      var found = false;
+      node.get('children').each(function(n) {
+        if (n.type.key === "/type/section") {
+          if (!found) depth += 1;
+          found = true;
+          calcDepth(n);
+        }
+      });
+    }
+    calcDepth(node);
+    
+    function checkDepth(level) {
+      if (node.type.key !== "/type/section") return true;
+      console.log(level+depth);
+      return level+depth <= 3;
+    }
+    
+    $controls.find('.move-node.'+nodeType).each(function() {
+      
+      var insertionType = $(this).hasClass('child') ? "child" : "sibling";
+      var level = parseInt($(this).attr('level'));
+      
+      // For sibling insertion mode
+      if (insertionType === "sibling") {
+        var parent = that.getParent(graph.get($(this).attr('node')));
+        var allowedNodes = parent.properties().get('children').expectedTypes;
+        if (_.include(allowedNodes, that.selectedNode.type.key)) {
+          if (checkDepth(level)) {
+            $(this).show();
+            count++;            
+          }
+        }
+      } else {
+        $(this).show();
+        count++;
+      }
+    });
+    
+    if (count === 0) {
+      $controls.find(".message").html("Current node doesn't fit here");
+      setTimeout(function() {
+        $controls.find(".message").html('');
+      }, 2000);
+    }
+    
+    return false;
+  },
+  
+  // For a given node find the parent node
+  getParent: function(node) {
+    return graph.get($('#'+node._id.replace(/\//g, '_')).attr('parent'));
+  },
   
   initialize: function() {
     var that = this;
@@ -46,6 +114,69 @@ var Document = Backbone.View.extend({
       // Re-render Document browser
       that.app.browser.render();
     });
+  },
+  
+  moveNode: function(e) {
+    var node = this.selectedNode;
+    var nodeParent = this.getParent(node);
+    
+    var ref = graph.get($(e.currentTarget).attr('node'));
+    var refParent = this.getParent(ref);
+    var destination = $(e.currentTarget).attr('destination');
+    var insertionType = $(e.currentTarget).hasClass('child') ? "child" : "sibling";
+    
+    // Remove from prev. position
+    nodeParent.all('children').del(node._id);
+    nodeParent.dirty = true;
+    
+    this.trigger('change:node', nodeParent);
+    
+    if (insertionType === "child") {
+      ref.all('children').set(node._id, node);
+      ref.dirty = true;
+      this.trigger('change:node', ref);
+    } else {
+      // Register at new position
+      var targetIndex = refParent.all('children').index(ref._id);
+      if (destination === 'after') targetIndex += 1;
+
+      // Cleanup: Move all subsequent leaf nodes inside the new section
+      if (node.type.key === '/type/section') {
+        var successors = refParent.get('children').rest(targetIndex);
+        var done = false;
+        successors = successors.select(function(node) {
+          if (!done && node.type.key !== "/type/section") {
+            // Remove non-section successors from parent node
+            refParent.all('children').del(node._id);
+            return true;
+          } else {
+            done = true;
+            return false;
+          }
+        });
+        var children = new Data.Hash();
+        var idx = 0;
+        while (idx < node.get('children').length && node.get('children').at(idx).type.key !== "/type/section") {
+          var n = node.get('children').at(idx);
+          children.set(n._id, n);
+          idx += 1;
+        }
+        children = children.union(successors);
+        children = children.union(node.get('children').rest(idx));
+        node.set({
+          children: children.keys()
+        });
+      }
+      // Connect to parent
+      refParent.all('children').set(node._id, node, targetIndex);
+      refParent.dirty = true;
+      graph.trigger('dirty');
+      this.trigger('change:node', refParent);
+    }
+    // Select node
+    this.selectedNode = node;
+    this.trigger('select:node', this.selectedNode);
+    return false;
   },
   
   scrollTo: function(e) {
@@ -108,21 +239,6 @@ var Document = Backbone.View.extend({
       hijs('.content-node.code pre');
     }
   },
-  
-  // renderVisualizations: function() {
-  //   $('.visualization').each(function() {
-  //     // Initialize visualization
-  //     var c = new uv.Collection(countries_fixture);
-  //     
-  //     vis = new Linechart(c, {property: 'birth_rate', canvas: this});
-  //     vis.start();
-  //     
-  //     // Stop propagation of mousewheel events
-  //     $(this).bind('mousewheel', function() {
-  //       return false;
-  //     });
-  //   });
-  // },
   
   // Extract available documentTypes from config
   documentTypes: function() {
@@ -238,8 +354,6 @@ var Document = Backbone.View.extend({
     $('#tabs').show();
     function init(id) {
       that.model = graph.get(id);
-      
-      
       if (that.model) {
         that.render();
         that.init();
@@ -524,7 +638,7 @@ var Document = Backbone.View.extend({
     }
     return false;
   },
-    
+  
   removeNode: function(e) {
     if (arguments.length === 1) {
       var node = graph.get($(e.currentTarget).attr('node'));

@@ -472,25 +472,46 @@
         <a href="#">--&gt; INSERT</a>
       </div>
       <div class="actions">
-        <div class="placeholder">Insert Content</div>
+        <div class="placeholder insert">Insert Content</div>
+        <div class="placeholder move"><a href="#" class="toggle-move-node">Move Node</a></div>
         <% actions.each(function(action) { %>
             <% if (action.length === 1) { %>
               <% _.each(action, function(v) { %>
                 <span>
-                <a href="#" type="<%= v.nodeType %>" destination="<%= destination %>" node="<%= v.node %>" parent="<%= v.parentNode %>" class="add_<%= v.insertionType %>"><%= v.nodeTypeName %></a>
+                <a href="#" type="<%= v.nodeType %>" destination="<%= destination %>" node="<%= v.node %>" parent="<%= v.parentNode %>" class="add add_<%= v.insertionType %>"><%= v.nodeTypeName %></a>
                 </span>
               <% }); %>
             <% } else { %>
-              <span class="container">
+              <span class="container add">
               <%= action[0].nodeTypeName %>
               <div>
                 <% _.each(action, function(v) { %>
-                  <a href="#" type="<%= v.nodeType %>" destination="<%= destination %>" node="<%= v.node %>" parent="<%= v.parentNode %>" class="add_<%= v.insertionType %>">Level <%= v.level %></a>
+                  <a href="#" type="<%= v.nodeType %>" destination="<%= destination %>" node="<%= v.node %>" parent="<%= v.parentNode %>" class="add add_<%= v.insertionType %>">Level <%= v.level %></a>
                 <% }); %>
               </div>
               </span>
             <% } %>
         <% }); %>
+        
+        <div class="move-targets">
+          <!-- container node targets  -->
+          <% _.each(path.reverse(), function(n, index) { %>
+            <span><a class="move-node container-node" href="#" node="<%= n._id %>" destination="<%= destination %>" level="<%= (index+1) %>">Container Node Sibling <%= (index+1) %></a></span>
+          <% }); %>
+          
+          <!-- allow child insertion for empty container nodes -->
+          <% if (insertion_type === 'child') { %>
+            <span><a class="move-node container-node <%= insertion_type %>" href="#" node="<%= node %>" destination="<%= destination %>">Container Node <%= insertion_type %></a></span>
+          <% } %>
+          
+          
+          <!-- leaf node target  -->
+          <span><a class="move-node leaf-node <%= insertion_type %>" href="#" node="<%= node %>" destination="<%= destination %>">Leaf Node <%= insertion_type %></a></span>
+        </div>
+        
+        <span class="message">
+          
+        </span>
         <br class="clear"/>
       </div>
     </div>
@@ -659,7 +680,7 @@
         
         <div class="resource-editor">
           <div class="resource-url-area">
-            <div class="url-label">Resource URL</div>
+            <div class="url-label">Resource URL (Images are supported yet)</div>
             <div class="url-container">
               <input class="resource-url" type="text" name="url" value="{{url}}"/>
               <div class="status">Enter URL</div>
