@@ -79,7 +79,6 @@ var renderControls = function(node, first, last, parent, level) {
       insertion_type: moveInsertionType,
       destination: destination,
       actions: actions,
-      drop_options: [],
       path: path
     });
   }
