@@ -331,7 +331,7 @@
     
     // Get value at given *key*
     get: function (key) {
-      return this.data[key];
+      return this.data.hasOwnProperty(key) ? this.data[key] : undefined;
     },
     
     // Get value at given *index*
@@ -470,12 +470,10 @@
           result = new Data.Hash();
           
       this.each(function(value, key) {
-        if (!result.get(key))
-          result.set(key, value);
+        result.set(key, value);
       });
       hash.each(function(value, key) {
-        if (!result.get(key))
-          result.set(key, value);
+        if (!result.get(key)) result.set(key, value);
       });
       return result;
     },

@@ -2,7 +2,7 @@
 var ContentNode = {
   getTeaser: function(node) {
     if (node.type.key === "/type/section")
-      return node.get('name').trim().substring(0, 15)+" ..." || "Section";
+      return node.get('name') ? node.get('name').trim().substring(0, 15)+" ..." : "Section";      
     else if (node.type.key === "/type/text")
       return _.stripTags(node.get('content')).trim().substring(0, 15)+" ...";
     else if (node.type.key === "/type/image")
