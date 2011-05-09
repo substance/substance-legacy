@@ -24,7 +24,7 @@ var renderControls = function(node, first, last, parent, level) {
       var nlevel = parseInt($('#'+n.html_id).attr('level'));
       innerNode = n;
       n.level = nlevel;
-      path.push(n);
+      if (nlevel<=3) path.push(n);
       
       // Possible children
       if (n.all('children') && n.all('children').length === 0 && destination === 'after') {

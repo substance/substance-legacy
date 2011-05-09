@@ -500,7 +500,7 @@
           <% }); %>
           
           <!-- allow child insertion for empty container nodes -->
-          <% if (insertion_type === 'child') { %>
+          <% if (insertion_type === 'child' && node.level <= 3) { %>
             <span><a class="move-node container-node <%= insertion_type %>" href="#" node="<%= node._id %>" destination="<%= destination %>"><!--Inside--> here <!--&quot;<%= ContentNode.getTeaser(node).trim() %>&quot;--> (<%= (node.level+1) %>)</a></span>
           <% } %>
           
