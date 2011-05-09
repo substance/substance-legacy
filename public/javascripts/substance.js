@@ -301,8 +301,7 @@ var ContentNode = {
     else if (node.type.key === "/type/quote")
       return "Quote";
     else if (node.type.key === "/type/code")
-      return "Code";
-      
+      return "Code";  
     return "N/A"
   }
 }
@@ -331,6 +330,8 @@ var renderControls = function(node, first, last, parent, level) {
       
       var nlevel = parseInt($('#'+n.html_id).attr('level'));
       innerNode = n;
+      n.level = nlevel;
+      path.push(n);
       
       // Possible children
       if (n.all('children') && n.all('children').length === 0 && destination === 'after') {
@@ -371,19 +372,11 @@ var renderControls = function(node, first, last, parent, level) {
     }
     computeActions(node, parent);
     
-    function computePath(node) {
-      if (!node || node.get('creator')) return;
-      path.push(node);
-      computePath(app.document.getParent(node));
-    }
-    
-    computePath(innerNode);
-    
     // Move insertion type for leaf nodes
     var moveInsertionType = innerNode.all('children') && innerNode.all('children').length === 0 && destination === 'after' ? "child" : "sibling";
     
     return _.tpl('controls', {
-      node: innerNode._id,
+      node: innerNode,
       insertion_type: moveInsertionType,
       destination: destination,
       actions: actions,
@@ -1278,7 +1271,7 @@ var Document = Backbone.View.extend({
     
     // Hide other move-node controls
     $('.move-node').hide();
-    var $controls = $('.content-node:not(.selected) > .controls');
+    var $controls = $('.content-node .controls');
     
     $controls.each(function() {
       var $control = $(this);
@@ -1306,15 +1299,31 @@ var Document = Backbone.View.extend({
         if (node.type.key !== "/type/section") return true;
         return level+depth <= 3;
       }
+      
+      // Detect cyclic references
+      var cyclic = false;
+      function isCyclic(n) {
+        if (n===node) {
+          cyclic = true;
+        } else {
+          var parent = that.getParent(n);
+          if (parent) isCyclic(parent);
+        }
+        return cyclic;
+      }
 
       $control.find('.move-node.'+nodeType).each(function() {
-
         var insertionType = $(this).hasClass('child') ? "child" : "sibling";
         var level = parseInt($(this).attr('level'));
-
+        var ref = graph.get($(this).attr('node'));
+        var parent = that.getParent(ref);
+        
+        // Skip if source node is referenced by the target node or one of its anchestors
+        cyclic = false;
+        if (isCyclic(ref)) return;
+        
         // For sibling insertion mode
         if (insertionType === "sibling") {
-          var parent = that.getParent(graph.get($(this).attr('node')));
           var allowedNodes = parent.properties().get('children').expectedTypes;
           if (_.include(allowedNodes, that.selectedNode.type.key)) {
             if (checkDepth(level)) {
@@ -1327,19 +1336,22 @@ var Document = Backbone.View.extend({
           count++;
         }
       });
-
-      // if (count === 0) {
-      //   $control.find(".message").html("Current node doesn't fit here");
-      //   setTimeout(function() {
-      //     $control.find(".message").html('');
-      //   }, 2000);
-      // }
+      
+      // Hide move label if there are no drop targets
+      if (count === 0) {
+        $control.find(".placeholder").hide();
+      }
+      
+      // Hide move controls inside the selected node
+      $('.content-node.selected .controls .move-node').hide();
+      $controls = $('.content-node .controls');
     });
     return false;
   },
   
   // For a given node find the parent node
   getParent: function(node) {
+    if (!node) return null;
     return graph.get($('#'+node._id.replace(/\//g, '_')).attr('parent'));
   },
   

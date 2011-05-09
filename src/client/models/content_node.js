@@ -12,8 +12,7 @@ var ContentNode = {
     else if (node.type.key === "/type/quote")
       return "Quote";
     else if (node.type.key === "/type/code")
-      return "Code";
-      
+      return "Code";  
     return "N/A"
   }
 }

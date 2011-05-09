@@ -23,6 +23,8 @@ var renderControls = function(node, first, last, parent, level) {
       
       var nlevel = parseInt($('#'+n.html_id).attr('level'));
       innerNode = n;
+      n.level = nlevel;
+      path.push(n);
       
       // Possible children
       if (n.all('children') && n.all('children').length === 0 && destination === 'after') {
@@ -63,19 +65,11 @@ var renderControls = function(node, first, last, parent, level) {
     }
     computeActions(node, parent);
     
-    function computePath(node) {
-      if (!node || node.get('creator')) return;
-      path.push(node);
-      computePath(app.document.getParent(node));
-    }
-    
-    computePath(innerNode);
-    
     // Move insertion type for leaf nodes
     var moveInsertionType = innerNode.all('children') && innerNode.all('children').length === 0 && destination === 'after' ? "child" : "sibling";
     
     return _.tpl('controls', {
-      node: innerNode._id,
+      node: innerNode,
       insertion_type: moveInsertionType,
       destination: destination,
       actions: actions,
