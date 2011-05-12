@@ -17,9 +17,11 @@ var Document = Backbone.View.extend({
     'mouseover .content-node': 'highlightNode',
     'mouseout .content-node': 'unhighlightNode',
     'click .content-node': 'selectNode',
-    'click .controls .handle': 'showActions',
     'click a.unpublish-document': 'unpublishDocument',
     'click a.publish-document': 'publishDocument',
+    'click .toc-item': 'scrollTo',
+    'click a.move-node': 'moveNode',
+    'click a.toggle-move-node': 'toggleMoveNode',
     
     // Actions
     'click a.add_child': 'addChild',
@@ -28,6 +30,101 @@ var Document = Backbone.View.extend({
   },
   
   loadedDocuments: {},
+  
+  // Enable move mode
+  toggleMoveNode: function() {
+    var that = this;
+    
+    $('#document').addClass('move-mode');
+    
+    // Hide other move-node controls
+    $('.move-node').hide();
+    var $controls = $('.content-node .controls');
+    
+    // Show previously hidden labels
+    $controls.find(".placeholder.move").show();
+    
+    $controls.each(function() {
+      var $control = $(this);
+      
+      var node = that.selectedNode;
+      var nodeType = that.selectedNode.type.key == "/type/section" ? "container-node" : "leaf-node";
+      var count = 0;
+      var depth = 0;
+
+      function calcDepth(node) {
+        if (!node.get('children')) return;
+        var found = false;
+        node.get('children').each(function(n) {
+          if (n.type.key === "/type/section") {
+            if (!found) depth += 1;
+            found = true;
+            calcDepth(n);
+          }
+        });
+      }
+      
+      calcDepth(node);
+      
+      function checkDepth(level) {
+        if (node.type.key !== "/type/section") return true;
+        return level+depth <= 3;
+      }
+      
+      // Detect cyclic references
+      var cyclic = false;
+      function isCyclic(n) {
+        if (n===node) {
+          cyclic = true;
+        } else {
+          var parent = that.getParent(n);
+          if (parent) isCyclic(parent);
+        }
+        return cyclic;
+      }
+
+      $control.find('.move-node.'+nodeType).each(function() {
+        var insertionType = $(this).hasClass('child') ? "child" : "sibling";
+        var level = parseInt($(this).attr('level'));
+        var ref = graph.get($(this).attr('node'));
+        var parent = that.getParent(ref);
+        
+        // Skip if source node is referenced by the target node or one of its anchestors
+        cyclic = false;
+        if (isCyclic(ref)) return;
+        
+        // For sibling insertion mode
+        if (insertionType === "sibling") {
+          var allowedNodes = parent.properties().get('children').expectedTypes;
+          if (_.include(allowedNodes, that.selectedNode.type.key)) {
+            if (checkDepth(level)) {
+              $(this).show();
+              count++;            
+            }
+          }
+        } else {
+          $(this).show();
+          count++;
+        }
+      });
+      
+      // Hide move label if there are no drop targets
+      if (count === 0) {
+        $control.find(".placeholder.move").hide();
+      }
+      
+      // Hide move controls inside the selected node
+      $('.content-node.selected .controls .move-node').hide();
+      $controls = $('.content-node .controls');
+    });
+    return false;
+  },
+  
+  // For a given node find the parent node
+  getParent: function(node) {
+    if (!node) return null;
+    return graph.get($('#'+node._id.replace(/\//g, '_')).attr('parent'));
+  },
   
   initialize: function() {
     var that = this;
@@ -47,6 +144,76 @@ var Document = Backbone.View.extend({
     });
   },
   
+  moveNode: function(e) {
+    var node = this.selectedNode;
+    var nodeParent = this.getParent(node);
+    
+    var ref = graph.get($(e.currentTarget).attr('node'));
+    var refParent = this.getParent(ref);
+    var destination = $(e.currentTarget).attr('destination');
+    var insertionType = $(e.currentTarget).hasClass('child') ? "child" : "sibling";
+    
+    // Remove from prev. position
+    nodeParent.all('children').del(node._id);
+    nodeParent.dirty = true;
+    
+    this.trigger('change:node', nodeParent);
+    
+    if (insertionType === "child") {
+      ref.all('children').set(node._id, node);
+      ref.dirty = true;
+      this.trigger('change:node', ref);
+    } else {
+      // Register at new position
+      var targetIndex = refParent.all('children').index(ref._id);
+      if (destination === 'after') targetIndex += 1;
+
+      // Cleanup: Move all subsequent leaf nodes inside the new section
+      if (node.type.key === '/type/section') {
+        var successors = refParent.get('children').rest(targetIndex);
+        var done = false;
+        successors = successors.select(function(node) {
+          if (!done && node.type.key !== "/type/section") {
+            // Remove non-section successors from parent node
+            refParent.all('children').del(node._id);
+            return true;
+          } else {
+            done = true;
+            return false;
+          }
+        });
+        var children = new Data.Hash();
+        var idx = 0;
+        while (idx < node.get('children').length && node.get('children').at(idx).type.key !== "/type/section") {
+          var n = node.get('children').at(idx);
+          children.set(n._id, n);
+          idx += 1;
+        }
+        children = children.union(successors);
+        children = children.union(node.get('children').rest(idx));
+        node.set({
+          children: children.keys()
+        });
+      }
+      // Connect to parent
+      refParent.all('children').set(node._id, node, targetIndex);
+      refParent.dirty = true;
+      graph.trigger('dirty');
+      this.trigger('change:node', refParent);
+    }
+    // Select node
+    this.selectedNode = node;
+    this.trigger('select:node', this.selectedNode);
+    return false;
+  },
+  
+  scrollTo: function(e) {
+    var node = $(e.currentTarget).attr('node');
+    app.scrollTo(node);
+    controller.saveLocation($(e.currentTarget).attr('href'));
+    return false;
+  },
+  
   updateCursors: function() {
     // $('.content-node.occupied').removeClass('occupied');
     // _.each(this.status.cursors, function(user, nodeKey) {
@@ -62,13 +229,11 @@ var Document = Backbone.View.extend({
       mode: this.mode,
       doc: this.model
     }));
-    
     this.renderMenu();
 
     if (this.model) {
       // Render Attributes
       this.attributes.render();
-      
       // Render the acutal document
       this.renderDocument();
     }
@@ -100,21 +265,6 @@ var Document = Backbone.View.extend({
       hijs('.content-node.code pre');
     }
   },
-  
-  // renderVisualizations: function() {
-  //   $('.visualization').each(function() {
-  //     // Initialize visualization
-  //     var c = new uv.Collection(countries_fixture);
-  //     
-  //     vis = new Linechart(c, {property: 'birth_rate', canvas: this});
-  //     vis.start();
-  //     
-  //     // Stop propagation of mousewheel events
-  //     $(this).bind('mousewheel', function() {
-  //       return false;
-  //     });
-  //   });
-  // },
   
   // Extract available documentTypes from config
   documentTypes: function() {
@@ -230,17 +380,18 @@ var Document = Backbone.View.extend({
     $('#tabs').show();
     function init(id) {
       that.model = graph.get(id);
-      
       if (that.model) {
         that.render();
         that.init();
         that.reset();
+        
         that.trigger('changed');
         that.loadedDocuments[username+"/"+docname] = id;
         
         // Update browser graph reference
         app.browser.graph.set('objects', id, that.model);
         app.toggleView('document');
+        if (nodeid) app.scrollTo(nodeid);
         
         // TODO: register document for realtime sessions
         // remote.Session.registerDocument(id);
@@ -251,7 +402,6 @@ var Document = Backbone.View.extend({
     
     var id = that.loadedDocuments[username+"/"+docname];
     $('#document_tab').show();
-    
     
     // Already loaded - no need to fetch it
     if (id) {
@@ -327,6 +477,10 @@ var Document = Backbone.View.extend({
     
     // Reset node-editor-placeholders
     $('.node-editor-placeholder').html('');
+    
+    // Rest move-node mode, if active
+    $('.move-node').hide();
+    $('#document').removeClass('move-mode');
   },
   
   renderNodeEditor: function(node) {
@@ -484,19 +638,14 @@ var Document = Backbone.View.extend({
       var done = false;
       successors = successors.select(function(node) {
         if (!done && node.type.key !== "/type/section") {
+          // Remove non-section successors from parent node
+          parentNode.all('children').del(node._id);
           return true;
         } else {
           done = true;
           return false;
         }
       });
-      
-      var predecessors = parentNode.get('children').select(function(c, key, index) {
-        return index < targetIndex;
-      });
-      
-      // Update parent node's children
-      parentNode.set({children: predecessors.keys()});
       
       // Append successors to the new node
       newNode.set({
@@ -519,7 +668,7 @@ var Document = Backbone.View.extend({
     }
     return false;
   },
-    
+  
   removeNode: function(e) {
     if (arguments.length === 1) {
       var node = graph.get($(e.currentTarget).attr('node'));
@@ -538,6 +687,7 @@ var Document = Backbone.View.extend({
       // Broadcast insert node command
       // remote.Session.removeNode(node._id, parent._id);
     }
+    this.reset();
     return false;
   }
 });

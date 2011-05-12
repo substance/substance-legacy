@@ -6,7 +6,7 @@ var DocumentEditor = Backbone.View.extend({
   initialize: function() {
     var that = this;
     
-    this.$node = $('#' + app.document.selectedNode.html_id + ' > h1.content').unbind();
+    this.$node = $('#' + app.document.selectedNode.html_id + ' > .document-title.content').unbind();
     this.$lead = $('#' + app.document.selectedNode.html_id + ' #document_lead').unbind();
     
     function activateTitleEditor() {

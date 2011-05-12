@@ -5,7 +5,6 @@
 var Application = Backbone.View.extend({
   events: {
     'click .toggle-new-document': 'toggleNewDocument',
-    'click a.scroll-to': 'triggerScrollTo',
     'click .new-document': 'newDocument',
     'click #dashboard_toggle': 'showDashboard',
     'click #document_toggle': 'showDocument',
@@ -35,11 +34,6 @@ var Application = Backbone.View.extend({
     return false;
   },
   
-  triggerScrollTo: function(e) {
-    this.scrollTo($(e.currentTarget).attr('href'));
-    return false;
-  },
-  
   newDocument: function() {
     if (!head.browser.webkit) {
       alert("You need to use a Webkit based browser (Google Chrome, Safari) in order to write documents. In future, other browers will be supported too.");
@@ -49,6 +43,12 @@ var Application = Backbone.View.extend({
     this.content.render();
     
     this.toggleView('content');
+    return false;
+  },
+  
+  scrollTo: function(id) {
+    var offset = $('#'+id).offset();                             
+    offset ? $('html, body').animate({scrollTop: offset.top}, 'slow') : null;
     return false;
   },
   
@@ -358,13 +358,6 @@ var Application = Backbone.View.extend({
         notifier.notify(Notifications.AUTHENTICATION_FAILED);
       }
     });
-    return false;
-  },
-  
-  // Scroll to an element
-  scrollTo: function(selector) {
-    var offset = $(selector).offset();
-    offset ? $('html, body').animate({scrollTop: offset.top}, 'slow') : null;
     return false;
   },
   

@@ -18,7 +18,7 @@ var ResourceEditor = Backbone.View.extend({
       var url = that.$('.resource-url').val();
       that.resourceExists(url, function(err) {
         if (!err) {
-          that.$('img').attr('src', url);
+          that.$('.resource-content img').attr('src', url);
           that.$('.status').replaceWith('<div class="status image">Image</div>');
           app.document.updateSelectedNode({
             url: url

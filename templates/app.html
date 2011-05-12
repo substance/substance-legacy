@@ -467,30 +467,51 @@
   </script>
   
   <script type="text/x-handlebars-template" name="controls">
-    <div class="controls" node="<%= node %>" destination="<%= destination %>">
+    <div class="controls" node="<%= node._id %>" destination="<%= destination %>">
       <div class="handle">
         <a href="#">--&gt; INSERT</a>
       </div>
       <div class="actions">
-        <div class="placeholder">Insert Content</div>
+        <div class="placeholder insert">Insert Content</div>
+        <div class="placeholder move">Move</div>
         <% actions.each(function(action) { %>
+            <% if (action.length === 0) return; %>
             <% if (action.length === 1) { %>
               <% _.each(action, function(v) { %>
                 <span>
-                <a href="#" type="<%= v.nodeType %>" destination="<%= destination %>" node="<%= v.node %>" parent="<%= v.parentNode %>" class="add_<%= v.insertionType %>"><%= v.nodeTypeName %></a>
+                <a href="#" type="<%= v.nodeType %>" destination="<%= destination %>" node="<%= v.node %>" parent="<%= v.parentNode %>" class="add add_<%= v.insertionType %>"><%= v.nodeTypeName %></a>
                 </span>
               <% }); %>
             <% } else { %>
-              <span class="container">
+              <span class="container add">
               <%= action[0].nodeTypeName %>
               <div>
                 <% _.each(action, function(v) { %>
-                  <a href="#" type="<%= v.nodeType %>" destination="<%= destination %>" node="<%= v.node %>" parent="<%= v.parentNode %>" class="add_<%= v.insertionType %>">Level <%= v.level %></a>
+                  <a href="#" type="<%= v.nodeType %>" destination="<%= destination %>" node="<%= v.node %>" parent="<%= v.parentNode %>" class="add add_<%= v.insertionType %>">Level <%= v.level %></a>
                 <% }); %>
               </div>
               </span>
             <% } %>
         <% }); %>
+        
+        <div class="move-targets">
+          <!-- container node targets  -->
+          <% _.each(path, function(n, index) { %>
+            <span><a class="move-node container-node" href="#" node="<%= n._id %>" destination="<%= destination %>" level="<%= (index+1) %>"><!--<%= destination %>--> Here <!--&quot;<%= ContentNode.getTeaser(n).trim() %>&quot;--> at level <%= n.level %></a></span>
+          <% }); %>
+          
+          <!-- allow child insertion for empty container nodes -->
+          <% if (insertion_type === 'child' && node.level < 3) { %>
+            <span><a class="move-node container-node <%= insertion_type %>" href="#" node="<%= node._id %>" destination="<%= destination %>"><!--Inside--> Here <!--&quot;<%= ContentNode.getTeaser(node).trim() %>&quot;--> at level <%= (node.level+1) %></a></span>
+          <% } %>
+          
+          <!-- leaf node target  -->
+          <span><a class="move-node leaf-node <%= insertion_type %>" href="#" node="<%= node._id %>" destination="<%= destination %>"><!--<%= insertion_type == "sibling" ? destination : "inside" %>--> Here <!--&quot;<%= ContentNode.getTeaser(node).trim() %>&quot;--></a></span>
+        </div>
+        
+        <span class="message">
+          
+        </span>
         <br class="clear"/>
       </div>
     </div>
@@ -523,15 +544,15 @@
 
   <!-- content-node templates for the editor -->
   <script type="text/x-ejs-template" name="document">
-    <div id="<%= node.html_id %>" name=<%= node.key %> level="<%= level %>" class="content-node document level-{{level}}">
+    <div id="<%= node.html_id %>" name=<%= node.key %> level="<%= level %>" class="content-node document level-<%= level %><%= edit ? " edit" : "" %>">
       <% if (edit) { %><div class="content-node-outline"><div class="cursor"><span></span></div></div><% } %>
-      <h1 class="content<%= empty_title ? ' empty' : '' %>"<% if (edit) { %> contenteditable="true" title="Click To Edit Document Title"<% } %>>
+      <div class="document-title content<%= empty_title ? ' empty' : '' %>"<% if (edit) { %> contenteditable="true" title="Click To Edit Document Title"<% } %>>
         <% if (!empty_title) { %>
           <%= title %>
         <% } else { %>
           &laquo; Enter Title &raquo;
         <% } %>
-      </h1>
+      </div>
       <p class="author"><%= node.get('creator').get('name') || node.get('creator').get('username') %></p>
       <p class="published">
         <% if (node.get('published_on') && edit) { %>
@@ -551,14 +572,25 @@
         <% } %>
       </p>
       <div class="document-separator"></div>
+      <% if (!edit) { %>
+        <div class="toc-header">Table Of Contents</div>
+        <div id="toc">
+          <%= toc %>
+        </div>
+      <% } %>
       <%= content %>
     </div>
   </script>
   
   <script type="text/x-handlebars-template" name="section">
     <div id="{{node/html_id}}" name={{node/key}} parent="{{parent/_id}}" level="{{level}}" draggable="false" class="content-node section level-{{level}}">
-      {{#edit}}<a href="#" class="remove remove-node" title="Remove Section and all child elements" node="{{node/key}}" parent="{{parent/_id}}">x</a>{{/edit}}
       {{#edit}}<div class="content-node-outline"><div class="cursor"><span></span></div></div>{{/edit}}
+      {{#edit}}
+        <div class="operations">
+          <a href="#" class="remove-node" title="Remove Node" node="{{node/key}}" parent="{{parent/_id}}"><img src="/images/icons/white/x_alt_16x16.png"/></a>
+          <a href="#" class="toggle-move-node"><img src="/images/icons/white/arrow_right_16x16.png"/></a>
+        </div>
+      {{/edit}}
       {{#edit}}<div class="pilcrow">&#182;</div>{{/edit}}
       
       <h{{heading_level}} class="content{{#empty}} empty{{/empty}}"{{#edit}} title="Click To Edit Section Name"{{/edit}}>
@@ -573,8 +605,13 @@
   
   <script type="text/x-handlebars-template" name="text">
     <div id="{{node/html_id}}" name={{node/key}} parent="{{parent/_id}}" level="{{level}}" draggable="false" class="content-node text level-{{level}}">
-      {{#edit}}<a href="#" class="remove-node remove" title="Remove Text" node="{{node/key}}" parent="{{parent/_id}}">x</a>{{/edit}}
       {{#edit}}<div class="content-node-outline"><div class="cursor"><span></span></div></div>{{/edit}}
+      {{#edit}}
+        <div class="operations">
+          <a href="#" class="remove-node" title="Remove Node" node="{{node/key}}" parent="{{parent/_id}}"><img src="/images/icons/white/x_alt_16x16.png"/></a>
+          <a href="#" class="toggle-move-node"><img src="/images/icons/white/arrow_right_16x16.png"/></a>
+        </div>
+      {{/edit}}
       {{#edit}}<div class="pilcrow">&#182;</div>{{/edit}}
       <div class="content{{#empty}} empty{{/empty}}"{{#edit}} title="Click To Edit Text"{{/edit}}>
         {{^empty}}{{{content}}}{{/empty}}
@@ -586,8 +623,13 @@
   
   <script type="text/x-handlebars-template" name="quote">
     <div id="{{node/html_id}}" name={{node/key}} parent="{{parent/_id}}" level="{{level}}" draggable="false" class="content-node quote level-{{level}}">
-      {{#edit}}<a href="#" class="remove-node remove" title="Remove Quote" node="{{node/key}}" parent="{{parent/_id}}">x</a>{{/edit}}
       {{#edit}}<div class="content-node-outline"><div class="cursor"><span></span></div></div>{{/edit}}
+      {{#edit}}
+        <div class="operations">
+          <a href="#" class="remove-node" title="Remove Node" node="{{node/key}}" parent="{{parent/_id}}"><img src="/images/icons/white/x_alt_16x16.png"/></a>
+          <a href="#" class="toggle-move-node"><img src="/images/icons/white/arrow_right_16x16.png"/></a>
+        </div>
+      {{/edit}}
       {{#edit}}<div class="pilcrow">&#182;</div>{{/edit}}
       <blockquote>
         <p class="content quote-content{{#empty_content}} empty{{/empty_content}}"{{#edit}} contenteditable="true" title="Click To Edit Quote"{{/edit}}>
@@ -607,8 +649,13 @@
   
   <script type="text/x-handlebars-template" name="code">
     <div id="{{node/html_id}}" name={{node/key}} parent="{{parent/_id}}" level="{{level}}" draggable="false" class="content-node code level-{{level}}">
-      {{#edit}}<a href="#" class="remove-node remove" title="Remove Code" node="{{node/key}}" parent="{{parent/_id}}">x</a>{{/edit}}
       {{#edit}}<div class="content-node-outline"><div class="cursor"><span></span></div></div>{{/edit}}
+      {{#edit}}
+        <div class="operations">
+          <a href="#" class="remove-node" title="Remove Node" node="{{node/key}}" parent="{{parent/_id}}"><img src="/images/icons/white/x_alt_16x16.png"/></a>
+          <a href="#" class="toggle-move-node"><img src="/images/icons/white/arrow_right_16x16.png"/></a>
+        </div>
+      {{/edit}}
       {{#edit}}<div class="pilcrow">&#182;</div>{{/edit}}
       <pre class="content{{#empty}} empty{{/empty}}"{{#edit}} title="Click To Edit Code"{{/edit}}>{{^empty}}{{{content}}}{{/empty}}{{#empty}}&laquo; Enter code &raquo;{{/empty}}</pre>
       {{#edit}}<div class="node-editor-placeholder"></div>{{/edit}}
@@ -617,8 +664,13 @@
   
   <script type="text/x-handlebars-template" name="question">
     <div id="{{node/html_id}}" name={{node/key}} parent="{{parent/_id}}" level="{{level}}" draggable="false" class="content-node question level-{{level}}">
-      {{#edit}}<a href="#" class="remove-node remove" title="Remove Question" node="{{node/key}}" parent="{{parent/_id}}">x</a>{{/edit}}
       {{#edit}}<div class="content-node-outline"><div class="cursor"><span></span></div></div>{{/edit}}
+      {{#edit}}
+        <div class="operations">
+          <a href="#" class="remove-node" title="Remove Node" node="{{node/key}}" parent="{{parent/_id}}"><img src="/images/icons/white/x_alt_16x16.png"/></a>
+          <a href="#" class="toggle-move-node"><img src="/images/icons/white/arrow_right_16x16.png"/></a>
+        </div>
+      {{/edit}}
       {{#edit}}<div class="pilcrow">&#182;</div>{{/edit}}
       <p class="question content{{#empty}} empty{{/empty}}"{{#edit}} title="Click To Edit Question"{{/edit}}>
         {{^empty}}{{{content}}}{{/empty}}
@@ -630,8 +682,13 @@
   
   <script type="text/x-handlebars-template" name="answer">
     <div id="{{node/html_id}}" name={{node/key}} parent="{{parent/_id}}" level="{{level}}" draggable="false" class="content-node answer level-{{level}}">
-      {{#edit}}<a href="#" class="remove-node remove" title="Remove Answer" node="{{node/key}}" parent="{{parent/_id}}">x</a>{{/edit}}
       {{#edit}}<div class="content-node-outline"{{#edit}} title="Click To Edit Question"{{/edit}}><div class="cursor"><span></span></div></div>{{/edit}}
+      {{#edit}}
+        <div class="operations">
+          <a href="#" class="remove-node" title="Remove Node" node="{{node/key}}" parent="{{parent/_id}}"><img src="/images/icons/white/x_alt_16x16.png"/></a>
+          <a href="#" class="toggle-move-node"><img src="/images/icons/white/arrow_right_16x16.png"/></a>
+        </div>
+      {{/edit}}
       {{#edit}}<div class="pilcrow">&#182;</div>{{/edit}}
       <div class="answer content{{#empty}} empty{{/empty}}">
         {{^empty}}{{{content}}}{{/empty}}
@@ -643,8 +700,13 @@
   
   <script type="text/x-handlebars-template" name="resource">
     <div id="{{node/html_id}}" name={{node/key}} parent="{{parent/_id}}" level="{{level}}" draggable="false" class="content-node resource level-{{level}}">
-      {{#edit}}<a href="#" class="remove remove-node" title="Remove Resource" node="{{node/key}}" parent="{{parent/_id}}">x</a>{{/edit}}
       {{#edit}}<div class="content-node-outline"><div class="cursor"><span></span></div></div>{{/edit}}
+      {{#edit}}
+        <div class="operations">
+          <a href="#" class="remove-node" title="Remove Node" node="{{node/key}}" parent="{{parent/_id}}"><img src="/images/icons/white/x_alt_16x16.png"/></a>
+          <a href="#" class="toggle-move-node"><img src="/images/icons/white/arrow_right_16x16.png"/></a>
+        </div>
+      {{/edit}}
       {{#edit}}<div class="pilcrow">&#182;</div>{{/edit}}
       
       <div class="resource-content{{^url}} placeholder{{/url}}">
@@ -653,7 +715,7 @@
         
         <div class="resource-editor">
           <div class="resource-url-area">
-            <div class="url-label">Resource URL</div>
+            <div class="url-label">Resource URL (Images are supported yet)</div>
             <div class="url-container">
               <input class="resource-url" type="text" name="url" value="{{url}}"/>
               <div class="status">Enter URL</div>
@@ -673,8 +735,11 @@
     <div id="<%= node.html_id %>" name=<%= node.key %> parent="<%= parent._id %>" level="<%= level %>" draggable="false" class="content-node image level-<%= level %>">
       
       <% if (edit) { %>
-        <a href="#" class="remove remove-node" title="Remove Image" node="<%= node.key %>" parent="<%= parent._id %>">x</a>
         <div class="content-node-outline"><div class="cursor"><span></span></div></div>
+        <div class="operations">
+          <a href="#" class="remove-node" title="Remove Node" node="<%= node.key %>" parent="<%= parent._id %>"><img src="/images/icons/white/x_alt_16x16.png"/></a>
+          <a href="#" class="toggle-move-node"><img src="/images/icons/white/arrow_right_16x16.png"/></a>
+        </div>
         <div class="pilcrow">&#182;</div>
       <% } %>
       
@@ -710,21 +775,6 @@
       <div class="caption content<%= empty ? " empty" : "" %>">
         <%= !empty ? caption : "&laquo; Enter Caption &raquo;" %>
       </div>
-    </div>
-  </script>
-  
-  <script type="text/x-handlebars-template" name="visualization">
-    <div id="{{node/html_id}}" name={{node/key}} parent="{{parent/_id}}" level="{{level}}" draggable="false" class="content-node image level-{{level}}">
-      {{#edit}}<a href="#" class="remove remove-node" title="Remove Visualization" node="{{node/key}}" parent="{{parent/_id}}">x</a>{{/edit}}
-      {{#edit}}<div class="content-node-outline"><div class="cursor"><span></span></div></div>{{/edit}}
-      {{#edit}}<div class="pilcrow">&#182;</div>{{/edit}}
-      {{#data_source}}
-        <div class="visualization linechart" type="Linechart" datasrc="http://foo.com/bar.json"></div>
-      {{/data_source}}
-      {{^data_source}}
-        [ Provide a data source first ]
-      {{/data_source}}
-      {{#edit}}<div class="node-editor-placeholder"></div>{{/edit}}
     </div>
   </script>
   

@@ -2,23 +2,39 @@ var renderControls = function(node, first, last, parent, level) {
   
   function render(node, destination, consolidate) {
     var actions = new Data.Hash();
+    var innerNode = null;
+    var path = [];
+    
+    // Ensure correct order
+    actions.set('/type/section', []);
+    actions.set('/type/text', []);
+    actions.set('/type/image', []);
+    actions.set('/type/resource', []);
+    actions.set('/type/quote', []);
+    actions.set('/type/code', []);
     
     function computeActions(n, parent) {
       function registerAction(action) {
         if (action.nodeType === '/type/section' && action.level > 3) return;
-        
-        if (actions.get(action.nodeType)) {
-          if (action.nodeType === '/type/section') {
-            actions.get(action.nodeType).push(action);
-          } else if (action.level > actions.get(action.nodeType)[0].level) {
-            actions.set(action.nodeType, [action]);
+        // if (actions.get(action.nodeType)) {
+        if (action.nodeType === '/type/section') {
+          var SORT_BY_LEVEL = function(v1, v2) {
+            return v1.level === v2.level ? 0 : (v1.level < v2.level ? -1 : 1);
           }
-        } else {
+          var choices = actions.get(action.nodeType);
+          choices.push(action);
+          choices.sort(SORT_BY_LEVEL);
+          actions.set(action.nodeType, choices);
+        } else if (!actions.get(action.nodeType)[0] || action.level > actions.get(action.nodeType)[0].level) {
+          // Always use deepest level for leave nodes!
           actions.set(action.nodeType, [action]);
         }
       }
       
       var nlevel = parseInt($('#'+n.html_id).attr('level'));
+      innerNode = n;
+      n.level = nlevel;
+      if (nlevel<=3) path.push(n);
       
       // Possible children
       if (n.all('children') && n.all('children').length === 0 && destination === 'after') {
@@ -57,11 +73,17 @@ var renderControls = function(node, first, last, parent, level) {
       }
       return actions;
     }
+    computeActions(node, parent);
+    
+    // Move insertion type for leaf nodes
+    var moveInsertionType = innerNode.all('children') && innerNode.all('children').length === 0 && destination === 'after' ? "child" : "sibling";
     
     return _.tpl('controls', {
-      node: node.key,
+      node: innerNode,
+      insertion_type: moveInsertionType,
       destination: destination,
-      actions: computeActions(node, parent)
+      actions: actions,
+      path: path
     });
   }
   
@@ -74,16 +96,10 @@ var renderControls = function(node, first, last, parent, level) {
     }
   } else {
     //  Insert before, but only for starting nodes (first=true)
-    if (first) {
-      // Insert controls before node
-      $(render(node, 'before')).insertBefore($('#'+node.html_id));
-    }
+    if (first) $(render(node, 'before')).insertBefore($('#'+node.html_id));
     
-    // Consolidate at level 1 (=section level), but only for closing nodes (last=true)
-    if (parent.types().get('/type/document')) {
+    if (!last || parent.types().get('/type/document')) {
       $(render(node, 'after', true)).insertAfter($('#'+node.html_id));
-    } else if (!last) {
-      $(render(node,'after')).insertAfter($('#'+node.html_id));
     }
   }
   
@@ -96,7 +112,6 @@ var renderControls = function(node, first, last, parent, level) {
     });
   }
 };
-
 
 // HTMLRenderer
 // ---------------
@@ -117,6 +132,7 @@ var HTMLRenderer = function(root, parent, lvl) {
       
       return _.tpl('document', {
         node: node,
+        toc: new TOCRenderer(node).render(),
         content: content,
         edit: app.document.mode === 'edit',
         title: app.document.mode === 'edit' ? node.get('title') : node.get('title') || 'Untitled',
@@ -161,7 +177,7 @@ var HTMLRenderer = function(root, parent, lvl) {
         node: node,
         parent: parent,
         content: content,
-        heading_level: level+1,
+        heading_level: level,
         level: level,
         edit: app.document.mode === 'edit',
         name: node.get('name'),
@@ -279,12 +295,15 @@ var TOCRenderer = function(root) {
   // Known node types
   var renderers = {
     "/type/document": function(node) {
-      content = '<h2>Table of contents</h2>';
-      content += '<ul>';
+      content = '<ol>';
       node.all('children').each(function(child) {
-        content += '<li><a class="toc-item" node="'+child.html_id+'" href="#'+root.get('creator')._id.split('/')[2]+'/'+root.get('name')+'/'+child.html_id+'">'+child.get('name')+'</a></li>';
+        if (child.type.key !== '/type/section') return;
+        content += '<li><a class="toc-item" node="'+child.html_id+'" href="#'+root.get('creator')._id.split('/')[2]+'/'+root.get('name')+'/'+child.html_id+'">'+child.get('name')+'</a>';
+        
+        content += renderers["/type/document"](child);
+        content += '</li>';
       });
-      content += '</ul>';
+      content += '</ol>';
       return content;
     },
     

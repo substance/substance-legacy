@@ -1,7 +1,7 @@
 var ApplicationController = Backbone.Controller.extend({
   routes: {
-    '^(?!search)(.*)\/(.*)$': 'loadDocument',
     '^(?!search)(.*)\/(.*)\/(.*)$': 'loadDocument',
+    '^(?!search)(.*)\/(.*)$': 'loadDocument',
     ':username': 'userDocs',
     '^search\/(.*)$': 'searchDocs'
   },
@@ -10,7 +10,7 @@ var ApplicationController = Backbone.Controller.extend({
     app.browser.load({"type": "user", "value": username});
     app.document.loadDocument(username, docname, node);
     
-    $('#document_wrapper').attr('url', '#'+username+'/'+docname);
+    $('#document_wrapper').attr('url', '#'+username+'/'+docname+(node ? "/"+node : ""));
     $('#browser_wrapper').attr('url', '#'+username);
     return false;
   },
@@ -40,6 +40,7 @@ var ApplicationController = Backbone.Controller.extend({
   },
   
   searchDocs: function(searchstr) {
+    
     app.searchDocs(searchstr);
     return false;
   }
