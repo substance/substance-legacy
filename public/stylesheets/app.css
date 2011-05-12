@@ -66,14 +66,7 @@ h2 { font-size: 160%; padding-bottom: 15px; }
 
 /*:focus { outline: 0; }*/ /* should go to reset.css */
 
-/* Meta Data DT DD */
 
-dl { margin: 0;	padding: 0; }
-dt { 
-
-  color: rgba(255,255,255, 0.5); padding-left: 5px; position: relative; left: 0; top: 20px; width: 150px; font-size: 16px; font-style: italic; margin: 0; padding: 0;
-}
-dd { color: #fff; font-size: 1em;	margin: 0 0 0 155px; padding: 0; padding-left: 20px; }
 
 
 /* Webkit Animation Settings */
@@ -848,11 +841,7 @@ table tr.draft, table tr.draft a {
   -moz-border-radius:   4px;
   border-radius:        4px;*/
   
-/*  -webkit-box-shadow: 0px 1px 4px rgba(0,0,0,0.35), inset 0px 0px 1px rgba(255,255,255,0.15);
-  -moz-box-shadow:    0px 1px 4px rgba(0,0,0,0.35), inset 0px 0px 1px rgba(255,255,255,0.15);
-  box-shadow:         0px 1px 4px rgba(0,0,0,0.35), inset 0px 0px 1px rgba(255,255,255,0.15);
-*/  
-  background: #fff;
+
   position: relative;
   margin: 0 180px 20px 100px;
 }
@@ -958,11 +947,15 @@ table tr.draft, table tr.draft a {
   display: none;
   color: #000;
   position:relative;
-  
-  /* margin: 0 30px 0px 30px; */
   margin: 0;
   
   padding: 0px 0 0px 0;
+  
+  -webkit-box-shadow: 0px 1px 4px rgba(0,0,0,0.35), inset 0px 0px 1px rgba(255,255,255,0.15);
+  -moz-box-shadow:    0px 1px 4px rgba(0,0,0,0.35), inset 0px 0px 1px rgba(255,255,255,0.15);
+  box-shadow:         0px 1px 4px rgba(0,0,0,0.35), inset 0px 0px 1px rgba(255,255,255,0.15);
+
+    background: #fff;
   
   text-rendering:optimizeLegibility; 
   font-family: 'Palatino Linotype', 'Book Antiqua', Palatino, FreeSerif, serif;
@@ -972,12 +965,11 @@ table tr.draft, table tr.draft a {
   line-height: 1.4em;
 }
 
-#document .content-node.document { padding-bottom: 20px; }
+#document .content-node.document { padding-bottom: 80px; }
 
 
 #document .document-title {
   padding-top: 40px;
-  margin-top: 40px;
   font-size: 60px;
   line-height: 70px;
   text-align: center;
@@ -1193,20 +1185,29 @@ table tr.draft, table tr.draft a {
 
 #attributes {
   font-family: 'Palatino Linotype', 'Book Antiqua', Palatino, FreeSerif, serif;
-  display: none;
-  background: #635849;
-  padding-bottom: 40px;
-  padding-left: 20px;
+  color: #84806F;
+  background: #DCDDD9;
+  padding: 50px 100px;
   line-height: 1.6em;
+  
+  -webkit-box-shadow: 0px 1px 4px rgba(0,0,0,0.35), inset 0px 0px 1px rgba(255,255,255,0.15);
+  -moz-box-shadow:    0px 1px 4px rgba(0,0,0,0.35), inset 0px 0px 1px rgba(255,255,255,0.15);
+  box-shadow:         0px 1px 4px rgba(0,0,0,0.35), inset 0px 0px 1px rgba(255,255,255,0.15);
+  
 }
+
+/* Meta Data DT DD */
+
+dl { margin: 0;	padding: 0; }
+dt {
+  color: padding-left: 5px; position: relative; left: 0; top: 20px; width: 150px; font-size: 16px; font-style: italic; margin: 0; padding: 0;
+}
+dd { color: #444; font-size: 1em;	margin: 0 0 0 155px; padding: 0; padding-left: 20px; }
 
 #attributes a { border: none; }
 
 #attributes h1 {
-  margin-left: 7px;
-  padding-top: 30px;
   font-size: 20px;
-  color: #eee;
   font-weight: bold;
 }
 
@@ -1216,42 +1217,45 @@ table tr.draft, table tr.draft a {
 }
 
 .attribute-editor form { float: left; }
-.attribute-editor input { width: 150px; background: #544A3F; color: #fff; }
+.attribute-editor input { width: 150px; background: #EAEAE8; color: #444; }
 
 .attribute-editor input[type=submit] { 
   width: 80px;
   position: relative;
   top: -1px;
-  color: white;
-  background: #443C33;
+  color: #666;
+  background: #C9C9C7;
 }
 .attribute-editor div.items { padding: 0; }
 
 .attribute-editor div.available-items { position: absolute; width: 150px; z-index: 50000; }
-.attribute-editor div.available-item { background: #443C33; padding: 3px; border-bottom: 1px solid #777; }
-.attribute-editor div.available-item a { color: #ddd; }
-.attribute-editor div.available-item a { color: white; }
+.attribute-editor div.available-item { background: #C9C9C7; padding: 3px; border-bottom: 1px solid #ccc; }
+.attribute-editor div.available-item a { color: #444; }
 
 
-.attribute-editor div.available-item.selected { background: #38322A; }
+.attribute-editor div.available-item.selected { background: #C1C1C1; }
 
 #attributes .items .item {
   display: block;
   float: left;
-  color: #eee;
+  color: #444;
   font-size: 1em;
   height: 25px;
   white-space: nowrap;
-  background: #443C33;
+  background: #D6D6D4;
+  
   padding: 0px 7px;
   margin-right: 6px;
   margin-bottom: 6px;
 }
 
 #attributes .items .item a.remove-item {
-  color: rgba(255, 255, 255, 0.5);
+  color: rgba(100, 100, 100, 0.5);
   margin-left: 2px;
   font-weight: bold;
+}
+#attributes .items .item a.remove-item:hover {
+  color: rgba(100, 100, 100, 1.0);;
 }
 
 #attributes .items .item a:hover { text-decoration: none; color: white; }
@@ -1296,8 +1300,8 @@ table tr.draft, table tr.draft a {
   margin: 0 100px;
 }
 
-.content-node.code > .content {
-  margin: 0 100px;
+.content-node.code {
+  padding: 10px 0;
 }
 
 .content-node.quote > blockquote {
@@ -1332,11 +1336,14 @@ cite.quote-author {
 p.question {
   font-size:25px;
   line-height:1.5em;
+  margin: 0 100px 0 100px;
+  padding: 10px 0;
   font-style: italic;
 }
 
-p.answer {
-  
+div.answer.content {
+  margin: 0 100px 0 100px;
+  padding: 10px 0;
 }
 
 #document #document_lead {
@@ -1361,10 +1368,10 @@ code {
 }
 
 pre {
-  padding: 2px 0 2px 15px;
+  padding: 2px 10px 2px 15px;
   border-left: 4px solid #BBB;
-  margin: 0px 0 30px;
-  margin-bottom: 20px;
+  margin: 10px 100px;
+  /*  margin: 10px 30px;*/
 }
 
 /* Image Editor
@@ -1619,10 +1626,6 @@ pre {
 
 /* Operations panel */
 
-/*.operations {
-  display: none;
-}*/
-
 .operations {
   position: absolute;
   right: 0px;
@@ -1635,7 +1638,6 @@ pre {
 .content-node.section > .operations { background: #a5c54b; }
 .content-node.text > .operations { background: #459fc9; }
 .content-node.image > .operations { background: #c35a3a; }
-
 
 .content-node.selected > .operations {
   display: block;
@@ -1652,13 +1654,15 @@ pre {
   opacity: 1.0;
 }
 
-
 .content-node { 
   position: relative; 
 }
 
 /* Overthink this */
-#document .content-node.text .content {padding-right: 25px;}
+#document .content-node.text .content {
+/*  padding-right: 25px;*/
+  padding: 10px 0;
+}
 /*.content-node.active { background: #fff; }*/
 
 .content-node .content-node { 
@@ -1683,16 +1687,16 @@ pre {
 /*  padding-left: 30px;*/
 }
 
+
 #document.edit-mode .content-node.selected {
   background: #fff;
-  min-height: 80px;
-/*  border: 1px solid #666;*/
+  min-height: 70px;
+  
+  -webkit-box-shadow: 0px 1px 4px rgba(0,0,0,0.35), inset 0px 0px 1px rgba(255,255,255,0.15);
+  -moz-box-shadow:    0px 1px 4px rgba(0,0,0,0.35), inset 0px 0px 1px rgba(255,255,255,0.15);
+  box-shadow:         0px 1px 4px rgba(0,0,0,0.35), inset 0px 0px 1px rgba(255,255,255,0.15);
 }
 
-/*#document.edit-mode .content-node.selected {
-
-}
-*/
 .content {
   
 }
@@ -1904,7 +1908,7 @@ pre {
 }
 
 .controls .actions {
-  /*  border: 1px dotted #ddd;*/
+  /* border: 1px solid #eee; */
   background: rgba(243,244,239, 0.8);
   -webkit-border-radius: 5px;
   -moz-border-radius: 5px;
