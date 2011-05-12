@@ -312,18 +312,28 @@ var renderControls = function(node, first, last, parent, level) {
     var innerNode = null;
     var path = [];
     
+    // Ensure correct order
+    actions.set('/type/section', []);
+    actions.set('/type/text', []);
+    actions.set('/type/image', []);
+    actions.set('/type/resource', []);
+    actions.set('/type/quote', []);
+    actions.set('/type/code', []);
+    
     function computeActions(n, parent) {
       function registerAction(action) {
         if (action.nodeType === '/type/section' && action.level > 3) return;
-        
-        if (actions.get(action.nodeType)) {
-          if (action.nodeType === '/type/section') {
-            actions.get(action.nodeType).push(action);
-          } else if (action.level > actions.get(action.nodeType)[0].level) {
-            // Always use deepest level for leave nodes!
-            actions.set(action.nodeType, [action]);
+        // if (actions.get(action.nodeType)) {
+        if (action.nodeType === '/type/section') {
+          var SORT_BY_LEVEL = function(v1, v2) {
+            return v1.level === v2.level ? 0 : (v1.level < v2.level ? -1 : 1);
           }
-        } else {
+          var choices = actions.get(action.nodeType);
+          choices.push(action);
+          choices.sort(SORT_BY_LEVEL);
+          actions.set(action.nodeType, choices);
+        } else if (!actions.get(action.nodeType)[0] || action.level > actions.get(action.nodeType)[0].level) {
+          // Always use deepest level for leave nodes!
           actions.set(action.nodeType, [action]);
         }
       }
@@ -991,7 +1001,7 @@ var ResourceEditor = Backbone.View.extend({
       var url = that.$('.resource-url').val();
       that.resourceExists(url, function(err) {
         if (!err) {
-          that.$('img').attr('src', url);
+          that.$('.resource-content img').attr('src', url);
           that.$('.status').replaceWith('<div class="status image">Image</div>');
           app.document.updateSelectedNode({
             url: url
@@ -1273,6 +1283,9 @@ var Document = Backbone.View.extend({
     $('.move-node').hide();
     var $controls = $('.content-node .controls');
     
+    // Show previously hidden labels
+    $controls.find(".placeholder.move").show();
+    
     $controls.each(function() {
       var $control = $(this);
       
@@ -1339,7 +1352,7 @@ var Document = Backbone.View.extend({
       
       // Hide move label if there are no drop targets
       if (count === 0) {
-        $control.find(".placeholder").hide();
+        $control.find(".placeholder.move").hide();
       }
       
       // Hide move controls inside the selected node
