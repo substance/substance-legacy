@@ -475,6 +475,7 @@
         <div class="placeholder insert">Insert Content</div>
         <div class="placeholder move">Move</div>
         <% actions.each(function(action) { %>
+            <% if (action.length === 0) return; %>
             <% if (action.length === 1) { %>
               <% _.each(action, function(v) { %>
                 <span>
@@ -496,16 +497,16 @@
         <div class="move-targets">
           <!-- container node targets  -->
           <% _.each(path, function(n, index) { %>
-            <span><a class="move-node container-node" href="#" node="<%= n._id %>" destination="<%= destination %>" level="<%= (index+1) %>"><!--<%= destination %>--> here <!--&quot;<%= ContentNode.getTeaser(n).trim() %>&quot;--> (<%= n.level %>)</a></span>
+            <span><a class="move-node container-node" href="#" node="<%= n._id %>" destination="<%= destination %>" level="<%= (index+1) %>"><!--<%= destination %>--> Here <!--&quot;<%= ContentNode.getTeaser(n).trim() %>&quot;--> at level <%= n.level %></a></span>
           <% }); %>
           
           <!-- allow child insertion for empty container nodes -->
           <% if (insertion_type === 'child' && node.level < 3) { %>
-            <span><a class="move-node container-node <%= insertion_type %>" href="#" node="<%= node._id %>" destination="<%= destination %>"><!--Inside--> here <!--&quot;<%= ContentNode.getTeaser(node).trim() %>&quot;--> (<%= (node.level+1) %>xx)</a></span>
+            <span><a class="move-node container-node <%= insertion_type %>" href="#" node="<%= node._id %>" destination="<%= destination %>"><!--Inside--> Here <!--&quot;<%= ContentNode.getTeaser(node).trim() %>&quot;--> at level <%= (node.level+1) %></a></span>
           <% } %>
           
           <!-- leaf node target  -->
-          <span><a class="move-node leaf-node <%= insertion_type %>" href="#" node="<%= node._id %>" destination="<%= destination %>"><!--<%= insertion_type == "sibling" ? destination : "inside" %>--> here <!--&quot;<%= ContentNode.getTeaser(node).trim() %>&quot;--></a></span>
+          <span><a class="move-node leaf-node <%= insertion_type %>" href="#" node="<%= node._id %>" destination="<%= destination %>"><!--<%= insertion_type == "sibling" ? destination : "inside" %>--> Here <!--&quot;<%= ContentNode.getTeaser(node).trim() %>&quot;--></a></span>
         </div>
         
         <span class="message">

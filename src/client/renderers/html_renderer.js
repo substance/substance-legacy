@@ -5,18 +5,28 @@ var renderControls = function(node, first, last, parent, level) {
     var innerNode = null;
     var path = [];
     
+    // Ensure correct order
+    actions.set('/type/section', []);
+    actions.set('/type/text', []);
+    actions.set('/type/image', []);
+    actions.set('/type/resource', []);
+    actions.set('/type/quote', []);
+    actions.set('/type/code', []);
+    
     function computeActions(n, parent) {
       function registerAction(action) {
         if (action.nodeType === '/type/section' && action.level > 3) return;
-        
-        if (actions.get(action.nodeType)) {
-          if (action.nodeType === '/type/section') {
-            actions.get(action.nodeType).push(action);
-          } else if (action.level > actions.get(action.nodeType)[0].level) {
-            // Always use deepest level for leave nodes!
-            actions.set(action.nodeType, [action]);
+        // if (actions.get(action.nodeType)) {
+        if (action.nodeType === '/type/section') {
+          var SORT_BY_LEVEL = function(v1, v2) {
+            return v1.level === v2.level ? 0 : (v1.level < v2.level ? -1 : 1);
           }
-        } else {
+          var choices = actions.get(action.nodeType);
+          choices.push(action);
+          choices.sort(SORT_BY_LEVEL);
+          actions.set(action.nodeType, choices);
+        } else if (!actions.get(action.nodeType)[0] || action.level > actions.get(action.nodeType)[0].level) {
+          // Always use deepest level for leave nodes!
           actions.set(action.nodeType, [action]);
         }
       }

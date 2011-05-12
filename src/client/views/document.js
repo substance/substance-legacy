@@ -41,6 +41,9 @@ var Document = Backbone.View.extend({
     $('.move-node').hide();
     var $controls = $('.content-node .controls');
     
+    // Show previously hidden labels
+    $controls.find(".placeholder.move").show();
+    
     $controls.each(function() {
       var $control = $(this);
       
@@ -107,7 +110,7 @@ var Document = Backbone.View.extend({
       
       // Hide move label if there are no drop targets
       if (count === 0) {
-        $control.find(".placeholder").hide();
+        $control.find(".placeholder.move").hide();
       }
       
       // Hide move controls inside the selected node
