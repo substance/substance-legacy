@@ -103,7 +103,7 @@ var Application = Backbone.View.extend({
   createDocument: function(e) {
     var that = this;
     var name = $('#create_document input[name=new_document_name]').val();
-    var type = $('#create_document select[name=document_type]').val();
+    var type = "/type/article"; // $('#create_document select[name=document_type]').val();
     
     if (new RegExp(graph.get('/type/document').get('properties', 'name').validator).test(name)) {
       
