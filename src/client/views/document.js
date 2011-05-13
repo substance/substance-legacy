@@ -415,14 +415,18 @@ var Document = Backbone.View.extend({
         dataType: "json",
         success: function(res) {
           if (res.status === 'error') {
-            $('#document_wrapper').html('Document loading failed');
+            $('#document_tab').html('&nbsp;&nbsp;&nbsp; Document not found');
+            $('#document_wrapper').html("<div class=\"notification error\">The requested document couldn't be found.</div>");
+            app.toggleView('document');
           } else {
             graph.merge(res.graph);
             init(res.id);
           }
         },
         error: function(err) {
-          $('#document_wrapper').html('Document loading failed');
+          $('#document_tab').html('&nbsp;&nbsp;&nbsp; Document not found.');
+          $('#document_wrapper').html("<div class=\"notification error\">The requested document couldn't be found.</div>");
+          app.toggleView('document');
         }
       });
     }

@@ -425,7 +425,9 @@ div.browser-not-supported a:hover {
 }
 
 .page-content h1 {
+  font-size: 34px;
   color: #000;
+  padding: 20px 0;
   border-top: 1px solid #ccc;
   border-bottom: 1px solid #ccc;
 }
@@ -944,7 +946,6 @@ table tr.draft, table tr.draft a {
 -------------------------------------------------------------------------------*/
 
 #document {
-  display: none;
   color: #000;
   position:relative;
   margin: 0;
@@ -963,6 +964,17 @@ table tr.draft, table tr.draft a {
   
   font-size: 16px;
   line-height: 1.4em;
+}
+
+#document_wrapper .notification.error {
+  -webkit-box-shadow: 0px 1px 4px rgba(0,0,0,0.35), inset 0px 0px 1px rgba(255,255,255,0.15);
+  -moz-box-shadow:    0px 1px 4px rgba(0,0,0,0.35), inset 0px 0px 1px rgba(255,255,255,0.15);
+  box-shadow:         0px 1px 4px rgba(0,0,0,0.35), inset 0px 0px 1px rgba(255,255,255,0.15);
+  
+  font-family: 'Palatino Linotype', 'Book Antiqua', Palatino, FreeSerif, serif;
+  font-size: 20px;
+  background: #fff;
+  padding: 30px;
 }
 
 #document .content-node.document { padding-bottom: 80px; }
