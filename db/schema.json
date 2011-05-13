@@ -149,6 +149,11 @@
         "unique": true,
         "type": "date"
       },
+      "settings": {
+		"name": "Document Settings",
+		"unique": true,
+		"type": "object"
+	  },
       "subjects": {
         "type": ["/type/attribute"],
         "name": "Subjects",
@@ -213,7 +218,7 @@
       "children": {
         "name": "Children/Contents",
         "unique": false,
-        "type": ["/type/section"],
+        "type": ["/type/section", "/type/text", "/type/image", "/type/resource", "/type/quote", "/type/code"],
         "default": []
       }
     },
