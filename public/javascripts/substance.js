@@ -1657,14 +1657,18 @@ var Document = Backbone.View.extend({
         dataType: "json",
         success: function(res) {
           if (res.status === 'error') {
-            $('#document_wrapper').html('Document loading failed');
+            $('#document_tab').html('&nbsp;&nbsp;&nbsp; Document not found');
+            $('#document_wrapper').html("<div class=\"notification error\">The requested document couldn't be found.</div>");
+            app.toggleView('document');
           } else {
             graph.merge(res.graph);
             init(res.id);
           }
         },
         error: function(err) {
-          $('#document_wrapper').html('Document loading failed');
+          $('#document_tab').html('&nbsp;&nbsp;&nbsp; Document not found.');
+          $('#document_wrapper').html("<div class=\"notification error\">The requested document couldn't be found.</div>");
+          app.toggleView('document');
         }
       });
     }
@@ -2684,7 +2688,7 @@ var Application = Backbone.View.extend({
   createDocument: function(e) {
     var that = this;
     var name = $('#create_document input[name=new_document_name]').val();
-    var type = $('#create_document select[name=document_type]').val();
+    var type = "/type/article"; // $('#create_document select[name=document_type]').val();
     
     if (new RegExp(graph.get('/type/document').get('properties', 'name').validator).test(name)) {
       
