@@ -100,6 +100,69 @@
     }
   },
 
+  "/type/subscription": {
+    "_id": "/type/subscription",
+    "type": "/type/type",
+    "properties": {
+      "document": {
+        "name": "Document",
+        "type": "/type/document",
+        "unique": true,
+        "required": true
+      },
+      "user": {
+        "name": "User",
+        "type": "/type/user",
+        "unique": true,
+        "required": true
+      }
+    },
+    "indexes": {
+      "key": ["user", "document"]
+    }
+	},
+	
+	"/type/comment": {
+    "_id": "/type/comment",
+    "type": "/type/type",
+    "properties": {
+      "node": {
+        "name": "Node",
+        "type": ["/type/section", "/type/text", "/type/image", "/type/resource", "/type/quote", "/type/code", "/type/question", "/type/answer"],
+        "unique": true,
+        "required": true
+      },
+      "document": {
+        "name": "Document",
+        "type": ["/type/document"],
+        "unique": true,
+        "required": true
+      },
+      "user": {
+        "name": "User",
+        "type": "/type/user",
+        "unique": true,
+        "required": true
+      },
+      "created_at": {
+        "name": "Created at",
+        "unique": true,
+        "type": "date",
+        "required": true
+      },
+      "content": {
+        "name": "Content",
+        "type": "string",
+        "unique": true,
+        "required": true
+      }
+    },
+    "indexes": {
+      "by_node": ["node"],
+      "by_user": ["user"]
+    }
+	},
+
   "/type/document": {
     "_id": "/type/document",
     "type": "/type/type",
@@ -150,10 +213,22 @@
         "type": "date"
       },
       "settings": {
-		"name": "Document Settings",
-		"unique": true,
-		"type": "object"
-	  },
+		    "name": "Document Settings",
+		    "unique": true,
+		    "type": "object"
+	    },
+	    "views": {
+		    "name": "View Count",
+		    "unique": true,
+		    "type": "number",
+		    "default": 0
+	    },
+  	  "subscribers": {
+    		"name": "Subscribers",
+    		"unique": true,
+    		"type": "number",
+    		"default": 0
+  	  },
       "subjects": {
         "type": ["/type/attribute"],
         "name": "Subjects",
@@ -251,6 +326,12 @@
         "unique": false,
         "type": ["/type/text", "/type/image", "/type/resource", "/type/quote", "/type/code", "/type/section"],
         "default": []
+      },
+      "comments": {
+        "name": "Comments",
+        "unique": false,
+        "type": ["/type/comment"],
+        "default": []
       }
     }
   },
@@ -265,6 +346,12 @@
         "unique": true,
         "type": "string",
         "default": "<p></p>"
+      },
+      "comments": {
+        "name": "Comments",
+        "unique": false,
+        "type": ["/type/comment"],
+        "default": []
       },
       "document": {
         "name": "Document Membership",
@@ -294,6 +381,12 @@
         "required": true,
         "default": "linechart"
       },
+      "comments": {
+        "name": "Comments",
+        "unique": false,
+        "type": ["/type/comment"],
+        "default": []
+      },
       "document": {
         "name": "Document Membership",
         "unique": true,
@@ -319,6 +412,12 @@
         "unique": true,
         "required": true,
         "type": ["/type/document"]
+      },
+      "comments": {
+        "name": "Comments",
+        "unique": false,
+        "type": ["/type/comment"],
+        "default": []
       }
     }
   },
@@ -339,6 +438,12 @@
         "unique": true,
         "required": true,
         "type": ["/type/document"]
+      },
+      "comments": {
+        "name": "Comments",
+        "unique": false,
+        "type": ["/type/comment"],
+        "default": []
       }
     }
   },
@@ -365,6 +470,12 @@
         "unique": true,
         "required": true,
         "type": ["/type/document"]
+      },
+      "comments": {
+        "name": "Comments",
+        "unique": false,
+        "type": ["/type/comment"],
+        "default": []
       }
     }
   },
@@ -385,6 +496,12 @@
         "unique": true,
         "required": true,
         "type": ["/type/document"]
+      },
+      "comments": {
+        "name": "Comments",
+        "unique": false,
+        "type": ["/type/comment"],
+        "default": []
       }
     }
   },
@@ -414,6 +531,12 @@
         "unique": true,
         "required": true,
         "type": ["/type/document"]
+      },
+      "comments": {
+        "name": "Comments",
+        "unique": false,
+        "type": ["/type/comment"],
+        "default": []
       }
     }
   },
@@ -438,6 +561,12 @@
         "unique": true,
         "required": true,
         "type": ["/type/document"]
+      },
+      "comments": {
+        "name": "Comments",
+        "unique": false,
+        "type": ["/type/comment"],
+        "default": []
       }
     }
   }
