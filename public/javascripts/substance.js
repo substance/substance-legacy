@@ -493,7 +493,7 @@ var HTMLRenderer = function(root, parent, lvl) {
     },
     
     "/type/text": function(node, parent, level) {
-      return Helpers.renderTemplate('text', {
+      return _.tpl('text', {
         node: node,
         parent: parent,
         edit: app.document.mode === 'edit',
@@ -1264,6 +1264,8 @@ var Document = Backbone.View.extend({
     'click .toc-item': 'scrollTo',
     'click a.move-node': 'moveNode',
     'click a.toggle-move-node': 'toggleMoveNode',
+    'click a.toggle-comments': 'toggleComments',
+    'click a.create-comment': 'createComment',
     
     // Actions
     'click a.add_child': 'addChild',
@@ -1272,6 +1274,11 @@ var Document = Backbone.View.extend({
   },
   
   loadedDocuments: {},
+  
+  toggleComments: function() {
+    var foo = $('#'+this.selectedNode.html_id+' > .comments-wrapper').toggleClass('expanded');
+    return false;
+  },
   
   // Enable move mode
   toggleMoveNode: function() {
@@ -1798,8 +1805,54 @@ var Document = Backbone.View.extend({
     return false;
   },
   
+  createComment: function(e) {
+    var comments = this.selectedNode.get('comments') ? this.selectedNode.get('comments').keys() : [];
+    
+    var comment = graph.set(null, {
+      type: "/type/comment",
+      node: this.selectedNode._id,
+      document: this.model._id,
+      created_at: new Date(),
+      user: '/user/'+app.username,
+      content: this.commentEditor.content()
+    });
+    
+    comments.push(comment._id);
+    this.selectedNode.set({
+      comments: comments
+    });
+
+    this.enableCommentEditor();
+    return false;
+  },
+  
+  enableCommentEditor: function() {
+    var that = this;
+    
+    // Render comments
+    var wrapper = $('#'+this.selectedNode.html_id+' > .comments-wrapper');
+    if (wrapper.length === 0) return;
+    wrapper.html(_.tpl('comments', {node: this.selectedNode}));
+    
+    var $content = $('#'+this.selectedNode.html_id+' > .comments-wrapper .comment-content');
+    function activate() {
+      that.commentEditor = new Proper();
+      that.commentEditor.activate($content, {
+        multiline: true,
+        markup: true,
+        placeholder: 'Enter Comment'
+      });
+      return false;
+    }
+    
+    $content.unbind();
+    $content.click(activate);
+  },
+  
   selectNode: function(e) {
-    if (this.mode === 'show') return; // Skip for show mode
+    var that = this;
+    // if (this.mode === 'show') return; // Skip for show mode
+    
     var key = $(e.currentTarget).attr('name');
     if (!e.stopProp && (!this.selectedNode || this.selectedNode.key !== key)) {
       var node = graph.get(key);
@@ -1808,6 +1861,7 @@ var Document = Backbone.View.extend({
       e.stopProp = true;
       // The server will respond with a status package containing my own cursor position
       // remote.Session.selectNode(key);
+      this.enableCommentEditor();
     }
     e.stopPropagation();
     // return false;
