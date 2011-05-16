@@ -541,7 +541,31 @@
   <script type="text/x-handlebars-template" name="edit_section">
     <h3>Edit section</h3>
   </script>
-
+  
+  <script type="text/x-ejs-template" name="comments">    
+    <div class="comments-title">Comments</div>
+    <div class="comments">
+      <% if (node.get('comments')) { %>
+        <% node.get('comments').each(function(comment, key) { %>
+          <div class="comment">
+            <% username = comment.get('user')._id.split('/')[2]; %>
+            <div class="header"><a href="#<%= username%>"><%= username %></a> commented <%= _.prettyDate(comment.get('created_at')) %></div>
+            <div class="body"><%= comment.get('content') %></div>
+          </div>
+        <% }); %>
+      <% } %>
+    </div>
+    <% if (app.username) { %>
+      <div class="add-comment">
+        <div class="comment-content empty">&laquo; Enter Comment &raquo;</div>
+        <a href="#" class="create-comment">Comment</a>
+      </div>
+    <% } else { %>
+      To comment on content fragments you need to be logged in.
+    <% } %>
+    
+  </script>
+  
   <!-- content-node templates for the editor -->
   <script type="text/x-ejs-template" name="document">
     <div id="<%= node.html_id %>" name=<%= node.key %> level="<%= level %>" class="content-node document level-<%= level %><%= edit ? " edit" : "" %>">
@@ -584,13 +608,16 @@
   
   <script type="text/x-handlebars-template" name="section">
     <div id="{{node/html_id}}" name={{node/key}} parent="{{parent/_id}}" level="{{level}}" draggable="false" class="content-node section level-{{level}}">
-      {{#edit}}<div class="content-node-outline"><div class="cursor"><span></span></div></div>{{/edit}}
-      {{#edit}}
-        <div class="operations">
-          <a href="#" class="remove-node" title="Remove Node" node="{{node/key}}" parent="{{parent/_id}}"><img src="/images/icons/white/x_alt_16x16.png"/></a>
-          <a href="#" class="toggle-move-node" title="Move Section — Use placeholders as targets"><img src="/images/icons/white/arrow_right_16x16.png"/></a>
-        </div>
-      {{/edit}}
+      <div class="content-node-outline"><div class="cursor"><span></span></div></div>
+      
+      <div class="operations">
+        {{#edit}}
+        <a href="#" class="remove-node" title="Remove Node" node="{{node/key}}" parent="{{parent/_id}}"><img src="/images/icons/white/x_alt_16x16.png"/></a>
+        <a href="#" class="toggle-move-node" title="Move Section — Use placeholders as targets"><img src="/images/icons/white/arrow_right_16x16.png"/></a>
+        {{/edit}}
+        <a href="#" class="toggle-comments" title="Toggle Comments"><img src="/images/icons/white/comment_stroke_16x14.png"/></a>
+      </div>
+      
       {{#edit}}<div class="pilcrow">&#182;</div>{{/edit}}
       
       <h{{heading_level}} class="content{{#empty}} empty{{/empty}}"{{#edit}} title="Click To Edit Section Name"{{/edit}}>
@@ -600,36 +627,45 @@
       
       {{#edit}}<div class="node-editor-placeholder"></div>{{/edit}}
       {{{content}}}
+      <div class="comments-wrapper{{^edit}} expanded{{/edit}}"></div>
     </div>
   </script>
   
+
+  
   <script type="text/x-handlebars-template" name="text">
-    <div id="{{node/html_id}}" name={{node/key}} parent="{{parent/_id}}" level="{{level}}" draggable="false" class="content-node text level-{{level}}">
-      {{#edit}}<div class="content-node-outline"><div class="cursor"><span></span></div></div>{{/edit}}
-      {{#edit}}
-        <div class="operations">
-          <a href="#" class="remove-node" title="Remove Node" node="{{node/key}}" parent="{{parent/_id}}"><img src="/images/icons/white/x_alt_16x16.png"/></a>
+    <div id="<%= node.html_id %>" name=<%= node.key %> parent="<%= parent._id %>" level="<%= level %>" draggable="false" class="content-node text level-<%= level %>">
+      <div class="content-node-outline"><div class="cursor"><span></span></div></div>
+      
+      <div class="operations">
+        <% if (edit) { %>
+          <a href="#" class="remove-node" title="Remove Node" node="<%= node.key %>" parent="<%= parent._id %>"><img src="/images/icons/white/x_alt_16x16.png"/></a>
           <a href="#" class="toggle-move-node" title="Move Text — Use placeholders as targets"><img src="/images/icons/white/arrow_right_16x16.png"/></a>
-        </div>
-      {{/edit}}
-      {{#edit}}<div class="pilcrow">&#182;</div>{{/edit}}
-      <div class="content{{#empty}} empty{{/empty}}"{{#edit}} title="Click To Edit Text"{{/edit}}>
-        {{^empty}}{{{content}}}{{/empty}}
-        {{#empty}}<p>&laquo; Enter Text &raquo;</p>{{/empty}}
+        <% } %>
+        <a href="#" class="toggle-comments" title="Toggle Comments"><img src="/images/icons/white/comment_stroke_16x14.png"/></a>
       </div>
-      {{#edit}}<div class="node-editor-placeholder"></div>{{/edit}}
+      
+      <% if (edit) { %><div class="pilcrow">&#182;</div> <% } %>
+      
+      <div class="content<%= empty ? " empty" : "" %>"<%= empty ? 'title="Click To Edit Text"' : "" %>>
+        <%= empty ? "<p>&laquo; Enter Text &raquo;</p>" : content %>
+      </div>
+      <% if (edit) { %><div class="node-editor-placeholder"></div><% } %>
+      <div class="comments-wrapper <%= !edit ? "expanded" : ""%>"></div>
     </div>
   </script>
   
   <script type="text/x-handlebars-template" name="quote">
     <div id="{{node/html_id}}" name={{node/key}} parent="{{parent/_id}}" level="{{level}}" draggable="false" class="content-node quote level-{{level}}">
-      {{#edit}}<div class="content-node-outline"><div class="cursor"><span></span></div></div>{{/edit}}
-      {{#edit}}
+      <div class="content-node-outline"><div class="cursor"><span></span></div></div>
         <div class="operations">
-          <a href="#" class="remove-node" title="Remove Node" node="{{node/key}}" parent="{{parent/_id}}"><img src="/images/icons/white/x_alt_16x16.png"/></a>
-          <a href="#" class="toggle-move-node" title="Move Quote — Use placeholders as targets"><img src="/images/icons/white/arrow_right_16x16.png"/></a>
+          {{#edit}}
+            <a href="#" class="remove-node" title="Remove Node" node="{{node/key}}" parent="{{parent/_id}}"><img src="/images/icons/white/x_alt_16x16.png"/></a>
+            <a href="#" class="toggle-move-node" title="Move Quote — Use placeholders as targets"><img src="/images/icons/white/arrow_right_16x16.png"/></a>
+          {{/edit}}
+          <a href="#" class="toggle-comments" title="Toggle Comments"><img src="/images/icons/white/comment_stroke_16x14.png"/></a>
         </div>
-      {{/edit}}
+      
       {{#edit}}<div class="pilcrow">&#182;</div>{{/edit}}
       <blockquote>
         <p class="content quote-content{{#empty_content}} empty{{/empty_content}}"{{#edit}} contenteditable="true" title="Click To Edit Quote"{{/edit}}>
@@ -644,69 +680,83 @@
       </blockquote>
       <br class="clear"/>
       {{#edit}}<div class="node-editor-placeholder"></div>{{/edit}}
+      <div class="comments-wrapper{{^edit}} expanded{{/edit}}"></div>
     </div>
   </script>
   
   <script type="text/x-handlebars-template" name="code">
     <div id="{{node/html_id}}" name={{node/key}} parent="{{parent/_id}}" level="{{level}}" draggable="false" class="content-node code level-{{level}}">
-      {{#edit}}<div class="content-node-outline"><div class="cursor"><span></span></div></div>{{/edit}}
-      {{#edit}}
+      <div class="content-node-outline"><div class="cursor"><span></span></div></div>
         <div class="operations">
-          <a href="#" class="remove-node" title="Remove Node" node="{{node/key}}" parent="{{parent/_id}}"><img src="/images/icons/white/x_alt_16x16.png"/></a>
-          <a href="#" class="toggle-move-node" title="Move Code — Use placeholders as targets"><img src="/images/icons/white/arrow_right_16x16.png"/></a>
+          {{#edit}}
+            <a href="#" class="remove-node" title="Remove Node" node="{{node/key}}" parent="{{parent/_id}}"><img src="/images/icons/white/x_alt_16x16.png"/></a>
+            <a href="#" class="toggle-move-node" title="Move Code — Use placeholders as targets"><img src="/images/icons/white/arrow_right_16x16.png"/></a>
+          {{/edit}}
+          <a href="#" class="toggle-comments" title="Toggle Comments"><img src="/images/icons/white/comment_stroke_16x14.png"/></a>
         </div>
-      {{/edit}}
+      
       {{#edit}}<div class="pilcrow">&#182;</div>{{/edit}}
       <pre class="content{{#empty}} empty{{/empty}}"{{#edit}} title="Click To Edit Code"{{/edit}}>{{^empty}}{{{content}}}{{/empty}}{{#empty}}&laquo; Enter code &raquo;{{/empty}}</pre>
       {{#edit}}<div class="node-editor-placeholder"></div>{{/edit}}
+      <div class="comments-wrapper{{^edit}} expanded{{/edit}}"></div>
     </div>
   </script>
   
   <script type="text/x-handlebars-template" name="question">
     <div id="{{node/html_id}}" name={{node/key}} parent="{{parent/_id}}" level="{{level}}" draggable="false" class="content-node question level-{{level}}">
-      {{#edit}}<div class="content-node-outline"><div class="cursor"><span></span></div></div>{{/edit}}
-      {{#edit}}
-        <div class="operations">
+      <div class="content-node-outline"><div class="cursor"><span></span></div></div>
+      
+      <div class="operations">
+        {{#edit}}
           <a href="#" class="remove-node" title="Remove Node" node="{{node/key}}" parent="{{parent/_id}}"><img src="/images/icons/white/x_alt_16x16.png"/></a>
           <a href="#" class="toggle-move-node" title="Move Question — Use placeholders as targets"><img src="/images/icons/white/arrow_right_16x16.png"/></a>
-        </div>
-      {{/edit}}
+        {{/edit}}
+        <a href="#" class="toggle-comments" title="Toggle Comments"><img src="/images/icons/white/comment_stroke_16x14.png"/></a>
+      </div>
+      
       {{#edit}}<div class="pilcrow">&#182;</div>{{/edit}}
       <p class="question content{{#empty}} empty{{/empty}}"{{#edit}} title="Click To Edit Question"{{/edit}}>
         {{^empty}}{{{content}}}{{/empty}}
         {{#empty}}&laquo; Enter Question &raquo;{{/empty}}
       </p>
       {{#edit}}<div class="node-editor-placeholder"></div>{{/edit}}
+      <div class="comments-wrapper{{^edit}} expanded{{/edit}}"></div>
     </div>
   </script>
   
   <script type="text/x-handlebars-template" name="answer">
     <div id="{{node/html_id}}" name={{node/key}} parent="{{parent/_id}}" level="{{level}}" draggable="false" class="content-node answer level-{{level}}">
-      {{#edit}}<div class="content-node-outline"{{#edit}} title="Click To Edit Question"{{/edit}}><div class="cursor"><span></span></div></div>{{/edit}}
-      {{#edit}}
-        <div class="operations">
+      <div class="content-node-outline"{{#edit}} title="Click To Edit Answer"{{/edit}}><div class="cursor"><span></span></div></div>
+      
+      <div class="operations">
+        {{#edit}}
           <a href="#" class="remove-node" title="Remove Node" node="{{node/key}}" parent="{{parent/_id}}"><img src="/images/icons/white/x_alt_16x16.png"/></a>
           <a href="#" class="toggle-move-node" title="Move Answer — Use placeholders as targets"><img src="/images/icons/white/arrow_right_16x16.png"/></a>
-        </div>
-      {{/edit}}
+        {{/edit}}
+        <a href="#" class="toggle-comments" title="Toggle Comments"><img src="/images/icons/white/comment_stroke_16x14.png"/></a>
+      </div>
+      
       {{#edit}}<div class="pilcrow">&#182;</div>{{/edit}}
       <div class="answer content{{#empty}} empty{{/empty}}">
         {{^empty}}{{{content}}}{{/empty}}
         {{#empty}}<p>&laquo; Enter Answer &raquo;</p>{{/empty}}
       </div>
       {{#edit}}<div class="node-editor-placeholder"></div>{{/edit}}
+      <div class="comments-wrapper{{^edit}} expanded{{/edit}}"></div>
     </div>
   </script>
   
   <script type="text/x-handlebars-template" name="resource">
     <div id="{{node/html_id}}" name={{node/key}} parent="{{parent/_id}}" level="{{level}}" draggable="false" class="content-node resource level-{{level}}">
-      {{#edit}}<div class="content-node-outline"><div class="cursor"><span></span></div></div>{{/edit}}
-      {{#edit}}
-        <div class="operations">
+      <div class="content-node-outline"><div class="cursor"><span></span></div></div>
+      
+      <div class="operations">
+        {{#edit}}
           <a href="#" class="remove-node" title="Remove Node" node="{{node/key}}" parent="{{parent/_id}}"><img src="/images/icons/white/x_alt_16x16.png"/></a>
           <a href="#" class="toggle-move-node" title="Move Resource — Use placeholders as targets"><img src="/images/icons/white/arrow_right_16x16.png"/></a>
-        </div>
-      {{/edit}}
+        {{/edit}}
+        <a href="#" class="toggle-comments" title="Toggle Comments"><img src="/images/icons/white/comment_stroke_16x14.png"/></a>
+      </div>
       {{#edit}}<div class="pilcrow">&#182;</div>{{/edit}}
       
       <div class="resource-content{{^url}} placeholder{{/url}}">
@@ -728,20 +778,22 @@
         {{^empty}}{{{caption}}}{{/empty}}
         {{#empty}}&laquo; Enter Caption &raquo;{{/empty}}
       </div>
+      <div class="comments-wrapper{{^edit}} expanded{{/edit}}"></div>
     </div>
   </script>
   
   <script type="text/x-handlebars-template" name="image">
     <div id="<%= node.html_id %>" name=<%= node.key %> parent="<%= parent._id %>" level="<%= level %>" draggable="false" class="content-node image level-<%= level %>">
       
-      <% if (edit) { %>
-        <div class="content-node-outline"><div class="cursor"><span></span></div></div>
-        <div class="operations">
-          <a href="#" class="remove-node" title="Remove Node" node="<%= node.key %>" parent="<%= parent._id %>"><img src="/images/icons/white/x_alt_16x16.png"/></a>
-          <a href="#" class="toggle-move-node" title="Move Image — Use placeholders as targets"><img src="/images/icons/white/arrow_right_16x16.png"/></a>
-        </div>
-        <div class="pilcrow">&#182;</div>
-      <% } %>
+      <div class="content-node-outline"><div class="cursor"><span></span></div></div>
+      <div class="operations">
+        <% if (edit) { %>
+        <a href="#" class="remove-node" title="Remove Node" node="<%= node.key %>" parent="<%= parent._id %>"><img src="/images/icons/white/x_alt_16x16.png"/></a>
+        <a href="#" class="toggle-move-node" title="Move Image — Use placeholders as targets"><img src="/images/icons/white/arrow_right_16x16.png"/></a>
+        <% } %>
+        <a href="#" class="toggle-comments" title="Toggle Comments"><img src="/images/icons/white/comment_stroke_16x14.png"/></a>
+      </div>
+      <div class="pilcrow">&#182;</div>
       
       <div class="image-content<%= !url ? " placehoder" : ""%>">
         <% if (url) { %>
@@ -754,27 +806,30 @@
           <img src="images/image_placeholder.png"/>
         <% } %>
         
-        <div class="image-editor">
-          <form class="upload-image-form" action="http://api2.transloadit.com/assemblies" enctype="multipart/form-data" method="POST">
-            <div class="image-drop-area">
-              <div class="info">Drop image here or <a href="#">choose a file</a></div>
-              <div class="image-progress">
-                <div class="label">Uploading image ...</div>
-                <div class="progress-container">
-                  <div class="progress-bar" style="width:60%"></div>
+        <% if (edit) { %>
+          <div class="image-editor">
+            <form class="upload-image-form" action="http://api2.transloadit.com/assemblies" enctype="multipart/form-data" method="POST">
+              <div class="image-drop-area">
+                <div class="info">Drop image here or <a href="#">choose a file</a></div>
+                <div class="image-progress">
+                  <div class="label">Uploading image ...</div>
+                  <div class="progress-container">
+                    <div class="progress-bar" style="width:60%"></div>
+                  </div>
                 </div>
+                <div class="credits">Image hosting sponsored by <a href="http://transloadit.com" target="_new">Transloadit</a></div>
+                <input type="file" class="image-file" name="image-file" />
+                <input type="hidden" name="params" value="<%= transloadit_params %>" />
               </div>
-              <div class="credits">Image hosting sponsored by <a href="http://transloadit.com" target="_new">Transloadit</a></div>
-              <input type="file" class="image-file" name="image-file" />
-              <input type="hidden" name="params" value="<%= transloadit_params %>" />
-            </div>
-          </form>
-        </div>
+            </form>
+          </div>
+        <% } %>
       </div>
       
       <div class="caption content<%= empty ? " empty" : "" %>">
         <%= !empty ? caption : "&laquo; Enter Caption &raquo;" %>
       </div>
+      <div class="comments-wrapper <%= !edit ? "expanded" : ""%>"></div>
     </div>
   </script>
   

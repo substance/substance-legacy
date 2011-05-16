@@ -1640,11 +1640,17 @@ pre {
 
 .operations {
   position: absolute;
-  right: 0px;
+  right: -26px;
   top: 0px;
+  width: 26px;
   bottom: 0px;
   background: #747260;
   display: none;
+  
+  -webkit-box-shadow: 0px 1px 4px rgba(0,0,0,0.35), inset 0px 0px 1px rgba(255,255,255,0.15);
+  -moz-box-shadow:    0px 1px 4px rgba(0,0,0,0.35), inset 0px 0px 1px rgba(255,255,255,0.15);
+  box-shadow:         0px 1px 4px rgba(0,0,0,0.35), inset 0px 0px 1px rgba(255,255,255,0.15);
+  
 }
 
 .content-node.section > .operations { background: #a5c54b; }
@@ -1656,6 +1662,7 @@ pre {
 }
 
 .operations a {
+  
   padding: 5px;
   display: block;
   border: none;
@@ -1668,6 +1675,11 @@ pre {
 
 .content-node { 
   position: relative; 
+  margin: 10px 0;
+}
+
+.content-node.document {
+  margin: 0;
 }
 
 /* Overthink this */
@@ -1699,10 +1711,15 @@ pre {
 /*  padding-left: 30px;*/
 }
 
+#document .content-node.active {
+  -webkit-box-shadow: 0px 1px 4px rgba(0,0,0,0.35), inset 0px 0px 1px rgba(255,255,255,0.15);
+  -moz-box-shadow:    0px 1px 4px rgba(0,0,0,0.35), inset 0px 0px 1px rgba(255,255,255,0.15);
+  box-shadow:         0px 1px 4px rgba(0,0,0,0.35), inset 0px 0px 1px rgba(255,255,255,0.15);
+}
 
-#document.edit-mode .content-node.selected {
+#document .content-node.selected {
   background: #fff;
-  min-height: 70px;
+  min-height: 100px;
   
   -webkit-box-shadow: 0px 1px 4px rgba(0,0,0,0.35), inset 0px 0px 1px rgba(255,255,255,0.15);
   -moz-box-shadow:    0px 1px 4px rgba(0,0,0,0.35), inset 0px 0px 1px rgba(255,255,255,0.15);
@@ -1736,6 +1753,8 @@ pre {
   border-top: 1px dashed #ccc;
   border-bottom: 1px dashed #ccc;
 }
+
+
 
 /*.remove {
   width:22px;
@@ -1852,6 +1871,64 @@ pre {
 .controls {
   position: relative;
 }
+
+
+/* Comments
+-------------------------------------------------------------------------------*/
+
+.content-node .comments-wrapper {
+  display: none;
+  margin: 0 100px;
+  font-family: Helvetica, Arial;
+  font-size: 14px;
+  padding-bottom: 20px;
+  text-align: left;
+}
+
+.content-node .comments-title {
+  margin: 20px 0;
+  border-bottom: 1px solid #ccc;
+  text-transform: uppercase;
+  font-size: 10px;
+}
+
+
+.content-node.selected > .comments-wrapper.expanded {
+  display: block;
+}
+
+.comments-wrapper .comment-content {
+  min-height: 30px;
+  border: 1px solid #ccc;
+  padding: 10px;
+}
+
+.comments-wrapper .comment .header {
+  font-size: 12px;
+}
+
+.comments-wrapper .comment .body {
+  font-size: 12px;
+  color: #555;
+  padding-bottom: 10px;
+}
+
+
+#document .comments-wrapper a.create-comment {
+  display: block;
+  margin: 10px 0;
+  width: 75px;
+  color: #eee;
+  background: #666;
+  border: none;
+  padding: 3px 5px;
+}
+
+#document .comments-wrapper a.create-comment:hover {
+  background: #444;
+  color: #fff;
+}
+
 
 /* Move actions */
 

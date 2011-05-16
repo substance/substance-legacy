@@ -186,7 +186,7 @@ var HTMLRenderer = function(root, parent, lvl) {
     },
     
     "/type/text": function(node, parent, level) {
-      return Helpers.renderTemplate('text', {
+      return _.tpl('text', {
         node: node,
         parent: parent,
         edit: app.document.mode === 'edit',

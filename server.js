@@ -8,14 +8,21 @@ var _ = require('underscore');
 var CouchClient = require('./lib/data/lib/couch-client');
 var async = require('async');
 
+var Document = require('./src/server/document');
+var Counter = require('./src/server/counter');
+var User = require('./src/server/user');
+var Filters = require('./src/server/filters');
+
 // App Config
 global.config = JSON.parse(fs.readFileSync(__dirname+ '/config.json', 'utf-8'));
 global.seed = JSON.parse(fs.readFileSync(__dirname+ '/db/schema.json', 'utf-8'));
 
 // App Settings
 global.settings = JSON.parse(fs.readFileSync(__dirname+ '/settings.json', 'utf-8'));
+global.db = CouchClient(config.couchdb_url);
 
-var db = CouchClient(config.couchdb_url);
+// Substance logs
+var events = CouchClient("http://localhost:8888/substance_events");
 
 // Express.js Configuration
 // -----------
@@ -35,15 +42,6 @@ app.configure('development', function() {
   app.use(express.static(__dirname+"/src", { maxAge: 41 }));
 });
 
-// Fetch a single node from the graph
-function fetchNode(id, callback) {
-  db.get(id, function(err, node) {
-    if (err) return callback(err);
-    
-    // Attach to result graph
-    callback(null, node);
-  });
-}
 
 function findAttributes(member, searchstr, callback) {
   db.view('substance/attributes', {key: member}, function(err, res) {
@@ -67,206 +65,8 @@ function findAttributes(member, searchstr, callback) {
 }
 
 
-function findUsers(searchstr, callback) {
-  db.view('substance/users', function(err, res) {
-    // Bug-workarount related to https://github.com/creationix/couch-client/issues#issue/3
-    // Normally we'd just use the err object in an error case
-  
-    if (err) {
-      callback(err);
-    } else {
-      var result = {};
-      var count = 0;
-      
-      _.each(res.rows, function(row) {
-        if (row.key && row.key.match(new RegExp("("+searchstr+")", "i"))) {
-          // Add to result set
-          if (count < 200) { // 200 Users maximum
-            count += 1;
-            result[row.value._id] = row.value;
-            delete result[row.value._id].password
-            delete result[row.value._id].email
-          }
-        }
-      });
-      callback(null, result);
-    }
-  });
-}
 
 
-// Get a single document from the database, including all associated content nodes
-function getDocument(username, docname, callback) {
-  db.view('substance/documents', {key: username+'/'+docname}, function(err, res) {
-    if (err) {
-      callback(err);
-    } else {
-      var result = {};
-      var count = 0;
-      
-      if (res.rows.length >0) {
-        var doc = res.rows[0].value;
-        result[doc._id] = doc;
-        
-        // Fetches associated objects
-        function fetchAssociated(node, callback) {
-          
-          // Fetch children
-          if (!node.children) return callback(null);
-          async.forEach(node.children, function(child, callback) {
-            fetchNode(child, function(err, node) {
-              if (err) callback(err);
-              result[node._id] = node;
-              fetchAssociated(node, function(err) {
-                callback(null);
-              });
-            });
-          }, function(err) {
-            callback(null);
-          });
-        }
-        
-        fetchAssociated(res.rows[0].value, function(err) {
-          // Fetch attributes and user
-          async.forEach(doc.subjects.concat(doc.entities).concat([doc.creator]), function(nodeId, callback) {
-            fetchNode(nodeId, function(err, node) {
-              if (err) { console.log('FATAL: BROKEN REFERENCE!'); console.log(err); return callback(); }
-              result[node._id] = node;
-              callback(null);
-            });
-          }, function(err) { 
-            callback(err, result, doc._id); 
-          });
-        });
-        
-      } else {
-        callback('not found');
-      }
-    }
-  });
-}
-
-function recentDocuments(limit, username, callback) {
-  db.view('substance/recent_documents', {limit: parseInt(limit), descending: true}, function(err, res) {
-    if (err) {
-      callback(err);
-    } else {
-      var result = {};
-      var associatedItems = [];
-      var count = 0;
-      var matched;
-      _.each(res.rows, function(row) {
-        // Add to result set
-        if (!result[row.value._id]) count += 1;
-        result[row.value._id] = row.value;
-        // Include associated objects like attributes and users
-        associatedItems = associatedItems.concat([row.value.creator]);
-        if (row.value.subjects) associatedItems = associatedItems.concat(row.value.subjects);
-        if (row.value.entities) associatedItems = associatedItems.concat(row.value.entities);
-      });
-
-      // Fetch associated items
-      // TODO: make dynamic
-      async.forEach(_.uniq(associatedItems), function(nodeId, callback) {
-        fetchNode(nodeId, function(err, node) {
-          if (err) { console.log('BROKEN REFERENCE!'); console.log(err); return callback(); }
-          result[node._id] = node;
-          delete result[node._id].password;
-          callback();
-        });
-      }, function(err) { callback(err, result, count); });
-    }
-  });
-}
-
-
-// We are aware that this is not a performant solution.
-// But search functionality needed to be there, quickly.
-// We'll replace it with a speedy fulltext search asap.
-function findDocuments(searchstr, type, username, callback) {
-  db.view('substance/documents_by_keyword', function(err, res) {
-    if (err && _.include(["user", "keyword"], type)) {
-      callback(err);
-    } else {
-      var result = {};
-      var associatedItems = [];
-      var count = 0;
-      var matched;
-      _.each(res.rows, function(row) {
-        if (type === "keyword") {
-          matched = row.key && row.key.match(new RegExp("("+searchstr+")", "i"));
-        } else {
-          matched = row.value.creator.match(new RegExp("/user/("+searchstr+")$", "i"));
-        }
-        
-        if (matched && (row.value.published_on || row.value.creator === '/user/'+username)) {
-          // Add to result set
-          if (!result[row.value._id]) count += 1;
-          if (count < 200) { // 200 Documents maximum
-            result[row.value._id] = row.value;
-            // Include associated objects like attributes and users
-            associatedItems = associatedItems.concat([row.value.creator]);
-            if (row.value.subjects) associatedItems = associatedItems.concat(row.value.subjects);
-            if (row.value.entities) associatedItems = associatedItems.concat(row.value.entities);
-          }
-        }
-      });
-      
-      if (type === 'user') {
-        associatedItems.push('/user/'+searchstr.toLowerCase());
-      }
-
-      // Fetch associated items
-      // TODO: make dynamic
-      async.forEach(_.uniq(associatedItems), function(nodeId, callback) {
-        fetchNode(nodeId, function(err, node) {
-          if (err) { console.log('BROKEN REFERENCE!'); console.log(err); return callback(); }
-          result[node._id] = node;
-          delete result[node._id].password;
-          callback();
-        });
-      }, function(err) { callback(err, result, count); });
-    }
-  });
-}
-
-// Middleware for graph read and write operations
-var Filters = {};
-Filters.ensureAuthorized = function() {
-  return {
-    read: function(node, next, session) {
-      // Hide all password properties
-      delete node.password;      
-      next(node);
-    },
-
-    write: function(node, next, session) {
-      var that = this;
-      
-      if (_.include(node.type, "/type/document")) {
-        return node.creator !== "/user/"+session.username ? next(null) : next(node);
-        // TODO: Make sure that document deletion can only be done by the creator, not the collaborators.
-      } else if (_.intersect(node.type, ["/type/section", "/type/visualization", "/type/text",
-                                         "/type/question", "/type/answer", "/type/quote", "/type/image", "/type/reference"]).length > 0) {
-
-        that.db.get(node.document, function(err, document) {
-          if (err) return next(node); // if the document does not yet exist
-          return document.creator !== "/user/"+session.username ? next(null) : next(node);
-        });
-      } else if (_.include(node.type, "/type/user")) {
-        // Ensure username can't be changed for existing users
-        that.db.get(node._id, function(err, user) {
-          if (err) return next(null);
-          
-          if (node._rev) node.username = user.username;
-          next(node);
-        });
-      } else {
-        next(node);
-      }
-    }
-  };
-};
 
 
 var graph = new Data.Graph(seed);
@@ -277,6 +77,7 @@ graph.connect('couch', {
 
 // Serve Data.js backend along with an express server
 graph.serve(app);
+
 
 // Helpers
 // -----------
@@ -328,23 +129,21 @@ app.get('/', function(req, res) {
 
 // Quick search interface (returns found users and a documentset)
 app.get('/search/:search_str', function(req, res) {
-  findDocuments(req.params.search_str, 'keyword', req.session.username, function(err, graph, count) {
-    findUsers(req.params.search_str, function(err, users) {
+  Document.find(req.params.search_str, 'keyword', req.session.username, function(err, graph, count) {
+    User.find(req.params.search_str, function(err, users) {
       res.send(JSON.stringify({document_count: count, users: users}));
     });
   });
 });
 
-
-// Find documents by search string (full text search in future)
-// Or find by user
+// Find documents by search string or user
 app.get('/documents/search/:type/:search_str', function(req, res) {
   if (req.params.type == 'recent') {
-    recentDocuments(req.params.search_str, req.session.username, function(err, graph, count) {
+    Document.recent(req.params.search_str, req.session.username, function(err, graph, count) {
       res.send(JSON.stringify({graph: graph, count: count}));
     });
   } else {
-    findDocuments(req.params.search_str, req.params.type, req.session.username, function(err, graph, count) {
+    Document.find(req.params.search_str, req.params.type, req.session.username, function(err, graph, count) {
       res.send(JSON.stringify({graph: graph, count: count}));
     });
   }
@@ -493,20 +292,20 @@ app.post('/updateuser', function(req, res) {
 
 // Returns the most recent version of the requested doc
 app.get('/documents/:username/:name', function(req, res) {
-  getDocument(req.params.username, req.params.name, function(err, graph, id) {
+  Document.get(req.params.username, req.params.name, function(err, graph, id) {
     if (err) return res.send({status: "error", error: err});
     res.send({status: "ok", graph: graph, id: id});
   });
 });
 
 // Write a single document, expressed as a graph
-// app.post('/writedocument', function(req, res) {
-//   var graph = new Data.Graph(seed, false).connect('couch', { url: config.couchdb_url, force_updates: true });
-//   graph.merge(JSON.parse(req.rawBody), true);
-//   graph.sync(function(err, nodes) {
-//     res.send({"status": "ok"});
-//   });
-// });
+app.post('/writedocument', function(req, res) {
+  var graph = new Data.Graph(seed, false).connect('couch', { url: config.couchdb_url, force_updates: true });
+  graph.merge(JSON.parse(req.rawBody), true);
+  graph.sync(function(err, nodes) {
+    res.send({"status": "ok"});
+  });
+});
 
 console.log('READY: Substance is listening http://'+config['server_host']+':'+config['server_port']);
 app.listen(config['server_port'], config['server_host']);
