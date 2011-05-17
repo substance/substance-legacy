@@ -1409,6 +1409,7 @@
       });
     },
     
+    // Nodes that got rejected during sync
     rejectedNodes: function() {
       return this.all('objects').select(function(obj, key) {
         return obj._rejected;

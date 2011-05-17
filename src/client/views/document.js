@@ -24,6 +24,7 @@ var Document = Backbone.View.extend({
     'click a.toggle-move-node': 'toggleMoveNode',
     'click a.toggle-comments': 'toggleComments',
     'click a.create-comment': 'createComment',
+    'click a.remove-comment': 'removeComment',
     
     // Actions
     'click a.add_child': 'addChild',
@@ -33,8 +34,45 @@ var Document = Backbone.View.extend({
   
   loadedDocuments: {},
   
-  toggleComments: function() {
-    var foo = $('#'+this.selectedNode.html_id+' > .comments-wrapper').toggleClass('expanded');
+  removeComment: function(e) {
+    var comment = graph.get($(e.currentTarget).attr('comment'));
+    
+    // All comments of the currently selected node
+    var comments = this.selectedNode.get('comments');
+    
+    // Remove comment from node
+    this.selectedNode.set({
+      comments: comments.del(comment._id).keys()
+    });
+    
+    // Remove comment
+    graph.del(comment._id);
+    // Re-render comments
+    this.enableCommentEditor();
+    return false;
+  },
+  
+  toggleComments: function(e) {
+    var nodeId = $(e.currentTarget).parent().parent().attr('name');
+    var changed = false;
+    if (!this.selectedNode || this.selectedNode._id !== nodeId) {
+      // First select node
+      this.selectedNode = graph.get(nodeId);
+      this.trigger('select:node', this.selectedNode);
+      changed = true;
+    }
+    this.enableCommentEditor();
+    
+    // Toggle them
+    var wrapper = $('#'+this.selectedNode.html_id+' > .comments-wrapper');
+    wrapper.toggleClass('expanded');
+    if (changed) wrapper.addClass('expanded'); // overrule
+    
+    if (wrapper.hasClass('expanded')) {
+      // Scroll to the comments wrapper
+      var offset = wrapper.offset();
+      $('html, body').animate({scrollTop: offset.top-100}, 'slow');
+    }
     return false;
   },
   
@@ -592,6 +630,11 @@ var Document = Backbone.View.extend({
     if (wrapper.length === 0) return;
     wrapper.html(_.tpl('comments', {node: this.selectedNode}));
     
+    var count = this.selectedNode.get('comments') ? this.selectedNode.get('comments').length : 0;
+    
+    // Update comment count
+    $('#'+this.selectedNode.html_id+' > .operations a.toggle-comments span').html(count);
+    
     var $content = $('#'+this.selectedNode.html_id+' > .comments-wrapper .comment-content');
     function activate() {
       that.commentEditor = new Proper();
@@ -619,7 +662,10 @@ var Document = Backbone.View.extend({
       e.stopProp = true;
       // The server will respond with a status package containing my own cursor position
       // remote.Session.selectNode(key);
-      this.enableCommentEditor();
+      
+      var wrapper = $('#'+this.selectedNode.html_id+' > .comments-wrapper');
+      wrapper.removeClass('expanded');
+      // this.enableCommentEditor();
     }
     e.stopPropagation();
     // return false;

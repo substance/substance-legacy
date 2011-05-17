@@ -175,6 +175,7 @@ var HTMLRenderer = function(root, parent, lvl) {
       
       return Helpers.renderTemplate('section', {
         node: node,
+        comments: node.get('comments') && node.get('comments').length>0 ? node.get('comments').length : "",
         parent: parent,
         content: content,
         heading_level: level,
@@ -188,6 +189,7 @@ var HTMLRenderer = function(root, parent, lvl) {
     "/type/text": function(node, parent, level) {
       return _.tpl('text', {
         node: node,
+        comments: node.get('comments') && node.get('comments').length>0 ? node.get('comments').length : "",
         parent: parent,
         edit: app.document.mode === 'edit',
         content: node.get('content'),
@@ -199,6 +201,7 @@ var HTMLRenderer = function(root, parent, lvl) {
     "/type/quote": function(node, parent, level) {
       return Helpers.renderTemplate('quote', {
         node: node,
+        comments: node.get('comments') && node.get('comments').length>0 ? node.get('comments').length : "",
         parent: parent,
         edit: app.document.mode === 'edit',
         content: node.get('content'),
@@ -212,6 +215,7 @@ var HTMLRenderer = function(root, parent, lvl) {
     "/type/code": function(node, parent, level) {
       return Helpers.renderTemplate('code', {
         node: node,
+        comments: node.get('comments') && node.get('comments').length>0 ? node.get('comments').length : "",
         parent: parent,
         edit: app.document.mode === 'edit',
         content: node.get('content'),
@@ -223,6 +227,7 @@ var HTMLRenderer = function(root, parent, lvl) {
     "/type/question": function(node, parent, level) {
       return Helpers.renderTemplate('question', {
         node: node,
+        comments: node.get('comments') && node.get('comments').length>0 ? node.get('comments').length : "",
         parent: parent,
         edit: app.document.mode === 'edit',
         content: node.get('content'),
@@ -234,6 +239,7 @@ var HTMLRenderer = function(root, parent, lvl) {
     "/type/answer": function(node, parent, level) {
       return Helpers.renderTemplate('answer', {
         node: node,
+        comments: node.get('comments') && node.get('comments').length>0 ? node.get('comments').length : "",
         parent: parent,
         edit: app.document.mode === 'edit',
         content: node.get('content'),
@@ -245,6 +251,7 @@ var HTMLRenderer = function(root, parent, lvl) {
     "/type/image": function(node, parent, level) {
       return _.tpl('image', {
         node: node,
+        comments: node.get('comments') && node.get('comments').length>0 ? node.get('comments').length : "",
         parent: parent,
         edit: app.document.mode === 'edit',
         url: node.get('url'),
@@ -259,6 +266,7 @@ var HTMLRenderer = function(root, parent, lvl) {
     "/type/resource": function(node, parent, level) {
       return Helpers.renderTemplate('resource', {
         node: node,
+        comments: node.get('comments') && node.get('comments').length>0 ? node.get('comments').length : "",
         parent: parent,
         edit: app.document.mode === 'edit',
         url: node.get('url'),
@@ -272,6 +280,7 @@ var HTMLRenderer = function(root, parent, lvl) {
     "/type/visualization": function(node, parent, level) {
       return Helpers.renderTemplate('visualization', {
         node: node,
+        comments: node.get('comments') && node.get('comments').length>0 ? node.get('comments').length : "",
         parent: parent,
         edit: app.document.mode === 'edit',
         visualization_type: node.get('visualization_type'),
