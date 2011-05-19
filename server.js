@@ -21,17 +21,14 @@ global.seed = JSON.parse(fs.readFileSync(__dirname+ '/db/schema.json', 'utf-8'))
 global.settings = JSON.parse(fs.readFileSync(__dirname+ '/settings.json', 'utf-8'));
 global.db = CouchClient(config.couchdb_url);
 
-// Substance logs
-var events = CouchClient("http://localhost:8888/substance_events");
-
 // Express.js Configuration
 // -----------
 
 app.configure(function() {
+  var CookieStore = require('cookie-sessions');
   app.use(express.bodyParser());
   app.use(express.methodOverride());
-  app.use(express.cookieParser());
-  app.use(express.session({secret: config['secret']}));
+  app.use(CookieStore({secret: 'keyboard cat'}));
   app.use(app.router);
   app.use(express.static(__dirname+"/public", { maxAge: 41 }));
   app.use(express.logger({ format: ':method :url' }));
@@ -64,20 +61,42 @@ function findAttributes(member, searchstr, callback) {
   });
 }
 
-
-
-
+function getNotifications(username, callback) {
+  // Read in reversed order, therefore replaced startkey with endkey
+  if (!username) return callback(null, {});
+  db.view('substance/notifications', {endkey: ["/user/"+username], descending: true, limit: 5}, function(err, res) {
+    if (err) {
+      console.log(err);
+      callback(err);
+    } else {
+      var result = {};
+      async.forEach(res.rows, function(row, callback) {
+        result[row.value._id] = row.value;
+        // Fetch corresponding event
+        db.get(row.value.event, function(err, event) {
+          result[event._id] = event;
+          callback();
+        });
+        
+      }, function(err) {
+        callback(null, result);
+      });
+    }
+  });
+}
 
 
 var graph = new Data.Graph(seed);
 graph.connect('couch', {
   url: config.couchdb_url,
-  filters: [Filters.ensureAuthorized()]
+  filters: [
+    Filters.ensureAuthorized(),
+    Filters.logEvents()
+  ]
 });
 
 // Serve Data.js backend along with an express server
 graph.serve(app);
-
 
 // Helpers
 // -----------
@@ -116,15 +135,21 @@ function scripts() {
   }
 }
 
+
 // Web server
 // -----------
 
 app.get('/', function(req, res) {
   html = fs.readFileSync(__dirname+ '/templates/app.html', 'utf-8');
-  res.send(html.replace('{{{{seed}}}}', JSON.stringify(seed))
-               .replace('{{{{session}}}}', JSON.stringify(req.session))
-               .replace('{{{{config}}}}', JSON.stringify(clientConfig()))
-               .replace('{{{{scripts}}}}', JSON.stringify(scripts())));
+  var session = req.session ? req.session : {};
+  getNotifications(session.username, function(err, notifications) {
+    var sessionSeed = _.extend(_.clone(seed), notifications);
+    
+    res.send(html.replace('{{{{seed}}}}', JSON.stringify(sessionSeed))
+                 .replace('{{{{session}}}}', JSON.stringify(session))
+                 .replace('{{{{config}}}}', JSON.stringify(clientConfig()))
+                 .replace('{{{{scripts}}}}', JSON.stringify(scripts())));
+  });
 });
 
 // Quick search interface (returns found users and a documentset)
@@ -171,14 +196,19 @@ app.post('/login', function(req, res) {
         seed[user._id] = user.toJSON();
         delete seed[user._id].password;
         
-        res.send({
-          status: "ok",
-          username: username,
-          seed: seed
+        // TODO: Include notifications
+        getNotifications(username, function(err, notifications) {
+          req.session = {
+            username: username,
+            seed: seed
+          };
+          
+          res.send({
+            status: "ok",
+            username: username,
+            seed: _.extend(_.clone(seed), notifications)
+          });
         });
-        
-        req.session.username = username;
-        req.session.seed = seed;
       } else {
         res.send({status: "error"});
       }
@@ -189,8 +219,7 @@ app.post('/login', function(req, res) {
 });
 
 app.post('/logout', function(req, res) {  
-  delete req.session.username;
-  delete req.session.seed;
+  req.session = {};
   res.send({status: "ok"});
 });
 
@@ -289,6 +318,48 @@ app.post('/updateuser', function(req, res) {
   });
 });
 
+app.get('/notifications', function(req, res) {
+  getNotifications(req.session.username, function(err, notifications) {
+    // Only deliver unread notifications
+    var unreadNotifications = {};
+    _.each(notifications, function(n, key) {
+      if (!n.read && _.include(n.type, "/type/notification")) {
+        unreadNotifications[key] = n;
+        unreadNotifications[n.event] = notifications[n.event];
+      }
+    });
+    res.send(JSON.stringify(unreadNotifications));
+  });
+});
+
+function fetchGravatar(username, size, res, callback) {
+  db.get("/user/"+username, function(err, node) {
+    var email = node.email || "";
+    var host = 'www.gravatar.com';
+    var query = "?s="+size+"&d=retro"; // (queryData && "?s=100" + queryData) || "";
+    var path = '/avatar/' + crypto.createHash('md5').update(email.toLowerCase()).digest('hex') + query;
+
+    http.get({host: host, path: path}, function(cres) {
+      if (cres.statusCode !== 200) return callback('error', '');
+      cres.setEncoding('binary');
+      cres.on('data', function(d) {
+        res.write(d, 'binary');
+      });
+      cres.on('end', function() {
+        callback(null);
+      });
+    }).on('error', function(e) {
+      callback(e);
+    });
+  });
+}
+
+app.get('/avatar/:username/:size', function(req, res) {
+  res.writeHead(200, { 'Content-Type': 'image/png'});
+  fetchGravatar(req.params.username, req.params.size, res, function() {
+    res.end();
+  });
+});
 
 // Returns the most recent version of the requested doc
 app.get('/documents/:username/:name', function(req, res) {

@@ -377,21 +377,18 @@ div.browser-not-supported a:hover {
 -------------------------------------------------------------------------------*/
 
 #header {
-  position: relative;
   margin: 0 180px 10px 100px;
   height: 65px;
   font-style: italic;
   background: #F0F1EB;
-  overflow: auto;
-  line-height: 60px;
 }
-
 
 #header .title {
   font-family: 'Palatino Linotype', 'Book Antiqua', Palatino, FreeSerif, serif;
   font-weight: lighter;
   font-style: normal;
   font-size: 30px;
+  line-height: 60px;
   float: left;
 }
 
@@ -647,7 +644,6 @@ div.browser-not-supported a:hover {
 
 #login_state {
   float: right;
-  width: 400px;
 }
 
 #login_action label {
@@ -657,20 +653,13 @@ div.browser-not-supported a:hover {
 
 #login {
   padding-top: 10px;
-  position: absolute;
-  line-height: 50px;
-  right: 0px;
+  float: right;
   z-index: 5000;
-  height: 60px;  
-  overflow: hidden;
 }
 
 #login .signup {
-  position: absolute;
-  top: 34px;
   color: #888;
-  right: 0px;
-  height: 5px;
+  float: right;
   font-size: 14px;
   font-family: 'Palatino Linotype', 'Book Antiqua', Palatino, FreeSerif, serif;
 }
@@ -679,7 +668,7 @@ div.browser-not-supported a:hover {
   font-style: normal;
 }
 
-#login div {float: left; line-height: 32px; padding-right: 1px; font-style: normal; color: #ccc;}
+#login div {  padding-right: 1px; font-style: normal; color: #ccc;}
 #login div a {
   margin-left: 10px;
 }
@@ -732,7 +721,7 @@ form.auth-form label {
 }
 
 #documents th {
-  white-space: nowrap;
+  /* white-space: nowrap;*/
   padding: 15px 5px 15px 5px;
   font-family: 'Palatino Linotype', 'Book Antiqua', Palatino, FreeSerif, serif;
 }
@@ -1268,11 +1257,90 @@ dd { color: #444; font-size: 1em;	margin: 0 0 0 155px; padding: 0; padding-left:
   margin-left: 2px;
   font-weight: bold;
 }
+
 #attributes .items .item a.remove-item:hover {
   color: rgba(100, 100, 100, 1.0);;
 }
 
 #attributes .items .item a:hover { text-decoration: none; color: white; }
+
+
+/* Event Notifications
+-------------------------------------------------------------------------------*/
+
+#event_notifications_wrapper {
+  position: relative;
+}
+
+#event_notifications_wrapper > a {
+  padding: 2px 4px;
+  background: #666;
+  -webkit-border-radius:3px;
+  -moz-border-radius:   3px;
+  border-radius:        3px;
+  color: white;
+  border: none;
+}
+
+/*#event_notifications_wrapper:hover #event_notifications {
+  display: block;
+}*/
+
+#event_notifications {
+  background: #E1E2DE;
+  position: absolute;
+  top: 20px;
+  width: 300px;
+  z-index: 100000;
+  display: none;
+}
+
+#event_notifications.active {
+  display: block;
+}
+
+#event_notifications strong {
+  font-weight: bold;
+}
+
+
+#event_notifications div.notification {
+  border-top: 1px solid #ccc;
+  padding: 5px;
+  
+  font-size: 12px;
+  margin-left: 0px;
+}
+
+
+/* Message */
+#event_notifications div.notification .message {
+  color: #444;
+  margin-left: 70px;
+}
+
+#event_notifications div.notification .timestamp {
+  color: #999;
+  font-size: 10px;
+  margin-left: 70px;
+}
+
+/* Highlight unread notifications */
+#event_notifications div.notification.unread {
+  background: rgba(0,0,0,0.1);
+}
+
+#event_notifications div.notification img {
+  float: left;
+}
+
+#login #event_notifications a {
+  margin: 0;
+}
+
+#event_notifications div.notification:hover {
+  background: rgba(0,0,0,0.2);
+}
 
 /* Notifications
 -------------------------------------------------------------------------------*/

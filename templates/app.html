@@ -187,15 +187,29 @@
   
   <script type="text/x-ejs-template" name="header">
     <div class="title">
-      
       <a href="#recent"<% if (!user) { %> class="toggle-startpage"<% } %>>Substance.io</a>
-      
     </div>
     <div id="sync_state"></div>
     <div id="login_state">
       <div id="login">
         <% if (user) { %>
           <div>
+            <span id="event_notifications_wrapper"><a href="#" class="toggle-notifications"><%= count %></a>
+              <div id="event_notifications" class="<%= notifications_active ? "active" : "" %>">
+                <% notifications.each(function(n) { %>
+                  <a href="<%= n.get('event').get('link') %>"><div class="notification<%= n.get('read') ? " read": " unread" %>">
+                    <img src="/avatar/<%= n.get('event').get('creator')._id.split('/')[2]%>/50">
+                    <div class="message"><%= n.get('event').get('message') %></div>
+                    <div class="timestamp"><%= _.prettyDate(n.get('event').get('created_at')) %></div>
+                  </div></a>
+                <% }); %>
+                <% if (notifications.length == 0) { %>
+                  <div class="notification">
+                    <div class="message">Currently no notifications</div>
+                  </div>
+                <% } %>
+              </div>
+            </span>
             <a href="#<%= user.get('username') %>"><b><%= user.get('name') || user.get('username') %></b></a>
             <a href="#" class="toggle-user-settings">Account Settings</a>
             <a href="#logout" class="logout">Logout</a>
@@ -206,12 +220,14 @@
             <input type="password" name="password" class="hint" id="login-password" value="password">
             <input type="submit" value="Login"/>
           </form>
+          <br class="clear"/>
           <div class="signup">
             New to Substance? <a href="#signup" class="toggle-signup">Create an Account</a>
           </div>
         <% } %>
       </div>
     </div>
+    <br class="clear"/>
   </script>
 
   <script type="text/x-ejs-template" name="user_settings">
@@ -523,21 +539,6 @@
     </div>
   </script>
   
-  <script type="text/x-handlebars-template" name="edit_image">
-    <!--<form id="upload_image" action="http://api2.transloadit.com/assemblies" enctype="multipart/form-data" method="POST">
-      <div class="lpl texteditor">
-          <label for="my_file">select file</label>
-          <input type="file" name="my_file" id="my_file" />
-          <input type="hidden" name="params" value="{&quot;auth&quot;:{&quot;key&quot;:&quot;4ccca6b9de144af4882760af72ec3211&quot;},&quot;steps&quot;:{&quot;resize_image&quot;:{&quot;robot&quot;:&quot;\/image\/resize&quot;,&quot;width&quot;:320,&quot;height&quot;:240,&quot;result&quot;:true}},&quot;redirect_url&quot;:&quot;http:\/\/example.com\/upload&quot;}" />
-          <input type="submit" class="upload-image" value="Upload">
-      </div>
-      <div id="progress_container">
-        <div class="lpl progress-container"><div id="upload_progress" class="lpl progress-bar stripes animated" style="width:60%"></div></div>
-        <div id="image_progress_legend" class="lpl legend">
-      </div>
-    </form>-->
-  </script>
-  
   <script type="text/x-handlebars-template" name="edit_section">
     <h3>Edit section</h3>
   </script>
@@ -547,8 +548,8 @@
     <div class="comments">
       <% if (node.get('comments')) { %>
         <% node.get('comments').each(function(comment, key) { %>
-          <div class="comment">
-            <% username = comment.get('user')._id.split('/')[2]; %>
+          <div class="comment" id="<%= comment.html_id %>">
+            <% username = comment.get('creator')._id.split('/')[2]; %>
             <div class="header">
               <a href="#<%= username%>"><%= username %></a>
               commented <%= _.prettyDate(comment.get('created_at')) %>

@@ -28,3 +28,5 @@ User.find = function(searchstr, callback) {
     }
   });
 }
+
+module.exports = User;

@@ -413,7 +413,7 @@ var Document = Backbone.View.extend({
     return false;
   },
   
-  loadDocument: function(username, docname, nodeid, mode) {
+  loadDocument: function(username, docname, nodeid, commentid, mode) {
     var that = this;
     that.mode = mode || (username === this.app.username ? 'edit' : 'show');
     
@@ -436,7 +436,17 @@ var Document = Backbone.View.extend({
         // Update browser graph reference
         app.browser.graph.set('objects', id, that.model);
         app.toggleView('document');
-        if (nodeid) app.scrollTo(nodeid);
+        
+        // Scroll to target node
+        if (nodeid && !commentid) app.scrollTo(nodeid);
+        
+        // Scroll to comment
+        if (nodeid && commentid) {
+          var targetNode = graph.get(nodeid.replace(/_/g, '/'));
+          that.enableCommentEditor(targetNode);
+          $('#'+nodeid+' > .comments-wrapper').show();
+          app.scrollTo(commentid);
+        }
         
         // TODO: register document for realtime sessions
         // remote.Session.registerDocument(id);
@@ -449,32 +459,32 @@ var Document = Backbone.View.extend({
     $('#document_tab').show();
     
     // Already loaded - no need to fetch it
-    if (id) {
-      // TODO: check if there are changes from a realtime session
-      init(id);
-    } else {
-      $('#document_tab').html('&nbsp;&nbsp;&nbsp;Loading...');
-      $.ajax({
-        type: "GET",
-        url: "/documents/"+username+"/"+docname,
-        dataType: "json",
-        success: function(res) {
-          if (res.status === 'error') {
-            $('#document_tab').html('&nbsp;&nbsp;&nbsp; Document not found');
-            $('#document_wrapper').html("<div class=\"notification error\">The requested document couldn't be found.</div>");
-            app.toggleView('document');
-          } else {
-            graph.merge(res.graph);
-            init(res.id);
-          }
-        },
-        error: function(err) {
-          $('#document_tab').html('&nbsp;&nbsp;&nbsp; Document not found.');
+    // if (id) {
+    //   // TODO: check if there are changes from a realtime session
+    //   init(id);
+    // } else {
+    $('#document_tab').html('&nbsp;&nbsp;&nbsp;Loading...');
+    $.ajax({
+      type: "GET",
+      url: "/documents/"+username+"/"+docname,
+      dataType: "json",
+      success: function(res) {
+        if (res.status === 'error') {
+          $('#document_tab').html('&nbsp;&nbsp;&nbsp; Document not found');
           $('#document_wrapper').html("<div class=\"notification error\">The requested document couldn't be found.</div>");
           app.toggleView('document');
+        } else {
+          graph.merge(res.graph);
+          init(res.id);
         }
-      });
-    }
+      },
+      error: function(err) {
+        $('#document_tab').html('&nbsp;&nbsp;&nbsp; Document not found.');
+        $('#document_wrapper').html("<div class=\"notification error\">The requested document couldn't be found.</div>");
+        app.toggleView('document');
+      }
+    });
+    // }
   },
   
   closeDocument: function() {
@@ -609,7 +619,7 @@ var Document = Backbone.View.extend({
       node: this.selectedNode._id,
       document: this.model._id,
       created_at: new Date(),
-      user: '/user/'+app.username,
+      creator: '/user/'+app.username,
       content: this.commentEditor.content()
     });
     
@@ -622,20 +632,23 @@ var Document = Backbone.View.extend({
     return false;
   },
   
-  enableCommentEditor: function() {
+  enableCommentEditor: function(node) {
+    
+    node = node ? node : this.selectedNode;
     var that = this;
     
     // Render comments
-    var wrapper = $('#'+this.selectedNode.html_id+' > .comments-wrapper');
+    var wrapper = $('#'+node.html_id+' > .comments-wrapper');
     if (wrapper.length === 0) return;
-    wrapper.html(_.tpl('comments', {node: this.selectedNode}));
+    wrapper.html(_.tpl('comments', {node: node}));
     
-    var count = this.selectedNode.get('comments') ? this.selectedNode.get('comments').length : 0;
+    var comments = node.get('comments');
+    var count = comments && comments.length > 0 ? comments.length : "";
     
     // Update comment count
-    $('#'+this.selectedNode.html_id+' > .operations a.toggle-comments span').html(count);
+    $('#'+node.html_id+' > .operations a.toggle-comments span').html(count);
     
-    var $content = $('#'+this.selectedNode.html_id+' > .comments-wrapper .comment-content');
+    var $content = $('#'+node.html_id+' > .comments-wrapper .comment-content');
     function activate() {
       that.commentEditor = new Proper();
       that.commentEditor.activate($content, {

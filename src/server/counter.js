@@ -1,4 +1,4 @@
-// A generic counter interface
+// A generic counter interface (stub)
 // --------------------------
 
 var Counter = {}

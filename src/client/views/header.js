@@ -44,9 +44,22 @@ var Header = Backbone.View.extend({
 
   render: function() {
     var username = this.options.app.username;
+    var notifications = graph.find({"type|=": "/type/notification", "recipient": "/user/"+username});
+
+    var SORT_BY_DATE_DESC = function(v1, v2) {
+      var v1 = v1.value.get('created_at'),
+          v2 = v2.value.get('created_at');
+      return v1 === v2 ? 0 : (v1 > v2 ? -1 : 1);
+    }
+    
+    notifications = notifications.sort(SORT_BY_DATE_DESC);
+    
     // Render login-state
     $(this.el).html(_.tpl('header', {
-      user: graph.get('/user/'+username)
+      user: graph.get('/user/'+username),
+      notifications: notifications,
+      count: notifications.select(function(n) { return !n.get('read')}).length,
+      notifications_active: this.notificationsActive
     }));
   }
 });

@@ -1,6 +1,7 @@
 var _ = require('underscore');
 var async = require('async');
 var Counter = require('./counter');
+var Data = require('../../lib/data/data');
 
 // Middleware for graph read and write operations
 var Filters = {};
@@ -23,7 +24,6 @@ Filters.ensureAuthorized = function() {
         
         that.db.get(node.document, function(err, document) {
           if (err) return next(node); // if the document does not yet exist
-          
           if (document.creator !== "/user/"+session.username) {
             // Allow just nodes
             that.db.get(node._id, function(err, n) {
@@ -48,6 +48,46 @@ Filters.ensureAuthorized = function() {
       }
     }
   };
+};
+
+Filters.logEvents = function() {
+  return {
+    read: function(node, next, session) {
+      next(node);
+    },
+    write: function(node, next, session) {
+      var that = this;
+      // Log event and notifications for comment addition
+      if (_.include(node.type, "/type/comment") && !node._deleted) {
+        this.db.get(node.document, function(err, document) {
+          that.db.save({
+            _id: Data.uuid("/event/"),
+            type: ["/type/event"],
+            event_type: "add-comment",
+            creator: node.creator,
+            message: "<strong>"+node.creator.split('/')[2]+"</strong> commented on <strong>"+node.document.split('/')[2]+"/"+document.name+"</strong>",
+            link: "#"+node.document.split('/')[2]+"/"+document.name+"/"+node.node.replace(/\//g, '_')+"/"+node._id.replace(/\//g, '_'),
+            created_at: new Date()
+          }, function(err, event) {
+            // Insert notifications
+            var recipient = "/user/"+node.document.split('/')[2];
+            // Don't notify the the event creator itself
+            if (recipient !== node.creator) {
+              that.db.save({
+                _id: Data.uuid('/notification/'),
+                type: ["/type/notification"],
+                event: event._id,
+                read: false,
+                recipient: recipient,
+                created_at: event.created_at // use date of the event
+              });
+            }
+          });
+        });
+      }
+      next(node);
+    }
+  }
 };
 
 module.exports = Filters;

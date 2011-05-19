@@ -26,12 +26,59 @@ var Application = Backbone.View.extend({
     'click a.toggle-edit-mode': 'toggleEditMode',
     'click a.toggle-show-mode': 'toggleShowMode',
     'click a.toggle-user-settings': 'toggleUserSettings',
-    'submit #signup-form': 'registerUser'
+    'submit #signup-form': 'registerUser',
+    'click a.toggle-notifications': 'toggleNotifications',
+    'click #event_notifications a .notification': 'hideNotifications'
   },
 
   login: function(e) {
     this.authenticate();
     return false;
+  },
+    
+  // Triggered by toggleNotifications
+  // Triggers markAllRead
+  showNotifications: function() {
+    this.header.notificationsActive = true;
+    this.header.render();
+  },
+  
+  // Triggered by toggleNotifications and when clicking a notification
+  // Triggers count reset (to zero)
+  hideNotifications: function() {
+    // Mark all notifications as read
+    var notifications = graph.find({"type|=": "/type/notification", "recipient": "/user/"+app.username});
+    var unread = notifications.select(function(n) { return !n.get('read')});
+    unread.each(function(n) {
+      n.set({read: true});
+    });
+    this.header.notificationsActive = false;
+    this.header.render();
+  },
+  
+  toggleNotifications: function() {
+    $('#event_notifications').hasClass('active') ? this.hideNotifications() : this.showNotifications();
+    return false;
+  },
+  
+  loadNotifications: function() {
+    var that = this;
+    $.ajax({
+      type: "GET",
+      url: "/notifications",
+      dataType: "json",
+      success: function(notifications) {
+        var newNodes = {};
+        _.each(notifications, function(n, key) {
+          // Only merge in if not already there
+          if (!graph.get(key)) {
+            newNodes[key] = n;
+          }
+        });
+        graph.merge(newNodes);
+        that.header.render();
+      }
+    });
   },
   
   newDocument: function() {
@@ -76,7 +123,6 @@ var Application = Backbone.View.extend({
   searchDocs: function(searchstr) {
     app.browser.load({"type": "keyword", "value": encodeURI(searchstr)});
     $('#browser_wrapper').attr('url', '#search/'+encodeURI(searchstr));
-    
     app.browser.bind('loaded', function() {
       app.toggleView('browser');
     });
@@ -185,9 +231,7 @@ var Application = Backbone.View.extend({
         that.browser.render();
         that.render();
         $('#document_tab').hide();
-        
         app.toggleStartpage();
-        
         controller.saveLocation('');
         $('.new-document').hide();
       }
@@ -259,9 +303,12 @@ var Application = Backbone.View.extend({
       that.browser.bind('loaded', function() {
         that.toggleView('browser');
       });
-      
       controller.saveLocation('#'+that.username);
     });
+    
+    setInterval(function() {
+      that.loadNotifications();
+    }, 5000);
     
     that.render();
   },
@@ -479,8 +526,7 @@ var remote,                              // Remote handle for server-side method
     
     // Prevent exit when there are unsaved changes
     window.onbeforeunload = confirmExit;
-    function confirmExit()
-    {
+    function confirmExit() {
       if (graph.dirtyNodes().length>0) return "You have unsynced changes, which will be lost. Are you sure you want to leave this page?";
     }
     
