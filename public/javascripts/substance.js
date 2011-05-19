@@ -1048,17 +1048,18 @@ var ResourceEditor = Backbone.View.extend({
 });
 var ApplicationController = Backbone.Controller.extend({
   routes: {
+    '^(?!search)(.*)\/(.*)\/(.*)\/(.*)$$': 'loadDocument',
     '^(?!search)(.*)\/(.*)\/(.*)$': 'loadDocument',
     '^(?!search)(.*)\/(.*)$': 'loadDocument',
     ':username': 'userDocs',
     '^search\/(.*)$': 'searchDocs'
   },
   
-  loadDocument: function(username, docname, node) {
+  loadDocument: function(username, docname, node, comment) {
     app.browser.load({"type": "user", "value": username});
-    app.document.loadDocument(username, docname, node);
+    app.document.loadDocument(username, docname, node, comment);
     
-    $('#document_wrapper').attr('url', '#'+username+'/'+docname+(node ? "/"+node : ""));
+    $('#document_wrapper').attr('url', '#'+username+'/'+docname+(node ? "/"+node : "")+(comment ? "/"+comment : ""));
     $('#browser_wrapper').attr('url', '#'+username);
     return false;
   },
@@ -1664,7 +1665,7 @@ var Document = Backbone.View.extend({
     return false;
   },
   
-  loadDocument: function(username, docname, nodeid, mode) {
+  loadDocument: function(username, docname, nodeid, commentid, mode) {
     var that = this;
     that.mode = mode || (username === this.app.username ? 'edit' : 'show');
     
@@ -1687,7 +1688,17 @@ var Document = Backbone.View.extend({
         // Update browser graph reference
         app.browser.graph.set('objects', id, that.model);
         app.toggleView('document');
-        if (nodeid) app.scrollTo(nodeid);
+        
+        // Scroll to target node
+        if (nodeid && !commentid) app.scrollTo(nodeid);
+        
+        // Scroll to comment
+        if (nodeid && commentid) {
+          var targetNode = graph.get(nodeid.replace(/_/g, '/'));
+          that.enableCommentEditor(targetNode);
+          $('#'+nodeid+' > .comments-wrapper').show();
+          app.scrollTo(commentid);
+        }
         
         // TODO: register document for realtime sessions
         // remote.Session.registerDocument(id);
@@ -1700,32 +1711,32 @@ var Document = Backbone.View.extend({
     $('#document_tab').show();
     
     // Already loaded - no need to fetch it
-    if (id) {
-      // TODO: check if there are changes from a realtime session
-      init(id);
-    } else {
-      $('#document_tab').html('&nbsp;&nbsp;&nbsp;Loading...');
-      $.ajax({
-        type: "GET",
-        url: "/documents/"+username+"/"+docname,
-        dataType: "json",
-        success: function(res) {
-          if (res.status === 'error') {
-            $('#document_tab').html('&nbsp;&nbsp;&nbsp; Document not found');
-            $('#document_wrapper').html("<div class=\"notification error\">The requested document couldn't be found.</div>");
-            app.toggleView('document');
-          } else {
-            graph.merge(res.graph);
-            init(res.id);
-          }
-        },
-        error: function(err) {
-          $('#document_tab').html('&nbsp;&nbsp;&nbsp; Document not found.');
+    // if (id) {
+    //   // TODO: check if there are changes from a realtime session
+    //   init(id);
+    // } else {
+    $('#document_tab').html('&nbsp;&nbsp;&nbsp;Loading...');
+    $.ajax({
+      type: "GET",
+      url: "/documents/"+username+"/"+docname,
+      dataType: "json",
+      success: function(res) {
+        if (res.status === 'error') {
+          $('#document_tab').html('&nbsp;&nbsp;&nbsp; Document not found');
           $('#document_wrapper').html("<div class=\"notification error\">The requested document couldn't be found.</div>");
           app.toggleView('document');
+        } else {
+          graph.merge(res.graph);
+          init(res.id);
         }
-      });
-    }
+      },
+      error: function(err) {
+        $('#document_tab').html('&nbsp;&nbsp;&nbsp; Document not found.');
+        $('#document_wrapper').html("<div class=\"notification error\">The requested document couldn't be found.</div>");
+        app.toggleView('document');
+      }
+    });
+    // }
   },
   
   closeDocument: function() {
@@ -1860,7 +1871,7 @@ var Document = Backbone.View.extend({
       node: this.selectedNode._id,
       document: this.model._id,
       created_at: new Date(),
-      user: '/user/'+app.username,
+      creator: '/user/'+app.username,
       content: this.commentEditor.content()
     });
     
@@ -1873,20 +1884,23 @@ var Document = Backbone.View.extend({
     return false;
   },
   
-  enableCommentEditor: function() {
+  enableCommentEditor: function(node) {
+    
+    node = node ? node : this.selectedNode;
     var that = this;
     
     // Render comments
-    var wrapper = $('#'+this.selectedNode.html_id+' > .comments-wrapper');
+    var wrapper = $('#'+node.html_id+' > .comments-wrapper');
     if (wrapper.length === 0) return;
-    wrapper.html(_.tpl('comments', {node: this.selectedNode}));
+    wrapper.html(_.tpl('comments', {node: node}));
     
-    var count = this.selectedNode.get('comments') ? this.selectedNode.get('comments').length : 0;
+    var comments = node.get('comments');
+    var count = comments && comments.length > 0 ? comments.length : "";
     
     // Update comment count
-    $('#'+this.selectedNode.html_id+' > .operations a.toggle-comments span').html(count);
+    $('#'+node.html_id+' > .operations a.toggle-comments span').html(count);
     
-    var $content = $('#'+this.selectedNode.html_id+' > .comments-wrapper .comment-content');
+    var $content = $('#'+node.html_id+' > .comments-wrapper .comment-content');
     function activate() {
       that.commentEditor = new Proper();
       that.commentEditor.activate($content, {
@@ -2686,9 +2700,22 @@ var Header = Backbone.View.extend({
 
   render: function() {
     var username = this.options.app.username;
+    var notifications = graph.find({"type|=": "/type/notification", "recipient": "/user/"+username});
+
+    var SORT_BY_DATE_DESC = function(v1, v2) {
+      var v1 = v1.value.get('created_at'),
+          v2 = v2.value.get('created_at');
+      return v1 === v2 ? 0 : (v1 > v2 ? -1 : 1);
+    }
+    
+    notifications = notifications.sort(SORT_BY_DATE_DESC);
+    
     // Render login-state
     $(this.el).html(_.tpl('header', {
-      user: graph.get('/user/'+username)
+      user: graph.get('/user/'+username),
+      notifications: notifications,
+      count: notifications.select(function(n) { return !n.get('read')}).length,
+      notifications_active: this.notificationsActive
     }));
   }
 });
@@ -2720,12 +2747,59 @@ var Application = Backbone.View.extend({
     'click a.toggle-edit-mode': 'toggleEditMode',
     'click a.toggle-show-mode': 'toggleShowMode',
     'click a.toggle-user-settings': 'toggleUserSettings',
-    'submit #signup-form': 'registerUser'
+    'submit #signup-form': 'registerUser',
+    'click a.toggle-notifications': 'toggleNotifications',
+    'click #event_notifications a .notification': 'hideNotifications'
   },
 
   login: function(e) {
     this.authenticate();
     return false;
+  },
+    
+  // Triggered by toggleNotifications
+  // Triggers markAllRead
+  showNotifications: function() {
+    this.header.notificationsActive = true;
+    this.header.render();
+  },
+  
+  // Triggered by toggleNotifications and when clicking a notification
+  // Triggers count reset (to zero)
+  hideNotifications: function() {
+    // Mark all notifications as read
+    var notifications = graph.find({"type|=": "/type/notification", "recipient": "/user/"+app.username});
+    var unread = notifications.select(function(n) { return !n.get('read')});
+    unread.each(function(n) {
+      n.set({read: true});
+    });
+    this.header.notificationsActive = false;
+    this.header.render();
+  },
+  
+  toggleNotifications: function() {
+    $('#event_notifications').hasClass('active') ? this.hideNotifications() : this.showNotifications();
+    return false;
+  },
+  
+  loadNotifications: function() {
+    var that = this;
+    $.ajax({
+      type: "GET",
+      url: "/notifications",
+      dataType: "json",
+      success: function(notifications) {
+        var newNodes = {};
+        _.each(notifications, function(n, key) {
+          // Only merge in if not already there
+          if (!graph.get(key)) {
+            newNodes[key] = n;
+          }
+        });
+        graph.merge(newNodes);
+        that.header.render();
+      }
+    });
   },
   
   newDocument: function() {
@@ -2770,7 +2844,6 @@ var Application = Backbone.View.extend({
   searchDocs: function(searchstr) {
     app.browser.load({"type": "keyword", "value": encodeURI(searchstr)});
     $('#browser_wrapper').attr('url', '#search/'+encodeURI(searchstr));
-    
     app.browser.bind('loaded', function() {
       app.toggleView('browser');
     });
@@ -2879,9 +2952,7 @@ var Application = Backbone.View.extend({
         that.browser.render();
         that.render();
         $('#document_tab').hide();
-        
         app.toggleStartpage();
-        
         controller.saveLocation('');
         $('.new-document').hide();
       }
@@ -2953,9 +3024,12 @@ var Application = Backbone.View.extend({
       that.browser.bind('loaded', function() {
         that.toggleView('browser');
       });
-      
       controller.saveLocation('#'+that.username);
     });
+    
+    setInterval(function() {
+      that.loadNotifications();
+    }, 5000);
     
     that.render();
   },
@@ -3173,8 +3247,7 @@ var remote,                              // Remote handle for server-side method
     
     // Prevent exit when there are unsaved changes
     window.onbeforeunload = confirmExit;
-    function confirmExit()
-    {
+    function confirmExit() {
       if (graph.dirtyNodes().length>0) return "You have unsynced changes, which will be lost. Are you sure you want to leave this page?";
     }
     
