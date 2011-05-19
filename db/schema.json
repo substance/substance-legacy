@@ -18,7 +18,7 @@
       }
     }
   },
-
+  
   "/config/substance": {
     "type": "/type/config",
     "document_types": ["/type/qaa", "/type/manual", "/type/article"],
@@ -99,6 +99,133 @@
       }
     }
   },
+  
+  "/type/event": {
+    "_id": "/type/event",
+    "type": "/type/type",
+    "properties": {
+      "event_type": {
+        "name": "Event Type",
+        "unique": true,
+        "type": "string",
+        "required": true
+      },
+      "message": {
+        "name": "Event message",
+        "unique": true,
+        "type": "string",
+        "required": true
+      },
+      "creator": {
+        "name": "User causing the event",
+        "unique": true,
+        "type": "/type/user",
+        "required": true
+      },
+      "link": {
+        "name": "Link",
+        "unique": true,
+        "type": "string",
+        "required": true
+      },
+      "created_at": {
+        "name": "Created at",
+        "unique": true,
+        "type": "date",
+        "required": true
+      }
+    },
+    "indexes": {
+      "by_date": ["created_at"],
+      "by_event_type_and_date": ["event_type", "created_at"]
+    }
+  },
+  
+  "/type/notification": {
+    "_id": "/type/notification",
+    "type": "/type/type",
+    "properties": {
+      "event": {
+        "name": "Associated Event",
+        "unique": true,
+        "type": "/type/event",
+        "required": true
+      },
+      "recipient": {
+        "name": "Recipient",
+        "unique": true,
+        "type": "/type/user",
+        "required": true
+      },
+      "read": {
+        "name": "Read",
+        "type": "boolean",
+        "unique": true,
+        "default": false
+      },
+      "created_at": {
+        "name": "Created at",
+        "unique": true,
+        "type": "date",
+        "required": true
+      },
+      "event_type": {
+        "name": "Event Type",
+        "unique": true,
+        "type": "string"
+      },
+      "message": {
+        "name": "Event message",
+        "unique": true,
+        "type": "string"
+      },
+      "link": {
+        "name": "Link",
+        "unique": true,
+        "type": "string"
+      }
+    },
+    "indexes": {
+      "by_recipient": ["recipient"],
+      "by_date": ["created_at"],
+      "by_recipient_and_date": ["recipient", "created_at"] 
+    }
+  },
+  
+  "/type/bookmark": {
+    "_id": "/type/bookmark",
+    "type": "/type/type",
+    "properties": {
+      "creator": {
+        "name": "Creator",
+        "unique": true,
+        "type": "/type/user",
+        "required": true,
+        "meta": {}
+      },
+      "document": {
+        "name": "Document",
+        "type": "/type/document",
+        "unique": true,
+        "required": true
+      },
+      "node": {
+        "name": "Referenced Node",
+        "type": ["/type/text", "/type/section", "/type/quote", "/type/image", "/type/resource"],
+        "unique": true,
+        "required": true
+      },
+      "created_at": {
+        "name": "Created at",
+        "unique": true,
+        "type": "date",
+        "required": true
+      }
+    },
+    "indexes": {
+      "by_creator": ["creator"]
+    }
+  },
 
   "/type/subscription": {
     "_id": "/type/subscription",
@@ -138,8 +265,8 @@
         "unique": true,
         "required": true
       },
-      "user": {
-        "name": "User",
+      "creator": {
+        "name": "Creator",
         "type": "/type/user",
         "unique": true,
         "required": true
@@ -192,8 +319,7 @@
         "unique": true,
         "type": "/type/user",
         "required": true,
-        "meta": {
-        }
+        "meta": {}
       },
       "created_at": {
         "name": "Created at",
