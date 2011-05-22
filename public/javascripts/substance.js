@@ -199,6 +199,25 @@ Helpers.renderTemplate = _.renderTemplate = function(tpl, view, helpers) {
   return template(view, helpers || {});
 };
 
+
+_.slug = function(str) {
+  str = str.replace(/^\s+|\s+$/g, ''); // trim
+  str = str.toLowerCase();
+  
+  // remove accents, swap ñ for n, etc
+  var from = "àáäâèéëêìíïîòóöôùúüûñç·/_,:;";
+  var to   = "aaaaeeeeiiiioooouuuunc------";
+  for (var i=0, l=from.length ; i<l ; i++) {
+    str = str.replace(new RegExp(from.charAt(i), 'g'), to.charAt(i));
+  }
+
+  str = str.replace(/[^a-z0-9 -]/g, '') // remove invalid chars
+    .replace(/\s+/g, '-') // collapse whitespace and replace by -
+    .replace(/-+/g, '-'); // collapse dashes
+
+  return str;
+}
+
 // Render Underscore templates
 _.tpl = function(tpl, ctx) {
   source = $("script[name="+tpl+"]").html();
@@ -1250,14 +1269,15 @@ UI.MultiStringEditor = Backbone.View.extend({
     }));
   }
 });
-function addEmptyDoc(type, name) {
+function addEmptyDoc(type, name, title) {
   var docType = graph.get(type);
   var doc = graph.set(Data.uuid('/document/'+ app.username +'/'), docType.meta.template);
   doc.set({
     creator: "/user/"+app.username,
     created_at: new Date(),
     updated_at: new Date(),
-    name: name
+    name: name,
+    title: title
   });
   return doc;
 };
@@ -1639,8 +1659,8 @@ var Document = Backbone.View.extend({
     });
   },
   
-  newDocument: function(type, name) {
-    this.model = addEmptyDoc(type, name);
+  newDocument: function(type, name, title) {
+    this.model = addEmptyDoc(type, name, title);
     
     this.status = null;
     this.mode = 'edit';
@@ -2339,7 +2359,8 @@ var DocumentBrowser = Backbone.View.extend({
       this.documents = this.documents.sort(DESC_BY_UPDATED_AT);
       $(this.el).html(_.tpl('document_browser', {
         documents: this.documents,
-        user: that.query.type === 'user' ? that.graph.get('/user/'+that.query.value) : null
+        user: that.query.type === 'user' ? that.graph.get('/user/'+that.query.value) : null,
+        query: that.query
       }));
       
       if (this.loaded) this.facets.render();
@@ -2640,7 +2661,7 @@ var BrowserTab = Backbone.View.extend({
       switch (this.browser.query.type){
         case 'user': queryDescr = this.browser.query.value+"'s documents"; break;
         case 'recent': queryDescr = 'Recent Documents'; break;
-        default : queryDescr = 'Documents for &quot;'+this.browser.query.value+'&quot;';
+        default : queryDescr = 'Documents matching &quot;'+this.browser.query.value+'&quot;';
       }
     } else {
       queryDescr = 'Type to search ...';
@@ -2678,7 +2699,7 @@ var Header = Backbone.View.extend({
     var input = $(e.currentTarget)
     if (input.val() === '') {
       input.addClass('hint');
-      input.val('username');
+      input.val('Username');
     }
   },
   
@@ -2694,7 +2715,7 @@ var Header = Backbone.View.extend({
     var input = $(e.currentTarget)
     if (input.val() === '') {
       input.addClass('hint');
-      input.val('password');
+      input.val('Password');
     }
   },
 
@@ -2731,7 +2752,6 @@ var Application = Backbone.View.extend({
     'click #document_toggle': 'showDocument',
     'click a.load-document': 'loadDocument',
     'click a.save-document': 'saveDocument',
-    'click a.logout': 'logout',
     'click a.signup': 'toggleSignup',
     'click .tab': 'switchTab',
     'click a.show-attributes': 'showAttributes',
@@ -2746,9 +2766,11 @@ var Application = Backbone.View.extend({
     'click a.toggle-startpage': 'toggleStartpage',
     'click a.toggle-edit-mode': 'toggleEditMode',
     'click a.toggle-show-mode': 'toggleShowMode',
-    'click a.toggle-user-settings': 'toggleUserSettings',
+    'click .toggle.logout': 'logout',
+    'click .toggle.user-settings': 'toggleUserSettings',
+    'click .toggle.user-profile': 'toggleUserProfile',
     'submit #signup-form': 'registerUser',
-    'click a.toggle-notifications': 'toggleNotifications',
+    'click .toggle.notifications': 'toggleNotifications',
     'click #event_notifications a .notification': 'hideNotifications'
   },
 
@@ -2800,6 +2822,11 @@ var Application = Backbone.View.extend({
         that.header.render();
       }
     });
+  },
+  
+  toggleUserProfile: function() {
+    app.browser.load({"type": "user", "value": this.username});
+    app.toggleView('browser');
   },
   
   newDocument: function() {
@@ -2869,7 +2896,8 @@ var Application = Backbone.View.extend({
   
   createDocument: function(e) {
     var that = this;
-    var name = $('#create_document input[name=new_document_name]').val();
+    var title = $('#create_document input[name=new_document_name]').val();
+    var name = _.slug(title);
     var type = "/type/article"; // $('#create_document select[name=document_type]').val();
     
     if (new RegExp(graph.get('/type/document').get('properties', 'name').validator).test(name)) {
@@ -2881,7 +2909,7 @@ var Application = Backbone.View.extend({
         dataType: "json",
         success: function(res) {
           if (res.status === 'error') {
-            that.document.newDocument(type, name);
+            that.document.newDocument(type, name, title);
           } else {
             $('#create_document input[name=new_document_name]').addClass('error');
             $('#new_document_name_message').html('This document name is already taken.');            
@@ -2895,7 +2923,7 @@ var Application = Backbone.View.extend({
       return false;
     } else {
       $('#create_document input[name=new_document_name]').addClass('error');
-      $('#new_document_name_message').html('Invalid document name. No spaces or special characters allowed.');
+      $('#new_document_name_message').html('Invalid document name. Check your input');
     }
     return false;
   },
@@ -2904,7 +2932,7 @@ var Application = Backbone.View.extend({
     var user = app.document.model.get('creator').get('username');
     var name = app.document.model.get('name');
     
-    app.document.loadDocument(user, name, null, 'edit');
+    app.document.loadDocument(user, name, null, null, 'edit');
     return false;
   },
   
@@ -2912,7 +2940,7 @@ var Application = Backbone.View.extend({
     var user = app.document.model.get('creator').get('username');
     var name = app.document.model.get('name');
     
-    app.document.loadDocument(user, name, null, 'show');
+    app.document.loadDocument(user, name, null, null, 'show');
     return false;
   },
   
@@ -3029,7 +3057,7 @@ var Application = Backbone.View.extend({
     
     setInterval(function() {
       that.loadNotifications();
-    }, 5000);
+    }, 30000);
     
     that.render();
   },
