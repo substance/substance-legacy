@@ -77,7 +77,7 @@ var BrowserTab = Backbone.View.extend({
       switch (this.browser.query.type){
         case 'user': queryDescr = this.browser.query.value+"'s documents"; break;
         case 'recent': queryDescr = 'Recent Documents'; break;
-        default : queryDescr = 'Documents for &quot;'+this.browser.query.value+'&quot;';
+        default : queryDescr = 'Documents matching &quot;'+this.browser.query.value+'&quot;';
       }
     } else {
       queryDescr = 'Type to search ...';

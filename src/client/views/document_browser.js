@@ -76,7 +76,8 @@ var DocumentBrowser = Backbone.View.extend({
       this.documents = this.documents.sort(DESC_BY_UPDATED_AT);
       $(this.el).html(_.tpl('document_browser', {
         documents: this.documents,
-        user: that.query.type === 'user' ? that.graph.get('/user/'+that.query.value) : null
+        user: that.query.type === 'user' ? that.graph.get('/user/'+that.query.value) : null,
+        query: that.query
       }));
       
       if (this.loaded) this.facets.render();

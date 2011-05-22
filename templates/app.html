@@ -11,7 +11,6 @@
   </script>
   
   <script type="text/x-ejs-template" name="edit_attributes">
-    <h1>Attributes</h1>
     <dl class="document-attributes">
       <dt>Creator</dt>
       <dd><%= doc.get('creator').get('username') %></dd>
@@ -30,7 +29,6 @@
   </script>
   
   <script type="text/x-ejs-template" name="show_attributes">
-    <h1>Attributes</h1>
     <dl class="document-attributes">
       <dt>Creator</dt>
       <dd><%= doc.get('creator').get('name') || doc.get('creator').get('username') %></dd>
@@ -187,48 +185,57 @@
   
   <script type="text/x-ejs-template" name="header">
     <div class="title">
-      <a href="#recent"<% if (!user) { %> class="toggle-startpage"<% } %>>Substance.io</a>
+      <a href="#recent"<% if (!user) { %> class="toggle-startpage"<% } %>>Substance</a>
     </div>
     <div id="sync_state"></div>
-    <div id="login_state">
-      <div id="login">
-        <% if (user) { %>
-          <div>
-            <span id="event_notifications_wrapper"><a href="#" class="toggle-notifications"><%= count %></a>
-              <div id="event_notifications" class="<%= notifications_active ? "active" : "" %>">
-                <% notifications.each(function(n) { %>
-                  <a href="<%= n.get('event').get('link') %>"><div class="notification<%= n.get('read') ? " read": " unread" %>">
-                    <img src="/avatar/<%= n.get('event').get('creator')._id.split('/')[2]%>/50">
-                    <div class="message"><%= n.get('event').get('message') %></div>
-                    <div class="timestamp"><%= _.prettyDate(n.get('event').get('created_at')) %></div>
-                  </div></a>
-                <% }); %>
-                <% if (notifications.length == 0) { %>
-                  <div class="notification">
-                    <div class="message">Currently no notifications</div>
-                  </div>
-                <% } %>
-              </div>
-            </span>
-            <a href="#<%= user.get('username') %>"><b><%= user.get('name') || user.get('username') %></b></a>
-            <a href="#" class="toggle-user-settings">Account Settings</a>
-            <a href="#logout" class="logout">Logout</a>
-          </div>
-        <% } else { %>
-          <form id="login-form" class="auth-form">
-            <input type="text" name="username" class="hint" id="login-user" value="username">
-            <input type="password" name="password" class="hint" id="login-password" value="password">
-            <input type="submit" value="Login"/>
-          </form>
-          <br class="clear"/>
-          <div class="signup">
-            New to Substance? <a href="#signup" class="toggle-signup">Create an Account</a>
-          </div>
-        <% } %>
+    <% if (user) { %>
+      <div id="login_state" class="logged-in">
+        <div class="toggle notifications<%= notifications_active ? " active" : "" %>" title="Notifications">
+          <div class="icon"></div>
+          <div class="count"><span><%= count %></span></div>
+        </div>
+        <div class="toggle user-profile" title="User Profile">
+          <div class="icon"><img src="/avatar/<%= user.get('username') %>/25"/></div>
+          <div class="lbl"><span><%= user.get('name') %></span></div>
+        </div>
+        <div class="toggle user-settings" title="User Settings">
+          <div class="icon"></div>
+        </div>
+        <div class="toggle logout" title="Logout">
+          <div class="icon"></div>
+        </div>
+        
+        <div id="event_notifications" class="<%= notifications_active ? "active" : "" %>">
+          <% notifications.each(function(n) { %>
+            <a href="<%= n.get('event').get('link') %>"><div class="notification<%= n.get('read') ? " read": " unread" %>">
+              <img src="/avatar/<%= n.get('event').get('creator')._id.split('/')[2]%>/30">
+              <div class="message"><%= n.get('event').get('message') %></div>
+              <div class="timestamp"><%= _.prettyDate(n.get('event').get('created_at')) %></div>
+            </div></a>
+          <% }); %>
+          <% if (notifications.length == 0) { %>
+            <div class="notification">
+              <div class="message">Currently no notifications</div>
+            </div>
+          <% } %>
+        </div>
       </div>
-    </div>
+    <% } else { %>
+      <div id="login_state">
+        <form id="login-form" class="auth-form">
+          <input type="text" name="username" class="hint" id="login-user" value="Username">
+          <input type="password" name="password" class="hint" id="login-password" value="Password">
+          <input type="submit" value="Login"/>
+        </form>
+        <br class="clear"/>
+        <div class="signup">
+          New to Substance? <a href="#signup" class="toggle-signup">Create an Account</a>
+        </div>
+      </div>
+    <% } %>
     <br class="clear"/>
   </script>
+
 
   <script type="text/x-ejs-template" name="user_settings">
     <div id="user_settings" class="page-content">
@@ -290,19 +297,9 @@
   <script type="text/x-ejs-template" name="new_document">
     <div id="new_document" class="page-content">
       <h1>New Document</h1>
-      <form id="create_document">
-        <!--<div>
-          <label for="document_type">Document Type:<span>Choose from various document types</span></label>
-          <select id="documen_type" name="document_type">
-            <option value="/type/article">Article</option>
-            <option value="/type/manual">Manual</option>
-            <option value="/type/qaa">Interview</option>
-          </select>
-          <div class="input-messages"></div>
-        </div>-->
-        
+      <form id="create_document">        
         <div>
-          <label for="new_document_name">Document ID:<span>http://substance.io/#USERNAME/ID</span></label>
+          <label for="new_document_name">Document Name:<span></span></label>
           <input type="text" id="new_document_name" name="new_document_name"/>
           <div class="input-message" id="new_document_name_message"></div>
         </div>
@@ -333,7 +330,7 @@
   
   <script type="text/x-handlebars-template" name="browser_not_supported">
     <div class="browser-not-supported">
-      <h1>Substance.io
+      <h1>Substance
         <p>Open Documents For The Web</p>
       </h1>
       <div></div>
@@ -393,32 +390,42 @@
     </div>
   
     <div id="browser_inner_wrapper">
-      <% if (user) { %>
-        <div id="user_profile">
+      
+      <div id="card_file">
+        <% if (user) { %>
           <div class="container">
             <div class="avatar">
-              <img<% if (user.get('username') === app.username) { %> title="Change your avatar at Gravatar.com"<% } %> class="left" src="<%= _.gravatar(user.get('email'), 100) %>"/>
+              <img<% if (user.get('username') === app.username) { %> title="Change your avatar at Gravatar.com"<% } %> class="left" src="/avatar/<%= user.get('username') %>/100"/>
             </div>
             <div class="username">
               <h1><%= user.get('name') %></h1>
               <p><em>as</em> <b><%= user.get('username') %></b> <em>since</em> <%= _.date(user.get('created_at')) %></p>
-            </div>
-            <div class="attributes">
-              <% if (user.get('location')) { %>
-                <span><em>Located in</em> <%= user.get('location') %></span>
-              <% } %>
               
-              <% if (user.get('company')) { %>
-                <span><em>Works at</em> <%= user.get('company') %></span>
-              <% } %>
-              
-              <% if (user.get('website')) { %>
-                <span><em>Website at</em> <a target="_blank" href="<%= user.get('website') %>"><%= user.get('website') %></a></span>
-              <% } %>
+              <div class="attributes">
+                <% if (user.get('location')) { %>
+                  <div><em>Located in</em> <%= user.get('location') %></div>
+                <% } %>
+
+                <% if (user.get('company')) { %>
+                  <div><em>Works at</em> <%= user.get('company') %></div>
+                <% } %>
+
+                <% if (user.get('website')) { %>
+                  <div><em>Website at</em> <a target="_blank" href="<%= user.get('website') %>"><%= user.get('website') %></a></div>
+                <% } %>
+              </div>
             </div>
           </div>
-        </div>
-      <% } %>
+        <% } else { %>
+          <% if (query.type == "recent") { %>
+            <h1>Recent Documents</h1>
+          <% } else { %>
+            <h1>Documents matching &quot;<%= query.value %>&quot;</h1>
+          <% } %>
+        <% } %>
+        
+        <h2><%= documents.length %> Document<%= documents.length > 1 ? 's' : '' %></h2>
+      </div>
     
       <% if (documents.length > 0) { %>
         <div id="browser">
@@ -427,40 +434,31 @@
           </div>
           
           <div id="documents">
-            <h2><%= documents.length %> Document<%= documents.length > 1 ? 's' : '' %></h2>
-            <table>
-              <thead>
-                <tr><th>Title</th><th>Author</th><th>Published</th><th class="right-align">Last modified</th></tr>
-              </thead>
-              <tbody>
-              <% documents.each(function(doc) { %> 
-                <tr class="<%= doc.get('published_on') ? 'published' : 'draft' %>">
-                  <th><a class="link load-document" href="#<%= doc.get('creator')._id.split('/')[2] %>/<%= doc.get('name') %>" document="<%= doc._id %>" user="<%= doc.get('creator')._id.split('/')[2] %>" name="<%= doc.get('name') %>"><%= doc.get('title') || 'Untitled' %><span class="document-type"><%= doc.type.key.split('/')[2] %></span></a></th>
-                  <td><%= doc.get('creator').get('name') || doc.get('creator').get('username') || doc.get('creator')._id.split('/')[2]%></td>
-                  <td>
-                    <% if (doc.get('published_on')) { %>
-                      <%= _.date(doc.get('published_on')) %>
-                    <% } else { %>
-                      - - -
-                    <% } %>
-                  </td>
-                  <td class="right-align"><%= _.prettyDate(doc.get('updated_at')) %></td>
-                </tr>
-              <% }); %>
-              </tbody>
-            </table>
+            <% documents.each(function(doc) { %> 
+            <div class="document">
+              <div class="title"><a class="link load-document" href="#<%= doc.get('creator')._id.split('/')[2] %>/<%= doc.get('name') %>" document="<%= doc._id %>" user="<%= doc.get('creator')._id.split('/')[2] %>" name="<%= doc.get('name') %>"><%= doc.get('title') || 'Untitled' %></a></div>
+              <div class="author"><%= doc.get('creator').get('name') || doc.get('creator').get('username') || doc.get('creator')._id.split('/')[2] %></div>
+              <div class="dates">
+                <% if (doc.get('published_on')) { %>
+                  <div class="published-on" title="Published on"><%= _.date(doc.get('published_on')) %></div>
+                <% } %>
+                <div class="updated-at"><span>updated </span><%= _.prettyDate(doc.get('updated_at')) %></div>
+              </div>
+            </div>
+            <% }); %>
           </div>
         </div>
       <% } else { %>
-        <div id="documents">
-          <h2>No Documents ...</h2>
+        <div id="browser">
+          <div id="documents">
+            <h2>No Documents ...</h2>
+          </div>
         </div>
       <% } %>
     </div>
   </script>
   
   <script type="text/x-handlebars-template" name="facets">
-    <h2>Filter</h2>
     <div class="list">
       {{^facets}}
         <p class="no-filters">No filters available</p>
@@ -471,10 +469,10 @@
           <h3>{{property_name}}</h3>
           <ul class="facet-choices">
             {{#selected_facet_choices}}
-              <li class="facet-choice selected"><a href="#" class="remove-criterion" property="{{../property}}" operator="CONTAINS" value="{{key}}"><div class="tick-icon ticked"/>{{value}}<span class="item-count">{{item_count}}</span></a></li>
+              <li class="facet-choice selected"><a href="#" class="remove-criterion" property="{{../property}}" operator="CONTAINS" value="{{key}}">{{value}}<span class="item-count">{{item_count}}</span></a></li>
             {{/selected_facet_choices}}
             {{#facet_choices}}
-              <li class="facet-choice"><a href="#" class="add-criterion" property="{{../property}}" operator="CONTAINS" value="{{key}}"><div class="tick-icon"/>{{value}}<span class="item-count">{{item_count}}</span></a></li>
+              <li class="facet-choice"><a href="#" class="add-criterion" property="{{../property}}" operator="CONTAINS" value="{{key}}">{{value}}<span class="item-count">{{item_count}}</span></a></li>
             {{/facet_choices}}
           </ul>
         </div>
@@ -880,10 +878,10 @@
     </div>
     
     <div id="tabs">
-      <div id="browser_tab" class="tab" view="browser">
+      <div id="browser_tab" class="tab" view="browser" title="Browser">
       </div>
       
-      <div id="document_tab" class="tab hidden" view="document">
+      <div id="document_tab" class="tab hidden" view="document" title="Document">
       </div>
       
       <a href="#" class="action new-document hidden" title="Create a new document">
@@ -906,9 +904,10 @@
       
       </div>
     </div>
+    
     <div id="footer">
-      <div class="credits"><a href="http://substance.io#substance/substance">About</a> &middot; <a href="http://twitter.com/_substance" target="_new">Twitter</a> &middot; <a href="http://github.com/michael/substance" target="_new">Source Code</a> &middot; <a href="http://github.com/michael/substance/issues" target="_new">Report Bugs</a> &middot; <a href="http://news.ycombinator.com/item?id=2260865" target="_new">Discuss</a></div>
-      <div class="version"><a href="http://substance.io#substance/release-notes">Substance 0.2.1</a></div>
+      <div class="credits"><a href="http://substance.io#substance/substance">About</a> &middot; <a href="http://twitter.com/_substance" target="_new">Twitter</a> &middot; <a href="http://github.com/michael/substance" target="_new">Source Code</a> &middot; <a href="http://github.com/michael/substance/issues" target="_new">Report Bugs</a></div>
+      <div class="version"><a href="http://substance.io#substance/release-notes">Substance 0.3.0</a></div>
     </div>
   </div>
   

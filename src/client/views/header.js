@@ -22,7 +22,7 @@ var Header = Backbone.View.extend({
     var input = $(e.currentTarget)
     if (input.val() === '') {
       input.addClass('hint');
-      input.val('username');
+      input.val('Username');
     }
   },
   
@@ -38,7 +38,7 @@ var Header = Backbone.View.extend({
     var input = $(e.currentTarget)
     if (input.val() === '') {
       input.addClass('hint');
-      input.val('password');
+      input.val('Password');
     }
   },
 
