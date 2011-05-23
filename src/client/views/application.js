@@ -31,11 +31,20 @@ var Application = Backbone.View.extend({
     'click .toggle.notifications': 'toggleNotifications',
     'click .toggle-toc': 'toggleTOC',
     'click #event_notifications a .notification': 'hideNotifications',
-    'click #toc_wrapper': 'toggleTOC'
+    'click #toc_wrapper': 'toggleTOC',
+    'click a.open-notification': 'openNotification'
   },
 
   login: function(e) {
     this.authenticate();
+    return false;
+  },
+  
+  openNotification: function(e) {
+    var url = $(e.currentTarget).attr('href');
+    var urlParts = url.replace('#', '').split('/');
+    app.document.loadDocument(urlParts[0], urlParts[1], urlParts[2], urlParts[3], 'show');
+    $('#document_wrapper').attr('url', url);
     return false;
   },
     
@@ -508,14 +517,17 @@ var remote,                              // Remote handle for server-side method
       if (head.browser.opera && head.browser.version > "11.0") {
         return true;
       }
+      // if (head.browser.msie && head.browser.version > "9.0") {
+      //   return true;
+      // }
       return false;
     }
     
-    if (!browserSupported()) {
-      $('#container').html(_.tpl('browser_not_supported'));
-      $('#container').show();
-      return;
-    }
+    // if (!browserSupported()) {
+    //   $('#container').html(_.tpl('browser_not_supported'));
+    //   $('#container').show();
+    //   return;
+    // }
     
     $('#container').show();
     

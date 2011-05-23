@@ -71,8 +71,13 @@ Filters.logEvents = function() {
           }, function(err, event) {
             // Insert notifications
             var recipient = "/user/"+node.document.split('/')[2];
-            // Don't notify the the event creator itself
+            
+            
+            console.log(recipient);
+            console.log(node.creator);
+            // Don't notify the the document creator itself
             if (recipient !== node.creator) {
+              console.log('Saving Notification...');
               that.db.save({
                 _id: Data.uuid('/notification/'),
                 type: ["/type/notification"],
@@ -80,6 +85,9 @@ Filters.logEvents = function() {
                 read: false,
                 recipient: recipient,
                 created_at: event.created_at // use date of the event
+              }, function(err) {
+                console.log('sent notification');
+                console.log(err);
               });
             }
           });
