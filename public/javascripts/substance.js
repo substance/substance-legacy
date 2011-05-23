@@ -1069,7 +1069,7 @@ var ApplicationController = Backbone.Controller.extend({
   
   loadDocument: function(username, docname, node, comment) {
     app.browser.load({"type": "user", "value": username});
-    app.document.loadDocument(username, docname, node, comment);
+    app.document.loadDocument(username, docname, node, comment, 'show');
     
     $('#document_wrapper').attr('url', '#'+username+'/'+docname+(node ? "/"+node : "")+(comment ? "/"+comment : ""));
     $('#browser_wrapper').attr('url', '#'+username);
@@ -1784,7 +1784,7 @@ var Document = Backbone.View.extend({
     if (!this.model) return;
     
     // if (!noBlur) $('.content').blur();
-    $(document.activeElement).blur();
+    if (!noBlur) $(document.activeElement).blur();
     
     this.app.document.selectedNode = null;
     this.resetSelection();
@@ -2769,11 +2769,20 @@ var Application = Backbone.View.extend({
     'click .toggle.notifications': 'toggleNotifications',
     'click .toggle-toc': 'toggleTOC',
     'click #event_notifications a .notification': 'hideNotifications',
-    'click #toc_wrapper': 'toggleTOC'
+    'click #toc_wrapper': 'toggleTOC',
+    'click a.open-notification': 'openNotification'
   },
 
   login: function(e) {
     this.authenticate();
+    return false;
+  },
+  
+  openNotification: function(e) {
+    var url = $(e.currentTarget).attr('href');
+    var urlParts = url.replace('#', '').split('/');
+    app.document.loadDocument(urlParts[0], urlParts[1], urlParts[2], urlParts[3], 'show');
+    $('#document_wrapper').attr('url', url);
     return false;
   },
     
@@ -2784,14 +2793,7 @@ var Application = Backbone.View.extend({
     this.header.render();
   },
   
-  reset: function(e) {
-    console.log('yay');
-    return false;
-  },
-  
   toggleTOC: function() {
-    console.log('meeh');
-
     if ($('#toc_wrapper').is(":hidden")) {
       $('#toc_wrapper').slideDown();
       $('#document').offset().top;
@@ -2970,7 +2972,7 @@ var Application = Backbone.View.extend({
       var user = $(e.currentTarget).attr('user');
           name = $(e.currentTarget).attr('name');
 
-      app.document.loadDocument(user, name);
+      app.document.loadDocument(user, name, null,  null, 'show');
       if (controller) {
         controller.saveLocation($(e.currentTarget).attr('href'));
         $('#document_wrapper').attr('url', $(e.currentTarget).attr('href'));
@@ -3050,11 +3052,10 @@ var Application = Backbone.View.extend({
     //   notifier.notify(Notifications.CONNECTED);
     // });
     
-    
     // Reset when clicking on the body
-    $('#container').click(function(e) {
-      console.log('reset?');
-      app.document.reset();
+    $('body').click(function(e) {
+      app.document.reset(true);
+      return true;
     });
     
     // Cookie-based auto-authentication
@@ -3251,14 +3252,20 @@ var remote,                              // Remote handle for server-side method
       if (head.browser.webkit && head.browser.version > "533.0") {
         return true;
       }
+      if (head.browser.opera && head.browser.version > "11.0") {
+        return true;
+      }
+      // if (head.browser.msie && head.browser.version > "9.0") {
+      //   return true;
+      // }
       return false;
     }
     
-    if (!browserSupported()) {
-      $('#container').html(_.tpl('browser_not_supported'));
-      $('#container').show();
-      return;
-    }
+    // if (!browserSupported()) {
+    //   $('#container').html(_.tpl('browser_not_supported'));
+    //   $('#container').show();
+    //   return;
+    // }
     
     $('#container').show();
     
@@ -3272,7 +3279,6 @@ var remote,                              // Remote handle for server-side method
         $('#document .board').addClass('docked');
         $('#document .board').css('left', ($('#document').offset().left)+'px');
         $('#document .board').css('width', ($('#document').width())+'px');
-        // $('#document .board').css('min-height', ($('#document').height())+'px');
       } else {
         $('#document .board').css('left', '');
         $('#document .board').removeClass('docked');
