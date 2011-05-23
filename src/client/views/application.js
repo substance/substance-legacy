@@ -225,7 +225,7 @@ var Application = Backbone.View.extend({
       var user = $(e.currentTarget).attr('user');
           name = $(e.currentTarget).attr('name');
 
-      app.document.loadDocument(user, name);
+      app.document.loadDocument(user, name, null,  null, 'show');
       if (controller) {
         controller.saveLocation($(e.currentTarget).attr('href'));
         $('#document_wrapper').attr('url', $(e.currentTarget).attr('href'));
@@ -505,6 +505,9 @@ var remote,                              // Remote handle for server-side method
       if (head.browser.webkit && head.browser.version > "533.0") {
         return true;
       }
+      if (head.browser.opera && head.browser.version > "11.0") {
+        return true;
+      }
       return false;
     }
     
@@ -526,7 +529,6 @@ var remote,                              // Remote handle for server-side method
         $('#document .board').addClass('docked');
         $('#document .board').css('left', ($('#document').offset().left)+'px');
         $('#document .board').css('width', ($('#document').width())+'px');
-        // $('#document .board').css('min-height', ($('#document').height())+'px');
       } else {
         $('#document .board').css('left', '');
         $('#document .board').removeClass('docked');

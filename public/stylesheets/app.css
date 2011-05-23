@@ -376,13 +376,18 @@ div.browser-not-supported {
   text-align: center;
 }
 
+div.browser-not-supported h1 {
+  font-size: 50px;
+}
+
 div.browser-not-supported h1 p {
   position: relative;
   font-family: Helvetica, Arial;
   color: #777;
-  top: -20px;
+  top: 10px;
   font-size: 15px;
   padding: 0;
+  padding-bottom: 20px;
   margin: 0;
 }
 
