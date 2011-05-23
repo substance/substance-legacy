@@ -9,7 +9,7 @@ var ApplicationController = Backbone.Controller.extend({
   
   loadDocument: function(username, docname, node, comment) {
     app.browser.load({"type": "user", "value": username});
-    app.document.loadDocument(username, docname, node, comment);
+    app.document.loadDocument(username, docname, node, comment, 'show');
     
     $('#document_wrapper').attr('url', '#'+username+'/'+docname+(node ? "/"+node : "")+(comment ? "/"+comment : ""));
     $('#browser_wrapper').attr('url', '#'+username);
