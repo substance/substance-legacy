@@ -382,6 +382,8 @@
       activeElement = el;
       bindEvents(el);
       
+      $('.proper-commands').remove();
+      
       // Setup controls
       if (options.markup) {
         $controls = $(controlsTpl); 

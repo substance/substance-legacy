@@ -141,12 +141,11 @@ function scripts() {
 
 app.get('/', function(req, res) {
   html = fs.readFileSync(__dirname+ '/templates/app.html', 'utf-8');
-  var session = req.session ? req.session : {};
-  getNotifications(session.username, function(err, notifications) {
+  req.session = req.session ? req.session : {username: null};
+  getNotifications(req.session.username, function(err, notifications) {
     var sessionSeed = _.extend(_.clone(seed), notifications);
-    
     res.send(html.replace('{{{{seed}}}}', JSON.stringify(sessionSeed))
-                 .replace('{{{{session}}}}', JSON.stringify(session))
+                 .replace('{{{{session}}}}', JSON.stringify(req.session))
                  .replace('{{{{config}}}}', JSON.stringify(clientConfig()))
                  .replace('{{{{scripts}}}}', JSON.stringify(scripts())));
   });

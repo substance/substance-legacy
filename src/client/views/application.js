@@ -29,7 +29,9 @@ var Application = Backbone.View.extend({
     'click .toggle.user-profile': 'toggleUserProfile',
     'submit #signup-form': 'registerUser',
     'click .toggle.notifications': 'toggleNotifications',
-    'click #event_notifications a .notification': 'hideNotifications'
+    'click .toggle-toc': 'toggleTOC',
+    'click #event_notifications a .notification': 'hideNotifications',
+    'click #toc_wrapper': 'toggleTOC'
   },
 
   login: function(e) {
@@ -42,6 +44,30 @@ var Application = Backbone.View.extend({
   showNotifications: function() {
     this.header.notificationsActive = true;
     this.header.render();
+  },
+  
+  reset: function(e) {
+    console.log('yay');
+    return false;
+  },
+  
+  toggleTOC: function() {
+    console.log('meeh');
+
+    if ($('#toc_wrapper').is(":hidden")) {
+      $('#toc_wrapper').slideDown();
+      $('#document').offset().top;
+      // Scroll to toc top and remember old scroll
+      // this.prevScrollTop = document.body.scrollTop;
+      // $('#document .content-node.document').hide();
+      // document.body.scrollTop = $('#document').offset().top;
+    } else {
+      $('#toc_wrapper').slideUp();
+      // $('#document .content-node.document').show();
+      // document.body.scrollTop = this.prevScrollTop;
+    }
+
+    return false;
   },
   
   // Triggered by toggleNotifications and when clicking a notification
@@ -286,6 +312,13 @@ var Application = Backbone.View.extend({
     //   notifier.notify(Notifications.CONNECTED);
     // });
     
+    
+    // Reset when clicking on the body
+    $('#container').click(function(e) {
+      console.log('reset?');
+      app.document.reset();
+    });
+    
     // Cookie-based auto-authentication
     if (session.username) {
       graph.merge(session.seed);
@@ -495,21 +528,23 @@ var remote,                              // Remote handle for server-side method
       return document.body.scrollTop || document.documentElement.scrollTop;
     }
 
-    window.positionViewActions = function() {
+    window.positionBoard = function() {
       var main = document.getElementById('main');
-
       if (main.offsetTop - scrollTop() < 0) {
-        $('.view-actions').addClass('docked');
-        $('.view-actions').css('left', ($('#document_wrapper').offset().left-60)+'px')
+        $('#document .board').addClass('docked');
+        $('#document .board').css('left', ($('#document').offset().left)+'px');
+        $('#document .board').css('width', ($('#document').width())+'px');
+        // $('#document .board').css('min-height', ($('#document').height())+'px');
       } else {
-        $('.view-actions').css('left', '');
-        $('.view-actions').removeClass('docked');
+        $('#document .board').css('left', '');
+        $('#document .board').removeClass('docked');
       }
     }
     
-    positionViewActions();
-    $(window).bind('scroll', positionViewActions);
-    $(window).bind('resize', positionViewActions);
+    positionBoard();
+    
+    $(window).bind('scroll', positionBoard);
+    $(window).bind('resize', positionBoard);
 
     // Start the engines
     app = new Application({el: $('#container'), session: session});

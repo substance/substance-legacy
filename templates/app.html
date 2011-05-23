@@ -59,7 +59,7 @@
       <h1>Start writing.</h1>
       <form id="signup-form" class="auth-form">
         <div>
-          <label for="signup_user">Username:<span>http://substance.io/#USERNAME (No special characters)</span></label>
+          <label for="signup_user">Username:<span>http://substance.io/#USERNAME</span></label>
           <input type="text" id="signup_user" name="username"/>
           <div class="input-message" id="signup_user_message"></div>
         </div>
@@ -313,13 +313,6 @@
   </script>
   
   <script type="text/x-handlebars-template" name="document_wrapper">
-    <div id="document_actions" class="view-actions">
-      <a href="#" title="Read Document" class="toggle-show-mode view-action-icon read<%= mode !== 'edit' ? ' active' : '' %>"><span>Read</span></a>
-      <% if (doc && doc.get('creator')._id === '/user/'+app.username) { %>
-        <a href="#" title="Write Document" class="toggle-edit-mode view-action-icon write<%= mode === 'edit' ? ' active' : '' %>"><span>Write</span></a>
-        <a href="#" title="Delete Document" class="delete-document view-action-icon delete"><span>Delete</span></a>
-      <% } %>
-    </div>
     <div id="document_inner_wrapper">
       <div id="document">
         <p>No document loaded... You can either create a <em>New Document</em> or <em>Browse</em> existing ones.</p>
@@ -572,6 +565,27 @@
   
   <!-- content-node templates for the editor -->
   <script type="text/x-ejs-template" name="document">
+    
+    <div class="board">
+      <div class="toggle-toc"><div class="label">Contents</div></div>
+      
+      <div id="toc_wrapper">
+        <div class="toc-header">Table Of Contents</div>
+        <div id="toc">
+          <%= toc %>
+        </div>
+        <div style="document-separator">&nbsp;</div>
+      </div>
+      
+      <div id="document_actions" class="view-actions">
+        <a href="#" title="Read Document" class="toggle-show-mode view-action-icon read<%= edit ? '' : ' active' %>"><span>Read</span></a>
+
+        <% if (node && node.get('creator')._id === '/user/'+app.username) { %>
+          <a href="#" title="Write Document" class="toggle-edit-mode view-action-icon write<%= edit ? ' active' : '' %>"><span>Write</span></a>
+          <a href="#" title="Delete Document" class="delete-document view-action-icon delete"><span>Delete</span></a>
+        <% } %>
+      </div>
+    </div>
     <div id="<%= node.html_id %>" name=<%= node.key %> level="<%= level %>" class="content-node document level-<%= level %><%= edit ? " edit" : "" %>">
       <% if (edit) { %><div class="content-node-outline"><div class="cursor"><span></span></div></div><% } %>
       
@@ -604,16 +618,9 @@
         <% } %>
       </p>
       <div class="document-separator"></div>
-      <% if (!edit) { %>
-        <div id="toc-wrapper">
-          <div class="toc-header">Table Of Contents</div>
-          <div id="toc">
-            <%= toc %>
-          </div>
-        </div>
-      <% } %>
       <%= content %>
     </div>
+
   </script>
   
   <script type="text/x-handlebars-template" name="section">

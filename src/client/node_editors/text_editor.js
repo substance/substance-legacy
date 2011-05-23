@@ -6,11 +6,11 @@ var TextEditor = Backbone.View.extend({
   initialize: function() {
     var that = this;
     this.render();
-    
+
     this.$content = this.$('div.content');
     editor.activate(this.$content, {
       placeholder: 'Enter Text',
-      controlsTarget: $('#document_actions')
+      controlsTarget: $(this.el) // $('#document_actions')
     });
     
     // Update node when editor commands are applied
@@ -22,5 +22,6 @@ var TextEditor = Backbone.View.extend({
   },
   
   render: function() {
+    
   }
 });

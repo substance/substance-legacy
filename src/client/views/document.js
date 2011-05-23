@@ -257,6 +257,7 @@ var Document = Backbone.View.extend({
     var node = $(e.currentTarget).attr('node');
     app.scrollTo(node);
     controller.saveLocation($(e.currentTarget).attr('href'));
+    app.toggleTOC();
     return false;
   },
   
@@ -430,6 +431,8 @@ var Document = Backbone.View.extend({
         that.render();
         that.init();
         that.reset();
+        
+        window.positionBoard();
         
         that.trigger('changed');
         that.loadedDocuments[username+"/"+docname] = id;

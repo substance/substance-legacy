@@ -33,6 +33,7 @@ html {
   margin: 0; padding: 0; 
   -webkit-font-smoothing: antialiased;
 }
+
 img { border: none; }
 
 body { 
@@ -90,10 +91,10 @@ input[type=search], input[type=text], input[type=email], input[type=password], t
   background-color: #F6F7F2;
 
   border: solid 1px #d4d4d4;
-  height: 28px;
+/*  height: 28px;*/
   color: #777;
   width: 100%;
-  padding: 10px 6px;
+  padding: 5px 6px;
   font-size: 12px;
   
   -webkit-box-shadow: inset 1px 1px 4px #ddd;
@@ -720,7 +721,7 @@ div.browser-not-supported a:hover {
 #login_state .toggle:hover, #login_state .toggle.active { background: rgba(0,0,0, 0.1); }
 
 .toggle .icon {
-  opacity: 0.3;
+  opacity: 0.4;
   float: left;
   width: 35px;
   height: 35px;
@@ -739,12 +740,12 @@ div.browser-not-supported a:hover {
   float: left;
   margin-right: 4px;
   font-style: normal;
-  color: #898a88;
+  color: #6D6D6C;
   line-height: 35px;
 }
 
 .toggle.user-profile:hover .lbl {
-  color: #5E5E5D;
+  color: #4C4C4B;
 }
 
 .toggle.notifications .count span {
@@ -799,7 +800,7 @@ div.browser-not-supported a:hover {
   background: #C0C1BD;
   font-style: normal;
   position: absolute;
-  top: 35px;
+  top: 34px;
   left: 0px;
   right: 0px;
   z-index: 100000;
@@ -827,7 +828,7 @@ div.browser-not-supported a:hover {
   padding-top: 10px;
   font-size: 12px;
   margin-left: 0px;
-  border-left: 2px solid transparent;
+/*  border-left: 2px solid transparent;*/
 }
 
 
@@ -855,7 +856,7 @@ div.browser-not-supported a:hover {
 
 #login #event_notifications a { margin: 0; }
 
-#event_notifications div.notification:hover { border-left: 2px solid #444; }
+#event_notifications div.notification:hover { /*border-left: 2px solid #444;*/ }
 
 
 /* body > #container > #browser_wrapper > #documents
@@ -996,11 +997,6 @@ div.browser-not-supported a:hover {
 -------------------------------------------------------------------------------*/
 
 #document_wrapper { 
-/*  -webkit-border-radius:4px;
-  -moz-border-radius:   4px;
-  border-radius:        4px;*/
-  
-
   position: relative;
   margin: 0 180px 20px 100px;
 }
@@ -1024,11 +1020,6 @@ div.browser-not-supported a:hover {
   height: 200px;
 }
 
-.view-actions.docked {
-  position: fixed;
-  top: 0px;
-  left: 40px;
-}
 
 .view-actions a {
   border: none;
@@ -1106,19 +1097,13 @@ div.browser-not-supported a:hover {
   color: #000;
   position:relative;
   margin: 0;
-  
   padding: 0px 0 0px 0;
-  
   -webkit-box-shadow: 0px 1px 4px rgba(0,0,0,0.35), inset 0px 0px 1px rgba(255,255,255,0.15);
   -moz-box-shadow:    0px 1px 4px rgba(0,0,0,0.35), inset 0px 0px 1px rgba(255,255,255,0.15);
   box-shadow:         0px 1px 4px rgba(0,0,0,0.35), inset 0px 0px 1px rgba(255,255,255,0.15);
-
-    background: #fff;
-  
-  text-rendering:optimizeLegibility; 
+  background: #fff;
   font-family: 'Palatino Linotype', 'Book Antiqua', Palatino, FreeSerif, serif;
-  font-weight: lighter;
-  
+  -webkit-font-smoothing: subpixel-antialiased;
   font-size: 16px;
   line-height: 1.4em;
 }
@@ -1186,7 +1171,6 @@ div.browser-not-supported a:hover {
   font-weight: bold;
 }
 
-
 /* Increment Figure Counter */
 .content-node.image {
   counter-increment: figure;
@@ -1200,8 +1184,67 @@ div.browser-not-supported a:hover {
 /* body > #container > #document_wrapper > #document > #toc
 -------------------------------------------------------------------------------*/
 
-#document #toc-wrapper {
+#document .board {
+  position: absolute;
+  left: 0px;
+  right: 0px;
+  top: 0px;
+  background: #ccc;
+  z-index: 50000;
+}
+
+#document .board.docked {
+  position: fixed;
+  top: 0px;
+}
+
+#document #toc_wrapper {
+  -webkit-box-shadow: 0px 1px 4px rgba(0,0,0,0.35), inset 0px 0px 1px rgba(255,255,255,0.15);
+  -moz-box-shadow:    0px 1px 4px rgba(0,0,0,0.35), inset 0px 0px 1px rgba(255,255,255,0.15);
+  box-shadow:         0px 1px 4px rgba(0,0,0,0.35), inset 0px 0px 1px rgba(255,255,255,0.15);
+  
   display: none;
+  color: #fff;
+  background: #635849;
+  position: absolute;
+    
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 50000;
+}
+
+#document.sticky #toc_wrapper {
+  position: fixed;
+  top: 0px;
+  left
+}
+
+#document .toggle-toc {
+  position: absolute;
+  right: 30px;
+  top: 0px;
+  width: 40px;
+  height: 80px;
+  cursor: pointer;
+  background: #eee;
+  z-index: 100000;
+  text-shadow: #c0c0c0 3px 3px 5px;
+}
+
+#document .toggle-toc:hover {
+  background: #ccc;
+}
+
+#document .toggle-toc .label {
+  font-style: italic;
+  padding-left: 20px;
+  -webkit-transform: rotate(90deg); 
+  -moz-transform: rotate(90deg);
+}
+
+#document #toc_wrapper a {
+  background: #fff;
 }
 
 #document #toc {
@@ -1210,13 +1253,14 @@ div.browser-not-supported a:hover {
 
 .toc-header {
   font-size: 30px;
-  margin-top: 90px;
-  text-align: center;
-  margin-bottom: 70px;
+  padding-top: 90px;
+  padding-bottom: 20px;
+  margin-left: 100px;
+/*  text-align: center;*/
 }
 
 #toc ol {
-  margin: 2em;
+  margin: 0 2em;
   padding: .5em;
   list-style: none;
   counter-reset: item;
@@ -1230,19 +1274,18 @@ div.browser-not-supported a:hover {
 #document #toc > ol {
   margin: 30px 0;
   padding: 0;
-  margin-bottom: 30px;
 }
 
 #toc ol li {
-    display: block
-    margin: .5em 0;
+    display: block;
+/*    margin: .5em 0;*/
     padding-left: 3em;
     font-size: 16px;
 }
 
 #toc ol ol > li {
-  display: block
-  margin: .5em 0;
+  display: block;
+/*  margin: .5em 0;*/
   font-size: 16px;
 }
 
@@ -1251,8 +1294,8 @@ div.browser-not-supported a:hover {
 }
 
 #toc > ol > li a {
-  margin-bottom: 10px;
-  margin-top: 10px;
+/*  margin-bottom: 10px;*/
+/*  margin-top: 10px;*/
 }
 
 #toc ol li:before {
@@ -1313,8 +1356,9 @@ div.browser-not-supported a:hover {
 
 #document h1, #document h2, #document h3, #document h4, #document h5 {
   font-weight: normal;
-  margin: 2em 100px 0 100px;
-  padding-bottom: 1em;
+  margin: 0em 100px 0 100px;
+  /*  padding-bottom: 10px;*/
+  padding: 0;
   line-height: 1.6em;
 }
 
@@ -1477,6 +1521,7 @@ dd { color: #444; font-size: 1em;	margin: 0 0 0 155px; padding: 0; padding-left:
 .content-node.text > .content {
   margin: 0 100px;
 }
+
 
 .content-node.code {
   padding: 10px 0;
@@ -1899,7 +1944,7 @@ pre {
 
 #document .content-node.selected {
   background: #fff;
-  min-height: 100px;
+  min-height: 150px;
   
   -webkit-box-shadow: 0px 1px 4px rgba(0,0,0,0.35), inset 0px 0px 1px rgba(255,255,255,0.15);
   -moz-box-shadow:    0px 1px 4px rgba(0,0,0,0.35), inset 0px 0px 1px rgba(255,255,255,0.15);
@@ -2281,8 +2326,8 @@ pre {
 
 .proper-commands {
   position: absolute;
-  left: -11px;
-  top: 170px;
+  left: 20px;
+  top: 10px;
   width: 100px;
   margin-left: -10px;
   margin-right: -10px;
@@ -2296,13 +2341,14 @@ pre {
   float:left;
   width:30px;
   height:30px;
-  margin:0 2px 0 0;
+  margin: 1px;
   color:#999;
   font-size:9px;
   text-align:center;
   text-indent:-5000px;
   text-transform:uppercase;
-  opacity: 0.6;
+  opacity: 0.8;
+/*  background: #eee;*/
 
   -webkit-border-radius:4px;
   -moz-border-radius:   4px;
@@ -2314,7 +2360,7 @@ pre {
   border: none;
 }
 
-.proper-commands .command:hover { opacity: 1.0; }
+.proper-commands .command:hover { opacity: 1.0; background:rgba(0,0,0,0.12); }
 .proper-commands .command:active { background:rgba(0,0,0,0.12); }
 
 .proper-commands .command.selected {
