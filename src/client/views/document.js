@@ -520,7 +520,7 @@ var Document = Backbone.View.extend({
     if (!this.model) return;
     
     // if (!noBlur) $('.content').blur();
-    $(document.activeElement).blur();
+    if (!noBlur) $(document.activeElement).blur();
     
     this.app.document.selectedNode = null;
     this.resetSelection();

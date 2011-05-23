@@ -46,14 +46,7 @@ var Application = Backbone.View.extend({
     this.header.render();
   },
   
-  reset: function(e) {
-    console.log('yay');
-    return false;
-  },
-  
   toggleTOC: function() {
-    console.log('meeh');
-
     if ($('#toc_wrapper').is(":hidden")) {
       $('#toc_wrapper').slideDown();
       $('#document').offset().top;
@@ -312,11 +305,10 @@ var Application = Backbone.View.extend({
     //   notifier.notify(Notifications.CONNECTED);
     // });
     
-    
     // Reset when clicking on the body
-    $('#container').click(function(e) {
-      console.log('reset?');
-      app.document.reset();
+    $('body').click(function(e) {
+      app.document.reset(true);
+      return true;
     });
     
     // Cookie-based auto-authentication
