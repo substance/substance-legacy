@@ -63,6 +63,10 @@ _.slug = function(str) {
   return str;
 }
 
+_.scrollTop = function() {
+  return document.body.scrollTop || document.documentElement.scrollTop;
+}
+
 // Render Underscore templates
 _.tpl = function(tpl, ctx) {
   source = $("script[name="+tpl+"]").html();

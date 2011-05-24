@@ -447,7 +447,11 @@ var Document = Backbone.View.extend({
         // Scroll to comment
         if (nodeid && commentid) {
           var targetNode = graph.get(nodeid.replace(/_/g, '/'));
+          
+          that.selectedNode = targetNode;
+          that.trigger('select:node', that.selectedNode);
           that.enableCommentEditor(targetNode);
+          
           $('#'+nodeid+' > .comments-wrapper').show();
           app.scrollTo(commentid);
         }

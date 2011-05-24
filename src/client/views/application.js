@@ -57,16 +57,12 @@ var Application = Backbone.View.extend({
   
   toggleTOC: function() {
     if ($('#toc_wrapper').is(":hidden")) {
+      $('#document .board').addClass('active');
       $('#toc_wrapper').slideDown();
-      $('#document').offset().top;
-      // Scroll to toc top and remember old scroll
-      // this.prevScrollTop = document.body.scrollTop;
-      // $('#document .content-node.document').hide();
-      // document.body.scrollTop = $('#document').offset().top;
+      $('#toc_wrapper').css('top', Math.max(_.scrollTop()-$('#document').offset().top, 0));
     } else {
+      $('#document .board').removeClass('active');
       $('#toc_wrapper').slideUp();
-      // $('#document .content-node.document').show();
-      // document.body.scrollTop = this.prevScrollTop;
     }
 
     return false;
@@ -523,26 +519,31 @@ var remote,                              // Remote handle for server-side method
       return false;
     }
     
-    // if (!browserSupported()) {
-    //   $('#container').html(_.tpl('browser_not_supported'));
-    //   $('#container').show();
-    //   return;
-    // }
+    if (!browserSupported()) {
+      $('#container').html(_.tpl('browser_not_supported'));
+      $('#container').show();
+      return;
+    }
     
     $('#container').show();
     
-    function scrollTop() {
-      return document.body.scrollTop || document.documentElement.scrollTop;
-    }
+
 
     window.positionBoard = function() {
       var wrapper = document.getElementById('document_wrapper');
-      if (wrapper.offsetTop - scrollTop() < 0) {
+      if (wrapper.offsetTop - _.scrollTop() < 0) {
         $('#document .board').addClass('docked');
         $('#document .board').css('left', ($('#document').offset().left)+'px');
         $('#document .board').css('width', ($('#document').width())+'px');
+        
+        var tocOffset = $('#toc_wrapper').offset();
+        if (tocOffset && _.scrollTop() < tocOffset.top) {
+          $('#toc_wrapper').css('top', _.scrollTop()-$('#document').offset().top+"px");
+        }
+        
       } else {
         $('#document .board').css('left', '');
+        $('#toc_wrapper').css('top', 0);
         $('#document .board').removeClass('docked');
       }
     }
@@ -600,7 +601,7 @@ var remote,                              // Remote handle for server-side method
               resetWorkspace();
             }
           });
-        }, 4000);
+        }, 3000);
       }
     });
     

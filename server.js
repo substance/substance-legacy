@@ -162,12 +162,13 @@ app.get('/search/:search_str', function(req, res) {
 
 // Find documents by search string or user
 app.get('/documents/search/:type/:search_str', function(req, res) {
+  var username = req.session ? req.session.username : null
   if (req.params.type == 'recent') {
-    Document.recent(req.params.search_str, req.session.username, function(err, graph, count) {
+    Document.recent(req.params.search_str, username, function(err, graph, count) {
       res.send(JSON.stringify({graph: graph, count: count}));
     });
   } else {
-    Document.find(req.params.search_str, req.params.type, req.session.username, function(err, graph, count) {
+    Document.find(req.params.search_str, req.params.type, username, function(err, graph, count) {
       res.send(JSON.stringify({graph: graph, count: count}));
     });
   }

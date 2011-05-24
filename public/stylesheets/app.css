@@ -894,6 +894,16 @@ div.browser-not-supported a:hover {
   position: relative;
 }
 
+#documents .document .icon {
+  position: absolute;
+  left: 30px;
+  top: 20px;
+  width: 40px;
+  height: 40px;
+  opacity: 0.3;
+  background: url(../images/icons/black/article_16x16.png) center no-repeat;
+}
+
 #documents .document a {
   color: #635849;
 }
@@ -904,7 +914,7 @@ div.browser-not-supported a:hover {
 
 #documents .title {
   padding-top: 20px;
-  margin-left: 100px;
+  margin-left: 80px;
   margin-right: 200px;
   font-size: 20px;
 }
@@ -912,7 +922,7 @@ div.browser-not-supported a:hover {
 #documents .author {
   font-size: 14px;
   color: #999;
-  margin-left: 100px;
+  margin-left: 80px;
   margin-right: 200px;
   
 }
@@ -1213,7 +1223,8 @@ div.browser-not-supported a:hover {
   left: 0px;
   right: 0px;
   top: 0px;
-  background: #ccc;
+  
+/*  background: #ccc;*/
   z-index: 50000;
 }
 
@@ -1222,42 +1233,51 @@ div.browser-not-supported a:hover {
   top: 0px;
 }
 
+/*#document .board.active {
+  overflow: auto;
+  bottom: 0px;
+}*/
+
 #document #toc_wrapper {
   -webkit-box-shadow: 0px 1px 4px rgba(0,0,0,0.35), inset 0px 0px 1px rgba(255,255,255,0.15);
   -moz-box-shadow:    0px 1px 4px rgba(0,0,0,0.35), inset 0px 0px 1px rgba(255,255,255,0.15);
   box-shadow:         0px 1px 4px rgba(0,0,0,0.35), inset 0px 0px 1px rgba(255,255,255,0.15);
   
   display: none;
-  color: #fff;
-  background: #635849;
+  color: #635849;
+/*  background: #635849;*/
+  background: #DCDDD9;
+  
   position: absolute;
-    
-  top: 0;
-  left: 0;
-  right: 0;
+  top: 0px;
+  left: 0px;
+  right: 0px;
+  
   z-index: 50000;
 }
 
-#document.sticky #toc_wrapper {
+/*#document.sticky #toc_wrapper {
   position: fixed;
   top: 0px;
-  left
-}
+}*/
 
 #document .toggle-toc {
   position: absolute;
   right: 30px;
   top: 0px;
-  width: 40px;
-  height: 80px;
+  width: 35px;
+  height: 122px;
+  color: #fff;
   cursor: pointer;
-  background: #eee;
+  opacity: 0.8;
+  font-weight: normal;
+  background: url(../images/contents-toggle.png) right repeat-y;
   z-index: 100000;
-  text-shadow: #c0c0c0 3px 3px 5px;
 }
 
 #document .toggle-toc:hover {
-  background: #ccc;
+  opacity: 1.0;
+/*  background: #ccc;*/
 }
 
 #document .toggle-toc .label {

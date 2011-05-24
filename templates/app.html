@@ -113,12 +113,12 @@
                 <div class="descr">Embed images in your document</div>
               </li>
               <li>
-                <div>Publish</div>
-                <div class="descr">Publish and instantly share your articles</div>
+                <div>User Comments <small style="color: #bd0a0a;">NEW!</small></div>
+                <div class="descr">Comment on content fragments</div>
               </li>
               <li>
-                <div>Soon: Collaboration</div>
-                <div class="descr">Collaborative Editing in a team</div>
+                <div>Publish</div>
+                <div class="descr">Publish and instantly share your articles</div>
               </li>
             </ul>
           </div>
@@ -429,6 +429,7 @@
           <div id="documents">
             <% documents.each(function(doc) { %> 
             <div class="document">
+              <div class="icon published"></div>
               <div class="title"><a class="link load-document" href="#<%= doc.get('creator')._id.split('/')[2] %>/<%= doc.get('name') %>" document="<%= doc._id %>" user="<%= doc.get('creator')._id.split('/')[2] %>" name="<%= doc.get('name') %>"><%= doc.get('title') || 'Untitled' %></a></div>
               <div class="author"><%= doc.get('creator').get('name') || doc.get('creator').get('username') || doc.get('creator')._id.split('/')[2] %></div>
               <div class="dates">
@@ -566,16 +567,16 @@
   <!-- content-node templates for the editor -->
   <script type="text/x-ejs-template" name="document">
     
+    <div id="toc_wrapper">
+      <div class="toc-header">Table Of Contents</div>
+      <div id="toc">
+        <%= toc %>
+      </div>
+      <div style="document-separator">&nbsp;</div>
+    </div>
+    
     <div class="board">
       <div class="toggle-toc"><div class="label">Contents</div></div>
-      
-      <div id="toc_wrapper">
-        <div class="toc-header">Table Of Contents</div>
-        <div id="toc">
-          <%= toc %>
-        </div>
-        <div style="document-separator">&nbsp;</div>
-      </div>
       
       <div id="document_actions" class="view-actions">
         <a href="#" title="Read Document" class="toggle-show-mode view-action-icon read<%= edit ? '' : ' active' %>"><span>Read</span></a>
