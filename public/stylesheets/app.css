@@ -224,8 +224,6 @@ a.button:active { background: #98B247; }
   -moz-border-radius: 2px;
   -webkit-border-radius: 2px;
   border-radius: 2px;
-  
-  
   color: white;
 }
 
@@ -450,10 +448,31 @@ div.browser-not-supported a:hover {
   left: 2px;
 }
 
-#header #sync_state {
-  position: absolute;
+@-webkit-keyframes rotate {
+  from {
+    -webkit-transform: rotate(0deg);
+  }
+  to { 
+    -webkit-transform: rotate(360deg);
+  }
+}
+
+#sync_state {
+  position: fixed;
   padding-top: 15px;
-  left: 600px;
+  right: 20px;
+  top: 10px;
+  display: none;
+  background: #ccc;
+  width: 30px;
+  height: 30px;
+  background: url('/images/icons/black/spin_28x32.png') center center no-repeat;
+  
+  opacity: 0.5;
+  -webkit-animation-name:             rotate; 
+  -webkit-animation-duration:         2.0s; 
+  -webkit-animation-iteration-count:  infinite;
+  -webkit-animation-timing-function:  linear;
 }
 
 /* body > #container > #content_wrapper

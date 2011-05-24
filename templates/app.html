@@ -166,7 +166,7 @@
             </p>
             <div>
               <a href="http://substance.io#substance/contribute">
-                <div id="donations_total">$ 95.00</div>
+                <div id="donations_total">$ 195.00</div>
                 <div id="donations_total_label">contributed so far</div>
               </a>
               <form id="contribute_form" action="https://www.paypal.com/cgi-bin/webscr" method="post">
@@ -187,7 +187,7 @@
     <div class="title">
       <a href="#recent"<% if (!user) { %> class="toggle-startpage"<% } %>>Substance</a>
     </div>
-    <div id="sync_state"></div>
+    
     <% if (user) { %>
       <div id="login_state" class="logged-in">
         <div class="toggle notifications<%= notifications_active ? " active" : "" %>" title="Notifications">
@@ -917,6 +917,8 @@
       <div class="version"><a href="http://substance.io#substance/release-notes">Substance 0.3.0</a></div>
     </div>
   </div>
+  
+  <div id="sync_state"></div>
   
   <div id="notifications">
     <div class="wrapper">

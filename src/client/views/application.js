@@ -536,8 +536,8 @@ var remote,                              // Remote handle for server-side method
     }
 
     window.positionBoard = function() {
-      var main = document.getElementById('main');
-      if (main.offsetTop - scrollTop() < 0) {
+      var wrapper = document.getElementById('document_wrapper');
+      if (wrapper.offsetTop - scrollTop() < 0) {
         $('#document .board').addClass('docked');
         $('#document .board').css('left', ($('#document').offset().left)+'px');
         $('#document .board').css('width', ($('#document').width())+'px');
@@ -589,19 +589,18 @@ var remote,                              // Remote handle for server-side method
       if (!pendingSync) {
         pendingSync = true;
         setTimeout(function() {
-          $('#sync_state').html('Synchronizing...');
+          $('#sync_state').fadeIn(100);
           graph.sync(function(err, invalidNodes) {
             pendingSync = false;
             if (!err && invalidNodes.length === 0) {
-              $('#sync_state').html('Successfully synced.');
               setTimeout(function() {
-                $('#sync_state').html('');
-              }, 3000);
+                $('#sync_state').fadeOut(100);
+              }, 1500);
             } else {
               resetWorkspace();
             }
           });
-        }, 3000);
+        }, 4000);
       }
     });
     
