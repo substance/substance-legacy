@@ -373,6 +373,9 @@
           "facet": true
         }
       }
+    },
+    "indexes": {
+      "key": ["creator", "name"]
     }
   },
 
