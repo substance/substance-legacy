@@ -1175,11 +1175,9 @@ div.browser-not-supported a:hover {
 
 #document {
   counter-reset: section;
-  counter-reset: figure;
 }
 
 #document h1 {
-  
   counter-reset: sub-section;
   
   font-size: 30px;
