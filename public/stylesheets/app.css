@@ -888,6 +888,10 @@ div.browser-not-supported a:hover {
 
 #documents { margin-right: 250px; }
 
+#documents h2 {
+  padding: 30px;
+}
+
 #documents .document {
   border-bottom: 1px solid #eee;
   padding-bottom: 15px;
@@ -1083,6 +1087,7 @@ div.browser-not-supported a:hover {
 .view-action-icon.read { background: url(../images/icons/black/article_32x32.png) center no-repeat; }
 .view-action-icon.write { background: url(../images/icons/black/pen_32x32.png) center no-repeat; }
 .view-action-icon.delete { background: url(../images/icons/black/x_28x28.png) center no-repeat; }
+.view-action-icon.print { background: url(../images/icons/black/print_28x28.png) center no-repeat; }
 .view-action-icon.new { background: url(../images/icons/black/document_stroke_32x32.png) center no-repeat; }
 
 .view-action-icon.browse-user { background: url(../images/icons/black/document_stroke_32x32.png) center no-repeat; }
@@ -1168,10 +1173,13 @@ div.browser-not-supported a:hover {
 
 /* Numbering */
 
-#document {counter-reset: section}
+#document {
+  counter-reset: section;
+  counter-reset: figure;
+}
 
 #document h1 {
-  counter-reset: figure;
+  
   counter-reset: sub-section;
   
   font-size: 30px;
@@ -1211,7 +1219,7 @@ div.browser-not-supported a:hover {
 }
 
 .caption:before {
-  content: "Figure " counter(section) "." counter(figure) " ";
+  content: "Fig. " counter(figure) " ";
 }
 
 

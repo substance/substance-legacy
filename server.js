@@ -123,6 +123,7 @@ _.escapeHTML = function(string) {
 
 function clientConfig() {
   return {
+    "letterpress_url": config.letterpress_url,
     "transloadit": _.escapeHTML(JSON.stringify(config.transloadit))
   };
 }
@@ -334,6 +335,7 @@ app.get('/notifications', function(req, res) {
 
 function fetchGravatar(username, size, res, callback) {
   db.get("/user/"+username, function(err, node) {
+    if (err) return callback(err);
     var email = node.email || "";
     var host = 'www.gravatar.com';
     var query = "?s="+size+"&d=retro"; // (queryData && "?s=100" + queryData) || "";
@@ -363,6 +365,22 @@ app.get('/avatar/:username/:size', function(req, res) {
 
 // Returns the most recent version of the requested doc
 app.get('/documents/:username/:name', function(req, res) {
+  // var graph = new Data.Graph(seed, false).connect('couch', { url: config.couchdb_url});
+  // var qry = {
+  //   "type": "/type/document",
+  //   "creator": "/user/michael",
+  //   "name": "data-js",
+  //   "include": ["children*", "creator", "subjects", "entities"]
+  // };
+  // 
+  // graph.fetch(qry, function(err, nodes) {
+  //   if (err) return res.send({status: "error", error: err});
+  //   var result = nodes.toJSON();
+  //   var comments = [];
+  //   // TODO: get all comments as well
+  //   res.send({status: "ok", graph: nodes.toJSON(), id: "/user/michael"});    
+  // });
+  
   Document.get(req.params.username, req.params.name, function(err, graph, id) {
     if (err) return res.send({status: "error", error: err});
     res.send({status: "ok", graph: graph, id: id});

@@ -432,7 +432,7 @@ var Document = Backbone.View.extend({
         that.init();
         that.reset();
         
-        window.positionBoard();
+        // window.positionBoard();
         
         that.trigger('changed');
         that.loadedDocuments[username+"/"+docname] = id;

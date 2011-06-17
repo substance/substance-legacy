@@ -9,7 +9,7 @@ var ApplicationController = Backbone.Controller.extend({
   
   loadDocument: function(username, docname, node, comment) {
     app.browser.load({"type": "user", "value": username});
-    app.document.loadDocument(username, docname, node, comment, 'show');
+    app.document.loadDocument(username, docname, node, comment);
     
     $('#document_wrapper').attr('url', '#'+username+'/'+docname+(node ? "/"+node : "")+(comment ? "/"+comment : ""));
     $('#browser_wrapper').attr('url', '#'+username);
@@ -41,7 +41,6 @@ var ApplicationController = Backbone.Controller.extend({
   },
   
   searchDocs: function(searchstr) {
-    
     app.searchDocs(searchstr);
     return false;
   }

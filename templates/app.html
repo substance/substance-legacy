@@ -117,6 +117,10 @@
                 <div class="descr">Comment on content fragments</div>
               </li>
               <li>
+                <div>Print Documents <small style="color: #bd0a0a;">NEW!</small></div>
+                <div class="descr">Export to PDF/LaTeX</div>
+              </li>
+              <li>
                 <div>Publish</div>
                 <div class="descr">Publish and instantly share your articles</div>
               </li>
@@ -445,7 +449,7 @@
       <% } else { %>
         <div id="browser">
           <div id="documents">
-            <h2>No Documents ...</h2>
+            <h2>No Documents yet ...</h2>
           </div>
         </div>
       <% } %>
@@ -585,6 +589,7 @@
           <a href="#" title="Write Document" class="toggle-edit-mode view-action-icon write<%= edit ? ' active' : '' %>"><span>Write</span></a>
           <a href="#" title="Delete Document" class="delete-document view-action-icon delete"><span>Delete</span></a>
         <% } %>
+        <a href="<%= config.letterpress_url %>/pdf?url=http://<%= top.location.host %>/documents/<%= node.get('creator')._id.split('/')[2]+"/"+node.get('name') %>" target="_blank" title="Print Document (Experimental)" class="print-document view-action-icon print"><span>Print</span></a>
       </div>
     </div>
     <div id="<%= node.html_id %>" name=<%= node.key %> level="<%= level %>" class="content-node document level-<%= level %><%= edit ? " edit" : "" %>">
@@ -915,7 +920,7 @@
     
     <div id="footer">
       <div class="credits"><a href="http://substance.io#substance/substance">About</a> &middot; <a href="http://twitter.com/_substance" target="_new">Twitter</a> &middot; <a href="http://github.com/michael/substance" target="_new">Source Code</a> &middot; <a href="http://github.com/michael/substance/issues" target="_new">Report Bugs</a></div>
-      <div class="version"><a href="http://substance.io#substance/release-notes">Substance 0.3.0</a></div>
+      <div class="version"><a href="http://substance.io#substance/release-notes">Substance 0.3.1</a></div>
     </div>
   </div>
   
