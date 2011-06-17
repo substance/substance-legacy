@@ -1073,7 +1073,7 @@ var ApplicationController = Backbone.Controller.extend({
   
   loadDocument: function(username, docname, node, comment) {
     app.browser.load({"type": "user", "value": username});
-    app.document.loadDocument(username, docname, node, comment, 'show');
+    app.document.loadDocument(username, docname, node, comment);
     
     $('#document_wrapper').attr('url', '#'+username+'/'+docname+(node ? "/"+node : "")+(comment ? "/"+comment : ""));
     $('#browser_wrapper').attr('url', '#'+username);
@@ -1105,7 +1105,6 @@ var ApplicationController = Backbone.Controller.extend({
   },
   
   searchDocs: function(searchstr) {
-    
     app.searchDocs(searchstr);
     return false;
   }
@@ -1700,7 +1699,7 @@ var Document = Backbone.View.extend({
         that.init();
         that.reset();
         
-        window.positionBoard();
+        // window.positionBoard();
         
         that.trigger('changed');
         that.loadedDocuments[username+"/"+docname] = id;
@@ -2789,7 +2788,7 @@ var Application = Backbone.View.extend({
   openNotification: function(e) {
     var url = $(e.currentTarget).attr('href');
     var urlParts = url.replace('#', '').split('/');
-    app.document.loadDocument(urlParts[0], urlParts[1], urlParts[2], urlParts[3], 'show');
+    app.document.loadDocument(urlParts[0], urlParts[1], urlParts[2], urlParts[3]);
     $('#document_wrapper').attr('url', url);
     return false;
   },
@@ -2976,7 +2975,7 @@ var Application = Backbone.View.extend({
       var user = $(e.currentTarget).attr('user');
           name = $(e.currentTarget).attr('name');
 
-      app.document.loadDocument(user, name, null,  null, 'show');
+      app.document.loadDocument(user, name, null,  null);
       if (controller) {
         controller.saveLocation($(e.currentTarget).attr('href'));
         $('#document_wrapper').attr('url', $(e.currentTarget).attr('href'));
@@ -3275,29 +3274,29 @@ var remote,                              // Remote handle for server-side method
     
 
 
-    window.positionBoard = function() {
-      var wrapper = document.getElementById('document_wrapper');
-      if (wrapper.offsetTop - _.scrollTop() < 0) {
-        $('#document .board').addClass('docked');
-        $('#document .board').css('left', ($('#document').offset().left)+'px');
-        $('#document .board').css('width', ($('#document').width())+'px');
-        
-        var tocOffset = $('#toc_wrapper').offset();
-        if (tocOffset && _.scrollTop() < tocOffset.top) {
-          $('#toc_wrapper').css('top', _.scrollTop()-$('#document').offset().top+"px");
-        }
-        
-      } else {
-        $('#document .board').css('left', '');
-        $('#toc_wrapper').css('top', 0);
-        $('#document .board').removeClass('docked');
-      }
-    }
-    
-    positionBoard();
-    
-    $(window).bind('scroll', positionBoard);
-    $(window).bind('resize', positionBoard);
+    // window.positionBoard = function() {
+    //   var wrapper = document.getElementById('document_wrapper');
+    //   if (wrapper.offsetTop - _.scrollTop() < 0) {
+    //     $('#document .board').addClass('docked');
+    //     $('#document .board').css('left', ($('#document').offset().left)+'px');
+    //     $('#document .board').css('width', ($('#document').width())+'px');
+    //     
+    //     var tocOffset = $('#toc_wrapper').offset();
+    //     if (tocOffset && _.scrollTop() < tocOffset.top) {
+    //       $('#toc_wrapper').css('top', _.scrollTop()-$('#document').offset().top+"px");
+    //     }
+    //     
+    //   } else {
+    //     $('#document .board').css('left', '');
+    //     $('#toc_wrapper').css('top', 0);
+    //     $('#document .board').removeClass('docked');
+    //   }
+    // }
+    // 
+    // positionBoard();
+    // 
+    // $(window).bind('scroll', positionBoard);
+    // $(window).bind('resize', positionBoard);
 
     // Start the engines
     app = new Application({el: $('#container'), session: session});
