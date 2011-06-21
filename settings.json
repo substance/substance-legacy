@@ -13,7 +13,8 @@
       "datajs/data.js",
       "javascripts/data-0.2.0.js",
       "javascripts/backbone.js",
-      "javascripts/proper.js"
+      "javascripts/proper.js",
+      "javascripts/jquery.nivo.slider.pack.js"
     ],
     "production": [
       "javascripts/sanitize.js",
@@ -29,7 +30,8 @@
       "javascripts/data-0.2.0.js",
       "javascripts/backbone.min.js",
       "javascripts/proper.js",
-      "javascripts/substance.min.js"
+      "javascripts/substance.min.js",
+      "javascripts/jquery.nivo.slider.pack.js"
     ],
     "source": [
       "client/notifier.js",

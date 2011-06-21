@@ -67,6 +67,17 @@ h1, h2, h3, h4, h5, h6 { padding: 10px 0 5px 0; }
 h3, h4, h5, h6 { padding-top: 20px; }
 h2 { font-size: 160%; padding-bottom: 15px; }
 
+
+hr.separator {
+  display: block;
+  background: url(/images/separator.png) no-repeat center;
+  width: 920px;
+  height: 15px;
+  border: 0;
+  margin: 30px 0;
+}
+
+
 .border {
   border-top: 1px solid red;
   border-bottom: 1px solid green;
@@ -420,7 +431,7 @@ div.browser-not-supported a:hover {
 /* body > #container
 -------------------------------------------------------------------------------*/
 
-#container { margin: auto; padding: 0; max-width: 1200px; display:none; }
+#container { margin: auto; padding: 0; width: 1200px; display:none; }
 
 /* body > #container > #header
 -------------------------------------------------------------------------------*/
@@ -1230,7 +1241,6 @@ div.browser-not-supported a:hover {
   right: 0px;
   top: 0px;
   
-/*  background: #ccc;*/
   z-index: 50000;
 }
 
@@ -1239,10 +1249,6 @@ div.browser-not-supported a:hover {
   top: 0px;
 }
 
-/*#document .board.active {
-  overflow: auto;
-  bottom: 0px;
-}*/
 
 #document #toc_wrapper {
   -webkit-box-shadow: 0px 1px 4px rgba(0,0,0,0.35), inset 0px 0px 1px rgba(255,255,255,0.15);
@@ -1262,11 +1268,6 @@ div.browser-not-supported a:hover {
   z-index: 50000;
 }
 
-/*#document.sticky #toc_wrapper {
-  position: fixed;
-  top: 0px;
-}*/
-
 #document .toggle-toc {
   position: absolute;
   right: 30px;
@@ -1283,13 +1284,12 @@ div.browser-not-supported a:hover {
 
 #document .toggle-toc:hover {
   opacity: 1.0;
-/*  background: #ccc;*/
 }
 
 #document .toggle-toc .label {
   font-style: italic;
   padding-left: 20px;
-  -webkit-transform: rotate(90deg); 
+  -webkit-transform: rotate(90deg);
   -moz-transform: rotate(90deg);
 }
 
@@ -1383,10 +1383,7 @@ div.browser-not-supported a:hover {
 #toc ol li li li{ }
 
 /*target third level*/
-#toc ol li li li:before { 
-}
-
-
+#toc ol li li li:before {}
 
 #document .author {
   margin-top: 30px;
@@ -1407,7 +1404,6 @@ div.browser-not-supported a:hover {
 #document h1, #document h2, #document h3, #document h4, #document h5 {
   font-weight: normal;
   margin: 0em 100px 0 100px;
-  /*  padding-bottom: 10px;*/
   padding: 0;
   line-height: 1.6em;
 }
@@ -1530,8 +1526,6 @@ dd { color: #444; font-size: 1em;	margin: 0 0 0 155px; padding: 0; padding-left:
 #attributes .items .item a:hover { text-decoration: none; color: white; }
 
 
-
-
 /* Notifications
 -------------------------------------------------------------------------------*/
 
@@ -1564,9 +1558,9 @@ dd { color: #444; font-size: 1em;	margin: 0 0 0 155px; padding: 0; padding-left:
 #notifications .wrapper > p.warning      > span { float:left; width:70px; color:#fd6; font-size:11px; font-weight:bold; text-transform:uppercase; }
 #notifications .wrapper > p.notification > span { float:left; width:70px; color:#aaa; font-size:11px; font-weight:bold; text-transform:uppercase; }
 
+
 /* Node Types
 -------------------------------------------------------------------------------*/
-
 
 .content-node.text > .content {
   margin: 0 100px;
@@ -1644,7 +1638,6 @@ pre {
   padding: 2px 10px 2px 15px;
   border-left: 4px solid #BBB;
   margin: 10px 100px;
-  /*  margin: 10px 30px;*/
 }
 
 /* Image Editor
@@ -1879,6 +1872,7 @@ pre {
   opacity: 0.1;
 }
 
+
 /* Content Nodes
 -------------------------------------------------------------------------------*/
 
@@ -1924,7 +1918,6 @@ pre {
 
 
 /* Icons */
-
 .operations a {
   width: 26px;
   background: blue;
@@ -1970,7 +1963,6 @@ pre {
 #document .content-node.text .content {
   padding: 10px 0;
 }
-
 
 #document.edit-mode .content-node { color: #aaa; }
 #document.edit-mode .content-node a { color: #aaa; }
@@ -2121,7 +2113,6 @@ pre {
   position: relative;
 }
 
-
 /* Comments
 -------------------------------------------------------------------------------*/
 
@@ -2142,13 +2133,9 @@ pre {
   font-size: 14px;
 }
 
-
 .content-node.selected > .comments-wrapper.expanded {
   display: block;
 }
-
-
-
 
 .comments-wrapper .comment .header {
   font-size: 13px;
@@ -2206,7 +2193,6 @@ pre {
   background: rgba(0,0,0, 0.4);
   color: #fff;
 }
-
 
 /* Move actions */
 
@@ -2450,24 +2436,44 @@ pre {
 -------------------------------------------------------------------------------*/
 
 #startpage {
-/*  background: #F0F1EB;*/
   margin: 0 180px 0 100px;
+  font-size: 17px;
+  color: #444;
 }
 
 div.intro {
-  color: #000;
+  text-align: center;
   font-size: 38px;
   line-height: 50px;
   padding: 30px 0;
   margin-bottom: 20px;
   font-family: 'Palatino Linotype', 'Book Antiqua', Palatino, FreeSerif, serif;
   font-weight: lighter;
-  border-top: 1px solid #ccc;
-  border-bottom: 1px solid #ccc;
+}
+
+
+#plot {
+  overflow: auto;
+  padding-bottom: 20px;
+}
+
+#plot h2 {
+  padding-top: 0px;
+  font-size: 16px;
+  font-weight: bold;
+}
+#plot .description {
+  margin-right: 500px;
+}
+
+#plot .characteristics {
+  width: 440px;
+  float: right;
 }
 
 .intro b {
   font-weight: bold;
+  
 }
 
 .intro a {
@@ -2478,42 +2484,60 @@ div.intro {
   color: #000;
 }
 
+
 #features {
   overflow: auto;
   font-size: 14px;
 }
 
 #features .feature {
-  width: 30%;
+  width: 293px;
   float: left;
   margin-right: 20px;
+}
+
+#features .feature.contribute {
+  margin-right: 0px;
 }
 
 #features .feature .feature-wrapper {
   max-width: 250px;
 }
 
+.feature {
+
+}
+
 .feature .feature-title {
-  text-transform: uppercase;
-  font-family: Helvetica;
+  color:#111;
+  text-transform:uppercase;
   font-weight: bold;
-  padding-left: 50px;
-  font-size: 20px;
-  color: #000;
-  margin-bottom: 30px;
+  font-size: 1.17em;
+  line-height: 16px;
+  color: #444;
+  margin-bottom: 20px;
+  margin-top: 10px;
 }
 
-.feature.browse .feature-title {
-  background: url(../images/icons/black/article_32x32.png) center left no-repeat;
+.feature-title .icon {
+  margin-right: 10px;
+  width: 16px;
+  height: 16px;
+  opacity: 0.7;
 }
 
-.feature.write .feature-title {
-  background: url(../images/icons/black/pen_32x32.png) center left no-repeat;
+.feature.browse .feature-title .icon {
+  background: url(../images/icons/black/article_16x16.png) center left no-repeat;
 }
 
-.feature.contribute .feature-title {
-  background: url(../images/icons/black/heart_fill_32x38.png) center left no-repeat;
+.feature.write .feature-title .icon {
+  background: url(../images/icons/black/pen_16x16.png) center left no-repeat;
 }
+
+.feature.contribute .feature-title .icon {
+  background: url(../images/icons/black/heart_fill_16x14.png) center left no-repeat;
+}
+
 
 #features .feature-descr {
   font-size: 15px;
@@ -2530,7 +2554,7 @@ div.intro {
 
 .feature-properties li {
   margin-bottom: 5px;
-  color: #000;
+  color: #444;
 }
 
 .feature-properties li .descr {
@@ -2593,3 +2617,182 @@ pre .string, pre .regexp  { color: #219161 }
 /* code .class, code .special { font-weight: bold; } */
 /* code .number               { color: pink } */
 pre .comment              { color: #888 }
+
+
+
+
+
+
+
+
+/*
+ * jQuery Nivo Slider v2.5.2
+ * http://nivo.dev7studios.com
+ *
+ * Copyright 2011, Gilbert Pellegrom
+ * Free to use and abuse under the MIT license.
+ * http://www.opensource.org/licenses/mit-license.php
+ * 
+ * March 2010
+ */
+ 
+ 
+/* The Nivo Slider styles */
+.nivoSlider {
+	position:relative;
+}
+.nivoSlider img {
+	position:absolute;
+	top:0px;
+	left:0px;
+}
+/* If an image is wrapped in a link */
+.nivoSlider a.nivo-imageLink {
+	position:absolute;
+	top:0px;
+	left:0px;
+	width:100%;
+	height:100%;
+	border:0;
+	padding:0;
+	margin:0;
+	z-index:6;
+	display:none;
+}
+/* The slices and boxes in the Slider */
+.nivo-slice {
+	display:block;
+	position:absolute;
+	z-index:5;
+	height:100%;
+}
+.nivo-box {
+	display:block;
+	position:absolute;
+	z-index:5;
+}
+/* Caption styles */
+.nivo-caption {
+	position:absolute;
+	left:0px;
+	bottom:0px;
+	background:#000;
+	color:#fff;
+	opacity:0.8; /* Overridden by captionOpacity setting */
+	width:100%;
+	z-index:8;
+}
+.nivo-caption p {
+	padding:5px;
+	margin:0;
+}
+.nivo-caption a {
+	display:inline !important;
+}
+.nivo-html-caption {
+    display:none;
+}
+/* Direction nav styles (e.g. Next & Prev) */
+.nivo-directionNav a {
+	position:absolute;
+	top:45%;
+	z-index:9;
+	cursor:pointer;
+}
+.nivo-prevNav {
+	left:0px;
+}
+.nivo-nextNav {
+	right:0px;
+}
+/* Control nav styles (e.g. 1,2,3...) */
+.nivo-controlNav a {
+	position:relative;
+	z-index:9;
+	cursor:pointer;
+}
+.nivo-controlNav a.active {
+	font-weight:bold;
+}
+
+
+
+/*============================*/
+/*=== Custom Slider Styles ===*/
+/*============================*/
+#slider-wrapper {
+    height:352px;
+    margin:0 auto;
+}
+
+#slider {
+	position:relative;
+  width:920px;
+    height:300px;
+    border: 6px solid #fff;
+    -moz-border-radius: 4px;
+    -webkit-border-radius: 4px;
+    border-radius: 4px;
+	  background:url(/images/slider/loading.gif) no-repeat 50% 50%;
+}
+#slider img {
+	position:absolute;
+	top:0px;
+	left:0px;
+	display:none;
+}
+#slider a {
+	border:0;
+	display:block;
+}
+
+.nivo-controlNav {
+	position:absolute;
+	left:400px;
+	bottom:-42px;
+}
+.nivo-controlNav a {
+	display:block;
+	width:22px;
+	height:22px;
+	background:url(/images/slider/bullets.png) no-repeat;
+	text-indent:-9999px;
+	border:0;
+	margin-right:3px;
+	float:left;
+}
+.nivo-controlNav a.active {
+	background-position:0 -22px;
+}
+
+.nivo-directionNav a {
+	display:block;
+	width:30px;
+	height:30px;
+	background:url(/images/slider/arrows.png) no-repeat;
+	text-indent:-9999px;
+	border:0;
+}
+a.nivo-nextNav {
+	background-position:-30px 0;
+	right:15px;
+}
+a.nivo-prevNav {
+	left:15px;
+}
+
+.nivo-caption {
+    text-shadow:none;
+    font-family: Helvetica, Arial, sans-serif;
+}
+.nivo-caption a { 
+    color:#efe9d1;
+    text-decoration:underline;
+}
+
+/*====================*/
+/*=== Other Styles ===*/
+/*====================*/
+.clear {
+	clear:both;
+}

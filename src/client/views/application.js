@@ -146,6 +146,20 @@ var Application = Backbone.View.extend({
   toggleStartpage: function() {
     app.browser.browserTab.render();
     $('#content_wrapper').html(_.tpl('startpage'));
+    
+    // Initialize Slider
+    $('#slider').nivoSlider({
+      manualAdvance: true
+    });
+    
+    // Initialize flattr
+    var s = document.createElement('script'), t = document.getElementsByTagName('script')[0];
+    s.type = 'text/javascript';
+    s.async = true;
+    s.src = 'http://api.flattr.com/js/0.6/load.js?mode=auto';
+    t.parentNode.insertBefore(s, t);
+    
+    
     app.toggleView('content');
     return false;
   },
