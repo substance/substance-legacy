@@ -18,11 +18,12 @@ var ApplicationController = Backbone.Controller.extend({
   
   userDocs: function(username) {    
     if (!username) { // startpage rendering
-      if (app.username) {
-        username = app.username;
-      } else {
-        return app.toggleStartpage();
-      }
+      // if (app.username) {
+      //   username = app.username;
+      // } else {
+      //   
+      // }
+      return app.toggleStartpage();
     }
     
     if (username === 'recent') {

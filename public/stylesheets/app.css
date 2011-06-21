@@ -201,6 +201,9 @@ a.button:active { background: #98B247; }
 
 .icon:hover { }
 .icon.browse { background: url(../images/icons/white/magnifying_glass_16x16.png) center no-repeat; }
+.icon.search { background: url(../images/icons/white/magnifying_glass_16x16.png) center no-repeat; }
+.icon.recent { background: url(../images/icons/white/clock_16x16.png) center no-repeat; }
+.icon.user { background: url(../images/icons/white/user_12x16.png) center no-repeat; }
 .icon.write { background: url(../images/icons/white/arrow_right_12x12.png) center no-repeat; }
 .icon.read { background: url(../images/icons/white/article_16x16.png) center no-repeat; }
 .icon.new-document { background: url(../images/icons/white/document_stroke_16x16.png) center no-repeat; }
@@ -227,10 +230,10 @@ a.button:active { background: #98B247; }
   float: left;
   margin-right: 4px;
   padding: 10px 10px 10px 0;
-  width: 260px;
+  width: 290px;
   height: 45px;
   position: relative;
-  cursor: pointer;
+/*  cursor: pointer;*/
   
   -moz-border-radius: 2px;
   -webkit-border-radius: 2px;
@@ -239,10 +242,27 @@ a.button:active { background: #98B247; }
 }
 
 #tabs input {
-  -webkit-box-shadow: none;
   -moz-box-shadow: none;
   box-shadow: none;
-  border: none
+  background: transparent;
+}
+
+#tabs input { 
+  border-color: transparent;
+  width: 180px;
+  margin-left: 5px;
+  padding-left: 5px;
+  height: 26px; 
+  color: white;
+}
+
+#tabs .tab:hover input {
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+#tabs .tab input:focus {
+  border-color: rgba(255, 255, 255, 0.7);
+  background: rgba(255, 255, 255, 0.1);
 }
 
 .tab input {
@@ -250,10 +270,10 @@ a.button:active { background: #98B247; }
   padding-right: 0px;
 }
 
+
 .tab .tab-label {
   position: absolute;
   font-style: normal;
-  /*  font-family: 'Palatino Linotype', 'Book Antiqua', Palatino, FreeSerif, serif;*/
   font-style: italic;
   display: none;
   top: -23px;
@@ -262,6 +282,7 @@ a.button:active { background: #98B247; }
   color: #888;
 }
 
+/* Browser Tab */
 
 #browser_tab.active, #browser_tab:hover {
   background: rgba(88,108,114, 1.0);
@@ -297,9 +318,6 @@ a.button:active { background: #98B247; }
 }
 
 #browser_tab { background: rgba(88,108,114, 0.7); }
-#browser_tab input { border: 1px solid transparent; width: 180px; margin-left: 5px; height: 26px; background: rgba(0,0,0, 0); color: rgba(255,255,255, 0.7); }
-
-#browser_tab input:focus {border-bottom: 1px dotted #fff; color: rgba(255,255,255, 1); }
 
 .tab .icon { margin-left: 6px; }
 
@@ -309,6 +327,20 @@ a.button:active { background: #98B247; }
   font-weight: bold;
   font-size: 18px;
   position: absolute; bottom: 5px; right: 10px; color: rgba(255,255,255, 0.5);
+}
+
+#browser_tab .options {
+  position: absolute;
+  right: 10px;
+  top: 10px;
+}
+
+#browser_tab .options .icon {
+  opacity: 0.5;
+}
+
+#browser_tab .options .icon:hover {
+  opacity: 1.0;
 }
 
 #browser_tab .results {
@@ -362,14 +394,18 @@ a.button:active { background: #98B247; }
   font-size: 16px;
 }
 
-/*#tabs .tab:not(.active) input { cursor: pointer; }*/
+#tabs .tab:not(.active) input { cursor: pointer; }
 
 #document_tab { background: rgba(99,88,73, 0.7); /* background: #635849; */ }
 #document_tab .user-name {padding-left: 10px; max-width: 210px; overflow: hidden; white-space: nowrap; }
 #document_tab > div {height: 26px; float: left; line-height: 26px;}
 
-#document_tab input { float: left; border: 1px solid transparent; width: 100px; margin-left: 5px; height: 26px; background: rgba(0,0,0, 0); color: rgba(255,255,255, 0.7); }
-#document_tab input:focus {border-bottom: 1px dotted #fff; color: rgba(255,255,255, 1); }
+#document_tab input { 
+  width: 100px; 
+  position: relative;
+  top: -1px;
+  margin-left: 0;
+}
 
 
 /* Browser not supported view
@@ -475,15 +511,9 @@ div.browser-not-supported a:hover {
   top: 10px;
   display: none;
   background: #ccc;
-  width: 30px;
-  height: 30px;
-  background: url('/images/icons/black/spin_28x32.png') center center no-repeat;
-  
-  opacity: 0.5;
-  -webkit-animation-name:             rotate; 
-  -webkit-animation-duration:         2.0s; 
-  -webkit-animation-iteration-count:  infinite;
-  -webkit-animation-timing-function:  linear;
+  width: 50px;
+  height: 50px;
+  background: url('/images/load.gif') center center no-repeat;
 }
 
 /* body > #container > #content_wrapper

@@ -32,7 +32,22 @@ var Application = Backbone.View.extend({
     'click .toggle-toc': 'toggleTOC',
     'click #event_notifications a .notification': 'hideNotifications',
     'click #toc_wrapper': 'toggleTOC',
-    'click a.open-notification': 'openNotification'
+    'click a.open-notification': 'openNotification',
+    'change #document_name': 'updateDocumentName'
+  },
+  
+  updateDocumentName: function(e) {
+    var name = $(e.currentTarget).val();
+    this.checkDocumentName(name, function(valid) {
+      if (valid) {
+        app.document.updateName(name);
+        controller.saveLocation('#'+app.username+'/'+name);
+      } else {
+        $('#document_name').val(app.document.model.get('name'));
+        alert('Sorry, this name is already taken.');
+      }
+    });
+    return false;
   },
 
   login: function(e) {
@@ -151,21 +166,19 @@ var Application = Backbone.View.extend({
     $('#slider').nivoSlider({
       manualAdvance: true
     });
-    
     // Initialize flattr
     var s = document.createElement('script'), t = document.getElementsByTagName('script')[0];
     s.type = 'text/javascript';
     s.async = true;
     s.src = 'http://api.flattr.com/js/0.6/load.js?mode=auto';
     t.parentNode.insertBefore(s, t);
-    
-    
+
     app.toggleView('content');
     return false;
   },
   
   searchDocs: function(searchstr) {
-    app.browser.load({"type": "keyword", "value": encodeURI(searchstr)});
+    app.browser.load({"type": "search", "value": encodeURI(searchstr)});
     $('#browser_wrapper').attr('url', '#search/'+encodeURI(searchstr));
     app.browser.bind('loaded', function() {
       app.toggleView('browser');
@@ -190,37 +203,41 @@ var Application = Backbone.View.extend({
     return false;
   },
   
-  createDocument: function(e) {
-    var that = this;
-    var title = $('#create_document input[name=new_document_name]').val();
-    var name = _.slug(title);
-    var type = "/type/article"; // $('#create_document select[name=document_type]').val();
-    
+  checkDocumentName: function(name, callback) {
     if (new RegExp(graph.get('/type/document').get('properties', 'name').validator).test(name)) {
-      
       // TODO: find a more efficient way to check for existing docs.
       $.ajax({
         type: "GET",
         url: "/documents/"+app.username+"/"+name,
         dataType: "json",
         success: function(res) {
-          if (res.status === 'error') {
-            that.document.newDocument(type, name, title);
-          } else {
-            $('#create_document input[name=new_document_name]').addClass('error');
-            $('#new_document_name_message').html('This document name is already taken.');            
-          }
+          res.status === 'error' ? callback(true) : callback(false);
         },
         error: function(err) {
-          $('#document_wrapper').html('Document loading failed');
+          callback(false);
         }
       });
-      
       return false;
     } else {
-      $('#create_document input[name=new_document_name]').addClass('error');
-      $('#new_document_name_message').html('Invalid document name. Check your input');
+      callback(false);
     }
+  },
+  
+  createDocument: function(e) {
+    var that = this;
+    var title = $('#create_document input[name=new_document_name]').val();
+    var name = _.slug(title);
+    var type = "/type/article"; // $('#create_document select[name=document_type]').val();
+    
+    this.checkDocumentName(name, function(valid) {
+      if (valid) {
+        that.document.newDocument(type, name, title);
+      } else {
+        $('#create_document input[name=new_document_name]').addClass('error');
+        $('#new_document_name_message').html('This document name is already taken.');
+      }
+    });
+    
     return false;
   },
   

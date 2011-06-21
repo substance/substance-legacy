@@ -236,128 +236,20 @@
               <noscript><a href="http://flattr.com/thing/317181/Substance-Open-Documents-For-The-Web" target="_blank">
               <img src="http://api.flattr.com/button/flattr-badge-large.png" alt="Flattr this" title="Flattr this" border="0" /></a></noscript>
               <p>
-                <br/>We've received <a href="http://substance.io#substance/contribute">$ 240.00</a> so far. Thank you for that!
+                <br/>We have received <a href="http://substance.io#substance/contribute">$ 240.00</a> so far. Thank you for that!
               </p>
             </div>
           </div>
         </div>
       </div>
-      
       <hr class="separator"/>
       
-      
-    </div>
-    
-  </script>
-  
-  <script type="text/x-ejs-template" name="startpage222">
-    <div id="startpage">
-      <div class="intro"><b>Substance</b> is a web-based document authoring and publishing platform. <a href="#signup" class="toggle-signup">Create an Account</a> or <a href="#substance/substance">learn more</a>.</div>
-      <!-- Features -->
-      <div id="features">
-        <div class="feature write">
-          <div class="feature-wrapper">
-            <h1 class="feature-title">
-              Write
-            </h1>
-            <p class="feature-descr">
-              <b>Write</b> and <b>annotate</b> documents right in the <b>browser</b>.
-            </p> 
-            <ul class="feature-properties">
-              <li>
-                <div>Semantic Editing</div>
-                <div class="descr">Focus is on Content not Layout</div>
-              </li>
-              <li>
-                <div>Images <small style="color: #bd0a0a;">NEW!</small></div>
-                <div class="descr">Embed images in your document</div>
-              </li>
-              <li>
-                <div>User Comments <small style="color: #bd0a0a;">NEW!</small></div>
-                <div class="descr">Comment on content fragments</div>
-              </li>
-              <li>
-                <div>Print Documents <small style="color: #bd0a0a;">NEW!</small></div>
-                <div class="descr">Export to PDF/LaTeX</div>
-              </li>
-              <li>
-                <div>Publish</div>
-                <div class="descr">Publish and instantly share your articles</div>
-              </li>
-            </ul>
-          </div>
-        </div>
-        
-        <div class="feature browse">
-          <div class="feature-wrapper">
-            <h1 class="feature-title">
-              Browse
-            </h1>
-            <p class="feature-descr">
-              <b>Find</b> and <b>read</b> relevant
-              documents by using novel navigation techniques.
-            </p> 
-            <p class="feature-descr">
-              Use the Browser Tab to search for a keyword or show <a href="#recent">Recent Documents</a>.
-            </p>
-            <ul class="feature-properties">
-              <li>
-                <div>Search by Keyword</div>
-                <div class="descr">Find relevant documents based on keywords</div>
-              </li>
-              <li>
-                <div>Faceted Browsing</div>
-                <div class="descr">Filter matched documents using faceted navigation</div>
-              </li>
-            </ul>
-          </div>
-        </div>
-        
-        <div class="feature contribute">
-          <div class="feature-wrapper">
-            <h1 class="feature-title">
-              Contribute
-            </h1>
-            <p class="feature-descr">
-              In order to <b>improve</b> the system
-              and keep it <b>open</b> and <b>free</b>, we
-              need your help!
-            </p><p class="feature-descr">
-              With your donations we ‘ll
-              be able to add new features
-              such as <b>Realtime Collaboration</b>,
-              <b>User Comments</b> and <b>PDF Export</b>.
-            </p>
-            <div>
-              <a href="http://substance.io#substance/contribute">
-                <div id="donations_total">$ 240.00</div>
-                <div id="donations_total_label">contributed so far</div>
-              </a>
-              <form id="contribute_form" action="https://www.paypal.com/cgi-bin/webscr" method="post">
-                <input type="hidden" name="cmd" value="_s-xclick">
-                <input type="hidden" name="hosted_button_id" value="WAP9SGX5H29HS">
-                <a href="#contribute" onclick="javascript: $('#contribute_form').submit(); return false;" id="contribute_button" class="button contribute">Contribute</a>
-                <img alt="" border="0" src="https://www.paypal.com/de_DE/i/scr/pixel.gif" width="1" height="1">
-              </form>
-              
-              
-              
-              <br class="clear"/>
-              
-              <a class="FlattrButton" style="display:none;" href="http://substance.io"></a>
-              <noscript><a href="http://flattr.com/thing/317181/Substance-Open-Documents-For-The-Web" target="_blank">
-              <img src="http://api.flattr.com/button/flattr-badge-large.png" alt="Flattr this" title="Flattr this" border="0" /></a></noscript>
-            </div>
-          </div>
-        </div>
-      </div>
-    
     </div>
   </script>
   
   <script type="text/x-ejs-template" name="header">
     <div class="title">
-      <a href="#recent"<% if (!user) { %> class="toggle-startpage"<% } %>>Substance</a>
+      <a href="#" class="toggle-startpage">Substance</a>
     </div>
     
     <% if (user) { %>
@@ -532,11 +424,16 @@
   
   <script type="text/x-ejs-template" name="browser_tab">
     <div class="cursor"><span></span></div>
-    <div class="icon browse"></div>
+    <div class="icon <%= query ? query.type : "search" %>"></div>
     <div class="tab-label">Browser</div>
-    <form id="search_form"><input type="text" id="search" name="search" value="<%= query_descr %>" autocomplete="off"/></form>
-    <div class="count"><%= documents.length > 0 ? documents.length : ''%></div>
+    <form id="search_form"><input type="text" title="Start searching" id="search" name="search" value="<%= query_descr %>" autocomplete="off"/></form>
+    <!--<div class="count"><%= documents.length > 0 ? documents.length : ''%></div>-->
     <br class="clear"/>
+    
+    <div class="options">
+      <% if ((!query && app.username) || (query && query.type !== 'user' && app.username)) { %> <a href="#<%= app.username %>" title="My Documents"><div class="icon user"></div></a><% } %>
+      <% if (!query || query.type !== 'recent') { %> <a href="#recent" title="Recent Documents"><div class="icon recent"></div></a><% } %>
+    </div>
     <div class="results"></div>
   </script>
   
@@ -545,9 +442,8 @@
     <div class="icon read"></div>
     <div class="tab-label">Document</div>
     <div class="user-name">
-      <%= username %> / <b><%= document_name %></b>
+      <span><%= username %> / </span><input type="text" id="document_name" name="document_name" value="<%= document_name %>"/>
     </div>
-    <!--<input type="text" id="document_name" name="document_name" value="foo"/>-->
   </script>
   
   <script type="text/x-ejs-template" name="document_browser">

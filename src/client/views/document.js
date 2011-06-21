@@ -708,6 +708,13 @@ var Document = Backbone.View.extend({
     return false;
   },
   
+  // Update the document's name
+  updateName: function(name) {
+    this.model.set({
+      name: name
+    });
+  },
+  
   addChild: function(e) {
     if (arguments.length === 1) {
       // Setup node
