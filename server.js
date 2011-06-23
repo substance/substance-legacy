@@ -86,6 +86,7 @@ function getNotifications(username, callback) {
 }
 
 
+
 var graph = new Data.Graph(seed);
 graph.connect('couch', {
   url: config.couchdb_url,
@@ -164,10 +165,15 @@ app.get('/search/:search_str', function(req, res) {
 // Find documents by search string or user
 app.get('/documents/search/:type/:search_str', function(req, res) {
   var username = req.session ? req.session.username : null
-  if (req.params.type == 'recent') {
+  if (req.params.type === 'recent') {
     Document.recent(req.params.search_str, username, function(err, graph, count) {
       res.send(JSON.stringify({graph: graph, count: count}));
     });
+  } else if(req.params.type === 'subscribed') {
+    Document.subscribed(username, function(err, graph, count) {
+      res.send(JSON.stringify({graph: graph, count: count}));
+    });
+    
   } else {
     Document.find(req.params.search_str, req.params.type, username, function(err, graph, count) {
       res.send(JSON.stringify({graph: graph, count: count}));
@@ -364,24 +370,8 @@ app.get('/avatar/:username/:size', function(req, res) {
 });
 
 // Returns the most recent version of the requested doc
-app.get('/documents/:username/:name', function(req, res) {
-  // var graph = new Data.Graph(seed, false).connect('couch', { url: config.couchdb_url});
-  // var qry = {
-  //   "type": "/type/document",
-  //   "creator": "/user/michael",
-  //   "name": "data-js",
-  //   "include": ["children*", "creator", "subjects", "entities"]
-  // };
-  // 
-  // graph.fetch(qry, function(err, nodes) {
-  //   if (err) return res.send({status: "error", error: err});
-  //   var result = nodes.toJSON();
-  //   var comments = [];
-  //   // TODO: get all comments as well
-  //   res.send({status: "ok", graph: nodes.toJSON(), id: "/user/michael"});    
-  // });
-  
-  Document.get(req.params.username, req.params.name, function(err, graph, id) {
+app.get('/documents/:username/:name', function(req, res) {  
+  Document.get(req.params.username, req.params.name, req.session.username, function(err, graph, id) {
     if (err) return res.send({status: "error", error: err});
     res.send({status: "ok", graph: graph, id: id});
   });

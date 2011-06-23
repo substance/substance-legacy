@@ -1,6 +1,7 @@
 var _ = require('underscore');
 var async = require('async');
 var Counter = require('./counter');
+var Data = require ('../../lib/data/data')
 
 // Document
 // --------------------------
@@ -17,8 +18,61 @@ function fetchNode(id, callback) {
   });
 }
 
+
+// Stats
+// -----------
+
+function logView(documentId, username, callback) {
+  db.save({
+    _id: Data.uuid("/event/"),
+    type: ["/type/event"],
+    event_type: "view-document",
+    creator: username ? "/user/"+username : null,
+    message: "",
+    link: "",
+    object: documentId,
+    created_at: new Date()
+  }, function(err, event) {
+    callback();
+  });
+}
+
+
+function getViewCount(documentId, callback) {
+  db.view('substance/document_views', {key: documentId}, function(err, res) {
+    if (err) {
+      callback(err);
+    } else {
+      callback(null, res.rows[0].value);
+    }
+  });
+}
+
+function getUsage(documentId, callback) {
+  db.view('substance/document_views_by_day', {group: true}, function(err, res) {
+    err ? callback(err) : callback(null, res.rows);
+  });
+}
+
 // Get a single document from the database, including all associated content nodes
-Document.get = function(username, docname, callback) {
+Document.get = function(username, docname, reader, callback) {
+  
+  // var graph = new Data.Graph(seed, false).connect('couch', { url: config.couchdb_url});
+  // var qry = {
+  //   "type": "/type/document",
+  //   "creator": "/user/michael",
+  //   "name": "data-js",
+  //   "include": ["children*", "creator", "subjects", "entities"]
+  // };
+  // 
+  // graph.fetch(qry, function(err, nodes) {
+  //   if (err) return res.send({status: "error", error: err});
+  //   var result = nodes.toJSON();
+  //   var comments = [];
+  //   // TODO: get all comments as well
+  //   res.send({status: "ok", graph: nodes.toJSON(), id: "/user/michael"});    
+  // });
+  
   db.view('substance/documents', {key: username+'/'+docname}, function(err, res) {
     if (err) {
       callback(err);
@@ -59,23 +113,19 @@ Document.get = function(username, docname, callback) {
               callback(null);
             });
           }, function(err) {
-            Counter.increment(doc._id, 'views', function(e, val) {
-              doc.views = val;
-              
-              Counter.get(doc._id, 'subscribers', function(e, val) {
-                doc.subscribers = val;
-                callback(err, result, doc._id);
-              });              
+            logView(doc._id, reader, function() {
+              getViewCount(doc._id, function(err, views) {
+                doc.views = views;
+                
+                // Check for subscriptions
+                var graph = new Data.Graph(seed).connect('couch', {url: config.couchdb_url});
+                graph.fetch({type: "/type/subscription", "user": "/user/"+reader, document: doc._id}, function(err, nodes) {
+                  doc.subscribed = nodes.length > 0 ? true : false;
+                  doc.subscribers = nodes.length;
+                  callback(err, result, doc._id);
+                });
+              });
             });
-            
-            // Log view event
-            // events.save({
-            //   timestamp: new Date(),
-            //   name: 'view-document',
-            //   object: doc._id,
-            // }, function(err) {
-            //   console.log('inserted event entry');
-            // });
           });
         });
         
@@ -85,6 +135,17 @@ Document.get = function(username, docname, callback) {
     }
   });
 }
+
+
+Document.subscribed = function(username, callback) {
+  var graph = new Data.Graph(seed).connect('couch', {url: config.couchdb_url});
+  var qry = {"type": "/type/subscription", "user": "/user/"+username, "_include": ["user", "document"]};
+  graph.fetch(qry, function(err, graph) {
+    callback(null, graph, graph.length / 2);
+  });
+}
+
+
 
 Document.recent = function(limit, username, callback) {
   db.view('substance/recent_documents', {limit: parseInt(limit), descending: true}, function(err, res) {

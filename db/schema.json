@@ -122,6 +122,12 @@
         "type": "/type/user",
         "required": true
       },
+      "object": {
+        "name": "Concerned Object",
+        "unique": true,
+        "type": "string",
+        "required": true
+      },
       "link": {
         "name": "Link",
         "unique": true,
@@ -245,7 +251,8 @@
       }
     },
     "indexes": {
-      "key": ["user", "document"]
+      "key": ["user", "document"],
+      "by_user": ["user"]
     }
 	},
 	
@@ -354,6 +361,11 @@
     		"unique": true,
     		"type": "number",
     		"default": 0
+  	  },
+  	  "subscribed": {
+    		"name": "Subscribed by current user (meta-attribute)",
+    		"unique": true,
+    		"type": "boolean"
   	  },
       "subjects": {
         "type": ["/type/attribute"],

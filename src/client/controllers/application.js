@@ -26,8 +26,8 @@ var ApplicationController = Backbone.Controller.extend({
       return app.toggleStartpage();
     }
     
-    if (username === 'recent') {
-      app.browser.load({"type": "recent", "value": 50});
+    if (_.include(['recent', 'subscribed'], username)) {
+      app.browser.load({"type": username, "value": 50});
     } else {
       app.browser.load({"type": "user", "value": username});
     }

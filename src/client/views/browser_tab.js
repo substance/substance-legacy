@@ -77,6 +77,7 @@ var BrowserTab = Backbone.View.extend({
       switch (this.browser.query.type){
         case 'user': queryDescr = this.browser.query.value+"'s documents"; break;
         case 'recent': queryDescr = 'Recent Documents'; break;
+        case 'subscribed': queryDescr = 'Subscribed Documents'; break;
         default : queryDescr = 'Documents for &quot;'+this.browser.query.value+'&quot;';
       }
     } else {

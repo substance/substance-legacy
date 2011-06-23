@@ -20,7 +20,7 @@
   }
   
   // Current version of the library. Keep in sync with `package.json`.
-  Data.VERSION = '0.3.0';
+  Data.VERSION = '0.4.0-pre';
 
   // Require Underscore, if we're on the server, and it's not already present.
   var _ = this._;
@@ -1001,7 +1001,7 @@
       if (!this.data) throw new Error('Object has no data, and cannot be built');
       
       // Pull off _id and _rev properties
-      delete this.data._id;
+      // delete this.data._id;
       this._rev = this.data._rev; // delete this.data._rev;
       this._conflicted = this.data._conflicted;
       this._deleted = this.data._deleted; // delete this.data._deleted;
@@ -1027,7 +1027,6 @@
           }
         });
       });
-      
       if (this.dirty) this.g.trigger('dirty');
     },
     
@@ -1262,28 +1261,29 @@
       });
       return this;
     },
-    
-    // Set (add) a new node on the graph
-    set: function(id, properties) {
-      var that = this;
-      var types = _.isArray(properties.type) ? properties.type : [properties.type];
-      if (arguments.length === 2) {
-        id = id ? id : Data.uuid('/' + _.last(_.last(types).split('/')) + '/');
+
+    set: function(node) {
+      var id, that = this;
+      
+      // Backward compatibility
+      if (arguments.length === 2) node = _.extend(arguments[1], {_id: arguments[0]});
+
+      var types = _.isArray(node.type) ? node.type : [node.type];
+      if (arguments.length <= 2) {
+        node._id = node._id ? node._id : Data.uuid('/' + _.last(_.last(types).split('/')) + '/');
         // Recycle existing object if there is one
-        var res = that.get(id) ? that.get(id) : new Data.Object(that, id, properties, true);
-        res.data = properties;
+        var res = that.get(node._id) ? that.get(node._id) : new Data.Object(that, node._id, _.clone(node), true);
+        res.data = node;
         res.dirty = true;
         res.build();
-        this.set('objects', id, res);
-        return this.get('objects', id);
+        this.set('objects', node._id, res);
+        return res;
       } else { // Delegate to Data.Node#set
         return Data.Node.prototype.set.call(this, arguments[0], arguments[1], arguments[2]);
       }
     },
     
     // API method for accessing objects in the graph space
-    // TODO: Ask the datastore if the node is not known in the local graph
-    //       use async method queues for this!
     get: function(id) {
       if (arguments.length === 1) {
         return this.get('objects', id);

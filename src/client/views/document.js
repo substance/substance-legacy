@@ -26,6 +26,8 @@ var Document = Backbone.View.extend({
     'click a.toggle-comments': 'toggleComments',
     'click a.create-comment': 'createComment',
     'click a.remove-comment': 'removeComment',
+    'click a.subscribe-document': 'subscribeDocument',
+    'click a.unsubscribe-document': 'unsubscribeDocument',
     
     // Actions
     'click a.add_child': 'addChild',
@@ -493,6 +495,33 @@ var Document = Backbone.View.extend({
       }
     });
     // }
+  },
+  
+  subscribeDocument: function() {
+    graph.set(null, {
+      type: "/type/subscription",
+      user: "/user/"+app.username,
+      document: this.model._id
+    });
+    this.model.set({subscribed: true});
+    this.model.dirty = false; // Don't make dirty
+    this.render();
+    return false;
+  },
+  
+  unsubscribeDocument: function() {
+    var that = this;
+    // Fetch the subscription object
+    graph.fetch({type: "/type/subscription", "user": "/user/"+app.username, "document": this.model._id}, function(err, nodes) {
+      if (nodes.length === 0) return;
+      // Unsubscribe
+      graph.del(nodes.first()._id);
+      that.model.set({subscribed: false});
+      that.model.dirty = false; // Don't make dirty
+      that.render();
+    });
+    
+    return false;
   },
   
   closeDocument: function() {
