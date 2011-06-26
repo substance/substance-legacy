@@ -3086,7 +3086,7 @@ var Application = Backbone.View.extend({
   },
   
   deleteDocument: function(e) {
-    if (confirm('Are you sure to delete this document?')) {
+    if (confirm('Are you sure you want to delete this document?')) {
       this.document.deleteDocument(app.document.model._id);
       this.document.closeDocument();
     }

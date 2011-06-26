@@ -55,10 +55,10 @@
         if (rejected) return;
         var condition;
         // Extract operator
-        var matches = key.match(/^([a-z_]{1,30})(!=|>|>=|<|<=|\|=|&=)?$/),
+        var matches = key.match(/^([a-z_]{1,30})(=|==|!=|>|>=|<|<=|\|=|&=)?$/),
             property = matches[1],
-            operator = matches[2] || '==';
-
+            operator = matches[2] || (property == "type" || _.isArray(value) ? "|=" : "=");
+        
         if (operator === "|=") { // one of operator
           var values = _.isArray(value) ? value : [value];
           var objectValues = _.isArray(node[property]) ? node[property] : [node[property]];
@@ -1335,8 +1335,8 @@
         err ? callback(err) : callback(null, nodes);
       });
     },
-
-    // Synchronize dirty nodes with the database
+    
+    // Synchronize dirty nodes with the backend
     sync: function(callback) {
       callback = callback || function() {};
       var that = this,
