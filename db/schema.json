@@ -252,7 +252,8 @@
     },
     "indexes": {
       "key": ["user", "document"],
-      "by_user": ["user"]
+      "by_user": ["user"],
+      "by_document": ["document"]
     }
 	},
 	
