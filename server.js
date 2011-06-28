@@ -9,7 +9,6 @@ var CouchClient = require('./lib/data/lib/couch-client');
 var async = require('async');
 
 var Document = require('./src/server/document');
-var Counter = require('./src/server/counter');
 var User = require('./src/server/user');
 var Filters = require('./src/server/filters');
 
@@ -64,24 +63,21 @@ function findAttributes(member, searchstr, callback) {
 function getNotifications(username, callback) {
   // Read in reversed order, therefore replaced startkey with endkey
   if (!username) return callback(null, {});
-  db.view('substance/notifications', {endkey: ["/user/"+username], descending: true, limit: 5}, function(err, res) {
-    if (err) {
-      console.log(err);
-      callback(err);
-    } else {
-      var result = {};
-      async.forEach(res.rows, function(row, callback) {
+  db.view('substance/notifications', {endkey: ["/user/"+username], startkey: ["/user/"+username, {}], descending: true, limit: 5}, function(err, res) {
+    if (err) return callback(err);
+    var result = {};
+    async.forEach(res.rows, function(row, callback) {
+      // Fetch corresponding event
+      db.get(row.value.event, function(err, event) {
+        if (err) return callback();
         result[row.value._id] = row.value;
-        // Fetch corresponding event
-        db.get(row.value.event, function(err, event) {
-          result[event._id] = event;
-          callback();
-        });
-        
-      }, function(err) {
-        callback(null, result);
+        result[event._id] = event;
+        callback();
       });
-    }
+      
+    }, function(err) {
+      callback(null, result);
+    });
   });
 }
 

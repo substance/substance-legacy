@@ -38,13 +38,15 @@ var DocumentBrowser = Backbone.View.extend({
     this.browserTab = new BrowserTab({el: '#browser_tab', browser: this});
     this.documents = [];
     this.commands = [];
+    
+    this.graph = new Data.Graph(seed);
   },
   
   // Modfies query state (reflected in the BrowserTab)
   load: function(query) {
     var that = this;
     this.query = query;
-    this.graph = new Data.Graph(seed);
+    
     
     $('#browser_tab').show().html('&nbsp;&nbsp;&nbsp;Loading documents...');
     $('#browser_wrapper').html('');
