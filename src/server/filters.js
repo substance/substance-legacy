@@ -11,7 +11,12 @@ Filters.ensureAuthorized = function() {
   return {
     read: function(node, next, session) {
       // Hide all password properties
-      delete node.password;      
+      delete node.password;
+      
+      // Secure unpublished documents
+      if (_.include(node.type, "/type/document") && !node.published_on) {
+        return node.creator !== "/user/"+session.username ? next(null) : next(node);
+      }
       next(node);
     },
 
@@ -51,7 +56,6 @@ Filters.ensureAuthorized = function() {
     }
   };
 };
-
 
 
 // Event logging and user notifications

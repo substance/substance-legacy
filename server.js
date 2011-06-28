@@ -365,6 +365,7 @@ app.get('/avatar/:username/:size', function(req, res) {
   });
 });
 
+
 // Returns the most recent version of the requested doc
 app.get('/documents/:username/:name', function(req, res) {  
   Document.get(req.params.username, req.params.name, req.session.username, function(err, graph, id) {
@@ -374,13 +375,13 @@ app.get('/documents/:username/:name', function(req, res) {
 });
 
 // Write a single document, expressed as a graph
-app.post('/writedocument', function(req, res) {
-  var graph = new Data.Graph(seed, false).connect('couch', { url: config.couchdb_url, force_updates: true });
-  graph.merge(JSON.parse(req.rawBody), true);
-  graph.sync(function(err, nodes) {
-    res.send({"status": "ok"});
-  });
-});
+// app.post('/writedocument', function(req, res) {
+//   var graph = new Data.Graph(seed, false).connect('couch', { url: config.couchdb_url, force_updates: true });
+//   graph.merge(JSON.parse(req.rawBody), true);
+//   graph.sync(function(err, nodes) {
+//     res.send({"status": "ok"});
+//   });
+// });
 
 console.log('READY: Substance is listening http://'+config['server_host']+':'+config['server_port']);
 app.listen(config['server_port'], config['server_host']);
