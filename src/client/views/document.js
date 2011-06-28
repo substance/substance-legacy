@@ -441,6 +441,7 @@ var Document = Backbone.View.extend({
         
         // Update browser graph reference
         app.browser.graph.set('objects', id, that.model);
+        
         app.toggleView('document');
         
         // Scroll to target node

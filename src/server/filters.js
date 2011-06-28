@@ -1,9 +1,11 @@
 var _ = require('underscore');
 var async = require('async');
-var Counter = require('./counter');
 var Data = require('../../lib/data/data');
 
+
 // Middleware for graph read and write operations
+// -----------
+
 var Filters = {};
 Filters.ensureAuthorized = function() {
   return {
@@ -50,47 +52,88 @@ Filters.ensureAuthorized = function() {
   };
 };
 
+
+
+// Event logging and user notifications
+// -----------
+
 Filters.logEvents = function() {
   return {
     read: function(node, next, session) {
       next(node);
     },
     write: function(node, next, session) {
+      var graph = new Data.Graph(seed).connect('couch', {url: config.couchdb_url});
+      
+      // Extract users that will be notified
+      function recipients(callback) {
+        qry = [
+          // Comment Authors
+          {
+            _id: node.document,
+            "children": {
+              "_recursive": true,
+              "comments": {}
+            }
+          },
+          // Subscribers
+          {
+            "type": "/type/subscription",
+            "document": node.document
+          }
+        ];
+        
+        graph.fetch(qry, function(err, nodes) {
+          if (err) return callback(err);
+          var recipients = [];
+          // Comment Authors
+          graph.find({"type": "/type/comment"}).each(function(c) {
+            recipients.push(c.get('creator')._id);
+          });
+          // Subscribers
+          graph.find({"type": "/type/subscription"}).each(function(s) {
+            recipients.push(s.get('user')._id);
+          });
+          // Do not notify the comment creator
+          callback(_.uniq(_.without(recipients, node.creator)));
+        })
+      }
+      
+      // Log Event, then notify users
+      function logEvent() {
+        var doc = graph.get(node.document);
+        var event = graph.set({
+          type: "/type/event",
+          event_type: "add-comment",
+          creator: node.creator,
+          object: node.document,
+          message: "<strong>"+node.creator.split('/')[2]+"</strong> commented on <strong>"+doc._id.split('/')[2]+"/"+doc.get('name')+"</strong>",
+          link: "#"+node.document.split('/')[2]+"/"+doc.get('name')+"/"+node.node.replace(/\//g, '_')+"/"+node._id.replace(/\//g, '_'),
+          created_at: new Date()
+        });
+        
+        // Notify users
+        recipients(function(recipients) {
+          _.each(recipients, function(recipient) {
+            var notification = graph.set({
+              type: "/type/notification",
+              event: event._id,
+              read: false,
+              recipient: recipient,
+              created_at: event.get('created_at') // use date of the event
+            });
+          });
+          
+          graph.sync();
+        });
+      }
+      
       var that = this;
       // Log event and notifications for comment addition
       if (_.include(node.type, "/type/comment") && !node._deleted) {
-        this.db.get(node.document, function(err, document) {
-          that.db.save({
-            _id: Data.uuid("/event/"),
-            type: ["/type/event"],
-            event_type: "add-comment",
-            creator: node.creator,
-            message: "<strong>"+node.creator.split('/')[2]+"</strong> commented on <strong>"+node.document.split('/')[2]+"/"+document.name+"</strong>",
-            link: "#"+node.document.split('/')[2]+"/"+document.name+"/"+node.node.replace(/\//g, '_')+"/"+node._id.replace(/\//g, '_'),
-            created_at: new Date()
-          }, function(err, event) {
-            // Insert notifications
-            var recipient = "/user/"+node.document.split('/')[2];
-            
-            
-            console.log(recipient);
-            console.log(node.creator);
-            // Don't notify the the document creator itself
-            if (recipient !== node.creator) {
-              console.log('Saving Notification...');
-              that.db.save({
-                _id: Data.uuid('/notification/'),
-                type: ["/type/notification"],
-                event: event._id,
-                read: false,
-                recipient: recipient,
-                created_at: event.created_at // use date of the event
-              }, function(err) {
-                console.log('sent notification');
-                console.log(err);
-              });
-            }
-          });
+        // Fetch related info
+        graph.fetch({_id: [node.document, node.node]}, function(err, nodes) {
+          logEvent();
         });
       }
       next(node);

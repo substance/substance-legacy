@@ -204,7 +204,7 @@ var Application = Backbone.View.extend({
   },
   
   checkDocumentName: function(name, callback) {
-    if (new RegExp(graph.get('/type/document').get('properties', 'name').validator).test(name)) {
+    if (new RegExp(graph.get('/type/document').get('properties', 'name').validator).test(name)) {      
       // TODO: find a more efficient way to check for existing docs.
       $.ajax({
         type: "GET",
