@@ -123,11 +123,13 @@
         that = this,
         pendingChange = false,
         options = {},
+        ignoreBlur = false,
         defaultOptions = { // default options
           multiline: true,
           markup: true,
           placeholder: 'Enter Text'
         };
+        
     
     // Setup temporary hidden DOM Node, for sanitization
     $('body').append($('<div id="proper_content"></div>').hide());
@@ -241,6 +243,7 @@
     
     // Used for placeholders
     function checkEmpty() {
+      if (ignoreBlur) return;
       if ($(activeElement).text().trim().length === 0) {
         $(activeElement).addClass('empty');
         if (options.markup) {
@@ -299,6 +302,7 @@
       
       $(el).bind('paste', function() {
         var selection = saveSelection();
+        ignoreBlur = true;
         $('#proper_raw_content').focus();
         
         // Immediately sanitize pasted content
@@ -306,11 +310,8 @@
           sanitize();
           restoreSelection(selection);
           $(el).focus();
-          
-          // Avoid nested paragraph correction resulting from paste
+          ignoreBlur = false;
           var content = $('#proper_content').html().trim();
-
-          // For some reason last </p> gets injected anyway
           document.execCommand('insertHTML', false, content);
           $('#proper_raw_content').html('');
         }, 1);
@@ -381,8 +382,6 @@
       $(el).attr('contenteditable', true);
       activeElement = el;
       bindEvents(el);
-      
-      $('.proper-commands').remove();
       
       // Setup controls
       if (options.markup) {

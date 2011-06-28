@@ -14,7 +14,7 @@ coverage/*
 _Yardoc
 .yardoc
 tmp/*
-
+node_modules/*
 
 /.settings.xml
 /config.json.edge

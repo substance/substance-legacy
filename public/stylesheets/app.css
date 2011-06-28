@@ -1223,7 +1223,6 @@ div.browser-not-supported a:hover {
 
 #document h1 {
   counter-reset: sub-section;
-  
   font-size: 30px;
 }
 
@@ -2397,7 +2396,7 @@ pre {
   position: absolute;
   left: 20px;
   top: 10px;
-  width: 100px;
+  width: 80px;
   margin-left: -10px;
   margin-right: -10px;
   margin-top: 0px;
