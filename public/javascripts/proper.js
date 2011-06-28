@@ -223,7 +223,12 @@
     // TODO: enable proper sanitizing that allows markup to be pasted too
     function sanitize() {      
       var rawContent = document.getElementById('proper_raw_content');
-      $('#proper_content').html($(rawContent).text());
+      // Extract newlines
+      var content = $(rawContent).html().replace(/<\/div>/g, "\n")
+                                        .replace(/<br/g, "\n")
+                                        .replace(/<\/p>/g, "\n");
+      
+      $('#proper_content').html(_.stripTags(content));
     }
     
     function updateCommandState() {
