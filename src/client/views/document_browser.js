@@ -38,7 +38,6 @@ var DocumentBrowser = Backbone.View.extend({
     this.browserTab = new BrowserTab({el: '#browser_tab', browser: this});
     this.documents = [];
     this.commands = [];
-    
     this.graph = new Data.Graph(seed);
   },
   
@@ -55,6 +54,7 @@ var DocumentBrowser = Backbone.View.extend({
       url: "/documents/search/"+query.type+"/"+encodeURI(query.value),
       dataType: "json",
       success: function(res) {
+        that.graph = new Data.Graph(seed);
         that.graph.merge(res.graph);
         that.facets = new Facets({el: '#facets', browser: that});
         that.loaded = true;

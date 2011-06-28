@@ -24,9 +24,6 @@
       <dt>Views</dt>
       <dd><%= doc.get('views') %></dd>
       
-      <dt>Subscribers</dt>
-      <dd><%= doc.get('subscribers') %></dd>
-      
       <% attributes.each(function(attribute) { %>
         <dt><%= attribute.name %></dt>
         <dd id="property_<%= attribute.key %>" property="/<%= attribute.type._id.split('/')[2] %>/<%= attribute.key %>" key="<%= attribute.key %>" type="string" class="attribute-editor <%= attribute.unique ? "unique" : "non-unique"%>"></dd>
@@ -48,8 +45,6 @@
       <dt>Views</dt>
       <dd><%= doc.get('views') %></dd>
       
-      <dt>Subscribers</dt>
-      <dd><%= doc.get('subscribers') %></dd>
       
       <% attributes.each(function(attribute) { %>
         <% if (doc.get(attribute.key).length > 0) { %>
@@ -668,9 +663,9 @@
           <a href="#" title="Write Document" class="toggle-edit-mode view-action-icon write<%= edit ? ' active' : '' %>"><span>Write</span></a>
           <a href="#" title="Delete Document" class="delete-document view-action-icon delete"><span>Delete</span></a>
         <% } %>
-        <% if (app.username) { %>
-          <a href="#" title="<%= node.get('subscribed') ? "Unsubscribe" : "Subscribe document and get notified about updates" %> " class="view-action-icon <%= node.get('subscribed') ? "unsubscribe-document" : "subscribe-document" %>"><span>Subscribe document and get notified about updates</span></a>
-        <% } %>
+        
+        <a href="#" title="<%= node.get('subscribed') ? "Unsubscribe" : "Subscribe document and get notified about updates" %> " class="view-action-icon <%= node.get('subscribed') ? "unsubscribe-document" : "subscribe-document" %>"><div class="subscription-count"><%= node.get('subscribers') > 0 ? node.get('subscribers') : "" %></div><span>Subscribe document and get notified about updates</span></a>
+
         <a href="<%= config.letterpress_url %>/pdf?url=http://<%= top.location.host %>/documents/<%= node.get('creator')._id.split('/')[2]+"/"+node.get('name') %>" target="_blank" title="Print Document (Experimental)" class="print-document view-action-icon print"><span>Print</span></a>
       </div>
     </div>

@@ -126,11 +126,11 @@ Document.get = function(username, docname, reader, callback) {
       logView(doc._id, reader, function() {
         getViewCount(doc._id, function(err, views) {
           doc.views = views;
-        
+
           // Check subscriptions
-          graph.fetch({type: "/type/subscription", "user": "/user/"+reader, document: doc._id}, function(err, nodes) {
+          graph.fetch({type: "/type/subscription", "document": doc._id}, function(err, nodes) {
             if (err) return callback(err);
-            doc.subscribed = nodes.length > 0 ? true : false;
+            doc.subscribed = graph.find({"user": "/user/"+reader, "document": doc._id}).length > 0 ? true : false;
             doc.subscribers = nodes.length;
             callback(null, result, doc._id);
           });

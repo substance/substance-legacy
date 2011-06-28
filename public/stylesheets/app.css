@@ -1112,6 +1112,14 @@ div.browser-not-supported a:hover {
   margin-bottom: 3px;
   background: #333;
   opacity: 0.3;
+  position: relative;
+}
+
+.view-action-icon .subscription-count {
+  position: absolute;
+  bottom: -5px;
+  font-weight: bold;
+  right: 0px;
 }
 
 .view-action-icon:hover {

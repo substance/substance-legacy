@@ -499,12 +499,19 @@ var Document = Backbone.View.extend({
   },
   
   subscribeDocument: function() {
+    if (!app.username) {
+      alert('Please log in to make a subscription.');
+      return false;
+    }
     graph.set(null, {
       type: "/type/subscription",
       user: "/user/"+app.username,
       document: this.model._id
     });
-    this.model.set({subscribed: true});
+    this.model.set({
+      subscribed: true,
+      subscribers: this.model.get('subscribers') + 1
+    });
     this.model.dirty = false; // Don't make dirty
     this.render();
     return false;
@@ -512,12 +519,17 @@ var Document = Backbone.View.extend({
   
   unsubscribeDocument: function() {
     var that = this;
+    
     // Fetch the subscription object
     graph.fetch({type: "/type/subscription", "user": "/user/"+app.username, "document": this.model._id}, function(err, nodes) {
       if (nodes.length === 0) return;
+      
       // Unsubscribe
       graph.del(nodes.first()._id);
-      that.model.set({subscribed: false});
+      that.model.set({
+        subscribed: false,
+        subscribers: that.model.get('subscribers') - 1
+      });
       that.model.dirty = false; // Don't make dirty
       that.render();
     });
