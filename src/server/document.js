@@ -1,6 +1,5 @@
 var _ = require('underscore');
 var async = require('async');
-var Counter = require('./counter');
 var Data = require ('../../lib/data/data')
 
 // Document
@@ -106,6 +105,7 @@ Document.get = function(username, docname, reader, callback) {
     var graph = new Data.Graph(seed).connect('couch', {url: config.couchdb_url});
     
     if (err) return callback(err);
+    if (res.rows.length == 0) return callback({error: "No documents found"});
     var id = res.rows[0].value._id;
     
     var qry = {
