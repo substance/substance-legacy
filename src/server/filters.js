@@ -89,7 +89,7 @@ Filters.logEvents = function() {
         
         graph.fetch(qry, function(err, nodes) {
           if (err) return callback(err);
-          var recipients = [];
+          var recipients = [graph.get(node.document).get('creator')._id];
           // Comment Authors
           graph.find({"type": "/type/comment"}).each(function(c) {
             recipients.push(c.get('creator')._id);
@@ -98,6 +98,7 @@ Filters.logEvents = function() {
           graph.find({"type": "/type/subscription"}).each(function(s) {
             recipients.push(s.get('user')._id);
           });
+          
           // Do not notify the comment creator
           callback(_.uniq(_.without(recipients, node.creator)));
         })
