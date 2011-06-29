@@ -138,10 +138,6 @@ function scripts() {
 // -----------
 
 app.get('/', function(req, res) {
-  
-  console.log('SESSION:');
-  console.log(req.session);
-  
   html = fs.readFileSync(__dirname+ '/templates/app.html', 'utf-8');
   req.session = req.session ? req.session : {username: null};
   getNotifications(req.session.username, function(err, notifications) {
@@ -226,13 +222,6 @@ app.post('/login', function(req, res) {
 });
 
 
-
-app.get('/foobaz', function(req, res) {
-
-  res.send('HALLO');
-});
-
-
 app.post('/logout', function(req, res) {  
   req.session = {};
   res.send({status: "ok"});
@@ -279,9 +268,6 @@ app.post('/register', function(req, res) {
             username: username.toLowerCase(),
             seed: seed
           });
-          
-          console.log('REGISTERED:');
-          console.log(req.session);
         } else {
           return res.send({"status": "error", "field": "all", "message": "Unknown error."});
         }
