@@ -138,6 +138,10 @@ function scripts() {
 // -----------
 
 app.get('/', function(req, res) {
+  
+  console.log('SESSION:');
+  console.log(req.session);
+  
   html = fs.readFileSync(__dirname+ '/templates/app.html', 'utf-8');
   req.session = req.session ? req.session : {username: null};
   getNotifications(req.session.username, function(err, notifications) {
@@ -202,7 +206,7 @@ app.post('/login', function(req, res) {
         // TODO: Include notifications
         getNotifications(username, function(err, notifications) {
           req.session = {
-            username: username,
+            username: username.toLowerCase(),
             seed: seed
           };
           
@@ -220,6 +224,14 @@ app.post('/login', function(req, res) {
     }
   });
 });
+
+
+
+app.get('/foobaz', function(req, res) {
+
+  res.send('HALLO');
+});
+
 
 app.post('/logout', function(req, res) {  
   req.session = {};
@@ -256,14 +268,20 @@ app.post('/register', function(req, res) {
           var seed = {};
           seed[user._id] = user.toJSON();
           delete seed[user._id].password;
+          
+          req.session = {
+            username: username.toLowerCase(),
+            seed: seed
+          };
+          
           res.send({
             status: "ok",
             username: username.toLowerCase(),
             seed: seed
           });
           
-          req.session.username = username.toLowerCase();
-          req.session.seed = seed;
+          console.log('REGISTERED:');
+          console.log(req.session);
         } else {
           return res.send({"status": "error", "field": "all", "message": "Unknown error."});
         }

@@ -288,13 +288,7 @@ var Application = Backbone.View.extend({
       success: function(res) {
         that.username = null;
         that.authenticated = false;
-        that.document.closeDocument();
-        that.browser.loaded = false;
-        that.browser.render();
         that.render();
-        $('#document_tab').hide();
-        app.toggleStartpage();
-        controller.saveLocation('');
         $('.new-document').hide();
       }
     });
@@ -365,13 +359,7 @@ var Application = Backbone.View.extend({
       $('#tabs').show();
       $('.new-document').show();
       that.render();
-      that.document.closeDocument();
       that.browser.load(that.query());
-      
-      that.browser.bind('loaded', function() {
-        that.toggleView('browser');
-      });
-      controller.saveLocation('#'+that.username);
     });
     
     setInterval(function() {
