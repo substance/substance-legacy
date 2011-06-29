@@ -122,8 +122,13 @@ var Application = Backbone.View.extend({
   },
   
   toggleUserProfile: function() {
+    var that = this;
     app.browser.load({"type": "user", "value": this.username});
-    app.toggleView('browser');
+    app.browser.bind('loaded', function() {
+      app.toggleView('browser');
+      $('#browser_wrapper').attr('url', '#'+that.username);
+      app.browser.unbind('loaded');
+    });
   },
   
   newDocument: function() {
