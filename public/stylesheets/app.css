@@ -1443,7 +1443,7 @@ div.browser-not-supported a:hover {
 
 #document h1, #document h2, #document h3, #document h4, #document h5 {
   font-weight: normal;
-  margin: 0em 100px 0 100px;
+  margin: 0em 100px 0 55px;
   padding: 0;
   line-height: 1.6em;
 }

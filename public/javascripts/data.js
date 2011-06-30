@@ -1212,6 +1212,15 @@
       this.adapter.unwatch(channel, function() {});
     },
     
+    // Empty graph
+    empty: function() {
+      var that = this;
+      _.each(this.objects().keys(), function(id) {
+        that.del(id);
+        that.all('objects').del(id);
+      });
+    },
+    
     // Merges in another Graph
     merge: function(g, dirty) {
       var that = this;

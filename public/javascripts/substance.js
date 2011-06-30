@@ -1082,11 +1082,6 @@ var ApplicationController = Backbone.Controller.extend({
   
   userDocs: function(username) {    
     if (!username) { // startpage rendering
-      // if (app.username) {
-      //   username = app.username;
-      // } else {
-      //   
-      // }
       return app.toggleStartpage();
     }
     
@@ -1709,6 +1704,7 @@ var Document = Backbone.View.extend({
         
         // Update browser graph reference
         app.browser.graph.set('objects', id, that.model);
+        
         app.toggleView('document');
         
         // Scroll to target node
@@ -1766,12 +1762,19 @@ var Document = Backbone.View.extend({
   },
   
   subscribeDocument: function() {
+    if (!app.username) {
+      alert('Please log in to make a subscription.');
+      return false;
+    }
     graph.set(null, {
       type: "/type/subscription",
       user: "/user/"+app.username,
       document: this.model._id
     });
-    this.model.set({subscribed: true});
+    this.model.set({
+      subscribed: true,
+      subscribers: this.model.get('subscribers') + 1
+    });
     this.model.dirty = false; // Don't make dirty
     this.render();
     return false;
@@ -1779,12 +1782,17 @@ var Document = Backbone.View.extend({
   
   unsubscribeDocument: function() {
     var that = this;
+    
     // Fetch the subscription object
     graph.fetch({type: "/type/subscription", "user": "/user/"+app.username, "document": this.model._id}, function(err, nodes) {
       if (nodes.length === 0) return;
+      
       // Unsubscribe
       graph.del(nodes.first()._id);
-      that.model.set({subscribed: false});
+      that.model.set({
+        subscribed: false,
+        subscribers: that.model.get('subscribers') - 1
+      });
       that.model.dirty = false; // Don't make dirty
       that.render();
     });
@@ -2361,13 +2369,14 @@ var DocumentBrowser = Backbone.View.extend({
     this.browserTab = new BrowserTab({el: '#browser_tab', browser: this});
     this.documents = [];
     this.commands = [];
+    this.graph = new Data.Graph(seed);
   },
   
   // Modfies query state (reflected in the BrowserTab)
   load: function(query) {
     var that = this;
     this.query = query;
-    this.graph = new Data.Graph(seed);
+    
     
     $('#browser_tab').show().html('&nbsp;&nbsp;&nbsp;Loading documents...');
     $('#browser_wrapper').html('');
@@ -2376,6 +2385,7 @@ var DocumentBrowser = Backbone.View.extend({
       url: "/documents/search/"+query.type+"/"+encodeURI(query.value),
       dataType: "json",
       success: function(res) {
+        that.graph = new Data.Graph(seed);
         that.graph.merge(res.graph);
         that.facets = new Facets({el: '#facets', browser: that});
         that.loaded = true;
@@ -2906,8 +2916,13 @@ var Application = Backbone.View.extend({
   },
   
   toggleUserProfile: function() {
+    var that = this;
     app.browser.load({"type": "user", "value": this.username});
-    app.toggleView('browser');
+    app.browser.bind('loaded', function() {
+      app.toggleView('browser');
+      $('#browser_wrapper').attr('url', '#'+that.username);
+      app.browser.unbind('loaded');
+    });
   },
   
   newDocument: function() {
@@ -2988,7 +3003,7 @@ var Application = Backbone.View.extend({
   },
   
   checkDocumentName: function(name, callback) {
-    if (new RegExp(graph.get('/type/document').get('properties', 'name').validator).test(name)) {
+    if (new RegExp(graph.get('/type/document').get('properties', 'name').validator).test(name)) {      
       // TODO: find a more efficient way to check for existing docs.
       $.ajax({
         type: "GET",
@@ -3072,13 +3087,7 @@ var Application = Backbone.View.extend({
       success: function(res) {
         that.username = null;
         that.authenticated = false;
-        that.document.closeDocument();
-        that.browser.loaded = false;
-        that.browser.render();
         that.render();
-        $('#document_tab').hide();
-        app.toggleStartpage();
-        controller.saveLocation('');
         $('.new-document').hide();
       }
     });
@@ -3149,13 +3158,7 @@ var Application = Backbone.View.extend({
       $('#tabs').show();
       $('.new-document').show();
       that.render();
-      that.document.closeDocument();
       that.browser.load(that.query());
-      
-      that.browser.bind('loaded', function() {
-        that.toggleView('browser');
-      });
-      controller.saveLocation('#'+that.username);
     });
     
     setInterval(function() {
@@ -3344,29 +3347,29 @@ var remote,                              // Remote handle for server-side method
     
 
 
-    // window.positionBoard = function() {
-    //   var wrapper = document.getElementById('document_wrapper');
-    //   if (wrapper.offsetTop - _.scrollTop() < 0) {
-    //     $('#document .board').addClass('docked');
-    //     $('#document .board').css('left', ($('#document').offset().left)+'px');
-    //     $('#document .board').css('width', ($('#document').width())+'px');
-    //     
-    //     var tocOffset = $('#toc_wrapper').offset();
-    //     if (tocOffset && _.scrollTop() < tocOffset.top) {
-    //       $('#toc_wrapper').css('top', _.scrollTop()-$('#document').offset().top+"px");
-    //     }
-    //     
-    //   } else {
-    //     $('#document .board').css('left', '');
-    //     $('#toc_wrapper').css('top', 0);
-    //     $('#document .board').removeClass('docked');
-    //   }
-    // }
-    // 
-    // positionBoard();
-    // 
-    // $(window).bind('scroll', positionBoard);
-    // $(window).bind('resize', positionBoard);
+    window.positionBoard = function() {
+      var wrapper = document.getElementById('document_wrapper');
+      if (wrapper.offsetTop - _.scrollTop() < 0) {
+        $('#document .board').addClass('docked');
+        $('#document .board').css('left', ($('#document').offset().left)+'px');
+        $('#document .board').css('width', ($('#document').width())+'px');
+        
+        var tocOffset = $('#toc_wrapper').offset();
+        if (tocOffset && _.scrollTop() < tocOffset.top) {
+          $('#toc_wrapper').css('top', _.scrollTop()-$('#document').offset().top+"px");
+        }
+        
+      } else {
+        $('#document .board').css('left', '');
+        $('#toc_wrapper').css('top', 0);
+        $('#document .board').removeClass('docked');
+      }
+    }
+    
+    positionBoard();
+    
+    $(window).bind('scroll', positionBoard);
+    $(window).bind('resize', positionBoard);
 
     // Start the engines
     app = new Application({el: $('#container'), session: session});

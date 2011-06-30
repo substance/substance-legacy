@@ -553,29 +553,29 @@ var remote,                              // Remote handle for server-side method
     
 
 
-    // window.positionBoard = function() {
-    //   var wrapper = document.getElementById('document_wrapper');
-    //   if (wrapper.offsetTop - _.scrollTop() < 0) {
-    //     $('#document .board').addClass('docked');
-    //     $('#document .board').css('left', ($('#document').offset().left)+'px');
-    //     $('#document .board').css('width', ($('#document').width())+'px');
-    //     
-    //     var tocOffset = $('#toc_wrapper').offset();
-    //     if (tocOffset && _.scrollTop() < tocOffset.top) {
-    //       $('#toc_wrapper').css('top', _.scrollTop()-$('#document').offset().top+"px");
-    //     }
-    //     
-    //   } else {
-    //     $('#document .board').css('left', '');
-    //     $('#toc_wrapper').css('top', 0);
-    //     $('#document .board').removeClass('docked');
-    //   }
-    // }
-    // 
-    // positionBoard();
-    // 
-    // $(window).bind('scroll', positionBoard);
-    // $(window).bind('resize', positionBoard);
+    window.positionBoard = function() {
+      var wrapper = document.getElementById('document_wrapper');
+      if (wrapper.offsetTop - _.scrollTop() < 0) {
+        $('#document .board').addClass('docked');
+        $('#document .board').css('left', ($('#document').offset().left)+'px');
+        $('#document .board').css('width', ($('#document').width())+'px');
+        
+        var tocOffset = $('#toc_wrapper').offset();
+        if (tocOffset && _.scrollTop() < tocOffset.top) {
+          $('#toc_wrapper').css('top', _.scrollTop()-$('#document').offset().top+"px");
+        }
+        
+      } else {
+        $('#document .board').css('left', '');
+        $('#toc_wrapper').css('top', 0);
+        $('#document .board').removeClass('docked');
+      }
+    }
+    
+    positionBoard();
+    
+    $(window).bind('scroll', positionBoard);
+    $(window).bind('resize', positionBoard);
 
     // Start the engines
     app = new Application({el: $('#container'), session: session});
