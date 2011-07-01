@@ -183,7 +183,7 @@ var Application = Backbone.View.extend({
   },
   
   searchDocs: function(searchstr) {
-    app.browser.load({"type": "search", "value": encodeURI(searchstr)});
+    app.browser.load({"type": "keyword", "value": encodeURI(searchstr)});
     $('#browser_wrapper').attr('url', '#search/'+encodeURI(searchstr));
     app.browser.bind('loaded', function() {
       app.toggleView('browser');

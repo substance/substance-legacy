@@ -45,7 +45,6 @@
       <dt>Views</dt>
       <dd><%= doc.get('views') %></dd>
       
-      
       <% attributes.each(function(attribute) { %>
         <% if (doc.get(attribute.key).length > 0) { %>
           <dt><%= attribute.name %></dt>
@@ -99,8 +98,8 @@
   
   <script type="text/x-ejs-template" name="startpage">
     <div id="startpage">
-      <div id="slider-wrapper">
-      
+    
+      <!--<div id="slider-wrapper">
         <div id="slider" class="nivoSlider">
           <img src="images/startpage/intro1.png" alt="" />
           <a href="http://dev7studios.com"><img src="images/startpage/intro2.png" alt="" title="This is an example of a caption" /></a>
@@ -110,9 +109,28 @@
         <div id="htmlcaption" class="nivo-html-caption">
           <strong>This</strong> is an example of a <em>HTML</em> caption with <a href="#">a link</a>.
         </div>
-      </div>
+      </div>-->
       
+      <hr class="separator"/>
       <div class="intro">Document authoring and publishing for the web.</div>
+      
+      <hr class="separator"/>
+      
+      <div id="example_documents_header">Try some documents</div>
+      <div id="example_documents">
+        <a href="http://substance.io#substance/getting-started"><div class="document">
+          <div class="title">Getting Started</div>
+          <div class="author">Substance Team</div>
+        </div></a>
+        <a href="http://substance.io#substance/substance-as-a-blog-engine"><div class="document">
+          <div class="title">Use Substance as a blog engine</div>
+          <div class="author">Substance Team</div>
+        </div>
+        <a href="http://substance.io#michael/data-js"><div class="document">
+          <div class="title">Data.js</div>
+          <div class="author">Michael Aufreiter</div>
+        </div></a>
+      </div>
       
       <hr class="separator"/>
       
@@ -129,7 +147,7 @@
           <div class="characteristic">
             <h2>Collaboration</h2>
             <p>
-              Substance targets open collaboration. Everyone can contribute and comment on certain text passages. In Future you'll even be able to submit patches, that can be applied by the owner.
+              Substance targets open collaboration. Readers can participate and comment on certain text passages. In future they'll even be able to submit patches, that can be applied by the owner.
             </p>
           </div>
           
@@ -153,12 +171,10 @@
             <br/>Substance is <a href="http://github.com/michael/substance">open source</a>, and free for non-commercial use.
           </p>
         </div>
-        
-        
-
       </div>
-
       
+
+
       <hr class="separator"/>
       
       <!-- Features -->
@@ -431,7 +447,7 @@
   
   <script type="text/x-ejs-template" name="browser_tab">
     <div class="cursor"><span></span></div>
-    <div class="icon <%= query ? query.type : "search" %>"></div>
+    <div class="icon <%= query ? query.type : "keyword" %>"></div>
     <div class="tab-label">Browser</div>
     <form id="search_form"><input type="text" title="Start searching" id="search" name="search" value="<%= query_descr %>" autocomplete="off"/></form>
     <!--<div class="count"><%= documents.length > 0 ? documents.length : ''%></div>-->

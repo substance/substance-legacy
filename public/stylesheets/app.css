@@ -201,7 +201,7 @@ a.button:active { background: #98B247; }
 
 .icon:hover { }
 .icon.browse { background: url(../images/icons/white/magnifying_glass_16x16.png) center no-repeat; }
-.icon.search { background: url(../images/icons/white/magnifying_glass_16x16.png) center no-repeat; }
+.icon.keyword { background: url(../images/icons/white/magnifying_glass_16x16.png) center no-repeat; }
 .icon.recent { background: url(../images/icons/white/clock_16x16.png) center no-repeat; }
 .icon.subscribed { background: url(../images/icons/white/rss_16x16.png) center no-repeat; }
 .icon.user { background: url(../images/icons/white/user_12x16.png) center no-repeat; }
@@ -250,7 +250,7 @@ a.button:active { background: #98B247; }
 
 #tabs input { 
   border-color: transparent;
-  width: 180px;
+  width: 150px;
   margin-left: 5px;
   padding-left: 5px;
   height: 26px; 
@@ -270,7 +270,6 @@ a.button:active { background: #98B247; }
   padding-left: 0px;
   padding-right: 0px;
 }
-
 
 .tab .tab-label {
   position: absolute;
@@ -2524,6 +2523,58 @@ div.intro {
   color: #000;
 }
 
+
+#example_documents {
+  overflow: auto;
+  height: 270px;
+  width: 630px;
+  margin: auto;
+}
+
+#example_documents .document {
+  margin: 30px;
+  width: 150px;
+  height: 200px;
+  background: white;
+  float: left;
+  
+  -webkit-box-shadow: 0px 1px 4px rgba(0,0,0,0.35), inset 0px 0px 1px rgba(255,255,255,0.15);
+  -moz-box-shadow:    0px 1px 4px rgba(0,0,0,0.35), inset 0px 0px 1px rgba(255,255,255,0.15);
+  box-shadow:         0px 1px 4px rgba(0,0,0,0.35), inset 0px 0px 1px rgba(255,255,255,0.15);
+  background: #fff;
+  text-align: center;
+  
+  -moz-transition-duration: 0.4s;
+  -webkit-transition-duration: 0.4s;
+  -o-transition-duration: 0.4s;
+  transition-duration: 0.4s;
+}
+
+#example_documents .document:hover {
+  -webkit-transform: scale(1.1);
+}
+
+#example_documents_header {
+  text-align: center;
+  font-size: 25px;
+  padding: 30px 0;
+  font-family: 'Palatino Linotype', 'Book Antiqua', Palatino, FreeSerif, serif;
+  font-weight: lighter;
+}
+
+#example_documents .document .title {
+  margin-top: 20px;
+  padding: 10px;
+  font-family: 'Palatino Linotype', 'Book Antiqua', Palatino, FreeSerif, serif;
+  font-size: 20px;
+  font-weight: bold;
+}
+
+#example_documents .document .author {
+  margin-top: 10px;
+  color: #777;
+  font-size: 13px;
+}
 
 #features {
   overflow: auto;
