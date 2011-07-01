@@ -245,6 +245,7 @@ a.button:active { background: #98B247; }
 #tabs input {
   -moz-box-shadow: none;
   box-shadow: none;
+  -webkit-box-shadow: none;  
   background: transparent;
 }
 
