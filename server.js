@@ -371,8 +371,8 @@ app.get('/avatar/:username/:size', function(req, res) {
 
 
 // Returns the most recent version of the requested doc
-app.get('/documents/:username/:name', function(req, res) {  
-  Document.get(req.params.username, req.params.name, req.session.username, function(err, graph, id) {
+app.get('/documents/:username/:name', function(req, res) {
+  Document.get(req.params.username, req.params.name, req.session ? req.session.username : null, function(err, graph, id) {
     if (err) return res.send({status: "error", error: err});
     res.send({status: "ok", graph: graph, id: id});
   });
