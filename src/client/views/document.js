@@ -690,6 +690,7 @@ var Document = Backbone.View.extend({
     // Render comments
     var wrapper = $('#'+node.html_id+' > .comments-wrapper');
     if (wrapper.length === 0) return;
+    
     wrapper.html(_.tpl('comments', {node: node}));
     
     var comments = node.get('comments');

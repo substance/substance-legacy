@@ -635,7 +635,6 @@
       <% if (node.get('comments')) { %>
         <% node.get('comments').each(function(comment, key) { %>
           <div class="comment" id="<%= comment.html_id %>">
-            <% console.log(comment.toJSON()); %>
             <% username = comment.get('creator')._id.split('/')[2]; %>
             <div class="header">
               <a href="#<%= username%>"><%= username %></a>
