@@ -979,10 +979,10 @@ var ImageEditor = Backbone.View.extend({
       },
       onSuccess: function(assembly) {
         // This triggers a node re-render
-        if (assembly.results.resize_image && assembly.results.resize_image[0] && assembly.results.resize_image[0].url) {
+        if (assembly.results.web_version && assembly.results.web_version[1] && assembly.results.web_version[1].url) {
           app.document.updateSelectedNode({
-            url: assembly.results.resize_image[0].url,
-            original_url: assembly.uploads[0].url,
+            url: assembly.results.web_version[1].url,
+            original_url: assembly.results.print_version[1].url,
             dirty: true
           });
           
