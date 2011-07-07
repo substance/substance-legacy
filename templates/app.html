@@ -466,7 +466,7 @@
     <div class="icon read"></div>
     <div class="tab-label">Document</div>
     <div class="user-name">
-      <span><%= username %> / </span><input type="text" id="document_name" name="document_name" value="<%= document_name %>"/>
+      <span><%= username %> / </span><input type="text" id="document_name" name="document_name" value="<%= document_name %>" <%= app.document.mode !== 'edit' ? 'disabled="disabled"' : ''%>/>
     </div>
   </script>
   
@@ -635,6 +635,7 @@
       <% if (node.get('comments')) { %>
         <% node.get('comments').each(function(comment, key) { %>
           <div class="comment" id="<%= comment.html_id %>">
+            <% console.log(comment.toJSON()); %>
             <% username = comment.get('creator')._id.split('/')[2]; %>
             <div class="header">
               <a href="#<%= username%>"><%= username %></a>
