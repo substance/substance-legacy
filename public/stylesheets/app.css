@@ -2551,10 +2551,6 @@ div.intro {
   transition-duration: 0.4s;
 }
 
-#example_documents .document:hover {
-  -webkit-transform: scale(1.1);
-}
-
 #example_documents_header {
   text-align: center;
   font-size: 25px;

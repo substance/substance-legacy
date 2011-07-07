@@ -164,7 +164,7 @@
           <p>
             <b>Substance</b> is a fully web-based document authoring and publishing platform and an attempt to implement the idea of <a href="http://en.wikipedia.org/wiki/Freedom_of_information">Freedom of Information</a>.</p><p>
             With Substance, <b>writers</b>, <b>journalists</b>, <b>scientists</b> and everyone else who's interested in publishing can
-            use an open platform for writing and sharing their articles.</p><p>Document authoring used to take place in word processors on the Desktop (like MS Word or Open Office).
+            use an open platform for writing and sharing articles.</p><p>Document authoring used to take place in word processors on the Desktop (like MS Word or Open Office).
             We believe that now this can all be be done in the browser, in a simpler, more collaborative way.
           </p>
           <p>
@@ -282,7 +282,7 @@
           <div class="count"><span><%= count %></span></div>
         </div>
         <div class="toggle user-profile" title="User Profile">
-          <div class="icon"><img src="/avatar/<%= user.get('username') %>/25"/></div>
+          <div class="icon"><img src="/avatar/<%= user._id.split('/')[2] %>/25"/></div>
           <div class="lbl"><span><%= user.get('name') %></span></div>
         </div>
         <div class="toggle user-settings" title="User Settings">
@@ -480,7 +480,7 @@
         <% if (user) { %>
           <div class="container">
             <div class="avatar">
-              <img<% if (user.get('username') === app.username) { %> title="Change your avatar at Gravatar.com"<% } %> class="left" src="/avatar/<%= user.get('username') %>/100"/>
+              <img<% if (user.get('username') === app.username) { %> title="Change your avatar at Gravatar.com"<% } %> class="left" src="/avatar/<%= user._id.split('/')[2] %>/100"/>
             </div>
             <div class="username">
               <h1><%= user.get('name') %></h1>
