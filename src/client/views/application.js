@@ -615,9 +615,9 @@ var remote,                              // Remote handle for server-side method
         pendingSync = true;
         setTimeout(function() {
           $('#sync_state').fadeIn(100);
-          graph.sync(function(err, invalidNodes) {
+          graph.sync(function(err) {
             pendingSync = false;
-            if (!err && invalidNodes.length === 0) {
+            if (!err) {
               setTimeout(function() {
                 $('#sync_state').fadeOut(100);
               }, 1500);
