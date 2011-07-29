@@ -20,7 +20,7 @@
   }
   
   // Current version of the library. Keep in sync with `package.json`.
-  Data.VERSION = '0.4.0-pre';
+  Data.VERSION = '0.4.1';
 
   // Require Underscore, if we're on the server, and it's not already present.
   var _ = this._;
@@ -815,11 +815,11 @@
             if (that.isObjectType()) {
               // Create on the fly if an object is passed as a value
               if (typeof v === 'object') v = that.type.g.set(null, v)._id;
-              val = that.type.g.get('objects', v);
+              val = that.type.g.get('nodes', v);
               if (!val) {
                 // Register the object (even if not yet loaded)
                 val = new Data.Object(that.type.g, v);
-                that.type.g.set('objects', v, val);
+                that.type.g.set('nodes', v, val);
               }
             } else {
               val = new Data.Node({value: v});
@@ -911,7 +911,7 @@
     
     // Objects of this type
     objects: function() {
-      return this.all('objects');
+      return this.all('nodes');
     },
     
     // Serialize a single type node
@@ -960,7 +960,7 @@
       this.key = id;
       this._id = id;
       this.html_id = id.replace(/\//g, '_');
-      this.dirty = true; // Every constructed node is dirty by default
+      this._dirty = true; // Every constructed node is dirty by default
       
       this.errors = []; // Stores validation errors
       this._types = new Data.Hash();
@@ -1000,18 +1000,16 @@
       
       if (!this.data) throw new Error('Object has no data, and cannot be built');
       
-      // Pull off _id and _rev properties
-      // delete this.data._id;
-      this._rev = this.data._rev; // delete this.data._rev;
+      this._rev = this.data._rev;
       this._conflicted = this.data._conflicted;
-      this._deleted = this.data._deleted; // delete this.data._deleted;
+      this._deleted = this.data._deleted;
       
       // Initialize primary type (backward compatibility)
-      this.type = this.g.get('objects', _.last(types));
+      this.type = this.g.get('nodes', _.last(types));
             
       // Initialize types
       _.each(types, function(type) {
-        that._types.set(type, that.g.get('objects', type));
+        that._types.set(type, that.g.get('nodes', type));
         // Register properties for all types
         that._types.get(type).all('properties').each(function(property, key) {        
           function applyValue(value) {
@@ -1027,7 +1025,7 @@
           }
         });
       });
-      if (this.dirty) this.g.trigger('dirty');
+      if (this._dirty) this.g.trigger('dirty', this);
     },
     
     // Validates an object against its type (=schema)
@@ -1123,8 +1121,9 @@
           // Setup values
           that.replace(p.key, p.registerValues(_.isArray(value) ? value : [value], that));
           
-          that.dirty = true;
-          that.g.trigger('dirty');
+          that._dirty = true;
+          that.g.trigger('dirty', that);
+          that.g.snapshot();
         });
       } else {
         return Data.Node.prototype.set.call(this, arguments[0], arguments[1], arguments[2]);
@@ -1165,14 +1164,19 @@
   // Set a new Data.Adapter and enable Persistence API
 
   Data.Graph = _.inherits(Data.Node, {
-    constructor: function(g, dirty) {
+    constructor: function(g, options) {
       var that = this;
       Data.Node.call(this);
       
       this.watchers = {};
-      this.replace('objects', new Data.Hash());
+      this.replace('nodes', new Data.Hash());
       if (!g) return;
-      this.merge(g, dirty);
+      this.merge(g, options && options.dirty);
+      
+      if (options && options.persistent) {
+        this.persistent = options.persistent;
+        this.restore(); // Restore data
+      }
     },
     
     connect: function(name, config) {
@@ -1217,7 +1221,7 @@
       var that = this;
       _.each(this.objects().keys(), function(id) {
         that.del(id);
-        that.all('objects').del(id);
+        that.all('nodes').del(id);
       });
     },
     
@@ -1228,9 +1232,9 @@
       // Process schema nodes
       var types = _.select(g, function(node, key) {
         if (node.type === '/type/type' || node.type === 'type') {
-          if (!that.get('objects', key)) {
-            that.set('objects', key, new Data.Type(that, key, node));
-            that.get(key).dirty = dirty;
+          if (!that.get('nodes', key)) {
+            that.set('nodes', key, new Data.Type(that, key, node));
+            that.get(key)._dirty = node._dirty ? node._dirty : dirty;
           }
           return true;
         }
@@ -1240,23 +1244,24 @@
       // Process object nodes
       var objects = _.select(g, function(node, key) {
         if (node.type !== '/type/type' && node.type !== 'type') {
-          var res = that.get('objects', key);
+          var res = that.get('nodes', key);
           var types = _.isArray(node.type) ? node.type : [node.type];
           if (!res) {
             res = new Data.Object(that, key, node);
-            that.set('objects', key, res);
+            that.set('nodes', key, res);
           } else {
             // Populate existing node with data in order to be rebuilt
             res.data = node;
           }
           // Check for type existence
           _.each(types, function(type) {
-            if (!that.get('objects', type)) {
+            if (!that.get('nodes', type)) {
               throw new Error("Type '"+type+"' not found for "+key+"...");
             }
-            that.get('objects', type).set('objects', key, res);
+            that.get('nodes', type).set('nodes', key, res);
           });
-          that.get(key).dirty = dirty;
+          that.get(key)._dirty = node._dirty ? node._dirty : dirty;
+          
           if (!node._id) node._id = key;
           return true;
         }
@@ -1268,6 +1273,9 @@
         var obj = that.get(o._id);
         if (obj.data) obj.build();
       });
+      
+      // Create a new snapshot
+      this.snapshot();
       return this;
     },
 
@@ -1283,9 +1291,10 @@
         // Recycle existing object if there is one
         var res = that.get(node._id) ? that.get(node._id) : new Data.Object(that, node._id, _.clone(node), true);
         res.data = node;
-        res.dirty = true;
+        res._dirty = true;
         res.build();
-        this.set('objects', node._id, res);
+        this.set('nodes', node._id, res);
+        this.snapshot();
         return res;
       } else { // Delegate to Data.Node#set
         return Data.Node.prototype.set.call(this, arguments[0], arguments[1], arguments[2]);
@@ -1295,7 +1304,7 @@
     // API method for accessing objects in the graph space
     get: function(id) {
       if (arguments.length === 1) {
-        return this.get('objects', id);
+        return this.get('nodes', id);
       } else {
         return Data.Node.prototype.get.call(this, arguments[0], arguments[1]);
       }
@@ -1306,13 +1315,14 @@
       var node = this.get(id);
       if (!node) return;
       node._deleted = true;
-      node.dirty = true;
+      node._dirty = true;
       // Remove registered values
       node.properties().each(function(p, key) {
         var values = node.all(key);
         if (values) p.unregisterValues(values, node);
       });
-      this.trigger('dirty');
+      this.trigger('dirty', node);
+      this.snapshot();
     },
     
     // Find objects that match a particular query
@@ -1320,6 +1330,18 @@
       return this.objects().select(function(o) {
         return Data.matches(o.toJSON(), query);
       });
+    },
+    
+    // Memoize a snapshot of the current graph
+    snapshot: function() {
+      if (!this.persistent) return;
+      localStorage.setItem("graph", JSON.stringify(this.toJSON(true)));
+    },
+    
+    // Restore latest snapshot from localStorage
+    restore: function() {
+      var snapshot = JSON.parse(localStorage.getItem("graph"));
+      if (snapshot) this.merge(snapshot);
     },
     
     // Fetches a new subgraph from the adapter and either merges the new nodes
@@ -1352,36 +1374,37 @@
           nodes = that.dirtyNodes();
       
       var validNodes = new Data.Hash();
-      var invalidNodes = nodes.select(function(node, key) {
+      nodes.select(function(node, key) {
         if (!node.validate || (node.validate && node.validate())) {
           validNodes.set(key, node);
-          return false;
-        } else {
-          return true;
         }
       });
       
       this.adapter.write(validNodes.toJSON(), function(err, g) {
-        if (err) {
-          callback(err);
-        } else {
-          that.merge(g, false);
-          
-          // Check for rejectedNodes
-          validNodes.each(function(n, key) {
-            if (g[key]) {
-              n.dirty = false;
-              n._rejected = false;
-            } else {
-              n._rejected = true;
-            }
-          });
-          
-          if (that.conflictedNodes().length > 0) that.trigger('conflicted');
-          if (that.rejectedNodes().length > 0) that.trigger('rejected');
-          
-          callback(invalidNodes.length > 0 ? 'Some invalid nodes' : null, invalidNodes);
-        }
+        if (err) return callback(err);
+        that.merge(g, false);
+
+        // Check for rejectedNodes / conflictedNodes
+        validNodes.each(function(n, key) {
+          if (g[key]) {
+            n._dirty = false;
+            n._rejected = false;
+          } else {
+            n._rejected = true;
+          }
+        });
+        
+        // Update localStorage
+        if (this.persistent) that.snapshot();
+        
+        if (that.invalidNodes().length > 0) that.trigger('invalid');
+        if (that.conflictedNodes().length > 0) that.trigger('conflicted');
+        if (that.rejectedNodes().length > 0) that.trigger('rejected');
+        
+        var unsavedNodes = that.invalidNodes().union(that.conflictedNodes())
+                           .union(that.rejectedNodes()).length;
+        
+        callback(unsavedNodes > 0 ? unsavedNodes+' unsaved nodes' : null);
       });
     },
     
@@ -1394,14 +1417,14 @@
     
     // Type nodes
     types: function() {
-      return this.all('objects').select(function(node, key) {
+      return this.all('nodes').select(function(node, key) {
         return node.type === '/type/type' || node.type === 'type';
       });
     },
     
     // Object nodes
     objects: function() {
-      return this.all('objects').select(function(node, key) {
+      return this.all('nodes').select(function(node, key) {
         return node.type !== '/type/type' && node.type !== 'type' && node.data && !node._deleted;
       });
     },
@@ -1409,41 +1432,47 @@
     // Get dirty nodes
     // Used by Data.Graph#sync
     dirtyNodes: function() {
-      return this.all('objects').select(function(obj, key) {
-        return (obj.dirty && (obj.data || obj instanceof Data.Type));
+      return this.all('nodes').select(function(obj, key) {
+        return (obj._dirty && (obj.data || obj instanceof Data.Type));
       });
     },
     
     // Get invalid nodes
     invalidNodes: function() {
-      return this.all('objects').select(function(obj, key) {
+      return this.all('nodes').select(function(obj, key) {
         return (obj.errors && obj.errors.length > 0);
       });
     },
     
     // Get conflicting nodes
     conflictedNodes: function() {
-      return this.all('objects').select(function(obj, key) {
+      return this.all('nodes').select(function(obj, key) {
         return obj._conflicted;
       });
     },
     
     // Nodes that got rejected during sync
     rejectedNodes: function() {
-      return this.all('objects').select(function(obj, key) {
+      return this.all('nodes').select(function(obj, key) {
         return obj._rejected;
       });
     },
     
     // Serializes the graph to the JSON-based exchange format
-    toJSON: function() {
+    toJSON: function(extended) {
       var result = {};
       
       // Serialize object nodes
-      this.all('objects').each(function(obj, key) {
+      this.all('nodes').each(function(obj, key) {
         // Only serialize fetched nodes
         if (obj.data || obj instanceof Data.Type) {
           result[key] = obj.toJSON();
+          if (extended) {
+            // include special properties
+            if (obj._dirty) result[key]._dirty = true;
+            if (obj._conflicted) result[key]._conclicted = true;
+            if (obj._rejected) result[key].rejected = true;
+          }
         }
       });
       
@@ -1453,7 +1482,7 @@
   
   _.extend(Data.Graph.prototype, _.Events);
   
-  
+
   // Data.Collection
   // --------------
   
@@ -1520,7 +1549,7 @@
     
     // Convenience function for accessing properties
     properties: function() {
-      return this.g.get('objects', '/type/item').all('properties');
+      return this.g.get('nodes', '/type/item').all('properties');
     },
     
     // Convenience function for accessing items

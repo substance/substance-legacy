@@ -3318,7 +3318,7 @@ var remote,                              // Remote handle for server-side method
     app,                                 // The Application
     controller,                          // Controller responding to routes
     editor,                              // A global instance of the Proper Richtext editor
-    graph = new Data.Graph(seed, false).connect('ajax'); // The database
+    graph = new Data.Graph(seed).connect('ajax'); // The database
 
 (function() {
   $(function() {    
