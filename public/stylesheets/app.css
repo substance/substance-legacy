@@ -1226,8 +1226,7 @@ div.browser-not-supported a:hover {
 /* Numbering */
 
 #document {
-  counter-reset: section;
-  counter-reset: figure;
+  counter-reset: figure 0 section 0;
 }
 
 #document h1 {
