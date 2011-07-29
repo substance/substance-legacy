@@ -1227,6 +1227,7 @@ div.browser-not-supported a:hover {
 
 #document {
   counter-reset: section;
+  counter-reset: figure;
 }
 
 #document h1 {
