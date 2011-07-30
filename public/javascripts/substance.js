@@ -2023,8 +2023,6 @@ var Document = Backbone.View.extend({
   
   addChild: function(e) {
     if (arguments.length === 1) {
-      console.log('yeeh');
-      
       // Setup node
       var type = $(e.currentTarget).attr('type');
       var refNode = graph.get($(e.currentTarget).attr('node'));
@@ -2034,8 +2032,6 @@ var Document = Backbone.View.extend({
       var refNode = graph.get(arguments[1]);
       var newNode = graph.set(arguments[0].nodeId, arguments[0]);
     }
-    
-    console.log(refNode._id);
     
     // Connect child node
     refNode.all('children').set(newNode._id, newNode);
