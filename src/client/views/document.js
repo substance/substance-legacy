@@ -203,13 +203,13 @@ var Document = Backbone.View.extend({
     
     // Remove from prev. position
     nodeParent.all('children').del(node._id);
-    nodeParent.dirty = true;
+    nodeParent._dirty = true;
     
     this.trigger('change:node', nodeParent);
     
     if (insertionType === "child") {
       ref.all('children').set(node._id, node);
-      ref.dirty = true;
+      ref._dirty = true;
       this.trigger('change:node', ref);
     } else {
       // Register at new position
@@ -245,7 +245,7 @@ var Document = Backbone.View.extend({
       }
       // Connect to parent
       refParent.all('children').set(node._id, node, targetIndex);
-      refParent.dirty = true;
+      refParent._dirty = true;
       graph.trigger('dirty');
       this.trigger('change:node', refParent);
     }
@@ -512,7 +512,7 @@ var Document = Backbone.View.extend({
       subscribed: true,
       subscribers: this.model.get('subscribers') + 1
     });
-    this.model.dirty = false; // Don't make dirty
+    this.model._dirty = false; // Don't make dirty
     this.render();
     return false;
   },
@@ -530,7 +530,7 @@ var Document = Backbone.View.extend({
         subscribed: false,
         subscribers: that.model.get('subscribers') - 1
       });
-      that.model.dirty = false; // Don't make dirty
+      that.model._dirty = false; // Don't make dirty
       that.render();
     });
     
@@ -635,7 +635,7 @@ var Document = Backbone.View.extend({
     });
     
     // Only set dirty if explicitly requested    
-    if (attrs.dirty) {
+    if (attrs._dirty) {
       this.trigger('change:node', this.selectedNode);
     }
     
@@ -760,18 +760,23 @@ var Document = Backbone.View.extend({
   
   addChild: function(e) {
     if (arguments.length === 1) {
+      console.log('yeeh');
+      
       // Setup node
       var type = $(e.currentTarget).attr('type');
       var refNode = graph.get($(e.currentTarget).attr('node'));
+      
       var newNode = graph.set(null, {"type": type, "document": this.model._id});
     } else {
       var refNode = graph.get(arguments[1]);
       var newNode = graph.set(arguments[0].nodeId, arguments[0]);
     }
     
+    console.log(refNode._id);
+    
     // Connect child node
     refNode.all('children').set(newNode._id, newNode);
-    refNode.dirty = true;
+    refNode._dirty = true;
     this.trigger('change:node', refNode);
     
     // Select newly created node
@@ -830,7 +835,7 @@ var Document = Backbone.View.extend({
     
     // Connect to parent
     parentNode.all('children').set(newNode._id, newNode, targetIndex);
-    parentNode.dirty = true;
+    parentNode._dirty = true;
     this.trigger('change:node', parentNode);
 
     // Select newly created node
@@ -855,7 +860,7 @@ var Document = Backbone.View.extend({
     
     parent.all('children').del(node._id);
     graph.del(node._id);
-    parent.dirty = true;
+    parent._dirty = true;
     this.trigger('change:node', parent);
 
     if (arguments.length === 1) {
