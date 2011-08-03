@@ -1691,6 +1691,8 @@ pre {
   padding: 0;
   margin: 0;
   max-width: 720px;
+  min-width: 200px;
+  min-height: 150px;
   display: block;
   padding: 5px 0;
 }
