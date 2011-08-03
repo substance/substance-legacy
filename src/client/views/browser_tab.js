@@ -36,7 +36,7 @@ var BrowserTab = Backbone.View.extend({
           
           $.ajax({
              type: "GET",
-             url: "/search/"+encodeURI($('#search').val()),
+             url: "/quicksearch/"+encodeURI($('#search').val()),
              dataType: "json",
              success: function(res) {               
                // Render results

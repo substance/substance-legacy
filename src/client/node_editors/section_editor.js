@@ -1,7 +1,4 @@
 var SectionEditor = Backbone.View.extend({
-  events: {
-    'keydown .property': 'updateNode'
-  },
   
   initialize: function() {
     var that = this;

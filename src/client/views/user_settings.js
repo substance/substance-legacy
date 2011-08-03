@@ -36,7 +36,7 @@ var UserSettings = Backbone.View.extend({
               app.toggleView('browser');
             });
 
-            controller.saveLocation('#'+app.username);
+            router.navigate(app.username);
           }
         },
         error: function(err) {

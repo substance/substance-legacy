@@ -258,7 +258,7 @@ var Document = Backbone.View.extend({
   scrollTo: function(e) {
     var node = $(e.currentTarget).attr('node');
     app.scrollTo(node);
-    controller.saveLocation($(e.currentTarget).attr('href'));
+    router.navigate($(e.currentTarget).attr('href'));
     app.toggleTOC();
     return false;
   },
@@ -409,7 +409,7 @@ var Document = Backbone.View.extend({
     // Move to the actual document
     app.toggleView('document');
     
-    controller.saveLocation('#'+this.app.username+'/'+name);
+    router.navigate(this.app.username+'/'+name);
     $('#document_wrapper').attr('url', '#'+this.app.username+'/'+name);
     
     this.trigger('changed');
@@ -539,7 +539,7 @@ var Document = Backbone.View.extend({
   
   closeDocument: function() {
     this.model = null;
-    controller.saveLocation('#'+this.app.username);
+    router.navigate(this.app.username);
     $('#document_wrapper').attr('url', '#'+this.app.username);
     $('#document_tab').hide();
     app.toggleView('content');

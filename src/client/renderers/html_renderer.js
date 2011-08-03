@@ -126,8 +126,9 @@ var HTMLRenderer = function(root, parent, lvl) {
       
       if (children) {
         children.each(function(child, key, index) {
+          if (!child.type) console.log(node._id+ "has an unreferenced child" + key);
           content += renderers[child.type._id](child, node, level+1);
-        });        
+        });
       }
       
       return _.tpl('document', {

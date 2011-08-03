@@ -101,13 +101,13 @@
     
       <!--<div id="slider-wrapper">
         <div id="slider" class="nivoSlider">
-          <img src="images/startpage/intro1.png" alt="" />
-          <a href="http://dev7studios.com"><img src="images/startpage/intro2.png" alt="" title="This is an example of a caption" /></a>
-          <img src="images/startpage/intro3.png" alt="" />
-          <img src="images/startpage/intro4.png" alt="" title="#htmlcaption" />
+          <img src="/images/startpage/intro1.png" alt="" />
+          <a href="http://dev7studios.com"><img src="/images/startpage/intro2.png" alt="" title="This is an example of a caption" /></a>
+          <img src="/images/startpage/intro3.png" alt="" />
+          <img src="/images/startpage/intro4.png" alt="" title="#htmlcaption" />
         </div>
         <div id="htmlcaption" class="nivo-html-caption">
-          <strong>This</strong> is an example of a <em>HTML</em> caption with <a href="#">a link</a>.
+          <strong>This</strong> is an example of a <em>HTML</em> caption with <a href="/">a link</a>.
         </div>
       </div>-->
       
@@ -118,26 +118,25 @@
       
       <div id="example_documents_header">Try some interactive documents</div>
       <div id="example_documents">
-        <a href="http://substance.io#substance/getting-started"><div class="document">
+        <a href="http://substance.io/substance/getting-started"><div class="document">
           <div class="title">Getting Started</div>
           <div class="author">Substance Team</div>
         </div></a>
-        <a href="http://substance.io#substance/substance-as-a-blog-engine"><div class="document">
+        <a href="http://substance.io/substance/substance-as-a-blog-engine"><div class="document">
           <div class="title">Use Substance as a blog engine</div>
           <div class="author">Substance Team</div>
         </div>
-        <a href="http://substance.io#michael/data-js"><div class="document">
+        <a href="http://substance.io/michael/data-js"><div class="document">
           <div class="title">Data.js</div>
           <div class="author">Michael Aufreiter</div>
         </div></a>
-        <a href="http://substance.io#michael/offline-applications-with-datajs"><div class="document">
+        <a href="http://substance.io/michael/offline-applications-with-datajs"><div class="document">
           <div class="title">Offline Applications with Data.js</div>
           <div class="author">Michael Aufreiter</div>
         </div></a>
       </div>
       
       <hr class="separator"/>
-      
       
       <div id="plot">
         <div class="characteristics">
@@ -177,8 +176,6 @@
         </div>
       </div>
       
-
-
       <hr class="separator"/>
       
       <!-- Features -->
@@ -224,7 +221,7 @@
               documents by using novel navigation techniques.
             </p> 
             <p class="feature-descr">
-              Use the Browser Tab to search for a keyword or show <a href="#recent">recent documents</a>.
+              Use the Browser Tab to search for a keyword or show <a href="/recent">recent documents</a>.
             </p>
             <ul class="feature-properties">
               <li>
@@ -255,7 +252,7 @@
                 <input type="hidden" name="cmd" value="_s-xclick">
                 <input type="hidden" name="hosted_button_id" value="WAP9SGX5H29HS">
                 <p>You can either <a href="https://flattr.com/thing/317181/Substance-Open-Documents-For-The-Web">flattr</a> us,
-                or donate using <a href="#contribute" onclick="javascript: $('#contribute_form').submit(); return false;" id="contribute_button" class="">Paypal</a>.</p>
+                or donate using <a href="/contribute" onclick="javascript: $('#contribute_form').submit(); return false;" id="contribute_button" class="">Paypal</a>.</p>
                 <img alt="" border="0" src="https://www.paypal.com/de_DE/i/scr/pixel.gif" width="1" height="1">
               </form>
               
@@ -276,7 +273,7 @@
   
   <script type="text/x-ejs-template" name="header">
     <div class="title">
-      <a href="#" class="toggle-startpage">Substance</a>
+      <a href="/" class="toggle-startpage">Substance</a>
     </div>
     
     <% if (user) { %>
@@ -320,7 +317,7 @@
         </form>
         <br class="clear"/>
         <div class="signup">
-          New to Substance? <a href="#signup" class="toggle-signup">Create an Account</a>
+          New to Substance? <a href="/signup" class="toggle-signup">Create an Account</a>
         </div>
       </div>
     <% } %>
@@ -458,9 +455,9 @@
     <br class="clear"/>
     
     <div class="options">
-      <% if ((!query && app.username) || (query && query.type !== 'user' && app.username)) { %> <a href="#<%= app.username %>" title="My Documents"><div class="icon user"></div></a><% } %>
-      <% if ((!query && app.username) || (query && query.type !== 'subscribed' && app.username)) { %> <a href="#subscribed" title="Subscribed Documents"><div class="icon subscribed"></div></a><% } %>
-      <% if (!query || query.type !== 'recent') { %> <a href="#recent" title="Recent Documents"><div class="icon recent"></div></a><% } %>
+      <% if ((!query && app.username) || (query && query.type !== 'user' && app.username)) { %> <a href="/<%= app.username %>" class="toggle-userdocs" title="My Documents"><div class="icon user"></div></a><% } %>
+      <% if ((!query && app.username) || (query && query.type !== 'subscribed' && app.username)) { %> <a href="/subscribed" class="toggle-subscribed" title="Subscribed Documents"><div class="icon subscribed"></div></a><% } %>
+      <% if (!query || query.type !== 'recent') { %> <a href="/recent" class="toggle-recent" title="Recent Documents"><div class="icon recent"></div></a><% } %>
     </div>
     <div class="results"></div>
   </script>
@@ -528,7 +525,7 @@
             <% documents.each(function(doc) { %> 
             <div class="document">
               <div class="icon published"></div>
-              <div class="title"><a class="link load-document" href="#<%= doc.get('creator')._id.split('/')[2] %>/<%= doc.get('name') %>" document="<%= doc._id %>" user="<%= doc.get('creator')._id.split('/')[2] %>" name="<%= doc.get('name') %>"><%= doc.get('title') || 'Untitled' %></a></div>
+              <div class="title"><a class="link load-document" href="/<%= doc.get('creator')._id.split('/')[2] %>/<%= doc.get('name') %>" document="<%= doc._id %>" user="<%= doc.get('creator')._id.split('/')[2] %>" name="<%= doc.get('name') %>"><%= doc.get('title') || 'Untitled' %></a></div>
               <div class="author"><%= doc.get('creator').get('name') || doc.get('creator').get('username') || doc.get('creator')._id.split('/')[2] %></div>
               <div class="dates">
                 <% if (doc.get('published_on')) { %>
@@ -561,10 +558,10 @@
           <h3>{{property_name}}</h3>
           <ul class="facet-choices">
             {{#selected_facet_choices}}
-              <li class="facet-choice selected"><a href="#" class="remove-criterion" property="{{../property}}" operator="CONTAINS" value="{{key}}">{{value}}<span class="item-count">{{item_count}}</span></a></li>
+              <li class="facet-choice selected"><a href="/" class="remove-criterion" property="{{../property}}" operator="CONTAINS" value="{{key}}">{{value}}<span class="item-count">{{item_count}}</span></a></li>
             {{/selected_facet_choices}}
             {{#facet_choices}}
-              <li class="facet-choice"><a href="#" class="add-criterion" property="{{../property}}" operator="CONTAINS" value="{{key}}">{{value}}<span class="item-count">{{item_count}}</span></a></li>
+              <li class="facet-choice"><a href="/" class="add-criterion" property="{{../property}}" operator="CONTAINS" value="{{key}}">{{value}}<span class="item-count">{{item_count}}</span></a></li>
             {{/facet_choices}}
           </ul>
         </div>
@@ -575,7 +572,7 @@
   <script type="text/x-handlebars-template" name="controls">
     <div class="controls" node="<%= node._id %>" destination="<%= destination %>">
       <div class="handle">
-        <a href="#">--&gt; INSERT</a>
+        <a href="/">--&gt; INSERT</a>
       </div>
       <div class="actions">
         <div class="placeholder insert">Insert Content</div>
@@ -585,7 +582,7 @@
             <% if (action.length === 1) { %>
               <% _.each(action, function(v) { %>
                 <span>
-                <a href="#" type="<%= v.nodeType %>" destination="<%= destination %>" node="<%= v.node %>" parent="<%= v.parentNode %>" class="add add_<%= v.insertionType %>"><%= v.nodeTypeName %></a>
+                <a href="/" type="<%= v.nodeType %>" destination="<%= destination %>" node="<%= v.node %>" parent="<%= v.parentNode %>" class="add add_<%= v.insertionType %>"><%= v.nodeTypeName %></a>
                 </span>
               <% }); %>
             <% } else { %>
@@ -593,7 +590,7 @@
               <%= action[0].nodeTypeName %>
               <div>
                 <% _.each(action, function(v) { %>
-                  <a href="#" type="<%= v.nodeType %>" destination="<%= destination %>" node="<%= v.node %>" parent="<%= v.parentNode %>" class="add add_<%= v.insertionType %>">Level <%= v.level %></a>
+                  <a href="/" type="<%= v.nodeType %>" destination="<%= destination %>" node="<%= v.node %>" parent="<%= v.parentNode %>" class="add add_<%= v.insertionType %>">Level <%= v.level %></a>
                 <% }); %>
               </div>
               </span>
@@ -603,16 +600,16 @@
         <div class="move-targets">
           <!-- container node targets  -->
           <% _.each(path, function(n, index) { %>
-            <span><a class="move-node container-node" href="#" node="<%= n._id %>" destination="<%= destination %>" level="<%= (index+1) %>"><!--<%= destination %>--> Here <!--&quot;<%= ContentNode.getTeaser(n).trim() %>&quot;--> at level <%= n.level %></a></span>
+            <span><a class="move-node container-node" href="/" node="<%= n._id %>" destination="<%= destination %>" level="<%= (index+1) %>"><!--<%= destination %>--> Here <!--&quot;<%= ContentNode.getTeaser(n).trim() %>&quot;--> at level <%= n.level %></a></span>
           <% }); %>
           
           <!-- allow child insertion for empty container nodes -->
           <% if (insertion_type === 'child' && node.level < 3) { %>
-            <span><a class="move-node container-node <%= insertion_type %>" href="#" node="<%= node._id %>" destination="<%= destination %>"><!--Inside--> Here <!--&quot;<%= ContentNode.getTeaser(node).trim() %>&quot;--> at level <%= (node.level+1) %></a></span>
+            <span><a class="move-node container-node <%= insertion_type %>" href="/" node="<%= node._id %>" destination="<%= destination %>"><!--Inside--> Here <!--&quot;<%= ContentNode.getTeaser(node).trim() %>&quot;--> at level <%= (node.level+1) %></a></span>
           <% } %>
           
           <!-- leaf node target  -->
-          <span><a class="move-node leaf-node <%= insertion_type %>" href="#" node="<%= node._id %>" destination="<%= destination %>"><!--<%= insertion_type == "sibling" ? destination : "inside" %>--> Here <!--&quot;<%= ContentNode.getTeaser(node).trim() %>&quot;--></a></span>
+          <span><a class="move-node leaf-node <%= insertion_type %>" href="/" node="<%= node._id %>" destination="<%= destination %>"><!--<%= insertion_type == "sibling" ? destination : "inside" %>--> Here <!--&quot;<%= ContentNode.getTeaser(node).trim() %>&quot;--></a></span>
         </div>
         
         <span class="message">
@@ -641,10 +638,10 @@
           <div class="comment" id="<%= comment.html_id %>">
             <% username = comment.get('creator')._id.split('/')[2]; %>
             <div class="header">
-              <a href="#<%= username%>"><%= username %></a>
+              <a href="/<%= username%>"><%= username %></a>
               commented <%= _.prettyDate(comment.get('created_at')) %>
               <% if (app.username === username) { %>
-                <a href="#" comment="<%= comment._id %>" class="remove-comment">Remove</a></div>
+                <a href="/" comment="<%= comment._id %>" class="remove-comment">Remove</a></div>
               <% } %>
             <div class="body"><%= comment.get('content') %></div>
           </div>
@@ -653,7 +650,7 @@
     </div>
     <% if (app.username) { %>
       <div class="add-comment">
-        <a href="#" class="create-comment">Add Comment</a>
+        <a href="/" class="create-comment">Add Comment</a>
         <div class="comment-content empty"><p>&laquo; Enter Comment &raquo;</p></div>
       </div>
     <% } else { %>
@@ -677,14 +674,14 @@
       <div class="toggle-toc"><div class="label">Contents</div></div>
       
       <div id="document_actions" class="view-actions">
-        <a href="#" title="Read Document" class="toggle-show-mode view-action-icon read<%= edit ? '' : ' active' %>"><span>Read</span></a>
+        <a href="/" title="Read Document" class="toggle-show-mode view-action-icon read<%= edit ? '' : ' active' %>"><span>Read</span></a>
 
         <% if (node && node.get('creator')._id === '/user/'+app.username) { %>
-          <a href="#" title="Write Document" class="toggle-edit-mode view-action-icon write<%= edit ? ' active' : '' %>"><span>Write</span></a>
-          <a href="#" title="Delete Document" class="delete-document view-action-icon delete"><span>Delete</span></a>
+          <a href="/" title="Write Document" class="toggle-edit-mode view-action-icon write<%= edit ? ' active' : '' %>"><span>Write</span></a>
+          <a href="/" title="Delete Document" class="delete-document view-action-icon delete"><span>Delete</span></a>
         <% } %>
         
-        <a href="#" title="<%= node.get('subscribed') ? "Unsubscribe" : "Subscribe document and get notified about updates" %> " class="view-action-icon <%= node.get('subscribed') ? "unsubscribe-document" : "subscribe-document" %>"><div class="subscription-count"><%= node.get('subscribers') > 0 ? node.get('subscribers') : "" %></div><span>Subscribe document and get notified about updates</span></a>
+        <a href="/" title="<%= node.get('subscribed') ? "Unsubscribe" : "Subscribe document and get notified about updates" %> " class="view-action-icon <%= node.get('subscribed') ? "unsubscribe-document" : "subscribe-document" %>"><div class="subscription-count"><%= node.get('subscribers') > 0 ? node.get('subscribers') : "" %></div><span>Subscribe document and get notified about updates</span></a>
 
         <a href="<%= config.letterpress_url %>/pdf?url=http://<%= top.location.host %>/documents/<%= node.get('creator')._id.split('/')[2]+"/"+node.get('name') %>" target="_blank" title="Print Document (Experimental)" class="print-document view-action-icon print"><span>Print</span></a>
       </div>
@@ -706,9 +703,9 @@
       <p class="published">
         <% if (node.get('published_on') && edit) { %>
           <%= _.date(node.get('published_on')) %>
-          — <a href="#unpublish" class="unpublish-document">Unpublish</a>
+          — <a href="/unpublish" class="unpublish-document">Unpublish</a>
         <% } else if (edit) { %>
-          Not published yet — <a href="#" class="publish-document">Publish</a>
+          Not published yet — <a href="/" class="publish-document">Publish</a>
         <% } else if (node.get('published_on')) { %>
           <%= _.date(node.get('published_on')) %>
         <% } %>
@@ -731,10 +728,10 @@
       <div class="content-node-outline"><div class="cursor"><span></span></div></div>
       
       <div class="operations">
-        <a href="#" class="toggle-comments sticky" title="Toggle comments for Section"><span>{{comments}}</span></a>
+        <a href="/" class="toggle-comments sticky" title="Toggle comments for Section"><span>{{comments}}</span></a>
         {{#edit}}
-        <a href="#" class="remove-node" title="Remove Node" node="{{node/key}}" parent="{{parent/_id}}"></a>
-        <a href="#" class="toggle-move-node" title="Move Section — Use placeholders as targets"></a>
+        <a href="/" class="remove-node" title="Remove Node" node="{{node/key}}" parent="{{parent/_id}}"></a>
+        <a href="/" class="toggle-move-node" title="Move Section — Use placeholders as targets"></a>
         {{/edit}}
       </div>
       
@@ -751,17 +748,15 @@
     </div>
   </script>
   
-
-  
   <script type="text/x-handlebars-template" name="text">
     <div id="<%= node.html_id %>" name=<%= node.key %> parent="<%= parent._id %>" level="<%= level %>" draggable="false" class="content-node text level-<%= level %>">
       <div class="content-node-outline"><div class="cursor"><span></span></div></div>
       
       <div class="operations">
-        <a href="#" class="toggle-comments sticky" title="Toggle comments for Text"><span><%= comments %></span></a>
+        <a href="/" class="toggle-comments sticky" title="Toggle comments for Text"><span><%= comments %></span></a>
         <% if (edit) { %>
-          <a href="#" class="remove-node" title="Remove Node" node="<%= node.key %>" parent="<%= parent._id %>"></a>
-          <a href="#" class="toggle-move-node" title="Move Text — Use placeholders as targets"></a>
+          <a href="/" class="remove-node" title="Remove Node" node="<%= node.key %>" parent="<%= parent._id %>"></a>
+          <a href="/" class="toggle-move-node" title="Move Text — Use placeholders as targets"></a>
         <% } %>
       </div>
       
@@ -779,10 +774,10 @@
     <div id="{{node/html_id}}" name={{node/key}} parent="{{parent/_id}}" level="{{level}}" draggable="false" class="content-node quote level-{{level}}">
       <div class="content-node-outline"><div class="cursor"><span></span></div></div>
         <div class="operations">
-          <a href="#" class="toggle-comments sticky" title="Toggle comments for Quote"><span>{{comments}}</span></a>
+          <a href="/" class="toggle-comments sticky" title="Toggle comments for Quote"><span>{{comments}}</span></a>
           {{#edit}}
-            <a href="#" class="remove-node" title="Remove Node" node="{{node/key}}" parent="{{parent/_id}}"></a>
-            <a href="#" class="toggle-move-node" title="Move Quote — Use placeholders as targets"></a>
+            <a href="/" class="remove-node" title="Remove Node" node="{{node/key}}" parent="{{parent/_id}}"></a>
+            <a href="/" class="toggle-move-node" title="Move Quote — Use placeholders as targets"></a>
           {{/edit}}
         </div>
       
@@ -808,10 +803,10 @@
     <div id="{{node/html_id}}" name={{node/key}} parent="{{parent/_id}}" level="{{level}}" draggable="false" class="content-node code level-{{level}}">
       <div class="content-node-outline"><div class="cursor"><span></span></div></div>
         <div class="operations">
-          <a href="#" class="toggle-comments sticky" title="Toggle comments for Code"><span>{{comments}}</span></a>
+          <a href="/" class="toggle-comments sticky" title="Toggle comments for Code"><span>{{comments}}</span></a>
           {{#edit}}
-            <a href="#" class="remove-node" title="Remove Node" node="{{node/key}}" parent="{{parent/_id}}"></a>
-            <a href="#" class="toggle-move-node" title="Move Code — Use placeholders as targets"></a>
+            <a href="/" class="remove-node" title="Remove Node" node="{{node/key}}" parent="{{parent/_id}}"></a>
+            <a href="/" class="toggle-move-node" title="Move Code — Use placeholders as targets"></a>
           {{/edit}}
         </div>
       
@@ -827,10 +822,10 @@
       <div class="content-node-outline"><div class="cursor"><span></span></div></div>
       
       <div class="operations">
-        <a href="#" class="toggle-comments sticky" title="Toggle comments for Question"><span>{{comments}}</span></a>
+        <a href="/" class="toggle-comments sticky" title="Toggle comments for Question"><span>{{comments}}</span></a>
         {{#edit}}
-          <a href="#" class="remove-node" title="Remove Node" node="{{node/key}}" parent="{{parent/_id}}"></a>
-          <a href="#" class="toggle-move-node" title="Move Question — Use placeholders as targets"></a>
+          <a href="/" class="remove-node" title="Remove Node" node="{{node/key}}" parent="{{parent/_id}}"></a>
+          <a href="/" class="toggle-move-node" title="Move Question — Use placeholders as targets"></a>
         {{/edit}}
       </div>
       
@@ -849,10 +844,10 @@
       <div class="content-node-outline"{{#edit}} title="Click To Edit Answer"{{/edit}}><div class="cursor"><span></span></div></div>
       
       <div class="operations">
-        <a href="#" class="toggle-comments sticky" title="Toggle comments for Answer"><span>{{comments}}</span></a>
+        <a href="/" class="toggle-comments sticky" title="Toggle comments for Answer"><span>{{comments}}</span></a>
         {{#edit}}
-          <a href="#" class="remove-node" title="Remove Node" node="{{node/key}}" parent="{{parent/_id}}"></a>
-          <a href="#" class="toggle-move-node" title="Move Answer — Use placeholders as targets"></a>
+          <a href="/" class="remove-node" title="Remove Node" node="{{node/key}}" parent="{{parent/_id}}"></a>
+          <a href="/" class="toggle-move-node" title="Move Answer — Use placeholders as targets"></a>
         {{/edit}}
       </div>
       
@@ -871,17 +866,17 @@
       <div class="content-node-outline"><div class="cursor"><span></span></div></div>
       
       <div class="operations">
-        <a href="#" class="toggle-comments" title="Toggle comments for Resource"></a>
+        <a href="/" class="toggle-comments" title="Toggle comments for Resource"></a>
         {{#edit}}
-          <a href="#" class="remove-node" title="Remove Node" node="{{node/key}}" parent="{{parent/_id}}"><img src="/images/icons/white/x_alt_16x16.png"/></a>
-          <a href="#" class="toggle-move-node" title="Move Resource — Use placeholders as targets"><img src="/images/icons/white/arrow_right_16x16.png"/></a>
+          <a href="/" class="remove-node" title="Remove Node" node="{{node/key}}" parent="{{parent/_id}}"><img src="/images/icons/white/x_alt_16x16.png"/></a>
+          <a href="/" class="toggle-move-node" title="Move Resource — Use placeholders as targets"><img src="/images/icons/white/arrow_right_16x16.png"/></a>
         {{/edit}}
       </div>
       {{#edit}}<div class="pilcrow">&#182;</div>{{/edit}}
       
       <div class="resource-content{{^url}} placeholder{{/url}}">
         {{#url}}<img src="{{.}}"/>{{/url}}
-        {{^url}}<img src="images/image_placeholder.png"/>{{/url}}
+        {{^url}}<img src="/images/image_placeholder.png"/>{{/url}}
         
         <div class="resource-editor">
           <div class="resource-url-area">
@@ -907,10 +902,10 @@
       
       <div class="content-node-outline"><div class="cursor"><span></span></div></div>
       <div class="operations">
-        <a href="#" class="toggle-comments" title="Toggle comments for Image"></a>
+        <a href="/" class="toggle-comments" title="Toggle comments for Image"></a>
         <% if (edit) { %>
-          <a href="#" class="remove-node" title="Remove Node" node="<%= node.key %>" parent="<%= parent._id %>"></a>
-          <a href="#" class="toggle-move-node" title="Move Image — Use placeholders as targets"></a>
+          <a href="/" class="remove-node" title="Remove Node" node="<%= node.key %>" parent="<%= parent._id %>"></a>
+          <a href="/" class="toggle-move-node" title="Move Image — Use placeholders as targets"></a>
         <% } %>
       </div>
       <div class="pilcrow">&#182;</div>
@@ -923,14 +918,14 @@
             <a href="<%= original_url %>" target="_blank"><img src="<%= url %>"/></a>
           <% } %>
         <% } else { %>
-          <img src="images/image_placeholder.png"/>
+          <img src="/images/image_placeholder.png"/>
         <% } %>
         
         <% if (edit) { %>
           <div class="image-editor">
             <form class="upload-image-form" action="http://api2.transloadit.com/assemblies" enctype="multipart/form-data" method="POST">
               <div class="image-drop-area">
-                <div class="info">Drop image here or <a href="#">choose a file</a></div>
+                <div class="info">Drop image here or <a href="/">choose a file</a></div>
                 <div class="image-progress">
                   <div class="label">Uploading image ...</div>
                   <div class="progress-container">
@@ -974,8 +969,8 @@
   
   
   <!-- styles --> 
-  <link href="stylesheets/reset.css" media="screen" rel="stylesheet" type="text/css" />
-  <link href="stylesheets/app.css" media="screen" rel="stylesheet" type="text/css" />
+  <link href="/stylesheets/reset.css" media="screen" rel="stylesheet" type="text/css" />
+  <link href="/stylesheets/app.css" media="screen" rel="stylesheet" type="text/css" />
   
   <script src="/javascripts/head.min.js"></script>
   <script>
@@ -995,7 +990,7 @@
       <div id="document_tab" class="tab hidden" view="document" title="Document">
       </div>
       
-      <a href="#" class="action new-document hidden" title="Create a new document">
+      <a href="/" class="action new-document hidden" title="Create a new document">
         <div class="view-action-icon new"></div>
       </a>
     </div>
@@ -1003,7 +998,6 @@
     <div id="main">
       <!-- Various content (used for user settings dialogue etc.) -->  
       <div id="content_wrapper" class="view">
-      
       </div>
     
       <!-- The document browser -->
@@ -1012,13 +1006,12 @@
     
       <!-- The document browser -->
       <div id="document_wrapper" class="view hidden">
-      
       </div>
     </div>
     
     <div id="footer">
       <div class="credits"><a href="http://substance.io#substance/substance">About</a> &middot; <a href="http://twitter.com/_substance" target="_new">Twitter</a> &middot; <a href="http://github.com/michael/substance" target="_new">Source Code</a> &middot; <a href="http://github.com/michael/substance/issues" target="_new">Report Bugs</a></div>
-      <div class="version"><a href="http://substance.io#substance/release-notes">Substance 0.3.2</a></div>
+      <div class="version"><a href="http://substance.io#substance/release-notes">Substance 0.3.3</a></div>
     </div>
   </div>
   

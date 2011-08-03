@@ -1,25 +1,42 @@
+// The Router
+// ---------------
+
+var Router = Backbone.Router.extend({
+  initialize: function() {
+    // Using this.route, because order matters
+    this.route(":username", "user", app.userDocs);
+    this.route(":username/:docname/:node/:comment", "comment", this.loadDocument);
+    this.route(":username/:docname/:node", "node", this.loadDocument);
+    this.route(":username/:docname", "document", this.loadDocument);
+    this.route("subscribed", "subscribed", app.subscribedDocs);
+    this.route("recent", "recent", app.recentDocs);
+    this.route("search/:searchstr", "search", app.searchDocs);
+  },
+  
+  loadDocument: function(username, docname, node, comment) {
+    app.browser.load({"type": "user", "value": username});
+    app.document.loadDocument(username, docname, node, comment);
+    $('#document_wrapper').attr('url', username+'/'+docname+(node ? "/"+node : "")+(comment ? "/"+comment : ""));
+    $('#browser_wrapper').attr('url', username);
+    return false;
+  }
+});
+
+
 // The Application
 // ---------------
 
 // This is the top-level piece of UI.
 var Application = Backbone.View.extend({
   events: {
-    'click .toggle-new-document': 'toggleNewDocument',
     'click .new-document': 'newDocument',
-    'click #dashboard_toggle': 'showDashboard',
-    'click #document_toggle': 'showDocument',
     'click a.load-document': 'loadDocument',
-    'click a.save-document': 'saveDocument',
     'click a.signup': 'toggleSignup',
     'click .tab': 'switchTab',
     'click a.show-attributes': 'showAttributes',
-    'click a.publish-document': 'publishDocument',
-    'click a.unpublish-document': 'unpublishDocument',
     'submit #create_document': 'createDocument',
     'submit #login-form': 'login',
     'click a.delete-document': 'deleteDocument',
-    'click a.view-collaborators': 'viewCollaborators',
-    'click a.toggle-document-views': 'toggleDocumentViews',
     'click a.toggle-signup': 'toggleSignup',
     'click a.toggle-startpage': 'toggleStartpage',
     'click a.toggle-edit-mode': 'toggleEditMode',
@@ -33,7 +50,39 @@ var Application = Backbone.View.extend({
     'click #event_notifications a .notification': 'hideNotifications',
     'click #toc_wrapper': 'toggleTOC',
     'click a.open-notification': 'openNotification',
-    'change #document_name': 'updateDocumentName'
+    'change #document_name': 'updateDocumentName',
+    'click a.toggle-recent': 'toggleRecent',
+    'click a.toggle-subscribed': 'toggleSubscribed',
+    'click a.toggle-userdocs': 'toggleUserDocs'
+  },
+  
+  // Event handlers
+  // ---------------
+  
+  toggleRecent: function() {
+    this.recentDocs();
+    return false;
+  },
+  
+  toggleSubscribed: function() {
+    this.subscribedDocs();
+    return false;
+  },
+  
+  toggleUserDocs: function() {
+    this.userDocs(app.username);
+    return false;
+  },
+  
+  userDocs: function(username) {
+    app.browser.load({"type": "user", "value": username});
+    $('#browser_wrapper').attr('url', username);
+    
+    app.browser.bind('loaded', function() {
+      app.toggleView('browser');
+      app.browser.unbind('loaded');
+    });
+    return false;
   },
   
   updateDocumentName: function(e) {
@@ -41,7 +90,7 @@ var Application = Backbone.View.extend({
     this.checkDocumentName(name, function(valid) {
       if (valid) {
         app.document.updateName(name);
-        controller.saveLocation('#'+app.username+'/'+name);
+        router.navigate(app.username+'/'+name);
       } else {
         $('#document_name').val(app.document.model.get('name'));
         alert('Sorry, this name is already taken.');
@@ -49,7 +98,7 @@ var Application = Backbone.View.extend({
     });
     return false;
   },
-
+  
   login: function(e) {
     this.authenticate();
     return false;
@@ -60,6 +109,60 @@ var Application = Backbone.View.extend({
     var urlParts = url.replace('#', '').split('/');
     app.document.loadDocument(urlParts[0], urlParts[1], urlParts[2], urlParts[3]);
     $('#document_wrapper').attr('url', url);
+    return false;
+  },
+  
+  
+  // Actions
+  // ---------------
+  
+  recentDocs: function() {
+    app.browser.load({"type": "recent", "value": 50});
+    $('#browser_wrapper').attr('url', "recent");
+    
+    app.browser.bind('loaded', function() {
+      app.toggleView('browser');
+      app.browser.unbind('loaded');
+    });
+    return false;
+  },
+  
+  subscribedDocs: function() {
+    app.browser.load({"type": "subscribed", "value": 50});
+    $('#browser_wrapper').attr('url', "subscribed");
+    
+    app.browser.bind('loaded', function() {
+      app.toggleView('browser');
+      app.browser.unbind('loaded');
+    });
+    return false;
+  },
+  
+  searchDocs: function(searchstr) {
+    app.browser.load({"type": "keyword", "value": encodeURI(searchstr)});
+    $('#browser_wrapper').attr('url', 'search/'+encodeURI(searchstr));
+    app.browser.bind('loaded', function() {
+      app.toggleView('browser');
+    });
+  },
+  
+  toggleStartpage: function() {
+    app.browser.browserTab.render();
+    $('#content_wrapper').html(_.tpl('startpage'));
+    
+    // Initialize Slider
+    $('#slider').nivoSlider({
+      manualAdvance: true
+    });
+    
+    // Initialize Flattr
+    var s = document.createElement('script'), t = document.getElementsByTagName('script')[0];
+    s.type = 'text/javascript';
+    s.async = true;
+    s.src = 'http://api.flattr.com/js/0.6/load.js?mode=auto';
+    t.parentNode.insertBefore(s, t);
+
+    app.toggleView('content');
     return false;
   },
     
@@ -126,7 +229,7 @@ var Application = Backbone.View.extend({
     app.browser.load({"type": "user", "value": this.username});
     app.browser.bind('loaded', function() {
       app.toggleView('browser');
-      $('#browser_wrapper').attr('url', '#'+that.username);
+      $('#browser_wrapper').attr('url', that.username);
       app.browser.unbind('loaded');
     });
   },
@@ -163,33 +266,6 @@ var Application = Backbone.View.extend({
     return false;
   },
   
-  toggleStartpage: function() {
-    app.browser.browserTab.render();
-    $('#content_wrapper').html(_.tpl('startpage'));
-    
-    // Initialize Slider
-    $('#slider').nivoSlider({
-      manualAdvance: true
-    });
-    // Initialize flattr
-    var s = document.createElement('script'), t = document.getElementsByTagName('script')[0];
-    s.type = 'text/javascript';
-    s.async = true;
-    s.src = 'http://api.flattr.com/js/0.6/load.js?mode=auto';
-    t.parentNode.insertBefore(s, t);
-
-    app.toggleView('content');
-    return false;
-  },
-  
-  searchDocs: function(searchstr) {
-    app.browser.load({"type": "keyword", "value": encodeURI(searchstr)});
-    $('#browser_wrapper').attr('url', '#search/'+encodeURI(searchstr));
-    app.browser.bind('loaded', function() {
-      app.toggleView('browser');
-    });
-  },
-  
   switchTab: function(e) {
     this.toggleView($(e.currentTarget).attr('view'));
   },
@@ -203,8 +279,8 @@ var Application = Backbone.View.extend({
 
     // Wait until url update got injected
     setTimeout(function() {
-      controller.saveLocation($('#'+view+'_wrapper').attr('url'));
-    }, 200);
+      router.navigate($('#'+view+'_wrapper').attr('url'));
+    }, 10);
     return false;
   },
   
@@ -267,8 +343,8 @@ var Application = Backbone.View.extend({
           name = $(e.currentTarget).attr('name');
 
       app.document.loadDocument(user, name, null,  null);
-      if (controller) {
-        controller.saveLocation($(e.currentTarget).attr('href'));
+      if (router) {
+        router.navigate($(e.currentTarget).attr('href'));
         $('#document_wrapper').attr('url', $(e.currentTarget).attr('href'));
       }
     return false;
@@ -521,7 +597,7 @@ var Application = Backbone.View.extend({
 
 var remote,                              // Remote handle for server-side methods
     app,                                 // The Application
-    controller,                          // Controller responding to routes
+    router,                              // The Router
     editor,                              // A global instance of the Proper Richtext editor
     graph = new Data.Graph(seed).connect('ajax'); // The database
 
@@ -551,8 +627,6 @@ var remote,                              // Remote handle for server-side method
     
     $('#container').show();
     
-
-
     window.positionBoard = function() {
       var wrapper = document.getElementById('document_wrapper');
       if (wrapper.offsetTop - _.scrollTop() < 0) {
@@ -583,11 +657,11 @@ var remote,                              // Remote handle for server-side method
     // Set up a global instance of the Proper Richtext Editor
     editor = new Proper();
     
-    // Initialize controller
-    controller = new ApplicationController({app: this});
+    // Initialize router
+    router = new Router({app: this});
     
     // Start responding to routes
-    Backbone.history.start();
+    Backbone.history.start({pushState: true});
     
     // Reset document when window gets out of focus
     // document.body.onblur = function() {  if (app.document) app.document.reset(); }
