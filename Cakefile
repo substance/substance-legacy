@@ -34,7 +34,7 @@ log = (message, color, explanation) ->
 build = ->
   # Build Client
   content = ''
-  content += fs.readFileSync("src/"+file)+'\n' for file in settings.scripts.source
+  content += fs.readFileSync("src"+file)+'\n' for file in settings.scripts.source
   fs.writeFileSync('./public/javascripts/substance.js', content, encoding='utf8')
   
   # Build Data.js
