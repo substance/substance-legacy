@@ -11,6 +11,7 @@ var Router = Backbone.Router.extend({
     this.route("subscribed", "subscribed", app.subscribedDocs);
     this.route("recent", "recent", app.recentDocs);
     this.route("search/:searchstr", "search", app.searchDocs);
+    this.route("", "startpage", app.toggleStartpage);
   },
   
   loadDocument: function(username, docname, node, comment) {
