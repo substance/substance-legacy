@@ -23,6 +23,19 @@ global.db = CouchClient(config.couchdb_url);
 // Express.js Configuration
 // -----------
 
+
+function serveStartpage(req, res) {
+  html = fs.readFileSync(__dirname+ '/templates/app.html', 'utf-8');
+  req.session = req.session ? req.session : {username: null};
+  getNotifications(req.session.username, function(err, notifications) {
+    var sessionSeed = _.extend(_.clone(seed), notifications);
+    res.send(html.replace('{{{{seed}}}}', JSON.stringify(sessionSeed))
+                 .replace('{{{{session}}}}', JSON.stringify(req.session))
+                 .replace('{{{{config}}}}', JSON.stringify(clientConfig()))
+                 .replace('{{{{scripts}}}}', JSON.stringify(scripts())));
+  });
+}
+
 app.configure(function() {
   var CookieStore = require('cookie-sessions');
   app.use(express.bodyParser());
@@ -31,11 +44,16 @@ app.configure(function() {
   app.use(app.router);
   app.use(express.static(__dirname+"/public", { maxAge: 41 }));
   app.use(express.logger({ format: ':method :url' }));
+  
 });
 
 app.configure('development', function() {
   // Expose source file in development mode
   app.use(express.static(__dirname+"/src", { maxAge: 41 }));
+});
+
+app.use(function(req, res) {
+  serveStartpage(req, res);
 });
 
 
@@ -137,20 +155,8 @@ function scripts() {
 // Web server
 // -----------
 
-app.get('/', function(req, res) {
-  html = fs.readFileSync(__dirname+ '/templates/app.html', 'utf-8');
-  req.session = req.session ? req.session : {username: null};
-  getNotifications(req.session.username, function(err, notifications) {
-    var sessionSeed = _.extend(_.clone(seed), notifications);
-    res.send(html.replace('{{{{seed}}}}', JSON.stringify(sessionSeed))
-                 .replace('{{{{session}}}}', JSON.stringify(req.session))
-                 .replace('{{{{config}}}}', JSON.stringify(clientConfig()))
-                 .replace('{{{{scripts}}}}', JSON.stringify(scripts())));
-  });
-});
-
 // Quick search interface (returns found users and a documentset)
-app.get('/search/:search_str', function(req, res) {
+app.get('/quicksearch/:search_str', function(req, res) {
   Document.find(req.params.search_str, 'keyword', req.session.username, function(err, graph, count) {
     User.find(req.params.search_str, function(err, users) {
       res.send(JSON.stringify({document_count: count, users: users}));
