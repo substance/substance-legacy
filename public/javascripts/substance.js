@@ -2296,7 +2296,7 @@ var DocumentBrowser = Backbone.View.extend({
     var property = $(e.currentTarget).attr('property'),
         operator = $(e.currentTarget).attr('operator'),
         value = $(e.currentTarget).attr('value');
-    
+
     this.applyCommand({command: 'add_criterion', options: {
       property: property,
       operator: operator,
@@ -2344,7 +2344,9 @@ var DocumentBrowser = Backbone.View.extend({
       success: function(res) {
         that.graph = new Data.Graph(seed);
         that.graph.merge(res.graph);
-        that.facets = new Facets({el: '#facets', browser: that});
+        
+        
+        that.facets = new Facets({browser: that});
         that.loaded = true;
         that.trigger('loaded');
         that.render();
@@ -2434,10 +2436,10 @@ var DocumentBrowser = Backbone.View.extend({
 });
 
 var Facets = Backbone.View.extend({
-  
   initialize: function(options) {
     this.browser = options.browser;
     this.facetChoices = {};
+    this.el = '#facets';
   },
   
   select: function(property) {
@@ -2762,6 +2764,7 @@ var Router = Backbone.Router.extend({
     this.route("subscribed", "subscribed", app.subscribedDocs);
     this.route("recent", "recent", app.recentDocs);
     this.route("search/:searchstr", "search", app.searchDocs);
+    this.route("", "startpage", app.toggleStartpage);
   },
   
   loadDocument: function(username, docname, node, comment) {

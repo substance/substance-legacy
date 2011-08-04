@@ -178,7 +178,6 @@ function scripts() {
 app.get('/sitemap.xml', function(req, res) {
  Document.recent(3000, '', function(err, nodes, count) {
    res.writeHead(200, {'Content-Type': 'text/plain'});
-   var count = 0;
    _.each(nodes, function(n) {
      if (_.include(n.type, '/type/document')) {
        res.write("http://substance.io/"+n.creator.split('/')[2]+"/"+n.name+"\n");
