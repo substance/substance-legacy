@@ -1394,7 +1394,7 @@ var Document = Backbone.View.extend({
   
   initialize: function() {
     var that = this;
-    this.attributes = new Attributes({el: '#attributes', model: this.model});
+    this.attributes = new Attributes({model: this.model});
     
     this.app = this.options.app;
     this.mode = 'show';
@@ -2088,7 +2088,7 @@ var Document = Backbone.View.extend({
 var Attributes = Backbone.View.extend({
   
   initialize: function() {
-    var that = this;
+    this.el = '#attributes';
   },
   
   render: function() {
