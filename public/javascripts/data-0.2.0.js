@@ -37,7 +37,7 @@ _.extend(Data.Criterion.operators, {
   // Logical Operators
   
   CONTAINS: function(target, typeKey, propertyKey, value) {
-    var type = target.get('objects', typeKey),
+    var type = target.get('nodes', typeKey),
         property = type.get('properties', propertyKey),
         v = property.get('values', value);
     
@@ -49,7 +49,7 @@ _.extend(Data.Criterion.operators, {
   
   // Only works with value type properties
   GT: function(target, typeKey, propertyKey, value) {
-    var type = target.get('objects', typeKey),
+    var type = target.get('nodes', typeKey),
         property = type.get('properties', propertyKey),
         values = property.all('values'),
         matchedObjects = new Data.Hash();
