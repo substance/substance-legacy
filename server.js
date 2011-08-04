@@ -11,6 +11,8 @@ var async = require('async');
 var Document = require('./src/server/document');
 var User = require('./src/server/user');
 var Filters = require('./src/server/filters');
+var HTMLRenderer = require('./src/server/renderers/html_renderer');
+
 
 // App Config
 global.config = JSON.parse(fs.readFileSync(__dirname+ '/config.json', 'utf-8'));
@@ -22,19 +24,6 @@ global.db = CouchClient(config.couchdb_url);
 
 // Express.js Configuration
 // -----------
-
-
-function serveStartpage(req, res) {
-  html = fs.readFileSync(__dirname+ '/templates/app.html', 'utf-8');
-  req.session = req.session ? req.session : {username: null};
-  getNotifications(req.session.username, function(err, notifications) {
-    var sessionSeed = _.extend(_.clone(seed), notifications);
-    res.send(html.replace('{{{{seed}}}}', JSON.stringify(sessionSeed))
-                 .replace('{{{{session}}}}', JSON.stringify(req.session))
-                 .replace('{{{{config}}}}', JSON.stringify(clientConfig()))
-                 .replace('{{{{scripts}}}}', JSON.stringify(scripts())));
-  });
-}
 
 app.configure(function() {
   var CookieStore = require('cookie-sessions');
@@ -53,9 +42,40 @@ app.configure('development', function() {
 });
 
 app.use(function(req, res) {
-  serveStartpage(req, res);
+  var path = require('url').parse(req.url).pathname
+  var fragments = path.split('/');
+  
+  if (fragments.length === 3 && (req.headers["user-agent"].indexOf('bot.html')>=0 || req.query.static)) {
+    var username = fragments[1];
+    var docname = fragments[2];
+
+    Document.get(username, docname, null, function(err, nodes, id) {
+      if (err) return res.send({status: "error", error: err});
+      var graph = new Data.Graph(seed);
+      graph.merge(nodes);
+      
+      html = fs.readFileSync(__dirname+ '/templates/doc.html', 'utf-8');
+      var content = new HTMLRenderer(graph.get(id)).render();
+      res.send(html.replace('{{{{document}}}}', content));
+    });
+  } else {
+    // A modern web-client is talking - Serve the app
+    serveStartpage(req, res);
+  }
 });
 
+
+function serveStartpage(req, res) {
+  html = fs.readFileSync(__dirname+ '/templates/app.html', 'utf-8');
+  req.session = req.session ? req.session : {username: null};
+  getNotifications(req.session.username, function(err, notifications) {
+    var sessionSeed = _.extend(_.clone(seed), notifications);
+    res.send(html.replace('{{{{seed}}}}', JSON.stringify(sessionSeed))
+                 .replace('{{{{session}}}}', JSON.stringify(req.session))
+                 .replace('{{{{config}}}}', JSON.stringify(clientConfig()))
+                 .replace('{{{{scripts}}}}', JSON.stringify(scripts())));
+  });
+}
 
 function findAttributes(member, searchstr, callback) {
   db.view('substance/attributes', {key: member}, function(err, res) {
@@ -154,6 +174,19 @@ function scripts() {
 
 // Web server
 // -----------
+
+app.get('/sitemap.xml', function(req, res) {
+ Document.recent(3000, '', function(err, nodes, count) {
+   res.writeHead(200, {'Content-Type': 'text/plain'});
+   var count = 0;
+   _.each(nodes, function(n) {
+     if (_.include(n.type, '/type/document')) {
+       res.write("http://substance.io/"+n.creator.split('/')[2]+"/"+n.name+"\n");
+     }
+   });
+   res.end();
+ });
+});
 
 // Quick search interface (returns found users and a documentset)
 app.get('/quicksearch/:search_str', function(req, res) {
@@ -374,6 +407,7 @@ app.get('/avatar/:username/:size', function(req, res) {
     res.end();
   });
 });
+
 
 
 // Returns the most recent version of the requested doc

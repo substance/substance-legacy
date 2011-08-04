@@ -1602,10 +1602,16 @@ dd { color: #444; font-size: 1em;	margin: 0 0 0 155px; padding: 0; padding-left:
 /* Node Types
 -------------------------------------------------------------------------------*/
 
-.content-node.text > .content {
+
+/* Static version of document */
+
+.content-fragment {
   margin: 0 100px;
 }
 
+.content-node.text > .content {
+  margin: 0 100px;
+}
 
 .content-node.code {
   padding: 10px 0;

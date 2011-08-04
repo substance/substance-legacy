@@ -1,0 +1,43 @@
+<!DOCTYPE html> 
+<html> 
+<head> 
+  <title>Substance — Open Documents for the Web</title>
+
+  <script type="text/x-handlebars-template" name="string_editor">
+    <input type="text" name="value" value="{{value}}"/>
+  </script>
+  
+  <!-- styles --> 
+  <link href="/stylesheets/reset.css" media="screen" rel="stylesheet" type="text/css" />
+  <link href="/stylesheets/app.css" media="screen" rel="stylesheet" type="text/css" />
+  
+  <style>
+    #container {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <div id="container">
+    
+    <div id="header"></div>
+    
+    <div id="main">
+      <!-- The document browser -->
+      <div id="document_wrapper" class="view">
+        <div id="document_inner_wrapper">
+          <div id="document">
+            {{{{document}}}}
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div id="footer">
+      <div class="credits"><a href="http://substance.io/substance/substance">About</a> &middot; <a href="http://twitter.com/_substance" target="_new">Twitter</a> &middot; <a href="http://github.com/michael/substance" target="_new">Source Code</a> &middot; <a href="http://github.com/michael/substance/issues" target="_new">Report Bugs</a></div>
+      <div class="version"><a href="http://substance.io/substance/release-notes">Substance 0.3.3</a></div>
+    </div>
+  </div>
+  
+</body>
+</html>
