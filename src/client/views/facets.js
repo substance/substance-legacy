@@ -1,8 +1,8 @@
 var Facets = Backbone.View.extend({
-  
   initialize: function(options) {
     this.browser = options.browser;
     this.facetChoices = {};
+    this.el = '#facets';
   },
   
   select: function(property) {
