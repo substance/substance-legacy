@@ -1,7 +1,7 @@
 var Attributes = Backbone.View.extend({
   
   initialize: function() {
-    var that = this;
+    this.el = '#attributes';
   },
   
   render: function() {
