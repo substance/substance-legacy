@@ -1725,7 +1725,7 @@ pre {
   display: block;
 }
 
-#document .content-node.image.selected .image-content img {
+#document .content-node.document.edit .content-node.image.selected .image-content img {
   opacity: 0.1;
 }
 
