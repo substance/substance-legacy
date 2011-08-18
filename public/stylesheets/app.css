@@ -1137,7 +1137,7 @@ div.browser-not-supported a:hover {
 .view-action-icon.read { background: url(../images/icons/black/article_32x32.png) center no-repeat; }
 .view-action-icon.write { background: url(../images/icons/black/pen_32x32.png) center no-repeat; }
 .view-action-icon.delete { background: url(../images/icons/black/x_28x28.png) center no-repeat; }
-.view-action-icon.print { background: url(../images/icons/black/print_28x28.png) center no-repeat; }
+.view-action-icon.export { background: url(../images/icons/black/export.png) center no-repeat; }
 .view-action-icon.subscribe-document { background: url(../images/icons/black/rss_32x32.png) center no-repeat; }
 .view-action-icon.unsubscribe-document { background: url(../images/icons/black/rss_32x32.png) center no-repeat; opacity: 1.0; }
 .view-action-icon.new { background: url(../images/icons/black/document_stroke_32x32.png) center no-repeat; }
@@ -1145,6 +1145,84 @@ div.browser-not-supported a:hover {
 .view-action-icon.browse-user { background: url(../images/icons/black/document_stroke_32x32.png) center no-repeat; }
 .view-action-icon.browse-recent { background: url(../images/icons/black/document_stroke_32x32.png) center no-repeat; }
 .view-action-icon.browse-search { background: url(../images/icons/black/document_stroke_32x32.png) center no-repeat; }
+
+
+/* Document Export Dialogue
+-------------------------------------------------------------------------------*/
+
+#document_export {
+  background: #eaebe5;
+  font-family: Helvetica, Arial;
+  font-weight: bold;
+  padding: 20px;
+  
+  position: absolute;
+  top: 0px;
+  width: 400px;
+  display: none;
+  left: 0px;
+  
+  -webkit-box-shadow: 0px 1px 4px rgba(0,0,0,0.35), inset 0px 0px 1px rgba(255,255,255,0.15);
+  -moz-box-shadow:    0px 1px 4px rgba(0,0,0,0.35), inset 0px 0px 1px rgba(255,255,255,0.15);
+  box-shadow:         0px 1px 4px rgba(0,0,0,0.35), inset 0px 0px 1px rgba(255,255,255,0.15);
+}
+
+#document_export .formats {
+  overflow: auto;
+  margin: 20px 0;
+}
+
+#document_export .additional-formats {
+  overflow: auto;
+  margin: 20px 0;
+}
+
+.formats .format {
+  border: none;
+  display: block;
+  float: left;
+  height: 48px;
+  width: 48px;
+  margin: 10px;
+  background: url(/images/formats/document.png);
+}
+
+.formats .format .label {
+  font-family: Helvetica, Arial;
+  font-size: 9px;
+  line-height: 11px;
+  background: #666;
+  color: #fff;
+  padding: 2px 3px 0px 1px;
+  
+  width: 29px;
+  margin-top: 3px; 
+}
+
+.additional-formats .format {
+  border: none;
+  display: block;
+  float: left;
+  height: 32px;
+  width: 150px;
+  margin: 10px;
+  background: url(/images/formats/document_small.png) no-repeat center left;
+}
+
+.additional-formats .format .label {
+  padding-left: 40px;
+  line-height: 32px;
+  font-family: Helvetica, Arial;
+  font-size: 12px;
+  font-weight: normal;
+}
+
+.formats .format.epub .label { background: #85b916; }
+.formats .format.pdf .label { background: #cc0000; }
+.formats .format.odf .label { background: #0e85cd; }
+.formats .format.rtf .label { background: #023a6d; }
+
+
 
 
 /* body > #container > #document_wrapper > #document_menu

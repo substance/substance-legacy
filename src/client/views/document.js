@@ -28,6 +28,7 @@ var Document = Backbone.View.extend({
     'click a.remove-comment': 'removeComment',
     'click a.subscribe-document': 'subscribeDocument',
     'click a.unsubscribe-document': 'unsubscribeDocument',
+    'click a.export-document': 'toggleExport',
     
     // Actions
     'click a.add_child': 'addChild',
@@ -36,6 +37,12 @@ var Document = Backbone.View.extend({
   },
   
   loadedDocuments: {},
+  
+  toggleExport: function() {
+    $('#document_export').slideToggle();
+    $('.view-action-icon.export').toggleClass('active');
+    return false;
+  },
   
   removeComment: function(e) {
     var comment = graph.get($(e.currentTarget).attr('comment'));

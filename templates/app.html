@@ -659,6 +659,8 @@
     
   </script>
   
+
+  
   <!-- content-node templates for the editor -->
   <script type="text/x-ejs-template" name="document">
     
@@ -683,7 +685,29 @@
         
         <a href="/" title="<%= node.get('subscribed') ? "Unsubscribe" : "Subscribe document and get notified about updates" %> " class="view-action-icon <%= node.get('subscribed') ? "unsubscribe-document" : "subscribe-document" %>"><div class="subscription-count"><%= node.get('subscribers') > 0 ? node.get('subscribers') : "" %></div><span>Subscribe document and get notified about updates</span></a>
 
-        <a href="<%= config.letterpress_url %>/<%= node.get('name').replace(/[^A-Za-z0-9_]/g, '_') %>.pdf?url=http://<%= top.location.host %>/documents/<%= node.get('creator')._id.split('/')[2]+"/"+node.get('name') %>" target="_blank" title="Print Document (Experimental)" class="print-document view-action-icon print"><span>Print</span></a>
+        <a href="#" class="export-document view-action-icon export" title="Export Document (Experimental)"><span>Export</span></a>
+      </div>
+      
+      <div id="document_export">
+        <h7>Export Document</h7>
+        <div class="formats">
+          <a href="<%= config.letterpress_url %>/<%= node.get('name').replace(/[^A-Za-z0-9_]/g, '_') %>.pdf?url=http://<%= top.location.host %>/documents/<%= node.get('creator')._id.split('/')[2]+"/"+node.get('name') %>" target="_blank" class="format pdf" title="Adobe PDF"><div class="label">PDF</div></a>
+          <a href="<%= config.letterpress_url %>/<%= node.get('name').replace(/[^A-Za-z0-9_]/g, '_') %>.odf?url=http://<%= top.location.host %>/documents/<%= node.get('creator')._id.split('/')[2]+"/"+node.get('name') %>" target="_blank" class="format odf" title="Open Document Format"><div class="label">ODF</div></a>
+          <a href="<%= config.letterpress_url %>/<%= node.get('name').replace(/[^A-Za-z0-9_]/g, '_') %>.rtf?url=http://<%= top.location.host %>/documents/<%= node.get('creator')._id.split('/')[2]+"/"+node.get('name') %>" target="_blank" class="format rtf" title="Rich Text Format"><div class="label">RTF</div></a>
+          <a href="<%= config.letterpress_url %>/<%= node.get('name').replace(/[^A-Za-z0-9_]/g, '_') %>.epub?url=http://<%= top.location.host %>/documents/<%= node.get('creator')._id.split('/')[2]+"/"+node.get('name') %>" target="_blank" class="format epub" title="Electronic Publication"><div class="label">EPUB</div></a>
+          <a href="<%= config.letterpress_url %>/<%= node.get('name').replace(/[^A-Za-z0-9_]/g, '_') %>.s5?url=http://<%= top.location.host %>/documents/<%= node.get('creator')._id.split('/')[2]+"/"+node.get('name') %>" target="_blank" class="format s5" title="S5 Slideshow"><div class="label">S5</div></a>
+        </div>
+        <h7>Additional Formats</h7>
+        <div class="additional-formats">
+          <a href="<%= config.letterpress_url %>/<%= node.get('name').replace(/[^A-Za-z0-9_]/g, '_') %>.html?url=http://<%= top.location.host %>/documents/<%= node.get('creator')._id.split('/')[2]+"/"+node.get('name') %>" target="_blank" class="format html" title="HTML"><div class="label">HTML</div></a>
+          <a href="<%= config.letterpress_url %>/<%= node.get('name').replace(/[^A-Za-z0-9_]/g, '_') %>.latex?url=http://<%= top.location.host %>/documents/<%= node.get('creator')._id.split('/')[2]+"/"+node.get('name') %>" target="_blank" class="format latex"><div class="label">LaTeX</div></a>
+          <a href="<%= config.letterpress_url %>/<%= node.get('name').replace(/[^A-Za-z0-9_]/g, '_') %>.markdown?url=http://<%= top.location.host %>/documents/<%= node.get('creator')._id.split('/')[2]+"/"+node.get('name') %>" target="_blank" class="format markdown"><div class="label">Markdown</div></a>
+          <a href="<%= config.letterpress_url %>/<%= node.get('name').replace(/[^A-Za-z0-9_]/g, '_') %>.textile?url=http://<%= top.location.host %>/documents/<%= node.get('creator')._id.split('/')[2]+"/"+node.get('name') %>" target="_blank" class="format textile"><div class="label">Textile</div></a>
+          <a href="<%= config.letterpress_url %>/<%= node.get('name').replace(/[^A-Za-z0-9_]/g, '_') %>.mediawiki?url=http://<%= top.location.host %>/documents/<%= node.get('creator')._id.split('/')[2]+"/"+node.get('name') %>" target="_blank" class="format mediawiki"><div class="label">MediaWiki</div></a>
+          <a href="<%= config.letterpress_url %>/<%= node.get('name').replace(/[^A-Za-z0-9_]/g, '_') %>.texinfo?url=http://<%= top.location.host %>/documents/<%= node.get('creator')._id.split('/')[2]+"/"+node.get('name') %>" target="_blank" class="format texinfo"><div class="label">Texinfo</div></a>
+          <a href="<%= config.letterpress_url %>/<%= node.get('name').replace(/[^A-Za-z0-9_]/g, '_') %>.org?url=http://<%= top.location.host %>/documents/<%= node.get('creator')._id.split('/')[2]+"/"+node.get('name') %>" target="_blank" class="format org"><div class="label">Emacs Org-Mode</div></a>
+          <a href="<%= config.letterpress_url %>/<%= node.get('name').replace(/[^A-Za-z0-9_]/g, '_') %>.rst?url=http://<%= top.location.host %>/documents/<%= node.get('creator')._id.split('/')[2]+"/"+node.get('name') %>" target="_blank" class="format rst"><div class="label">ReStructuredText</div></a>
+        </div>
       </div>
     </div>
     <div id="<%= node.html_id %>" name=<%= node.key %> level="<%= level %>" class="content-node document level-<%= level %><%= edit ? " edit" : "" %>">
@@ -1013,7 +1037,7 @@
     
     <div id="footer">
       <div class="credits"><a href="http://substance.io/substance/substance">About</a> &middot; <a href="http://twitter.com/_substance" target="_blank">Twitter</a> &middot; <a href="http://github.com/michael/substance" target="_blank">Source Code</a> &middot; <a href="http://github.com/michael/substance/issues" target="_blank">Report Bugs</a></div>
-      <div class="version"><a href="http://substance.io/substance/release-notes">Substance 0.3.3</a></div>
+      <div class="version"><a href="http://substance.io/substance/release-notes">Substance 0.3.4</a></div>
     </div>
   </div>
   
