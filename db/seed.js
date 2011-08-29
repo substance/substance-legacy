@@ -6,7 +6,7 @@ var _ = require('underscore');
 var config = JSON.parse(fs.readFileSync(__dirname+ '/../config.json', 'utf-8'));
 var seed = JSON.parse(fs.readFileSync(__dirname+ '/schema.json', 'utf-8'));
 
-var graph = new Data.Graph(seed, {dirty: true});
+var graph = new Data.Graph(seed, {dirty: true, syncMode: 'push'});
 
 // Setup Data.Adapter
 graph.connect('couch', { url: config.couchdb_url, force_updates: true });
