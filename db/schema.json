@@ -77,6 +77,9 @@
         "unique": true,
         "type": "date"
       }
+    },
+    "indexes": {
+      "by_email": ["email"]
     }
   },
 
@@ -297,6 +300,46 @@
       "by_user": ["user"]
     }
 	},
+	
+	"/type/collaborator": {
+    "_id": "/type/collaborator",
+    "type": "/type/type",
+    "properties": {
+      "document": {
+        "name": "Document",
+        "type": ["/type/document"],
+        "unique": true,
+        "required": true
+      },
+      "email": {
+        "name": "Invitation Email",
+        "type": "string",
+        "unique": true,
+        "required": true
+      },
+      "status": {
+        "name": "Collaboration Status",
+        "type": "string",
+        "unique": true,
+        "required": true
+      },
+      "user": {
+        "name": "User",
+        "type": ["/type/user"],
+        "unique": true,
+        "default": null
+      },
+      "created_at": {
+        "name": "Created at",
+        "unique": true,
+        "type": "date",
+        "required": true
+      }
+    },
+    "indexes": {
+      "by_document": ["document"]
+    }
+	},
 
   "/type/document": {
     "_id": "/type/document",
@@ -328,6 +371,12 @@
         "type": "/type/user",
         "required": true,
         "meta": {}
+      },
+      "collaborators": {
+        "name": "Collaborators",
+        "unique": false,
+        "type": "/type/user",
+        "default": []
       },
       "created_at": {
         "name": "Created at",
