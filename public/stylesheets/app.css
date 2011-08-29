@@ -1138,6 +1138,7 @@ div.browser-not-supported a:hover {
 .view-action-icon.write { background: url(../images/icons/black/pen_32x32.png) center no-repeat; }
 .view-action-icon.delete { background: url(../images/icons/black/x_28x28.png) center no-repeat; }
 .view-action-icon.export { background: url(../images/icons/black/export.png) center no-repeat; }
+.view-action-icon.settings { background: url(../images/icons/black/cog_32x32.png) center no-repeat; }
 .view-action-icon.subscribe-document { background: url(../images/icons/black/rss_32x32.png) center no-repeat; }
 .view-action-icon.unsubscribe-document { background: url(../images/icons/black/rss_32x32.png) center no-repeat; opacity: 1.0; }
 .view-action-icon.new { background: url(../images/icons/black/document_stroke_32x32.png) center no-repeat; }
@@ -1224,6 +1225,45 @@ div.browser-not-supported a:hover {
 
 
 
+/* Document Settings Dialogue
+-------------------------------------------------------------------------------*/
+
+
+#document_settings {
+  background: #eaebe5;
+  font-family: Helvetica, Arial;
+  padding: 20px;
+  
+  position: absolute;
+  top: 0px;
+  width: 400px;
+  display: none;
+  left: 0px;
+  
+  -webkit-box-shadow: 0px 1px 4px rgba(0,0,0,0.35), inset 0px 0px 1px rgba(255,255,255,0.15);
+  -moz-box-shadow:    0px 1px 4px rgba(0,0,0,0.35), inset 0px 0px 1px rgba(255,255,255,0.15);
+  box-shadow:         0px 1px 4px rgba(0,0,0,0.35), inset 0px 0px 1px rgba(255,255,255,0.15);
+}
+
+#document_settings h6 {
+  font-weight: bold;
+}
+
+#document_settings input {
+  width: 160px;
+}
+
+#document_settings input[type=submit] {
+  width: 100px;
+  display: inline;
+}
+
+/* Confirm Collaboration Dialogue
+-------------------------------------------------------------------------------*/
+
+#confirm_collaboration {
+  margin: 0 180px 0 100px;
+}
 
 /* body > #container > #document_wrapper > #document_menu
 -------------------------------------------------------------------------------*/
