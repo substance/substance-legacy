@@ -29,6 +29,7 @@ var Document = Backbone.View.extend({
     'click a.subscribe-document': 'subscribeDocument',
     'click a.unsubscribe-document': 'unsubscribeDocument',
     'click a.export-document': 'toggleExport',
+    'click a.toggle-settings': 'toggleSettings',
     
     // Actions
     'click a.add_child': 'addChild',
@@ -39,8 +40,22 @@ var Document = Backbone.View.extend({
   loadedDocuments: {},
   
   toggleExport: function() {
+    $('#document_settings').hide();
+    $('.view-action-icon.settings').removeClass('active');
     $('#document_export').slideToggle();
     $('.view-action-icon.export').toggleClass('active');
+    return false;
+  },
+  
+  toggleSettings: function() {
+    $('#document_export').hide();
+    $('.view-action-icon.export').removeClass('active');
+    
+    this.settings = new DocumentSettings();
+    this.settings.render();
+    
+    $('#document_settings').slideToggle();
+    $('.view-action-icon.settings').toggleClass('active');
     return false;
   },
   
@@ -426,16 +441,18 @@ var Document = Backbone.View.extend({
   
   loadDocument: function(username, docname, nodeid, commentid, mode) {
     var that = this;
-    that.mode = mode || (username === this.app.username ? 'edit' : 'show');
-    
-    if (that.mode === 'edit' && !head.browser.webkit) {
-      alert("You need to use a Webkit-based browser (Google Chrome, Safari) in order to write documents. In future, other browers will be supported too.");
-      that.mode = 'show';
-    }
     
     $('#tabs').show();
     function init(id) {
       that.model = graph.get(id);
+      
+      that.mode = mode || (username === this.app.username || _.include(that.model.get('collaborators').keys(), "/user/"+this.app.username) ? 'edit' : 'show');
+      
+      if (that.mode === 'edit' && !head.browser.webkit) {
+        alert("You need to use a Webkit-based browser (Google Chrome, Safari) in order to write documents. In future, other browers will be supported too.");
+        that.mode = 'show';
+      }
+      
       if (that.model) {
         that.render();
         that.init();

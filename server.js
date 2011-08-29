@@ -13,6 +13,10 @@ var User = require('./src/server/user');
 var Filters = require('./src/server/filters');
 var HTMLRenderer = require('./src/server/renderers/html_renderer');
 
+var nodemailer = require('nodemailer');
+nodemailer.sendmail = true;
+
+
 // Google Analytics (TODO: move somewhere else)
 var gaScript = [
   "<script type=\"text/javascript\">",
@@ -81,14 +85,29 @@ app.use(function(req, res) {
 function serveStartpage(req, res) {
   html = fs.readFileSync(__dirname+ '/templates/app.html', 'utf-8');
   req.session = req.session ? req.session : {username: null};
-  getNotifications(req.session.username, function(err, notifications) {
-    var sessionSeed = _.extend(_.clone(seed), notifications);
-    res.send(html.replace('{{{{seed}}}}', JSON.stringify(sessionSeed))
-                 .replace('{{{{session}}}}', JSON.stringify(req.session))
-                 .replace('{{{{config}}}}', JSON.stringify(clientConfig()))
-                 .replace('{{{{ga}}}}', gaScript)
-                 .replace('{{{{scripts}}}}', JSON.stringify(scripts())));
-  });
+
+  function serve() {
+    getNotifications(req.session.username, function(err, notifications) {
+      var sessionSeed = _.extend(_.clone(seed), notifications);
+      res.send(html.replace('{{{{seed}}}}', JSON.stringify(sessionSeed))
+                   .replace('{{{{session}}}}', JSON.stringify(req.session))
+                   .replace('{{{{config}}}}', JSON.stringify(clientConfig()))
+                   .replace('{{{{ga}}}}', gaScript)
+                   .replace('{{{{scripts}}}}', JSON.stringify(scripts())));
+    });
+  }
+  
+  // update session seed every time!
+  var graph = new Data.Graph(seed).connect('couch', {url: config.couchdb_url});
+  
+  if (req.session.username) {
+    graph.fetch({_id: "/user/"+req.session.username}, function(err, nodes) {
+      req.session.seed = nodes.toJSON();
+      serve();
+    });
+  } else {
+    serve();
+  }
 }
 
 function findAttributes(member, searchstr, callback) {
@@ -309,7 +328,6 @@ app.post('/register', function(req, res) {
           var seed = {};
           seed[user._id] = user.toJSON();
           delete seed[user._id].password;
-          
           req.session = {
             username: username.toLowerCase(),
             seed: seed
@@ -376,6 +394,63 @@ app.post('/updateuser', function(req, res) {
     } else return res.send({"status": "error", "message": "Not valid", "errors": user.errors});
   });
 });
+
+
+// Invite Collaborator by Email
+
+app.post('/invite', function(req, res) {
+  var document = req.body.document,
+      email = req.body.email;
+  
+  var graph = new Data.Graph(seed).connect('couch', {url: config.couchdb_url});
+  
+  // TODO: Check if authorized?
+  
+  graph.fetch({_id: document}, function(err) {
+    var doc = graph.get(document);
+    
+    // 1. create invitation for a email address (=substance user if exists)
+    
+    graph.fetch({type: "/type/user", email: email}, function(err, nodes) {
+      if (nodes.length > 0) {
+        console.log(nodes.first());
+      } else { // User does not yet exist
+        // Create collaborator object
+        var collaborator = graph.set({
+          document: document,
+          type: "/type/collaborator",
+          email: email,
+          status: 'pending',
+          created_at: new Date()
+        });
+        
+        // Message object
+        var message = {
+            sender: 'Michael Aufreiter <ma@zive.at>',
+            to: email,
+            subject: doc.get('title'),
+            body: "You've been invited to collaborate on \""+doc.get('title')+"\". \n\n "+"http://localhost:3003/collaborate/"+collaborator._id.split('/')[2],
+            debug: true
+        };
+        
+        graph.sync(function(err) {
+          res.send({"status": "ok", "graph": doc.toJSON()});
+          if (err) return;
+          // Notify
+          var mail = nodemailer.send_mail(message, function(err) {
+            if(err){
+              console.log('Error occured');
+              console.log(err.message);
+              return;
+            }
+            console.log('Successfully notified');
+          });
+        });
+      }
+    });
+  });
+});
+
 
 app.get('/notifications', function(req, res) {
   getNotifications(req.session.username, function(err, notifications) {

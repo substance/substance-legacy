@@ -14,7 +14,8 @@
       "/javascripts/data-0.2.0.js",
       "/javascripts/backbone.js",
       "/javascripts/proper.js",
-      "/javascripts/jquery.nivo.slider.pack.js"
+      "/javascripts/jquery.nivo.slider.pack.js",
+      "/javascripts/jquery.suggestr.js"
     ],
     "production": [
       "/javascripts/sanitize.js",
@@ -31,7 +32,8 @@
       "/javascripts/backbone.min.js",
       "/javascripts/proper.js",
       "/javascripts/substance.min.js",
-      "/javascripts/jquery.nivo.slider.pack.js"
+      "/javascripts/jquery.nivo.slider.pack.js",
+      "/javascripts/jquery.suggestr.js"
     ],
     "source": [
       "/client/notifier.js",
@@ -51,6 +53,8 @@
       "/client/ui/string_editor.js",
       "/client/ui/multi_string_editor.js",
       "/client/views/document.js",
+      "/client/views/document_settings.js",
+      "/client/views/confirm_collaboration.js",
       "/client/views/attributes.js",
       "/client/commands.js",
       "/client/views/document_browser.js",

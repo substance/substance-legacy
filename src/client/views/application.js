@@ -10,8 +10,30 @@ var Router = Backbone.Router.extend({
     this.route(":username/:docname", "document", this.loadDocument);
     this.route("subscribed", "subscribed", app.subscribedDocs);
     this.route("recent", "recent", app.recentDocs);
+    
+    this.route("collaborate/:invitation", "collaborate", this.collaborate)
     this.route("search/:searchstr", "search", app.searchDocs);
     this.route("", "startpage", app.toggleStartpage);
+  },
+  
+  // Confirm invitation
+  collaborate: function(collaborator) {
+    
+    $('#content_wrapper').attr('url', "collaborate/"+collaborator);
+    var view = new ConfirmCollaboration();
+    view.render();
+    
+    app.toggleView('content');
+    return false;
+    
+    // Collaborate Dialogue (Choose User)
+    
+    // graph.fetch({_id: "/collaborator/"+collaborator, "document": {}}, function(err, nodes) {
+    //   console.log('fetched..');
+    //   console.log(nodes.keys());
+    //   
+    //   console.log(graph.get("/collaborator/"+collaborator).toJSON());
+    // });
   },
   
   loadDocument: function(username, docname, node, comment) {
@@ -267,6 +289,7 @@ var Application = Backbone.View.extend({
     return false;
   },
   
+  
   switchTab: function(e) {
     this.toggleView($(e.currentTarget).attr('view'));
   },
@@ -425,7 +448,7 @@ var Application = Backbone.View.extend({
     
     // Cookie-based auto-authentication
     if (session.username) {
-      graph.merge(session.seed);
+      graph.merge(session.seed);      
       this.authenticated = true;
       this.username = session.username;
       this.trigger('authenticated');
@@ -451,52 +474,52 @@ var Application = Backbone.View.extend({
     that.render();
   },
   
-  connect: function() {
-    var that = this;
-    
-    DNode({
-      Session: {
-        updateStatus: function(status) {
-          that.document.status = status;
-          that.document.trigger('status:changed');
-        },
-        
-        updateSystemStatus: function(status) {
-          that.updateSystemStatus(status);
-        },
-        
-        updateNode: function(key, node) {
-          app.document.updateNode(key, node);
-        },
-        
-        moveNode: function(sourceKey, targetKey, parentKey, destination) {
-          throw 'Not implemented';
-        },
-        
-        insertNode: function(insertionType, node, targetKey, parentKey, destination) {
-          if (insertionType === 'sibling') {
-            app.document.addSibling(node, targetKey, parentKey, destination);
-          } else { // inserionType === 'child'
-            app.document.addChild(node, targetKey, parentKey, destination);
-          }
-        },
-        
-        removeNode: function(key, parentKey) {
-          app.document.removeNode(key, parentKey);
-        },
-        
-        // The server asks for the current (real-time) version of the document
-        getDocument: function(callback) {
-          var result = that.getFullDocument(app.document.model._id);
-          callback(result);
-        }
-      }
-    }).connect(function (remoteHandle) {
-      // For later use store a reference to the remote object
-      remote = remoteHandle;      
-      that.trigger('connected');
-    });
-  },
+  // connect: function() {
+  //   var that = this;
+  //   
+  //   DNode({
+  //     Session: {
+  //       updateStatus: function(status) {
+  //         that.document.status = status;
+  //         that.document.trigger('status:changed');
+  //       },
+  //       
+  //       updateSystemStatus: function(status) {
+  //         that.updateSystemStatus(status);
+  //       },
+  //       
+  //       updateNode: function(key, node) {
+  //         app.document.updateNode(key, node);
+  //       },
+  //       
+  //       moveNode: function(sourceKey, targetKey, parentKey, destination) {
+  //         throw 'Not implemented';
+  //       },
+  //       
+  //       insertNode: function(insertionType, node, targetKey, parentKey, destination) {
+  //         if (insertionType === 'sibling') {
+  //           app.document.addSibling(node, targetKey, parentKey, destination);
+  //         } else { // inserionType === 'child'
+  //           app.document.addChild(node, targetKey, parentKey, destination);
+  //         }
+  //       },
+  //       
+  //       removeNode: function(key, parentKey) {
+  //         app.document.removeNode(key, parentKey);
+  //       },
+  //       
+  //       // The server asks for the current (real-time) version of the document
+  //       getDocument: function(callback) {
+  //         var result = that.getFullDocument(app.document.model._id);
+  //         callback(result);
+  //       }
+  //     }
+  //   }).connect(function (remoteHandle) {
+  //     // For later use store a reference to the remote object
+  //     remote = remoteHandle;      
+  //     that.trigger('connected');
+  //   });
+  // },
   
   getFullDocument: function(id) {    
     var result = {};
@@ -537,6 +560,7 @@ var Application = Backbone.View.extend({
           graph.merge(res.seed);
           that.username = res.username;
           that.trigger('authenticated');
+          // window.location.reload();
         }
       },
       error: function(err) {
@@ -600,7 +624,8 @@ var remote,                              // Remote handle for server-side method
     app,                                 // The Application
     router,                              // The Router
     editor,                              // A global instance of the Proper Richtext editor
-    graph = new Data.Graph(seed).connect('ajax'); // The database
+    graph = new Data.Graph(seed, {dirty: false, syncMode: 'push'}).connect('ajax'); // The database
+
 
 (function() {
   $(function() {    
@@ -651,10 +676,12 @@ var remote,                              // Remote handle for server-side method
     
     $(window).bind('scroll', positionBoard);
     $(window).bind('resize', positionBoard);
-
+    
+    
     // Start the engines
     app = new Application({el: $('#container'), session: session});
     
+
     // Set up a global instance of the Proper Richtext Editor
     editor = new Proper();
     
@@ -664,6 +691,7 @@ var remote,                              // Remote handle for server-side method
     // Start responding to routes
     Backbone.history.start({pushState: true});
     
+
     // Reset document when window gets out of focus
     // document.body.onblur = function() {  if (app.document) app.document.reset(); }
     

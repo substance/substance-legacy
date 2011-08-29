@@ -2,6 +2,15 @@ var _ = require('underscore');
 var async = require('async');
 var Data = require('../../lib/data/data');
 
+// Util
+// -----------
+
+function isAuthorized(node, username) {
+  var authorizedUsers = [node.creator];
+  if (node.collaborators) authorizedUsers = authorizedUsers.concat(node.collaborators);
+  return _.include(authorizedUsers, "/user/"+username);
+}
+
 
 // Middleware for graph read and write operations
 // -----------
@@ -15,23 +24,28 @@ Filters.ensureAuthorized = function() {
       
       // Secure unpublished documents
       if (_.include(node.type, "/type/document") && !node.published_on) {
-        return node.creator !== "/user/"+session.username ? next(null) : next(node);
+        return isAuthorized(node, session.username) ? next(node) : next(null);
+      } else if (_.include(node.type, "/type/collaborator")) {
+        return next(node); // next(null);
+      } else {
+        next(node);
       }
-      next(node);
     },
 
     write: function(node, next, session) {
       var that = this;
       
       if (_.include(node.type, "/type/document")) {
-        return node.creator !== "/user/"+session.username ? next(null) : next(node);
+        // return node.creator !== "/user/"+session.username ? next(null) : next(node);
+        return isAuthorized(node, session.username) ? next(node) : next(null);
         // TODO: Make sure that document deletion can only be done by the creator, not the collaborators.
       } else if (_.intersect(node.type, ["/type/section", "/type/visualization", "/type/text",
                                          "/type/question", "/type/answer", "/type/quote", "/type/image", "/type/reference"]).length > 0) {
         
         that.db.get(node.document, function(err, document) {
           if (err) return next(node); // if the document does not yet exist
-          if (document.creator !== "/user/"+session.username) {
+          
+          if (!isAuthorized(document, session.username)) {
             // Allow just nodes
             that.db.get(node._id, function(err, n) {
               if (err) return next(null);
@@ -48,10 +62,10 @@ Filters.ensureAuthorized = function() {
           if (err) return next(null);
           
           if (node._rev) node.username = user.username;
-          next(node);
+          return next(node);
         });
       } else {
-        next(node);
+        return next(node);
       }
     }
   };
