@@ -116,8 +116,7 @@
       "message": {
         "name": "Event message",
         "unique": true,
-        "type": "string",
-        "required": true
+        "type": "string"
       },
       "creator": {
         "name": "User causing the event",
@@ -134,8 +133,7 @@
       "link": {
         "name": "Link",
         "unique": true,
-        "type": "string",
-        "required": true
+        "type": "string"
       },
       "created_at": {
         "name": "Created at",
@@ -305,9 +303,15 @@
     "_id": "/type/collaborator",
     "type": "/type/type",
     "properties": {
+      "tan": {
+        "name": "TAN",
+        "type": "string",
+        "unique": true,
+        "required": true
+      },
       "document": {
         "name": "Document",
-        "type": ["/type/document"],
+        "type": "/type/document",
         "unique": true,
         "required": true
       },
@@ -337,7 +341,11 @@
       }
     },
     "indexes": {
-      "by_document": ["document"]
+      "by_document": ["document"],
+      "by_document_and_email": ["document", "email"],
+      "by_document_and_user": ["document", "user"],
+      "by_user": ["user"],
+      "by_tan": ["tan"]
     }
 	},
 
