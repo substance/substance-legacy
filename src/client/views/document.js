@@ -51,8 +51,7 @@ var Document = Backbone.View.extend({
     $('#document_export').hide();
     $('.view-action-icon.export').removeClass('active');
     
-    this.settings = new DocumentSettings();
-    this.settings.render();
+    this.settings.load();
     
     $('#document_settings').slideToggle();
     $('.view-action-icon.settings').toggleClass('active');
@@ -199,6 +198,7 @@ var Document = Backbone.View.extend({
   initialize: function() {
     var that = this;
     this.attributes = new Attributes({model: this.model});
+    this.settings = new DocumentSettings();
     
     this.app = this.options.app;
     this.mode = 'show';
@@ -425,7 +425,7 @@ var Document = Backbone.View.extend({
     
     // Update browser graph
     if (app.browser && app.browser.query && app.browser.query.type === "user" && app.browser.query.value === app.username) {
-      app.browser.graph.set('objects', this.model._id, this.model);
+      app.browser.graph.set('nodes', this.model._id, this.model);
     }
     
     // Move to the actual document
@@ -446,8 +446,6 @@ var Document = Backbone.View.extend({
     function init(id) {
       that.model = graph.get(id);
       
-      that.mode = mode || (username === this.app.username || _.include(that.model.get('collaborators').keys(), "/user/"+this.app.username) ? 'edit' : 'show');
-      
       if (that.mode === 'edit' && !head.browser.webkit) {
         alert("You need to use a Webkit-based browser (Google Chrome, Safari) in order to write documents. In future, other browers will be supported too.");
         that.mode = 'show';
@@ -464,8 +462,7 @@ var Document = Backbone.View.extend({
         that.loadedDocuments[username+"/"+docname] = id;
         
         // Update browser graph reference
-        app.browser.graph.set('objects', id, that.model);
-        
+        app.browser.graph.set('nodes', id, that.model);
         app.toggleView('document');
         
         // Scroll to target node
@@ -504,6 +501,7 @@ var Document = Backbone.View.extend({
       url: "/documents/"+username+"/"+docname,
       dataType: "json",
       success: function(res) {
+        that.mode = mode || (res.authorized ? "edit" : "show");
         if (res.status === 'error') {
           $('#document_tab').html('&nbsp;&nbsp;&nbsp; Document not found');
           $('#document_wrapper').html("<div class=\"notification error\">The requested document couldn't be found.</div>");

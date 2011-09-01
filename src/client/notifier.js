@@ -139,7 +139,7 @@ var notifier = new Backbone.Notifier();
 
 // Listen for messages 
 notifier.bind('message:arrived', function(message) {
-  var $message = $('<p class="notification"><span>info:</span>'+message.message+'</p>');
+  var $message = $('<p class="notification"><span>'+message.type+':</span>'+message.message+'</p>');
   $('#notifications .wrapper').append($message);
   
   if (message.message.indexOf('...') !== -1) {

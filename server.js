@@ -16,7 +16,6 @@ var HTMLRenderer = require('./src/server/renderers/html_renderer');
 var nodemailer = require('nodemailer');
 nodemailer.sendmail = true;
 
-
 // Google Analytics (TODO: move somewhere else)
 var gaScript = [
   "<script type=\"text/javascript\">",
@@ -39,6 +38,9 @@ global.seed = JSON.parse(fs.readFileSync(__dirname+ '/db/schema.json', 'utf-8'))
 global.settings = JSON.parse(fs.readFileSync(__dirname+ '/settings.json', 'utf-8'));
 global.db = CouchClient(config.couchdb_url);
 
+
+var VALIDATE_EMAIL = new RegExp("^(([^<>()[\\]\\\\.,;:\\s@\\\"]+(\\.[^<>()[\\]\\\\.,;:\\s@\\\"]+)*)|(\\\".+\\\"))@((\\[[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\])|(([a-zA-Z\\-0-9]+\\.)+[a-zA-Z]{2,}))$");
+
 // Express.js Configuration
 // -----------
 
@@ -50,7 +52,6 @@ app.configure(function() {
   app.use(app.router);
   app.use(express.static(__dirname+"/public", { maxAge: 41 }));
   app.use(express.logger({ format: ':method :url' }));
-  
 });
 
 app.configure('development', function() {
@@ -151,7 +152,6 @@ function getNotifications(username, callback) {
     });
   });
 }
-
 
 
 var graph = new Data.Graph(seed);
@@ -257,14 +257,14 @@ app.get('/attributes', function(req, res) {
   });
 });
 
-app.post('/login', function(req, res) {  
+app.post('/login', function(req, res) {
   var username = req.body.username.toLowerCase(),
       password = req.body.password;
   
   var graph = new Data.Graph(seed).connect('couch', {url: config.couchdb_url});
-  graph.fetch({type: '/type/user'}, function(err) {
-    if (!err) {
-      var user = graph.get('/user/'+username);
+  graph.fetch({_id: '/user/'+username}, function(err, nodes) {
+    if (!err && nodes.length > 0) {
+      var user = nodes.first();
       if (user && username === user.get('username').toLowerCase() && encryptPassword(password) === user.get('password')) {
         var seed = {};
         seed[user._id] = user.toJSON();
@@ -276,7 +276,6 @@ app.post('/login', function(req, res) {
             username: username.toLowerCase(),
             seed: seed
           };
-          
           res.send({
             status: "ok",
             username: username,
@@ -344,7 +343,7 @@ app.post('/register', function(req, res) {
       });
     } else {
       console.log(user.errors);
-      return res.send({"status": "error", "errors": user.errors, "field": "all", "message": "Validation error. Check your input."});
+      return res.send({"status": "error", "errors": user.errors, "field": "all", "message": "Some field values are invalid. Please check your input."});
     }
   });
 });
@@ -396,57 +395,94 @@ app.post('/updateuser', function(req, res) {
 });
 
 
+app.post('/confirm_collaborator', function(req, res) {
+  var tan = req.body.tan,
+      user = req.body.user;
+  var graph = new Data.Graph(seed).connect('couch', {url: config.couchdb_url});
+  
+  if (req.session.username && req.session.username === user) {
+    graph.fetch({type: "/type/collaborator", tan: tan, "document": {}}, function(err, nodes) {
+      if (nodes.length <= 0) return res.send({"status": "error"});
+      
+      if (nodes.first().get('document').get('creator')._id === "/user/"+user) return res.send({"status": "error", "error": "already_involved"});
+      
+      graph.fetch({type: "/type/collaborator", document: nodes.first().get('document')._id, user: "/user/"+user}, function(err, collaborators) {
+        if (collaborators.length > 0) return res.send({"status": "error", "error": "already_involved"});
+        
+        graph.get(nodes.first()._id).set({
+          user: "/user/"+user,
+          status: "confirmed"
+        });
+        graph.sync(function(err) {
+          return err ? res.send({"status": "error"}) : res.send({"status": "ok", "graph": {}});
+        });
+      });
+    });
+  } else {
+    res.send({"status": "error", "error": "unknown_error"});
+  }
+});
+
+
 // Invite Collaborator by Email
 
 app.post('/invite', function(req, res) {
   var document = req.body.document,
       email = req.body.email;
   
+  if (!VALIDATE_EMAIL.test(email)) {
+    return res.send({"status": "error", "error": "invalid_email"});
+  }
+  
+  console.log('INVITING....');
+  
   var graph = new Data.Graph(seed).connect('couch', {url: config.couchdb_url});
-  
-  // TODO: Check if authorized?
-  
   graph.fetch({_id: document}, function(err) {
     var doc = graph.get(document);
     
-    // 1. create invitation for a email address (=substance user if exists)
+    // Check if authorized — only the creator is allowed to invite collaborators
+    if (doc.get('creator')._id.split('/')[2] !== req.session.username) {
+      return res.send({"status": "error", "error": "not_authorized"});
+    }
     
-    graph.fetch({type: "/type/user", email: email}, function(err, nodes) {
-      if (nodes.length > 0) {
-        console.log(nodes.first());
-      } else { // User does not yet exist
-        // Create collaborator object
-        var collaborator = graph.set({
-          document: document,
-          type: "/type/collaborator",
-          email: email,
-          status: 'pending',
-          created_at: new Date()
-        });
+    graph.fetch({type: "/type/collaborator", document: document, email: email}, function(err, nodes) {
+      if (nodes.length>0) return res.send({"status": "error", "error": "already_invited"});
+      
+      // Create collaborator object
+      var collaborator = graph.set({
+        type: "/type/collaborator",
+        document: document,
+        email: email,
+        tan: Data.uuid(),
+        user: null,
+        status: "pending",
+        created_at: new Date()
+      });
+      
+      // Message object
+      var message = {
+        sender: 'Michael Aufreiter <ma@zive.at>',
+        to: email,
         
-        // Message object
-        var message = {
-            sender: 'Michael Aufreiter <ma@zive.at>',
-            to: email,
-            subject: doc.get('title'),
-            body: "You've been invited to collaborate on \""+doc.get('title')+"\". \n\n "+"http://localhost:3003/collaborate/"+collaborator._id.split('/')[2],
-            debug: true
-        };
-        
-        graph.sync(function(err) {
-          res.send({"status": "ok", "graph": doc.toJSON()});
-          if (err) return;
-          // Notify
-          var mail = nodemailer.send_mail(message, function(err) {
-            if(err){
-              console.log('Error occured');
-              console.log(err.message);
-              return;
-            }
-            console.log('Successfully notified');
-          });
+        subject: doc.get('title'),
+        body: "You've been invited to collaborate on \""+doc.get('title')+"\", a document on Substance. \n\n "+"http://localhost:3003/collaborate/"+collaborator.get('tan'),
+        debug: true
+      };
+      
+      graph.sync(function(err) {
+        res.send({"status": "ok", "graph": doc.toJSON()});
+        if (err) return;
+        // Notify
+        var mail = nodemailer.send_mail(message, function(err) {
+          if(err) {
+            console.log('Error occured');
+            console.log(err.message);
+            return;
+          }
+          console.log('Successfully notified collaborator.');
         });
-      }
+      });
+      
     });
   });
 });
@@ -471,7 +507,7 @@ function fetchGravatar(username, size, res, callback) {
     if (err) return callback(err);
     var email = node.email || "";
     var host = 'www.gravatar.com';
-    var query = "?s="+size+"&d=retro"; // (queryData && "?s=100" + queryData) || "";
+    var query = "?s="+size+"&d=retro";
     var path = '/avatar/' + crypto.createHash('md5').update(email.toLowerCase()).digest('hex') + query;
 
     http.get({host: host, path: path}, function(cres) {
@@ -497,12 +533,11 @@ app.get('/avatar/:username/:size', function(req, res) {
 });
 
 
-
 // Returns the most recent version of the requested doc
 app.get('/documents/:username/:name', function(req, res) {
-  Document.get(req.params.username, req.params.name, req.session ? req.session.username : null, function(err, graph, id) {
+  Document.get(req.params.username, req.params.name, req.session ? req.session.username : null, function(err, graph, id, authorized) {
     if (err) return res.send({status: "error", error: err});
-    res.send({status: "ok", graph: graph, id: id});
+    res.send({status: "ok", graph: graph, id: id, authorized: authorized});
   });
 });
 

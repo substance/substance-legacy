@@ -4,6 +4,7 @@ var DocumentSettings = Backbone.View.extend({
   },
 
   invite: function() {
+    var that = this;
     $.ajax({
       type: "POST",
       url: "/invite",
@@ -13,16 +14,23 @@ var DocumentSettings = Backbone.View.extend({
       },
       dataType: "json",
       success: function(res) {
-        console.log('Invited.');
-        console.log(res);
+        if (res.error) return alert(res.error);
+        that.load();
       },
       error: function(err) {
-        console.log('an error occurred');
-        console.log(err);
+        alert("Unknown error occurred");
       }
     });
     
     return false;
+  },
+  
+  load: function() {
+    var that = this;
+    graph.fetch({"type": "/type/collaborator", "document": app.document.model._id}, function(err, nodes) {
+      that.collaborators = nodes;
+      that.render();
+    });
   },
   
   initialize: function() {
@@ -31,11 +39,9 @@ var DocumentSettings = Backbone.View.extend({
   
   render: function() {
     $(this.el).html(_.tpl('document_settings', {
-      
+      collaborators: this.collaborators,
+      document: app.document.model
     }));
-    
-    // $('#new_collaborator').suggestr(['John', 'Peter', 'Mark']);
-    
     this.delegateEvents();
   }
 });
