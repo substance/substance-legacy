@@ -98,44 +98,62 @@ Document.find = function(searchstr, type, username, callback) {
 };
 
 
+// There's a duplicate version in filters.js
+function isAuthorized(node, username, callback) {
+  if ("/user/"+username === node.creator) return callback(null);
+  
+  // Fetch list of collaborators
+  db.view('substance/collaborators', {key: ["/user/"+username, node._id]}, function(err, res) {
+    res.rows.length > 0 ? callback(null) : callback({error: "unauthorized"});
+  });
+}
+
 // Get a single document from the database, including all associated content nodes
 Document.get = function(username, docname, reader, callback) {
   db.view('substance/documents', {key: username+'/'+docname}, function(err, res) {
-    
     var graph = new Data.Graph(seed).connect('couch', {url: config.couchdb_url});
     
     if (err) return callback(err);
-    if (res.rows.length == 0) return callback({error: "No documents found"});
-    var id = res.rows[0].value._id;
+    if (res.rows.length == 0) return callback({error: "not_found"});
     
-    var qry = {
-      "_id": id,
-      "children": {
-        "_recursive": true,
-        "comments": {}
-      },
-      "subjects": {},
-      "entities": {},
-      "creator": {}
-    };
+    var node = res.rows[0].value;
     
-    graph.fetch(qry, function(err, nodes) {
-      var result = nodes.toJSON(),
-          doc = result[id];
+    function load(authorized) {
+      var id = res.rows[0].value._id;
 
-      logView(doc._id, reader, function() {
-        getViewCount(doc._id, function(err, views) {
-          doc.views = views;
+      var qry = {
+        "_id": id,
+        "children": {
+          "_recursive": true,
+          "comments": {}
+        },
+        "subjects": {},
+        "entities": {},
+        "creator": {}
+      };
 
-          // Check subscriptions
-          graph.fetch({type: "/type/subscription", "document": doc._id}, function(err, nodes) {
-            if (err) return callback(err);
-            doc.subscribed = graph.find({"user": "/user/"+reader, "document": doc._id}).length > 0 ? true : false;
-            doc.subscribers = nodes.length;
-            callback(null, result, doc._id);
+      graph.fetch(qry, function(err, nodes) {
+        var result = nodes.toJSON(),
+            doc = result[id];
+
+        logView(doc._id, reader, function() {
+          getViewCount(doc._id, function(err, views) {
+            doc.views = views;
+            // Check subscriptions
+            graph.fetch({type: "/type/subscription", "document": doc._id}, function(err, nodes) {
+              if (err) return callback(err);
+              doc.subscribed = graph.find({"user": "/user/"+reader, "document": doc._id}).length > 0 ? true : false;
+              doc.subscribers = nodes.length;
+              callback(null, result, doc._id, authorized);
+            });
           });
         });
       });
+    }
+    
+    isAuthorized(node, reader, function(err) {
+      if (err && !node.published_on) return callback({error: "not_authorized"});
+      load(!err);
     });
   });
 };
