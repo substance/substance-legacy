@@ -5,10 +5,13 @@ var Data = require('../../lib/data/data');
 // Util
 // -----------
 
-function isAuthorized(node, username) {
-  var authorizedUsers = [node.creator];
-  if (node.collaborators) authorizedUsers = authorizedUsers.concat(node.collaborators);
-  return _.include(authorizedUsers, "/user/"+username);
+// There's a duplicate version in document.js
+function isAuthorized(node, username, callback) {
+  if ("/user/"+username === node.creator) return callback(null);
+  // Fetch list of collaborators
+  this.db.view('substance/collaborators', {key: ["/user/"+username, node._id]}, function(err, res) {
+    res.rows.length > 0 ? callback(null) : callback({error: "unauthorized"});
+  });
 }
 
 
@@ -24,9 +27,11 @@ Filters.ensureAuthorized = function() {
       
       // Secure unpublished documents
       if (_.include(node.type, "/type/document") && !node.published_on) {
-        return isAuthorized(node, session.username) ? next(node) : next(null);
+        // return isAuthorized(node, session.username) ? next(node) : next(null);
+        next(node);
       } else if (_.include(node.type, "/type/collaborator")) {
-        return next(node); // next(null);
+        delete node.tan;
+        return next(node);
       } else {
         next(node);
       }
@@ -36,25 +41,27 @@ Filters.ensureAuthorized = function() {
       var that = this;
       
       if (_.include(node.type, "/type/document")) {
-        // return node.creator !== "/user/"+session.username ? next(null) : next(node);
-        return isAuthorized(node, session.username) ? next(node) : next(null);
+        isAuthorized(node, session.username, function(err) {
+          return err ? next(null) : next(node);
+        });
+        
         // TODO: Make sure that document deletion can only be done by the creator, not the collaborators.
       } else if (_.intersect(node.type, ["/type/section", "/type/visualization", "/type/text",
                                          "/type/question", "/type/answer", "/type/quote", "/type/image", "/type/reference"]).length > 0) {
         
         that.db.get(node.document, function(err, document) {
-          if (err) return next(node); // if the document does not yet exist
+          if (err) return next(null); // if the document does not yet exist
           
-          if (!isAuthorized(document, session.username)) {
+          isAuthorized(document, session.username, function(err) {
+            if (!err) return next(node);
             // Allow just nodes
             that.db.get(node._id, function(err, n) {
               if (err) return next(null);
               n.comments = node.comments;
               return next(n);
             });
-          } else {
-            return next(node);
-          }
+          });
+
         });
       } else if (_.include(node.type, "/type/user")) {
         // Ensure username can't be changed for existing users
