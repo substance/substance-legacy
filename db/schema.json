@@ -50,6 +50,11 @@
         "type": "string",
         "required": true
       },
+      "tan": {
+        "name": "TAN",
+        "type": "string",
+        "unique": true
+      },
       "website": {
         "name": "Website",
         "unique": true,
