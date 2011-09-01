@@ -10,7 +10,7 @@ function isAuthorized(node, username, callback) {
   if ("/user/"+username === node.creator) return callback(null);
   // Fetch list of collaborators
   this.db.view('substance/collaborators', {key: ["/user/"+username, node._id]}, function(err, res) {
-    res.rows.length > 0 ? callback(null) : callback({error: "unauthorized"});
+    res.rows.length > 0 && res.rows[0].value.mode === "edit" ? callback(null) : callback({error: "unauthorized"});
   });
 }
 
@@ -61,13 +61,18 @@ Filters.ensureAuthorized = function() {
               return next(n);
             });
           });
-
+        });
+      } else if (_.include(node.type, "/type/collaborator")) {
+        that.db.get(node._id, function(err, n) {
+          // Restore tan from original node
+          if (err) return next(null);
+          node.tan = n.tan;
+          next(node);
         });
       } else if (_.include(node.type, "/type/user")) {
         // Ensure username can't be changed for existing users
         that.db.get(node._id, function(err, user) {
           if (err) return next(null);
-          
           if (node._rev) node.username = user.username;
           return next(node);
         });

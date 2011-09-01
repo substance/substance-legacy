@@ -428,13 +428,12 @@ app.post('/confirm_collaborator', function(req, res) {
 
 app.post('/invite', function(req, res) {
   var document = req.body.document,
-      email = req.body.email;
+      email = req.body.email,
+      mode = req.body.mode;
   
   if (!VALIDATE_EMAIL.test(email)) {
     return res.send({"status": "error", "error": "invalid_email"});
   }
-  
-  console.log('INVITING....');
   
   var graph = new Data.Graph(seed).connect('couch', {url: config.couchdb_url});
   graph.fetch({_id: document}, function(err) {
@@ -454,6 +453,7 @@ app.post('/invite', function(req, res) {
         document: document,
         email: email,
         tan: Data.uuid(),
+        mode: mode,
         user: null,
         status: "pending",
         created_at: new Date()
@@ -461,11 +461,11 @@ app.post('/invite', function(req, res) {
       
       // Message object
       var message = {
-        sender: 'Michael Aufreiter <ma@zive.at>',
+        sender: 'Substance <info@substance.io>',
         to: email,
-        
         subject: doc.get('title'),
-        body: "You've been invited to collaborate on \""+doc.get('title')+"\", a document on Substance. \n\n "+"http://localhost:3003/collaborate/"+collaborator.get('tan'),
+        body: "\""+ doc.get('creator')._id.split('/')[2] + "\" invited you to collaborate on his document \""+doc.get('title')+"\" on Substance. \n\n "+ config.server_url +"/collaborate/"+collaborator.get('tan'),
+        // Would like you to see his document. in the view case.
         debug: true
       };
       

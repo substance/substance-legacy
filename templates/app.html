@@ -661,20 +661,19 @@
   <script type="text/x-ejs/template" name="confirm_collaboration">
     <div id="confirm_collaboration">
         <div class="title">Substance</div>
-      <% if (collaborator.get('user')) { %>
+      <% if (!collaborator || collaborator.get('user')) { %>
         <div class="summary">
           <h2>Sorry. This Invitation has already been confirmed or was deleted by the author.</h2>
         </div>
       <% } else { %>
         <div class="summary">
-          <h2><b><%= document.get('creator')._id.split('/')[2] %></b> would like to collaborate on his document</h2>
+          <h2><b><%= document.get('creator')._id.split('/')[2] %></b> would like you to collaborate on his document</h2>
           <div class="document">
             <h1><%= document.get('title') %></h1>
             <p class="lead">
               <%= document.get('lead') %>
             </p>
           </div>
-          
         </div>
         
         <div class="option-tabs">
@@ -752,6 +751,7 @@
   </script>
   
   <script type="text/x-ejs/template" name="document_settings">
+    <div class="settings-title">Document Settings</div>
     <h6>Collaborators</h6>
     <table class="collaborators">
       <% collaborators.each(function(collaborator) { %>
@@ -759,7 +759,18 @@
           <td><%= collaborator.get('email') %></td>
           <td><%= collaborator.get('user') ? "<strong>"+collaborator.get('user')._id.split('/')[2]+"</strong>" : "" %></td>
           
-          <td class="right-align"><%= collaborator.get('user') ? '<span class="confirmed">Confirmed</span>' : '<span class="invited">Invited</span>' %></td>
+          <td><%= collaborator.get('user') ? '<span class="confirmed">Confirmed</span>' : '<span class="invited">Invited</span>' %></td>
+          <% if (document.get('creator')._id === '/user/'+app.username) { %>
+          <td class="right-align">
+            <select class="change-mode" collaborator="<%= collaborator._id %>">
+              <option value="edit">Can edit</option>
+              <option value="view"<%= collaborator.get('mode') === "view" ? ' selected="selected"' : "" %>>Can view</option>
+            </select>
+          </td>
+          <td class="right-align">
+            <a href="#" class="remove-collaborator" collaborator="<%= collaborator._id %>"><span>x</span></a>
+          </td>
+          <% } %>
         </tr>
       <% }); %>
     </table>
@@ -768,6 +779,10 @@
       <form>
         <label>Enter Email Address</label><br/>
         <input type="text" id="collaborator_email" name="collaborator_email"/>
+        <select name="mode" id="collaborator_mode">
+          <option value="edit">Can edit</option>
+          <option value="view">Can view</option>
+        </select>
         <input type="submit" value="Invite"/>
       </form>
     <% } %>
@@ -1156,7 +1171,7 @@
     </div>
     
     <div id="footer">
-      <div class="credits"><a href="http://substance.io/substance/substance">About</a> &middot; <a href="http://twitter.com/_substance" target="_blank">Twitter</a> &middot; <a href="http://github.com/michael/substance" target="_blank">Source Code</a> &middot; <a href="http://github.com/michael/substance/issues" target="_blank">Report Bugs</a></div>
+      <div class="credits"><a href="http://substance.io/substance/substance">About</a> &middot; <a href="http://twitter.com/_substance" target="_blank">Twitter</a> &middot; <a href="http://github.com/michael/substance" target="_blank">Source Code</a> &middot; <a href="https://groups.google.com/group/substance_" target="_blank">Discuss</a> &middot; <a href="http://github.com/michael/substance/issues" target="_blank">Report Bugs</a></div>
       <div class="version"><a href="http://substance.io/substance/release-notes">Substance 0.3.4</a></div>
     </div>
   </div>

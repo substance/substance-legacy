@@ -133,7 +133,6 @@ var Application = Backbone.View.extend({
     return false;
   },
   
-  
   // Actions
   // ---------------
   
@@ -394,10 +393,11 @@ var Application = Backbone.View.extend({
       url: "/logout",
       dataType: "json",
       success: function(res) {
-        that.username = null;
-        that.authenticated = false;
-        that.render();
-        $('.new-document').hide();
+        // that.username = null;
+        // that.authenticated = false;
+        // that.render();
+        // $('.new-document').hide();
+        window.location.reload();
       }
     });
     return false;
@@ -437,12 +437,6 @@ var Application = Backbone.View.extend({
     this.header = new Header({el: '#header', app: this});
     this.activeUsers = [];
     
-    // Try to establish a server connection
-    // this.connect();
-    // this.bind('connected', function() {
-    //   notifier.notify(Notifications.CONNECTED);
-    // });
-    
     // Reset when clicking on the body
     $('body').click(function(e) {
       app.document.reset(true);
@@ -462,12 +456,15 @@ var Application = Backbone.View.extend({
     }
     
     this.bind('authenticated', function() {
-      that.authenticated = true;
-      // Re-render browser
-      $('#tabs').show();
-      $('.new-document').show();
-      that.render();
-      that.browser.load(that.query());
+      // that.authenticated = true;
+      // // Re-render browser
+      // $('#tabs').show();
+      // $('.new-document').show();
+      // that.render();
+      // that.browser.load(that.query());
+      
+      // Reload current page
+      window.location.reload();
     });
     
     setInterval(function() {
@@ -476,53 +473,6 @@ var Application = Backbone.View.extend({
     
     that.render();
   },
-  
-  // connect: function() {
-  //   var that = this;
-  //   
-  //   DNode({
-  //     Session: {
-  //       updateStatus: function(status) {
-  //         that.document.status = status;
-  //         that.document.trigger('status:changed');
-  //       },
-  //       
-  //       updateSystemStatus: function(status) {
-  //         that.updateSystemStatus(status);
-  //       },
-  //       
-  //       updateNode: function(key, node) {
-  //         app.document.updateNode(key, node);
-  //       },
-  //       
-  //       moveNode: function(sourceKey, targetKey, parentKey, destination) {
-  //         throw 'Not implemented';
-  //       },
-  //       
-  //       insertNode: function(insertionType, node, targetKey, parentKey, destination) {
-  //         if (insertionType === 'sibling') {
-  //           app.document.addSibling(node, targetKey, parentKey, destination);
-  //         } else { // inserionType === 'child'
-  //           app.document.addChild(node, targetKey, parentKey, destination);
-  //         }
-  //       },
-  //       
-  //       removeNode: function(key, parentKey) {
-  //         app.document.removeNode(key, parentKey);
-  //       },
-  //       
-  //       // The server asks for the current (real-time) version of the document
-  //       getDocument: function(callback) {
-  //         var result = that.getFullDocument(app.document.model._id);
-  //         callback(result);
-  //       }
-  //     }
-  //   }).connect(function (remoteHandle) {
-  //     // For later use store a reference to the remote object
-  //     remote = remoteHandle;      
-  //     that.trigger('connected');
-  //   });
-  // },
   
   getFullDocument: function(id) {    
     var result = {};
@@ -598,14 +548,7 @@ var Application = Backbone.View.extend({
   },
   
   createUser: function(username, name, email, password, callback) {
-    // callback(null); // success!
-    
     var that = this;
-    
-    // $('.page-content .input-message').empty();
-    // $('#registration_error_message').empty();
-    // $('.page-content input').removeClass('error');
-    
     $.ajax({
       type: "POST",
       url: "/register",
@@ -621,8 +564,6 @@ var Application = Backbone.View.extend({
       },
       error: function(err) {
         alert("Unknown error. Couldn't create user.")
-        // callback('error', err);
-        // $('#registration_error_message').html('Unknown error.');
       }
     });
     return false;
@@ -682,7 +623,6 @@ var remote,                              // Remote handle for server-side method
         if (tocOffset && _.scrollTop() < tocOffset.top) {
           $('#toc_wrapper').css('top', _.scrollTop()-$('#document').offset().top+"px");
         }
-        
       } else {
         $('#document .board').css('left', '');
         $('#toc_wrapper').css('top', 0);

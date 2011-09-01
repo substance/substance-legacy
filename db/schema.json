@@ -306,14 +306,20 @@
       "tan": {
         "name": "TAN",
         "type": "string",
-        "unique": true,
-        "required": true
+        "unique": true
       },
       "document": {
         "name": "Document",
         "type": "/type/document",
         "unique": true,
         "required": true
+      },
+      "mode": {
+        "name": "Mode",
+        "type": "string",
+        "unique": true,
+        "required": true,
+        "default": "view"
       },
       "email": {
         "name": "Invitation Email",

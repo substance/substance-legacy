@@ -1,8 +1,33 @@
 var DocumentSettings = Backbone.View.extend({
   events: {
-    'submit form': 'invite'
+    'submit form': 'invite',
+    'change select.change-mode': 'changeMode',
+    'click a.remove-collaborator': 'removeCollaborator'
   },
-
+  
+  changeMode: function(e) {
+    var collaboratorId = $(e.currentTarget).attr('collaborator');
+    var mode = $(e.currentTarget).val();
+    
+    graph.get(collaboratorId).set({
+      mode: mode
+    });
+    // trigger immediate sync
+    graph.sync();
+    
+    return false;
+  },
+  
+  removeCollaborator: function(e) {
+    var collaboratorId = $(e.currentTarget).attr('collaborator');
+    graph.del(collaboratorId);
+    // trigger immediate sync
+    graph.sync();
+    this.collaborators.del(collaboratorId);
+    this.render();
+    return false;
+  },
+  
   invite: function() {
     var that = this;
     $.ajax({
@@ -10,7 +35,8 @@ var DocumentSettings = Backbone.View.extend({
       url: "/invite",
       data: {
         email: $('#collaborator_email').val(),
-        document: app.document.model._id
+        document: app.document.model._id,
+        mode: $('#collaborator_mode').val()
       },
       dataType: "json",
       success: function(res) {

@@ -495,6 +495,18 @@ var Document = Backbone.View.extend({
     //   // TODO: check if there are changes from a realtime session
     //   init(id);
     // } else {
+      
+    function printError(error) {
+      if (error === "not_authorized") {
+        $('#document_tab').html('&nbsp;&nbsp;&nbsp; Not Authorized');
+        $('#document_wrapper').html("<div class=\"notification error\">You are not authorized to access this document.</div>");
+      } else {
+        $('#document_tab').html('&nbsp;&nbsp;&nbsp; Document not found');
+        $('#document_wrapper').html("<div class=\"notification error\">The requested document couldn't be found.</div>");
+      }
+      app.toggleView('document');
+    }
+      
     $('#document_tab').html('&nbsp;&nbsp;&nbsp;Loading...');
     $.ajax({
       type: "GET",
@@ -503,18 +515,14 @@ var Document = Backbone.View.extend({
       success: function(res) {
         that.mode = mode || (res.authorized ? "edit" : "show");
         if (res.status === 'error') {
-          $('#document_tab').html('&nbsp;&nbsp;&nbsp; Document not found');
-          $('#document_wrapper').html("<div class=\"notification error\">The requested document couldn't be found.</div>");
-          app.toggleView('document');
+          printError(res.error)
         } else {
           graph.merge(res.graph);
           init(res.id);
         }
       },
       error: function(err) {
-        $('#document_tab').html('&nbsp;&nbsp;&nbsp; Document not found.');
-        $('#document_wrapper').html("<div class=\"notification error\">The requested document couldn't be found.</div>");
-        app.toggleView('document');
+        printError();
       }
     });
     // }

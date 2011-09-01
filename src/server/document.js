@@ -100,11 +100,11 @@ Document.find = function(searchstr, type, username, callback) {
 
 // There's a duplicate version in filters.js
 function isAuthorized(node, username, callback) {
-  if ("/user/"+username === node.creator) return callback(null);
+  if ("/user/"+username === node.creator) return callback(null, true);
   
   // Fetch list of collaborators
   db.view('substance/collaborators', {key: ["/user/"+username, node._id]}, function(err, res) {
-    res.rows.length > 0 ? callback(null) : callback({error: "unauthorized"});
+    res.rows.length > 0 ? callback(null, res.rows[0].value.mode === "edit" ? true : false) : callback({error: "unauthorized"});
   });
 }
 
@@ -114,11 +114,11 @@ Document.get = function(username, docname, reader, callback) {
     var graph = new Data.Graph(seed).connect('couch', {url: config.couchdb_url});
     
     if (err) return callback(err);
-    if (res.rows.length == 0) return callback({error: "not_found"});
+    if (res.rows.length == 0) return callback("not_found");
     
     var node = res.rows[0].value;
     
-    function load(authorized) {
+    function load(mode) {
       var id = res.rows[0].value._id;
 
       var qry = {
@@ -144,16 +144,16 @@ Document.get = function(username, docname, reader, callback) {
               if (err) return callback(err);
               doc.subscribed = graph.find({"user": "/user/"+reader, "document": doc._id}).length > 0 ? true : false;
               doc.subscribers = nodes.length;
-              callback(null, result, doc._id, authorized);
+              callback(null, result, doc._id, mode);
             });
           });
         });
       });
     }
     
-    isAuthorized(node, reader, function(err) {
-      if (err && !node.published_on) return callback({error: "not_authorized"});
-      load(!err);
+    isAuthorized(node, reader, function(err, mode) {
+      if (err && !node.published_on) return callback("not_authorized");
+      load(mode);
     });
   });
 };

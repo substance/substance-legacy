@@ -1229,8 +1229,11 @@ div.browser-not-supported a:hover {
 
 #document_settings {
   background: #eaebe5;
-  font-family: Helvetica, Arial;
+  font:14px/26px "Helvetica Neue", Arial, Helvetica, Geneva, sans-serif; color:#111;
   padding: 20px;
+  color: #444;
+  
+  -webkit-font-smoothing: antialiased;
   
   position: absolute;
   top: 0px;
@@ -1241,6 +1244,51 @@ div.browser-not-supported a:hover {
   -webkit-box-shadow: 0px 1px 4px rgba(0,0,0,0.35), inset 0px 0px 1px rgba(255,255,255,0.15);
   -moz-box-shadow:    0px 1px 4px rgba(0,0,0,0.35), inset 0px 0px 1px rgba(255,255,255,0.15);
   box-shadow:         0px 1px 4px rgba(0,0,0,0.35), inset 0px 0px 1px rgba(255,255,255,0.15);
+}
+
+#document_settings .settings-title {
+  font-size: 30px;
+}
+
+#document_settings .remove-collaborator {
+  width: 30px;
+  height: 30px;
+  display: block;
+  opacity: 0.6;
+  background: url('/images/icons/black/x_alt_16x16.png') center center no-repeat;
+}
+
+#document_settings .remove-collaborator:hover {
+  opacity: 1;
+}
+
+#document_settings .remove-collaborator span {
+  visibility: hidden;
+}
+
+#document_settings .collaborators span {
+  padding: 4px;
+  font-size: 11px;
+  text-transform: uppercase;
+  background: #555;
+  color: white;
+  -webkit-border-radius: 3px;
+  -moz-border-radius:    3px;
+  border-radius:         3px;
+}
+
+#document_settings .collaborators span.confirmed {
+  background: #A2C44E;
+}
+
+#document_settings a {
+  border: none;
+}
+
+#document_settings select {
+  height: 27px;
+  line-height: 27px;
+  border: 1px solid #CCC;
 }
 
 #document_settings h6 {
@@ -1270,8 +1318,6 @@ div.browser-not-supported a:hover {
 #confirm_collaboration {
   margin: 0 180px 80px 100px;
 }
-
-
 
 #confirm_collaboration .option {
   padding: 30px;
