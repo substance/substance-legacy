@@ -522,7 +522,7 @@ var Document = Backbone.View.extend({
         }
       },
       error: function(err) {
-        printError();
+        printError(JSON.parse(err.responseText).error);
       }
     });
     // }

@@ -153,7 +153,6 @@ function getNotifications(username, callback) {
   });
 }
 
-
 var graph = new Data.Graph(seed);
 graph.connect('couch', {
   url: config.couchdb_url,
@@ -536,7 +535,7 @@ app.get('/avatar/:username/:size', function(req, res) {
 // Returns the most recent version of the requested doc
 app.get('/documents/:username/:name', function(req, res) {
   Document.get(req.params.username, req.params.name, req.session ? req.session.username : null, function(err, graph, id, authorized) {
-    if (err) return res.send({status: "error", error: err});
+    if (err) return res.send({status: "error", error: err}, 404);
     res.send({status: "ok", graph: graph, id: id, authorized: authorized});
   });
 });
