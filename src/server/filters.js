@@ -14,7 +14,6 @@ function isAuthorized(node, username, callback) {
   });
 }
 
-
 // Middleware for graph read and write operations
 // -----------
 
@@ -27,9 +26,13 @@ Filters.ensureAuthorized = function() {
       
       // Secure unpublished documents
       if (_.include(node.type, "/type/document") && !node.published_on) {
-        // return isAuthorized(node, session.username) ? next(node) : next(null);
-        next(node);
+        isAuthorized(document, session.username, function(err) {
+          err ? next(null) : next(node);
+        });
       } else if (_.include(node.type, "/type/collaborator")) {
+        delete node.tan;
+        return next(node);
+      } else if (_.include(node.type, "/type/user")) {
         delete node.tan;
         return next(node);
       } else {

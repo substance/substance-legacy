@@ -55,6 +55,8 @@
       "/client/views/document.js",
       "/client/views/document_settings.js",
       "/client/views/confirm_collaboration.js",
+      "/client/views/recover_password.js",
+      "/client/views/reset_password.js",
       "/client/views/attributes.js",
       "/client/commands.js",
       "/client/views/document_browser.js",

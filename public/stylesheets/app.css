@@ -1365,7 +1365,7 @@ div.browser-not-supported a:hover {
   padding: 20px 0 30px 0;
 }
 
-#confirm_collaboration .title {
+#confirm_collaboration .title, #recover_password .title, #reset_password .title {
   font-family: 'Palatino Linotype', 'Book Antiqua', Palatino, FreeSerif, serif;
   font-size: 40px;
   line-height: 100px;
@@ -1385,6 +1385,25 @@ div.browser-not-supported a:hover {
   display: block;
 }
 
+
+/* Recover Password
+-------------------------------------------------------------------------------*/
+
+#recover_password {
+  margin: 0 180px 80px 100px;
+}
+
+#recover_password .success {
+  display: none;
+}
+
+
+/* Reset Password
+-------------------------------------------------------------------------------*/
+
+#reset_password {
+  margin: 0 180px 80px 100px;
+}
 
 /* body > #container > #document_wrapper > #document_menu
 -------------------------------------------------------------------------------*/

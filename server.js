@@ -291,10 +291,14 @@ app.post('/login', function(req, res) {
 });
 
 
+// Logout
+
 app.post('/logout', function(req, res) {  
   req.session = {};
   res.send({status: "ok"});
 });
+
+// Register user
 
 app.post('/register', function(req, res) {
   var username = req.body.username,
@@ -330,7 +334,6 @@ app.post('/register', function(req, res) {
             username: username.toLowerCase(),
             seed: seed
           };
-          
           res.send({
             status: "ok",
             username: username.toLowerCase(),
@@ -347,10 +350,8 @@ app.post('/register', function(req, res) {
   });
 });
 
-
 app.post('/updateuser', function(req, res) {
   var username = req.body.username;
-  
   var graph = new Data.Graph(seed).connect('couch', {url: config.couchdb_url});
   graph.fetch({type: '/type/user'}, function(err) {
     var user = graph.get('/user/'+username);
@@ -371,7 +372,6 @@ app.post('/updateuser', function(req, res) {
         password: encryptPassword(req.body.password)
       });
     }
-
     if (user.validate()) {
       graph.sync(function(err) {
         if (!err) {
@@ -393,6 +393,82 @@ app.post('/updateuser', function(req, res) {
   });
 });
 
+// Reset password
+
+app.post('/reset_password', function(req, res) {
+  var username = req.body.username,
+      tan = req.body.tan,
+      password = req.body.password;
+  
+  var graph = new Data.Graph(seed).connect('couch', {url: config.couchdb_url});
+  graph.fetch({_id: "/user/"+username}, function(err) {
+    var user = graph.get("/user/"+username);
+    
+    if (user.get('tan') !== tan) return res.send({"status": "error", "message": "The Password reset token has expired."});
+    if (password.length < 3) return res.send({"status": "error", "message": "Password is invalid. Be aware that you need 3 characters minimum."});
+    if (user) {
+      user.set({
+        password: encryptPassword(password),
+        tan: null // reset tan
+      });
+      
+      // Auto login
+      var seed = {};
+      seed[user._id] = user.toJSON();
+      delete seed[user._id].password;
+      req.session = {
+        username: username.toLowerCase(),
+        seed: seed
+      };
+      graph.sync(function(err) {
+        if (err) return res.send({"status": "error", "message": "Unknown error."});
+        res.send({"status": "ok"});
+      });
+    } else {
+      res.send({"status": "error"});
+    }
+  });
+});
+
+// Recover lost password
+
+app.post('/recover_password', function(req, res) {
+  var username = req.body.username;
+  
+  var graph = new Data.Graph(seed).connect('couch', {url: config.couchdb_url});
+  graph.fetch({_id: "/user/"+username}, function(err) {
+    var user = graph.get("/user/"+username);
+    if (user) {
+      user.set({
+        tan: Data.uuid()
+      });
+      
+      graph.sync(function(err) {
+        // Message object
+        var message = {
+          sender: 'Substance <info@substance.io>',
+          to: user.get('email'),
+          subject: 'Reset your Substance password',
+          body: 'In order to reset your password on Substance, click on the link below (or copy and paste the URL into your browser): \
+                '+config.server_url+"/reset/"+user.get('username')+"/"+user.get('tan'),
+          debug: true
+        };
+
+        if (err) return res.send({"status": "error"}, 404);
+        
+        // Notify
+        var mail = nodemailer.send_mail(message, function(err) {
+          if (err) return res.send({"status": "error"}, 404);
+          res.send({"status": "ok"});
+        });
+      });
+    } else {
+      res.send({"status": "error"}, 404);
+    }
+  });
+});
+
+// Confirm collaboration on a document
 
 app.post('/confirm_collaborator', function(req, res) {
   var tan = req.body.tan,

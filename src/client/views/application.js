@@ -8,12 +8,15 @@ var Router = Backbone.Router.extend({
     this.route(":username/:docname/:node/:comment", "comment", this.loadDocument);
     this.route(":username/:docname/:node", "node", this.loadDocument);
     this.route(":username/:docname", "document", this.loadDocument);
+    
+    this.route("reset/:username/:tan", "reset", this.resetPassword);
     this.route("subscribed", "subscribed", app.subscribedDocs);
     this.route("recent", "recent", app.recentDocs);
-    
-    this.route("collaborate/:invitation", "collaborate", this.collaborate);
+    this.route("collaborate/:tan", "collaborate", this.collaborate);
     this.route("search/:searchstr", "search", app.searchDocs);
     this.route("register", "register", app.toggleSignup);
+    this.route("recover", "recover", this.recoverPassword);
+    
     this.route("", "startpage", app.toggleStartpage);
   },
   
@@ -21,6 +24,30 @@ var Router = Backbone.Router.extend({
   collaborate: function(tan) {
     $('#content_wrapper').attr('url', "collaborate/"+tan);
     var view = new ConfirmCollaboration(tan);
+    
+    app.toggleView('content');
+    $('#header').hide();
+    $('#tabs').hide();
+    $('#footer').hide();
+    
+    return false;
+  },
+    
+  recoverPassword: function() {
+    $('#content_wrapper').attr('url', "recover");
+    var view = new RecoverPassword();
+    
+    app.toggleView('content');
+    $('#header').hide();
+    $('#tabs').hide();
+    $('#footer').hide();
+    
+    return false;
+  },
+  
+  resetPassword: function(username, tan) {
+    $('#content_wrapper').attr('url', "reset/"+username+"/"+tan);
+    var view = new ResetPassword(username, tan);
     
     app.toggleView('content');
     $('#header').hide();
