@@ -448,8 +448,7 @@ app.post('/recover_password', function(req, res) {
           sender: 'Substance <info@substance.io>',
           to: user.get('email'),
           subject: 'Reset your Substance password',
-          body: 'In order to reset your password on Substance, click on the link below: \
-                '+config.server_url+"/reset/"+user.get('username')+"/"+user.get('tan'),
+          body: 'In order to reset your password on Substance, click on the link below:\n'+config.server_url+"/reset/"+user.get('username')+"/"+user.get('tan'),
           debug: true
         };
 
