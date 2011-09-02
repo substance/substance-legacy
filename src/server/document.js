@@ -93,7 +93,16 @@ Document.find = function(searchstr, type, username, callback) {
       if (matched && (row.value.published_on || row.value.creator === '/user/'+username)
                   && documents.length < 200) documents.push(row.value._id);
     });
-    fetchDocuments(documents, callback);
+    fetchDocuments(documents, function(err, nodes, count) {
+      if (type === "user" && !nodes["/user/"+searchstr]) {
+        db.get("/user/"+searchstr, function(err, node) {
+          if (!err) nodes[node._id] = node;
+          callback(null, nodes, count);
+        });
+      } else {
+        callback(err, nodes, count);
+      }
+    });
   });
 };
 
