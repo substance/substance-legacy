@@ -239,7 +239,6 @@ app.get('/documents/search/:type/:search_str', function(req, res) {
     Document.subscribed(username, function(err, graph, count) {
       res.send(JSON.stringify({graph: graph, count: count}));
     });
-    
   } else {
     Document.find(req.params.search_str, req.params.type, username, function(err, graph, count) {
       res.send(JSON.stringify({graph: graph, count: count}));
@@ -449,7 +448,7 @@ app.post('/recover_password', function(req, res) {
           sender: 'Substance <info@substance.io>',
           to: user.get('email'),
           subject: 'Reset your Substance password',
-          body: 'In order to reset your password on Substance, click on the link below (or copy and paste the URL into your browser): \
+          body: 'In order to reset your password on Substance, click on the link below: \
                 '+config.server_url+"/reset/"+user.get('username')+"/"+user.get('tan'),
           debug: true
         };
