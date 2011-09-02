@@ -139,7 +139,7 @@ var notifier = new Backbone.Notifier();
 
 // Listen for messages 
 notifier.bind('message:arrived', function(message) {
-  var $message = $('<p class="notification"><span>info:</span>'+message.message+'</p>');
+  var $message = $('<p class="notification"><span>'+message.type+':</span>'+message.message+'</p>');
   $('#notifications .wrapper').append($message);
   
   if (message.message.indexOf('...') !== -1) {
@@ -1247,6 +1247,7 @@ var Document = Backbone.View.extend({
     'click a.subscribe-document': 'subscribeDocument',
     'click a.unsubscribe-document': 'unsubscribeDocument',
     'click a.export-document': 'toggleExport',
+    'click a.toggle-settings': 'toggleSettings',
     
     // Actions
     'click a.add_child': 'addChild',
@@ -1257,8 +1258,21 @@ var Document = Backbone.View.extend({
   loadedDocuments: {},
   
   toggleExport: function() {
+    $('#document_settings').hide();
+    $('.view-action-icon.settings').removeClass('active');
     $('#document_export').slideToggle();
     $('.view-action-icon.export').toggleClass('active');
+    return false;
+  },
+  
+  toggleSettings: function() {
+    $('#document_export').hide();
+    $('.view-action-icon.export').removeClass('active');
+    
+    this.settings.load();
+    
+    $('#document_settings').slideToggle();
+    $('.view-action-icon.settings').toggleClass('active');
     return false;
   },
   
@@ -1402,6 +1416,7 @@ var Document = Backbone.View.extend({
   initialize: function() {
     var that = this;
     this.attributes = new Attributes({model: this.model});
+    this.settings = new DocumentSettings();
     
     this.app = this.options.app;
     this.mode = 'show';
@@ -1519,7 +1534,12 @@ var Document = Backbone.View.extend({
     var parent = graph.get($node.attr('parent'));
     var level = parseInt($node.attr('level'));
     
-    $('#'+node.html_id).replaceWith(new HTMLRenderer(node, parent, level).render());
+    if (_.include(node.types().keys(), '/type/document')) {
+      $('#document').html(new HTMLRenderer(node, parent, level).render());
+    } else {
+      $('#'+node.html_id).replaceWith(new HTMLRenderer(node, parent, level).render());
+    }
+    
     if (this.mode === 'edit') {
       renderControls(this.model, null, null, null, 0);
     } else {
@@ -1628,7 +1648,7 @@ var Document = Backbone.View.extend({
     
     // Update browser graph
     if (app.browser && app.browser.query && app.browser.query.type === "user" && app.browser.query.value === app.username) {
-      app.browser.graph.set('objects', this.model._id, this.model);
+      app.browser.graph.set('nodes', this.model._id, this.model);
     }
     
     // Move to the actual document
@@ -1644,16 +1664,16 @@ var Document = Backbone.View.extend({
   
   loadDocument: function(username, docname, nodeid, commentid, mode) {
     var that = this;
-    that.mode = mode || (username === this.app.username ? 'edit' : 'show');
-    
-    if (that.mode === 'edit' && !head.browser.webkit) {
-      alert("You need to use a Webkit-based browser (Google Chrome, Safari) in order to write documents. In future, other browers will be supported too.");
-      that.mode = 'show';
-    }
     
     $('#tabs').show();
     function init(id) {
       that.model = graph.get(id);
+      
+      if (that.mode === 'edit' && !head.browser.webkit) {
+        alert("You need to use a Webkit-based browser (Google Chrome, Safari) in order to write documents. In future, other browers will be supported too.");
+        that.mode = 'show';
+      }
+      
       if (that.model) {
         that.render();
         that.init();
@@ -1665,8 +1685,7 @@ var Document = Backbone.View.extend({
         that.loadedDocuments[username+"/"+docname] = id;
         
         // Update browser graph reference
-        app.browser.graph.set('objects', id, that.model);
-        
+        app.browser.graph.set('nodes', id, that.model);
         app.toggleView('document');
         
         // Scroll to target node
@@ -1699,25 +1718,34 @@ var Document = Backbone.View.extend({
     //   // TODO: check if there are changes from a realtime session
     //   init(id);
     // } else {
+      
+    function printError(error) {
+      if (error === "not_authorized") {
+        $('#document_tab').html('&nbsp;&nbsp;&nbsp; Not Authorized');
+        $('#document_wrapper').html("<div class=\"notification error\">You are not authorized to access this document.</div>");
+      } else {
+        $('#document_tab').html('&nbsp;&nbsp;&nbsp; Document not found');
+        $('#document_wrapper').html("<div class=\"notification error\">The requested document couldn't be found.</div>");
+      }
+      app.toggleView('document');
+    }
+      
     $('#document_tab').html('&nbsp;&nbsp;&nbsp;Loading...');
     $.ajax({
       type: "GET",
       url: "/documents/"+username+"/"+docname,
       dataType: "json",
       success: function(res) {
+        that.mode = mode || (res.authorized ? "edit" : "show");
         if (res.status === 'error') {
-          $('#document_tab').html('&nbsp;&nbsp;&nbsp; Document not found');
-          $('#document_wrapper').html("<div class=\"notification error\">The requested document couldn't be found.</div>");
-          app.toggleView('document');
+          printError(res.error)
         } else {
           graph.merge(res.graph);
           init(res.id);
         }
       },
       error: function(err) {
-        $('#document_tab').html('&nbsp;&nbsp;&nbsp; Document not found.');
-        $('#document_wrapper').html("<div class=\"notification error\">The requested document couldn't be found.</div>");
-        app.toggleView('document');
+        printError(JSON.parse(err.responseText).error);
       }
     });
     // }
@@ -2092,6 +2120,278 @@ var Document = Backbone.View.extend({
     return false;
   }
 });
+var DocumentSettings = Backbone.View.extend({
+  events: {
+    'submit form': 'invite',
+    'change select.change-mode': 'changeMode',
+    'click a.remove-collaborator': 'removeCollaborator'
+  },
+  
+  changeMode: function(e) {
+    var collaboratorId = $(e.currentTarget).attr('collaborator');
+    var mode = $(e.currentTarget).val();
+    
+    graph.get(collaboratorId).set({
+      mode: mode
+    });
+    // trigger immediate sync
+    graph.sync();
+    
+    return false;
+  },
+  
+  removeCollaborator: function(e) {
+    var collaboratorId = $(e.currentTarget).attr('collaborator');
+    graph.del(collaboratorId);
+    // trigger immediate sync
+    graph.sync();
+    this.collaborators.del(collaboratorId);
+    this.render();
+    return false;
+  },
+  
+  invite: function() {
+    var that = this;
+    $.ajax({
+      type: "POST",
+      url: "/invite",
+      data: {
+        email: $('#collaborator_email').val(),
+        document: app.document.model._id,
+        mode: $('#collaborator_mode').val()
+      },
+      dataType: "json",
+      success: function(res) {
+        if (res.error) return alert(res.error);
+        that.load();
+      },
+      error: function(err) {
+        alert("Unknown error occurred");
+      }
+    });
+    
+    return false;
+  },
+  
+  load: function() {
+    var that = this;
+    graph.fetch({"type": "/type/collaborator", "document": app.document.model._id}, function(err, nodes) {
+      that.collaborators = nodes;
+      that.render();
+    });
+  },
+  
+  initialize: function() {
+    this.el = '#document_settings';
+  },
+  
+  render: function() {
+    $(this.el).html(_.tpl('document_settings', {
+      collaborators: this.collaborators,
+      document: app.document.model
+    }));
+    this.delegateEvents();
+  }
+});
+
+var ConfirmCollaboration = Backbone.View.extend({
+  
+  events: {
+    "click a.option-tab": "selectOption",
+    "submit #login-form": "login",
+    "submit #signup-form": "register",
+    "submit #confirm-form": "doConfirm"
+  },
+  
+  initialize: function(tan) {
+    var that = this;
+    this.el = '#content_wrapper';
+    this.tan = tan;
+    
+    graph.fetch({"type": "/type/collaborator", "tan": this.tan, "document": {}}, function(err, nodes) {
+      that.document = nodes.select(function(n) {
+        return n.types().get('/type/document');
+      }).first();
+      that.collaborator = nodes.select(function(n) {
+        return n.types().get('/type/collaborator');
+      }).first();
+      that.render();
+    });
+  },
+  
+  selectOption: function(e) {
+    var option = $(e.currentTarget).attr('option');
+    this.$('.option').removeClass('active');
+    this.$('.option-tab').removeClass('active');
+    this.$('.option.'+option).addClass('active');
+    this.$('.option-tab.'+option).addClass('active');
+    return false;
+  },
+  
+  doConfirm: function() {
+    var that = this;
+    this.confirm(function(err) {
+      if (err) return alert('Collaboration could not be confirmed. '+err.error);
+      
+      window.location.href = "/"+that.document.get('creator')._id.split('/')[2]+"/"+that.document.get('name');
+      // router.loadDocument(that.document.get('creator')._id.split('/')[2], that.document.get('name'));
+    });
+    return false;
+  },
+
+  confirm: function(callback) {
+    $.ajax({
+      type: "POST",
+      url: "/confirm_collaborator",
+      data: {
+        tan: this.tan,
+        user: app.username
+      },
+      dataType: "json",
+      success: function(res) {
+        if (res.error) return callback({error: res.error});
+        callback(null);
+      },
+      error: function(err) {
+        callback({error: "Error occurred"});
+      }
+    });
+  },
+  
+  login: function(e) {
+    var that = this;
+    app.authenticate(this.$('.username').val(), this.$('.password').val(), function(err) {
+      if (err) return notifier.notify(Notifications.AUTHENTICATION_FAILED);
+      // that.trigger('authenticated');
+      // app.render();
+      that.confirm(function(err) {
+        if (err) return alert('Collaboration could not be confirmed. '+err.error);
+        window.location.href = "/"+that.document.get('creator')._id.split('/')[2]+"/"+that.document.get('name');
+        // router.loadDocument(that.document.get('creator')._id.split('/')[2], that.document.get('name'));
+      });
+    });
+    return false;
+  },
+  
+  register: function() {
+    var that = this;
+    $('.page-content .input-message').empty();
+    $('#registration_error_message').empty();
+    $('.page-content input').removeClass('error');
+    
+    app.createUser($('#signup_user').val(), $('#signup_name').val(), $('#signup_email').val(), $('#signup_password').val(), function(err, res) {
+      if (err) {
+        if (res.field === "username") {
+          $('#signup_user').addClass('error');
+          $('#signup_user_message').html(res.message);
+        } else {
+          $('#registration_error_message').html(res.message);
+        }
+      } else {
+        graph.merge(res.seed);
+        notifier.notify(Notifications.AUTHENTICATED);
+        app.username = res.username;          
+        that.trigger('authenticated');
+        app.render();
+        
+        that.confirm(function(err) {
+          if (err) return alert('Collaboration could not be confirmed. '+err.error);
+          // router.loadDocument(that.document.get('creator')._id.split('/')[2], that.document.get('name'));
+          window.location.href = "/"+that.document.get('creator')._id.split('/')[2]+"/"+that.document.get('name');
+        });
+      }
+    });
+    return false;
+  },
+  
+  render: function() {    
+    $(this.el).html(_.tpl('confirm_collaboration', {
+      collaborator: this.collaborator,
+      document: this.document
+    }));
+    this.delegateEvents();
+  }
+});
+
+var RecoverPassword = Backbone.View.extend({
+  events: {
+    'submit form': 'requestReset'
+  },
+  
+  requestReset: function() {
+    var that = this;
+    $.ajax({
+      type: "POST",
+      url: "/recover_password",
+      data: {
+        username: $('#username').val()
+      },
+      dataType: "json",
+      success: function(res) {
+        if (res.error) return $('#registration_error_message').html('Username does not exist.');
+        $('.recover').hide();
+        $('.success').show();
+      },
+      error: function(err) {
+        $('#registration_error_message').html('Username does not exist.');
+      }
+    });
+    return false;
+  },
+  
+  initialize: function() {
+    this.el = '#content_wrapper';
+    this.render();
+  },
+  
+  render: function() {
+    $(this.el).html(_.tpl('recover_password', {}));
+    this.delegateEvents();
+  }
+});
+var ResetPassword = Backbone.View.extend({
+  events: {
+    'submit form': 'resetPassword'
+  },
+  
+  resetPassword: function() {
+    if ($('#password').val() !== $('#password_confirmation').val()) {
+      return alert('Password and confirmation do not match!');
+    }
+    
+    var that = this;
+    $.ajax({
+      type: "POST",
+      url: "/reset_password",
+      data: {
+        username: that.username,
+        tan: that.tan,
+        password: $('#password').val()
+      },
+      dataType: "json",
+      success: function(res) {
+        if (res.status === "error") return $('#registration_error_message').html(res.message);
+        window.location.href = "/"+that.username;
+      },
+      error: function(err) {
+        $('#registration_error_message').html('Unknown error.');
+      }
+    });
+    return false;
+  },
+  
+  initialize: function(username, tan) {
+    this.username = username;
+    this.tan = tan;
+    this.el = '#content_wrapper';
+    this.render();
+  },
+  
+  render: function() {
+    $(this.el).html(_.tpl('reset_password', {}));
+    this.delegateEvents();
+  }
+});
 var Attributes = Backbone.View.extend({
   
   initialize: function() {
@@ -2341,7 +2641,6 @@ var DocumentBrowser = Backbone.View.extend({
     var that = this;
     this.query = query;
     
-    
     $('#browser_tab').show().html('&nbsp;&nbsp;&nbsp;Loading documents...');
     $('#browser_wrapper').html('');
     $.ajax({
@@ -2351,8 +2650,6 @@ var DocumentBrowser = Backbone.View.extend({
       success: function(res) {
         that.graph = new Data.Graph(seed);
         that.graph.merge(res.graph);
-        
-        
         that.facets = new Facets({browser: that});
         that.loaded = true;
         that.trigger('loaded');
@@ -2641,9 +2938,9 @@ var BrowserTab = Backbone.View.extend({
              success: function(res) {               
                // Render results
                that.$('.results').html('');
-               that.$('.results').append($('<a href="#search/'+encodeURI($('#search').val())+'" class="result-item documents">'+res.document_count+' Documents / '+_.keys(res.users).length+' Users</a>'));
+               that.$('.results').append($('<a href="/search/'+encodeURI($('#search').val())+'" class="result-item documents">'+res.document_count+' Documents / '+_.keys(res.users).length+' Users</a>'));
                _.each(res.users, function(user, key) {
-                 that.$('.results').append($('<a href="#'+user.username+'" class="result-item user"><div class="username">'+user.username+'</div><div class="full-name">'+(user.name ? user.name : '')+'</div><div class="count">User</div></a>'));
+                 that.$('.results').append($('<a href="/'+user.username+'" class="result-item user"><div class="username">'+user.username+'</div><div class="full-name">'+(user.name ? user.name : '')+'</div><div class="count">User</div></a>'));
                });
                $('#browser_tab .results').show();
              },
@@ -2768,10 +3065,53 @@ var Router = Backbone.Router.extend({
     this.route(":username/:docname/:node/:comment", "comment", this.loadDocument);
     this.route(":username/:docname/:node", "node", this.loadDocument);
     this.route(":username/:docname", "document", this.loadDocument);
+    
+    this.route("reset/:username/:tan", "reset", this.resetPassword);
     this.route("subscribed", "subscribed", app.subscribedDocs);
     this.route("recent", "recent", app.recentDocs);
+    this.route("collaborate/:tan", "collaborate", this.collaborate);
     this.route("search/:searchstr", "search", app.searchDocs);
+    this.route("register", "register", app.toggleSignup);
+    this.route("recover", "recover", this.recoverPassword);
+    
     this.route("", "startpage", app.toggleStartpage);
+  },
+  
+  // Confirm invitation
+  collaborate: function(tan) {
+    $('#content_wrapper').attr('url', "collaborate/"+tan);
+    var view = new ConfirmCollaboration(tan);
+    
+    app.toggleView('content');
+    $('#header').hide();
+    $('#tabs').hide();
+    $('#footer').hide();
+    
+    return false;
+  },
+    
+  recoverPassword: function() {
+    $('#content_wrapper').attr('url', "recover");
+    var view = new RecoverPassword();
+    
+    app.toggleView('content');
+    $('#header').hide();
+    $('#tabs').hide();
+    $('#footer').hide();
+    
+    return false;
+  },
+  
+  resetPassword: function(username, tan) {
+    $('#content_wrapper').attr('url', "reset/"+username+"/"+tan);
+    var view = new ResetPassword(username, tan);
+    
+    app.toggleView('content');
+    $('#header').hide();
+    $('#tabs').hide();
+    $('#footer').hide();
+    
+    return false;
   },
   
   loadDocument: function(username, docname, node, comment) {
@@ -2861,7 +3201,11 @@ var Application = Backbone.View.extend({
   },
   
   login: function(e) {
-    this.authenticate();
+    var that = this;
+    this.authenticate($('#login-user').val(), $('#login-password').val(), function(err) {
+      if (err) return notifier.notify(Notifications.AUTHENTICATION_FAILED);
+      that.trigger('authenticated');
+    });
     return false;
   },
   
@@ -2872,7 +3216,6 @@ var Application = Backbone.View.extend({
     $('#document_wrapper').attr('url', url);
     return false;
   },
-  
   
   // Actions
   // ---------------
@@ -3021,6 +3364,7 @@ var Application = Backbone.View.extend({
   },
   
   toggleSignup: function() {
+    $('#content_wrapper').attr('url', "register");
     app.browser.browserTab.render();
     $('#content_wrapper').html(_.tpl('signup'));
     app.toggleView('content');
@@ -3037,6 +3381,11 @@ var Application = Backbone.View.extend({
     if (view === 'browser' && !this.browser.loaded) return;
     $('.view').hide();
     $('#'+view+'_wrapper').show();
+    
+    // Show stuff - inverting of this.collaborate();
+    $('#header').show();
+    $('#tabs').show();
+    $('#footer').show();
 
     // Wait until url update got injected
     setTimeout(function() {
@@ -3056,7 +3405,7 @@ var Application = Backbone.View.extend({
           res.status === 'error' ? callback(true) : callback(false);
         },
         error: function(err) {
-          callback(false);
+          callback(true); // Not found. Fine.
         }
       });
       return false;
@@ -3128,10 +3477,11 @@ var Application = Backbone.View.extend({
       url: "/logout",
       dataType: "json",
       success: function(res) {
-        that.username = null;
-        that.authenticated = false;
-        that.render();
-        $('.new-document').hide();
+        // that.username = null;
+        // that.authenticated = false;
+        // that.render();
+        // $('.new-document').hide();
+        window.location.reload();
       }
     });
     return false;
@@ -3171,12 +3521,6 @@ var Application = Backbone.View.extend({
     this.header = new Header({el: '#header', app: this});
     this.activeUsers = [];
     
-    // Try to establish a server connection
-    // this.connect();
-    // this.bind('connected', function() {
-    //   notifier.notify(Notifications.CONNECTED);
-    // });
-    
     // Reset when clicking on the body
     $('body').click(function(e) {
       app.document.reset(true);
@@ -3185,7 +3529,7 @@ var Application = Backbone.View.extend({
     
     // Cookie-based auto-authentication
     if (session.username) {
-      graph.merge(session.seed);
+      graph.merge(session.seed);      
       this.authenticated = true;
       this.username = session.username;
       this.trigger('authenticated');
@@ -3196,12 +3540,15 @@ var Application = Backbone.View.extend({
     }
     
     this.bind('authenticated', function() {
-      that.authenticated = true;
-      // Re-render browser
-      $('#tabs').show();
-      $('.new-document').show();
-      that.render();
-      that.browser.load(that.query());
+      // that.authenticated = true;
+      // // Re-render browser
+      // $('#tabs').show();
+      // $('.new-document').show();
+      // that.render();
+      // that.browser.load(that.query());
+      
+      // Reload current page
+      window.location.reload();
     });
     
     setInterval(function() {
@@ -3209,53 +3556,6 @@ var Application = Backbone.View.extend({
     }, 30000);
     
     that.render();
-  },
-  
-  connect: function() {
-    var that = this;
-    
-    DNode({
-      Session: {
-        updateStatus: function(status) {
-          that.document.status = status;
-          that.document.trigger('status:changed');
-        },
-        
-        updateSystemStatus: function(status) {
-          that.updateSystemStatus(status);
-        },
-        
-        updateNode: function(key, node) {
-          app.document.updateNode(key, node);
-        },
-        
-        moveNode: function(sourceKey, targetKey, parentKey, destination) {
-          throw 'Not implemented';
-        },
-        
-        insertNode: function(insertionType, node, targetKey, parentKey, destination) {
-          if (insertionType === 'sibling') {
-            app.document.addSibling(node, targetKey, parentKey, destination);
-          } else { // inserionType === 'child'
-            app.document.addChild(node, targetKey, parentKey, destination);
-          }
-        },
-        
-        removeNode: function(key, parentKey) {
-          app.document.removeNode(key, parentKey);
-        },
-        
-        // The server asks for the current (real-time) version of the document
-        getDocument: function(callback) {
-          var result = that.getFullDocument(app.document.model._id);
-          callback(result);
-        }
-      }
-    }).connect(function (remoteHandle) {
-      // For later use store a reference to the remote object
-      remote = remoteHandle;      
-      that.trigger('connected');
-    });
   },
   
   getFullDocument: function(id) {    
@@ -3279,28 +3579,27 @@ var Application = Backbone.View.extend({
     return result;
   },
   
-  authenticate: function() {
+  authenticate: function(username, password, callback) {
     var that = this;
-    
     $.ajax({
       type: "POST",
       url: "/login",
       data: {
-        username: $('#login-user').val(),
-        password: $('#login-password').val()
+        username: username,
+        password: password
       },
       dataType: "json",
       success: function(res) {
         if (res.status === 'error') {
-          return notifier.notify(Notifications.AUTHENTICATION_FAILED);
+          callback({error: "authentication_failed"});
         } else {
           graph.merge(res.seed);
           that.username = res.username;
-          that.trigger('authenticated');
+          callback(null);
         }
       },
       error: function(err) {
-        notifier.notify(Notifications.AUTHENTICATION_FAILED);
+        callback({error: "authentication_failed"});
       }
     });
     return false;
@@ -3313,36 +3612,44 @@ var Application = Backbone.View.extend({
     $('#registration_error_message').empty();
     $('.page-content input').removeClass('error');
     
+    this.createUser($('#signup_user').val(), $('#signup_name').val(), $('#signup_email').val(), $('#signup_password').val(), function(err, res) {
+      if (err) {
+        if (res.field === "username") {
+          $('#signup_user').addClass('error');
+          $('#signup_user_message').html(res.message);
+        } else {
+          $('#registration_error_message').html(res.message);
+        }
+      } else {
+        graph.merge(res.seed);
+        notifier.notify(Notifications.AUTHENTICATED);
+        that.username = res.username;          
+        that.trigger('authenticated');
+        router.navigate('', true);
+      }
+    });
+    return false;
+  },
+  
+  createUser: function(username, name, email, password, callback) {
+    var that = this;
     $.ajax({
       type: "POST",
       url: "/register",
       data: {
-        username: $('#signup_user').val(),
-        name: $('#signup_name').val(),
-        email: $('#signup_email').val(),
-        password: $('#signup_password').val()
+        username: username,
+        name: name,
+        email: email,
+        password: password
       },
       dataType: "json",
       success: function(res) {
-        if (res.status === 'error') {
-          if (res.field === "username") {
-            $('#signup_user').addClass('error');
-            $('#signup_user_message').html(res.message);
-          } else {
-            $('#registration_error_message').html(res.message);
-          }
-        } else {
-          graph.merge(res.seed);
-          notifier.notify(Notifications.AUTHENTICATED);
-          that.username = res.username;          
-          that.trigger('authenticated');
-        }
+        res.status === 'error' ? callback('error', res) : callback(null, res);
       },
       error: function(err) {
-        $('#registration_error_message').html('Unknown error.');
+        alert("Unknown error. Couldn't create user.")
       }
     });
-    
     return false;
   },
   
@@ -3360,7 +3667,8 @@ var remote,                              // Remote handle for server-side method
     app,                                 // The Application
     router,                              // The Router
     editor,                              // A global instance of the Proper Richtext editor
-    graph = new Data.Graph(seed).connect('ajax'); // The database
+    graph = new Data.Graph(seed, {dirty: false, syncMode: 'push'}).connect('ajax'); // The database
+
 
 (function() {
   $(function() {    
@@ -3399,7 +3707,6 @@ var remote,                              // Remote handle for server-side method
         if (tocOffset && _.scrollTop() < tocOffset.top) {
           $('#toc_wrapper').css('top', _.scrollTop()-$('#document').offset().top+"px");
         }
-        
       } else {
         $('#document .board').css('left', '');
         $('#toc_wrapper').css('top', 0);
@@ -3411,7 +3718,7 @@ var remote,                              // Remote handle for server-side method
     
     $(window).bind('scroll', positionBoard);
     $(window).bind('resize', positionBoard);
-
+    
     // Start the engines
     app = new Application({el: $('#container'), session: session});
     
@@ -3424,6 +3731,7 @@ var remote,                              // Remote handle for server-side method
     // Start responding to routes
     Backbone.history.start({pushState: true});
     
+
     // Reset document when window gets out of focus
     // document.body.onblur = function() {  if (app.document) app.document.reset(); }
     

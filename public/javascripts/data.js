@@ -20,12 +20,11 @@
   }
   
   // Current version of the library. Keep in sync with `package.json`.
-  Data.VERSION = '0.4.1';
+  Data.VERSION = '0.5.0';
 
   // Require Underscore, if we're on the server, and it's not already present.
   var _ = this._;
   if (!_ && (typeof require !== 'undefined')) _ = require("underscore");
-  
   
   // Top Level API
   // -------
@@ -317,7 +316,7 @@
     
     // Delete entry at given *key*
     del: function (key) {
-      if (this.data[key]) {
+      if (this.data.hasOwnProperty(key)) {
         var l = this.length;
         var index = this.index(key);
         delete this.data[key];
@@ -460,13 +459,20 @@
       var that = this,
           result = new Data.Hash();
       
-      // Ensure that is the smaller one
+      // Find out which hash is smaller
+      var smaller, other;
       if (hash.length < that.length) {
-        that = hash;
-        hash = this;
+        smaller = hash;
+        other = that;
+      } else {
+        smaller = that;
+        other = hash;
       }
-      that.each(function(value,key) {
-        if (hash.get(key)) result.set(key, value);
+      _.each(smaller.keyOrder, function (key) {
+        // TODO: Test for existence of a key with Object.prototype.hasOwnProperty
+        if (other.get(key)) {
+          result.set(key, hash.get(key));
+        }
       });
       return result;
     },
@@ -767,6 +773,7 @@
       this.name = options.name;
       this.meta = options.meta || {};
       this.validator = options.validator;
+      this.sync = options.sync;
       this.required = options["required"];
       this["default"] = options["default"];
       
@@ -817,7 +824,7 @@
               if (typeof v === 'object') v = that.type.g.set(null, v)._id;
               val = that.type.g.get('nodes', v);
               if (!val) {
-                // Register the object (even if not yet loaded)
+                // Register the object even if not yet loaded
                 val = new Data.Object(that.type.g, v);
                 that.type.g.set('nodes', v, val);
               }
@@ -830,7 +837,6 @@
           }
           val.referencedObjects.set(obj._id, obj);
         }
-        
         res.set(v, val);
       });
       
@@ -866,6 +872,7 @@
         type: this.expectedTypes,
         unique: this.unique,
         meta: this.meta,
+        sync: this.sync,
         validator: this.validator,
         required: this.required,
         "default": this["default"]
@@ -954,13 +961,10 @@
       var that = this;
       Data.Node.call(this);
       
-      this.g = g;
-      
-      // TODO: remove in favor of _id
-      this.key = id;
+      this.g = g;      
+      this.key = id; // TODO: remove in favor of _id
       this._id = id;
       this.html_id = id.replace(/\//g, '_');
-      this._dirty = true; // Every constructed node is dirty by default
       
       this.errors = []; // Stores validation errors
       this._types = new Data.Hash();
@@ -1013,6 +1017,7 @@
         // Register properties for all types
         that._types.get(type).all('properties').each(function(property, key) {        
           function applyValue(value) {
+            if (!value) return; // Skip null values
             var values = _.isArray(value) ? value : [value];
             // Apply property values
             that.replace(property.key, property.registerValues(values, that));
@@ -1172,6 +1177,7 @@
       this.replace('nodes', new Data.Hash());
       if (!g) return;
       this.merge(g, options && options.dirty);
+      this.syncMode = options && options.syncMode ? options.syncMode : 'push';
       
       if (options && options.persistent) {
         this.persistent = options.persistent;
@@ -1226,7 +1232,7 @@
     },
     
     // Merges in another Graph
-    merge: function(g, dirty) {
+    merge: function(g, dirty) {      
       var that = this;
       
       // Process schema nodes
@@ -1249,9 +1255,14 @@
           if (!res) {
             res = new Data.Object(that, key, node);
             that.set('nodes', key, res);
-          } else {
-            // Populate existing node with data in order to be rebuilt
-            res.data = node;
+          } else {            
+            // If dirty, we've got a conflict
+            if (res._dirty) {
+              res._conflicted = true;
+              res._conflicted_rev = node;
+            } else {
+              res.data = node;
+            }
           }
           // Check for type existence
           _.each(types, function(type) {
@@ -1261,7 +1272,6 @@
             that.get('nodes', type).set('nodes', key, res);
           });
           that.get(key)._dirty = node._dirty ? node._dirty : dirty;
-          
           if (!node._id) node._id = key;
           return true;
         }
@@ -1271,8 +1281,10 @@
       // Now that all new objects are registered we can build them
       _.each(objects, function(o) {
         var obj = that.get(o._id);
-        if (obj.data) obj.build();
+        if (obj.data && !obj._conflicted) obj.build();
       });
+      
+      if (this.conflictedNodes().length > 0) this.trigger('conflicted');
       
       // Create a new snapshot
       this.snapshot();
@@ -1367,11 +1379,35 @@
       });
     },
     
-    // Synchronize dirty nodes with the backend
-    sync: function(callback) {
+    // Pull in remote updates and push local changes to the server
+    sync: function(callback, resolveConflicts) {
       callback = callback || function() {};
+      resolveConflicts = resolveConflicts || function(cb) { cb(); };
+      var that = this;
+      
+      if (this.syncMode === 'full') {
+        this.pull(function() {
+          if (that.conflictedNodes().length > 0) {
+            resolveConflicts(function() { that.push(callback); });
+          } else {
+            that.push(callback);
+          }
+        });
+      } else if (this.syncMode === 'pull') {
+        this.pull(function() {
+          if (that.conflictedNodes().length > 0) {
+            resolveConflicts(function() {});
+          }
+        });
+      } else { // Push sync -> default
+        this.push(callback);
+      }
+    },
+    
+    // Push local updates to the server
+    push: function(callback) {
       var that = this,
-          nodes = that.dirtyNodes();
+          nodes = this.dirtyNodes();
       
       var validNodes = new Data.Hash();
       nodes.select(function(node, key) {
@@ -1382,8 +1418,7 @@
       
       this.adapter.write(validNodes.toJSON(), function(err, g) {
         if (err) return callback(err);
-        that.merge(g, false);
-
+        
         // Check for rejectedNodes / conflictedNodes
         validNodes.each(function(n, key) {
           if (g[key]) {
@@ -1393,6 +1428,9 @@
             n._rejected = true;
           }
         });
+        
+        // Update local nodes with new revision
+        that.merge(g, false);
         
         // Update localStorage
         if (this.persistent) that.snapshot();
@@ -1405,6 +1443,19 @@
                            .union(that.rejectedNodes()).length;
         
         callback(unsavedNodes > 0 ? unsavedNodes+' unsaved nodes' : null);
+      });
+    },
+    
+    pull: function(callback) {
+      var that = this;
+      var nodes = {};
+      this.objects().each(function(o) {
+        nodes[o._id] = o._rev || null;
+      });
+      
+      this.adapter.pull(nodes, function(err, g) {
+        that.merge(g, false);
+        callback();
       });
     },
     
@@ -1470,12 +1521,12 @@
           if (extended) {
             // include special properties
             if (obj._dirty) result[key]._dirty = true;
-            if (obj._conflicted) result[key]._conclicted = true;
-            if (obj._rejected) result[key].rejected = true;
+            if (obj._deleted) result[key]._deleted = true;
+            if (obj._conflicted) result[key]._conflicted = true;
+            if (obj._rejected) result[key]._rejected = true;
           }
         }
       });
-      
       return result;
     }
   });
@@ -1571,6 +1622,7 @@
     }
   });
 })();
+
 Data.Adapters["ajax"] = function(graph, config) {  
   
   config = config ? config : {url: '/graph/'};
@@ -1585,6 +1637,27 @@ Data.Adapters["ajax"] = function(graph, config) {
       type: "PUT",
       url: config.url+"write",
       data: JSON.stringify(graph),
+      contentType: "application/json",
+      dataType: "json",
+      success: function(res) {
+        res.error ? callback(res.error) : callback(null, res.graph);
+      },
+      error: function(err) {
+        callback(err);
+      }
+    });
+  };
+  
+  // pull
+  // --------------
+
+  // Takes a query object and reads all matching nodes
+  
+  self.pull = function(nodes, callback) {    
+    $.ajax({
+      type: "POST",
+      url: config.url+"pull",
+      data: JSON.stringify(nodes),
       contentType: "application/json",
       dataType: "json",
       success: function(res) {
