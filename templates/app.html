@@ -112,7 +112,6 @@
       
       <hr class="separator"/>
       <div class="intro">Document authoring and publishing for the web.</div>
-      
       <hr class="separator"/>
       
       <div id="example_documents_header">Try some interactive documents</div>
@@ -149,7 +148,7 @@
           <div class="characteristic">
             <h2>Collaboration</h2>
             <p>
-              Substance targets open collaboration. Readers can participate and comment on certain text passages. In future they'll even be able to submit patches, that can be applied by the owner. Thus, unlike with Wikis ownership is preserved.
+              Substance targets open collaboration. Readers can participate and comment on certain text passages. In future they'll even be able to submit patches, that can be applied by the owner.
             </p>
           </div>
           
@@ -164,10 +163,10 @@
         
         <div class="description">
           <p>
-            <b>Substance</b> is a fully web-based document authoring and publishing platform and an attempt to implement the idea of <a href="http://en.wikipedia.org/wiki/Freedom_of_information">Freedom of Information</a>.</p><p>
+            <b>Substance</b> is a fully web-based document authoring and publishing platform.</p><p>
             With Substance, <b>writers</b>, <b>journalists</b>, <b>scientists</b> and everyone else who's interested in publishing can
-            use an open platform for writing and sharing articles.</p><p>Document authoring used to take place in word processors on the Desktop (like MS Word or Open Office).
-            We believe that now this can all be be done in the browser, in a simpler, more collaborative way.
+            use an open platform for writing and sharing articles.</p><p>Document authoring used to take place in word processors on the Desktop like <a href="http://office.microsoft.com/word/">MS Word</a> or <a href="http://openoffice.org/">Open Office</a>.
+            We believe that today this can all be be done in the browser, in a simpler, more collaborative way.
           </p>
           <p>
             <br/>Substance is <a href="http://github.com/michael/substance">open source</a> and licensed under <a href="https://github.com/michael/substance/blob/master/LICENSE">GPLv3</a>.
@@ -190,20 +189,24 @@
             </p> 
             <ul class="feature-properties">
               <li>
-                <div>Images <small style="color: #bd0a0a;">NEW!</small></div>
-                <div class="descr">Embed images in your document</div>
+                <div>Collaborative Editing <small style="color: #bd0a0a;">NEW!</small></div>
+                <div class="descr">Invite co-authors to your document</div>
               </li>
               <li>
-                <div>User Comments <small style="color: #bd0a0a;">NEW!</small></div>
-                <div class="descr">Comment on content fragments</div>
-              </li>
-              <li>
-                <div>Print Documents <small style="color: #bd0a0a;">NEW!</small></div>
-                <div class="descr">Export to PDF/LaTeX</div>
+                <div>Export <small style="color: #bd0a0a;">NEW!</small></div>
+                <div class="descr">Export to PDF, ODT, ePub, etc.</div>
               </li>
               <li>
                 <div>Publish</div>
                 <div class="descr">Publish and instantly share your articles</div>
+              </li>
+              <li>
+                <div>Images</div>
+                <div class="descr">Embed images in your document</div>
+              </li>
+              <li>
+                <div>User Comments</div>
+                <div class="descr">Comment on content fragments</div>
               </li>
             </ul>
           </div>
@@ -512,7 +515,7 @@
           <% } %>
         <% } %>
         
-        <h2><%= documents.length %> Document<%= documents.length > 1 ? 's' : '' %></h2>
+        <h2><%= documents.length %> Document<%= documents.length !== 1 ? 's' : '' %></h2>
       </div>
     
       <% if (documents.length > 0) { %>
@@ -1228,7 +1231,7 @@
     </div>
     
     <div id="footer">
-      <div class="credits"><a href="http://substance.io/substance/substance">About</a> &middot; <a href="http://twitter.com/_substance" target="_blank">Twitter</a> &middot; <a href="http://github.com/michael/substance" target="_blank">Source Code</a> &middot; <a href="https://groups.google.com/group/substance_" target="_blank">Discuss</a> &middot; <a href="http://github.com/michael/substance/issues" target="_blank">Report Bugs</a></div>
+      <div class="credits"><a href="http://substance.io/substance/substance">About</a> &middot; <a href="http://twitter.com/_substance" target="_blank">Twitter</a> &middot; <a href="http://github.com/michael/substance" target="_blank">Source Code</a> &middot; <a href="https://groups.google.com/group/substance_" target="_blank">Discuss</a><!-- &middot; <a href="http://github.com/michael/substance/issues" target="_blank">Report Bugs</a>--></div>
       <div class="version"><a href="http://substance.io/substance/release-notes">Substance 0.3.4</a></div>
     </div>
   </div>
