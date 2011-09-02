@@ -316,7 +316,12 @@ var Document = Backbone.View.extend({
     var parent = graph.get($node.attr('parent'));
     var level = parseInt($node.attr('level'));
     
-    $('#'+node.html_id).replaceWith(new HTMLRenderer(node, parent, level).render());
+    if (_.include(node.types().keys(), '/type/document')) {
+      $('#document').html(new HTMLRenderer(node, parent, level).render());
+    } else {
+      $('#'+node.html_id).replaceWith(new HTMLRenderer(node, parent, level).render());
+    }
+    
     if (this.mode === 'edit') {
       renderControls(this.model, null, null, null, 0);
     } else {
@@ -325,6 +330,8 @@ var Document = Backbone.View.extend({
   },
   
   renderDocument: function() {
+    console.log('rendering document...?');
+    
     this.$('#document').html(new HTMLRenderer(this.model, null, 0).render());
     this.$('#attributes').show();
     this.$('#document').show();
