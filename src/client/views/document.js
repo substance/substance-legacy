@@ -330,8 +330,6 @@ var Document = Backbone.View.extend({
   },
   
   renderDocument: function() {
-    console.log('rendering document...?');
-    
     this.$('#document').html(new HTMLRenderer(this.model, null, 0).render());
     this.$('#attributes').show();
     this.$('#document').show();
