@@ -1611,7 +1611,7 @@ var Document = Backbone.View.extend({
     // TODO: Select the document node on-init
     $(document).unbind('keyup');
     $(document).keyup(function(e) {
-      if (e.keyCode == 27) { that.reset(); }  // esc
+      if (e.keyCode == 27) { that.reset(); } // ESC
       e.stopPropagation();
     });
     
@@ -1680,7 +1680,6 @@ var Document = Backbone.View.extend({
         that.reset();
         
         // window.positionBoard();
-        
         that.trigger('changed');
         that.loadedDocuments[username+"/"+docname] = id;
         
@@ -1702,9 +1701,6 @@ var Document = Backbone.View.extend({
           $('#'+nodeid+' > .comments-wrapper').show();
           app.scrollTo(commentid);
         }
-        
-        // TODO: register document for realtime sessions
-        // remote.Session.registerDocument(id);
       } else {
         $('#document_wrapper').html('Document loading failed');
       }
@@ -2232,9 +2228,7 @@ var ConfirmCollaboration = Backbone.View.extend({
     var that = this;
     this.confirm(function(err) {
       if (err) return alert('Collaboration could not be confirmed. '+err.error);
-      
       window.location.href = "/"+that.document.get('creator')._id.split('/')[2]+"/"+that.document.get('name');
-      // router.loadDocument(that.document.get('creator')._id.split('/')[2], that.document.get('name'));
     });
     return false;
   },
@@ -2262,12 +2256,9 @@ var ConfirmCollaboration = Backbone.View.extend({
     var that = this;
     app.authenticate(this.$('.username').val(), this.$('.password').val(), function(err) {
       if (err) return notifier.notify(Notifications.AUTHENTICATION_FAILED);
-      // that.trigger('authenticated');
-      // app.render();
       that.confirm(function(err) {
         if (err) return alert('Collaboration could not be confirmed. '+err.error);
         window.location.href = "/"+that.document.get('creator')._id.split('/')[2]+"/"+that.document.get('name');
-        // router.loadDocument(that.document.get('creator')._id.split('/')[2], that.document.get('name'));
       });
     });
     return false;
@@ -2296,7 +2287,6 @@ var ConfirmCollaboration = Backbone.View.extend({
         
         that.confirm(function(err) {
           if (err) return alert('Collaboration could not be confirmed. '+err.error);
-          // router.loadDocument(that.document.get('creator')._id.split('/')[2], that.document.get('name'));
           window.location.href = "/"+that.document.get('creator')._id.split('/')[2]+"/"+that.document.get('name');
         });
       }
@@ -2304,7 +2294,13 @@ var ConfirmCollaboration = Backbone.View.extend({
     return false;
   },
   
-  render: function() {    
+  render: function() {
+    // Forward to document if authorized.
+    if (this.collaborator.get('user')._id === "/user/"+app.username) {
+      window.location.href = "/"+this.document.get('creator')._id.split('/')[2]+"/"+this.document.get('name');
+      return;
+    }
+    
     $(this.el).html(_.tpl('confirm_collaboration', {
       collaborator: this.collaborator,
       document: this.document
@@ -3743,11 +3739,11 @@ var remote,                              // Remote handle for server-side method
     // Prevent exit when there are unsaved changes
     window.onbeforeunload = confirmExit;
     function confirmExit() {
-      if (graph.dirtyNodes().length>0) return "You have unsynced changes, which will be lost. Are you sure you want to leave this page?";
+      if (graph.dirtyNodes().length>0) return "You have unsynced changes, which will be lost.";
     }
-    
+     
     function resetWorkspace() {
-      confirm('There are conflicted or rejected nodes since the last sync. The workspace will be reset for your own safety');
+      confirm('There are conflicted or rejected nodes since the last sync. The workspace will be reset for your own safety. Keep in mind we do not yet support simultaneous editing of one document.');
       window.location.reload(true);
     }
     
@@ -3771,8 +3767,5 @@ var remote,                              // Remote handle for server-side method
         }, 3000);
       }
     });
-    
-    graph.bind('conflicted', resetWorkspace);
-    graph.bind('rejected', resetWorkspace);
   });
 })();
