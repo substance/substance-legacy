@@ -348,7 +348,7 @@ var Application = Backbone.View.extend({
           res.status === 'error' ? callback(true) : callback(false);
         },
         error: function(err) {
-          callback(false);
+          callback(true); // Not found. Fine.
         }
       });
       return false;
