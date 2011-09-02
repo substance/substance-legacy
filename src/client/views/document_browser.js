@@ -55,8 +55,6 @@ var DocumentBrowser = Backbone.View.extend({
       success: function(res) {
         that.graph = new Data.Graph(seed);
         that.graph.merge(res.graph);
-        
-        
         that.facets = new Facets({browser: that});
         that.loaded = true;
         that.trigger('loaded');
