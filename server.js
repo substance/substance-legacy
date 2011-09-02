@@ -561,8 +561,8 @@ app.post('/invite', function(req, res) {
   });
 });
 
-
 app.get('/notifications', function(req, res) {
+  if (!req.session) return res.send({});
   getNotifications(req.session.username, function(err, notifications) {
     // Only deliver unread notifications
     var unreadNotifications = {};
