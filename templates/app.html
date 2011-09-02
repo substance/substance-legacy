@@ -744,17 +744,21 @@
 
         <% if (app.username) { %>
           <div class="option current page-content active">
+            
             <form id="confirm-form">
               <h1>Use the current user "<%= app.username %>" to collaborate.</h1>
+              <p class="info">Once you confirmed this invitation, you can easily lookup the document in your <b>Subscribed Documents</b> bin.</p>
               <div>
                 <input type="submit" value="Confirm"/>
               </div>
             </form>
+            
           </div>
         <% } %>
         <div class="option login page-content<%= !app.username ? " active" : "" %>">
           <form id="login-form">
             <h1>Login with your account</h1>
+            <p class="info">Once you confirmed this invitation, you can easily lookup the document in your <b>Subscribed Documents</b> bin.</p>
             <div>
               <label for="username">Username:<span></span></label>
               <input type="text" id="username" class="username" name="name"/>
@@ -775,7 +779,7 @@
         <div class="option signup page-content">
           <form id="signup-form" class="auth-form">
             <h1>Create a new account</h1>
-            
+            <p class="info">Once you confirmed this invitation, you can easily lookup the document in your <b>Subscribed Documents</b> bin.</p>
             <div id="registration_error_message"></div>
             
             <div>
@@ -802,7 +806,9 @@
             <div>
               <label for="">&nbsp;</label>
               <input type="submit" value="Create Account"/>
+              
             </div>
+            
           </form>
           
         </div>
