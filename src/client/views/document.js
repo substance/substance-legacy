@@ -393,7 +393,7 @@ var Document = Backbone.View.extend({
     // TODO: Select the document node on-init
     $(document).unbind('keyup');
     $(document).keyup(function(e) {
-      if (e.keyCode == 27) { that.reset(); }  // esc
+      if (e.keyCode == 27) { that.reset(); } // ESC
       e.stopPropagation();
     });
     
@@ -462,7 +462,6 @@ var Document = Backbone.View.extend({
         that.reset();
         
         // window.positionBoard();
-        
         that.trigger('changed');
         that.loadedDocuments[username+"/"+docname] = id;
         
@@ -484,9 +483,6 @@ var Document = Backbone.View.extend({
           $('#'+nodeid+' > .comments-wrapper').show();
           app.scrollTo(commentid);
         }
-        
-        // TODO: register document for realtime sessions
-        // remote.Session.registerDocument(id);
       } else {
         $('#document_wrapper').html('Document loading failed');
       }

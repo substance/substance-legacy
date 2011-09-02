@@ -686,11 +686,11 @@ var remote,                              // Remote handle for server-side method
     // Prevent exit when there are unsaved changes
     window.onbeforeunload = confirmExit;
     function confirmExit() {
-      if (graph.dirtyNodes().length>0) return "You have unsynced changes, which will be lost. Are you sure you want to leave this page?";
+      if (graph.dirtyNodes().length>0) return "You have unsynced changes, which will be lost.";
     }
-    
+     
     function resetWorkspace() {
-      confirm('There are conflicted or rejected nodes since the last sync. The workspace will be reset for your own safety');
+      confirm('There are conflicted or rejected nodes since the last sync. The workspace will be reset for your own safety. Keep in mind we do not yet support simultaneous editing of one document.');
       window.location.reload(true);
     }
     
@@ -714,8 +714,5 @@ var remote,                              // Remote handle for server-side method
         }, 3000);
       }
     });
-    
-    graph.bind('conflicted', resetWorkspace);
-    graph.bind('rejected', resetWorkspace);
   });
 })();
