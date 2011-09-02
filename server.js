@@ -466,6 +466,7 @@ app.post('/recover_password', function(req, res) {
   });
 });
 
+
 // Confirm collaboration on a document
 
 app.post('/confirm_collaborator', function(req, res) {
@@ -477,18 +478,32 @@ app.post('/confirm_collaborator', function(req, res) {
     graph.fetch({type: "/type/collaborator", tan: tan, "document": {}}, function(err, nodes) {
       if (nodes.length <= 0) return res.send({"status": "error"});
       
-      if (nodes.first().get('document').get('creator')._id === "/user/"+user) return res.send({"status": "error", "error": "already_involved"});
+      var doc = nodes.first().get('document');
+      if (doc.get('creator')._id === "/user/"+user) return res.send({"status": "error", "error": "already_involved"});
       
-      graph.fetch({type: "/type/collaborator", document: nodes.first().get('document')._id, user: "/user/"+user}, function(err, collaborators) {
+      graph.fetch({type: "/type/collaborator", document: doc._id, user: "/user/"+user}, function(err, collaborators) {
         if (collaborators.length > 0) return res.send({"status": "error", "error": "already_involved"});
         
         graph.get(nodes.first()._id).set({
           user: "/user/"+user,
           status: "confirmed"
         });
-        graph.sync(function(err) {
-          return err ? res.send({"status": "error"}) : res.send({"status": "ok", "graph": {}});
+        
+        graph.fetch({type: "/type/subscription", user: "/user/"+user, document: doc._id}, function(err, nodes) {
+          if (nodes.length === 0) {
+            // Add subscription
+            graph.set(null, {
+              type: "/type/subscription",
+              user: "/user/"+user,
+              document: doc._id
+            });
+          }
+          
+          graph.sync(function(err) {
+            return err ? res.send({"status": "error"}) : res.send({"status": "ok", "graph": {}});
+          });          
         });
+        
       });
     });
   } else {
