@@ -2296,7 +2296,8 @@ var ConfirmCollaboration = Backbone.View.extend({
   
   render: function() {
     // Forward to document if authorized.
-    if (this.collaborator.get('user')._id === "/user/"+app.username) {
+    var user = this.collaborator.get('user');
+    if (user && user._id === "/user/"+app.username) {
       window.location.href = "/"+this.document.get('creator')._id.split('/')[2]+"/"+this.document.get('name');
       return;
     }
