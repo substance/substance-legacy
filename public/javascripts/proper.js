@@ -147,25 +147,71 @@
     // Commands
     // --------
     
+    function fixStyleLis() {
+      if ($.browser.mozilla) {
+        var lis = $(activeElement).find('li[style]');
+        if (lis.length > 0) {
+          var range = saveSelection();
+          
+          // TODO: make this dom operation more efficient
+          lis.each(function() {
+            var span = document.createElement('span');
+            span.setAttribute('style', this.getAttribute('style'));
+            this.removeAttribute('style');
+            
+            var child;
+            while (child = this.firstChild) {
+              this.removeChild(child);
+              span.appendChild(child);
+            }
+            
+            this.appendChild(span);
+          });
+          
+          if (range.startContainer.nodeName === 'LI') {
+            range.setStartBefore(range.startContainer);
+          }
+          if (range.endContainer.nodeName === 'LI') {
+            range.setEndAfter(range.endContainer);
+          }
+          restoreSelection(range);
+        }
+      }
+    }
+    
     var commands = {
       execEM: function() {
-        if (!document.queryCommandState('italic', false, true)) document.execCommand('removeFormat', false, true);
-        document.execCommand('italic', false, true);
+        if (!document.queryCommandState('italic', false, true)) {
+          document.execCommand('removeFormat', false, true);
+          document.execCommand('italic', false, true);
+          fixStyleLis();
+        } else {
+          document.execCommand('italic', false, true);
+        }
       },
 
       execSTRONG: function() {
-        if (!document.queryCommandState('bold', false, true)) document.execCommand('removeFormat', false, true);
-        document.execCommand('bold', false, true);
+        if (!document.queryCommandState('bold', false, true)) {
+          document.execCommand('removeFormat', false, true);
+          document.execCommand('bold', false, true);
+          fixStyleLis();
+        } else {
+          document.execCommand('bold', false, true);
+        }
       },
       
       execCODE: function() {
-        document.execCommand('removeFormat', false, true);
         if (cmpFontFamily(document.queryCommandValue('fontName'), options.codeFontFamily)) {
+          // remove <code>
+          document.execCommand('removeFormat', false, true);
           $(activeElement).find('.code-span').filter(function() {
             return !cmpFontFamily($(this).css('font-family'), options.codeFontFamily);
           }).remove();
         } else {
+          // add <code>
+          document.execCommand('removeFormat', false, true);
           document.execCommand('fontName', false, options.codeFontFamily);
+          fixStyleLis();
           $(activeElement).find('font').addClass('proper-code');
           $(activeElement).find('span').filter(function() {
             return cmpFontFamily($(this).css('font-family'), options.codeFontFamily);
@@ -194,6 +240,7 @@
       },
       
       execLINK: function() {
+        document.execCommand('removeFormat', false, true);
         document.execCommand('createLink', false, window.prompt('URL:', 'http://'));
       },
 
@@ -447,8 +494,8 @@
       
       $('.proper-commands a.command').click(function(e) {
         e.preventDefault();
-        commands['exec'+ $(e.currentTarget).attr('command').toUpperCase()]();
         $(activeElement).focus();
+        commands['exec'+ $(e.currentTarget).attr('command').toUpperCase()]();
         updateCommandState();
         setTimeout(function() {
           self.trigger('changed');
