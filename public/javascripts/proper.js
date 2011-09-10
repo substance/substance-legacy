@@ -123,96 +123,78 @@
         that = this,
         pendingChange = false,
         options = {},
-        ignoreBlur = false,
         defaultOptions = { // default options
           multiline: true,
           markup: true,
-          placeholder: 'Enter Text'
+          placeholder: 'Enter Text',
+          codeFontFamily: 'Monaco, Consolas, "Lucida Console", monospace'
         };
-        
     
     // Setup temporary hidden DOM Node, for sanitization
-    $('body').append($('<div id="proper_content"></div>').hide());
-    var rawContent = $('<div id="proper_raw_content" contenteditable="true"></div>');
-    rawContent.css('position', 'fixed');
-    rawContent.css('top', '20px');
-    rawContent.css('left', '20px');
-    rawContent.css('opacity', '0');
-    
-    $('body').append(rawContent);
+    var properContent = $('<div id="proper_content"></div>')
+      .hide()
+      .appendTo(document.body);
+    // TODO: michael, explain why these css properties are needed -- timjb
+    var rawContent = $('<div id="proper_raw_content" contenteditable="true"></div>')
+      .css({
+        position: 'fixed',
+        top: '20px',
+        left: '20px',
+        opacity: '0'
+      })
+      .appendTo(document.body);
     
     // Commands
-    // -----------
-    
-    function tagActive(element) {
-      var sel = window.getSelection();
-      var range = sel.getRangeAt(0);
-      return range.startContainer.parentNode.localName === element || range.endContainer.parentNode.localName === element;
-    }
-    
-    // A proper implementation of execCommand
-    function toggleTag(tag) {
-      var sel = window.getSelection();
-      var range = sel.getRangeAt(0);
-      
-      if (sel+"".length == 0) return;
-      
-      if (tagActive(tag)) {
-        document.execCommand('removeFormat', false, true);
-      } else {
-        var sel = window.getSelection();
-        var range = sel.getRangeAt(0);
-        document.execCommand('removeFormat', false, true);
-        document.execCommand('insertHTML', false, '<'+tag+'>'+window.getSelection()+'</'+tag+'>');
-      }
-    }
+    // --------
     
     var commands = {
       execEM: function() {
         if (!document.queryCommandState('italic', false, true)) document.execCommand('removeFormat', false, true);
         document.execCommand('italic', false, true);
-        return false;
       },
 
       execSTRONG: function() {
         if (!document.queryCommandState('bold', false, true)) document.execCommand('removeFormat', false, true);
         document.execCommand('bold', false, true);
-        return false;
       },
       
       execCODE: function() {
-        if (!tagActive('code')) document.execCommand('removeFormat', false, true);
-        toggleTag('code');
-        return false;
+        if (cmpFontFamily(document.queryCommandValue('fontName'), options.codeFontFamily)) {
+          document.execCommand('removeFormat', false, true);
+          $(activeElement).find('.code-span').filter(function() {
+            return !cmpFontFamily($(this).css('font-family'), options.codeFontFamily);
+          }).remove();
+        } else {
+          document.execCommand('fontName', false, options.codeFontFamily);
+          $(activeElement).find('font').addClass('proper-code');
+          $(activeElement).find('span').filter(function() {
+            return cmpFontFamily($(this).css('font-family'), options.codeFontFamily);
+          }).addClass('proper-code');
+        }
       },
 
       execUL: function() {
         document.execCommand('insertUnorderedList', false, true);
-        return false;
       },
 
       execOL: function() {
         document.execCommand('insertOrderedList', false, true);
-        return false;
       },
 
       execINDENT: function() {
         if (document.queryCommandState('insertOrderedList', false, true) || document.queryCommandState('insertUnorderedList', false, true)) {
           document.execCommand('indent', false, true);
         }
-        return false;
       },
 
       execOUTDENT: function() {
         if (document.queryCommandState('insertOrderedList', false, true) || document.queryCommandState('insertUnorderedList', false, true)) {
           document.execCommand('outdent', false, true);
         }
-        return false;
       },
       
       execLINK: function() {
         document.execCommand('createLink', false, prompt('URL:'));
-        return false;
       },
 
       showHTML: function() {
@@ -222,13 +204,51 @@
     
     // TODO: enable proper sanitizing that allows markup to be pasted too
     function sanitize() {      
-      var rawContent = document.getElementById('proper_raw_content');
-      // Extract newlines
-      var content = $(rawContent).html().replace(/<\/div>/g, "\n")
-                                        .replace(/<br/g, "\n")
-                                        .replace(/<\/p>/g, "\n");
+      properContent.html(rawContent.text());
+    }
+    
+    function normalizeFontFamily(s) {
+      return s.replace(/\s*,\s*/g, ',').replace(/'/g, '"');
+    }
+    
+    function cmpFontFamily(a, b) {
+      return normalizeFontFamily(a) === normalizeFontFamily(b);
+    }
+    
+    function getCorrectTagName(node) {
+      var tagName = node.nodeName.toLowerCase();
       
-      $('#proper_content').html(_.stripTags(content));
+      if (tagName === 'i') return 'em';
+      if (tagName === 'b') return 'strong';
+      if (tagName === 'font') return 'code';
+      if (tagName === 'span') {
+        if (node.style.fontWeight === 'bold') return 'strong';
+        if (node.style.fontStyle === 'italic') return 'em';
+        if (cmpFontFamily(node.style.fontFamily, options.codeFontFamily)) return 'code';
+      }
+      return tagName;
+    }
+    
+    function semantifyContents(node) {
+      if (node.nodeType === Node.TEXT_NODE) {
+        return node.data.replace(/&/g, '&amp;')
+                        .replace(/</g, '&lt;')
+                        .replace(/>/g, '&gt;');
+      } else if (node.nodeType === Node.ELEMENT_NODE) {
+        var tagName = getCorrectTagName(node);
+        
+        if (tagName === 'br') return '<br />';
+        
+        var result = '<'+tagName+'>';
+        var children = node.childNodes;
+        for (var i = 0, l = children.length; i < l; i++) {
+          result += semantifyContents(children[i]);
+        }
+        result += '</'+tagName+'>';
+        return result;
+      } else {
+        return '';
+      }
     }
     
     function updateCommandState() {
@@ -240,15 +260,13 @@
         if (document.queryCommandState(command, false, true)) {
           $controls.find('.command.'+key).addClass('selected');
         }
-        if (tagActive('code')) {
+        if (cmpFontFamily(document.queryCommandValue('fontName'), options.codeFontFamily)) {
           $controls.find('.command.code').addClass('selected');
         }
       });
     }
     
-    // Used for placeholders
-    function checkEmpty() {
-      if (ignoreBlur) return;
+    function maybeInsertPlaceholder() {
       if ($(activeElement).text().trim().length === 0) {
         $(activeElement).addClass('empty');
         if (options.markup) {
@@ -259,12 +277,11 @@
       }
     }
     
-    // Clean up the mess produced by contenteditable
-    function semantify(html) {
-      return html.replace(/<i>/g, '<em>')
-                 .replace(/<\/i>/g, '</em>')
-                 .replace(/<b>/g, '<strong>')
-                 .replace(/<\/b>/g, '</strong>');
+    function maybeRemovePlaceholder() {
+      if ($(activeElement).hasClass('empty')) {
+        selectAll();
+        document.execCommand('delete', false, "");
+      }
     }
     
     function saveSelection() {
@@ -282,7 +299,7 @@
     function restoreSelection(range) {
       if (range) {
         if (window.getSelection) {
-          sel = window.getSelection();
+          var sel = window.getSelection();
           sel.removeAllRanges();
           sel.addRange(range);
         } else if (document.selection && range.select) {
@@ -300,43 +317,45 @@
     }
     
     function bindEvents(el) {
-      $(el).unbind('paste');
-      $(el).unbind('keydown');
-      $(el).unbind('keyup');
-      $(el).unbind('blur');
+      $(el)
+        .unbind('paste')
+        .unbind('keydown')
+        .unbind('keyup')
+        .unbind('focus')
+        .unbind('blur');
       
       $(el).bind('paste', function() {
         var selection = saveSelection();
-        ignoreBlur = true;
-        $('#proper_raw_content').focus();
+        rawContent.focus();
         
         // Immediately sanitize pasted content
         setTimeout(function() {
           sanitize();
           restoreSelection(selection);
           $(el).focus();
-          ignoreBlur = false;
-          var content = $('#proper_content').html().trim();
+          
+          // Avoid nested paragraph correction resulting from paste
+          var content = properContent.html().trim();
+
+          // For some reason last </p> gets injected anyway
           document.execCommand('insertHTML', false, content);
-          $('#proper_raw_content').html('');
+          rawContent.html('');
         }, 1);
       });
       
       // Prevent multiline
       $(el).bind('keydown', function(e) {
-        if (!options.multiline && e.keyCode === 13) {
+        if ((!options.multiline && e.keyCode === 13) ||
+            (e.keyCode === 8 && $(activeElement).text().trim().length === 0)) {
           e.stopPropagation();
-          return false;
-        }
-        
-        if (e.keyCode == 8 && $(activeElement).text().trim().length == 0) {
-          e.stopPropagation();
-          return false;
+          e.preventDefault();
         }
       });
       
-      $(el).bind('blur', checkEmpty);
-      $(el).bind('click', updateCommandState);
+      $(el)
+        .bind('focus', maybeRemovePlaceholder)
+        .bind('blur', maybeInsertPlaceholder)
+        .bind('click', updateCommandState);
       
       $(el).bind('keyup', function(e) {        
         updateCommandState();
@@ -368,9 +387,10 @@
     // -----------
 
     self.deactivate = function() {
-      $(activeElement).attr('contenteditable', 'false');
-      $(activeElement).unbind('paste');
-      $(activeElement).unbind('keydown');
+      $(activeElement)
+        .attr('contenteditable', 'false')
+        .unbind('paste')
+        .unbind('keydown');
       $('.proper-commands').remove();
       self.unbind('changed');
     };
@@ -391,34 +411,37 @@
       // Setup controls
       if (options.markup) {
         $controls = $(controlsTpl); 
-        $controls.appendTo($(options.controlsTarget));          
+        $controls.appendTo($(options.controlsTarget));
       }
       
       // Keyboard bindings
       if (options.markup) {
-        $(activeElement).bind('keydown', 'ctrl+shift+e', commands.execEM);
-        $(activeElement).bind('keydown', 'ctrl+shift+s', commands.execSTRONG);
-        $(activeElement).bind('keydown', 'ctrl+shift+c', commands.execCODE);
-        $(activeElement).bind('keydown', 'ctrl+shift+l', commands.execLINK);
-        $(activeElement).bind('keydown', 'ctrl+shift+b', commands.execUL);
-        $(activeElement).bind('keydown', 'ctrl+shift+n', commands.execOL);
-        $(activeElement).bind('keydown', 'tab', commands.execINDENT);
-        $(activeElement).bind('keydown', 'shift+tab', commands.execOUTDENT);
+        function preventDefaultAnd(executeThisFunction) {
+          return function (event) {
+            event.preventDefault();
+            executeThisFunction();
+          };
+        }
+        $(activeElement)
+          .keydown('ctrl+shift+e', preventDefaultAnd(commands.execEM))
+          .keydown('ctrl+shift+s', preventDefaultAnd(commands.execSTRONG))
+          .keydown('ctrl+shift+c', preventDefaultAnd(commands.execCODE))
+          .keydown('ctrl+shift+l', preventDefaultAnd(commands.execLINK))
+          .keydown('ctrl+shift+b', preventDefaultAnd(commands.execUL))
+          .keydown('ctrl+shift+n', preventDefaultAnd(commands.execOL))
+          .keydown('tab',          preventDefaultAnd(commands.execINDENT))
+          .keydown('shift+tab',    preventDefaultAnd(commands.execOUTDENT));
       }
       
       updateCommandState();
-      if (el.hasClass('empty')) {
-        selectAll();
-        document.execCommand('delete', false, "");
-      }
       
       $('.proper-commands a.command').click(function(e) {
+        e.preventDefault();
         commands['exec'+ $(e.currentTarget).attr('command').toUpperCase()]();
         updateCommandState();
         setTimeout(function() {
           self.trigger('changed');
         }, 10);
-        return false;
       });
     };
     
@@ -427,7 +450,13 @@
       if ($(activeElement).hasClass('empty')) return '';
       
       if (options.markup) {
-        return activeElement ? semantify($(activeElement).html()).trim() : '';
+        if (!activeElement) return '';
+        
+        var result = '';
+        _.each($(activeElement).get(0).childNodes, function (child) {
+          result += semantifyContents(child);
+        })
+        return result;
       } else {
         if (options.multiline) {
           return _.stripTags($(activeElement).html().replace(/<div>/g, '\n')
