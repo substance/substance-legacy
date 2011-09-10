@@ -816,9 +816,31 @@
     </div>
   </script>
   
+  
+  <script type="text/x-ejs/template" name="publish_settings">
+    <div class="settings-title">Publish</div>
+    
+    <div id="new_version">
+      <div><input type="text" name="description" value="Enter optional description."/></div>
+      
+      <div class="panel">
+        <a href="#" class="publish-document">Publish new version</a>
+      </div>
+    </div>
+    
+    <h6>Versions</h6>
+    <div class="versions">
+      
+      <% versions.each(function(version) { %>
+        <div class="version"><%= version.get('created_at') %></div>
+      <% }); %>
+    </div>
+    
+  </script>
+  
   <script type="text/x-ejs/template" name="document_settings">
-    <div class="settings-title">Document Settings</div>
-    <h6>Collaborators</h6>
+  
+    <div class="settings-title">Collaborators</div>
     <table class="collaborators">
       <% collaborators.each(function(collaborator) { %>
         <tr class="collaborator">
@@ -852,14 +874,6 @@
         <input type="submit" value="Invite"/>
       </form>
     <% } %>
-    
-    <h6>Versions</h6>
-    <div class="versions">
-      
-      <% versions.each(function(version) { %>
-        <div class="version"><%= version.get('created_at') %></div>
-      <% }); %>
-    </div>
   </script>
   
   <!-- content-node templates for the editor -->
@@ -887,13 +901,18 @@
         <a href="/" title="<%= node.get('subscribed') ? "Unsubscribe" : "Subscribe document and get notified about updates" %> " class="view-action-icon <%= node.get('subscribed') ? "unsubscribe-document" : "subscribe-document" %>"><div class="subscription-count"><%= node.get('subscribers') > 0 ? node.get('subscribers') : "" %></div><span>Subscribe document and get notified about updates</span></a>
         
         <% if (app.document.mode === "edit") { %>
-          <a href="#" class="toggle-settings view-action-icon settings" title="Document Settings"><span>Settings</span></a>
+          <a href="#" class="toggle-settings view-action-icon settings" title="Collaborators"><span>Collaborators</span></a>
+          <a href="#" class="toggle-publish-settings view-action-icon publish-settings" title="Publish"><span>Publish</span></a>
         <% } %>
         
         <a href="#" class="export-document view-action-icon export" title="Export Document (Experimental)"><span>Export</span></a>
       </div>
       
       <div id="document_settings">
+        
+      </div>
+      
+      <div id="publish_settings">
         
       </div>
       

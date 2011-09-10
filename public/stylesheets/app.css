@@ -1136,7 +1136,9 @@ div.browser-not-supported a:hover {
 .view-action-icon.write { background: url(../images/icons/black/pen_32x32.png) center no-repeat; }
 .view-action-icon.delete { background: url(../images/icons/black/x_28x28.png) center no-repeat; }
 .view-action-icon.export { background: url(../images/icons/black/export.png) center no-repeat; }
-.view-action-icon.settings { background: url(../images/icons/black/cog_32x32.png) center no-repeat; }
+.view-action-icon.settings { background: url(../images/icons/black/user_24x32.png) center no-repeat; }
+.view-action-icon.publish-settings { background: url(../images/icons/black/unlock_stroke_32x24.png) center no-repeat; }
+
 .view-action-icon.subscribe-document { background: url(../images/icons/black/rss_32x32.png) center no-repeat; }
 .view-action-icon.unsubscribe-document { background: url(../images/icons/black/rss_32x32.png) center no-repeat; opacity: 1.0; }
 .view-action-icon.new { background: url(../images/icons/black/document_stroke_32x32.png) center no-repeat; }
@@ -1246,7 +1248,7 @@ div.browser-not-supported a:hover {
   box-shadow:         0px 1px 4px rgba(0,0,0,0.35), inset 0px 0px 1px rgba(255,255,255,0.15);
 }
 
-#document_settings .settings-title {
+#document_settings .settings-title, #publish_settings .settings-title {
   font-size: 30px;
 }
 
@@ -1311,6 +1313,69 @@ div.browser-not-supported a:hover {
 #document_settings table td {
   padding: 0px 3px;
 }
+
+
+/* Publish Settings Dialogue
+-------------------------------------------------------------------------------*/
+
+
+#publish_settings {
+  background: #eaebe5;
+  font:14px/26px "Helvetica Neue", Arial, Helvetica, Geneva, sans-serif; color:#111;
+  padding: 20px;
+  color: #444;
+  
+  -webkit-font-smoothing: antialiased;
+  
+  position: absolute;
+  top: 0px;
+  width: 500px;
+  display: none;
+  left: 0px;
+  
+  -webkit-box-shadow: 0px 1px 4px rgba(0,0,0,0.35), inset 0px 0px 1px rgba(255,255,255,0.15);
+  -moz-box-shadow:    0px 1px 4px rgba(0,0,0,0.35), inset 0px 0px 1px rgba(255,255,255,0.15);
+  box-shadow:         0px 1px 4px rgba(0,0,0,0.35), inset 0px 0px 1px rgba(255,255,255,0.15);
+}
+
+
+#publish_settings #new_version {
+  margin-top: 40px;
+/*  height: 70px;*/
+  background: white;
+  border: 1px solid #ccc;
+}
+
+#publish_settings #new_version .panel {
+  background: #efefef;
+  padding: 3px;
+  overflow: auto;
+}
+
+#publish_settings #new_version .panel a {
+  border: none;
+  background: #555;
+  padding: 1px 5px;
+  color: #fff;
+  display: block;
+  float: right;
+  
+  -webkit-border-radius:3px;
+  -moz-border-radius:   3px;
+  border-radius:        3px;
+}
+
+#publish_settings #new_version input {
+  background: white;
+  border: none;
+  -webkit-box-shadow: none;
+  -moz-box-shadow: none;
+  box-shadow: none;
+  font-size: 20px;
+  font-family: "Helvetica Neue", Arial, Helvetica, Geneva, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
 
 /* Confirm Collaboration Dialogue
 -------------------------------------------------------------------------------*/
