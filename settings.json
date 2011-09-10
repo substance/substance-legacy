@@ -3,7 +3,7 @@
     "development": [
       "/javascripts/sanitize.js",
       "/javascripts/hi.js",
-      "/javascripts/jquery-1.5.min.js",
+      "/javascripts/jquery.min.js",
       "/javascripts/handlebars.js",
       "/javascripts/showdown.js",
       "/javascripts/jquery.transloadit2.js",
@@ -20,7 +20,7 @@
     "production": [
       "/javascripts/sanitize.js",
       "/javascripts/hi.js",
-      "/javascripts/jquery-1.5.min.js",
+      "/javascripts/jquery.min.js",
       "/javascripts/handlebars.js",
       "/javascripts/showdown.js",
       "/javascripts/jquery.transloadit2.js",

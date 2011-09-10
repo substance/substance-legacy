@@ -2738,6 +2738,16 @@ pre {
   box-shadow:         1px 0px 0px rgba(255,255,255,0.5);
 }
 
+/* code */
+code, .proper-code {
+  font-family: Monaco, Consolas, "Lucida Console", monospace;
+  font-size: 12px;
+  padding: 0px 3px;
+  background: white;
+  border: 1px solid #DDD;
+}
+
+
 /* Startpage
 -------------------------------------------------------------------------------*/
 
