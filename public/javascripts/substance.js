@@ -1669,8 +1669,8 @@ var Document = Backbone.View.extend({
     function init(id) {
       that.model = graph.get(id);
       
-      if (that.mode === 'edit' && !head.browser.webkit) {
-        alert("You need to use a Webkit-based browser (Google Chrome, Safari) in order to write documents. In future, other browers will be supported too.");
+      if (that.mode === 'edit' && !(head.browser.webkit || head.browser.mozilla)) {
+        alert("Your browser is not yet supported. We recommend Google Chrome and Safari, but you can also use Firefox.");
         that.mode = 'show';
       }
       
