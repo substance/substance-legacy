@@ -159,8 +159,8 @@
       },
       
       execCODE: function() {
+        document.execCommand('removeFormat', false, true);
         if (cmpFontFamily(document.queryCommandValue('fontName'), options.codeFontFamily)) {
-          document.execCommand('removeFormat', false, true);
           $(activeElement).find('.code-span').filter(function() {
             return !cmpFontFamily($(this).css('font-family'), options.codeFontFamily);
           }).remove();
@@ -271,7 +271,6 @@
     
     function updateCommandState() {
       if (!options.markup) return;
-      $(activeElement).focus();
       
       $controls.find('.command').removeClass('selected');
       _.each(COMMANDS, function(command, key) {
@@ -297,6 +296,7 @@
     
     function maybeRemovePlaceholder() {
       if ($(activeElement).hasClass('empty')) {
+        $(activeElement).removeClass('empty');
         selectAll();
         document.execCommand('delete', false, "");
       }
@@ -377,15 +377,6 @@
       
       $(el).bind('keyup', function(e) {        
         updateCommandState();
-        if ($(activeElement).text().trim().length > 0) {
-          $(activeElement).removeClass('empty');
-        } else {
-          // TODO: problematic when hitting enter on an empty div
-          selectAll();
-          document.execCommand('delete', false, "");
-          $(activeElement).addClass('empty');
-        }
-        
         // Trigger change events, but consolidate them to 200ms time slices
         setTimeout(function() {
           // Skip if there's already a change pending
@@ -451,11 +442,13 @@
           .keydown('shift+tab',    preventDefaultAnd(commands.execOUTDENT));
       }
       
+      $(activeElement).focus();
       updateCommandState();
       
       $('.proper-commands a.command').click(function(e) {
         e.preventDefault();
         commands['exec'+ $(e.currentTarget).attr('command').toUpperCase()]();
+        $(activeElement).focus();
         updateCommandState();
         setTimeout(function() {
           self.trigger('changed');
