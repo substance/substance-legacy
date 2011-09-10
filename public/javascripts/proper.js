@@ -194,7 +194,7 @@
       },
       
       execLINK: function() {
-        document.execCommand('createLink', false, prompt('URL:'));
+        document.execCommand('createLink', false, window.prompt('URL:', 'http://'));
       },
 
       showHTML: function() {
@@ -208,11 +208,23 @@
     }
     
     function normalizeFontFamily(s) {
-      return s.replace(/\s*,\s*/g, ',').replace(/'/g, '"');
+      return (''+s).replace(/\s*,\s*/g, ',').replace(/'/g, '"');
     }
     
     function cmpFontFamily(a, b) {
-      return normalizeFontFamily(a) === normalizeFontFamily(b);
+      a = normalizeFontFamily(a);
+      b = normalizeFontFamily(b);
+      if ($.browser.msie) {
+        if (a.split(',').length === 1) {
+          return b.split(',').indexOf(a) > -1;
+        } else if (b.split(',').length === 1) {
+          return a.split(',').indexOf(b) > -1;
+        } else {
+          return a === b;
+        }
+      } else {
+        return a === b;
+      }
     }
     
     function getCorrectTagName(node) {
@@ -229,17 +241,23 @@
       return tagName;
     }
     
+    function escape(text) {
+      return text.replace(/&/g, '&amp;')
+                 .replace(/</g, '&lt;')
+                 .replace(/>/g, '&gt;')
+                 .replace(/"/g, '&quot;');
+    }
+    
     function semantifyContents(node) {
       if (node.nodeType === Node.TEXT_NODE) {
-        return node.data.replace(/&/g, '&amp;')
-                        .replace(/</g, '&lt;')
-                        .replace(/>/g, '&gt;');
+        return escape(node.data);
       } else if (node.nodeType === Node.ELEMENT_NODE) {
         var tagName = getCorrectTagName(node);
         
         if (tagName === 'br') return '<br />';
         
-        var result = '<'+tagName+'>';
+        var result = tagName === 'a' ? '<a href="'+escape(node.href)+'">'
+                                     : '<'+tagName+'>';
         var children = node.childNodes;
         for (var i = 0, l = children.length; i < l; i++) {
           result += semantifyContents(children[i]);
