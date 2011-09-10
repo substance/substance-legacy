@@ -444,7 +444,7 @@ var Document = Backbone.View.extend({
     return false;
   },
   
-  loadDocument: function(username, docname, nodeid, commentid, mode) {
+  loadDocument: function(username, docname, version, nodeid, commentid, mode) {
     var that = this;
     
     $('#tabs').show();
@@ -511,12 +511,12 @@ var Document = Backbone.View.extend({
     $('#document_tab').html('&nbsp;&nbsp;&nbsp;Loading...');
     $.ajax({
       type: "GET",
-      url: "/documents/"+username+"/"+docname,
+      url: version ? "/documents/"+username+"/"+docname+"/"+version : "/documents/"+username+"/"+docname,
       dataType: "json",
       success: function(res) {
-        that.mode = mode || (res.authorized ? "edit" : "show");
+        that.mode = mode || (res.authorized && !version ? "edit" : "show");
         if (res.status === 'error') {
-          printError(res.error)
+          printError(res.error);
         } else {
           graph.merge(res.graph);
           init(res.id);
@@ -534,15 +534,18 @@ var Document = Backbone.View.extend({
       alert('Please log in to make a subscription.');
       return false;
     }
+    
     graph.set(null, {
       type: "/type/subscription",
       user: "/user/"+app.username,
       document: this.model._id
     });
+    
     this.model.set({
       subscribed: true,
       subscribers: this.model.get('subscribers') + 1
     });
+    
     this.model._dirty = false; // Don't make dirty
     this.render();
     return false;

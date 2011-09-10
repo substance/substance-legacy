@@ -467,6 +467,8 @@ app.post('/recover_password', function(req, res) {
 });
 
 
+
+
 // Confirm collaboration on a document
 
 app.post('/confirm_collaborator', function(req, res) {
@@ -621,13 +623,56 @@ app.get('/avatar/:username/:size', function(req, res) {
 });
 
 
-// Returns the most recent version of the requested doc
-app.get('/documents/:username/:name', function(req, res) {
-  Document.get(req.params.username, req.params.name, req.session ? req.session.username : null, function(err, graph, id, authorized) {
+// Creates a new version from the current document state
+
+app.get('/publish', function(req, res) {
+  var document = "/document/substance/f99a9bba63e8c90e39e3618e7bc6cf0a";
+  
+  var graph = new Data.Graph(seed).connect('couch', {url: config.couchdb_url});
+  
+  Document.getContent(document, function(err, data, id) {
+    // Create a new version
+    var version = graph.set({
+      type: "/type/version",
+      document: document,
+      created_at: new Date(),
+      data: data
+    });
+    
+    graph.sync(function(err) {
+      if (err) res.send({"status": "error"}, 500);
+      res.send({"status": "ok", "version": version._id});
+    });
+  });
+});
+
+
+// Returns a specific version of the requested doc
+app.get('/documents/:username/:name/:version', function(req, res) {
+  Document.get(req.params.username, req.params.name, req.params.version, req.session ? req.session.username : null, function(err, graph, id, authorized) {
     if (err) return res.send({status: "error", error: err}, 404);
     res.send({status: "ok", graph: graph, id: id, authorized: authorized});
   });
 });
+
+
+// Returns a specific version of the requested doc
+app.get('/documents/:username/:name', function(req, res) {
+  Document.get(req.params.username, req.params.name, null, req.session ? req.session.username : null, function(err, graph, id, authorized) {
+    if (err) return res.send({status: "error", error: err}, 404);
+    res.send({status: "ok", graph: graph, id: id, authorized: authorized});
+  });
+});
+
+
+
+// Returns the most recent version of the requested doc
+// app.get('/documents/:username/:name', function(req, res) {
+//   Document.get(req.params.username, req.params.name, req.session ? req.session.username : null, function(err, graph, id, authorized) {
+//     if (err) return res.send({status: "error", error: err}, 404);
+//     res.send({status: "ok", graph: graph, id: id, authorized: authorized});
+//   });
+// });
 
 // Write a single document, expressed as a graph
 // app.post('/writedocument', function(req, res) {

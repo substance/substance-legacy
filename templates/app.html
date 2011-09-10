@@ -852,6 +852,14 @@
         <input type="submit" value="Invite"/>
       </form>
     <% } %>
+    
+    <h6>Versions</h6>
+    <div class="versions">
+      
+      <% versions.each(function(version) { %>
+        <div class="version"><%= version.get('created_at') %></div>
+      <% }); %>
+    </div>
   </script>
   
   <!-- content-node templates for the editor -->

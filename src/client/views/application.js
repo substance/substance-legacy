@@ -5,8 +5,9 @@ var Router = Backbone.Router.extend({
   initialize: function() {
     // Using this.route, because order matters
     this.route(":username", "user", app.userDocs);
-    this.route(":username/:docname/:node/:comment", "comment", this.loadDocument);
-    this.route(":username/:docname/:node", "node", this.loadDocument);
+    // this.route(":username/:docname/:node/:comment", "comment", this.loadDocument);
+    // this.route(":username/:docname/:node", "node", this.loadDocument);
+    this.route(":username/:docname/:version", "version", this.loadDocument);
     this.route(":username/:docname", "document", this.loadDocument);
     
     this.route("reset/:username/:tan", "reset", this.resetPassword);
@@ -56,14 +57,22 @@ var Router = Backbone.Router.extend({
     
     return false;
   },
-  
-  loadDocument: function(username, docname, node, comment) {
+
+  loadDocument: function(username, docname, version, comment) {
     app.browser.load({"type": "user", "value": username});
-    app.document.loadDocument(username, docname, node, comment);
-    $('#document_wrapper').attr('url', username+'/'+docname+(node ? "/"+node : "")+(comment ? "/"+comment : ""));
+    app.document.loadDocument(username, docname, version, null, comment);
+    $('#document_wrapper').attr('url', username+'/'+docname+(version ? "/"+version : "")+(comment ? "/"+comment : ""));
     $('#browser_wrapper').attr('url', username);
     return false;
   }
+    
+  // loadDocument: function(username, docname, node, comment) {
+  //   app.browser.load({"type": "user", "value": username});
+  //   app.document.loadDocument(username, docname, node, comment);
+  //   $('#document_wrapper').attr('url', username+'/'+docname+(node ? "/"+node : "")+(comment ? "/"+comment : ""));
+  //   $('#browser_wrapper').attr('url', username);
+  //   return false;
+  // }
 });
 
 

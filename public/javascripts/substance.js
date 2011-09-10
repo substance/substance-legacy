@@ -1662,7 +1662,7 @@ var Document = Backbone.View.extend({
     return false;
   },
   
-  loadDocument: function(username, docname, nodeid, commentid, mode) {
+  loadDocument: function(username, docname, version, nodeid, commentid, mode) {
     var that = this;
     
     $('#tabs').show();
@@ -1729,12 +1729,12 @@ var Document = Backbone.View.extend({
     $('#document_tab').html('&nbsp;&nbsp;&nbsp;Loading...');
     $.ajax({
       type: "GET",
-      url: "/documents/"+username+"/"+docname,
+      url: version ? "/documents/"+username+"/"+docname+"/"+version : "/documents/"+username+"/"+docname,
       dataType: "json",
       success: function(res) {
-        that.mode = mode || (res.authorized ? "edit" : "show");
+        that.mode = mode || (res.authorized && !version ? "edit" : "show");
         if (res.status === 'error') {
-          printError(res.error)
+          printError(res.error);
         } else {
           graph.merge(res.graph);
           init(res.id);
@@ -1752,15 +1752,18 @@ var Document = Backbone.View.extend({
       alert('Please log in to make a subscription.');
       return false;
     }
+    
     graph.set(null, {
       type: "/type/subscription",
       user: "/user/"+app.username,
       document: this.model._id
     });
+    
     this.model.set({
       subscribed: true,
       subscribers: this.model.get('subscribers') + 1
     });
+    
     this.model._dirty = false; // Don't make dirty
     this.render();
     return false;
@@ -2172,8 +2175,12 @@ var DocumentSettings = Backbone.View.extend({
   load: function() {
     var that = this;
     graph.fetch({"type": "/type/collaborator", "document": app.document.model._id}, function(err, nodes) {
-      that.collaborators = nodes;
-      that.render();
+      // Load versions
+      graph.fetch({"type": "/type/version", "document": app.document.model._id}, function(err, versions) {
+        that.versions = versions;
+        that.collaborators = nodes;
+        that.render();
+      });
     });
   },
   
@@ -2184,6 +2191,7 @@ var DocumentSettings = Backbone.View.extend({
   render: function() {
     $(this.el).html(_.tpl('document_settings', {
       collaborators: this.collaborators,
+      versions: this.versions,
       document: app.document.model
     }));
     this.delegateEvents();
@@ -3059,8 +3067,9 @@ var Router = Backbone.Router.extend({
   initialize: function() {
     // Using this.route, because order matters
     this.route(":username", "user", app.userDocs);
-    this.route(":username/:docname/:node/:comment", "comment", this.loadDocument);
-    this.route(":username/:docname/:node", "node", this.loadDocument);
+    // this.route(":username/:docname/:node/:comment", "comment", this.loadDocument);
+    // this.route(":username/:docname/:node", "node", this.loadDocument);
+    this.route(":username/:docname/:version", "version", this.loadDocument);
     this.route(":username/:docname", "document", this.loadDocument);
     
     this.route("reset/:username/:tan", "reset", this.resetPassword);
@@ -3110,14 +3119,22 @@ var Router = Backbone.Router.extend({
     
     return false;
   },
-  
-  loadDocument: function(username, docname, node, comment) {
+
+  loadDocument: function(username, docname, version, comment) {
     app.browser.load({"type": "user", "value": username});
-    app.document.loadDocument(username, docname, node, comment);
-    $('#document_wrapper').attr('url', username+'/'+docname+(node ? "/"+node : "")+(comment ? "/"+comment : ""));
+    app.document.loadDocument(username, docname, version, null, comment);
+    $('#document_wrapper').attr('url', username+'/'+docname+(version ? "/"+version : "")+(comment ? "/"+comment : ""));
     $('#browser_wrapper').attr('url', username);
     return false;
   }
+    
+  // loadDocument: function(username, docname, node, comment) {
+  //   app.browser.load({"type": "user", "value": username});
+  //   app.document.loadDocument(username, docname, node, comment);
+  //   $('#document_wrapper').attr('url', username+'/'+docname+(node ? "/"+node : "")+(comment ? "/"+comment : ""));
+  //   $('#browser_wrapper').attr('url', username);
+  //   return false;
+  // }
 });
 
 

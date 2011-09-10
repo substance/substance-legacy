@@ -54,8 +54,12 @@ var DocumentSettings = Backbone.View.extend({
   load: function() {
     var that = this;
     graph.fetch({"type": "/type/collaborator", "document": app.document.model._id}, function(err, nodes) {
-      that.collaborators = nodes;
-      that.render();
+      // Load versions
+      graph.fetch({"type": "/type/version", "document": app.document.model._id}, function(err, versions) {
+        that.versions = versions;
+        that.collaborators = nodes;
+        that.render();
+      });
     });
   },
   
@@ -66,6 +70,7 @@ var DocumentSettings = Backbone.View.extend({
   render: function() {
     $(this.el).html(_.tpl('document_settings', {
       collaborators: this.collaborators,
+      versions: this.versions,
       document: app.document.model
     }));
     this.delegateEvents();
