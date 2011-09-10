@@ -359,7 +359,40 @@
       "by_tan": ["tan"]
     }
 	},
-
+  
+  "/type/version": {
+    "_id": "/type/version",
+    "type": "/type/type",
+    "properties": {
+      "created_at": {
+        "name": "Created at",
+        "unique": true,
+        "type": "date",
+        "required": true
+      },
+      "remark": {
+        "name": "Remark",
+        "unique": true,
+        "type": "string"
+      },
+      "document": {
+        "name": "Document",
+        "unique": true,
+        "required": true,
+        "type": "/type/document"
+      },
+      "data": {
+        "name": "Data",
+        "type": "object",
+        "unique": true,
+        "required": true
+      }
+    },
+    "indexes": {
+      "by_document": ["document"]
+    }
+  },
+  
   "/type/document": {
     "_id": "/type/document",
     "type": "/type/type",
