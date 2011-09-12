@@ -1236,8 +1236,6 @@ var Document = Backbone.View.extend({
     'mouseover .content-node': 'highlightNode',
     'mouseout .content-node': 'unhighlightNode',
     'click .content-node': 'selectNode',
-    'click a.unpublish-document': 'unpublishDocument',
-    'click a.publish-document': 'publishDocument',
     'click .toc-item': 'scrollTo',
     'click a.move-node': 'moveNode',
     'click a.toggle-move-node': 'toggleMoveNode',
@@ -1248,6 +1246,7 @@ var Document = Backbone.View.extend({
     'click a.unsubscribe-document': 'unsubscribeDocument',
     'click a.export-document': 'toggleExport',
     'click a.toggle-settings': 'toggleSettings',
+    'click a.toggle-publish-settings': 'togglePublishSettings',
     
     // Actions
     'click a.add_child': 'addChild',
@@ -1257,9 +1256,27 @@ var Document = Backbone.View.extend({
   
   loadedDocuments: {},
   
+  togglePublishSettings: function() {
+    $('#document_settings').hide();
+    $('.view-action-icon.settings').removeClass('active');
+    
+    $('#document_export').hide();
+    $('.view-action-icon.export').removeClass('active');
+    
+    this.publishSettings.load();
+    
+    $('#publish_settings').slideToggle();
+    $('.view-action-icon.publish-settings').toggleClass('active');
+    return false;
+  },
+  
   toggleExport: function() {
     $('#document_settings').hide();
     $('.view-action-icon.settings').removeClass('active');
+    
+    $('#publish_settings').hide();
+    $('.view-action-icon.publish-settings').removeClass('active');
+    
     $('#document_export').slideToggle();
     $('.view-action-icon.export').toggleClass('active');
     return false;
@@ -1268,6 +1285,9 @@ var Document = Backbone.View.extend({
   toggleSettings: function() {
     $('#document_export').hide();
     $('.view-action-icon.export').removeClass('active');
+    
+    $('#publish_settings').hide();
+    $('.view-action-icon.publish-settings').removeClass('active');
     
     this.settings.load();
     
@@ -1417,6 +1437,8 @@ var Document = Backbone.View.extend({
     var that = this;
     this.attributes = new Attributes({model: this.model});
     this.settings = new DocumentSettings();
+    
+    this.publishSettings = new PublishSettings();
     
     this.app = this.options.app;
     this.mode = 'show';
@@ -1665,12 +1687,14 @@ var Document = Backbone.View.extend({
   loadDocument: function(username, docname, version, nodeid, commentid, mode) {
     var that = this;
     
+    // console.log('mode:'+ mode)
+    
     $('#tabs').show();
     function init(id) {
       that.model = graph.get(id);
       
-      if (that.mode === 'edit' && !head.browser.webkit) {
-        alert("You need to use a Webkit-based browser (Google Chrome, Safari) in order to write documents. In future, other browers will be supported too.");
+      if (that.mode === 'edit' && !(head.browser.webkit || head.browser.mozilla)) {
+        alert("Your browser is not yet supported. We recommend Google Chrome and Safari, but you can also use Firefox.");
         that.mode = 'show';
       }
       
@@ -1725,13 +1749,14 @@ var Document = Backbone.View.extend({
       }
       app.toggleView('document');
     }
-      
+
     $('#document_tab').html('&nbsp;&nbsp;&nbsp;Loading...');
     $.ajax({
       type: "GET",
       url: version ? "/documents/"+username+"/"+docname+"/"+version : "/documents/"+username+"/"+docname,
       dataType: "json",
       success: function(res) {
+        that.version = res.version;
         that.mode = mode || (res.authorized && !version ? "edit" : "show");
         if (res.status === 'error') {
           printError(res.error);
@@ -1987,22 +2012,6 @@ var Document = Backbone.View.extend({
     // return false;
   },
   
-  publishDocument: function(e) {
-    this.model.set({
-      published_on: (new Date()).toJSON()
-    });
-    this.render();
-    return false;
-  },
-  
-  unpublishDocument: function() {
-    this.model.set({
-      published_on: null
-    });
-    this.render();
-    return false;
-  },
-  
   // Update the document's name
   updateName: function(name) {
     this.model.set({
@@ -2175,12 +2184,8 @@ var DocumentSettings = Backbone.View.extend({
   load: function() {
     var that = this;
     graph.fetch({"type": "/type/collaborator", "document": app.document.model._id}, function(err, nodes) {
-      // Load versions
-      graph.fetch({"type": "/type/version", "document": app.document.model._id}, function(err, versions) {
-        that.versions = versions;
-        that.collaborators = nodes;
-        that.render();
-      });
+      that.collaborators = nodes;
+      that.render();
     });
   },
   
@@ -2191,6 +2196,93 @@ var DocumentSettings = Backbone.View.extend({
   render: function() {
     $(this.el).html(_.tpl('document_settings', {
       collaborators: this.collaborators,
+      document: app.document.model
+    }));
+    this.delegateEvents();
+  }
+});
+
+var PublishSettings = Backbone.View.extend({
+  events: {
+    'click a.publish-document': 'publishDocument',
+    'click .remove-version': 'removeVersion',
+    'focus #version_remark': 'focusRemark',
+    'blur #version_remark': 'blurRemark'
+  },
+  
+  focusRemark: function(e) {
+    var input = $('#version_remark');
+        
+    if (input.val() === 'Enter optional remark.') {
+      input.val('');
+    }
+  },
+  
+  blurRemark: function(e) {
+    var input = $('#version_remark');
+        
+    if (input.val() === '') {
+      input.val('Enter optional remark.');
+    }
+  },
+  
+  publishDocument: function(e) {
+    var that = this;
+    var remark = $('#version_remark').val();
+    
+    console.log(this.$('#version_remark'));
+    $.ajax({
+      type: "POST",
+      url: "/publish",
+      data: {
+        document: app.document.model._id,
+        remark: remark === 'Enter optional remark.' ? '' : remark
+      },
+      dataType: "json",
+      success: function(res) {
+        if (res.error) return alert(res.error);
+        that.load();
+      },
+      error: function(err) {
+        console.log(err);
+        alert("Unknown error occurred");
+      }
+    });
+    
+    return false;
+  },
+  
+  removeVersion: function(e) {
+    var version = $(e.currentTarget).attr('version');
+    var that = this;
+    
+    window.pendingSync = true;
+    graph.del(version);
+    
+    // Trigger immediate sync
+    graph.sync(function (err) {
+      window.pendingSync = false;
+      that.load();
+    });
+    
+    return false;
+  },
+  
+  load: function() {
+    var that = this;
+    // Load versions
+    graph.fetch({"type": "/type/version", "document": app.document.model._id}, function(err, versions) {
+      that.versions = versions;
+      that.render();
+    });
+  },
+  
+  initialize: function() {
+    this.el = '#publish_settings';
+  },
+  
+  render: function() {
+    $(this.el).html(_.tpl('publish_settings', {
       versions: this.versions,
       document: app.document.model
     }));
@@ -3450,7 +3542,8 @@ var Application = Backbone.View.extend({
     var user = app.document.model.get('creator')._id.split('/')[2];
     var name = app.document.model.get('name');
     
-    app.document.loadDocument(user, name, null, null, 'edit');
+    $('#document_wrapper').attr('url', user+"/"+name);
+    app.document.loadDocument(user, name, null, null, null, 'edit');
     return false;
   },
   
@@ -3458,7 +3551,8 @@ var Application = Backbone.View.extend({
     var user = app.document.model.get('creator')._id.split('/')[2];
     var name = app.document.model.get('name');
     
-    app.document.loadDocument(user, name, null, null, 'show');
+    $('#document_wrapper').attr('url', user+"/"+name);
+    app.document.loadDocument(user, name, null, null, null, 'show');
     return false;
   },
   
@@ -3466,7 +3560,7 @@ var Application = Backbone.View.extend({
       var user = $(e.currentTarget).attr('user').toLowerCase();
           name = $(e.currentTarget).attr('name');
 
-      app.document.loadDocument(user, name, null,  null);
+      app.document.loadDocument(user, name, null,  null, null);
       if (router) {
         router.navigate($(e.currentTarget).attr('href'));
         $('#document_wrapper').attr('url', $(e.currentTarget).attr('href'));
@@ -3696,7 +3790,7 @@ var remote,                              // Remote handle for server-side method
       if (head.browser.opera && head.browser.version > "11.0") {
         return true;
       }
-      // if (head.browser.msie && head.browser.version > "9.0") {
+      // if (head.browser.ie && head.browser.version > "9.0") {
       //   return true;
       // }
       return false;
@@ -3765,7 +3859,7 @@ var remote,                              // Remote handle for server-side method
       window.location.reload(true);
     }
     
-    var pendingSync = false;
+    window.pendingSync = false;
     graph.bind('dirty', function() {
       // Reload document browser      
       if (!pendingSync) {
