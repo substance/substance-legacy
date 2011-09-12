@@ -196,6 +196,7 @@ Document.get = function(username, docname, version, reader, callback) {
         function loadVersion(version, callback) {
           console.log('loading version: '+ version);
           graph.fetch({_id: "/version/"+version}, function(err, nodes) {
+            if (err || nodes.length === 0) return callback('not_found');
             var data = nodes.first().get('data');
             _.extend(result, data);
             published_on = nodes.first().get('created_at');
@@ -235,6 +236,7 @@ Document.get = function(username, docname, version, reader, callback) {
       }
       
       load(function(err, data, authorized, version) {
+        if (err) return callback(err);
         addMetaInfo(function() {
           callback(null, result, edit, version);
         });
@@ -244,6 +246,7 @@ Document.get = function(username, docname, version, reader, callback) {
     isAuthorized(node, reader, function(err, edit) {
       if (err && !node.published_on) return callback("not_authorized");
       loadDocument(node._id, version, edit, function(err, result, edit, version) {
+        if (err) return callback("not_found");
         callback(null, result, node._id, edit, version);
       });
     });
