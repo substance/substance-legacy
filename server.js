@@ -625,9 +625,9 @@ app.get('/avatar/:username/:size', function(req, res) {
 
 // Creates a new version from the current document state
 
-app.get('/publish', function(req, res) {
-  var document = "/document/substance/f99a9bba63e8c90e39e3618e7bc6cf0a";
-  
+app.post('/publish', function(req, res) {
+  var document = req.body.document;
+  var remark = req.body.remark;
   var graph = new Data.Graph(seed).connect('couch', {url: config.couchdb_url});
   
   Document.getContent(document, function(err, data, id) {
@@ -635,6 +635,7 @@ app.get('/publish', function(req, res) {
     var version = graph.set({
       type: "/type/version",
       document: document,
+      remark: remark,
       created_at: new Date(),
       data: data
     });
@@ -649,18 +650,18 @@ app.get('/publish', function(req, res) {
 
 // Returns a specific version of the requested doc
 app.get('/documents/:username/:name/:version', function(req, res) {
-  Document.get(req.params.username, req.params.name, req.params.version, req.session ? req.session.username : null, function(err, graph, id, authorized) {
+  Document.get(req.params.username, req.params.name, req.params.version, req.session ? req.session.username : null, function(err, graph, id, authorized, version) {
     if (err) return res.send({status: "error", error: err}, 404);
-    res.send({status: "ok", graph: graph, id: id, authorized: authorized});
+    res.send({status: "ok", graph: graph, id: id, authorized: authorized, version: version });
   });
 });
 
 
 // Returns a specific version of the requested doc
 app.get('/documents/:username/:name', function(req, res) {
-  Document.get(req.params.username, req.params.name, null, req.session ? req.session.username : null, function(err, graph, id, authorized) {
+  Document.get(req.params.username, req.params.name, null, req.session ? req.session.username : null, function(err, graph, id, authorized, version) {
     if (err) return res.send({status: "error", error: err}, 404);
-    res.send({status: "ok", graph: graph, id: id, authorized: authorized});
+    res.send({status: "ok", graph: graph, id: id, authorized: authorized, version: version});
   });
 });
 
