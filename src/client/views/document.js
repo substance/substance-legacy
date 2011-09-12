@@ -18,8 +18,6 @@ var Document = Backbone.View.extend({
     'mouseover .content-node': 'highlightNode',
     'mouseout .content-node': 'unhighlightNode',
     'click .content-node': 'selectNode',
-    'click a.unpublish-document': 'unpublishDocument',
-    'click a.publish-document': 'publishDocument',
     'click .toc-item': 'scrollTo',
     'click a.move-node': 'moveNode',
     'click a.toggle-move-node': 'toggleMoveNode',
@@ -41,7 +39,6 @@ var Document = Backbone.View.extend({
   loadedDocuments: {},
   
   togglePublishSettings: function() {
-    console.log('JOJOJO');
     $('#document_settings').hide();
     $('.view-action-icon.settings').removeClass('active');
     
@@ -50,8 +47,6 @@ var Document = Backbone.View.extend({
     
     this.publishSettings.load();
     
-    // $('#document_export').slideToggle();
-    // $('.view-action-icon.export').toggleClass('active');
     $('#publish_settings').slideToggle();
     $('.view-action-icon.publish-settings').toggleClass('active');
     return false;
@@ -534,13 +529,14 @@ var Document = Backbone.View.extend({
       }
       app.toggleView('document');
     }
-      
+
     $('#document_tab').html('&nbsp;&nbsp;&nbsp;Loading...');
     $.ajax({
       type: "GET",
       url: version ? "/documents/"+username+"/"+docname+"/"+version : "/documents/"+username+"/"+docname,
       dataType: "json",
       success: function(res) {
+        that.version = res.version;
         that.mode = mode || (res.authorized && !version ? "edit" : "show");
         if (res.status === 'error') {
           printError(res.error);
@@ -794,22 +790,6 @@ var Document = Backbone.View.extend({
     }
     e.stopPropagation();
     // return false;
-  },
-  
-  publishDocument: function(e) {
-    this.model.set({
-      published_on: (new Date()).toJSON()
-    });
-    this.render();
-    return false;
-  },
-  
-  unpublishDocument: function() {
-    this.model.set({
-      published_on: null
-    });
-    this.render();
-    return false;
   },
   
   // Update the document's name

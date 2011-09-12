@@ -820,21 +820,31 @@
   <script type="text/x-ejs/template" name="publish_settings">
     <div class="settings-title">Publish</div>
     
-    <div id="new_version">
-      <div><input type="text" name="description" value="Enter optional description."/></div>
-      
-      <div class="panel">
-        <a href="#" class="publish-document">Publish new version</a>
-      </div>
-    </div>
+    <% if (versions.length >= 0) { %>
+      <p>Not published yet</p>
+    <% } %>
     
-    <h6>Versions</h6>
-    <div class="versions">
+    <% if (document.get('creator')._id === '/user/'+app.username) { %>
+      <div id="new_version">
+        <div><input type="text" id="version_remark" name="remark" value="Enter optional remark."/></div>
+        <div class="panel">
+          <a href="#" class="publish-document">Publish new version</a>
+        </div>
+      </div>
+    <% } %>
+    
+    <% if (versions.length > 0) { %>
+      <h6>Versions</h6>
+      <div class="versions">
       
-      <% versions.each(function(version) { %>
-        <div class="version"><%= version.get('created_at') %></div>
-      <% }); %>
-    </div>
+        <% versions.each(function(version) { %>
+          <a title="<%= version.get('remark') %>"class="version" href="/<%= document.get('creator')._id.split('/')[2] %>/<%= document.get('name') %>/<%= version._id.split('/')[2] %>">
+            <div class="label"><%= _.date(version.get('created_at')) %></div>
+            <div class="remove-version" version="<%= version._id %>"></div>
+          </a>
+        <% }); %>
+      </div>
+    <% } %>
     
   </script>
   
@@ -902,7 +912,10 @@
         
         <% if (app.document.mode === "edit") { %>
           <a href="#" class="toggle-settings view-action-icon settings" title="Collaborators"><span>Collaborators</span></a>
-          <a href="#" class="toggle-publish-settings view-action-icon publish-settings" title="Publish"><span>Publish</span></a>
+        <% } %>
+        
+        <% if (node && node.get('creator')._id === '/user/'+app.username) { %>
+          <a href="#" class="toggle-publish-settings view-action-icon publish-settings" title="Publish"><span>Publish Settings</span></a>
         <% } %>
         
         <a href="#" class="export-document view-action-icon export" title="Export Document (Experimental)"><span>Export</span></a>
@@ -1265,7 +1278,7 @@
     
     <div id="footer">
       <div class="credits"><a href="http://substance.io/substance/substance">About</a> &middot; <a href="http://twitter.com/_substance" target="_blank">Twitter</a> &middot; <a href="http://github.com/michael/substance" target="_blank">Source Code</a> &middot; <a href="https://groups.google.com/group/substance_" target="_blank">Discuss</a><!-- &middot; <a href="http://github.com/michael/substance/issues" target="_blank">Report Bugs</a>--></div>
-      <div class="version"><a href="http://substance.io/substance/release-notes">Substance 0.3.5</a></div>
+      <div class="version"><a href="http://substance.io/substance/release-notes">Substance 0.3.6</a></div>
     </div>
   </div>
   

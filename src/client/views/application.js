@@ -388,7 +388,8 @@ var Application = Backbone.View.extend({
     var user = app.document.model.get('creator')._id.split('/')[2];
     var name = app.document.model.get('name');
     
-    app.document.loadDocument(user, name, null, null, 'edit');
+    $('#document_wrapper').attr('url', user+"/"+name);
+    app.document.loadDocument(user, name, null, null, null, 'edit');
     return false;
   },
   
@@ -396,7 +397,8 @@ var Application = Backbone.View.extend({
     var user = app.document.model.get('creator')._id.split('/')[2];
     var name = app.document.model.get('name');
     
-    app.document.loadDocument(user, name, null, null, 'show');
+    $('#document_wrapper').attr('url', user+"/"+name);
+    app.document.loadDocument(user, name, null, null, null, 'show');
     return false;
   },
   
@@ -404,7 +406,7 @@ var Application = Backbone.View.extend({
       var user = $(e.currentTarget).attr('user').toLowerCase();
           name = $(e.currentTarget).attr('name');
 
-      app.document.loadDocument(user, name, null,  null);
+      app.document.loadDocument(user, name, null,  null, null);
       if (router) {
         router.navigate($(e.currentTarget).attr('href'));
         $('#document_wrapper').attr('url', $(e.currentTarget).attr('href'));
@@ -634,7 +636,7 @@ var remote,                              // Remote handle for server-side method
       if (head.browser.opera && head.browser.version > "11.0") {
         return true;
       }
-      // if (head.browser.msie && head.browser.version > "9.0") {
+      // if (head.browser.ie && head.browser.version > "9.0") {
       //   return true;
       // }
       return false;
@@ -703,7 +705,7 @@ var remote,                              // Remote handle for server-side method
       window.location.reload(true);
     }
     
-    var pendingSync = false;
+    window.pendingSync = false;
     graph.bind('dirty', function() {
       // Reload document browser      
       if (!pendingSync) {

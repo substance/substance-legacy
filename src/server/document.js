@@ -135,60 +135,6 @@ Document.getContent = function(documentId, callback) {
   });
 };
 
-// Get a single document from the database, including all associated content nodes
-// Document.get = function(username, docname, reader, callback) {
-//   db.view('substance/documents', {key: username+'/'+docname}, function(err, res) {
-//     var graph = new Data.Graph(seed).connect('couch', {url: config.couchdb_url});
-//     
-//     if (err) return callback(err);
-//     if (res.rows.length == 0) return callback("not_found");
-//     
-//     var node = res.rows[0].value;
-//     
-//     function load(mode) {
-//       var id = res.rows[0].value._id;
-// 
-//       var qry = {
-//         "_id": id,
-//         "children": {
-//           "_recursive": true,
-//           "comments": {}
-//         },
-//         "subjects": {},
-//         "entities": {},
-//         "creator": {}
-//       };
-// 
-//       graph.fetch(qry, function(err, nodes) {
-//         var result = nodes.toJSON(),
-//             doc = result[id];
-// 
-//         logView(doc._id, reader, function() {
-//           getViewCount(doc._id, function(err, views) {
-//             doc.views = views;
-//             // Check subscriptions
-//             graph.fetch({type: "/type/subscription", "document": doc._id}, function(err, nodes) {
-//               if (err) return callback(err);
-//               doc.subscribed = graph.find({"user": "/user/"+reader, "document": doc._id}).length > 0 ? true : false;
-//               doc.subscribers = nodes.length;
-//               callback(null, result, doc._id, mode);
-//             });
-//           });
-//         });
-//       });
-//     }
-//     
-//     isAuthorized(node, reader, function(err, mode) {
-//       if (err && !node.published_on) return callback("not_authorized");
-//       load(mode);
-//     });
-//   });
-// };
-
-
-
-
-
 
 
 // Get a specific version of a document from the database, including all associated content nodes
@@ -201,165 +147,104 @@ Document.get = function(username, docname, version, reader, callback) {
     
     var node = res.rows[0].value;
     
-    // function fetchRecent(docId, callback) {
-    //   db.view('substance/versions', {endkey: [docId], startkey: [docId, {}], limit: 10, descending: true}, function(err, res) {
-    //     if (err) return callback(err);
-    //     // fetchDocuments(res.rows.map(function(d) { return d.id }), callback);
-    //     console.log("MEEH");
-    //     _.each(res.rows, function(row) {
-    //       console.log(row.key);
-    //     });
-    //   });
-    // }
-    
-    // function load(authorized) {
-    //   var id = res.rows[0].value._id;
-    //   
-    //   if (!version && authorized) {
-    //     console.log('authorized but no version');
-    //     var qry = {
-    //       "_id": id,
-    //       "children": {
-    //         "_recursive": true,
-    //         "comments": {}
-    //       },
-    //       "subjects": {},
-    //       "entities": {},
-    //       "creator": {}
-    //     };
-    //   } else {
-    //     var qry = {
-    //       "_id": id,
-    //       "subjects": {},
-    //       "entities": {},
-    //       "creator": {}
-    //     };
-    //   }
-    // 
-    //         
-    //   graph.fetch(qry, function(err, nodes) {
-    //     var result = nodes.toJSON(),
-    //         doc = result[id];
-    // 
-    //     logView(doc._id, reader, function() {
-    //       getViewCount(doc._id, function(err, views) {
-    //         var meta = {
-    //           views: views
-    //         };
-    //         
-    //         // Check subscriptions
-    //         graph.fetch({type: "/type/subscription", "document": doc._id}, function(err, nodes) {
-    //           if (err) return callback(err);
-    //           meta.subscribed = graph.find({"user": "/user/"+reader, "document": doc._id}).length > 0 ? true : false;
-    //           meta.subscribers = nodes.length;
-    //           
-    //           if (version) {
-    //             console.log('HAHA');
-    //             
-    //             // Use published version
-    //             graph.fetch({_id: "/version/"+version}, function(err, nodes) {
-    //               var data = nodes.first().get('data');
-    //               _.extend(result, data);
-    //               _.extend(result[id], meta); // Attach meta information
-    // 
-    //               callback(null, result, doc._id, false);
-    //             });
-    //           } else {
-    //             if (!authorized) {
-    //               console.log('FETCH MOST RECENT VERSION!');
-    //               
-    //               fetchRecent(id, function(err, data) {
-    //                 _.extend(result, data);
-    //                 _.extend(result[id], meta); // Attach meta information
-    //               })
-    //             }
-    //             // TODO: Fetch latest version if not the author!
-    //             _.extend(result[id], meta); // Attach meta information
-    //             callback(null, result, doc._id, authorized);
-    //           }
-    //           
-    //           
-    //           
-    //         });
-    //       });
-    //     });
-    //   });
-    // }
-    
-    
-    
-    
-    
-    
     function loadDocument(id, version, edit, callback) {
-
+      
       var result = {};
+      var published_on = null; // based on version.created_at
+      
+      function load(callback) {
 
-      // Load current Head Version
-      // ------------------
+        // Load current Head Version
+        // ------------------
 
-      function loadHead(callback) {
-        console.log("Loading head version");
-        var qry = {
-          "_id": id,
-          "children": {
-            "_recursive": true,
-            "comments": {}
-          },
-          "subjects": {},
-          "entities": {},
-          "creator": {}
-        };
-        
-        graph.fetch(qry, function(err, nodes) {
-          if (err) return callback(err);
-          callback(null, nodes.toJSON(), edit);
-        });
+        function loadHead(callback) {
+          console.log("Loading head version.");
+          var qry = {
+            "_id": id,
+            "children": {
+              "_recursive": true,
+              "comments": {}
+            },
+            "subjects": {},
+            "entities": {},
+            "creator": {}
+          };
+          
+          graph.fetch(qry, function(err, nodes) {
+            if (err) return callback(err);
+            _.extend(result, nodes.toJSON());
+            callback(null, result, edit, null);
+          });
+        }
+
+        // Load latest version, if exists
+        // ------------------
+
+        function loadLatestVersion(callback) {
+          console.log('Loading latest version.');
+          db.view('substance/versions', {endkey: [id], startkey: [id, {}], limit: 1, descending: true}, function(err, res) {
+            if (err) return callback(err);
+            _.extend(result, res.rows[0].value.data);
+            published_on = res.rows[0].value.created_at;
+            callback(null, result, false, res.rows[0].value._id.split('/')[2]);
+          });
+        }
+
+        // Try to load specific version, or latest version, or draft (as a fallback)
+        // ------------------
+
+        function loadVersion(version, callback) {
+          console.log('loading version: '+ version);
+          graph.fetch({_id: "/version/"+version}, function(err, nodes) {
+            var data = nodes.first().get('data');
+            _.extend(result, data);
+            published_on = nodes.first().get('created_at');
+            callback(null, result, false, version);
+          });
+        }
+
+        // Start the fun
+        if (edit) {
+          version ? loadVersion(version, callback) : loadHead(callback);
+        } else if (version) {
+          loadVersion(version, callback);
+        } else {
+          loadLatestVersion(function(err, version) {
+            if (err) return loadHead(callback);
+            callback(null, result, false);
+          });
+        }
       }
-
-      // Load latest version, if exists
-      // ------------------
-
-      function loadLatestVersion(callback) {
-        console.log('Loading latest version');
-        db.view('substance/versions', {endkey: [id], startkey: [id, {}], limit: 1, descending: true}, function(err, res) {
-          if (err) return callback(err);
-          _.extend(result, res.rows[0].value.data);
-          callback(null, result, false);
-        });
-      }
-
-      // Try to load specific version, or latest version, or draft (as a fallback)
-      // ------------------
-
-      function loadVersion(version, callback) {
-        console.log('loading version: '+ version);
-        graph.fetch({_id: "/version/"+version}, function(err, nodes) {
-          var data = nodes.first().get('data');
-          _.extend(result, data);
-        
-          callback(null, result, id, false);
+      
+      // Attach Meta Info
+      function addMetaInfo(callback) {
+        result[node._id].published_on = published_on;
+        logView(node._id, reader, function() {
+          getViewCount(node._id, function(err, views) {
+            result[node._id].views = views;
+            
+            // Check subscriptions
+            graph.fetch({type: "/type/subscription", "document": node._id}, function(err, nodes) {
+              if (err) return callback(err);
+              result[node._id].subscribed = graph.find({"user": "/user/"+reader, "document": node._id}).length > 0 ? true : false;
+              result[node._id].subscribers = nodes.length;
+              callback();
+            });
+          });
         });
       }
       
-      // Start the fun
-      if (edit) {
-        version ? loadVersion(version, callback) : loadHead(callback);
-      } else if (version) {
-        loadVersion(version, callback);
-      } else {
-        loadLatestVersion(function(err) {
-          if (err) return loadHead(callback);
-          callback(null, result, false);
+      load(function(err, data, authorized, version) {
+        addMetaInfo(function() {
+          callback(null, result, edit, version);
         });
-      }
+      });
     }
     
     isAuthorized(node, reader, function(err, edit) {
       if (err && !node.published_on) return callback("not_authorized");
-      loadDocument(node._id, version, edit, function(err, result, edit) {
-        // in the case of a version fetched by an author, edit should be set to false!
-        callback(null, result, node._id, edit);
+      loadDocument(node._id, version, edit, function(err, result, edit, version) {
+        callback(null, result, node._id, edit, version);
       });
     });
   });

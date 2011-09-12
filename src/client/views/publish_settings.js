@@ -1,62 +1,73 @@
 var PublishSettings = Backbone.View.extend({
   events: {
-    // 'submit form': 'invite',
-    // 'change select.change-mode': 'changeMode',
-    // 'click a.remove-collaborator': 'removeCollaborator'
+    'click a.publish-document': 'publishDocument',
+    'click .remove-version': 'removeVersion',
+    'focus #version_remark': 'focusRemark',
+    'blur #version_remark': 'blurRemark'
   },
   
-  // changeMode: function(e) {
-  //   var collaboratorId = $(e.currentTarget).attr('collaborator');
-  //   var mode = $(e.currentTarget).val();
-  //   
-  //   graph.get(collaboratorId).set({
-  //     mode: mode
-  //   });
-  //   // trigger immediate sync
-  //   graph.sync();
-  //   
-  //   return false;
-  // },
-  // 
-  // removeCollaborator: function(e) {
-  //   var collaboratorId = $(e.currentTarget).attr('collaborator');
-  //   graph.del(collaboratorId);
-  //   // trigger immediate sync
-  //   graph.sync();
-  //   this.collaborators.del(collaboratorId);
-  //   this.render();
-  //   return false;
-  // },
+  focusRemark: function(e) {
+    var input = $('#version_remark');
+        
+    if (input.val() === 'Enter optional remark.') {
+      input.val('');
+    }
+  },
   
-  // invite: function() {
-  //   var that = this;
-  //   $.ajax({
-  //     type: "POST",
-  //     url: "/invite",
-  //     data: {
-  //       email: $('#collaborator_email').val(),
-  //       document: app.document.model._id,
-  //       mode: $('#collaborator_mode').val()
-  //     },
-  //     dataType: "json",
-  //     success: function(res) {
-  //       if (res.error) return alert(res.error);
-  //       that.load();
-  //     },
-  //     error: function(err) {
-  //       alert("Unknown error occurred");
-  //     }
-  //   });
-  //   
-  //   return false;
-  // },
+  blurRemark: function(e) {
+    var input = $('#version_remark');
+        
+    if (input.val() === '') {
+      input.val('Enter optional remark.');
+    }
+  },
+  
+  publishDocument: function(e) {
+    var that = this;
+    var remark = $('#version_remark').val();
+    
+    console.log(this.$('#version_remark'));
+    $.ajax({
+      type: "POST",
+      url: "/publish",
+      data: {
+        document: app.document.model._id,
+        remark: remark === 'Enter optional remark.' ? '' : remark
+      },
+      dataType: "json",
+      success: function(res) {
+        if (res.error) return alert(res.error);
+        that.load();
+      },
+      error: function(err) {
+        console.log(err);
+        alert("Unknown error occurred");
+      }
+    });
+    
+    return false;
+  },
+  
+  removeVersion: function(e) {
+    var version = $(e.currentTarget).attr('version');
+    var that = this;
+    
+    window.pendingSync = true;
+    graph.del(version);
+    
+    // Trigger immediate sync
+    graph.sync(function (err) {
+      window.pendingSync = false;
+      that.load();
+    });
+    
+    return false;
+  },
   
   load: function() {
-
     var that = this;
     // Load versions
     graph.fetch({"type": "/type/version", "document": app.document.model._id}, function(err, versions) {
-      console.log(versions);
       that.versions = versions;
       that.render();
     });
@@ -68,9 +79,8 @@ var PublishSettings = Backbone.View.extend({
   
   render: function() {
     $(this.el).html(_.tpl('publish_settings', {
-      // collaborators: this.collaborators,
       versions: this.versions,
-      // document: app.document.model
+      document: app.document.model
     }));
     this.delegateEvents();
   }

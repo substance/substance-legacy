@@ -1376,6 +1376,44 @@ div.browser-not-supported a:hover {
   -webkit-font-smoothing: antialiased;
 }
 
+.versions .version {
+  border: none;
+  display: block;
+  float: left;
+  height: 48px;
+  width: 48px;
+  opacity: 0.5;
+  margin: 10px 25px 30px 25px;
+  background: url(/images/formats/document.png);
+  position: relative;
+}
+
+.versions .version:last-child {
+  opacity: 1.0;
+}
+
+.versions .version .label {
+  font-family: Helvetica, Arial;
+  font-size: 11px;
+  line-height: 11px;
+  padding: 2px 3px 0px 1px;
+  
+  position: absolute;
+  width: 120px;
+  left: -30px;
+  bottom: -20px;
+  text-align: center;
+}
+
+.versions .version:hover .remove-version {
+  position: absolute;
+  left: 0px;
+  top: -3px;
+  width: 18px;
+  height: 18px;
+  background: url('/images/icons/black/x_alt_16x16.png') center center no-repeat;
+}
+
 
 /* Confirm Collaboration Dialogue
 -------------------------------------------------------------------------------*/
