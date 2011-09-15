@@ -646,7 +646,14 @@
               <% if (app.username === username) { %>
                 <a href="/" comment="<%= comment._id %>" class="remove-comment">Remove</a></div>
               <% } %>
-            <div class="body">Version:  <%= comment.get('version') ? comment.get('version')._id : 'head' %><br/><%= comment.get('content') %></div>
+            <div class="body">
+              <% var version = comment.get('version') ? comment.get('version')._id.split('/')[2] : null; %>
+              <!--Version: <%= version %> / <%= app.document.version %>-->
+              <% if (version !== app.document.version || !(!!version === !!app.document.version)) { %>
+                <div class="different-version" title="This comment belongs to a different document version."><a href="#">different version</a></div>
+              <% } %>
+              <%= comment.get('content') %>
+            </div>
           </div>
         <% }); %>
       <% } %>
