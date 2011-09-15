@@ -88,6 +88,33 @@ Filters.ensureAuthorized = function() {
 };
 
 
+
+// Event logging and user notifications
+// -----------
+
+Filters.calcCommentCount = function() {
+  return {
+    read: function(node, next, session) {
+      if (_.intersect(node.type, ["/type/section", "/type/visualization", "/type/text",
+                                  "/type/question", "/type/answer", "/type/quote", "/type/image", "/type/reference"]).length > 0) {
+        
+        this.db.view('comment/by_node', {key: [node._id]}, function(err, res) {
+          if (!err) node.comment_count = res.rows.length;
+          next(node);
+        });
+      } else {
+        next(node);
+      }
+      
+    },
+    write: function(node, next, session) {
+      
+    }
+  };
+};
+
+
+
 // Event logging and user notifications
 // -----------
 

@@ -636,8 +636,8 @@
   <script type="text/x-ejs-template" name="comments">    
     <div class="comments-title">Comments</div>
     <div class="comments">
-      <% if (node.get('comments')) { %>
-        <% node.get('comments').each(function(comment, key) { %>
+      <% if (comments) { %>
+        <% comments.each(function(comment, key) { %>
           <div class="comment" id="<%= comment.html_id %>">
             <% username = comment.get('creator')._id.split('/')[2]; %>
             <div class="header">
@@ -646,7 +646,7 @@
               <% if (app.username === username) { %>
                 <a href="/" comment="<%= comment._id %>" class="remove-comment">Remove</a></div>
               <% } %>
-            <div class="body"><%= comment.get('content') %></div>
+            <div class="body">Version:  <%= comment.get('version') ? comment.get('version')._id : 'head' %><br/><%= comment.get('content') %></div>
           </div>
         <% }); %>
       <% } %>
@@ -966,12 +966,7 @@
       </div>
       <p class="author"><%= node.get('creator').get('name') || node.get('creator').get('username') %></p>
       <p class="published">
-        <% if (node.get('published_on') && edit) { %>
-          <%= _.date(node.get('published_on')) %>
-          — <a href="/unpublish" class="unpublish-document">Unpublish</a>
-        <% } else if (edit) { %>
-          Not published yet — <a href="/" class="publish-document">Publish</a>
-        <% } else if (node.get('published_on')) { %>
+        <% if (node.get('published_on')) { %>
           <%= _.date(node.get('published_on')) %>
         <% } %>
       </p>

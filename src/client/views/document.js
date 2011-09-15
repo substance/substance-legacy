@@ -78,47 +78,138 @@ var Document = Backbone.View.extend({
     return false;
   },
   
-  removeComment: function(e) {
-    var comment = graph.get($(e.currentTarget).attr('comment'));
+  
+  createComment: function(e) {
+    var that = this;
     
-    // All comments of the currently selected node
-    var comments = this.selectedNode.get('comments');
+    window.pendingSync = true;
     
-    // Remove comment from node
-    this.selectedNode.set({
-      comments: comments.del(comment._id).keys()
+    var comment = graph.set(null, {
+      type: "/type/comment",
+      node: this.selectedNode._id,
+      document: this.model._id,
+      created_at: new Date(),
+      version: this.version,
+      creator: '/user/'+app.username,
+      content: this.commentEditor.content()
     });
+    
+    // Trigger immediate sync
+    graph.sync(function (err) {
+      window.pendingSync = false;
+      that.enableCommentEditor(null, function() {
+        // ready.
+      });
+    });
+
+    return false;
+  },
+  
+  removeComment: function(e) {
+    var that = this;
+    var comment = graph.get($(e.currentTarget).attr('comment'));
     
     // Remove comment
     graph.del(comment._id);
-    // Re-render comments
-    this.enableCommentEditor();
+    
+    window.pendingSync = true;
+    
+    graph.sync(function (err) {
+      window.pendingSync = false;
+      that.enableCommentEditor(null, function() {
+        // ready.
+      });
+    });
+    
     return false;
+  },
+  
+  
+  loadComments: function(node, callback) {
+    graph.fetch({"type": "/type/comment", "node": node}, function(err, nodes) {
+      var ASC_BY_CREATED_AT = function(item1, item2) {
+        var v1 = item1.value.get('created_at'),
+            v2 = item2.value.get('created_at');
+        return v1 === v2 ? 0 : (v1 < v2 ? -1 : 1);
+      };
+      
+      callback(nodes.sort(ASC_BY_CREATED_AT));
+    });
+    
+    return false;
+  },
+  
+  
+  enableCommentEditor: function(node, callback) {
+    
+    node = node ? node : this.selectedNode;
+    var that = this;
+    
+    // Load comments for a certain node
+    this.loadComments(node._id, function(comments) {
+      // Render comments
+      var wrapper = $('#'+node.html_id+' > .comments-wrapper');
+      if (wrapper.length === 0) return;
+      
+      wrapper.html(_.tpl('comments', {
+        node: node,
+        comments: comments
+      }));
+
+      // var comments = node.get('comments');
+      var count = comments && comments.length > 0 ? comments.length : "";
+
+      // Update comment count
+      $('#'+node.html_id+' > .operations a.toggle-comments span').html(count);
+
+      var $content = $('#'+node.html_id+' > .comments-wrapper .comment-content');
+      function activate() {
+        that.commentEditor = new Proper();
+        that.commentEditor.activate($content, {
+          multiline: true,
+          markup: true,
+          placeholder: 'Enter Comment'
+        });
+        return false;
+      }
+
+      $content.unbind();
+      $content.click(activate);
+      callback();
+    });
   },
   
   toggleComments: function(e) {
     var nodeId = $(e.currentTarget).parent().parent().attr('name');
+    var that = this;
+    
+    
     var changed = false;
-    if (!this.selectedNode || this.selectedNode._id !== nodeId) {
+    if (!that.selectedNode || that.selectedNode._id !== nodeId) {
       // First select node
-      this.selectedNode = graph.get(nodeId);
-      this.trigger('select:node', this.selectedNode);
+      that.selectedNode = graph.get(nodeId);
+      that.trigger('select:node', that.selectedNode);
       changed = true;
     }
-    this.enableCommentEditor();
     
-    // Toggle them
-    var wrapper = $('#'+this.selectedNode.html_id+' > .comments-wrapper');
-    wrapper.toggleClass('expanded');
-    if (changed) wrapper.addClass('expanded'); // overrule
-    
-    if (wrapper.hasClass('expanded')) {
-      // Scroll to the comments wrapper
-      var offset = wrapper.offset();
-      $('html, body').animate({scrollTop: offset.top-100}, 'slow');
-    }
+    that.enableCommentEditor(null, function() {
+      
+      // Toggle them
+      var wrapper = $('#'+that.selectedNode.html_id+' > .comments-wrapper');
+      wrapper.toggleClass('expanded');
+      if (changed) wrapper.addClass('expanded'); // overrule
+      
+      if (wrapper.hasClass('expanded')) {
+        // Scroll to the comments wrapper
+        var offset = wrapper.offset();
+        $('html, body').animate({scrollTop: offset.top-100}, 'slow');
+      }
+      
+    });
+
     return false;
   },
+  
   
   // Enable move mode
   toggleMoveNode: function() {
@@ -500,10 +591,11 @@ var Document = Backbone.View.extend({
           
           that.selectedNode = targetNode;
           that.trigger('select:node', that.selectedNode);
-          that.enableCommentEditor(targetNode);
           
-          $('#'+nodeid+' > .comments-wrapper').show();
-          app.scrollTo(commentid);
+          that.enableCommentEditor(targetNode, function() {
+            $('#'+nodeid+' > .comments-wrapper').show();
+            app.scrollTo(commentid);
+          });
         }
       } else {
         $('#document_wrapper').html('Document loading failed');
@@ -718,58 +810,7 @@ var Document = Backbone.View.extend({
     return false;
   },
   
-  createComment: function(e) {
-    var comments = this.selectedNode.get('comments') ? this.selectedNode.get('comments').keys() : [];
-    
-    var comment = graph.set(null, {
-      type: "/type/comment",
-      node: this.selectedNode._id,
-      document: this.model._id,
-      created_at: new Date(),
-      creator: '/user/'+app.username,
-      content: this.commentEditor.content()
-    });
-    
-    comments.push(comment._id);
-    this.selectedNode.set({
-      comments: comments
-    });
 
-    this.enableCommentEditor();
-    return false;
-  },
-  
-  enableCommentEditor: function(node) {
-    
-    node = node ? node : this.selectedNode;
-    var that = this;
-    
-    // Render comments
-    var wrapper = $('#'+node.html_id+' > .comments-wrapper');
-    if (wrapper.length === 0) return;
-    
-    wrapper.html(_.tpl('comments', {node: node}));
-    
-    var comments = node.get('comments');
-    var count = comments && comments.length > 0 ? comments.length : "";
-    
-    // Update comment count
-    $('#'+node.html_id+' > .operations a.toggle-comments span').html(count);
-    
-    var $content = $('#'+node.html_id+' > .comments-wrapper .comment-content');
-    function activate() {
-      that.commentEditor = new Proper();
-      that.commentEditor.activate($content, {
-        multiline: true,
-        markup: true,
-        placeholder: 'Enter Comment'
-      });
-      return false;
-    }
-    
-    $content.unbind();
-    $content.click(activate);
-  },
   
   selectNode: function(e) {
     var that = this;

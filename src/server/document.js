@@ -1,6 +1,8 @@
 var _ = require('underscore');
 var async = require('async');
 var Data = require ('../../lib/data/data')
+var Filters = require('./filters');
+
 
 // Document
 // --------------------------
@@ -140,7 +142,12 @@ Document.getContent = function(documentId, callback) {
 // Get a specific version of a document from the database, including all associated content nodes
 Document.get = function(username, docname, version, reader, callback) {
   db.view('substance/documents', {key: username+'/'+docname}, function(err, res) {
-    var graph = new Data.Graph(seed).connect('couch', {url: config.couchdb_url});
+    var graph = new Data.Graph(seed).connect('couch', {
+      url: config.couchdb_url,
+      filters: [
+        Filters.calcCommentCount()
+      ]
+    });
     
     if (err) return callback(err);
     if (res.rows.length == 0) return callback("not_found");
@@ -162,8 +169,8 @@ Document.get = function(username, docname, version, reader, callback) {
           var qry = {
             "_id": id,
             "children": {
-              "_recursive": true,
-              "comments": {}
+              "_recursive": true
+              // "comments": {}
             },
             "subjects": {},
             "entities": {},

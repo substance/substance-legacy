@@ -279,6 +279,12 @@
         "unique": true,
         "required": true
       },
+      "version": {
+        "name": "Version",
+        "type": ["/type/version"],
+        "unique": true,
+        "required": false
+      },
       "creator": {
         "name": "Creator",
         "type": "/type/user",
@@ -575,6 +581,12 @@
         "unique": false,
         "type": ["/type/comment"],
         "default": []
+      },
+      "comment_count": {
+        "name": "Virtual comment count attribute",
+        "unique": true,
+        "type": "number",
+        "default": []
       }
     }
   },
@@ -594,6 +606,12 @@
         "name": "Comments",
         "unique": false,
         "type": ["/type/comment"],
+        "default": []
+      },
+      "comment_count": {
+        "name": "Virtual comment count attribute",
+        "unique": true,
+        "type": "number",
         "default": []
       },
       "document": {
@@ -630,6 +648,12 @@
         "type": ["/type/comment"],
         "default": []
       },
+      "comment_count": {
+        "name": "Virtual comment count attribute",
+        "unique": true,
+        "type": "number",
+        "default": []
+      },
       "document": {
         "name": "Document Membership",
         "unique": true,
@@ -661,6 +685,12 @@
         "unique": false,
         "type": ["/type/comment"],
         "default": []
+      },
+      "comment_count": {
+        "name": "Virtual comment count attribute",
+        "unique": true,
+        "type": "number",
+        "default": []
       }
     }
   },
@@ -686,6 +716,12 @@
         "name": "Comments",
         "unique": false,
         "type": ["/type/comment"],
+        "default": []
+      },
+      "comment_count": {
+        "name": "Virtual comment count attribute",
+        "unique": true,
+        "type": "number",
         "default": []
       }
     }
@@ -719,6 +755,12 @@
         "unique": false,
         "type": ["/type/comment"],
         "default": []
+      },
+      "comment_count": {
+        "name": "Virtual comment count attribute",
+        "unique": true,
+        "type": "number",
+        "default": []
       }
     }
   },
@@ -744,6 +786,12 @@
         "name": "Comments",
         "unique": false,
         "type": ["/type/comment"],
+        "default": []
+      },
+      "comment_count": {
+        "name": "Virtual comment count attribute",
+        "unique": true,
+        "type": "number",
         "default": []
       }
     }
@@ -780,6 +828,12 @@
         "unique": false,
         "type": ["/type/comment"],
         "default": []
+      },
+      "comment_count": {
+        "name": "Virtual comment count attribute",
+        "unique": true,
+        "type": "number",
+        "default": []
       }
     }
   },
@@ -809,6 +863,12 @@
         "name": "Comments",
         "unique": false,
         "type": ["/type/comment"],
+        "default": []
+      },
+      "comment_count": {
+        "name": "Virtual comment count attribute",
+        "unique": true,
+        "type": "number",
         "default": []
       }
     }
