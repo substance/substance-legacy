@@ -190,7 +190,7 @@ Document.get = function(username, docname, version, reader, callback) {
         function loadLatestVersion(callback) {
           console.log('Loading latest version.');
           db.view('substance/versions', {endkey: [id], startkey: [id, {}], limit: 1, descending: true}, function(err, res) {
-            if (err) return callback(err);
+            if (err || res.rows.length === 0) return callback('not_found');
             _.extend(result, res.rows[0].value.data);
             published_on = res.rows[0].value.created_at;
             callback(null, result, false, res.rows[0].value._id.split('/')[2]);
