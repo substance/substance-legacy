@@ -5,10 +5,11 @@ var Router = Backbone.Router.extend({
   initialize: function() {
     // Using this.route, because order matters
     this.route(":username", "user", app.userDocs);
-    // this.route(":username/:docname/:node/:comment", "comment", this.loadDocument);
-    // this.route(":username/:docname/:node", "node", this.loadDocument);
-    this.route(":username/:docname/:version", "version", this.loadDocument);
-    this.route(":username/:docname", "document", this.loadDocument);
+    
+    this.route(":username/:docname/:p1/:p2/:p3", "node", this.loadDocument);
+    this.route(":username/:docname/:p1/:p2", "node", this.loadDocument);
+    this.route(":username/:docname/:p1", "node", this.loadDocument);
+    this.route(":username/:docname", "node", this.loadDocument);
     
     this.route("reset/:username/:tan", "reset", this.resetPassword);
     this.route("subscribed", "subscribed", app.subscribedDocs);
@@ -58,21 +59,17 @@ var Router = Backbone.Router.extend({
     return false;
   },
 
-  loadDocument: function(username, docname, version, comment) {
+  loadDocument: function(username, docname, p1, p2, p3) {
+    var version = !p1 || p1.indexOf("_") >= 0 ? null : p1;
+    var node = version ? p2 : p1;
+    var comment = version ? p3 : p2;
     app.browser.load({"type": "user", "value": username});
-    app.document.loadDocument(username, docname, version, null, comment);
-    $('#document_wrapper').attr('url', username+'/'+docname+(version ? "/"+version : "")+(comment ? "/"+comment : ""));
+    app.document.loadDocument(username, docname, version, node, comment);
+    
+    $('#document_wrapper').attr('url', username+'/'+docname+(p1 ? "/"+p1 : "")+(p2 ? "/"+p2 : "")+(p3 ? "/"+p3 : ""));
     $('#browser_wrapper').attr('url', username);
     return false;
-  }
-    
-  // loadDocument: function(username, docname, node, comment) {
-  //   app.browser.load({"type": "user", "value": username});
-  //   app.document.loadDocument(username, docname, node, comment);
-  //   $('#document_wrapper').attr('url', username+'/'+docname+(node ? "/"+node : "")+(comment ? "/"+comment : ""));
-  //   $('#browser_wrapper').attr('url', username);
-  //   return false;
-  // }
+  },
 });
 
 
@@ -163,8 +160,17 @@ var Application = Backbone.View.extend({
   
   openNotification: function(e) {
     var url = $(e.currentTarget).attr('href');
-    var urlParts = url.replace('#', '').split('/');
-    app.document.loadDocument(urlParts[0], urlParts[1], urlParts[2], urlParts[3]);
+    var p = url.replace('#', '').split('/');
+    
+    var user = p[0];
+    var doc = p[1];
+    
+    var version = !p[2] || p[2].indexOf("_") >= 0 ? null : p[2];
+    var node = version ? p[3] : p[2];
+    var comment = version ? p[4] : p[3];
+    
+    
+    app.document.loadDocument(user, doc, version, node, comment);
     $('#document_wrapper').attr('url', url);
     return false;
   },
