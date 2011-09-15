@@ -68,7 +68,14 @@ var PublishSettings = Backbone.View.extend({
     var that = this;
     // Load versions
     graph.fetch({"type": "/type/version", "document": app.document.model._id}, function(err, versions) {
-      that.versions = versions;
+      var ASC_BY_CREATED_AT = function(item1, item2) {
+        var v1 = item1.value.get('created_at'),
+            v2 = item2.value.get('created_at');
+        return v1 === v2 ? 0 : (v1 < v2 ? -1 : 1);
+      };
+      
+      that.versions = versions.sort(ASC_BY_CREATED_AT);
+      
       that.render();
     });
   },
