@@ -89,7 +89,7 @@ var Document = Backbone.View.extend({
       node: this.selectedNode._id,
       document: this.model._id,
       created_at: new Date(),
-      version: this.version,
+      version: this.version ? '/version/'+this.version : null,
       creator: '/user/'+app.username,
       content: this.commentEditor.content()
     });
@@ -132,7 +132,6 @@ var Document = Backbone.View.extend({
             v2 = item2.value.get('created_at');
         return v1 === v2 ? 0 : (v1 < v2 ? -1 : 1);
       };
-      
       callback(nodes.sort(ASC_BY_CREATED_AT));
     });
     
