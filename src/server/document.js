@@ -143,10 +143,7 @@ Document.getContent = function(documentId, callback) {
 Document.get = function(username, docname, version, reader, callback) {
   db.view('substance/documents', {key: username+'/'+docname}, function(err, res) {
     var graph = new Data.Graph(seed).connect('couch', {
-      url: config.couchdb_url,
-      filters: [
-        Filters.calcCommentCount()
-      ]
+      url: config.couchdb_url
     });
     
     if (err) return callback(err);
@@ -226,6 +223,19 @@ Document.get = function(username, docname, version, reader, callback) {
       
       // Attach Meta Info
       function addMetaInfo(callback) {
+        
+        function calcCommentCount(callback) {
+          async.forEach(_.keys(result), function(nodeId, callback) {
+            var node = result[nodeId];
+            if (_.include(node.type, "/type/document")) return callback();
+            
+            db.view('comment/by_node', {key: [node._id]}, function(err, res) {
+              if (!err) node.comment_count = res.rows.length;
+              callback();
+            });
+          }, callback);
+        }
+        
         result[node._id].published_on = published_on;
         logView(node._id, reader, function() {
           getViewCount(node._id, function(err, views) {
@@ -236,7 +246,8 @@ Document.get = function(username, docname, version, reader, callback) {
               if (err) return callback(err);
               result[node._id].subscribed = graph.find({"user": "/user/"+reader, "document": node._id}).length > 0 ? true : false;
               result[node._id].subscribers = nodes.length;
-              callback();
+              
+              calcCommentCount(callback);
             });
           });
         });
