@@ -58,7 +58,7 @@ var Router = Backbone.Router.extend({
     
     return false;
   },
-
+  
   loadDocument: function(username, docname, p1, p2, p3) {
     var version = !p1 || p1.indexOf("_") >= 0 ? null : p1;
     var node = version ? p2 : p1;
@@ -69,7 +69,7 @@ var Router = Backbone.Router.extend({
     $('#document_wrapper').attr('url', username+'/'+docname+(p1 ? "/"+p1 : "")+(p2 ? "/"+p2 : "")+(p3 ? "/"+p3 : ""));
     $('#browser_wrapper').attr('url', username);
     return false;
-  },
+  }
 });
 
 

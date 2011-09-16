@@ -149,6 +149,7 @@ var Document = Backbone.View.extend({
       if (wrapper.length === 0) return;
       
       wrapper.html(_.tpl('comments', {
+        doc: that.model,
         node: node,
         comments: comments
       }));
@@ -590,7 +591,7 @@ var Document = Backbone.View.extend({
           
           that.enableCommentEditor(targetNode, function() {
             $('#'+nodeid+' > .comments-wrapper').show();
-            app.scrollTo(commentid);
+            graph.get(commentid.replace(/_/g, '/')) ? app.scrollTo(commentid) : app.scrollTo('comments'+nodeid);
           });
         }
       } else {
