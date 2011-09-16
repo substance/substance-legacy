@@ -647,8 +647,10 @@
                 <a href="/" comment="<%= comment._id %>" class="remove-comment">Remove</a></div>
               <% } %>
             <div class="body">
-              <% var version = comment.get('version') ? comment.get('version')._id.split('/')[2] : null; %>
+              <% var version = comment.get('version') ? comment.get('version')._id.split('/')[3] : null; %>
+              
               <!--Version: <%= version %> / <%= app.document.version %>-->
+              
               <% if (version !== app.document.version || !(!!version === !!app.document.version)) { %>
                 <div class="different-version" title="This comment belongs to a different document version.">
                   <a href="/<%= username %>/<%= doc.get('name') %><%= version ? "/"+version : "" %>/<%= node.html_id %>/<%= comment.html_id %>">different version</a>
@@ -843,7 +845,7 @@
     <% } %>
     
     <% if (versions.length > 0) { %>
-      <h6>Versions</h6>
+      <h6>Published Versions</h6>
       <div class="versions">
       
         <% versions.each(function(version) { %>

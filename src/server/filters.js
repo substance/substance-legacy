@@ -54,7 +54,7 @@ Filters.ensureAuthorized = function() {
                                          "/type/question", "/type/answer", "/type/quote", "/type/image", "/type/reference"]).length > 0) {
         
         that.db.get(node.document, function(err, document) {
-          if (err) return next(null); // if the document does not yet exist
+          if (err) return next(node); // if the document does not yet exist, pass it through
           
           isAuthorized(document, session.username, function(err) {
             if (!err) return next(node);

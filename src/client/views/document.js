@@ -47,8 +47,17 @@ var Document = Backbone.View.extend({
     
     this.publishSettings.load();
     
+    
+    
+    
+    if ($('#publish_settings').is(':visible')) {
+      $('.view-action-icon.publish-settings').removeClass('active');
+    } else {
+      $('.view-action-icon.publish-settings').addClass('active');
+    }
+    
     $('#publish_settings').slideToggle();
-    $('.view-action-icon.publish-settings').toggleClass('active');
+
     return false;
   },
   
@@ -89,7 +98,7 @@ var Document = Backbone.View.extend({
       node: this.selectedNode._id,
       document: this.model._id,
       created_at: new Date(),
-      version: this.version ? '/version/'+this.version : null,
+      version: this.version ? '/version/'+this.model._id.split('/')[3]+'/'+this.version : null,
       creator: '/user/'+app.username,
       content: this.commentEditor.content()
     });
