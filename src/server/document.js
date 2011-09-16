@@ -115,7 +115,15 @@ function isAuthorized(node, username, callback) {
   
   // Fetch list of collaborators
   db.view('substance/collaborators', {key: ["/user/"+username, node._id]}, function(err, res) {
-    res.rows.length > 0 ? callback(null, res.rows[0].value.mode === "edit" ? true : false) : callback({error: "unauthorized"});
+    if (res.rows.length > 0) {
+      return callback(null, res.rows[0].value.mode === "edit" ? true : false);
+    } else {
+      // Already published?
+      db.view('substance/versions', {endkey: [node._id], startkey: [node._id, {}], limit: 1, descending: true}, function(err, res) {
+        if (err || res.rows.length === 0) return callback({error: "unauthorized"});
+        return callback(null, false);
+      });
+    }
   });
 }
 
@@ -128,7 +136,6 @@ Document.getContent = function(documentId, callback) {
   };
   
   var graph = new Data.Graph(seed).connect('couch', {url: config.couchdb_url});
-  
   graph.fetch(qry, function(err, nodes) {
     var result = nodes.toJSON(),
         doc = result[documentId];
@@ -136,7 +143,6 @@ Document.getContent = function(documentId, callback) {
     callback(null, result, doc._id);
   });
 };
-
 
 
 // Get a specific version of a document from the database, including all associated content nodes
@@ -262,7 +268,8 @@ Document.get = function(username, docname, version, reader, callback) {
     }
     
     isAuthorized(node, reader, function(err, edit) {
-      if (err && !node.published_on) return callback("not_authorized");
+      if (err) return callback("not_authorized");
+      
       loadDocument(node._id, version, edit, function(err, result, edit, version) {
         if (err) return callback("not_found");
         callback(null, result, node._id, edit, version);

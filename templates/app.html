@@ -917,13 +917,12 @@
         
         <a href="/" title="<%= node.get('subscribed') ? "Unsubscribe" : "Subscribe document and get notified about updates" %> " class="view-action-icon <%= node.get('subscribed') ? "unsubscribe-document" : "subscribe-document" %>"><div class="subscription-count"><%= node.get('subscribers') > 0 ? node.get('subscribers') : "" %></div><span>Subscribe document and get notified about updates</span></a>
         
-        <% if (app.document.mode === "edit") { %>
+        <!--<% if (app.document.mode === "edit") { %>-->
+        <!-- check if authorized (=edit privileges) -->
           <a href="#" class="toggle-settings view-action-icon settings" title="Collaborators"><span>Collaborators</span></a>
-        <% } %>
+        <!--<% } %>-->
         
-        <% if (node && node.get('creator')._id === '/user/'+app.username) { %>
           <a href="#" class="toggle-publish-settings view-action-icon publish-settings" title="Publish"><span>Publish Settings</span></a>
-        <% } %>
         
         <a href="#" class="export-document view-action-icon export" title="Export Document (Experimental)"><span>Export</span></a>
       </div>

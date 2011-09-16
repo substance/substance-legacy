@@ -124,7 +124,6 @@ var Document = Backbone.View.extend({
     return false;
   },
   
-  
   loadComments: function(node, callback) {
     graph.fetch({"type": "/type/comment", "node": node}, function(err, nodes) {
       var ASC_BY_CREATED_AT = function(item1, item2) {
@@ -140,7 +139,6 @@ var Document = Backbone.View.extend({
   
   
   enableCommentEditor: function(node, callback) {
-    
     node = node ? node : this.selectedNode;
     var that = this;
     
@@ -155,7 +153,6 @@ var Document = Backbone.View.extend({
         comments: comments
       }));
 
-      // var comments = node.get('comments');
       var count = comments && comments.length > 0 ? comments.length : "";
 
       // Update comment count
