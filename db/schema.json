@@ -399,6 +399,19 @@
     }
   },
   
+  "/type/counter": {
+    "_id": "/type/counter",
+    "type": "/type/type",
+    "properties": {
+      "value": {
+        "name": "Counter Value",
+        "unique": true,
+        "type": "number",
+        "required": true
+      }
+    }
+  },
+  
   "/type/document": {
     "_id": "/type/document",
     "type": "/type/type",
