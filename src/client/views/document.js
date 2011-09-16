@@ -625,6 +625,8 @@ var Document = Backbone.View.extend({
       dataType: "json",
       success: function(res) {
         that.version = res.version;
+        that.authorized = res.authorized;
+        that.published = res.published;
         that.mode = mode || (res.authorized && !version ? "edit" : "show");
         if (res.status === 'error') {
           printError(res.error);

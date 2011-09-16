@@ -650,18 +650,18 @@ app.post('/publish', function(req, res) {
 
 // Returns a specific version of the requested doc
 app.get('/documents/:username/:name/:version', function(req, res) {
-  Document.get(req.params.username, req.params.name, req.params.version, req.session ? req.session.username : null, function(err, graph, id, authorized, version) {
+  Document.get(req.params.username, req.params.name, req.params.version, req.session ? req.session.username : null, function(err, graph, id, authorized, version, published) {
     if (err) return res.send({status: "error", error: err}, 404);
-    res.send({status: "ok", graph: graph, id: id, authorized: authorized, version: version });
+    res.send({status: "ok", graph: graph, id: id, authorized: authorized, version: version, published: published });
   });
 });
 
 
 // Returns a specific version of the requested doc
 app.get('/documents/:username/:name', function(req, res) {
-  Document.get(req.params.username, req.params.name, null, req.session ? req.session.username : null, function(err, graph, id, authorized, version) {
+  Document.get(req.params.username, req.params.name, null, req.session ? req.session.username : null, function(err, graph, id, authorized, version, published) {
     if (err) return res.send({status: "error", error: err}, 404);
-    res.send({status: "ok", graph: graph, id: id, authorized: authorized, version: version});
+    res.send({status: "ok", graph: graph, id: id, authorized: authorized, version: version, published: published});
   });
 });
 

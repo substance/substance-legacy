@@ -1137,7 +1137,9 @@ div.browser-not-supported a:hover {
 .view-action-icon.delete { background: url(../images/icons/black/x_28x28.png) center no-repeat; }
 .view-action-icon.export { background: url(../images/icons/black/export.png) center no-repeat; }
 .view-action-icon.settings { background: url(../images/icons/black/user_24x32.png) center no-repeat; }
-.view-action-icon.publish-settings { background: url(../images/icons/black/unlock_stroke_32x24.png) center no-repeat; }
+
+.view-action-icon.publish-settings { background: url(../images/icons/black/lock_stroke_24x32.png) center no-repeat; }
+.view-action-icon.publish-settings.pub { background: url(../images/icons/black/unlock_stroke_32x24.png) center no-repeat; }
 
 .view-action-icon.subscribe-document { background: url(../images/icons/black/rss_32x32.png) center no-repeat; }
 .view-action-icon.unsubscribe-document { background: url(../images/icons/black/rss_32x32.png) center no-repeat; opacity: 1.0; }

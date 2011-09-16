@@ -8,25 +8,18 @@ var PublishSettings = Backbone.View.extend({
   
   focusRemark: function(e) {
     var input = $('#version_remark');
-        
-    if (input.val() === 'Enter optional remark.') {
-      input.val('');
-    }
+    if (input.val() === 'Enter optional remark.') input.val('');
   },
   
   blurRemark: function(e) {
     var input = $('#version_remark');
-        
-    if (input.val() === '') {
-      input.val('Enter optional remark.');
-    }
+    if (input.val() === '') input.val('Enter optional remark.');
   },
   
   publishDocument: function(e) {
     var that = this;
     var remark = $('#version_remark').val();
     
-    console.log(this.$('#version_remark'));
     $.ajax({
       type: "POST",
       url: "/publish",
@@ -38,6 +31,9 @@ var PublishSettings = Backbone.View.extend({
       success: function(res) {
         if (res.error) return alert(res.error);
         that.load();
+        app.document.published = true;
+        app.document.render();
+        $('#publish_settings').show();
       },
       error: function(err) {
         console.log(err);
@@ -59,6 +55,12 @@ var PublishSettings = Backbone.View.extend({
     graph.sync(function (err) {
       window.pendingSync = false;
       that.load();
+      
+      if (that.versions.length === 1) {
+        app.document.published = false;
+        app.document.render();
+        $('#publish_settings').show();
+      }
     });
     
     return false;
@@ -75,7 +77,6 @@ var PublishSettings = Backbone.View.extend({
       };
       
       that.versions = versions.sort(ASC_BY_CREATED_AT);
-      
       that.render();
     });
   },

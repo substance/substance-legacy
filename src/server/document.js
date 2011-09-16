@@ -261,8 +261,13 @@ Document.get = function(username, docname, version, reader, callback) {
       
       load(function(err, data, authorized, version) {
         if (err) return callback(err);
+        
         addMetaInfo(function() {
-          callback(null, result, edit, version);
+          // Check if already published
+          // TODO: shift to authorized method, as its duplicate effort now
+          db.view('substance/versions', {endkey: [node._id], startkey: [node._id, {}], limit: 1, descending: true}, function(err, res) {
+            callback(null, result, edit, version, !err && res.rows.length > 0);
+          });
         });
       });
     }
@@ -270,9 +275,9 @@ Document.get = function(username, docname, version, reader, callback) {
     isAuthorized(node, reader, function(err, edit) {
       if (err) return callback("not_authorized");
       
-      loadDocument(node._id, version, edit, function(err, result, edit, version) {
+      loadDocument(node._id, version, edit, function(err, result, edit, version, published) {
         if (err) return callback("not_found");
-        callback(null, result, node._id, edit, version);
+        callback(null, result, node._id, edit, version, published);
       });
     });
   });
