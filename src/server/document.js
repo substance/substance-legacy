@@ -205,7 +205,7 @@ Document.get = function(username, docname, version, reader, callback) {
 
         function loadVersion(version, callback) {
           console.log('loading version: '+ version);
-          graph.fetch({_id: "/version/"+version}, function(err, nodes) {
+          graph.fetch({_id: "/version/"+node._id.split('/')[3]+"/"+version}, function(err, nodes) {
             if (err || nodes.length === 0) return callback('not_found');
             var data = nodes.first().get('data');
             _.extend(result, data);

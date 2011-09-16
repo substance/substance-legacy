@@ -625,24 +625,42 @@ app.get('/avatar/:username/:size', function(req, res) {
 
 // Creates a new version from the current document state
 
+
+
+// Increments or initializes a counter
+function count(counterId, callback) {
+  db.get(counterId, function(err, node) {
+    var node = node ? node : { _id: counterId, type: ["/type/counter"] };
+    node.value = err ? 1 : node.value + 1;
+    
+    db.save(node, function(err, node) {
+      if (err) return callback(err);
+      callback(null, node.value);
+    });
+  });
+}
+
 app.post('/publish', function(req, res) {
   var document = req.body.document;
   var remark = req.body.remark;
   var graph = new Data.Graph(seed).connect('couch', {url: config.couchdb_url});
   
   Document.getContent(document, function(err, data, id) {
-    // Create a new version
-    var version = graph.set({
-      type: "/type/version",
-      document: document,
-      remark: remark,
-      created_at: new Date(),
-      data: data
-    });
-    
-    graph.sync(function(err) {
-      if (err) res.send({"status": "error"}, 500);
-      res.send({"status": "ok", "version": version._id});
+    var version = count('/counter/document/'+document.split('/')[3], function(err, versionCount) {
+      // Create a new version
+      var version = graph.set({
+        _id: "/version/"+document.split('/')[3]+"/"+versionCount,
+        type: "/type/version",
+        document: document,
+        remark: remark,
+        created_at: new Date(),
+        data: data
+      });
+
+      graph.sync(function(err) {
+        if (err) res.send({"status": "error"}, 500);
+        res.send({"status": "ok", "version": version._id});
+      });
     });
   });
 });
@@ -664,7 +682,6 @@ app.get('/documents/:username/:name', function(req, res) {
     res.send({status: "ok", graph: graph, id: id, authorized: authorized, version: version, published: published});
   });
 });
-
 
 
 // Returns the most recent version of the requested doc
