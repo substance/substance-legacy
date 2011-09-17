@@ -79,7 +79,6 @@ function isAuthorized(node, username, callback) {
 
 function fetchDocuments(documents, callback) {
   var graph = new Data.Graph(seed).connect('couch', {url: config.couchdb_url});
-
   var result = {};
   
   function getHeadVersion(id, callback) {
@@ -104,10 +103,8 @@ function fetchDocuments(documents, callback) {
     
     // Asynchronously fetch the right versions for the doc browser
     async.forEach(documents, function(documentId, callback) {
-      
       getHeadVersion(documentId, function(err, head) {
         if (err) return callback(); // skip if there's no version
-        
         isAuthorized(result[documentId], "michael", function(err, edit) {
           if (edit) {
             result[documentId].published_on = head.published_on;
@@ -125,22 +122,32 @@ function fetchDocuments(documents, callback) {
 }
 
 
-// TODO: rework!
-
 Document.recent = function(limit, username, callback) {
-  
-  db.view('substance/recent_docs', {limit: 3, group_level: 1}, function(err, res) {
-    console.log('WHEEHEEE');
-    console.log();
+  db.view('substance/recent_versions', {limit: parseInt(limit*2)}, function(err, res) {
     if (err) return callback(err);
-    fetchDocuments(res.rows.map(function(d) { return d.key[0]; }), callback);
-    
+    var documents = res.rows.map(function(d) { return d.value; });
+    documents = _.select(_.uniq(documents), function(d, index) {
+      return index < limit;
+    });
+    fetchDocuments(documents, callback);
   });
+};
+
+
+Document.subscribed = function(username, callback) {
+  var graph = new Data.Graph(seed).connect('couch', {url: config.couchdb_url});
   
-  // db.view('substance/recent_documents', {limit: parseInt(limit), descending: true}, function(err, res) {
-  //   if (err) return callback(err);
-  //   fetchDocuments(res.rows.map(function(d) { return d.id }), callback);
-  // });
+  var qry = {
+    "type": "/type/subscription",
+    "user": "/user/"+username
+  };
+  
+  graph.fetch(qry, function(err, nodes) {
+    var documents = nodes.map(function(n) {
+      return n.get('document')._id
+    }).values();
+    fetchDocuments(documents, callback);
+  });
 };
 
 
@@ -332,9 +339,6 @@ function loadDocument(id, version, reader, edit, callback) {
 
 
 
-
-
-
 // Get a specific version of a document from the database, including all associated content nodes
 Document.get = function(username, docname, version, reader, callback) {
   db.view('substance/documents', {key: username+'/'+docname}, function(err, res) {
@@ -355,24 +359,5 @@ Document.get = function(username, docname, version, reader, callback) {
   });
 };
 
-
-Document.subscribed = function(username, callback) {
-  var graph = new Data.Graph(seed).connect('couch', {url: config.couchdb_url});
-  
-  var qry = {
-    "type": "/type/subscription",
-    "user": "/user/"+username,
-    "document": {
-      "creator": {},
-      "children": {"_recursive": true},
-      "subjects": {},
-      "entities": {}
-    }
-  };
-  
-  graph.fetch(qry, function(err, nodes) {
-    callback(null, nodes.toJSON(), graph.find({"type": "/type/subscription"}).length);
-  });
-};
 
 module.exports = Document;
