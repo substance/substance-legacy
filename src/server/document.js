@@ -57,58 +57,6 @@ function getUsage(documentId, callback) {
 }
 
 
-function fetchDocuments(documents, callback) {
-  var graph = new Data.Graph(seed).connect('couch', {url: config.couchdb_url});
-
-  var qry = {
-    "_id": documents,
-    "subjects": {},
-    "entities": {},
-    "creator": {}
-  };
-  
-  graph.fetch(qry, function(err, nodes) {
-    if (err) return callback(err);
-    callback(null, nodes.toJSON(), documents.length);
-  });
-}
-
-Document.recent = function(limit, username, callback) {
-  db.view('substance/recent_documents', {limit: parseInt(limit), descending: true}, function(err, res) {
-    if (err) return callback(err);
-    fetchDocuments(res.rows.map(function(d) { return d.id }), callback);
-  });
-};
-
-
-// We are aware that this is not a performant solution.
-// But search functionality needed to be there, quickly.
-// We'll replace it with a speedy fulltext search asap.
-Document.find = function(searchstr, type, username, callback) {
-  db.view('substance/documents_by_keyword', function(err, res) {
-    if (err) return callback(err);
-    var documents = [];
-    _.each(res.rows, function(row) {
-      var matched = type === "keyword" ? row.key && row.key.match(new RegExp("("+searchstr+")", "i"))
-                                   : row.value.creator.match(new RegExp("/user/("+searchstr+")$", "i"));
-                                   
-      if (matched && (row.value.published_on || row.value.creator === '/user/'+username)
-                  && documents.length < 200) documents.push(row.value._id);
-    });
-    fetchDocuments(documents, function(err, nodes, count) {
-      if (type === "user" && !nodes["/user/"+searchstr]) {
-        db.get("/user/"+searchstr, function(err, node) {
-          if (!err) nodes[node._id] = node;
-          callback(null, nodes, count);
-        });
-      } else {
-        callback(err, nodes, count);
-      }
-    });
-  });
-};
-
-
 // There's a duplicate version in filters.js
 function isAuthorized(node, username, callback) {
   if ("/user/"+username === node.creator) return callback(null, true);
@@ -126,6 +74,124 @@ function isAuthorized(node, username, callback) {
     }
   });
 }
+
+
+
+function fetchDocuments(documents, callback) {
+  var graph = new Data.Graph(seed).connect('couch', {url: config.couchdb_url});
+
+  var result = {};
+  
+  function getHeadVersion(id, callback) {
+    db.view('substance/versions', {endkey: [id], startkey: [id, {}], limit: 1, descending: true}, function(err, res) {
+      if (err || res.rows.length === 0) return callback('not found');
+      var data = res.rows[0].value.data;
+      data[id].published_on = res.rows[0].value.created_at;
+      callback(null, data[id]);
+    });
+  }
+  
+  var qry = {
+    "_id": documents,
+    "subjects": {},
+    "entities": {},
+    "creator": {}
+  };
+  
+  graph.fetch(qry, function(err, nodes) {
+    if (err) return callback(err);
+    _.extend(result, nodes.toJSON());
+    
+    // Asynchronously fetch the right versions for the doc browser
+    async.forEach(documents, function(documentId, callback) {
+      
+      getHeadVersion(documentId, function(err, head) {
+        if (err) return callback(); // skip if there's no version
+        
+        isAuthorized(result[documentId], "michael", function(err, edit) {
+          if (edit) {
+            result[documentId].published_on = head.published_on;
+            callback(); // skip if user has edit privileges
+          } else {
+            result[documentId] = head;
+            callback();
+          }
+        });
+      });
+    }, function() {
+      callback(null, result, documents.length);
+    });
+  });
+}
+
+
+// TODO: rework!
+
+Document.recent = function(limit, username, callback) {
+  
+  db.view('substance/recent_docs', {limit: 3, group_level: 1}, function(err, res) {
+    console.log('WHEEHEEE');
+    console.log();
+    if (err) return callback(err);
+    fetchDocuments(res.rows.map(function(d) { return d.key[0]; }), callback);
+    
+  });
+  
+  // db.view('substance/recent_documents', {limit: parseInt(limit), descending: true}, function(err, res) {
+  //   if (err) return callback(err);
+  //   fetchDocuments(res.rows.map(function(d) { return d.id }), callback);
+  // });
+};
+
+
+// We are aware that this is not a performant solution.
+// But search functionality needed to be there, quickly.
+// We'll replace it with a speedy fulltext search asap.
+Document.find = function(searchstr, type, username, callback) {
+  db.view('substance/documents_by_keyword', function(err, res) {
+    if (err) return callback(err);
+    var documents = [];
+
+    async.forEach(res.rows, function(row, callback) {
+      
+      var matched = type === "keyword" ? row.key && row.key.match(new RegExp("("+searchstr+")", "i"))
+                                   : row.value.creator.match(new RegExp("/user/("+searchstr+")$", "i"));
+                                   
+      function add() {
+        documents.push(row.value._id)
+      }
+                
+      if (matched && documents.length < 200) {
+        if (row.value.creator === '/user/'+username) {
+          add(); return callback();
+        } else {
+          // check if published
+          db.view('substance/versions', {endkey: [row.value._id], startkey: [row.value._id, {}], limit: 1, descending: true}, function(err, res) {
+            if (err || res.rows.length === 0) return callback();
+            add(); return callback(null, false);
+          });
+        }
+        
+      } else {
+        callback();
+      }
+    }, function() {
+      fetchDocuments(documents, function(err, nodes, count) {
+        if (type === "user" && !nodes["/user/"+searchstr]) {
+          db.get("/user/"+searchstr, function(err, node) {
+            if (!err) nodes[node._id] = node;
+            callback(null, nodes, count);
+          });
+        } else {
+          callback(err, nodes, count);
+        }
+      });
+    });
+  });
+};
+
+
+
 
 Document.getContent = function(documentId, callback) {
   var qry = {
@@ -145,137 +211,143 @@ Document.getContent = function(documentId, callback) {
 };
 
 
+
+function loadDocument(id, version, reader, edit, callback) {
+  
+  var graph = new Data.Graph(seed).connect('couch', {
+    url: config.couchdb_url
+  });
+  
+  var result = {};
+  var published_on = null; // based on version.created_at
+  
+  function load(callback) {
+
+    // Load current Head Version
+    // ------------------
+
+    function loadHead(callback) {
+      console.log("Loading head version.");
+      var qry = {
+        "_id": id,
+        "children": {
+          "_recursive": true
+        },
+        "subjects": {},
+        "entities": {},
+        "creator": {}
+      };
+      
+      graph.fetch(qry, function(err, nodes) {
+        if (err) return callback(err);
+        _.extend(result, nodes.toJSON());
+        callback(null, result, edit, null);
+      });
+    }
+
+    // Load latest version, if exists
+    // ------------------
+
+    function loadLatestVersion(callback) {
+      console.log('Loading latest version.');
+      db.view('substance/versions', {endkey: [id], startkey: [id, {}], limit: 1, descending: true}, function(err, res) {
+        if (err || res.rows.length === 0) return callback('not_found');
+        _.extend(result, res.rows[0].value.data);
+        published_on = res.rows[0].value.created_at;
+        callback(null, result, false, res.rows[0].value._id.split('/')[2]);
+      });
+    }
+
+    // Try to load specific version, or latest version, or draft (as a fallback)
+    // ------------------
+
+    function loadVersion(version, callback) {
+      console.log('loading version: '+ version);
+      graph.fetch({_id: "/version/"+id.split('/')[3]+"/"+version}, function(err, nodes) {
+        if (err || nodes.length === 0) return callback('not_found');
+        var data = nodes.first().get('data');
+        _.extend(result, data);
+        published_on = nodes.first().get('created_at');
+        callback(null, result, false, version);
+      });
+    }
+
+    // Start the fun
+    if (edit) {
+      version ? loadVersion(version, callback) : loadHead(callback);
+    } else if (version) {
+      loadVersion(version, callback);
+    } else {
+      loadLatestVersion(function(err, version) {
+        if (err) return loadHead(callback);
+        callback(null, result, false);
+      });
+    }
+  }
+  
+  // Attach Meta Info
+  function addMetaInfo(callback) {
+    
+    function calcCommentCount(callback) {
+      async.forEach(_.keys(result), function(nodeId, callback) {
+        var node = result[nodeId];
+        if (_.include(node.type, "/type/document")) return callback();
+        
+        db.view('comment/by_node', {key: [node._id]}, function(err, res) {
+          if (!err) node.comment_count = res.rows.length;
+          callback();
+        });
+      }, callback);
+    }
+    
+    result[id].published_on = published_on;
+    logView(id, reader, function() {
+      getViewCount(id, function(err, views) {
+        result[id].views = views;
+        
+        // Check subscriptions
+        graph.fetch({type: "/type/subscription", "document": id}, function(err, nodes) {
+          if (err) return callback(err);
+          result[id].subscribed = graph.find({"user": "/user/"+reader, "document": id}).length > 0 ? true : false;
+          result[id].subscribers = nodes.length;
+          
+          calcCommentCount(callback);
+        });
+      });
+    });
+  }
+  
+  load(function(err, data, authorized, version) {
+    if (err) return callback(err);
+    
+    addMetaInfo(function() {
+      // Check if already published
+      // TODO: shift to authorized method, as its duplicate effort now
+      db.view('substance/versions', {endkey: [id], startkey: [id, {}], limit: 1, descending: true}, function(err, res) {
+        callback(null, result, edit, version, !err && res.rows.length > 0);
+      });
+    });
+  });
+}
+
+
+
+
+
+
 // Get a specific version of a document from the database, including all associated content nodes
 Document.get = function(username, docname, version, reader, callback) {
   db.view('substance/documents', {key: username+'/'+docname}, function(err, res) {
-    var graph = new Data.Graph(seed).connect('couch', {
-      url: config.couchdb_url
-    });
-    
+
     if (err) return callback(err);
     if (res.rows.length == 0) return callback("not_found");
     
     var node = res.rows[0].value;
     
-    function loadDocument(id, version, edit, callback) {
-      
-      var result = {};
-      var published_on = null; // based on version.created_at
-      
-      function load(callback) {
-
-        // Load current Head Version
-        // ------------------
-
-        function loadHead(callback) {
-          console.log("Loading head version.");
-          var qry = {
-            "_id": id,
-            "children": {
-              "_recursive": true
-              // "comments": {}
-            },
-            "subjects": {},
-            "entities": {},
-            "creator": {}
-          };
-          
-          graph.fetch(qry, function(err, nodes) {
-            if (err) return callback(err);
-            _.extend(result, nodes.toJSON());
-            callback(null, result, edit, null);
-          });
-        }
-
-        // Load latest version, if exists
-        // ------------------
-
-        function loadLatestVersion(callback) {
-          console.log('Loading latest version.');
-          db.view('substance/versions', {endkey: [id], startkey: [id, {}], limit: 1, descending: true}, function(err, res) {
-            if (err || res.rows.length === 0) return callback('not_found');
-            _.extend(result, res.rows[0].value.data);
-            published_on = res.rows[0].value.created_at;
-            callback(null, result, false, res.rows[0].value._id.split('/')[2]);
-          });
-        }
-
-        // Try to load specific version, or latest version, or draft (as a fallback)
-        // ------------------
-
-        function loadVersion(version, callback) {
-          console.log('loading version: '+ version);
-          graph.fetch({_id: "/version/"+node._id.split('/')[3]+"/"+version}, function(err, nodes) {
-            if (err || nodes.length === 0) return callback('not_found');
-            var data = nodes.first().get('data');
-            _.extend(result, data);
-            published_on = nodes.first().get('created_at');
-            callback(null, result, false, version);
-          });
-        }
-
-        // Start the fun
-        if (edit) {
-          version ? loadVersion(version, callback) : loadHead(callback);
-        } else if (version) {
-          loadVersion(version, callback);
-        } else {
-          loadLatestVersion(function(err, version) {
-            if (err) return loadHead(callback);
-            callback(null, result, false);
-          });
-        }
-      }
-      
-      // Attach Meta Info
-      function addMetaInfo(callback) {
-        
-        function calcCommentCount(callback) {
-          async.forEach(_.keys(result), function(nodeId, callback) {
-            var node = result[nodeId];
-            if (_.include(node.type, "/type/document")) return callback();
-            
-            db.view('comment/by_node', {key: [node._id]}, function(err, res) {
-              if (!err) node.comment_count = res.rows.length;
-              callback();
-            });
-          }, callback);
-        }
-        
-        result[node._id].published_on = published_on;
-        logView(node._id, reader, function() {
-          getViewCount(node._id, function(err, views) {
-            result[node._id].views = views;
-            
-            // Check subscriptions
-            graph.fetch({type: "/type/subscription", "document": node._id}, function(err, nodes) {
-              if (err) return callback(err);
-              result[node._id].subscribed = graph.find({"user": "/user/"+reader, "document": node._id}).length > 0 ? true : false;
-              result[node._id].subscribers = nodes.length;
-              
-              calcCommentCount(callback);
-            });
-          });
-        });
-      }
-      
-      load(function(err, data, authorized, version) {
-        if (err) return callback(err);
-        
-        addMetaInfo(function() {
-          // Check if already published
-          // TODO: shift to authorized method, as its duplicate effort now
-          db.view('substance/versions', {endkey: [node._id], startkey: [node._id, {}], limit: 1, descending: true}, function(err, res) {
-            callback(null, result, edit, version, !err && res.rows.length > 0);
-          });
-        });
-      });
-    }
-    
     isAuthorized(node, reader, function(err, edit) {
       if (err) return callback("not_authorized");
       
-      loadDocument(node._id, version, edit, function(err, result, edit, version, published) {
+      loadDocument(node._id, version, reader, edit, function(err, result, edit, version, published) {
         if (err) return callback("not_found");
         callback(null, result, node._id, edit, version, published);
       });
