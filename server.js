@@ -646,7 +646,7 @@ app.post('/publish', function(req, res) {
   var graph = new Data.Graph(seed).connect('couch', {url: config.couchdb_url});
   
   Document.getContent(document, function(err, data, id) {
-    var version = count('/counter/document/'+document.split('/')[3], function(err, versionCount) {
+    count('/counter/document/'+document.split('/')[3], function(err, versionCount) {
       // Create a new version
       var version = graph.set({
         _id: "/version/"+document.split('/')[3]+"/"+versionCount,

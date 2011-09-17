@@ -1,1 +1,0 @@
-// Since we introduced a new feature "Versions" we need to migrate previously published documents.
