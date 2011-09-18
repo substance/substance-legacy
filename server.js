@@ -82,6 +82,8 @@ app.use(function(req, res) {
   }
 });
 
+app.enable("jsonp callback");
+
 
 function serveStartpage(req, res) {
   html = fs.readFileSync(__dirname+ '/templates/app.html', 'utf-8');
@@ -669,28 +671,21 @@ app.post('/publish', function(req, res) {
 // Returns a specific version of the requested doc
 app.get('/documents/:username/:name/:version', function(req, res) {
   Document.get(req.params.username, req.params.name, req.params.version, req.session ? req.session.username : null, function(err, graph, id, authorized, version, published) {
-    if (err) return res.send({status: "error", error: err}, 404);
-    res.send({status: "ok", graph: graph, id: id, authorized: authorized, version: version, published: published });
+    if (err) return res.json({status: "error", error: err}, 404);
+    res.json({status: "ok", graph: graph, id: id, authorized: authorized, version: version, published: published });
   });
 });
 
 
-// Returns a specific version of the requested doc
+// Returns the latest version of the requested doc
 app.get('/documents/:username/:name', function(req, res) {
+  
   Document.get(req.params.username, req.params.name, null, req.session ? req.session.username : null, function(err, graph, id, authorized, version, published) {
-    if (err) return res.send({status: "error", error: err}, 404);
-    res.send({status: "ok", graph: graph, id: id, authorized: authorized, version: version, published: published});
+    if (err) res.json({status: "error", error: err}, 404);
+    res.json({status: "ok", graph: graph, id: id, authorized: authorized, version: version, published: published});
   });
 });
 
-
-// Returns the most recent version of the requested doc
-// app.get('/documents/:username/:name', function(req, res) {
-//   Document.get(req.params.username, req.params.name, req.session ? req.session.username : null, function(err, graph, id, authorized) {
-//     if (err) return res.send({status: "error", error: err}, 404);
-//     res.send({status: "ok", graph: graph, id: id, authorized: authorized});
-//   });
-// });
 
 // Write a single document, expressed as a graph
 // app.post('/writedocument', function(req, res) {
