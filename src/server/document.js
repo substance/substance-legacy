@@ -160,7 +160,6 @@ Document.find = function(searchstr, type, username, callback) {
     var documents = [];
 
     async.forEach(res.rows, function(row, callback) {
-      
       var matched = type === "keyword" ? row.key && row.key.match(new RegExp("("+searchstr+")", "i"))
                                    : row.value.creator.match(new RegExp("/user/("+searchstr+")$", "i"));
                                    
@@ -196,8 +195,6 @@ Document.find = function(searchstr, type, username, callback) {
     });
   });
 };
-
-
 
 
 Document.getContent = function(documentId, callback) {
@@ -239,10 +236,7 @@ function loadDocument(id, version, reader, edit, callback) {
         "_id": id,
         "children": {
           "_recursive": true
-        },
-        "subjects": {},
-        "entities": {},
-        "creator": {}
+        }
       };
       
       graph.fetch(qry, function(err, nodes) {
@@ -261,7 +255,7 @@ function loadDocument(id, version, reader, edit, callback) {
         if (err || res.rows.length === 0) return callback('not_found');
         _.extend(result, res.rows[0].value.data);
         published_on = res.rows[0].value.created_at;
-        callback(null, result, false, res.rows[0].value._id.split('/')[2]);
+        callback(null, result, false, res.rows[0].value._id.split('/')[3]);
       });
     }
 
@@ -285,9 +279,9 @@ function loadDocument(id, version, reader, edit, callback) {
     } else if (version) {
       loadVersion(version, callback);
     } else {
-      loadLatestVersion(function(err, version) {
+      loadLatestVersion(function(err, result, authorized, version) {
         if (err) return loadHead(callback);
-        callback(null, result, false);
+        callback(null, result, false, version);
       });
     }
   }
@@ -307,6 +301,15 @@ function loadDocument(id, version, reader, edit, callback) {
       }, callback);
     }
     
+    function fetchAttributesAndUser(callback) {
+      var doc = result[id];
+      graph.fetch({_id: [doc.creator].concat(doc.entities).concat(doc.subjects) }, function(err, nodes) {
+        if (err) return callback();
+        _.extend(result, nodes.toJSON());
+        callback();
+      });
+    }
+    
     result[id].published_on = published_on;
     logView(id, reader, function() {
       getViewCount(id, function(err, views) {
@@ -318,7 +321,9 @@ function loadDocument(id, version, reader, edit, callback) {
           result[id].subscribed = graph.find({"user": "/user/"+reader, "document": id}).length > 0 ? true : false;
           result[id].subscribers = nodes.length;
           
-          calcCommentCount(callback);
+          calcCommentCount(function() {
+            fetchAttributesAndUser(callback);
+          });
         });
       });
     });
@@ -336,7 +341,6 @@ function loadDocument(id, version, reader, edit, callback) {
     });
   });
 }
-
 
 
 // Get a specific version of a document from the database, including all associated content nodes
