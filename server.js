@@ -642,6 +642,7 @@ function count(counterId, callback) {
   });
 }
 
+// TODO: check if authorized
 app.post('/publish', function(req, res) {
   var document = req.body.document;
   var remark = req.body.remark;
@@ -671,7 +672,7 @@ app.post('/publish', function(req, res) {
 // Returns a specific version of the requested doc
 app.get('/documents/:username/:name/:version', function(req, res) {
   Document.get(req.params.username, req.params.name, req.params.version, req.session ? req.session.username : null, function(err, graph, id, authorized, version, published) {
-    if (err) return res.json({status: "error", error: err}, 404);
+    if (err) return res.json({status: "error", error: err});
     res.json({status: "ok", graph: graph, id: id, authorized: authorized, version: version, published: published });
   });
 });
@@ -679,9 +680,8 @@ app.get('/documents/:username/:name/:version', function(req, res) {
 
 // Returns the latest version of the requested doc
 app.get('/documents/:username/:name', function(req, res) {
-  
   Document.get(req.params.username, req.params.name, null, req.session ? req.session.username : null, function(err, graph, id, authorized, version, published) {
-    if (err) res.json({status: "error", error: err}, 404);
+    if (err) return res.json({status: "error", error: err});
     res.json({status: "ok", graph: graph, id: id, authorized: authorized, version: version, published: published});
   });
 });
