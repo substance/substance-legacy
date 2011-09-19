@@ -3,10 +3,23 @@
 //     For all details and documentation:
 //     http://github.com/michael/proper
 
+// Goals:
+//
+// * Annotations (strong, em, code, link) are exclusive. No text can be both
+//   emphasized and strong.
+// * The output is semantic, valid HTML.
+// * Cross-browser compatibility: Support the most recent versions of Chrome,
+//   Safari, Firefox and Internet Explorer. Proper should behave the same on
+//   all these platforms (if possible).
+//
+// Proper uses contenteditable to support these features. Unfortunately, every
+// browser handles contenteditable differently, which is why many
+// browser-specific workarounds are required.
+
 (function(){
   
   // _.Events (borrowed from Backbone.js)
-  // -----------------
+  // ------------------------------------
   
   // A module that can be mixed in to *any object* in order to provide it with
   // custom events. You may `bind` or `unbind` a callback function to an event;
@@ -105,16 +118,8 @@
       <br class="clear"/>\
     </div>';
   
-  var COMMANDS = {
-    "em": "italic",
-    "strong": "bold",
-    "ul": "insertUnorderedList",
-    "ol": "insertOrderedList"
-    // "link": "createLink" // for some reason Firefox can't work with that
-  }
-  
   // Proper
-  // -----------
+  // ------
   
   this.Proper = function(options) {
     var activeElement = null, // element that's being edited
@@ -147,105 +152,134 @@
     // Commands
     // --------
     
-    function fixStyleLis() {
-      if ($.browser.mozilla) {
-        var lis = $(activeElement).find('li[style]');
-        if (lis.length > 0) {
-          var range = saveSelection();
-          
-          // TODO: make this dom operation more efficient
-          lis.each(function() {
-            var span = document.createElement('span');
-            span.setAttribute('style', this.getAttribute('style'));
-            this.removeAttribute('style');
-            
-            var child;
-            while (child = this.firstChild) {
-              this.removeChild(child);
-              span.appendChild(child);
-            }
-            
-            this.appendChild(span);
-          });
-          
-          if (range.startContainer.nodeName === 'LI') {
-            range.setStartBefore(range.startContainer);
-          }
-          if (range.endContainer.nodeName === 'LI') {
-            range.setEndAfter(range.endContainer);
-          }
-          restoreSelection(range);
+    function exec(cmd) {
+      var command = commands[cmd];
+      if (command.exec) {
+        command.exec();
+      } else {
+        if (command.isActive()) {
+          command.toggleOff();
+        } else {
+          command.toggleOn();
         }
       }
     }
-    
-    var commands = {
-      execEM: function() {
-        if (!document.queryCommandState('italic', false, true)) {
-          document.execCommand('removeFormat', false, true);
+
+    function removeFormat() {
+      document.execCommand('removeFormat', false, true);
+      _.each(['em', 'strong', 'code'], function (cmd) {
+        var command = commands[cmd];
+        if (command.isActive()) {
+          command.toggleOff();
+        }
+      });
+    }
+
+    // Give code elements (= monospace font) the class `proper-code`.
+    function addCodeClasses() {
+      $(activeElement).find('font').addClass('proper-code');
+    }
+
+    var nbsp = $('<span>&nbsp;</span>').text();
+
+    var commands = self.commands = {
+      em: {
+        isActive: function() {
+          return document.queryCommandState('italic', false, true);
+        },
+        toggleOn: function() {
+          removeFormat();
           document.execCommand('italic', false, true);
-          fixStyleLis();
-        } else {
+        },
+        toggleOff: function() {
           document.execCommand('italic', false, true);
         }
       },
 
-      execSTRONG: function() {
-        if (!document.queryCommandState('bold', false, true)) {
-          document.execCommand('removeFormat', false, true);
+      strong: {
+        isActive: function() {
+          return document.queryCommandState('bold', false, true);
+        },
+        toggleOn: function() {
+          removeFormat();
           document.execCommand('bold', false, true);
-          fixStyleLis();
-        } else {
+        },
+        toggleOff: function () {
           document.execCommand('bold', false, true);
         }
       },
-      
-      execCODE: function() {
-        if (cmpFontFamily(document.queryCommandValue('fontName'), options.codeFontFamily)) {
-          // remove <code>
-          document.execCommand('removeFormat', false, true);
-          $(activeElement).find('.code-span').filter(function() {
-            return !cmpFontFamily($(this).css('font-family'), options.codeFontFamily);
-          }).remove();
-        } else {
-          // add <code>
-          document.execCommand('removeFormat', false, true);
+
+      code: {
+        isActive: function() {
+          return cmpFontFamily(document.queryCommandValue('fontName'), options.codeFontFamily);
+        },
+        toggleOn: function() {
+          removeFormat();
           document.execCommand('fontName', false, options.codeFontFamily);
-          fixStyleLis();
-          $(activeElement).find('font').addClass('proper-code');
-          $(activeElement).find('span').filter(function() {
-            return cmpFontFamily($(this).css('font-family'), options.codeFontFamily);
-          }).addClass('proper-code');
+          addCodeClasses();
+        },
+        toggleOff: function () {
+          var sel;
+          if ($.browser.webkit && (sel = saveSelection()).collapsed) {
+            // Workaround for Webkit. Without this, the user wouldn't be
+            // able to disable <code> when there's no selection.
+            var container = sel.endContainer
+            ,   offset = sel.endOffset;
+            container.data = container.data.slice(0, offset)
+                           + nbsp
+                           + container.data.slice(offset);
+            var newSel = document.createRange();
+            newSel.setStart(container, offset);
+            newSel.setEnd(container, offset+1);
+            restoreSelection(newSel);
+            document.execCommand('removeFormat', false, true);
+          } else {
+            document.execCommand('removeFormat', false, true);
+          }
         }
       },
 
-      execUL: function() {
-        document.execCommand('insertUnorderedList', false, true);
-      },
-
-      execOL: function() {
-        document.execCommand('insertOrderedList', false, true);
-      },
-
-      execINDENT: function() {
-        if (document.queryCommandState('insertOrderedList', false, true) || document.queryCommandState('insertUnorderedList', false, true)) {
-          document.execCommand('indent', false, true);
+      link: {
+        exec: function() {
+          removeFormat();
+          document.execCommand('createLink', false, window.prompt('URL:', 'http://'));
         }
       },
 
-      execOUTDENT: function() {
-        if (document.queryCommandState('insertOrderedList', false, true) || document.queryCommandState('insertUnorderedList', false, true)) {
-          document.execCommand('outdent', false, true);
+      ul: {
+        isActive: function() {
+          return document.queryCommandState('insertUnorderedList', false, true);
+        },
+        exec: function() {
+          document.execCommand('insertUnorderedList', false, true);
         }
       },
-      
-      execLINK: function() {
-        document.execCommand('removeFormat', false, true);
-        document.execCommand('createLink', false, window.prompt('URL:', 'http://'));
+
+      ol: {
+        isActive: function() {
+          return document.queryCommandState('insertOrderedList', false, true);
+        },
+        exec: function() {
+          document.execCommand('insertOrderedList', false, true);
+        }
       },
 
-      showHTML: function() {
-        alert($(this.el).html());
+      indent: {
+        exec: function() {
+          if (document.queryCommandState('insertOrderedList', false, true) ||
+              document.queryCommandState('insertUnorderedList', false, true)) {
+            document.execCommand('indent', false, true);
+          }
+        }
+      },
+
+      outdent: {
+        exec: function() {
+          if (document.queryCommandState('insertOrderedList', false, true) ||
+              document.queryCommandState('insertUnorderedList', false, true)) {
+            document.execCommand('outdent', false, true);
+          }
+        }
       }
     };
     
@@ -254,13 +288,19 @@
       properContent.html(rawContent.text());
     }
     
-    function normalizeFontFamily(s) {
-      return (''+s).replace(/\s*,\s*/g, ',').replace(/'/g, '"');
-    }
-    
+    // Returns true if a and b is the same font family. This is used to check
+    // if the current font family (`document.queryCommandValue('fontName')`)
+    // is the font family that's used to style code.
     function cmpFontFamily(a, b) {
+      function normalizeFontFamily(s) {
+        return (''+s).replace(/\s*,\s*/g, ',').replace(/'/g, '"');
+      }
+      
       a = normalizeFontFamily(a);
       b = normalizeFontFamily(b);
+      // Internet Explorer's `document.queryCommandValue('fontName')` returns
+      // only the applied font family (e.g. `Consolas`), not the full font
+      // stack (e.g. `Monaco, Consolas, "Lucida Console", monospace`).
       if ($.browser.msie) {
         if (a.split(',').length === 1) {
           return b.split(',').indexOf(a) > -1;
@@ -274,19 +314,6 @@
       }
     }
     
-    function getCorrectTagName(node) {
-      var tagName = node.nodeName.toLowerCase();
-      
-      if (tagName === 'i') return 'em';
-      if (tagName === 'b') return 'strong';
-      if (tagName === 'font') return 'code';
-      if (tagName === 'span') {
-        if (node.style.fontWeight === 'bold') return 'strong';
-        if (node.style.fontStyle === 'italic') return 'em';
-        if (cmpFontFamily(node.style.fontFamily, options.codeFontFamily)) return 'code';
-      }
-      return tagName;
-    }
     
     function escape(text) {
       return text.replace(/&/g, '&amp;')
@@ -295,41 +322,143 @@
                  .replace(/"/g, '&quot;');
     }
     
+    // Recursively walks the dom and returns the semantified contents. Replaces
+    // presentational elements (e.g. `<b>`) with their semantic counterparts
+    // (e.g. `<strong>`).
     function semantifyContents(node) {
-      if (node.nodeType === Node.TEXT_NODE) {
-        return escape(node.data);
-      } else if (node.nodeType === Node.ELEMENT_NODE) {
-        var tagName = getCorrectTagName(node);
-        
-        if (tagName === 'br') return '<br />';
-        
-        var result = tagName === 'a' ? '<a href="'+escape(node.href)+'">'
-                                     : '<'+tagName+'>';
-        var children = node.childNodes;
-        for (var i = 0, l = children.length; i < l; i++) {
-          result += semantifyContents(children[i]);
-        }
-        result += '</'+tagName+'>';
-        return result;
-      } else {
-        return '';
+      function replace(presentational, semantic) {
+        node.find(presentational).each(function () {
+          $(this).replaceWith($(document.createElement(semantic)).html($(this).html()));
+        });
       }
-    }
-    
-    function updateCommandState() {
-      if (!options.markup) return;
+      replace('i', 'em');
+      replace('b', 'strong');
+      replace('.proper-code', 'code');
+      replace('div', 'p');
+      //replace('span', 'span');
       
-      $controls.find('.command').removeClass('selected');
-      _.each(COMMANDS, function(command, key) {
-        if (document.queryCommandState(command, false, true)) {
-          $controls.find('.command.'+key).addClass('selected');
+      node.find('span').each(function () {
+        if (this.firstChild) {
+          $(this.firstChild).unwrap();
         }
-        if (cmpFontFamily(document.queryCommandValue('fontName'), options.codeFontFamily)) {
-          $controls.find('.command.code').addClass('selected');
+      });
+      
+      node.find('p, ul, ol').each(function () {
+        while ($(this).parent().is('p')) {
+          $(this).unwrap();
+        }
+      });
+      
+      // Fix nested lists
+      node.find('ul > ul, ul > ol, ol > ul, ol > ol').each(function () {
+        if ($(this).prev()) {
+          $(this).prev().append(this);
+        } else {
+          $(this).wrap($('<li />'));
+        }
+      });
+      
+      (function () {
+        var currentP = [];
+        function wrapInP() {
+          if (currentP.length) {
+            var p = $('<p />').insertBefore(currentP[0]);
+            for (var i = 0, l = currentP.length; i < l; i++) {
+              $(currentP[i]).remove().appendTo(p);
+            }
+            currentP = [];
+          }
+        }
+        // _.clone is necessary because it turns the `childNodes` live
+        // dom collection into a static array.
+        var children = _.clone(node.get(0).childNodes);
+        for (var i = 0, l = children.length; i < l; i++) {
+          var child = children[i];
+          if (!$(child).is('p, ul, ol') &&
+              !(child.nodeType === Node.TEXT_NODE && (/^\s*$/).exec(child.data))) {
+            currentP.push(child);
+          } else {
+            wrapInP();
+          }
+        }
+        wrapInP();
+      })();
+      
+      // Remove unnecessary br's
+      node.find('br').each(function () {
+        if (this.parentNode.lastChild === this) {
+          $(this).remove();
+        }
+      });
+      
+      // Remove all spans
+      node.find('span').each(function () {
+        $(this).children().first().unwrap();
+      });
+      
+      node.children().each(function () {
+        if (!$(this).is('p,ul,ol')) {
+          $(this).wrap($('<p />'));
         }
       });
     }
     
+    // Replaces semantic elements with their presentational counterparts
+    // (e.g. <em> with <i>). Tries to preserve the user's selection and cursor
+    // position.
+    function desemantifyContents(node) {
+      var sel = saveSelection()
+      ,   startContainer = sel.startContainer
+      ,   startOffset    = sel.startOffset
+      ,   endContainer   = sel.endContainer
+      ,   endOffset      = sel.endOffset;
+      
+      function replace(semantic, presentational) {
+        node.find(semantic).each(function () {
+          var presentationalEl = $(presentational).get(0);
+          
+          var child;
+          while (child = this.firstChild) {
+            presentationalEl.appendChild(child);
+          }
+          
+          $(this).replaceWith(presentationalEl);
+        });
+      }
+      replace('em', '<i />');
+      replace('strong', '<b />');
+      replace('code', '<font class="proper-code" face="'+escape(options.codeFontFamily)+'" />');
+      
+      function isInDom(node) {
+        if (node === document.body) return true;
+        if (node.parentNode) return isInDom(node.parentNode);
+        return false;
+      }
+      
+      if (isInDom(startContainer)) {
+        sel.setStart(startContainer, startOffset);
+      }
+      if (isInDom(endContainer)) {
+        sel.setEnd(endContainer, endOffset);
+      }
+      
+      restoreSelection(sel);
+    }
+    
+    // Update the control buttons' state.
+    function updateCommandState() {
+      if (!options.markup) return;
+      
+      $controls.find('.command').removeClass('selected');
+      _.each(commands, function(command, name) {
+        if (command.isActive && command.isActive()) {
+          $controls.find('.command.'+name).addClass('selected');
+        }
+      });
+    }
+    
+    // If the activeElement has no content, display the placeholder and give
+    // the element the class `empty`.
     function maybeInsertPlaceholder() {
       if ($(activeElement).text().trim().length === 0) {
         $(activeElement).addClass('empty');
@@ -341,6 +470,8 @@
       }
     }
     
+    // If the activeElement has the class `empty`, remove the placeholder and
+    // the class.
     function maybeRemovePlaceholder() {
       if ($(activeElement).hasClass('empty')) {
         $(activeElement).removeClass('empty');
@@ -349,36 +480,37 @@
       }
     }
     
+    // Returns the current selection as a dom range.
     function saveSelection() {
       if (window.getSelection) {
         sel = window.getSelection();
         if (sel.getRangeAt && sel.rangeCount) {
           return sel.getRangeAt(0);
         }
-      } else if (document.selection && document.selection.createRange) {
+      } else if (document.selection && document.selection.createRange) { // IE
         return document.selection.createRange();
       }
       return null;
     }
 
+    // Selects the given dom range.
     function restoreSelection(range) {
       if (range) {
         if (window.getSelection) {
           var sel = window.getSelection();
           sel.removeAllRanges();
           sel.addRange(range);
-        } else if (document.selection && range.select) {
+        } else if (document.selection && range.select) { // IE
           range.select();
         }
       }
     }
     
+    // Selects the whole editing area.
     function selectAll() {
-      range = document.createRange();
+      var range = document.createRange();
       range.selectNodeContents($(activeElement)[0]);
-      selection = window.getSelection();
-      selection.removeAllRanges();
-      selection.addRange(range);
+      restoreSelection(range);
     }
     
     function bindEvents(el) {
@@ -408,12 +540,37 @@
         }, 1);
       });
       
+      function isTag(node, tag) {
+        if (!node || node === activeElement) return false;
+        if (node.tagName && node.tagName.toLowerCase() === tag) return true;
+        return isTag(node.parentNode, tag);
+      }
+      
       // Prevent multiline
       $(el).bind('keydown', function(e) {
-        if ((!options.multiline && e.keyCode === 13) ||
-            (e.keyCode === 8 && $(activeElement).text().trim().length === 0)) {
+        if (!options.multiline && e.keyCode === 13) {
           e.stopPropagation();
           e.preventDefault();
+          return;
+        }
+        setTimeout(function () {
+          if ($(activeElement).html().trim() === '') {
+            document.execCommand('insertParagraph', false, true);
+          }
+        }, 10);
+        // By default, Firefox doesn't create paragraphs. Fix this.
+        if ($.browser.mozilla) {
+          var selectionStart = saveSelection().startContainer;
+          if (options.multiline && !isTag(selectionStart, 'p') && !isTag(selectionStart, 'ul')) {
+            document.execCommand('insertParagraph', false, true);
+          }
+          if (e.keyCode === 13 && !e.shiftKey) {
+            window.setTimeout(function () {
+              if (!isTag(selectionStart, 'ul')) {
+                document.execCommand('insertParagraph', false, true);
+              }
+            }, 10);
+          }
         }
       });
       
@@ -424,6 +581,7 @@
       
       $(el).bind('keyup', function(e) {        
         updateCommandState();
+        addCodeClasses();
         // Trigger change events, but consolidate them to 200ms time slices
         setTimeout(function() {
           // Skip if there's already a change pending
@@ -472,34 +630,38 @@
       
       // Keyboard bindings
       if (options.markup) {
-        function preventDefaultAnd(executeThisFunction) {
-          return function (event) {
-            event.preventDefault();
-            executeThisFunction();
+        function execLater(cmd) {
+          return function(e) {
+            e.preventDefault();
+            exec(cmd);
           };
         }
         $(activeElement)
-          .keydown('ctrl+shift+e', preventDefaultAnd(commands.execEM))
-          .keydown('ctrl+shift+s', preventDefaultAnd(commands.execSTRONG))
-          .keydown('ctrl+shift+c', preventDefaultAnd(commands.execCODE))
-          .keydown('ctrl+shift+l', preventDefaultAnd(commands.execLINK))
-          .keydown('ctrl+shift+b', preventDefaultAnd(commands.execUL))
-          .keydown('ctrl+shift+n', preventDefaultAnd(commands.execOL))
-          .keydown('tab',          preventDefaultAnd(commands.execINDENT))
-          .keydown('shift+tab',    preventDefaultAnd(commands.execOUTDENT));
+          .keydown('ctrl+shift+e', execLater('em'))
+          .keydown('ctrl+shift+s', execLater('strong'))
+          .keydown('ctrl+shift+c', execLater('code'))
+          .keydown('ctrl+shift+l', execLater('link'))
+          .keydown('ctrl+shift+b', execLater('ul'))
+          .keydown('ctrl+shift+n', execLater('ol'))
+          .keydown('tab',          execLater('indent'))
+          .keydown('shift+tab',    execLater('outdent'));
       }
       
       $(activeElement).focus();
       updateCommandState();
+      desemantifyContents($(activeElement));
+      
+      // Use <b>, <i> and <font face="monospace"> instead of style attributes.
+      // This is convenient because these inline element can easily be replaced
+      // by their more semantic counterparts (<strong>, <em> and <code>);
+      document.execCommand('styleWithCSS', false, false);
       
       $('.proper-commands a.command').click(function(e) {
         e.preventDefault();
         $(activeElement).focus();
-        commands['exec'+ $(e.currentTarget).attr('command').toUpperCase()]();
+        exec($(e.currentTarget).attr('command'));
         updateCommandState();
-        setTimeout(function() {
-          self.trigger('changed');
-        }, 10);
+        setTimeout(function() { self.trigger('changed'); }, 10);
       });
     };
     
@@ -509,12 +671,9 @@
       
       if (options.markup) {
         if (!activeElement) return '';
-        
-        var result = '';
-        _.each($(activeElement).get(0).childNodes, function (child) {
-          result += semantifyContents(child);
-        })
-        return result;
+        var clone = $(activeElement).clone();
+        semantifyContents(clone);
+        return clone.html();
       } else {
         if (options.multiline) {
           return _.stripTags($(activeElement).html().replace(/<div>/g, '\n')
@@ -526,7 +685,7 @@
     };
     
     // Expose public API
-    // -----------
+    // -----------------
     
     _.extend(self, _.Events);
     return self;
