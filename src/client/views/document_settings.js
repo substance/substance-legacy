@@ -8,23 +8,37 @@ var DocumentSettings = Backbone.View.extend({
   changeMode: function(e) {
     var collaboratorId = $(e.currentTarget).attr('collaborator');
     var mode = $(e.currentTarget).val();
+    var that = this;
+    
+    window.pendingSync = true;
     
     graph.get(collaboratorId).set({
       mode: mode
     });
+    
     // trigger immediate sync
-    graph.sync();
+    graph.sync(function(err) {
+      window.pendingSync = false;
+      that.render();
+    });
     
     return false;
   },
   
   removeCollaborator: function(e) {
     var collaboratorId = $(e.currentTarget).attr('collaborator');
+    var that = this;
+    
+    window.pendingSync = true;
     graph.del(collaboratorId);
+    
     // trigger immediate sync
-    graph.sync();
-    this.collaborators.del(collaboratorId);
-    this.render();
+    graph.sync(function(err) {
+      window.pendingSync = false;
+      that.collaborators.del(collaboratorId);
+      that.render();
+    });
+
     return false;
   },
   
