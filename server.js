@@ -434,7 +434,7 @@ app.post('/reset_password', function(req, res) {
 // Recover lost password
 
 app.post('/recover_password', function(req, res) {
-  var username = req.body.username;
+  var username = req.body.username.toLowerCase();
   
   var graph = new Data.Graph(seed).connect('couch', {url: config.couchdb_url});
   graph.fetch({_id: "/user/"+username}, function(err) {
