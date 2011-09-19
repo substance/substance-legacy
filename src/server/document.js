@@ -123,7 +123,7 @@ function fetchDocuments(documents, username, callback) {
 
 
 Document.recent = function(limit, username, callback) {
-  db.view('substance/recent_versions', {limit: parseInt(limit*2)}, function(err, res) {
+  db.view('substance/recent_versions', {limit: parseInt(limit*2), descending: true}, function(err, res) {
     if (err) return callback(err);
     var documents = res.rows.map(function(d) { return d.value; });
     documents = _.select(_.uniq(documents), function(d, index) {
