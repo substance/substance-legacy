@@ -49,7 +49,7 @@ Filters.ensureAuthorized = function() {
           if (err) return next(null);
           if (node._deleted) {
             this.db.view('version/by_document', {key: [node._id]}, function(err, res) {
-              async.forEach(res.rows.map(function(d) { return d.value; }, function(version, callback) {
+              async.forEach(res.rows.map(function(d) { return d.value; }), function(version, callback) {
                 version._deleted = true;
                 db.save(version, callback);
               }, function(err) {
