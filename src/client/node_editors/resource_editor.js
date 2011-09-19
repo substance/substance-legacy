@@ -1,6 +1,5 @@
 var ResourceEditor = Backbone.View.extend({
   events: {
-    'change .image-file': 'upload',
     'keydown .resource-url': 'update'
   },
   

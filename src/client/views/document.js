@@ -864,6 +864,7 @@ var Document = Backbone.View.extend({
     // Connect child node
     refNode.all('children').set(newNode._id, newNode);
     refNode._dirty = true;
+    
     this.trigger('change:node', refNode);
     
     // Select newly created node

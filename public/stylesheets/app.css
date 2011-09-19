@@ -2275,11 +2275,11 @@ pre {
   background: #C35A3A;
 }
 
-#document .content-node.resource.selected .resource-editor {
+#document .content-node.document.edit .content-node.resource.selected .resource-editor {
   display: block;
 }
 
-#document .content-node.resource.selected .resource-content img {
+#document .content-node.document.edit .content-node.resource.selected .resource-content img {
   opacity: 0.1;
 }
 
