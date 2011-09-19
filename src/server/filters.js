@@ -46,7 +46,19 @@ Filters.ensureAuthorized = function() {
       
       if (_.include(node.type, "/type/document")) {
         isAuthorized(node, session.username, function(err) {
-          return err ? next(null) : next(node);
+          if (err) return next(null);
+          if (node._deleted) {
+            this.db.view('version/by_document', {key: [node._id]}, function(err, res) {
+              async.forEach(res.rows.map(function(d) { return d.value; }, function(version, callback) {
+                version._deleted = true;
+                db.save(version, callback);
+              }, function(err) {
+                return err ? next(null) : next(node);
+              });
+            });
+          } else { // regular doc update
+            return next(node);
+          }
         });
         
         // TODO: Make sure that document deletion can only be done by the creator, not the collaborators.
