@@ -584,8 +584,7 @@ var Application = Backbone.View.extend({
         graph.merge(res.seed);
         notifier.notify(Notifications.AUTHENTICATED);
         that.username = res.username;          
-        that.trigger('authenticated');
-        router.navigate('', true);
+        window.location.href = "/"+res.username;
       }
     });
     return false;
