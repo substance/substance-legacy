@@ -625,11 +625,8 @@ app.get('/avatar/:username/:size', function(req, res) {
 });
 
 
-// Creates a new version from the current document state
-
-
-
 // Increments or initializes a counter
+// TODO: put into separate module
 function count(counterId, callback) {
   db.get(counterId, function(err, node) {
     var node = node ? node : { _id: counterId, type: ["/type/counter"] };
@@ -642,6 +639,8 @@ function count(counterId, callback) {
   });
 }
 
+
+// Creates a new version from the current document state
 // TODO: check if authorized
 app.post('/publish', function(req, res) {
   var document = req.body.document;

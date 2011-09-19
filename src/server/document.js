@@ -77,7 +77,7 @@ function isAuthorized(node, username, callback) {
 
 
 
-function fetchDocuments(documents, callback) {
+function fetchDocuments(documents, username, callback) {
   var graph = new Data.Graph(seed).connect('couch', {url: config.couchdb_url});
   var result = {};
   
@@ -105,7 +105,7 @@ function fetchDocuments(documents, callback) {
     async.forEach(documents, function(documentId, callback) {
       getHeadVersion(documentId, function(err, head) {
         if (err) return callback(); // skip if there's no version
-        isAuthorized(result[documentId], "michael", function(err, edit) {
+        isAuthorized(result[documentId], username, function(err, edit) {
           if (edit) {
             result[documentId].published_on = head.published_on;
             callback(); // skip if user has edit privileges
@@ -129,7 +129,7 @@ Document.recent = function(limit, username, callback) {
     documents = _.select(_.uniq(documents), function(d, index) {
       return index < limit;
     });
-    fetchDocuments(documents, callback);
+    fetchDocuments(documents, username, callback);
   });
 };
 
@@ -146,7 +146,7 @@ Document.subscribed = function(username, callback) {
     var documents = nodes.map(function(n) {
       return n.get('document')._id
     }).values();
-    fetchDocuments(documents, callback);
+    fetchDocuments(documents, username, callback);
   });
 };
 
@@ -182,7 +182,7 @@ Document.find = function(searchstr, type, username, callback) {
         callback();
       }
     }, function() {
-      fetchDocuments(documents, function(err, nodes, count) {
+      fetchDocuments(documents, fetchDocuments, function(err, nodes, count) {
         if (type === "user" && !nodes["/user/"+searchstr]) {
           db.get("/user/"+searchstr, function(err, node) {
             if (!err) nodes[node._id] = node;
