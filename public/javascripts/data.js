@@ -821,7 +821,7 @@
             // Well, a new value needs to be created
             if (that.isObjectType()) {
               // Create on the fly if an object is passed as a value
-              if (typeof v === 'object') v = that.type.g.set(null, v)._id;
+              if (typeof v === 'object') v = that.type.g.set(v)._id;
               val = that.type.g.get('nodes', v);
               if (!val) {
                 // Register the object even if not yet loaded
@@ -1017,10 +1017,14 @@
         // Register properties for all types
         that._types.get(type).all('properties').each(function(property, key) {        
           function applyValue(value) {
-            if (!value) return; // Skip null values
-            var values = _.isArray(value) ? value : [value];
-            // Apply property values
-            that.replace(property.key, property.registerValues(values, that));
+            // if (!value) return; // Skip undefined values
+            if (value) {
+              var values = _.isArray(value) ? value : [value];
+              // Apply property values
+              that.replace(property.key, property.registerValues(values, that));              
+            } else {
+              that.replace(property.key, new Data.Hash());
+            }
           }
           
           if (that.data[key] !== undefined) {

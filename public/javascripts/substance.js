@@ -498,7 +498,7 @@ var HTMLRenderer = function(root, parent, lvl) {
       
       return Helpers.renderTemplate('section', {
         node: node,
-        comments: node.get('comments') && node.get('comments').length>0 ? node.get('comments').length : "",
+        comments: node.get('comment_count'), // node.get('comments') && node.get('comments').length>0 ? node.get('comments').length : "",
         parent: parent,
         content: content,
         heading_level: level,
@@ -512,7 +512,7 @@ var HTMLRenderer = function(root, parent, lvl) {
     "/type/text": function(node, parent, level) {
       return _.tpl('text', {
         node: node,
-        comments: node.get('comments') && node.get('comments').length>0 ? node.get('comments').length : "",
+        comments: node.get('comment_count'), // node.get('comments') && node.get('comments').length>0 ? node.get('comments').length : "",
         parent: parent,
         edit: app.document.mode === 'edit',
         content: node.get('content'),
@@ -524,7 +524,7 @@ var HTMLRenderer = function(root, parent, lvl) {
     "/type/quote": function(node, parent, level) {
       return Helpers.renderTemplate('quote', {
         node: node,
-        comments: node.get('comments') && node.get('comments').length>0 ? node.get('comments').length : "",
+        comments: node.get('comment_count'), // node.get('comments') && node.get('comments').length>0 ? node.get('comments').length : "",
         parent: parent,
         edit: app.document.mode === 'edit',
         content: node.get('content'),
@@ -538,7 +538,7 @@ var HTMLRenderer = function(root, parent, lvl) {
     "/type/code": function(node, parent, level) {
       return Helpers.renderTemplate('code', {
         node: node,
-        comments: node.get('comments') && node.get('comments').length>0 ? node.get('comments').length : "",
+        comments: node.get('comment_count'), // node.get('comments') && node.get('comments').length>0 ? node.get('comments').length : "",
         parent: parent,
         edit: app.document.mode === 'edit',
         content: node.get('content'),
@@ -550,7 +550,7 @@ var HTMLRenderer = function(root, parent, lvl) {
     "/type/question": function(node, parent, level) {
       return Helpers.renderTemplate('question', {
         node: node,
-        comments: node.get('comments') && node.get('comments').length>0 ? node.get('comments').length : "",
+        comments: node.get('comment_count'), // node.get('comments') && node.get('comments').length>0 ? node.get('comments').length : "",
         parent: parent,
         edit: app.document.mode === 'edit',
         content: node.get('content'),
@@ -562,7 +562,7 @@ var HTMLRenderer = function(root, parent, lvl) {
     "/type/answer": function(node, parent, level) {
       return Helpers.renderTemplate('answer', {
         node: node,
-        comments: node.get('comments') && node.get('comments').length>0 ? node.get('comments').length : "",
+        comments: node.get('comment_count'), // node.get('comments') && node.get('comments').length>0 ? node.get('comments').length : "",
         parent: parent,
         edit: app.document.mode === 'edit',
         content: node.get('content'),
@@ -574,7 +574,7 @@ var HTMLRenderer = function(root, parent, lvl) {
     "/type/image": function(node, parent, level) {
       return _.tpl('image', {
         node: node,
-        comments: node.get('comments') && node.get('comments').length>0 ? node.get('comments').length : "",
+        comments: node.get('comment_count'), // node.get('comments') && node.get('comments').length>0 ? node.get('comments').length : "",
         parent: parent,
         edit: app.document.mode === 'edit',
         url: node.get('url'),
@@ -589,7 +589,7 @@ var HTMLRenderer = function(root, parent, lvl) {
     "/type/resource": function(node, parent, level) {
       return Helpers.renderTemplate('resource', {
         node: node,
-        comments: node.get('comments') && node.get('comments').length>0 ? node.get('comments').length : "",
+        comments: node.get('comment_count'), // node.get('comments') && node.get('comments').length>0 ? node.get('comments').length : "",
         parent: parent,
         edit: app.document.mode === 'edit',
         url: node.get('url'),
@@ -603,7 +603,7 @@ var HTMLRenderer = function(root, parent, lvl) {
     "/type/visualization": function(node, parent, level) {
       return Helpers.renderTemplate('visualization', {
         node: node,
-        comments: node.get('comments') && node.get('comments').length>0 ? node.get('comments').length : "",
+        comments: node.get('comment_count'), // node.get('comments') && node.get('comments').length>0 ? node.get('comments').length : "",
         parent: parent,
         edit: app.document.mode === 'edit',
         visualization_type: node.get('visualization_type'),
@@ -1006,7 +1006,6 @@ var ImageEditor = Backbone.View.extend({
 });
 var ResourceEditor = Backbone.View.extend({
   events: {
-    'change .image-file': 'upload',
     'keydown .resource-url': 'update'
   },
   
@@ -1265,8 +1264,17 @@ var Document = Backbone.View.extend({
     
     this.publishSettings.load();
     
+    
+    
+    
+    if ($('#publish_settings').is(':visible')) {
+      $('.view-action-icon.publish-settings').removeClass('active');
+    } else {
+      $('.view-action-icon.publish-settings').addClass('active');
+    }
+    
     $('#publish_settings').slideToggle();
-    $('.view-action-icon.publish-settings').toggleClass('active');
+
     return false;
   },
   
@@ -1296,47 +1304,135 @@ var Document = Backbone.View.extend({
     return false;
   },
   
-  removeComment: function(e) {
-    var comment = graph.get($(e.currentTarget).attr('comment'));
+  
+  createComment: function(e) {
+    var that = this;
     
-    // All comments of the currently selected node
-    var comments = this.selectedNode.get('comments');
+    window.pendingSync = true;
     
-    // Remove comment from node
-    this.selectedNode.set({
-      comments: comments.del(comment._id).keys()
+    var comment = graph.set(null, {
+      type: "/type/comment",
+      node: this.selectedNode._id,
+      document: this.model._id,
+      created_at: new Date(),
+      version: this.version ? '/version/'+this.model._id.split('/')[3]+'/'+this.version : null,
+      creator: '/user/'+app.username,
+      content: this.commentEditor.content()
     });
+    
+    // Trigger immediate sync
+    graph.sync(function (err) {
+      window.pendingSync = false;
+      that.enableCommentEditor(null, function() {
+        // ready.
+      });
+    });
+
+    return false;
+  },
+  
+  removeComment: function(e) {
+    var that = this;
+    var comment = graph.get($(e.currentTarget).attr('comment'));
     
     // Remove comment
     graph.del(comment._id);
-    // Re-render comments
-    this.enableCommentEditor();
+    
+    window.pendingSync = true;
+    
+    graph.sync(function (err) {
+      window.pendingSync = false;
+      that.enableCommentEditor(null, function() {
+        // ready.
+      });
+    });
+    
     return false;
+  },
+  
+  loadComments: function(node, callback) {
+    graph.fetch({"type": "/type/comment", "node": node}, function(err, nodes) {
+      var ASC_BY_CREATED_AT = function(item1, item2) {
+        var v1 = item1.value.get('created_at'),
+            v2 = item2.value.get('created_at');
+        return v1 === v2 ? 0 : (v1 < v2 ? -1 : 1);
+      };
+      callback(nodes.sort(ASC_BY_CREATED_AT));
+    });
+    
+    return false;
+  },
+  
+  
+  enableCommentEditor: function(node, callback) {
+    node = node ? node : this.selectedNode;
+    var that = this;
+    
+    // Load comments for a certain node
+    this.loadComments(node._id, function(comments) {
+      // Render comments
+      var wrapper = $('#'+node.html_id+' > .comments-wrapper');
+      if (wrapper.length === 0) return;
+      
+      wrapper.html(_.tpl('comments', {
+        doc: that.model,
+        node: node,
+        comments: comments
+      }));
+
+      var count = comments && comments.length > 0 ? comments.length : "";
+
+      // Update comment count
+      $('#'+node.html_id+' > .operations a.toggle-comments span').html(count);
+
+      var $content = $('#'+node.html_id+' > .comments-wrapper .comment-content');
+      function activate() {
+        that.commentEditor = new Proper();
+        that.commentEditor.activate($content, {
+          multiline: true,
+          markup: true,
+          placeholder: 'Enter Comment'
+        });
+        return false;
+      }
+
+      $content.unbind();
+      $content.click(activate);
+      callback();
+    });
   },
   
   toggleComments: function(e) {
     var nodeId = $(e.currentTarget).parent().parent().attr('name');
+    var that = this;
+    
+    
     var changed = false;
-    if (!this.selectedNode || this.selectedNode._id !== nodeId) {
+    if (!that.selectedNode || that.selectedNode._id !== nodeId) {
       // First select node
-      this.selectedNode = graph.get(nodeId);
-      this.trigger('select:node', this.selectedNode);
+      that.selectedNode = graph.get(nodeId);
+      that.trigger('select:node', that.selectedNode);
       changed = true;
     }
-    this.enableCommentEditor();
     
-    // Toggle them
-    var wrapper = $('#'+this.selectedNode.html_id+' > .comments-wrapper');
-    wrapper.toggleClass('expanded');
-    if (changed) wrapper.addClass('expanded'); // overrule
-    
-    if (wrapper.hasClass('expanded')) {
-      // Scroll to the comments wrapper
-      var offset = wrapper.offset();
-      $('html, body').animate({scrollTop: offset.top-100}, 'slow');
-    }
+    that.enableCommentEditor(null, function() {
+      
+      // Toggle them
+      var wrapper = $('#'+that.selectedNode.html_id+' > .comments-wrapper');
+      wrapper.toggleClass('expanded');
+      if (changed) wrapper.addClass('expanded'); // overrule
+      
+      if (wrapper.hasClass('expanded')) {
+        // Scroll to the comments wrapper
+        var offset = wrapper.offset();
+        $('html, body').animate({scrollTop: offset.top-100}, 'slow');
+      }
+      
+    });
+
     return false;
   },
+  
   
   // Enable move mode
   toggleMoveNode: function() {
@@ -1663,6 +1759,7 @@ var Document = Backbone.View.extend({
     
     this.status = null;
     this.mode = 'edit';
+    this.authorized = true;
     $(this.el).show();
     this.render();
     this.loadedDocuments[app.username+"/"+name] = this.model._id;
@@ -1686,8 +1783,6 @@ var Document = Backbone.View.extend({
   
   loadDocument: function(username, docname, version, nodeid, commentid, mode) {
     var that = this;
-    
-    // console.log('mode:'+ mode)
     
     $('#tabs').show();
     function init(id) {
@@ -1720,10 +1815,11 @@ var Document = Backbone.View.extend({
           
           that.selectedNode = targetNode;
           that.trigger('select:node', that.selectedNode);
-          that.enableCommentEditor(targetNode);
           
-          $('#'+nodeid+' > .comments-wrapper').show();
-          app.scrollTo(commentid);
+          that.enableCommentEditor(targetNode, function() {
+            $('#'+nodeid+' > .comments-wrapper').show();
+            graph.get(commentid.replace(/_/g, '/')) ? app.scrollTo(commentid) : app.scrollTo('comments'+nodeid);
+          });
         }
       } else {
         $('#document_wrapper').html('Document loading failed');
@@ -1757,6 +1853,8 @@ var Document = Backbone.View.extend({
       dataType: "json",
       success: function(res) {
         that.version = res.version;
+        that.authorized = res.authorized;
+        that.published = res.published;
         that.mode = mode || (res.authorized && !version ? "edit" : "show");
         if (res.status === 'error') {
           printError(res.error);
@@ -1938,58 +2036,7 @@ var Document = Backbone.View.extend({
     return false;
   },
   
-  createComment: function(e) {
-    var comments = this.selectedNode.get('comments') ? this.selectedNode.get('comments').keys() : [];
-    
-    var comment = graph.set(null, {
-      type: "/type/comment",
-      node: this.selectedNode._id,
-      document: this.model._id,
-      created_at: new Date(),
-      creator: '/user/'+app.username,
-      content: this.commentEditor.content()
-    });
-    
-    comments.push(comment._id);
-    this.selectedNode.set({
-      comments: comments
-    });
 
-    this.enableCommentEditor();
-    return false;
-  },
-  
-  enableCommentEditor: function(node) {
-    
-    node = node ? node : this.selectedNode;
-    var that = this;
-    
-    // Render comments
-    var wrapper = $('#'+node.html_id+' > .comments-wrapper');
-    if (wrapper.length === 0) return;
-    
-    wrapper.html(_.tpl('comments', {node: node}));
-    
-    var comments = node.get('comments');
-    var count = comments && comments.length > 0 ? comments.length : "";
-    
-    // Update comment count
-    $('#'+node.html_id+' > .operations a.toggle-comments span').html(count);
-    
-    var $content = $('#'+node.html_id+' > .comments-wrapper .comment-content');
-    function activate() {
-      that.commentEditor = new Proper();
-      that.commentEditor.activate($content, {
-        multiline: true,
-        markup: true,
-        placeholder: 'Enter Comment'
-      });
-      return false;
-    }
-    
-    $content.unbind();
-    $content.click(activate);
-  },
   
   selectNode: function(e) {
     var that = this;
@@ -2034,6 +2081,7 @@ var Document = Backbone.View.extend({
     // Connect child node
     refNode.all('children').set(newNode._id, newNode);
     refNode._dirty = true;
+    
     this.trigger('change:node', refNode);
     
     // Select newly created node
@@ -2138,23 +2186,37 @@ var DocumentSettings = Backbone.View.extend({
   changeMode: function(e) {
     var collaboratorId = $(e.currentTarget).attr('collaborator');
     var mode = $(e.currentTarget).val();
+    var that = this;
+    
+    window.pendingSync = true;
     
     graph.get(collaboratorId).set({
       mode: mode
     });
+    
     // trigger immediate sync
-    graph.sync();
+    graph.sync(function(err) {
+      window.pendingSync = false;
+      that.render();
+    });
     
     return false;
   },
   
   removeCollaborator: function(e) {
     var collaboratorId = $(e.currentTarget).attr('collaborator');
+    var that = this;
+    
+    window.pendingSync = true;
     graph.del(collaboratorId);
+    
     // trigger immediate sync
-    graph.sync();
-    this.collaborators.del(collaboratorId);
-    this.render();
+    graph.sync(function(err) {
+      window.pendingSync = false;
+      that.collaborators.del(collaboratorId);
+      that.render();
+    });
+
     return false;
   },
   
@@ -2212,25 +2274,18 @@ var PublishSettings = Backbone.View.extend({
   
   focusRemark: function(e) {
     var input = $('#version_remark');
-        
-    if (input.val() === 'Enter optional remark.') {
-      input.val('');
-    }
+    if (input.val() === 'Enter optional remark.') input.val('');
   },
   
   blurRemark: function(e) {
     var input = $('#version_remark');
-        
-    if (input.val() === '') {
-      input.val('Enter optional remark.');
-    }
+    if (input.val() === '') input.val('Enter optional remark.');
   },
   
   publishDocument: function(e) {
     var that = this;
     var remark = $('#version_remark').val();
     
-    console.log(this.$('#version_remark'));
     $.ajax({
       type: "POST",
       url: "/publish",
@@ -2242,6 +2297,9 @@ var PublishSettings = Backbone.View.extend({
       success: function(res) {
         if (res.error) return alert(res.error);
         that.load();
+        app.document.published = true;
+        app.document.render();
+        $('#publish_settings').show();
       },
       error: function(err) {
         console.log(err);
@@ -2263,6 +2321,12 @@ var PublishSettings = Backbone.View.extend({
     graph.sync(function (err) {
       window.pendingSync = false;
       that.load();
+      
+      if (that.versions.length === 1) {
+        app.document.published = false;
+        app.document.render();
+        $('#publish_settings').show();
+      }
     });
     
     return false;
@@ -2272,7 +2336,13 @@ var PublishSettings = Backbone.View.extend({
     var that = this;
     // Load versions
     graph.fetch({"type": "/type/version", "document": app.document.model._id}, function(err, versions) {
-      that.versions = versions;
+      var ASC_BY_CREATED_AT = function(item1, item2) {
+        var v1 = item1.value.get('created_at'),
+            v2 = item2.value.get('created_at');
+        return v1 === v2 ? 0 : (v1 < v2 ? -1 : 1);
+      };
+      
+      that.versions = versions.sort(ASC_BY_CREATED_AT);
       that.render();
     });
   },
@@ -3159,10 +3229,11 @@ var Router = Backbone.Router.extend({
   initialize: function() {
     // Using this.route, because order matters
     this.route(":username", "user", app.userDocs);
-    // this.route(":username/:docname/:node/:comment", "comment", this.loadDocument);
-    // this.route(":username/:docname/:node", "node", this.loadDocument);
-    this.route(":username/:docname/:version", "version", this.loadDocument);
-    this.route(":username/:docname", "document", this.loadDocument);
+    
+    this.route(":username/:docname/:p1/:p2/:p3", "node", this.loadDocument);
+    this.route(":username/:docname/:p1/:p2", "node", this.loadDocument);
+    this.route(":username/:docname/:p1", "node", this.loadDocument);
+    this.route(":username/:docname", "node", this.loadDocument);
     
     this.route("reset/:username/:tan", "reset", this.resetPassword);
     this.route("subscribed", "subscribed", app.subscribedDocs);
@@ -3211,22 +3282,18 @@ var Router = Backbone.Router.extend({
     
     return false;
   },
-
-  loadDocument: function(username, docname, version, comment) {
+  
+  loadDocument: function(username, docname, p1, p2, p3) {
+    var version = !p1 || p1.indexOf("_") >= 0 ? null : p1;
+    var node = version ? p2 : p1;
+    var comment = version ? p3 : p2;
     app.browser.load({"type": "user", "value": username});
-    app.document.loadDocument(username, docname, version, null, comment);
-    $('#document_wrapper').attr('url', username+'/'+docname+(version ? "/"+version : "")+(comment ? "/"+comment : ""));
+    app.document.loadDocument(username, docname, version, node, comment);
+    
+    $('#document_wrapper').attr('url', username+'/'+docname+(p1 ? "/"+p1 : "")+(p2 ? "/"+p2 : "")+(p3 ? "/"+p3 : ""));
     $('#browser_wrapper').attr('url', username);
     return false;
   }
-    
-  // loadDocument: function(username, docname, node, comment) {
-  //   app.browser.load({"type": "user", "value": username});
-  //   app.document.loadDocument(username, docname, node, comment);
-  //   $('#document_wrapper').attr('url', username+'/'+docname+(node ? "/"+node : "")+(comment ? "/"+comment : ""));
-  //   $('#browser_wrapper').attr('url', username);
-  //   return false;
-  // }
 });
 
 
@@ -3317,8 +3384,17 @@ var Application = Backbone.View.extend({
   
   openNotification: function(e) {
     var url = $(e.currentTarget).attr('href');
-    var urlParts = url.replace('#', '').split('/');
-    app.document.loadDocument(urlParts[0], urlParts[1], urlParts[2], urlParts[3]);
+    var p = url.replace('#', '').split('/');
+    
+    var user = p[0];
+    var doc = p[1];
+    
+    var version = !p[2] || p[2].indexOf("_") >= 0 ? null : p[2];
+    var node = version ? p[3] : p[2];
+    var comment = version ? p[4] : p[3];
+    
+    
+    app.document.loadDocument(user, doc, version, node, comment);
     $('#document_wrapper').attr('url', url);
     return false;
   },
@@ -3732,8 +3808,7 @@ var Application = Backbone.View.extend({
         graph.merge(res.seed);
         notifier.notify(Notifications.AUTHENTICATED);
         that.username = res.username;          
-        that.trigger('authenticated');
-        router.navigate('', true);
+        window.location.href = "/"+res.username;
       }
     });
     return false;
