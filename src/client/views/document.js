@@ -542,6 +542,7 @@ var Document = Backbone.View.extend({
     
     this.status = null;
     this.mode = 'edit';
+    this.authorized = true;
     $(this.el).show();
     this.render();
     this.loadedDocuments[app.username+"/"+name] = this.model._id;
