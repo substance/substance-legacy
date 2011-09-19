@@ -1626,7 +1626,7 @@ div.browser-not-supported a:hover {
 }
 
 /* Increment Figure Counter */
-.content-node.image {
+.content-node.image, .content-node.resource {
   counter-increment: figure;
 }
 
