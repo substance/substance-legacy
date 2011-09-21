@@ -2010,7 +2010,7 @@ var Document = Backbone.View.extend({
     });
     
     // Only set dirty if explicitly requested    
-    if (attrs._dirty) {
+    if (attrs.dirty) {
       this.trigger('change:node', this.selectedNode);
     }
     
