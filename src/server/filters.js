@@ -156,7 +156,7 @@ Filters.logEvents = function() {
           creator: node.creator,
           object: node.document,
           message: "<strong>"+node.creator.split('/')[2]+"</strong> commented on <strong>"+doc._id.split('/')[2]+"/"+doc.get('name')+"</strong>",
-          link: "/"+node.document.split('/')[2]+"/"+doc.get('name')+(node.version ? "/"+node.version.split('/')[2] : "")+"/"+node.node.replace(/\//g, '_')+"/"+node._id.replace(/\//g, '_'),
+          link: "/"+node.document.split('/')[2]+"/"+doc.get('name')+(node.version ? "/"+node.version.split('/')[3] : "")+"/"+node.node.replace(/\//g, '_')+"/"+node._id.replace(/\//g, '_'),
           created_at: new Date()
         });
         
