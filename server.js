@@ -74,9 +74,9 @@ function urlToHttpOptions(u) {
 
 function letterpress(graph, id, format, response) {
   var postData = JSON.stringify({
-      'format' : format,
-      'graph': graph,
-      'id': id
+    'format' : format,
+    'graph': graph,
+    'id': id
   });
 
   var postOptions = urlToHttpOptions(config.letterpress_url+"/convert");
@@ -89,6 +89,8 @@ function letterpress(graph, id, format, response) {
   });
   
   var req = http.request(postOptions, function(res) {
+    res.setEncoding('utf8');
+    response.writeHead(200, res.headers);
     res.pipe(response)
   });
 
