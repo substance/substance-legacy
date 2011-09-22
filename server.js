@@ -89,7 +89,6 @@ function letterpress(graph, id, format, response) {
   });
   
   var req = http.request(postOptions, function(res) {
-    res.setEncoding('utf8');
     response.writeHead(200, res.headers);
     res.pipe(response)
   });
