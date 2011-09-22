@@ -84,7 +84,7 @@ function letterpress(graph, id, format, response) {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'Content-Length': postData.length
+      'Content-Length': Buffer.byteLength(postData)
     }
   });
   
