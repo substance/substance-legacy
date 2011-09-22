@@ -35,7 +35,7 @@
         "unique": true,
         "type": "string",
         "required": true,
-        "validator": "^[a-zA-Z_]{1}[a-zA-Z_0-9-]{2,20}$"
+        "validator": "^[a-zA-Z_]{1}[a-zA-Z_0-9-]{1,20}$"
       },
       "email": {
         "name": "Email",
