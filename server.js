@@ -3,10 +3,12 @@ var app = express.createServer();
 var http = require('http');
 var crypto = require('crypto');
 var fs = require('fs');
+var url = require('url');
 var Data = require('./lib/data/data');
 var _ = require('underscore');
 var CouchClient = require('./lib/data/lib/couch-client');
 var async = require('async');
+
 
 var Document = require('./src/server/document');
 var User = require('./src/server/user');
@@ -59,22 +61,66 @@ app.configure('development', function() {
   app.use(express.static(__dirname+"/src", { maxAge: 41 }));
 });
 
+
+function urlToHttpOptions(u) {
+  fragments = url.parse(u);
+  return {
+    host: fragments.hostname,
+    port: fragments.port,
+    path: fragments.pathname + (fragments.search || '')
+  }
+}
+
+
+function letterpress(graph, id, format, response) {
+  var postData = JSON.stringify({
+      'format' : format,
+      'graph': graph,
+      'id': id
+  });
+
+  var postOptions = urlToHttpOptions(config.letterpress_url+"/convert");
+  _.extend(postOptions, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Content-Length': postData.length
+    }
+  });
+  
+  var req = http.request(postOptions, function(res) {
+    res.pipe(response)
+  });
+
+  req.write(postData);
+  req.end();
+};
+
+
 app.use(function(req, res) {
   var path = require('url').parse(req.url).pathname
   var fragments = path.split('/');
   
-  if (fragments.length === 3 && (req.headers["user-agent"].indexOf('bot.html')>=0 || req.query.static)) {
-    var username = fragments[1];
-    var docname = fragments[2];
+  var username = fragments[1];
+  var docname = fragments[2] ? fragments[2].split('.')[0] : null;
+  var format = fragments[2] ? fragments[2].split('.')[1] : null;
+  var version = fragments[3]; // version
+  
+  if (username && docname && (req.headers["user-agent"].indexOf('bot.html')>=0 || req.query.static || format)) {
 
-    Document.get(username, docname, null, function(err, nodes, id) {
+    Document.get(username, docname, version, req.session ? req.session.username : null, function(err, nodes, id, authorized, version, published) {
       if (err) return res.send({status: "error", error: err});
-      var graph = new Data.Graph(seed);
-      graph.merge(nodes);
-      
-      html = fs.readFileSync(__dirname+ '/templates/doc.html', 'utf-8');
-      var content = new HTMLRenderer(graph.get(id)).render();
-      res.send(html.replace('{{{{document}}}}', content));
+
+      if (format) {
+        if (format === "json") return res.json({status: "ok", graph: nodes, id: id, authorized: authorized, version: version, published: published });
+        letterpress(nodes, id, format, res);
+      } else {
+        var graph = new Data.Graph(seed);
+        graph.merge(nodes);
+        html = fs.readFileSync(__dirname+ '/templates/doc.html', 'utf-8');
+        var content = new HTMLRenderer(graph.get(id)).render();
+        res.send(html.replace('{{{{document}}}}', content));
+      }
     });
   } else {
     // A modern web-client is talking - Serve the app
@@ -83,7 +129,6 @@ app.use(function(req, res) {
 });
 
 app.enable("jsonp callback");
-
 
 function serveStartpage(req, res) {
   html = fs.readFileSync(__dirname+ '/templates/app.html', 'utf-8');
