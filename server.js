@@ -206,6 +206,7 @@ graph.connect('couch', {
   url: config.couchdb_url,
   filters: [
     Filters.ensureAuthorized(),
+    Filters.sanitizeUserInput(),
     Filters.logEvents()
   ]
 });

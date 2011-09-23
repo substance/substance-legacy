@@ -1,6 +1,7 @@
 var _ = require('underscore');
 var async = require('async');
 var Data = require('../../lib/data/data');
+var sanitize = require('validator').sanitize;
 
 // Util
 // -----------
@@ -99,6 +100,29 @@ Filters.ensureAuthorized = function() {
   };
 };
 
+
+// Sanitize user input
+
+Filters.sanitizeUserInput = function() {
+  
+  function san(node) {
+    var sanitized = {};
+    _.each(node, function(value, key) {
+      sanitized[key] = typeof value === "string" ? sanitize(value).xss() : value;
+    });
+    return sanitized;
+  }
+  
+  return {
+    read: function(node, next, session) {
+      next(node);
+    },
+    write: function(node, next, session) {
+      if (!node) return next(node); // skip
+      next(san(node));
+    }
+  }
+};
 
 
 // Event logging and user notifications
