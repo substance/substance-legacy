@@ -553,11 +553,13 @@
           e.preventDefault();
           return;
         }
-        setTimeout(function () {
-          if ($(activeElement).html().trim() === '') {
-            document.execCommand('insertParagraph', false, true);
-          }
-        }, 10);
+        if (e.keyCode === 8 &&
+            $(activeElement).text().trim() === '' &&
+            $(activeElement).find('p, li').length === 1) {
+          // backspace is pressed and the editor is empty
+          // prevent the removal of the last paragraph
+          e.preventDefault();
+        }
         // By default, Firefox doesn't create paragraphs. Fix this.
         if ($.browser.mozilla) {
           var selectionStart = saveSelection().startContainer;
