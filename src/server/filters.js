@@ -1,7 +1,7 @@
 var _ = require('underscore');
 var async = require('async');
 var Data = require('../../lib/data/data');
-var sanitize = require('validator').sanitize;
+var sanitize = require('./sanitize').sanitize;
 
 // Util
 // -----------
@@ -105,10 +105,29 @@ Filters.ensureAuthorized = function() {
 
 Filters.sanitizeUserInput = function() {
   
-  function san(node) {
+  var basicMarkup = {
+    "a":{
+      href: function(href) {
+        // accepts only absolute http, https and ftp URLs and email-addresses
+        return /^(mailto:|(https?|ftp):\/\/)/.test(href);
+      }
+    },
+    "strong": {},
+    "em": {},
+    "b": {},
+    "i": {},
+    "code": {},
+    "p": {},
+    "ul": {},
+    "li": {},
+    "ol": {}
+  };
+  
+  function san(node, config) {
     var sanitized = {};
     _.each(node, function(value, key) {
-      sanitized[key] = typeof value === "string" ? sanitize(value).xss() : value;
+      var cfg = _.include(node.type, "/type/text") && key === "content" ? basicMarkup : null;
+      sanitized[key] = typeof value === "string" ? sanitize(value, cfg) : value;
     });
     return sanitized;
   }
@@ -118,7 +137,7 @@ Filters.sanitizeUserInput = function() {
       next(node);
     },
     write: function(node, next, session) {
-      if (!node) return next(node); // skip
+      if (!node) return next(node); // skip      
       next(san(node));
     }
   }
