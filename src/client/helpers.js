@@ -44,6 +44,43 @@ Helpers.renderTemplate = _.renderTemplate = function(tpl, view, helpers) {
   return template(view, helpers || {});
 };
 
+function activateCodeMirror(el) {
+  var escape = function (str) {
+    return str.replace(/&/g, '&amp;')
+              .replace(/</g, '&lt;')
+              .replace(/>/g, '&gt;')
+              .replace(/"/g, '&quot;')
+  };
+  
+  el = $(el);
+  
+  if (!el.data('codemirror')) {
+    var cm = CodeMirror.fromTextArea(el.get(0), {
+      mode: 'javascript',
+      lineNumbers: true,
+      theme: 'elegant',
+      indentUnit: 2,
+      indentWithTabs: false,
+      tabMode: 'shift',
+      readOnly: app.document.mode !== 'edit',
+      onFocus: function () {
+        // Without this, there is the possibility to focus the editor without
+        // activating the code node. Don't ask me why.
+        el.trigger('click');
+      },
+      onChange: _.throttle(function () {
+        app.document.updateSelectedNode({
+          content: escape(cm.getValue())
+        });
+      }, 500)
+    });
+    setTimeout(function () { cm.refresh(); }, 10);
+    el.data('codemirror', cm);
+  }
+  
+  return el.data('codemirror');
+}
+
 
 _.slug = function(str) {
   str = str.replace(/^\s+|\s+$/g, ''); // trim

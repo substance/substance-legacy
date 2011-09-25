@@ -2049,6 +2049,15 @@ pre {
   margin: 10px 100px;
 }
 
+.CodeMirror {
+  margin: 10px 100px;
+}
+
+.CodeMirror-scroll {
+  height: auto; overflow-y: visible; /* grow with content; source: manual */
+  overflow-x: auto;
+}
+
 /* Image Editor
 -------------------------------------------------------------------------------*/
 

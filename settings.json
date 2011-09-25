@@ -15,7 +15,9 @@
       "/javascripts/backbone.js",
       "/javascripts/proper.js",
       "/javascripts/jquery.nivo.slider.pack.js",
-      "/javascripts/jquery.suggestr.js"
+      "/javascripts/jquery.suggestr.js",
+      "/codemirror/lib/codemirror.js",
+      "/codemirror/mode/javascript/javascript.js"
     ],
     "production": [
       "/javascripts/sanitize.js",
@@ -33,7 +35,9 @@
       "/javascripts/proper.js",
       "/javascripts/substance.min.js",
       "/javascripts/jquery.nivo.slider.pack.js",
-      "/javascripts/jquery.suggestr.js"
+      "/javascripts/jquery.suggestr.js",
+      "/codemirror/lib/codemirror.js",
+      "/codemirror/mode/javascript/javascript.js"
     ],
     "source": [
       "/client/notifier.js",
