@@ -443,9 +443,14 @@ var Document = Backbone.View.extend({
     
     if (this.mode === 'edit') {
       renderControls(this.model, null, null, null, 0);
-    } else {
-      hijs('#'+node.html_id+' .content-node.code pre');
     }
+    
+    //setTimeout(function() {
+      $('.content-node.code textarea').each(function() {
+        var cm = activateCodeMirror(this);
+        $(this).data('codemirror', cm);
+      });
+    //}, 10);
   },
   
   renderDocument: function() {
@@ -456,9 +461,13 @@ var Document = Backbone.View.extend({
     // Render controls
     if (this.mode === 'edit') {
       renderControls(this.model, null, null, null, 0);
-    } else {
-      hijs('.content-node.code pre');
     }
+    
+    //setTimeout(function() {
+      $('.content-node.code textarea').each(function() {
+        activateCodeMirror(this);
+      });
+    //}, 10);
   },
   
   // Extract available documentTypes from config

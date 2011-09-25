@@ -1090,7 +1090,7 @@
         </div>
       
       {{#edit}}<div class="pilcrow">&#182;</div>{{/edit}}
-      <pre class="content{{#empty}} empty{{/empty}}"{{#edit}} title="Click To Edit Code"{{/edit}}>{{^empty}}{{{content}}}{{/empty}}{{#empty}}&laquo; Enter code &raquo;{{/empty}}</pre>
+      <textarea class="content"{{#edit}} title="Click To Edit Code"{{/edit}}>{{{content}}}</textarea>
       {{#edit}}<div class="node-editor-placeholder"></div>{{/edit}}
       <div class="comments-wrapper{{^edit}} expanded{{/edit}}"></div>
     </div>
@@ -1248,6 +1248,8 @@
   
   
   <!-- styles --> 
+  <link href="/codemirror/lib/codemirror.css" media="screen" rel="stylesheet" type="text/css" />
+  <link href="/codemirror/theme/elegant.css" media="screen" rel="stylesheet" type="text/css" />
   <link href="/stylesheets/reset.css" media="screen" rel="stylesheet" type="text/css" />
   <link href="/stylesheets/app.css" media="screen" rel="stylesheet" type="text/css" />
   
