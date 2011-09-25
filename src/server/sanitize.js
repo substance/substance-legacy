@@ -10,10 +10,17 @@ var sanitize = function (html, settings) {
     html = html.slice(n);
   }
   
+  function escape (str) {
+    return str.replace(/"/g, '&quot;')
+              .replace(/'/g, '&apos;')
+              .replace(/</g, '&lt;')
+              .replace(/>/g, '&gt;');
+  }
+  
   var match;
   while (html.length) {
     if (match = html.match(/^[^<]+/)) { // cdata
-      sanitized += match[0].replace(/>/g, '&gt;')
+      sanitized += escape(match[0]);
       advance(match[0].length);
       continue;
     }
@@ -48,22 +55,22 @@ var sanitize = function (html, settings) {
           
           if (attrs[0] === '=') {
             attrs = attrs.slice(1);
-            if (/['"]/.exec(attrs[0])) {
+            if (/['"]/.test(attrs[0])) {
               var quote = attrs[0];
               var closingPos = attrs.indexOf(quote, 1);
               if (closingPos === -1) break;
-              attributes[key] = attrs.slice(1, closingPos);
+              attributes[key] = escape(attrs.slice(1, closingPos));
               attrs = attrs.slice(closingPos+1);
-            } else if (!attrs[0].exec(/\s/)) {
+            } else if (!attrs[0].test(/\s/)) {
               var value = attrs.match(/^[^\s]+/);
               if (!value) break;
               value = value[0];
               attrs = attrs.slice(value.length);
-              attributes[key] = value;
+              attributes[key] = escape(value);
             } else {
               break;
             }
-          } else if (attrs[0].exec(/\s/)) {
+          } else if (attrs[0].test(/\s/)) {
             attributes[key] = key;
           } else {
             break;
@@ -80,7 +87,7 @@ var sanitize = function (html, settings) {
         for (var key in attributes) {
           var validator;
           if (attributes.hasOwnProperty(key) && (validator = settings[tagName][key])) {
-            var value = attributes[key].replace(/"/g, '&quot;');
+            var value = attributes[key];
             if (typeof validator === 'function' && !validator(value)) continue;
             sanitized += ' '+key+'="'+value+'"';
           }
