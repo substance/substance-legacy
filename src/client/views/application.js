@@ -103,11 +103,25 @@ var Application = Backbone.View.extend({
     'change #document_name': 'updateDocumentName',
     'click a.toggle-recent': 'toggleRecent',
     'click a.toggle-subscribed': 'toggleSubscribed',
-    'click a.toggle-userdocs': 'toggleUserDocs'
+    'click a.toggle-userdocs': 'toggleUserDocs',
+    'click a.watch-intro': 'watchIntro'
   },
   
   // Event handlers
   // ---------------
+  
+  watchIntro: function() {
+    $('#startpage .intro').height('400');
+    $('#startpage .intro .intro-text').fadeOut();
+    setTimeout(function() {
+      $('#startpage .intro .video').html('<video autoplay width="920" height="400" controls><source src="http://substance.io/videos/substance_intro.mp4" type=\'video/mp4; codecs="avc1.42E01E, mp4a.40.2"\'><source src="http://substance.io/videos/substance_intro.ogv" type="video/ogg" /> </video>')
+      setTimeout(function() {
+        $('#startpage .intro .video').fadeIn();
+      }, 400);
+    }, 1000);
+    
+    return false;
+  },
   
   toggleRecent: function() {
     this.recentDocs();
@@ -160,15 +174,13 @@ var Application = Backbone.View.extend({
   
   openNotification: function(e) {
     var url = $(e.currentTarget).attr('href');
-    var p = url.replace('#', '').split('/');
+    var p = url.replace('#', '/').split('/');
+    var user = p[1];
+    var doc = p[2];
     
-    var user = p[0];
-    var doc = p[1];
-    
-    var version = !p[2] || p[2].indexOf("_") >= 0 ? null : p[2];
-    var node = version ? p[3] : p[2];
-    var comment = version ? p[4] : p[3];
-    
+    var version = !p[3] || p[3].indexOf("_") >= 0 ? null : p[3];
+    var node = version ? p[4] : p[3];
+    var comment = version ? p[5] : p[4];
     
     app.document.loadDocument(user, doc, version, node, comment);
     $('#document_wrapper').attr('url', url);
@@ -223,7 +235,7 @@ var Application = Backbone.View.extend({
     s.async = true;
     s.src = 'http://api.flattr.com/js/0.6/load.js?mode=auto';
     t.parentNode.insertBefore(s, t);
-
+    
     app.toggleView('content');
     return false;
   },

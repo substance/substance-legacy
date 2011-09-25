@@ -75,8 +75,12 @@ hr.separator {
   height: 15px;
   border: 0;
   margin: 30px 0;
+  
 }
 
+hr.separator.nomargin {
+  margin: 0px;
+}
 
 .border {
   border-top: 1px solid red;
@@ -2891,10 +2895,43 @@ div.intro {
   text-align: center;
   font-size: 38px;
   line-height: 50px;
-  padding: 30px 0;
-  margin-bottom: 20px;
+  /*  padding: 30px 0;*/
+  /*  margin-bottom: 20px;*/
   font-family: 'Palatino Linotype', 'Book Antiqua', Palatino, FreeSerif, serif;
   font-weight: lighter;
+  
+  height: 220px;
+  -webkit-transition: all 0.5s ease-in-out;
+  -moz-transition: all 0.5s ease-in-out;
+  -o-transition: all 0.5s ease-in-out;
+  -ms-transition: all 0.5s ease-in-out;
+}
+
+div .intro .intro-text {
+  padding: 20px;
+}
+
+div .intro .intro-text a {
+  border: none;
+  font-size: 22px;
+  background: url(../images/icons/white/play_12x16.png) 14px 17px no-repeat;
+  background-color: #A2C44E;
+  font-style: italic;
+  color: #fff;
+  padding: 10px;
+  padding-left: 35px;
+  -moz-border-radius: 6px;
+  -webkit-border-radius: 6px;
+  border-radius: 6px;
+  opacity: 0.8;
+}
+
+div .intro .intro-text a:hover {
+  opacity: 1.0;
+}
+
+div .intro .video {
+  height: 400px;
 }
 
 
