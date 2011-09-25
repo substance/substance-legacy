@@ -199,6 +199,43 @@ Helpers.renderTemplate = _.renderTemplate = function(tpl, view, helpers) {
   return template(view, helpers || {});
 };
 
+function activateCodeMirror(el) {
+  var escape = function (str) {
+    return str.replace(/&/g, '&amp;')
+              .replace(/</g, '&lt;')
+              .replace(/>/g, '&gt;')
+              .replace(/"/g, '&quot;')
+  };
+  
+  el = $(el);
+  
+  if (!el.data('codemirror')) {
+    var cm = CodeMirror.fromTextArea(el.get(0), {
+      mode: 'javascript',
+      lineNumbers: true,
+      theme: 'elegant',
+      indentUnit: 2,
+      indentWithTabs: false,
+      tabMode: 'shift',
+      readOnly: app.document.mode !== 'edit',
+      onFocus: function () {
+        // Without this, there is the possibility to focus the editor without
+        // activating the code node. Don't ask me why.
+        el.trigger('click');
+      },
+      onChange: _.throttle(function () {
+        app.document.updateSelectedNode({
+          content: escape(cm.getValue())
+        });
+      }, 500)
+    });
+    setTimeout(function () { cm.refresh(); }, 10);
+    el.data('codemirror', cm);
+  }
+  
+  return el.data('codemirror');
+}
+
 
 _.slug = function(str) {
   str = str.replace(/^\s+|\s+$/g, ''); // trim
@@ -830,31 +867,10 @@ var QuoteEditor = Backbone.View.extend({
 });
 
 var CodeEditor = Backbone.View.extend({
-  events: {
-
-  },
+  events: {},
   
-  initialize: function() {
-    var that = this;
-    this.render();
-        
-    this.$content = this.$('.content');
-    editor.activate(this.$content, {
-      placeholder: 'Enter Code',
-      controlsTarget: $('#document_actions'),
-      markup: false
-    });
-    
-    // Update node when editor commands are applied
-    editor.bind('changed', function() {
-      app.document.updateSelectedNode({
-        content: editor.content()
-      });
-    });
-  },
-  
-  render: function() {
-    // $(this.el).html(Helpers.renderTemplate('edit_text', app.editor.model.selectedNode.data));
+  initialize: function () {
+    activateCodeMirror(this.$('textarea').get(0)).focus();
   }
 });
 
@@ -1660,9 +1676,14 @@ var Document = Backbone.View.extend({
     
     if (this.mode === 'edit') {
       renderControls(this.model, null, null, null, 0);
-    } else {
-      hijs('#'+node.html_id+' .content-node.code pre');
     }
+    
+    //setTimeout(function() {
+      $('.content-node.code textarea').each(function() {
+        var cm = activateCodeMirror(this);
+        $(this).data('codemirror', cm);
+      });
+    //}, 10);
   },
   
   renderDocument: function() {
@@ -1673,9 +1694,13 @@ var Document = Backbone.View.extend({
     // Render controls
     if (this.mode === 'edit') {
       renderControls(this.model, null, null, null, 0);
-    } else {
-      hijs('.content-node.code pre');
     }
+    
+    //setTimeout(function() {
+      $('.content-node.code textarea').each(function() {
+        activateCodeMirror(this);
+      });
+    //}, 10);
   },
   
   // Extract available documentTypes from config
@@ -2176,6 +2201,7 @@ var Document = Backbone.View.extend({
     return false;
   }
 });
+
 var DocumentSettings = Backbone.View.extend({
   events: {
     'submit form': 'invite',
