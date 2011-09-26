@@ -69,7 +69,7 @@ function activateCodeMirror(el) {
         el.trigger('click');
       },
       onBlur: function () {
-        //cm.setSelection({line:0,ch:0}, {line:0,ch:0});
+        cm.setSelection({line:0,ch:0}, {line:0,ch:0});
       },
       onChange: _.throttle(function () {
         app.document.updateSelectedNode({
