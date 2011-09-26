@@ -2053,14 +2053,7 @@ pre {
   margin: 10px 100px;
 }
 
-.CodeMirror {
-  margin: 10px 100px;
-}
 
-.CodeMirror-scroll {
-  height: auto; overflow-y: visible; /* grow with content; source: manual */
-  overflow-x: auto;
-}
 
 /* Image Editor
 -------------------------------------------------------------------------------*/
@@ -3161,7 +3154,95 @@ pre .comment              { color: #888 }
 
 
 
+/* CodeMirror Styles
+-------------------------------------------------------------------------------*/
 
+
+.CodeMirror {
+  margin: 10px 100px;
+  line-height: 1.7em;
+/*  font-family: monospace;*/
+/*  font-size: 0.8em;*/
+  font-size: 12px;
+  font-family: Monaco, Consolas, "Lucida Console", monospace;
+}
+
+.CodeMirror-scroll {
+  overflow: auto;
+  height: auto; overflow-y: visible; /* grow with content; source: manual */
+  overflow-x: auto;
+  /* This is needed to prevent an IE[67] bug where the scrolled content
+     is visible outside of the scrolling box. */
+  position: relative;
+}
+
+.CodeMirror-gutter {
+  position: absolute; left: 0; top: 0;
+  background-color: #f7f7f7;
+  border-right: 1px solid #eee;
+  min-width: 2em;
+  height: 100%;
+}
+.CodeMirror-gutter-text {
+  color: #aaa;
+  text-align: right;
+  padding: .4em .2em .4em .4em;
+}
+.CodeMirror-lines {
+  padding: .4em;
+}
+
+.CodeMirror pre {
+  -moz-border-radius: 0;
+  -webkit-border-radius: 0;
+  -o-border-radius: 0;
+  border-radius: 0;
+  border-width: 0; margin: 0; padding: 0; background: transparent;
+  font-family: inherit;
+  font-size: inherit;
+  padding: 0; margin: 0;
+  white-space: pre;
+  word-wrap: normal;
+}
+
+.CodeMirror textarea {
+  font-family: inherit !important;
+  font-size: inherit !important;
+}
+
+.CodeMirror-cursor {
+  z-index: 10;
+  position: absolute;
+  visibility: hidden;
+  border-left: 1px solid black !important;
+}
+.CodeMirror-focused .CodeMirror-cursor {
+  visibility: visible;
+}
+
+span.CodeMirror-selected {
+  background: #ccc !important;
+  color: HighlightText !important;
+}
+.CodeMirror-focused span.CodeMirror-selected {
+  background: Highlight !important;
+}
+
+.CodeMirror-matchingbracket {color: #0f0 !important;}
+.CodeMirror-nonmatchingbracket {color: #f22 !important;}
+
+
+
+
+.cm-s-elegant span.cm-number, .cm-s-elegant span.cm-string, .cm-s-elegant span.cm-atom {color: #219161;}
+.cm-s-elegant span.cm-comment {color: #888;}
+.cm-s-elegant span.cm-meta {color: #555;font-style: italic;}
+.cm-s-elegant span.cm-variable {color: #19469D;}
+.cm-s-elegant span.cm-variable-2 {color: #b11;}
+.cm-s-elegant span.cm-qualifier {color: #555;}
+.cm-s-elegant span.cm-keyword {color: #954121;}
+.cm-s-elegant span.cm-builtin {color: #30a;}
+.cm-s-elegant span.cm-error {background-color: #fdd;}
 
 
 
