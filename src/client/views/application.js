@@ -309,7 +309,7 @@ var Application = Backbone.View.extend({
   },
   
   newDocument: function() {
-    if (!head.browser.webkit) {
+    if (!head.browser.webkit && !head.browser.mozilla) {
       alert("You need to use a Webkit based browser (Google Chrome, Safari) in order to write documents. In future, other browers will be supported too.");
       return false;
     }
