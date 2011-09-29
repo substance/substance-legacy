@@ -116,6 +116,7 @@ Filters.sanitizeUserInput = function() {
     "em": {},
     "b": {},
     "i": {},
+    "br": {},
     "code": {},
     "p": {},
     "ul": {},
