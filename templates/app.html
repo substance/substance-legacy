@@ -1096,6 +1096,24 @@
     </div>
   </script>
   
+  <script type="text/x-handlebars-template" name="gist">
+    <div id="{{node/html_id}}" name={{node/key}} parent="{{parent/_id}}" level="{{level}}" draggable="false" class="content-node code gist level-{{level}}">
+      <div class="content-node-outline"><div class="cursor"><span></span></div></div>
+        <div class="operations">
+          <a href="/" class="toggle-comments sticky" title="Toggle comments for Gist"><span>{{comments}}</span></a>
+          {{#edit}}
+            <a href="/" class="remove-node" title="Remove Node" node="{{node/key}}" parent="{{parent/_id}}"></a>
+            <a href="/" class="toggle-move-node" title="Move Gist — Use placeholders as targets"></a>
+          {{/edit}}
+        </div>
+      
+      {{#edit}}<div class="pilcrow">&#182;</div>{{/edit}}
+      <textarea class="content"{{#edit}} title="Click To Edit Gist"{{/edit}}>{{{content}}}</textarea>
+      {{#edit}}<div class="node-editor-placeholder"></div>{{/edit}}
+      <div class="comments-wrapper{{^edit}} expanded{{/edit}}"></div>
+    </div>
+  </script>
+  
   <script type="text/x-handlebars-template" name="question">
     <div id="{{node/html_id}}" name={{node/key}} parent="{{parent/_id}}" level="{{level}}" draggable="false" class="content-node question level-{{level}}">
       <div class="content-node-outline"><div class="cursor"><span></span></div></div>

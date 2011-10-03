@@ -13,6 +13,8 @@ var ContentNode = {
       return "Quote";
     else if (node.type.key === "/type/code")
       return "Code";  
+    else if (node.type.key === "/type/gist")
+      return "Gist";        
     return "N/A"
   }
 }

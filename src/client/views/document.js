@@ -782,6 +782,8 @@ var Document = Backbone.View.extend({
       this.nodeEditor = new QuestionEditor({el: $node});
     } else if (this.selectedNode.type._id === '/type/answer') {
       this.nodeEditor = new AnswerEditor({el: $node});
+    } else if (this.selectedNode.type._id === '/type/gist') {
+      this.nodeEditor = new GistEditor({el: $node});
     }
   },
   

@@ -360,7 +360,16 @@ app.post('/register', function(req, res) {
   }
   
   db.view('substance/users', {key: username.toLowerCase()}, function(err, result) {
+    if (err && err.error === 'not_found') {
+        // that's okay, clear error
+        err = null;
+    }
     if (err) return res.send({"status": "error", "field": "all", "message": "Unknown error."});
+
+    result = result || {
+      rows: []  
+    };
+    
     if (result.rows.length > 0) return res.send({"status": "error", "field": "username", "message": "Username is already taken."});
     
     var user = graph.set('/user/'+username.toLowerCase(), {

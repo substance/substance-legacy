@@ -53,6 +53,7 @@
       "/client/node_editors/answer_editor.js",
       "/client/node_editors/image_editor.js",
       "/client/node_editors/resource_editor.js",
+      "/client/node_editors/gist_editor.js",
       "/client/ui/common.js",
       "/client/ui/string_editor.js",
       "/client/ui/multi_string_editor.js",

@@ -12,6 +12,7 @@ var renderControls = function(node, first, last, parent, level) {
     actions.set('/type/resource', []);
     actions.set('/type/quote', []);
     actions.set('/type/code', []);
+    actions.set('/type/gist', []);
     
     function computeActions(n, parent) {
       function registerAction(action) {
@@ -286,6 +287,18 @@ var HTMLRenderer = function(root, parent, lvl) {
         edit: app.document.mode === 'edit',
         visualization_type: node.get('visualization_type'),
         data_source: node.get('data_source'),
+        level: level
+      });
+    },
+    
+    "/type/gist": function(node, parent, level) {
+      return Helpers.renderTemplate('gist', {
+        node: node,
+        comments: node.get('comment_count'), // node.get('comments') && node.get('comments').length>0 ? node.get('comments').length : "",
+        parent: parent,
+        edit: app.document.mode === 'edit',
+        content: node.get('content'),
+        empty: app.document.mode === 'edit' && (!node.get('content') || node.get('content') === ''),
         level: level
       });
     }

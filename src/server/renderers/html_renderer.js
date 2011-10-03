@@ -73,6 +73,10 @@ var HTMLRenderer = function(root) {
       return '<pre class="content-fragment" class="code">'+node.get('content')+'</pre>';
     },
     
+    "/type/gist": function(node, level) {
+      return '<pre class="content-fragment" class="code">'+node.get('content')+'</pre>';
+    },    
+    
     "/type/image": function(node, level) {
       return '<image class="content-fragment" src="'+node.get('url')+'"/>';
     },
