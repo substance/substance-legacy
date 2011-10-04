@@ -124,8 +124,7 @@
   this.Proper = function(options) {
     var activeElement = null, // element that's being edited
         $controls,
-        self = {},
-        that = this,
+        events = _.extend({}, _.Events),
         pendingChange = false,
         options = {},
         defaultOptions = { // default options
@@ -135,19 +134,6 @@
           codeFontFamily: 'Monaco, Consolas, "Lucida Console", monospace'
         };
     
-    // Setup temporary hidden DOM Node, for sanitization
-    var properContent = $('<div id="proper_content"></div>')
-      .hide()
-      .appendTo(document.body);
-    // TODO: michael, explain why these css properties are needed -- timjb
-    var rawContent = $('<div id="proper_raw_content" contenteditable="true"></div>')
-      .css({
-        position: 'fixed',
-        top: '20px',
-        left: '20px',
-        opacity: '0'
-      })
-      .appendTo(document.body);
     
     // Commands
     // --------
@@ -182,7 +168,7 @@
 
     var nbsp = $('<span>&nbsp;</span>').text();
 
-    var commands = self.commands = {
+    var commands = {
       em: {
         isActive: function() {
           return document.queryCommandState('italic', false, true);
@@ -283,11 +269,6 @@
       }
     };
     
-    // TODO: enable proper sanitizing that allows markup to be pasted too
-    function sanitize() {      
-      properContent.html(rawContent.text());
-    }
-    
     // Returns true if a and b is the same font family. This is used to check
     // if the current font family (`document.queryCommandValue('fontName')`)
     // is the font family that's used to style code.
@@ -314,6 +295,9 @@
       }
     }
     
+    
+    // Semantify/desemantify content
+    // -----------------------------
     
     function escape(text) {
       return text.replace(/&/g, '&amp;')
@@ -395,54 +379,28 @@
       node.find('span').each(function () {
         $(this).children().first().unwrap();
       });
-      
-      node.children().each(function () {
-        if (!$(this).is('p,ul,ol')) {
-          $(this).wrap($('<p />'));
-        }
-      });
     }
     
     // Replaces semantic elements with their presentational counterparts
-    // (e.g. <em> with <i>). Tries to preserve the user's selection and cursor
-    // position.
+    // (e.g. <em> with <i>).
     function desemantifyContents(node) {
-      var sel = saveSelection()
-      ,   startContainer = sel.startContainer
-      ,   startOffset    = sel.startOffset
-      ,   endContainer   = sel.endContainer
-      ,   endOffset      = sel.endOffset;
-      
-      function replace(semantic, presentational) {
-        node.find(semantic).each(function () {
-          var presentationalEl = $(presentational).get(0);
-          
-          var child;
-          while (child = this.firstChild) {
-            presentationalEl.appendChild(child);
-          }
-          
-          $(this).replaceWith(presentationalEl);
-        });
-      }
-      replace('em', '<i />');
-      replace('strong', '<b />');
-      replace('code', '<font class="proper-code" face="'+escape(options.codeFontFamily)+'" />');
-      
-      function isInDom(node) {
-        if (node === document.body) return true;
-        if (node.parentNode) return isInDom(node.parentNode);
-        return false;
-      }
-      
-      if (isInDom(startContainer)) {
-        sel.setStart(startContainer, startOffset);
-      }
-      if (isInDom(endContainer)) {
-        sel.setEnd(endContainer, endOffset);
-      }
-      
-      restoreSelection(sel);
+      doWithSelection(function () {
+        function replace(semantic, presentational) {
+          node.find(semantic).each(function () {
+            var presentationalEl = $(presentational).get(0);
+            
+            var child;
+            while (child = this.firstChild) {
+              presentationalEl.appendChild(child);
+            }
+            
+            $(this).replaceWith(presentationalEl);
+          });
+        }
+        replace('em', '<i />');
+        replace('strong', '<b />');
+        replace('code', '<font class="proper-code" face="'+escape(options.codeFontFamily)+'" />');
+      });
     }
     
     // Update the control buttons' state.
@@ -456,6 +414,10 @@
         }
       });
     }
+    
+    
+    // Placeholder
+    // -----------
     
     // If the activeElement has no content, display the placeholder and give
     // the element the class `empty`.
@@ -480,6 +442,10 @@
       }
     }
     
+    
+    // DOM Selection
+    // -------------
+    
     // Returns the current selection as a dom range.
     function saveSelection() {
       if (window.getSelection) {
@@ -492,7 +458,7 @@
       }
       return null;
     }
-
+    
     // Selects the given dom range.
     function restoreSelection(range) {
       if (range) {
@@ -513,6 +479,101 @@
       restoreSelection(range);
     }
     
+    // Applies fn and tries to preserve the user's selection and cursor
+    // position.
+    function doWithSelection (fn) {
+      // Before
+      var sel = saveSelection()
+      ,   startContainer = sel.startContainer
+      ,   startOffset    = sel.startOffset
+      ,   endContainer   = sel.endContainer
+      ,   endOffset      = sel.endOffset;
+      
+      fn();
+      
+      // After
+      function isInDom(node) {
+        if (node === document.body) return true;
+        if (node.parentNode) return isInDom(node.parentNode);
+        return false;
+      }
+      if (isInDom(startContainer)) {
+        sel.setStart(startContainer, startOffset);
+      }
+      if (isInDom(endContainer)) {
+        sel.setEnd(endContainer, endOffset);
+      }
+      restoreSelection(sel);
+    }
+    
+    
+    // Handle events
+    // -------------
+    
+    // Should be called during a paste event. Removes the focus from the
+    // currently focused element. Expects a callback function that will be
+    // called with a node containing the pasted content.
+    function getPastedContent (callback) {
+      // TODO: michael, explain why these css properties are needed -- timjb
+      var tmpEl = $('<div id="proper_tmp_el" contenteditable="true" />')
+        .css({ position: 'fixed', top: '20px', left: '20px', opacity: '0' })
+        .appendTo(document.body)
+        .focus();
+      setTimeout(function () {
+        tmpEl.remove();
+        callback(tmpEl);
+      }, 10);
+    }
+    
+    function cleanPastedContent (node) {
+      var allowedTags = {
+        p: [], ul: [], ol: [], li: [],
+        strong: [], code: [], em: [], b: [], i: [], a: ['href']
+      };
+      
+      function traverse (node) {
+        // Remove comments
+        $(node).contents().filter(function () {
+          return this.nodeType === Node.COMMENT_NODE
+        }).remove();
+        
+        $(node).children().each(function () {
+          var tag = this.tagName.toLowerCase();
+          traverse(this);
+          if (allowedTags[tag]) {
+            var old  = $(this)
+            ,   neww = $(document.createElement(tag));
+            neww.html(old.html());
+            _.each(allowedTags[tag], function (name) {
+              neww.attr(name, old.attr(name));
+            });
+            old.replaceWith(neww);
+          } else if (tag === 'font' && $(this).hasClass('proper-code')) {
+            // do nothing
+          } else {
+            $(this).contents().first().unwrap();
+          }
+        });
+      }
+      
+      $(node).find('script, style').remove();
+      // Remove double annotations
+      var annotations = 'strong, em, b, i, code, a';
+      $(node).find(annotations).each(function () {
+        $(this).find(annotations).each(function () {
+          $(this).contents().first().unwrap();
+        });
+      });
+      traverse(node);
+    }
+    
+    // Removes <b>, <i> and <font> tags
+    function removeAnnotations (node) {
+      $(node).find('b, i, font').each(function () {
+        $(this).contents().first().unwrap();
+      });
+    }
+    
     function bindEvents(el) {
       $(el)
         .unbind('paste')
@@ -521,23 +582,21 @@
         .unbind('focus')
         .unbind('blur');
       
-      $(el).bind('paste', function() {
+      $(el).bind('paste', function () {
+        var isAnnotationActive = commands.strong.isActive()
+                              || commands.em.isActive()
+                              || commands.code.isActive();
         var selection = saveSelection();
-        rawContent.focus();
-        
-        // Immediately sanitize pasted content
-        setTimeout(function() {
-          sanitize();
+        getPastedContent(function (node) {
           restoreSelection(selection);
           $(el).focus();
-          
-          // Avoid nested paragraph correction resulting from paste
-          var content = properContent.html().trim();
-
+          cleanPastedContent($(node));
+          //semantifyContents($(node));
+          desemantifyContents($(node));
+          if (isAnnotationActive) removeAnnotations($(node));
           // For some reason last </p> gets injected anyway
-          document.execCommand('insertHTML', false, content);
-          rawContent.html('');
-        }, 1);
+          document.execCommand('insertHTML', false, $(node).html());
+        });
       });
       
       function isTag(node, tag) {
@@ -591,7 +650,7 @@
             pendingChange = true;
             setTimeout(function() {
               pendingChange = false;
-              self.trigger('changed');
+              events.trigger('changed');
             }, 200);
           }
         }, 10);
@@ -602,22 +661,22 @@
     // Instance methods
     // -----------
 
-    self.deactivate = function() {
+    function deactivate () {
       $(activeElement)
         .attr('contenteditable', 'false')
         .unbind('paste')
         .unbind('keydown');
       $('.proper-commands').remove();
-      self.unbind('changed');
+      events.unbind('changed');
     };
     
     // Activate editor for a given element
-    self.activate = function(el, opts) {
+    function activate (el, opts) {
       options = {};
       _.extend(options, defaultOptions, opts);
       
       // Deactivate previously active element
-      self.deactivate();
+      deactivate();
       
       // Make editable
       $(el).attr('contenteditable', true);
@@ -655,7 +714,7 @@
       
       // Use <b>, <i> and <font face="monospace"> instead of style attributes.
       // This is convenient because these inline element can easily be replaced
-      // by their more semantic counterparts (<strong>, <em> and <code>);
+      // by their more semantic counterparts (<strong>, <em> and <code>).
       document.execCommand('styleWithCSS', false, false);
       
       $('.proper-commands a.command').click(function(e) {
@@ -663,12 +722,12 @@
         $(activeElement).focus();
         exec($(e.currentTarget).attr('command'));
         updateCommandState();
-        setTimeout(function() { self.trigger('changed'); }, 10);
+        setTimeout(function() { events.trigger('changed'); }, 10);
       });
     };
     
     // Get current content
-    self.content = function() {
+    function content () {
       if ($(activeElement).hasClass('empty')) return '';
       
       if (options.markup) {
@@ -689,7 +748,16 @@
     // Expose public API
     // -----------------
     
-    _.extend(self, _.Events);
-    return self;
+    return {
+      bind:    function () { events.bind.apply(events, arguments); },
+      unbind:  function () { events.unbind.apply(events, arguments); },
+      trigger: function () { events.trigger.apply(events, arguments); },
+      
+      activate: activate,
+      deactivate: deactivate,
+      content: content,
+      exec: exec,
+      commands: commands
+    };
   };
 })();
