@@ -199,6 +199,23 @@ Helpers.renderTemplate = _.renderTemplate = function(tpl, view, helpers) {
   return template(view, helpers || {});
 };
 
+function getCodeMirrorModeForLanguage (language) {
+  return {
+    javascript: 'javascript',
+    python: { name: 'python', version: 3 },
+    ruby: 'ruby',
+    php: 'php',
+    html: 'htmlmixed',
+    css: 'css',
+    haskell: 'haskell',
+    coffeescript: 'coffeescript',
+    java: 'text/x-java',
+    c: 'text/x-csrc',
+    'c++': 'text/x-c++src',
+    csharp: 'text/x-csharp'
+  }[language] || 'null';
+}
+
 function activateCodeMirror(el) {
   var escape = function (str) {
     return str.replace(/&/g, '&amp;')
@@ -211,7 +228,7 @@ function activateCodeMirror(el) {
   
   if (!el.data('codemirror')) {
     var cm = CodeMirror.fromTextArea(el.get(0), {
-      mode: 'javascript',
+      mode: getCodeMirrorModeForLanguage(el.attr('data-language')),
       lineNumbers: true,
       theme: 'elegant',
       indentUnit: 2,
@@ -576,12 +593,27 @@ var HTMLRenderer = function(root, parent, lvl) {
     },
     
     "/type/code": function(node, parent, level) {
+      var languages = ['JavaScript', 'Python', 'Ruby', 'PHP', 'HTML', 'CSS', 'Haskell', 'CoffeeScript', 'Java', 'C', 'C++', 'CSharp', 'Other'];
+      
+      function createSelect (dflt, opts) {
+        var html = '<select>';
+        _.each(opts, function (lang) {
+          var value = lang.toLowerCase();
+          selected = dflt === value ? ' selected="selected"' : '';
+          html += '<option value="' + value + '"' + selected + '>' + lang + '</option>';
+        });
+        html += '</select>';
+        return html;
+      }
+      
       return Helpers.renderTemplate('code', {
         node: node,
         comments: node.get('comment_count'), // node.get('comments') && node.get('comments').length>0 ? node.get('comments').length : "",
         parent: parent,
         edit: app.document.mode === 'edit',
         content: node.get('content'),
+        language: node.get('language'),
+        languageSelect: createSelect(node.get('language'), languages),
         empty: app.document.mode === 'edit' && (!node.get('content') || node.get('content') === ''),
         level: level
       });
@@ -707,6 +739,7 @@ var TOCRenderer = function(root) {
     }
   };
 };
+
 var DocumentEditor = Backbone.View.extend({
   events: {
     'keydown .property': 'updateNode'
@@ -873,7 +906,16 @@ var CodeEditor = Backbone.View.extend({
   events: {},
   
   initialize: function () {
-    activateCodeMirror(this.$('textarea').get(0)).focus();
+    var cm = activateCodeMirror(this.$('textarea').get(0));
+    cm.focus();
+    
+    this.$('select').change(function () {
+      var language = $(this).val();
+      app.document.updateSelectedNode({
+        language: language
+      });
+      cm.setOption('mode', getCodeMirrorModeForLanguage(language));
+    });
   }
 });
 
