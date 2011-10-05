@@ -52,7 +52,12 @@ function getCodeMirrorModeForLanguage (language) {
     php: 'php',
     html: 'htmlmixed',
     css: 'css',
-    haskell: 'haskell'
+    haskell: 'haskell',
+    coffeescript: 'coffeescript',
+    java: 'text/x-java',
+    c: 'text/x-csrc',
+    'c++': 'text/x-c++src',
+    csharp: 'text/x-csharp'
   }[language] || 'null';
 }
 

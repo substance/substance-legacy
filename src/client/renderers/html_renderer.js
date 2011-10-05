@@ -214,7 +214,7 @@ var HTMLRenderer = function(root, parent, lvl) {
     },
     
     "/type/code": function(node, parent, level) {
-      var languages = ['JavaScript', 'Python', 'Ruby', 'PHP', 'HTML', 'CSS', 'Haskell', 'Other'];
+      var languages = ['JavaScript', 'Python', 'Ruby', 'PHP', 'HTML', 'CSS', 'Haskell', 'CoffeeScript', 'Java', 'C', 'C++', 'CSharp', 'Other'];
       
       function createSelect (dflt, opts) {
         var html = '<select>';

@@ -25,7 +25,8 @@
       "/codemirror/mode/htmlmixed/htmlmixed.js",
       "/codemirror/mode/php/php.js",
       "/codemirror/mode/python/python.js",
-      "/codemirror/mode/ruby/ruby.js"
+      "/codemirror/mode/ruby/ruby.js",
+      "/codemirror/mode/coffeescript/coffeescript.js"
     ],
     "production": [
       "/javascripts/sanitize.js",
@@ -53,7 +54,8 @@
       "/codemirror/mode/htmlmixed/htmlmixed.js",
       "/codemirror/mode/php/php.js",
       "/codemirror/mode/python/python.js",
-      "/codemirror/mode/ruby/ruby.js"
+      "/codemirror/mode/ruby/ruby.js",
+      "/codemirror/mode/coffeescript/coffeescript.js"
     ],
     "source": [
       "/client/notifier.js",
