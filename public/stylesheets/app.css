@@ -2527,6 +2527,11 @@ pre {
   top: 20px;
   right: 100px;
   z-index: 1000;
+  display: none;
+}
+
+.content-node.code.selected > select {
+  display: inline;
 }
 
 #document.structure-mode .node-actions { display: none; }
