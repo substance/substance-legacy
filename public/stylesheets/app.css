@@ -2522,6 +2522,13 @@ pre {
 .content-node > .content-node.level-3 > .content-node-outline { right: -70px; }
 .content-node > .content-node.level-4 > .content-node-outline { right: -50px; }
 
+.content-node.code select {
+  position: absolute;
+  top: 20px;
+  right: 100px;
+  z-index: 1000;
+}
+
 #document.structure-mode .node-actions { display: none; }
 #document.structure-mode { background: #eee;}
 #document.structure-mode .content-node { margin-left: 20px; }

@@ -789,6 +789,12 @@
         "type": "string",
         "default": ""
       },
+      "language" : {
+        "name": "Language",
+        "unique": true,
+        "type": "string",
+        "default": "javascript"
+      },
       "document": {
         "name": "Document Membership",
         "unique": true,

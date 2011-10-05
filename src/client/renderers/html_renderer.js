@@ -214,12 +214,27 @@ var HTMLRenderer = function(root, parent, lvl) {
     },
     
     "/type/code": function(node, parent, level) {
+      var languages = ['JavaScript', 'Python', 'Ruby', 'PHP', 'HTML', 'CSS', 'Haskell', 'Other'];
+      
+      function createSelect (dflt, opts) {
+        var html = '<select>';
+        _.each(opts, function (lang) {
+          var value = lang.toLowerCase();
+          selected = dflt === value ? ' selected="selected"' : '';
+          html += '<option value="' + value + '"' + selected + '>' + lang + '</option>';
+        });
+        html += '</select>';
+        return html;
+      }
+      
       return Helpers.renderTemplate('code', {
         node: node,
         comments: node.get('comment_count'), // node.get('comments') && node.get('comments').length>0 ? node.get('comments').length : "",
         parent: parent,
         edit: app.document.mode === 'edit',
         content: node.get('content'),
+        language: node.get('language'),
+        languageSelect: createSelect(node.get('language'), languages),
         empty: app.document.mode === 'edit' && (!node.get('content') || node.get('content') === ''),
         level: level
       });

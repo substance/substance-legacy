@@ -44,6 +44,18 @@ Helpers.renderTemplate = _.renderTemplate = function(tpl, view, helpers) {
   return template(view, helpers || {});
 };
 
+function getCodeMirrorModeForLanguage (language) {
+  return {
+    javascript: 'javascript',
+    python: { name: 'python', version: 3 },
+    ruby: 'ruby',
+    php: 'php',
+    html: 'htmlmixed',
+    css: 'css',
+    haskell: 'haskell'
+  }[language] || 'null';
+}
+
 function activateCodeMirror(el) {
   var escape = function (str) {
     return str.replace(/&/g, '&amp;')
@@ -56,7 +68,7 @@ function activateCodeMirror(el) {
   
   if (!el.data('codemirror')) {
     var cm = CodeMirror.fromTextArea(el.get(0), {
-      mode: 'javascript',
+      mode: getCodeMirrorModeForLanguage(el.attr('data-language')),
       lineNumbers: true,
       theme: 'elegant',
       indentUnit: 2,
