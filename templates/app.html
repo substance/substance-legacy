@@ -1097,7 +1097,7 @@
   </script>
   
   <script type="text/x-handlebars-template" name="gist">
-    <div id="{{node/html_id}}" name={{node/key}} parent="{{parent/_id}}" level="{{level}}" draggable="false" class="content-node code gist level-{{level}}">
+    <div id="{{node/html_id}}" name={{node/key}} parent="{{parent/_id}}" level="{{level}}" draggable="false" class="content-node gist level-{{level}}">
       <div class="content-node-outline"><div class="cursor"><span></span></div></div>
         <div class="operations">
           <a href="/" class="toggle-comments sticky" title="Toggle comments for Gist"><span>{{comments}}</span></a>
@@ -1108,7 +1108,29 @@
         </div>
       
       {{#edit}}<div class="pilcrow">&#182;</div>{{/edit}}
-      <textarea class="content"{{#edit}} title="Click To Edit Gist"{{/edit}}>{{{content}}}</textarea>
+      
+      <div class="edit-in-c9"><a href='#' target='_blank'>Edit in cloud9</a></div>
+      <div class="tabular-input">
+        <div class="row">
+            <label for='url'>Gist public clone URL</label>
+            <input type='text' class='url' id='url' value='{{url}}' />
+        </div>
+        <div class="row">
+            <label for='file'>File</label>
+            <select class='file' id='file'></select>
+        </div>
+        <div class="row">
+            <label for='line_start'>Starting line</label>
+            <input type='number' class='line_start' id='line_start' value='{{line_start}}' />
+        </div>
+        <div class="row">
+            <label for='line_end'>Ending line</label>
+            <input type='number' class='line_end' id='line_end' value='{{line_end}}' />
+        </div>
+      </div>
+      
+      <textarea class="snippet">{{{snippet}}}</textarea>
+      
       {{#edit}}<div class="node-editor-placeholder"></div>{{/edit}}
       <div class="comments-wrapper{{^edit}} expanded{{/edit}}"></div>
     </div>

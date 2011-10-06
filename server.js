@@ -741,6 +741,44 @@ app.get('/documents/:username/:name', function(req, res) {
   });
 });
 
+// Simple http proxy,
+// usage: /proxy/json?url=X&callback=Y
+app.get('/proxy/json', function(req, res) {
+    var params = url.parse(req.url, true).query;
+    
+    var settings = {
+      url: url.parse(params.url),
+      callback: params.callback
+    };
+    
+    console.log('proxying ' + params.url);
+    
+    function write(content) {
+        content = JSON.stringify(content);
+        
+        if (settings.callback) { 
+            return settings.callback + '(' + content + ')';
+        }
+        
+        return content;
+    }
+    
+    var port = settings.url.port || (settings.url.protocol === 'https:' ? 443 : 80);
+    var httpModule = port == 443 ? require('https') : require('http');
+    
+    httpModule.get({ host: settings.url.host, path: settings.url.pathname }, function (response) {
+    	var body = '';
+
+		response.on("data", function(chunk) {
+            body += chunk;
+		});
+
+		response.on('end', function() {
+			res.end(write(body));
+		});
+    });
+});
+
 
 // Write a single document, expressed as a graph
 // app.post('/writedocument', function(req, res) {

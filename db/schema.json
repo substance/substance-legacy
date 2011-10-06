@@ -892,12 +892,26 @@
     "type": "/type/type",
     "name": "Gist",
     "properties": {
-      "content": {
-        "name": "Content",
+      "url": {
+        "name": "Gist Url",
         "unique": true,
-        "type": "string",
-        "default": ""
+        "type": "string"
       },
+      "line_start": {
+        "name": "Starting line number",
+        "unique": true,
+        "type": "number"
+      },
+      "line_end": {
+        "name": "Ending line number",
+        "unique": true,
+        "type": "number"
+      },
+      "snippet": {
+        "name": "Snippet",
+        "unique": true,
+        "type": "string"
+      },      
       "document": {
         "name": "Document Membership",
         "unique": true,
