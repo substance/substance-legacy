@@ -2425,7 +2425,7 @@ pre {
 
 #document.edit-mode .content-node.selected > .content {color: #000; }
 #document.edit-mode .content-node.selected blockquote > .content {color: #000; }
-#document.edit-mode .content-node.selected pre > .content {color: #000; }
+#document.edit-mode .content-node.selected > .CodeMirror pre { color: #000; }
 #document.edit-mode .content-node.selected > .content a {color: #000; }
 #document.edit-mode .content-node.selected blockquote > .content a {color: #000; }
 #document.insert-mode .content-node { color: #aaa; }
