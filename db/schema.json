@@ -890,7 +890,7 @@
   "/type/gist": {
     "_id": "/type/gist",
     "type": "/type/type",
-    "name": "Gist",
+    "name": "Cloud9",
     "properties": {
       "url": {
         "name": "Gist Url",

@@ -121,7 +121,9 @@ var GistEditor = Backbone.View.extend({
         });
         
         // update the syntax highlighting plugin
-        controls.code.data('codemirror').setValue(snippet);
+        var codeMirror = controls.code.data('codemirror');
+        codeMirror.setOption('firstLineNumber', startingLine || 1);
+        codeMirror.setValue(snippet);
   },
   
   updateFileList: function (files, controls) {
@@ -154,7 +156,14 @@ var GistEditor = Backbone.View.extend({
       }
       
       // retrieve the gist id from the public repo url
-      var gistId = that.trim(publicCloneUrl).match(/\/(\d+)\.git$/)[1];
+      var gitUrlMatch = that.trim(publicCloneUrl).match(/\/(\d+)\.git$/);
+      
+      if (!gitUrlMatch) {
+          that.onNonGithubUrl();
+          return;
+      }
+      
+      var gistId = gitUrlMatch[1];
       
       // grab all files available in this gist repo
       // what are we going to do with multiple files in a gist?
@@ -238,5 +247,9 @@ var GistEditor = Backbone.View.extend({
       }
       
       return el.data('codemirror'); 
-  }
+  },
+    
+    onNonGithubUrl: function () {
+        // event placeholder
+    }
 });
