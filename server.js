@@ -50,7 +50,7 @@ app.configure(function() {
   var CookieStore = require('cookie-sessions');
   app.use(express.bodyParser());
   app.use(express.methodOverride());
-  app.use(CookieStore({secret: 'keyboard cat'}));
+  app.use(CookieStore({secret: config.secret}));
   app.use(app.router);
   app.use(express.static(__dirname+"/public", { maxAge: 41 }));
   app.use(express.logger({ format: ':method :url' }));
