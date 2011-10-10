@@ -108,8 +108,8 @@ Filters.sanitizeUserInput = function() {
   var basicMarkup = {
     "a":{
       href: function(href) {
-        // accepts only absolute http, https and ftp URLs and email-addresses
-        return /^(mailto:|(https?|ftp):\/\/)/.test(href);
+        // accepts only links to anchors, absolute http, https and ftp URLs and email-addresses
+        return /^((#[-_a-zA-Z0-9]+$)|mailto:|(https?|ftp):\/\/)/.test(href);
       }
     },
     "strong": {},
