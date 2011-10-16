@@ -7,7 +7,7 @@ Node.define('/type/code', 'Code', {
   }, Node.prototype.events),
 
   initialize: function () {
-    this.__super__.initialize.apply(this, arguments);
+    Node.prototype.initialize.apply(this, arguments);
   },
 
   languages: [ 'JavaScript', 'Python', 'Ruby', 'PHP', 'HTML', 'CSS', 'Haskell'
@@ -65,7 +65,7 @@ Node.define('/type/code', 'Code', {
       return html;
     }
     
-    this.__super__.render.apply(this, arguments);
+    Node.prototype.render.apply(this, arguments);
     this.languageSelect = $(createSelect(this.model.get('language'), this.languages)).appendTo(this.contentEl);
     var codeMirrorConfig = _.extend({}, this.codeMirrorConfig, {
       mode: this.modeForLanguage(this.model.get('language')),

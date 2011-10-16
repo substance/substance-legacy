@@ -15,15 +15,15 @@ function addEmptyDoc(type, name, title) {
 
 var Document = Backbone.View.extend({
   events: {
-    'mouseover .content-node': 'highlightNode',
-    'mouseout .content-node': 'unhighlightNode',
-    'click .content-node': 'selectNode',
+    //'mouseover .content-node': 'highlightNode',
+    //'mouseout .content-node': 'unhighlightNode',
+    //'click .content-node': 'selectNode',
     'click .toc-item': 'scrollTo',
-    'click a.move-node': 'moveNode',
-    'click a.toggle-move-node': 'toggleMoveNode',
-    'click a.toggle-comments': 'toggleComments',
-    'click a.create-comment': 'createComment',
-    'click a.remove-comment': 'removeComment',
+    //'click a.move-node': 'moveNode',
+    //'click a.toggle-move-node': 'toggleMoveNode',
+    //'click a.toggle-comments': 'toggleComments',
+    //'click a.create-comment': 'createComment',
+    //'click a.remove-comment': 'removeComment',
     'click a.subscribe-document': 'subscribeDocument',
     'click a.unsubscribe-document': 'unsubscribeDocument',
     'click a.export-document': 'toggleExport',
@@ -31,9 +31,9 @@ var Document = Backbone.View.extend({
     'click a.toggle-publish-settings': 'togglePublishSettings',
     
     // Actions
-    'click a.add_child': 'addChild',
-    'click a.add_sibling': 'addSibling',
-    'click a.remove-node': 'removeNode'
+    //'click a.add_child': 'addChild',
+    //'click a.add_sibling': 'addSibling',
+    //'click a.remove-node': 'removeNode'
   },
   
   loadedDocuments: {},
@@ -424,8 +424,11 @@ var Document = Backbone.View.extend({
     if (this.model) {
       // Render Attributes
       this.attributes.render();
+      this.node = Node.create({ model: this.model });
+      this.$('#document').html(''); // remove the no document notice
+      $(this.node.render().el).appendTo(this.$('#document'));
       // Render the acutal document
-      this.renderDocument();
+      //this.renderDocument();
     }
   },
   

@@ -50,16 +50,25 @@ var Node = Backbone.View.extend({
 
 }, {
 
-  nodes: {},
+  subclasses: {},
 
-  define: function (type, name, protoProps, classProps) {
+  define: function (types, name, protoProps, classProps) {
+    classProps = classProps || {};
     protoProps.name = classProps.name = name;
-    return this.nodes[type] = this.extend(protoProps, classProps);
+    var subclass = this.extend(protoProps, classProps);
+    
+    function toArray (a) { return _.isArray(a) ? a : [a] }
+    _.each(toArray(types), function (type) {
+      this.subclasses[type] = subclass;
+    }, this);
+    
+    return subclass;
   },
 
   create: function (options) {
-    var model = options.model;
-    return new this.nodes[model.type](options);
+    var model = options.model
+    ,   type  = model.type._id;
+    return new this.subclasses[type](options);
   }
 
 });
@@ -153,7 +162,7 @@ Node.Controls = Backbone.View.extend({
   render: function () {
     var actions = $('<div class="actions" />').appendTo(this.el);
     $('<div class="placeholder insert" />').text("Insert Content").appendTo(actions);
-    _.each(possibleChildNodes(this.model), function (type) {
+    _.each(possibleChildTypes(this.model), function (type) {
       var name = type;
       $('<span><a href="/" data-type="' + type + '" class="add add_child">' + name + '</a></span>').appendTo(actions);
     });

@@ -26,11 +26,11 @@ Node.define('/type/text', 'Text', {
   className: 'content-node text',
 
   initialize: function () {
-    this.__super__.initialize.apply(this, arguments);
+    Node.prototype.initialize.apply(this, arguments);
   },
 
   render: function () {
-    this.__super__.render.apply(this, arguments);
+    Node.prototype.render.apply(this, arguments);
     this.contentEl.html(this.model.get('content'));
     return this;
   }

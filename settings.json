@@ -89,7 +89,13 @@
       "/client/views/new_document.js",
       "/client/views/browser_tab.js",
       "/client/views/header.js",
-      "/client/views/application.js"
+      "/client/views/application.js",
+      "/client/model.js",
+      "/client/nodes/base.js",
+      "/client/nodes/code.js",
+      "/client/nodes/document.js",
+      "/client/nodes/section.js",
+      "/client/nodes/text.js"
     ]
   }
 }
