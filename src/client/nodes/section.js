@@ -20,6 +20,7 @@ Node.define('/type/section', 'Section', {
   },
 
   readonly: function () {
+    Node.prototype.readonly.apply(this);
     this.nodeList.readonly();
   },
 

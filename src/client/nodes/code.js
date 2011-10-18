@@ -38,10 +38,12 @@ Node.define('/type/code', 'Code', {
   },
 
   readonly: function () {
+    Node.prototype.readonly.apply(this);
     this.codeMirror.setOption('readOnly', true);
   },
 
   readwrite: function () {
+    Node.prototype.readonly.apply(this);
     this.codeMirror.setOption('readOnly', false);
   },
 
@@ -65,27 +67,50 @@ Node.define('/type/code', 'Code', {
       return html;
     }
     
+    function escape (s) {
+      return s.replace(/&/g, '&amp;')
+              .replace(/</g, '&lt;')
+              .replace(/>/g, '&gt;')
+              .replace(/"/g, '&quot;')
+              .replace(/'/g, '&apos;');
+    }
+    
+    function unescape (s) {
+      return s.replace(/&apos;/g, "'")
+              .replace(/&quot;/g, '"')
+              .replace(/&gt;/g,   '>')
+              .replace(/&lt;/g,   '<')
+              .replace(/&amp;/g,  '&');
+    }
+    
+    var self = this;
+    
     Node.prototype.render.apply(this, arguments);
     this.languageSelect = $(createSelect(this.model.get('language'), this.languages)).appendTo(this.contentEl);
     var codeMirrorConfig = _.extend({}, this.codeMirrorConfig, {
       mode: this.modeForLanguage(this.model.get('language')),
+      value: unescape(this.model.get('content')),
       readOnly: true,
-      //onFocus: function () {
-      //  // Without this, there is the possibility to focus the editor without
-      //  // activating the code node. Don't ask me why.
-      //  el.trigger('click');
-      //},
-      //onBlur: function () {
-      //  cm.setSelection({line:0,ch:0}, {line:0,ch:0});
-      //},
+      onFocus: function () {
+        // Without this, there is the possibility to focus the editor without
+        // activating the code node. Don't ask me why.
+        self.select();
+      },
+      onBlur: function () {
+        // Try to prevent multiple selections in multiple CodeMirror instances
+        self.codeMirror.setSelection({ line:0, ch:0 }, { line:0, ch:0 });
+      },
       onChange: _.throttle(function () {
-        // TODO
-        //app.document.updateSelectedNode({
-        //  content: escape(cm.getValue())
-        //});
+        updateNode(self.model, { content: escape(self.codeMirror.getValue()) });
       }, 500)
     });
     this.codeMirror = CodeMirror(this.contentEl.get(0), codeMirrorConfig);
+    
+    setTimeout(function () {
+      // after dom insertion
+      self.codeMirror.refresh();
+    }, 10);
+    
     return this;
   }
 

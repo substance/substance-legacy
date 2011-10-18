@@ -12,10 +12,13 @@ Node.define(['/type/document', '/type/article'], 'Document', {
   },
 
   readonly: function () {
+    Node.prototype.readonly.apply(this);
+    window.editor.deactivate();
     this.nodeList.readonly();
   },
 
   readwrite: function () {
+    Node.prototype.readwrite.apply(this);
     this.nodeList.readwrite();
   },
 
@@ -34,6 +37,7 @@ Node.define(['/type/document', '/type/article'], 'Document', {
     this.authorEl    = $('<p class="author" />').text(creator.get('name') || creator.get('username')).appendTo(this.contentEl);
     this.publishedEl = $('<p class="published" />').text(publishedOn ? _.date(publishedOn) : '').appendTo(this.contentEl);
     this.leadEl      = this.makeEditable($('<p class="lead content" id="document_lead" />'), 'lead', "Enter Lead").appendTo(this.contentEl);
+    $('<div class="document-separator" />').appendTo(this.contentEl);
     this.nodeListEl  = $(this.nodeList.render().el).appendTo(this.contentEl);
     return this;
   }

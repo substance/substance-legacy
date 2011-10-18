@@ -89,8 +89,6 @@ var Application = Backbone.View.extend({
     'click a.delete-document': 'deleteDocument',
     'click a.toggle-signup': 'toggleSignup',
     'click a.toggle-startpage': 'toggleStartpage',
-    'click a.toggle-edit-mode': 'toggleEditMode',
-    'click a.toggle-show-mode': 'toggleShowMode',
     'click .toggle.logout': 'logout',
     'click .toggle.user-settings': 'toggleUserSettings',
     'click .toggle.user-profile': 'toggleUserProfile',
@@ -399,24 +397,6 @@ var Application = Backbone.View.extend({
       }
     });
     
-    return false;
-  },
-  
-  toggleEditMode: function(e) {
-    var user = app.document.model.get('creator')._id.split('/')[2];
-    var name = app.document.model.get('name');
-    
-    $('#document_wrapper').attr('url', user+"/"+name);
-    app.document.loadDocument(user, name, null, null, null, 'edit');
-    return false;
-  },
-  
-  toggleShowMode: function(e) {
-    var user = app.document.model.get('creator')._id.split('/')[2];
-    var name = app.document.model.get('name');
-    
-    $('#document_wrapper').attr('url', user+"/"+name);
-    app.document.loadDocument(user, name, null, null, null, 'show');
     return false;
   },
   

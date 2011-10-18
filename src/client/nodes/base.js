@@ -6,18 +6,26 @@ var Node = Backbone.View.extend({
     draggable: 'false'
   },
 
-  events: {
-    'click .toggle-comments': 'toggleComments',
-    'click .remove-node': 'removeNode',
-    'click .toggle-move-node': 'toggleMoveNode',
-    'click': 'select'
-  },
-
   initialize: function (options) {
+    this.mode   = 'readonly';
     this.parent = options.parent;
     this.level  = options.level;
     this.root   = options.root;
     this.comments = new Node.Comments({ model: this.model.get('comments') });
+  },
+
+
+  // Events
+  // ------
+
+  events: {
+    'click .toggle-comments': 'toggleComments',
+    'click .remove-node': 'removeNode',
+    'click .toggle-move-node': 'toggleMoveNode',
+    
+    'click': 'selectNode',
+    'mouseover': 'highlight',
+    'mouseout': 'unhighlight'
   },
 
   toggleComments: function () { this.comments.toggle(); },
@@ -26,10 +34,33 @@ var Node = Backbone.View.extend({
   },
   toggleMoveNode: function () {},
 
-  readonly: function () {},
-  readwrite: function () {},
-  select: function () {
-    if (this.root) { this.root.deselect(); }
+  selectNode: function (e) {
+    // the parent view shouldn't deselect this view when the event bubbles up
+    e.stopPropagation();
+    
+    this.select();
+  },
+
+  highlight: function (e) {
+    e.preventDefault();
+    $(this.el).addClass('active');
+  },
+
+  unhighlight: function (e) {
+    e.preventDefault();
+    $(this.el).removeClass('active');
+  },
+
+
+  readonly:  function () { this.mode = 'readonly'; },
+  readwrite: function () { this.mode = 'readwrite'; },
+  
+  select: function (e) {
+    if (this.root) {
+      this.root.deselect();
+    } else {
+      this.deselect();
+    }
     $(this.el).addClass('selected');
   },
   deselect: function () {
@@ -60,12 +91,14 @@ var Node = Backbone.View.extend({
     $(el)
       .attr({ title: "Click to Edit" })
       .click(function () {
-        window.editor.activate($(el), options);
-        window.editor.bind('changed', function () {
-          var update = {};
-          update[attr] = window.editor.content();
-          updateNode(self.model, update);
-        });
+        if (self.mode === 'readwrite') {
+          window.editor.activate($(el), options);
+          window.editor.bind('changed', function () {
+            var update = {};
+            update[attr] = window.editor.content();
+            updateNode(self.model, update);
+          });
+        }
       });
     
     return $(el);
@@ -251,6 +284,13 @@ Node.NodeList = Backbone.View.extend({
 
   render: function () {
     var self = this;
+    
+    var controls = new Node.Controls({
+      model: self.model,
+      position: { parent: self.model, after: null }
+    });
+    $(controls.render().el).appendTo(self.el);
+    
     this.eachChildView(function (childView) {
       $(childView.render().el).appendTo(self.el);
       var controls = new Node.Controls({
@@ -259,6 +299,7 @@ Node.NodeList = Backbone.View.extend({
       });
       $(controls.render().el).appendTo(self.el);
     });
+    
     return this;
   }
 

@@ -13,7 +13,8 @@ function updateNode (node, attrs) {
   node.set(attrs);
   
   // Update modification date on original document
-  node.get('document').set({ updated_at: new Date() });
+  var doc = node.get('document') || node; // node can be the document itself
+  doc.set({ updated_at: new Date() });
   
   //// Only set dirty if explicitly requested    
   //if (attrs.dirty) {

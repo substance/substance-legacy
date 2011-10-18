@@ -15,15 +15,14 @@ function addEmptyDoc(type, name, title) {
 
 var Document = Backbone.View.extend({
   events: {
-    //'mouseover .content-node': 'highlightNode',
-    //'mouseout .content-node': 'unhighlightNode',
-    //'click .content-node': 'selectNode',
     'click .toc-item': 'scrollTo',
     //'click a.move-node': 'moveNode',
     //'click a.toggle-move-node': 'toggleMoveNode',
     //'click a.toggle-comments': 'toggleComments',
     //'click a.create-comment': 'createComment',
     //'click a.remove-comment': 'removeComment',
+    'click a.toggle-edit-mode': 'toggleEditMode',
+    'click a.toggle-show-mode': 'toggleShowMode',
     'click a.subscribe-document': 'subscribeDocument',
     'click a.unsubscribe-document': 'unsubscribeDocument',
     'click a.export-document': 'toggleExport',
@@ -35,6 +34,39 @@ var Document = Backbone.View.extend({
     //'click a.add_sibling': 'addSibling',
     //'click a.remove-node': 'removeNode'
   },
+
+  toggleEditMode: function(e) {
+    e.preventDefault();
+    
+    var user = app.document.model.get('creator')._id.split('/')[2];
+    var name = app.document.model.get('name');
+    $('#document_wrapper').attr('url', user+"/"+name);
+    
+    $('#document').addClass('edit-mode');
+    this.$('.toggle-show-mode').removeClass('active');
+    this.$('.toggle-edit-mode').addClass('active');
+    
+    if (this.node) {
+      this.node.readwrite();
+    }
+  },
+  
+  toggleShowMode: function(e) {
+    e.preventDefault();
+    
+    var user = app.document.model.get('creator')._id.split('/')[2];
+    var name = app.document.model.get('name');
+    $('#document_wrapper').attr('url', user+"/"+name);
+    
+    $('#document').removeClass('edit-mode');
+    this.$('.toggle-edit-mode').removeClass('active');
+    this.$('.toggle-show-mode').addClass('active');
+    
+    if (this.node) {
+      this.node.readonly();
+    }
+  },
+  
   
   loadedDocuments: {},
   
@@ -426,9 +458,8 @@ var Document = Backbone.View.extend({
       this.attributes.render();
       this.node = Node.create({ model: this.model });
       this.$('#document').html(''); // remove the no document notice
+      this.renderDocument();
       $(this.node.render().el).appendTo(this.$('#document'));
-      // Render the acutal document
-      //this.renderDocument();
     }
   },
   
@@ -444,9 +475,9 @@ var Document = Backbone.View.extend({
       $('#'+node.html_id).replaceWith(new HTMLRenderer(node, parent, level).render());
     }
     
-    if (this.mode === 'edit') {
-      renderControls(this.model, null, null, null, 0);
-    }
+    //if (this.mode === 'edit') {
+    //  renderControls(this.model, null, null, null, 0);
+    //}
   },
   
   renderDocument: function() {
@@ -455,9 +486,9 @@ var Document = Backbone.View.extend({
     this.$('#document').show();
     
     // Render controls
-    if (this.mode === 'edit') {
-      renderControls(this.model, null, null, null, 0);
-    }
+    //if (this.mode === 'edit') {
+    //  renderControls(this.model, null, null, null, 0);
+    //}
   },
   
   // Extract available documentTypes from config
@@ -495,9 +526,6 @@ var Document = Backbone.View.extend({
       
       // Deactivate Richtext Editor
       //editor.deactivate();
-      
-      // Render inline Node editor
-      that.renderNodeEditor(node);
     });
     
     // Former DocumentView stuff
@@ -749,32 +777,6 @@ var Document = Backbone.View.extend({
     $('#document').removeClass('move-mode');
   },
   
-  renderNodeEditor: function(node) {
-    var $node = $('#'+node.html_id);
-    if (this.mode !== 'edit') return;
-    
-    // Depending on the selected node's type, render the right editor
-    if (_.include(this.selectedNode.types().keys(), '/type/document')) {
-      this.nodeEditor = new DocumentEditor({el: $('#drawer_content')});
-    } else if (this.selectedNode.type._id === '/type/text') {
-      this.nodeEditor = new TextEditor({el: $node});
-    } else if (this.selectedNode.type._id === '/type/section') {
-      this.nodeEditor = new SectionEditor({el: $node});
-    } else if (this.selectedNode.type._id === '/type/image') {
-      this.nodeEditor = new ImageEditor({el: $node});
-    } else if (this.selectedNode.type._id === '/type/resource') {
-      this.nodeEditor = new ResourceEditor({el: $node});
-    } else if (this.selectedNode.type._id === '/type/quote') {
-      this.nodeEditor = new QuoteEditor({el: $node});
-    } else if (this.selectedNode.type._id === '/type/code') {
-      this.nodeEditor = new CodeEditor({el: $node});
-    } else if (this.selectedNode.type._id === '/type/question') {
-      this.nodeEditor = new QuestionEditor({el: $node});
-    } else if (this.selectedNode.type._id === '/type/answer') {
-      this.nodeEditor = new AnswerEditor({el: $node});
-    }
-  },
-  
   updateNode: function(nodeKey, attrs) {
     var node = graph.get(nodeKey);
     node.set(attrs);
@@ -808,39 +810,7 @@ var Document = Backbone.View.extend({
     }
   },
   
-  highlightNode: function(e) {
-    $(e.currentTarget).addClass('active');
-    return false;
-  },
-  
-  unhighlightNode: function(e) {
-    $(e.currentTarget).removeClass('active');
-    return false;
-  },
-  
 
-  
-  selectNode: function(e) {
-    var that = this;
-    // if (this.mode === 'show') return; // Skip for show mode
-    
-    var key = $(e.currentTarget).attr('name');
-    if (!e.stopProp && (!this.selectedNode || this.selectedNode.key !== key)) {
-      var node = graph.get(key);
-      this.selectedNode = node;
-      this.trigger('select:node', this.selectedNode);
-      e.stopProp = true;
-      // The server will respond with a status package containing my own cursor position
-      // remote.Session.selectNode(key);
-      
-      var wrapper = $('#'+this.selectedNode.html_id+' > .comments-wrapper');
-      wrapper.removeClass('expanded');
-      // this.enableCommentEditor();
-    }
-    e.stopPropagation();
-    // return false;
-  },
-  
   // Update the document's name
   updateName: function(name) {
     this.model.set({

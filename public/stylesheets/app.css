@@ -2530,7 +2530,7 @@ pre {
   display: none;
 }
 
-.content-node.code.selected > select {
+.content-node.code.selected select {
   display: inline;
 }
 

@@ -25,23 +25,27 @@ Node.define('/type/text', 'Text', {
 
   className: 'content-node text',
 
-  initialize: function () {
+  /*initialize: function () {
     Node.prototype.initialize.apply(this, arguments);
+  },*/
+
+  select: function () {
+    Node.prototype.select.apply(this);
+    this.$('.proper-commands').show();
   },
 
-  //select: function () {
-  //  Node.prototype.select.apply(this);
-  //},
-
-  //deselect: function () {},
+  deselect: function () {
+    Node.prototype.deselect.apply(this);
+    this.$('.proper-commands').hide();
+  },
 
   render: function () {
     Node.prototype.render.apply(this, arguments);
-    this.textEl = this.makeEditable($('<div />'), 'content', "Enter Text", {
+    this.textEl = this.makeEditable(this.contentEl, 'content', "Enter Text", {
       markup: true,
       multiline: true,
       controlsTarget: $(this.el)
-    }).appendTo(this.contentEl);
+    });
     return this;
   }
 

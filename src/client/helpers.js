@@ -44,62 +44,6 @@ Helpers.renderTemplate = _.renderTemplate = function(tpl, view, helpers) {
   return template(view, helpers || {});
 };
 
-function getCodeMirrorModeForLanguage (language) {
-  return {
-    javascript: 'javascript',
-    python: { name: 'python', version: 3 },
-    ruby: 'ruby',
-    php: 'php',
-    html: 'htmlmixed',
-    css: 'css',
-    haskell: 'haskell',
-    coffeescript: 'coffeescript',
-    java: 'text/x-java',
-    c: 'text/x-csrc',
-    'c++': 'text/x-c++src',
-    csharp: 'text/x-csharp'
-  }[language] || 'null';
-}
-
-function activateCodeMirror(el) {
-  var escape = function (str) {
-    return str.replace(/&/g, '&amp;')
-              .replace(/</g, '&lt;')
-              .replace(/>/g, '&gt;')
-              .replace(/"/g, '&quot;')
-  };
-  
-  el = $(el);
-  
-  if (!el.data('codemirror')) {
-    var cm = CodeMirror.fromTextArea(el.get(0), {
-      mode: getCodeMirrorModeForLanguage(el.attr('data-language')),
-      lineNumbers: true,
-      theme: 'elegant',
-      indentUnit: 2,
-      indentWithTabs: false,
-      tabMode: 'shift',
-      readOnly: app.document.mode !== 'edit',
-      onFocus: function () {
-        // Without this, there is the possibility to focus the editor without
-        // activating the code node. Don't ask me why.
-        el.trigger('click');
-      },
-      onBlur: function () {
-        cm.setSelection({line:0,ch:0}, {line:0,ch:0});
-      },
-      onChange: _.throttle(function () {
-        app.document.updateSelectedNode({
-          content: escape(cm.getValue())
-        });
-      }, 500)
-    });
-    setTimeout(function () { cm.refresh(); }, 10);
-    el.data('codemirror', cm);
-  }
-  
-  return el.data('codemirror');
-}
 
 
 _.slug = function(str) {
