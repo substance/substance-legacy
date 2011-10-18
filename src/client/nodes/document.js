@@ -6,7 +6,8 @@ Node.define(['/type/document', '/type/article'], 'Document', {
     Node.prototype.initialize.apply(this, arguments);
     this.nodeList = new Node.NodeList({
       model: this.model,
-      level: 1
+      level: 0,
+      root: this
     });
   },
 
@@ -21,15 +22,19 @@ Node.define(['/type/document', '/type/article'], 'Document', {
   //select: function () {},
 
   deselect: function () {
+    Node.prototype.deselect.apply(this);
     this.nodeList.deselect();
   },
 
   render: function () {
     Node.prototype.render.apply(this, arguments);
-    this.titleEl  = $('<h1 />').text(this.model.get('title')).appendTo(this.contentEl);
-    this.authorEl = $('<h2 />').text(this.model.get('creator').get('name')).appendTo(this.contentEl);
-    this.leadEl   = $('<p />').text(this.model.get('lead')).appendTo(this.contentEl);
-    this.nodeListEl = $(this.nodeList.render().el).appendTo(this.contentEl);
+    var creator = this.model.get('creator')
+    ,   publishedOn = this.model.get('published_on');
+    this.titleEl     = this.makeEditable($('<div class="document-title content" />'), 'title', "Enter Title").appendTo(this.contentEl);
+    this.authorEl    = $('<p class="author" />').text(creator.get('name') || creator.get('username')).appendTo(this.contentEl);
+    this.publishedEl = $('<p class="published" />').text(publishedOn ? _.date(publishedOn) : '').appendTo(this.contentEl);
+    this.leadEl      = this.makeEditable($('<p class="lead content" id="document_lead" />'), 'lead', "Enter Lead").appendTo(this.contentEl);
+    this.nodeListEl  = $(this.nodeList.render().el).appendTo(this.contentEl);
     return this;
   }
 

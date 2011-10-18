@@ -29,9 +29,19 @@ Node.define('/type/text', 'Text', {
     Node.prototype.initialize.apply(this, arguments);
   },
 
+  //select: function () {
+  //  Node.prototype.select.apply(this);
+  //},
+
+  //deselect: function () {},
+
   render: function () {
     Node.prototype.render.apply(this, arguments);
-    this.contentEl.html(this.model.get('content'));
+    this.textEl = this.makeEditable($('<div />'), 'content', "Enter Text", {
+      markup: true,
+      multiline: true,
+      controlsTarget: $(this.el)
+    }).appendTo(this.contentEl);
     return this;
   }
 

@@ -447,13 +447,6 @@ var Document = Backbone.View.extend({
     if (this.mode === 'edit') {
       renderControls(this.model, null, null, null, 0);
     }
-    
-    //setTimeout(function() {
-      $('.content-node.code textarea').each(function() {
-        var cm = activateCodeMirror(this);
-        $(this).data('codemirror', cm);
-      });
-    //}, 10);
   },
   
   renderDocument: function() {
@@ -465,12 +458,6 @@ var Document = Backbone.View.extend({
     if (this.mode === 'edit') {
       renderControls(this.model, null, null, null, 0);
     }
-    
-    //setTimeout(function() {
-      $('.content-node.code textarea').each(function() {
-        activateCodeMirror(this);
-      });
-    //}, 10);
   },
   
   // Extract available documentTypes from config
@@ -507,7 +494,7 @@ var Document = Backbone.View.extend({
       $('#document').addClass('edit-mode');
       
       // Deactivate Richtext Editor
-      editor.deactivate();
+      //editor.deactivate();
       
       // Render inline Node editor
       that.renderNodeEditor(node);
@@ -752,7 +739,7 @@ var Document = Backbone.View.extend({
     
     $('#document').removeClass('edit-mode');
     $('#document').removeClass('insert-mode');
-    $('.proper-commands').hide();
+    //$('.proper-commands').hide();
     
     // Reset node-editor-placeholders
     $('.node-editor-placeholder').html('');

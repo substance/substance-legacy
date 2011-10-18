@@ -9,12 +9,14 @@ var Node = Backbone.View.extend({
   events: {
     'click .toggle-comments': 'toggleComments',
     'click .remove-node': 'removeNode',
-    'click .toggle-move-node': 'toggleMoveNode'
+    'click .toggle-move-node': 'toggleMoveNode',
+    'click': 'select'
   },
 
   initialize: function (options) {
     this.parent = options.parent;
-    this.level = options.level;
+    this.level  = options.level;
+    this.root   = options.root;
     this.comments = new Node.Comments({ model: this.model.get('comments') });
   },
 
@@ -27,10 +29,46 @@ var Node = Backbone.View.extend({
   readonly: function () {},
   readwrite: function () {},
   select: function () {
+    if (this.root) { this.root.deselect(); }
     $(this.el).addClass('selected');
   },
   deselect: function () {
     $(this.el).removeClass('selected');
+  },
+
+  makeEditable: function (el, attr, dflt, options) {
+    dflt = dflt || '';
+    options = _.extend({
+      placeholder: dflt,
+      markup: false,
+      multiline: false,
+      codeFontFamily: 'Monaco, Consolas, "Lucida Console", monospace'
+    }, options || {});
+    var self = this;
+    
+    var value = this.model.get(attr);
+    if (value) {
+      if (options.markup) {
+        $(el).html(value);
+      } else {
+        $(el).text(value);
+      }
+    } else {
+      $(el).text(dflt).addClass('empty');
+    }
+    
+    $(el)
+      .attr({ title: "Click to Edit" })
+      .click(function () {
+        window.editor.activate($(el), options);
+        window.editor.bind('changed', function () {
+          var update = {};
+          update[attr] = window.editor.content();
+          updateNode(self.model, update);
+        });
+      });
+    
+    return $(el);
   },
 
   render: function () {
@@ -178,7 +216,12 @@ Node.NodeList = Backbone.View.extend({
   initialize: function (options) {
     var childViews = this.childViews = [];
     this.model.get('children').each(function (child) {
-      childViews.push(Node.create({ model: child, level: options.level + 1 }));
+      var childView = Node.create({
+        model: child,
+        level: options.level + 1,
+        root: options.root
+      });
+      childViews.push(childView);
     });
   },
 
@@ -198,7 +241,7 @@ Node.NodeList = Backbone.View.extend({
     });
   },
 
-  //select: function () {}
+  //select: function () {},
 
   deselect: function () {
     this.eachChildView(function (childView) {
