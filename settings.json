@@ -91,7 +91,9 @@
       "/client/nodes/code.js",
       "/client/nodes/document.js",
       "/client/nodes/section.js",
-      "/client/nodes/text.js"
+      "/client/nodes/text.js",
+      "/client/nodes/quote.js",
+      "/client/nodes/image.js"
     ]
   }
 }

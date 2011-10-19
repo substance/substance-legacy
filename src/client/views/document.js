@@ -32,7 +32,6 @@ var Document = Backbone.View.extend({
     // Actions
     //'click a.add_child': 'addChild',
     //'click a.add_sibling': 'addSibling',
-    //'click a.remove-node': 'removeNode'
   },
 
   toggleEditMode: function(e) {
@@ -58,7 +57,7 @@ var Document = Backbone.View.extend({
     var name = app.document.model.get('name');
     $('#document_wrapper').attr('url', user+"/"+name);
     
-    $('#document').removeClass('edit-mode');
+    $('#document').addClass('edit-mode');
     this.$('.toggle-edit-mode').removeClass('active');
     this.$('.toggle-show-mode').addClass('active');
     
@@ -903,28 +902,6 @@ var Document = Backbone.View.extend({
       // Broadcast insert node command
       // remote.Session.insertNode('sibling', newNode.toJSON(), refNode._id, parentNode._id, destination);      
     }
-    return false;
-  },
-  
-  removeNode: function(e) {
-    if (arguments.length === 1) {
-      var node = graph.get($(e.currentTarget).attr('node'));
-      var parent = graph.get($(e.currentTarget).attr('parent'));
-    } else {
-      var node = graph.get(arguments[0]);
-      var parent = graph.get(arguments[1]);
-    }
-    
-    parent.all('children').del(node._id);
-    graph.del(node._id);
-    parent._dirty = true;
-    this.trigger('change:node', parent);
-
-    if (arguments.length === 1) {
-      // Broadcast insert node command
-      // remote.Session.removeNode(node._id, parent._id);
-    }
-    this.reset();
     return false;
   }
 });

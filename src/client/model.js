@@ -1,20 +1,43 @@
+function getDocument (node) {
+  return node.get('document') || node; // node can be the document itself
+}
+
 function removeChild (parent, child) {
   parent.all('children').del(child._id);
-  //graph.del(node._id);
-  //parent._dirty = true;
-  //this.trigger('change:node', parent);
+  graph.del(child._id);
+  parent._dirty = true;
+  
+  child.trigger('removed');
 }
 
 function createNode (type, position) {
-  // TODO
+  var parent = position.parent
+  ,   after  = position.after;
+  
+  var newNode = graph.set(null, {
+    type: type,
+    document: getDocument(parent)._id
+  });
+  
+  var targetIndex;
+  if (after === null) {
+    // Insert at the beginning.
+    targetIndex = 0;
+  } else {
+    targetIndex = parent.all('children').index(after._id) + 1;
+  }
+  
+  parent.all('children').set(newNode._id, newNode, targetIndex);
+  parent._dirty = true;
+  
+  parent.trigger('added-child', newNode, targetIndex);
 }
 
 function updateNode (node, attrs) {
   node.set(attrs);
   
   // Update modification date on original document
-  var doc = node.get('document') || node; // node can be the document itself
-  doc.set({ updated_at: new Date() });
+  getDocument(node).set({ updated_at: new Date() });
   
   //// Only set dirty if explicitly requested    
   //if (attrs.dirty) {

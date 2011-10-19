@@ -29,6 +29,10 @@ Node.define('/type/text', 'Text', {
     Node.prototype.initialize.apply(this, arguments);
   },*/
 
+  focus: function () {
+    $(this.textEl).click();
+  },
+
   select: function () {
     Node.prototype.select.apply(this);
     this.$('.proper-commands').show();

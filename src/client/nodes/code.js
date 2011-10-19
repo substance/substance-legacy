@@ -47,6 +47,14 @@ Node.define('/type/code', 'Code', {
     this.codeMirror.setOption('readOnly', false);
   },
 
+  focus: function () {
+    this.codeMirror.focus();
+  },
+
+  /*select: function () {
+    Node.prototype.select.apply(this);
+  },*/
+
   codeMirrorConfig: {
     lineNumbers: true,
     theme: 'elegant',
@@ -89,7 +97,7 @@ Node.define('/type/code', 'Code', {
     this.languageSelect = $(createSelect(this.model.get('language'), this.languages)).appendTo(this.contentEl);
     var codeMirrorConfig = _.extend({}, this.codeMirrorConfig, {
       mode: this.modeForLanguage(this.model.get('language')),
-      value: unescape(this.model.get('content')),
+      value: unescape(this.model.get('content') || ''),
       readOnly: true,
       onFocus: function () {
         // Without this, there is the possibility to focus the editor without

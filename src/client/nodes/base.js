@@ -29,15 +29,18 @@ var Node = Backbone.View.extend({
   },
 
   toggleComments: function () { this.comments.toggle(); },
-  removeNode: function () {
+  
+  removeNode: function (e) {
+    e.preventDefault();
+    e.stopPropagation();
     removeChild(this.parent, this.model);
   },
+
   toggleMoveNode: function () {},
 
   selectNode: function (e) {
     // the parent view shouldn't deselect this view when the event bubbles up
     e.stopPropagation();
-    
     this.select();
   },
 
@@ -63,9 +66,12 @@ var Node = Backbone.View.extend({
     }
     $(this.el).addClass('selected');
   },
+
   deselect: function () {
     $(this.el).removeClass('selected');
   },
+
+  focus: function () {},
 
   makeEditable: function (el, attr, dflt, options) {
     dflt = dflt || '';
@@ -138,8 +144,11 @@ var Node = Backbone.View.extend({
 
   create: function (options) {
     var model = options.model
-    ,   type  = model.type._id;
-    return new this.subclasses[type](options);
+    ,   type = model.type._id
+    ,   Subclass = this.subclasses[type];
+    
+    if (!Subclass) { throw new Error("Node has no subclass for type '"+type+"'"); }
+    return new Subclass(options);
   }
 
 });
@@ -226,6 +235,7 @@ Node.Controls = Backbone.View.extend({
 
   insert: function (event) {
     event.preventDefault();
+    event.stopPropagation();
     var type = $(event.target).attr('data-type');
     createNode(type, this.position);
   },
@@ -247,15 +257,16 @@ Node.Controls = Backbone.View.extend({
 Node.NodeList = Backbone.View.extend({
 
   initialize: function (options) {
+    this.level = options.level;
+    this.root  = options.root;
+    
+    _.bindAll(this, 'addChild');
+    this.model.bind('added-child', this.addChild);
+    
     var childViews = this.childViews = [];
-    this.model.get('children').each(function (child) {
-      var childView = Node.create({
-        model: child,
-        level: options.level + 1,
-        root: options.root
-      });
-      childViews.push(childView);
-    });
+    this.model.get('children').each(_.bind(function (child) {
+      childViews.push(this.createChildView(child));
+    }, this));
   },
 
   eachChildView: function (fn) {
@@ -282,22 +293,60 @@ Node.NodeList = Backbone.View.extend({
     });
   },
 
+  addChild: function (child, index) {
+    var childView = this.createChildView(child)
+    ,   rendered  = this.renderChildView(childView);
+    
+    console.log(child, index);
+    
+    this.childViews.splice(index, 0, childView);
+    rendered.insertAfter(index === 0 ? this.firstControls.el
+                                     : $(this.childViews[index-1].el).next());
+    
+    //setTimeout(function () {
+    childView.readwrite();
+    childView.select();
+    childView.focus();
+    //}, 500);
+  },
+
+  createChildView: function (child) {
+    return Node.create({
+      parent: this.model,
+      model: child,
+      level: this.level + 1,
+      root: this.root
+    });
+  },
+
+  renderChildView: function (childView) {
+    var controls = new Node.Controls({
+      model: this.model,
+      position: { parent: this.model, after: childView.model }
+    });
+    var rendered = $([childView.render().el, controls.render().el]);
+    var self = this;
+    childView.model.bind('removed', function () {
+      rendered.remove();
+      // Remove childView from the childViews array
+      self.childViews = _.select(self.childViews, function (cv) {
+        return cv !== childView;
+      });
+    });
+    return rendered;
+  },
+
   render: function () {
     var self = this;
     
-    var controls = new Node.Controls({
+    this.firstControls = new Node.Controls({
       model: self.model,
       position: { parent: self.model, after: null }
     });
-    $(controls.render().el).appendTo(self.el);
+    $(this.firstControls.render().el).appendTo(self.el);
     
     this.eachChildView(function (childView) {
-      $(childView.render().el).appendTo(self.el);
-      var controls = new Node.Controls({
-        model: self.model,
-        position: { parent: self.model, after: childView.model }
-      });
-      $(controls.render().el).appendTo(self.el);
+      var rendered = self.renderChildView(childView).appendTo(self.el);
     });
     
     return this;
