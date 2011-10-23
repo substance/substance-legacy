@@ -6,18 +6,18 @@ function removeChild (parent, child) {
   parent.all('children').del(child._id);
   graph.del(child._id);
   parent._dirty = true;
-  
   child.trigger('removed');
 }
 
-function createNode (type, position) {
+function removeChildTemporary (parent, child) {
+  parent.all('children').del(child._id);
+  parent._dirty = true;
+  child.trigger('removed');
+}
+
+function addChild (node, position) {
   var parent = position.parent
   ,   after  = position.after;
-  
-  var newNode = graph.set(null, {
-    type: type,
-    document: getDocument(parent)._id
-  });
   
   var targetIndex;
   if (after === null) {
@@ -27,10 +27,19 @@ function createNode (type, position) {
     targetIndex = parent.all('children').index(after._id) + 1;
   }
   
-  parent.all('children').set(newNode._id, newNode, targetIndex);
+  parent.all('children').set(node._id, node, targetIndex);
   parent._dirty = true;
   
-  parent.trigger('added-child', newNode, targetIndex);
+  parent.trigger('added-child', node, targetIndex);
+}
+
+function createNode (type, position) {
+  var newNode = graph.set(null, {
+    type: type,
+    document: getDocument(position.parent)._id
+  });
+  
+  addChild(newNode, position);
 }
 
 function updateNode (node, attrs) {
@@ -59,4 +68,9 @@ function updateNode (node, attrs) {
 function possibleChildTypes (node) {
   // TODO
   return ['/type/section', '/type/text', '/type/image', '/type/resource', '/type/quote', '/type/code'];
+}
+
+function canBeMovedHere (newParent, node) {
+  // TODO
+  return true;
 }

@@ -250,6 +250,7 @@ var Document = Backbone.View.extend({
   
   // Enable move mode
   toggleMoveNode: function() {
+    /*
     var that = this;
     
     $('#document').addClass('move-mode');
@@ -335,6 +336,7 @@ var Document = Backbone.View.extend({
       $controls = $('.content-node .controls');
     });
     return false;
+    */
   },
   
   // For a given node find the parent node
@@ -772,7 +774,7 @@ var Document = Backbone.View.extend({
     $('.node-editor-placeholder').html('');
     
     // Rest move-node mode, if active
-    $('.move-node').hide();
+    //$('.move-node').hide();
     $('#document').removeClass('move-mode');
   },
   

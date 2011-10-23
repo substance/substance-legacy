@@ -28,6 +28,10 @@ Node.define('/type/section', 'Section', {
     this.nodeList.readwrite();
   },
 
+  enterMoveMode: function () {
+    this.nodeList.enterMoveMode();
+  },
+
   //select: function () {},
 
   deselect: function () {

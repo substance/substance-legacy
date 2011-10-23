@@ -22,6 +22,19 @@ Node.define(['/type/document', '/type/article'], 'Document', {
     this.nodeList.readwrite();
   },
 
+  enterMoveMode: function (node, position) {
+    $('#document').addClass('move-mode');
+    this._movingNode = node;
+    this.nodeList.enterMoveMode();
+  },
+
+  endMoveMode: function (position) {
+    $('#document').removeClass('move-mode');
+    var node = this._movingNode;
+    delete this._movingNode;
+    addChild(node, position);
+  },
+
   //select: function () {},
 
   deselect: function () {

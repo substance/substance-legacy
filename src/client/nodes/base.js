@@ -36,7 +36,16 @@ var Node = Backbone.View.extend({
     removeChild(this.parent, this.model);
   },
 
-  toggleMoveNode: function () {},
+  toggleMoveNode: function (e) {
+    e.preventDefault();
+    e.stopPropagation();
+    var index = this.parent.all('children').values().indexOf(this.model)
+    ,   after = index === 0 ? null : this.parent.all('children').at(index - 1);
+    this.root.enterMoveMode(this.model, { parent: this.parent, after: after });
+    removeChildTemporary(this.parent, this.model);
+  },
+
+  enterMoveMode: function (node, position) {},
 
   selectNode: function (e) {
     // the parent view shouldn't deselect this view when the event bubbles up
@@ -226,11 +235,30 @@ Node.Controls = Backbone.View.extend({
   className: 'controls',
 
   events: {
-    'click .add': 'insert'
+    'click .add': 'insert',
+    'click .move-node': 'moveHere'
   },
 
   initialize: function (options) {
+    this.root     = options.root;
     this.position = options.position;
+  },
+
+  enterMoveMode: function (node, position) {
+    this._moveMode = true;
+    if (canBeMovedHere(this.model, node)) {
+      $(this.el).addClass('move-mode');
+    }
+  },
+
+  moveHere: function (e) {
+    e.preventDefault();
+    e.stopPropagation();
+    this.root.endMoveMode(this.position);
+  },
+
+  endMoveMove: function () {
+    $(this.el).removeClass('move-mode');
   },
 
   insert: function (event) {
@@ -243,10 +271,12 @@ Node.Controls = Backbone.View.extend({
   render: function () {
     var actions = $('<div class="actions" />').appendTo(this.el);
     $('<div class="placeholder insert" />').text("Insert Content").appendTo(actions);
+    $('<div class="placeholder move" />').text("Move").appendTo(actions);
     _.each(possibleChildTypes(this.model), function (type) {
       var name = type;
       $('<span><a href="/" data-type="' + type + '" class="add add_child">' + name + '</a></span>').appendTo(actions);
     });
+    $('<div class="move-targets"><a href="/" class="move-node">Here</a></div>').appendTo(this.el);
     $('<br class="clear" />').appendTo(actions);
     return this;
   }
@@ -263,6 +293,7 @@ Node.NodeList = Backbone.View.extend({
     _.bindAll(this, 'addChild');
     this.model.bind('added-child', this.addChild);
     
+    this.controls = [];
     var childViews = this.childViews = [];
     this.model.get('children').each(_.bind(function (child) {
       childViews.push(this.createChildView(child));
@@ -271,6 +302,15 @@ Node.NodeList = Backbone.View.extend({
 
   eachChildView: function (fn) {
     _.each(this.childViews, fn);
+  },
+
+  enterMoveMode: function (node, position) {
+    _.each(this.controls, function (controls) {
+      controls.enterMoveMode(node, position);
+    });
+    this.eachChildView(function (childView) {
+      childView.enterMoveMode(node, position);
+    });
   },
 
   readonly: function () {
@@ -297,17 +337,13 @@ Node.NodeList = Backbone.View.extend({
     var childView = this.createChildView(child)
     ,   rendered  = this.renderChildView(childView);
     
-    console.log(child, index);
-    
     this.childViews.splice(index, 0, childView);
     rendered.insertAfter(index === 0 ? this.firstControls.el
                                      : $(this.childViews[index-1].el).next());
     
-    //setTimeout(function () {
     childView.readwrite();
     childView.select();
     childView.focus();
-    //}, 500);
   },
 
   createChildView: function (child) {
@@ -321,6 +357,7 @@ Node.NodeList = Backbone.View.extend({
 
   renderChildView: function (childView) {
     var controls = new Node.Controls({
+      root: this.root,
       model: this.model,
       position: { parent: this.model, after: childView.model }
     });
@@ -332,6 +369,9 @@ Node.NodeList = Backbone.View.extend({
       self.childViews = _.select(self.childViews, function (cv) {
         return cv !== childView;
       });
+      self.controls = _.select(self.controls, function (c) {
+        return c !== controls;
+      });
     });
     return rendered;
   },
@@ -340,9 +380,11 @@ Node.NodeList = Backbone.View.extend({
     var self = this;
     
     this.firstControls = new Node.Controls({
+      root: this.root,
       model: self.model,
       position: { parent: self.model, after: null }
     });
+    this.controls.push(this.firstControls);
     $(this.firstControls.render().el).appendTo(self.el);
     
     this.eachChildView(function (childView) {

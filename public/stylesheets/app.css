@@ -2672,9 +2672,6 @@ pre {
 
 #document .content-node .controls .actions .move-node { display: none; }
 
-/* Hide move controls for selected node */
-#document.move-mode .content-node.selected .actions .move-node { display: none; }
-
 
 .controls .handle {
   position: absolute;
