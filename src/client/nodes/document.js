@@ -11,28 +11,9 @@ Node.define(['/type/document', '/type/article'], 'Document', {
     });
   },
 
-  readonly: function () {
-    Node.prototype.readonly.apply(this);
-    window.editor.deactivate();
-    this.nodeList.readonly();
-  },
-
-  readwrite: function () {
-    Node.prototype.readwrite.apply(this);
-    this.nodeList.readwrite();
-  },
-
-  enterMoveMode: function (node, position) {
-    $('#document').addClass('move-mode');
-    this._movingNode = node;
-    this.nodeList.enterMoveMode();
-  },
-
-  endMoveMode: function (position) {
-    $('#document').removeClass('move-mode');
-    var node = this._movingNode;
-    delete this._movingNode;
-    addChild(node, position);
+  transitionTo: function (state) {
+    StateMachine.transitionTo.apply(this);
+    this.nodeList.transitionTo(state);
   },
 
   //select: function () {},
@@ -53,6 +34,27 @@ Node.define(['/type/document', '/type/article'], 'Document', {
     $('<div class="document-separator" />').appendTo(this.contentEl);
     this.nodeListEl  = $(this.nodeList.render().el).appendTo(this.contentEl);
     return this;
+  }
+
+}, {
+
+  states: {
+    write: {
+      leave: function () {
+        Node.states.write.leave.apply(this);
+        window.editor.deactivate();
+      }
+    },
+    moveTarget: {
+      enter: function () {
+        $('#document').addClass('move-mode');
+      },
+      leave: function () {
+        delete this.movedNode;
+        delete this.movedParent;
+        $('#document').removeClass('move-mode');
+      }
+    }
   }
 
 });

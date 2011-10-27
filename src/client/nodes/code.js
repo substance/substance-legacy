@@ -6,10 +6,6 @@ Node.define('/type/code', 'Code', {
     'change select': 'changeLanguageSelect'
   }, Node.prototype.events),
 
-  initialize: function () {
-    Node.prototype.initialize.apply(this, arguments);
-  },
-
   languages: [ 'JavaScript', 'Python', 'Ruby', 'PHP', 'HTML', 'CSS', 'Haskell'
              , 'CoffeeScript', 'Java', 'C', 'C++', 'CSharp', 'Other'
              ],
@@ -35,16 +31,6 @@ Node.define('/type/code', 'Code', {
     var newLanguage = this.languageSelect.val();
     updateNode(this.model, { language: newLanguage });
     this.codeMirror.setOption('mode', this.modeForLanguage(newLanguage));
-  },
-
-  readonly: function () {
-    Node.prototype.readonly.apply(this);
-    this.codeMirror.setOption('readOnly', true);
-  },
-
-  readwrite: function () {
-    Node.prototype.readonly.apply(this);
-    this.codeMirror.setOption('readOnly', false);
   },
 
   focus: function () {
@@ -121,5 +107,20 @@ Node.define('/type/code', 'Code', {
     
     return this;
   }
+
+}, {
+
+  states: {
+    write: {
+      enter: function () {
+        Node.states.write.enter.apply(this);
+        this.codeMirror.setOption('readOnly', false);
+      },
+      leave: function () {
+        Node.states.write.leave.apply(this);
+        this.codeMirror.setOption('readOnly', true);
+      }
+    }
+  },
 
 });

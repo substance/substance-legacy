@@ -19,17 +19,9 @@ Node.define('/type/section', 'Section', {
     });
   },
 
-  readonly: function () {
-    Node.prototype.readonly.apply(this);
-    this.nodeList.readonly();
-  },
-
-  readwrite: function () {
-    this.nodeList.readwrite();
-  },
-
-  enterMoveMode: function () {
-    this.nodeList.enterMoveMode();
+  transitionTo: function (state) {
+    StateMachine.transitionTo.apply(this);
+    this.nodeList.transitionTo(state);
   },
 
   //select: function () {},

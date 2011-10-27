@@ -1,4 +1,28 @@
-var Node = Backbone.View.extend({
+var StateMachine = {
+  transitionTo: function (state) {
+    if (this.state !== state && this.invokeForState('leave', state) !== false) {
+      this.state = state;
+      this.invokeForState('enter');
+    }
+  },
+
+  invokeForState: function (method) {
+    var args = Array.prototype.slice.call(arguments, 1);
+    
+    var parent = this.constructor;
+    while (parent) {
+      if (parent &&
+          parent.states &&
+          parent.states[this.state] &&
+          parent.states[this.state][method]) {
+        return parent.states[this.state][method].apply(this, args);
+      }
+      parent = parent.__super__;
+    }
+  }
+};
+
+var Node = Backbone.View.extend(_.extend({}, StateMachine, {
 
   className: 'content-node',
 
@@ -7,7 +31,7 @@ var Node = Backbone.View.extend({
   },
 
   initialize: function (options) {
-    this.mode   = 'readonly';
+    this.state  = 'read';
     this.parent = options.parent;
     this.level  = options.level;
     this.root   = options.root;
@@ -39,13 +63,19 @@ var Node = Backbone.View.extend({
   toggleMoveNode: function (e) {
     e.preventDefault();
     e.stopPropagation();
-    var index = this.parent.all('children').values().indexOf(this.model)
-    ,   after = index === 0 ? null : this.parent.all('children').at(index - 1);
-    this.root.enterMoveMode(this.model, { parent: this.parent, after: after });
-    removeChildTemporary(this.parent, this.model);
+    if (this.state === 'move') {
+      this.root.transitionTo('write');
+    } else {
+      // There could be another node that is currently in move state.
+      // Transition to read state to make sure that no node is in move state.
+      this.root.transitionTo('read');
+      this.transitionTo('move');
+      
+      this.root.movedNode = this.model;
+      this.root.movedParent = this.parent;
+      this.root.transitionTo('moveTarget');
+    }
   },
-
-  enterMoveMode: function (node, position) {},
 
   selectNode: function (e) {
     // the parent view shouldn't deselect this view when the event bubbles up
@@ -63,10 +93,6 @@ var Node = Backbone.View.extend({
     $(this.el).removeClass('active');
   },
 
-
-  readonly:  function () { this.mode = 'readonly'; },
-  readwrite: function () { this.mode = 'readwrite'; },
-  
   select: function (e) {
     if (this.root) {
       this.root.deselect();
@@ -106,7 +132,7 @@ var Node = Backbone.View.extend({
     $(el)
       .attr({ title: "Click to Edit" })
       .click(function () {
-        if (self.mode === 'readwrite') {
+        if (self.state === 'write') {
           window.editor.activate($(el), options);
           window.editor.bind('changed', function () {
             var update = {};
@@ -132,9 +158,41 @@ var Node = Backbone.View.extend({
     this.contentEl = $('<div class="content" />').appendTo(this.el);
     this.commentsEl = $(this.comments.render().el).appendTo(this.el);
     return this;
-  }
+  },
 
-}, {
+
+  // States
+  // ------
+
+
+}), {
+
+  states: {
+    read: {
+      enter: function () {},
+      leave: function () {}
+    },
+    
+    write: {
+      enter: function () {},
+      leave: function () {}
+    },
+
+    move: {
+      enter: function () {
+        $(this.el).addClass('being-moved'); // TODO
+      },
+      leave: function (nextState) {
+        if (nextState === 'moveTarget') { return false; }
+        $(this.el).removeClass('being-moved'); // TODO
+      }
+    },
+
+    moveTarget: {
+      enter: function () {},
+      leave: function () {}
+    }
+  },
 
   subclasses: {},
 
@@ -230,7 +288,7 @@ Node.Comments = Backbone.View.extend({
 */
 
 
-Node.Controls = Backbone.View.extend({
+Node.Controls = Backbone.View.extend(_.extend({}, StateMachine, {
 
   className: 'controls',
 
@@ -244,21 +302,14 @@ Node.Controls = Backbone.View.extend({
     this.position = options.position;
   },
 
-  enterMoveMode: function (node, position) {
-    this._moveMode = true;
-    if (canBeMovedHere(this.model, node)) {
-      $(this.el).addClass('move-mode');
-    }
-  },
-
   moveHere: function (e) {
     e.preventDefault();
     e.stopPropagation();
-    this.root.endMoveMode(this.position);
-  },
-
-  endMoveMove: function () {
-    $(this.el).removeClass('move-mode');
+    if (this.state === 'moveTarget') {
+      removeChildTemporary(this.root.movedParent, this.root.movedNode);
+      addChild(this.root.movedNode, this.position);
+      this.root.transitionTo('write');
+    }
   },
 
   insert: function (event) {
@@ -281,12 +332,30 @@ Node.Controls = Backbone.View.extend({
     return this;
   }
 
+}), {
+
+  states: {
+    read: {},
+    write: {},
+    move: {
+      enter: function (node, position) {
+        if (canBeMovedHere(this.model, node)) {
+          $(this.el).addClass('move-mode');
+        }
+      },
+      leave: function () {
+        $(this.el).removeClass('move-mode');
+      }
+    }
+  }
+
 });
 
 
 Node.NodeList = Backbone.View.extend({
 
   initialize: function (options) {
+    this.state = 'read';
     this.level = options.level;
     this.root  = options.root;
     
@@ -304,25 +373,17 @@ Node.NodeList = Backbone.View.extend({
     _.each(this.childViews, fn);
   },
 
-  enterMoveMode: function (node, position) {
-    _.each(this.controls, function (controls) {
-      controls.enterMoveMode(node, position);
-    });
+  eachControlsView: function (fn) {
+    fn(this.firstControls);
     this.eachChildView(function (childView) {
-      childView.enterMoveMode(node, position);
+      fn(childView.afterControls);
     });
   },
 
-  readonly: function () {
-    this.eachChildView(function (childView) {
-      childView.readonly();
-    });
-  },
-
-  readwrite: function () {
-    this.eachChildView(function (childView) {
-      childView.readwrite();
-    });
+  transitionTo: function (state) {
+    function transition (view) { view.transitionTo(state); }
+    this.eachChildView(transition);
+    this.eachControlsView(transition);
   },
 
   //select: function () {},
@@ -341,7 +402,7 @@ Node.NodeList = Backbone.View.extend({
     rendered.insertAfter(index === 0 ? this.firstControls.el
                                      : $(this.childViews[index-1].el).next());
     
-    childView.readwrite();
+    childView.transitionTo('write');
     childView.select();
     childView.focus();
   },
@@ -361,16 +422,15 @@ Node.NodeList = Backbone.View.extend({
       model: this.model,
       position: { parent: this.model, after: childView.model }
     });
+    childView.afterControls = controls;
     var rendered = $([childView.render().el, controls.render().el]);
+    
     var self = this;
     childView.model.bind('removed', function () {
       rendered.remove();
       // Remove childView from the childViews array
       self.childViews = _.select(self.childViews, function (cv) {
         return cv !== childView;
-      });
-      self.controls = _.select(self.controls, function (c) {
-        return c !== controls;
       });
     });
     return rendered;

@@ -3426,3 +3426,7 @@ a.nivo-prevNav {
 .clear {
 	clear:both;
 }
+
+.being-moved {
+  border: 1px solid #f00; /* TODO */
+}
