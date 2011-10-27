@@ -459,37 +459,10 @@ var Document = Backbone.View.extend({
       this.attributes.render();
       this.node = Node.create({ model: this.model });
       this.$('#document').html(''); // remove the no document notice
-      this.renderDocument();
+      this.$('#attributes').show();
+      this.$('#document').show();
       $(this.node.render().el).appendTo(this.$('#document'));
     }
-  },
-  
-  // Re-renders a particular node and all child nodes
-  renderNode: function(node) {
-    var $node = $('#'+node.html_id);
-    var parent = graph.get($node.attr('parent'));
-    var level = parseInt($node.attr('level'));
-    
-    if (_.include(node.types().keys(), '/type/document')) {
-      $('#document').html(new HTMLRenderer(node, parent, level).render());
-    } else {
-      $('#'+node.html_id).replaceWith(new HTMLRenderer(node, parent, level).render());
-    }
-    
-    //if (this.mode === 'edit') {
-    //  renderControls(this.model, null, null, null, 0);
-    //}
-  },
-  
-  renderDocument: function() {
-    this.$('#document').html(new HTMLRenderer(this.model, null, 0).render());
-    this.$('#attributes').show();
-    this.$('#document').show();
-    
-    // Render controls
-    //if (this.mode === 'edit') {
-    //  renderControls(this.model, null, null, null, 0);
-    //}
   },
   
   // Extract available documentTypes from config

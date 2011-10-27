@@ -1,10 +1,12 @@
-Node.define(['/type/document', '/type/article'], 'Document', {
+Node.define([ '/type/document', '/type/article', '/type/story'
+            , '/type/conversation', '/type/manual', '/type/qaa'
+            ], 'Document', {
 
   className: 'content-node document',
 
   initialize: function (options) {
     Node.prototype.initialize.apply(this, arguments);
-    this.nodeList = new Node.NodeList({
+    this.nodeList = new NodeList({
       model: this.model,
       level: 0,
       root: this

@@ -12,7 +12,7 @@ Node.define('/type/section', 'Section', {
 
   initialize: function (options) {
     Node.prototype.initialize.apply(this, arguments);
-    this.nodeList = new Node.NodeList({
+    this.nodeList = new NodeList({
       model: this.model,
       level: options.level,
       root: this.root

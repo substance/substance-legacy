@@ -60,9 +60,7 @@
     "source": [
       "/client/notifier.js",
       "/client/helpers.js",
-      "/client/models/content_node.js",
       "/client/renderers/html_renderer.js",
-      "/client/node_editors/document_editor.js",
       "/client/node_editors/question_editor.js",
       "/client/node_editors/answer_editor.js",
       "/client/node_editors/image_editor.js",
@@ -78,6 +76,8 @@
       "/client/views/reset_password.js",
       "/client/views/attributes.js",
       "/client/commands.js",
+      "/client/model.js",
+      "/client/state_machine.js",
       "/client/views/document_browser.js",
       "/client/views/facets.js",
       "/client/views/collaborators.js",
@@ -86,14 +86,16 @@
       "/client/views/browser_tab.js",
       "/client/views/header.js",
       "/client/views/application.js",
-      "/client/model.js",
-      "/client/nodes/base.js",
-      "/client/nodes/code.js",
-      "/client/nodes/document.js",
-      "/client/nodes/section.js",
-      "/client/nodes/text.js",
-      "/client/nodes/quote.js",
-      "/client/nodes/image.js"
+      "/client/views/comments.js",
+      "/client/views/controls.js",
+      "/client/views/node.js",
+      "/client/views/node_list.js",
+      "/client/views/node/code.js",
+      "/client/views/node/document.js",
+      "/client/views/node/section.js",
+      "/client/views/node/text.js",
+      "/client/views/node/quote.js",
+      "/client/views/node/image.js"
     ]
   }
 }
