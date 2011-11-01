@@ -3421,8 +3421,6 @@ a.nivo-prevNav {
 /*====================*/
 /*=== Gist plugin === */
 /*=================== */
-.tabular-input { display: none }
-.selected .tabular-input { display: block; }
 
-.edit-in-c9 { display: block; }
-.selected .edit-in-c9 { display: none; }
+.tabular-input { display: none }
+.selected .tabular-input { display: block; padding: 0 100px; }

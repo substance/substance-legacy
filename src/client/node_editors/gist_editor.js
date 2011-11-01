@@ -12,28 +12,35 @@ var GistEditor = Backbone.View.extend({
     lineEnd: null,
     code: null,
     editInC9: null,
-    file: null
+    file: null,
+    selectFile: null,
+    selectFileDdl: null
   },
   
   state: {
     cache: {},
-    fileCache: {}
+    fileCache: {},
+    currentRepo: null
   },
   
   initialize: function () {
       var that = this;
       
       function bindControls (controls) {
-          controls.url = that.$('.url');
-          controls.lineStart = that.$('.line_start');
-          controls.lineEnd = that.$('.line_end');
-          controls.code = that.$('.snippet');
+          var node = app.document.selectedNode.data;
+          
+          controls.url = that.$('.url').val(node.url);
+          controls.lineStart = that.$('.line_start').val(node.line_start);
+          controls.lineEnd = that.$('.line_end').val(node.line_end);
+          controls.code = that.$('.snippet').val(node.snippet);
           controls.editInC9 = that.$('.edit-in-c9 a');
-          controls.file = that.$('.file');
+          controls.file = that.$('.file').val(node.file);
+          controls.selectFile = that.$('.select-file');
+          controls.selectFileDdl = that.createDropdown();
           
           // default content
           if(!controls.code.html()) {
-              controls.code.html('Codez will appear one day');
+              controls.code.html('/* Create a repository on http://gist.github.com first and paste the URL in the input field */');
           }
           
           // now bind codeMirror to it
@@ -47,12 +54,25 @@ var GistEditor = Backbone.View.extend({
           });
           
           controls.file.change(function () {
+              // when changing the select button thingy, clear out the line numbers
               controls.lineStart.val('');
               controls.lineEnd.val('');
               
+              // set the dropdown button
+              controls.selectFile.text($(this).val());
+              
               that.update();
           });
+          
+          // show/hide the select file button
+          controls.selectFile.click(function () {
+              controls.selectFileDdl.toggle();
+          });
+          
+          that.update();
       }
+      
+      this.state.currentRepo = null;
       
       bindControls(this.controls);
       bindEvents(this.controls);
@@ -60,6 +80,8 @@ var GistEditor = Backbone.View.extend({
   
   update: function () { 
       var controls = this.controls;
+      
+      controls.selectFileDdl.hide();
       
       this.getGist(controls.url.val(), controls.file.val(), this.updateGistRawContent);
       
@@ -137,14 +159,58 @@ var GistEditor = Backbone.View.extend({
       }
       
       controls.file.val(curVal);
+      
+      this.updateDropdown();
+  },
+  
+  createDropdown: function () {
+      if (this.$('ul.select-file-ddl').length) {
+          return this.$('ul.select-file-ddl');
+      }
+      
+      var ele = $('<ul>').addClass('select-file-ddl').hide();
+      this.controls.selectFile.after(ele);
+      
+      return ele;
+  },
+  
+  updateDropdown: function () {
+      var controls = this.controls;
+      var ddl = controls.selectFileDdl;
+      ddl.find('li').remove();
+      
+      var curVal = controls.file.val();
+      
+      controls.file.find('option').each(function (ix, el) {
+          var $el = $(el),
+              li = $('<li>').append($('<a>').text($el.text()).attr('data-value', $el.val()).attr('href', '#'));
+                
+          if ($el.val() === curVal) {
+              li.addClass('selected');
+          }
+          ddl.append(li);
+      });
+      
+      if (controls.file.find('option').length === 1) {
+          controls.selectFile.text(controls.file.find('option:first').text());
+      }
+      
+      // bind click events
+      controls.selectFileDdl.find('li a').click(function() {
+          controls.file.val($(this).attr('data-value')).change(); // change doesnt fire; do manual
+          return false;
+      });   
   },
   
   getGist: function (publicCloneUrl, file, callback) {
       var that = this;
       
+      publicCloneUrl = that.trim(publicCloneUrl);
+      
       // if the file list is still in cache, then update UI
-      if (that.state.fileCache[publicCloneUrl]) {
+      if (publicCloneUrl !== that.state.currentRepo && that.state.fileCache[publicCloneUrl]) {
           that.updateFileList(that.state.fileCache[publicCloneUrl], that.controls);
+          that.state.currentRepo = publicCloneUrl;
       }
       
       var cacheKey = publicCloneUrl + file;
@@ -172,7 +238,11 @@ var GistEditor = Backbone.View.extend({
           // read them files, put them in cache, and then update the UI
           var fileCollection = data.gists[0].files;
           that.state.fileCache[publicCloneUrl] = fileCollection;
-          that.updateFileList(fileCollection, that.controls);
+          
+          if (publicCloneUrl !== that.state.currentRepo) {
+                that.updateFileList(fileCollection, that.controls);
+                that.state.currentRepo = publicCloneUrl;
+          }
           
           // no file selected? then just ditch it (except if ur the only one)
           file = file || (fileCollection.length === 1 ? fileCollection[0] : null);
@@ -194,6 +264,10 @@ var GistEditor = Backbone.View.extend({
   },
   
   trim: function (str) {
+      if (!str) {
+          return str;
+      }
+      
       // if native, then use that one
       if (String.prototype.trim) {
           return str.trim();   
@@ -226,19 +300,9 @@ var GistEditor = Backbone.View.extend({
                   indentWithTabs: false,
                   tabMode: 'shift',
                   readOnly: true,
-                  onFocus: function () {
-                    // Without this, there is the possibility to focus the editor without
-                    // activating the code node. Don't ask me why.
-                    el.trigger('click');
-                  },
                   onBlur: function () {
                     cm.setSelection({line:0,ch:0}, {line:0,ch:0});
-                  },
-                  onChange: _.throttle(function () {
-                    app.document.updateSelectedNode({
-                      content: escape(cm.getValue())
-                    });
-                  }, 500)
+                  }
             });
             setTimeout(function () { cm.refresh(); }, 10);
             
