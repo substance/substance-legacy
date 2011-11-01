@@ -1105,117 +1105,15 @@
             <a href="/" class="remove-node" title="Remove Node" node="{{node/key}}" parent="{{parent/_id}}"></a>
             <a href="/" class="toggle-move-node" title="Move Gist — Use placeholders as targets"></a>
           {{/edit}}
+          <a href="#" class="operation-in-c9 sticky" title="Run in Cloud9 IDE" target="_blank"></a>
         </div>
       
       {{#edit}}<div class="pilcrow">&#182;</div>{{/edit}}
       
       <style>
-        .gist.selected { padding-bottom: 9px; }
-        .gist .row { clear: both; overflow: hidden; }
-      
-        .gist .edit-in-c9 { display: none }
-        .gist .tabular-input {
-            padding-top: 27px;
-            margin-bottom: 14px; /* its actually 14, but the text editor already takes 10 */
-        }
-        
-        .gist .clone-url {
-            font-family: 'Palatino Linotype', 'Book Antiqua', Palatino, FreeSerif, serif;
-            font-size: 16px;
-            font-style: italic;
-            color: #303030;
-            display: block;
-            margin-bottom: 13px;
-        }
-        
-        .gist .url-container, .gist .file-container {
-            float: left;
-        }
-        
-        .gist input[type=text] {
-            border: none;
-            box-shadow: none;
-            background: #E1E1E1;
-            border-radius: 0px;
-            color: black;
-        }
-        
-        .gist .url-container .url {
-            width: 545px;
-        }
-        
-        .gist .file-container {
-            margin-left: 12px;
-        }
-        .gist .file-container label {
-            float: left;
-            margin-top: 4px;
-            font-family: 'Palatino Linotype', 'Book Antiqua', Palatino, FreeSerif, serif;;
-            font-size: 14px;
-            color: #000;
-        }
-        .gist .file-container select.file {
-            float: left;
-        }
-        
-        .gist .row.lines {
-            margin-top: 11px;
-        }
-        .gist .lines label {
-            margin-top: 4px;
-            font-family: 'Palatino Linotype', 'Book Antiqua', Palatino, FreeSerif, serif;;
-            font-size: 14px;
-            color: black;
-            margin-right: 7px;
-        }
-        .gist .lines input[type=text] {
-            width: 79px;
-            margin-right: 9px;
-        }
-        .gist .lines * {
-            float: left;
-            display: block;
-        }
-        
-        .gist .select-file {
-            height: 24px;
-            width: 114px;
-            background: #666;
-            font-family: Arial;
-            font-size: 12px;
-            font-weight: bold;
-            color: #fff;
-            float: left;
-            text-align: center;
-            padding-top: 2px;
-            margin-left: 10px;                   
-            margin-top: 1px;
-            height: 25px;            
-        }
-        .gist .select-file img {
-            margin-left: 9px;
-            text-align: center;
-        }
-        
-        .gist .select-file-ddl {
-            display: block;
-            background: #e7e8e5;
-            font-family: Arial;
-            font-size: 12px;
-            color: #000;
-            padding-left: 25px;
-            list-style: none;
-            position: absolute;
-            min-width: 140px;
-            top: 95px;
-            right: 102px;            
-        }
-        .gist .select-file-ddl li.selected {
-            color: purple;
-        }
+
       </style>
       
-      <div class="edit-in-c9"><a href='#' target='_blank'>Edit in cloud9</a></div>
       <div class="tabular-input">
         <div class="row">
             <label for='url' class="clone-url">Gist public clone URL</label>
@@ -1241,6 +1139,8 @@
       </div>
       
       <textarea class="snippet">{{{snippet}}}</textarea>
+      
+      <div class="edit-in-c9"><a href='#' target='_blank'><img src="/images/run_in_c9.png" /></a></div>
       
       {{#edit}}<div class="node-editor-placeholder"></div>{{/edit}}
       <div class="comments-wrapper{{^edit}} expanded{{/edit}}"></div>

@@ -33,22 +33,30 @@ var GistEditor = Backbone.View.extend({
           controls.lineStart = that.$('.line_start').val(node.line_start);
           controls.lineEnd = that.$('.line_end').val(node.line_end);
           controls.code = that.$('.snippet').val(node.snippet);
-          controls.editInC9 = that.$('.edit-in-c9 a');
+          controls.editInC9 = that.$('.edit-in-c9 a').add(that.$('.operation-in-c9'));
           controls.file = that.$('.file').val(node.file);
-          controls.selectFile = that.$('.select-file');
+          controls.selectFile = that.$('.select-file').unbind();
           controls.selectFileDdl = that.createDropdown();
           
           // default content
-          if(!controls.code.html()) {
-              controls.code.html('/* Create a repository on http://gist.github.com first and paste the URL in the input field */');
+          if(!controls.code.val()) {
+              controls.code.val('/* Create a repository on http://gist.github.com first and paste the URL in the input field */');
           }
           
           // now bind codeMirror to it
           that.bindCodeMirror(controls.code);
+          
+            // update the syntax highlighting plugin
+            var codeMirror = controls.code.data('codemirror');
+            codeMirror.setOption('firstLineNumber', parseInt(node.line_start || 1, 10));
       }
       
       function bindEvents (controls) {
           var onBlurUpdate = controls.url.add(controls.lineStart).add(controls.lineEnd).add(controls.file);
+          
+          // unbind current event handlers
+          onBlurUpdate.unbind('blur');
+          
           onBlurUpdate.blur(function () { 
               that.update();
           });
@@ -194,9 +202,12 @@ var GistEditor = Backbone.View.extend({
       if (controls.file.find('option').length === 1) {
           controls.selectFile.text(controls.file.find('option:first').text());
       }
-      
+            
       // bind click events
       controls.selectFileDdl.find('li a').click(function() {
+          controls.selectFileDdl.find('li.selected').removeClass('selected');
+          $(this).closest('li').addClass('selected');
+          
           controls.file.val($(this).attr('data-value')).change(); // change doesnt fire; do manual
           return false;
       });   
@@ -302,6 +313,11 @@ var GistEditor = Backbone.View.extend({
                   readOnly: true,
                   onBlur: function () {
                     cm.setSelection({line:0,ch:0}, {line:0,ch:0});
+                  },
+                  onFocus: function () {
+                    // Without this, there is the possibility to focus the editor without
+                    // activating the code node. Don't ask me why.
+                    el.trigger('click');
                   }
             });
             setTimeout(function () { cm.refresh(); }, 10);

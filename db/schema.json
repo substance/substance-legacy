@@ -911,7 +911,12 @@
         "name": "Snippet",
         "unique": true,
         "type": "string"
-      },      
+      },  
+      "file": {
+        "name": "File",
+        "unique": true,
+        "type": "string"
+      },     
       "document": {
         "name": "Document Membership",
         "unique": true,
