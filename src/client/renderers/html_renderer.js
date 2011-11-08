@@ -120,30 +120,6 @@ var HTMLRenderer = function(root, parent, lvl) {
   
   // Implement node types
   var renderers = {
-    "/type/question": function(node, parent, level) {
-      return Helpers.renderTemplate('question', {
-        node: node,
-        comments: node.get('comment_count'), // node.get('comments') && node.get('comments').length>0 ? node.get('comments').length : "",
-        parent: parent,
-        edit: app.document.mode === 'edit',
-        content: node.get('content'),
-        empty: app.document.mode === 'edit' && (!node.get('content') || node.get('content') === ''),
-        level: level
-      });
-    },
-    
-    "/type/answer": function(node, parent, level) {
-      return Helpers.renderTemplate('answer', {
-        node: node,
-        comments: node.get('comment_count'), // node.get('comments') && node.get('comments').length>0 ? node.get('comments').length : "",
-        parent: parent,
-        edit: app.document.mode === 'edit',
-        content: node.get('content'),
-        empty: app.document.mode === 'edit' && (!node.get('content') || node.get('content') === ''),
-        level: level
-      });
-    },
-    
     "/type/image": function(node, parent, level) {
       return _.tpl('image', {
         node: node,

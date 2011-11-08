@@ -90,12 +90,13 @@
       "/client/views/controls.js",
       "/client/views/node.js",
       "/client/views/node_list.js",
+      "/client/views/node/answer.js",
       "/client/views/node/code.js",
       "/client/views/node/document.js",
-      "/client/views/node/section.js",
-      "/client/views/node/text.js",
+      "/client/views/node/question.js",
       "/client/views/node/quote.js",
-      "/client/views/node/image.js"
+      "/client/views/node/section.js",
+      "/client/views/node/text.js"
     ]
   }
 }
