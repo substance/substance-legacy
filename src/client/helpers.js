@@ -70,7 +70,7 @@ _.scrollTop = function() {
 
 // Render Underscore templates
 _.tpl = function(tpl, ctx) {
-  source = $("script[name="+tpl+"]").html();
+  var source = $("script[name="+tpl+"]").html();
   return _.template(source, ctx);
 };
 

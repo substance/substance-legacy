@@ -1,3 +1,9 @@
+// Nodes
+// =====
+
+// Position
+// --------
+
 function Position (parent, after) {
   this.parent = parent;
   this.after  = after;
@@ -99,4 +105,49 @@ function getTeaser (node) {
   else if (node.type.key === "/type/code")
     return "Code";
   return "N/A";
+}
+
+
+// Comments
+// ========
+
+function loadComments (node, callback) {
+  graph.fetch({ type: '/type/comment', node: node._id }, function (err, nodes) {
+    if (err) { return callback(err, null); }
+    var ASC_BY_CREATED_AT = function (item1, item2) {
+      var v1 = item1.value.get('created_at')
+      ,   v2 = item2.value.get('created_at');
+      return v1 === v2 ? 0 : (v1 < v2 ? -1 : 1);
+    };
+    callback(null, nodes.sort(ASC_BY_CREATED_AT));
+  });
+}
+
+function createComment (node, content, callback) {
+  window.pendingSync = true;
+  
+  var comment = graph.set(null, {
+    type: '/type/comment',
+    creator: '/user/' + app.username,
+    created_at: new Date(),
+    content: content,
+    node: node._id,
+    document: node.get('document')._id,
+    version: this.version ? '/version/'+this.model._id.split('/')[3]+'/'+this.version : null
+  });
+  
+  // Trigger immediate sync
+  graph.sync(function (err) {
+    window.pendingSync = false;
+    callback(err);
+  });
+}
+
+function removeComment (comment, callback) {
+  window.pendingSync = true;
+  graph.del(comment._id);
+  graph.sync(function (err) {
+    window.pendingSync = false;
+    callback(err);
+  });
 }

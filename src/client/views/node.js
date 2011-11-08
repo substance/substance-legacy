@@ -7,11 +7,11 @@ var Node = Backbone.View.extend(_.extend({}, StateMachine, {
   },
 
   initialize: function (options) {
-    this.state  = 'read';
-    this.parent = options.parent;
-    this.level  = options.level;
-    this.root   = options.root;
-    this.comments = new Comments({ model: this.model.get('comments') });
+    this.state    = 'read';
+    this.parent   = options.parent;
+    this.level    = options.level;
+    this.root     = options.root;
+    this.comments = new Comments({ model: this.model });
   },
 
 
@@ -19,8 +19,8 @@ var Node = Backbone.View.extend(_.extend({}, StateMachine, {
   // ------
 
   events: {
-    'click .toggle-comments': 'toggleComments',
-    'click .remove-node': 'removeNode',
+    'click .toggle-comments':  'toggleComments',
+    'click .remove-node':      'removeNode',
     'click .toggle-move-node': 'toggleMoveNode',
     
     'click': 'selectNode',
@@ -28,7 +28,11 @@ var Node = Backbone.View.extend(_.extend({}, StateMachine, {
     'mouseout': 'unhighlight'
   },
 
-  toggleComments: function () { this.comments.toggle(); },
+  toggleComments: function (e) {
+    e.preventDefault();
+    e.stopPropagation();
+    this.comments.toggle();
+  },
   
   removeNode: function (e) {
     e.preventDefault();
@@ -125,7 +129,7 @@ var Node = Backbone.View.extend(_.extend({}, StateMachine, {
     $('<div class="content-node-outline"><div class="cursor"><span></span></div></div>').appendTo(this.el);
     this.operationsEl = $(
       '<div class="operations">' +
-        '<a href="/" class="toggle-comments sticky" title="Toggle comments for Section"><span>' + this.model.get('comment_count') + '</span></a>' +
+        '<a href="/" class="toggle-comments sticky" title="Toggle comments for Section"><span>' + (this.model.get('comment_count') || "") + '</span></a>' +
         '<a href="/" class="remove-node" title="Remove Node"></a>' +
         '<a href="/" class="toggle-move-node" title="Move Section — Use placeholders as targets"></a>' +
       '</div>'
