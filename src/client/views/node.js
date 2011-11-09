@@ -12,6 +12,8 @@ var Node = Backbone.View.extend(_.extend({}, StateMachine, {
     this.level    = options.level;
     this.root     = options.root;
     this.comments = new Comments({ model: this.model });
+    
+    $(this.el).attr({ id: this.model.html_id });
   },
 
 

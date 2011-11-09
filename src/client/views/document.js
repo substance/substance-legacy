@@ -15,10 +15,6 @@ function addEmptyDoc(type, name, title) {
 
 var Document = Backbone.View.extend({
   events: {
-    'click .toc-item': 'scrollTo',
-    //'click a.move-node': 'moveNode',
-    //'click a.toggle-move-node': 'toggleMoveNode',
-    //'click a.toggle-comments': 'toggleComments',
     'click a.toggle-edit-mode': 'toggleEditMode',
     'click a.toggle-show-mode': 'toggleShowMode',
     'click a.subscribe-document': 'subscribeDocument',
@@ -299,14 +295,6 @@ var Document = Backbone.View.extend({
     return false;
   },
   
-  scrollTo: function(e) {
-    var node = $(e.currentTarget).attr('node');
-    app.scrollTo(node);
-    router.navigate($(e.currentTarget).attr('href'));
-    app.toggleTOC();
-    return false;
-  },
-  
   updateCursors: function() {
     // $('.content-node.occupied').removeClass('occupied');
     // _.each(this.status.cursors, function(user, nodeKey) {
@@ -319,7 +307,6 @@ var Document = Backbone.View.extend({
   render: function() {
     // Render all relevant sub views
     $(this.el).html(_.tpl('document_wrapper', {
-      toc: this.model ? new TOCRenderer(this.model).render() : '',
       mode: this.mode,
       doc: this.model
     }));
@@ -327,11 +314,13 @@ var Document = Backbone.View.extend({
 
     if (this.model) {
       // Render Attributes
-      this.attributes.render();
       this.node = Node.create({ model: this.model });
+      this.attributes.render();
       this.$('#attributes').show();
       this.$('#document').show();
       $('#document_tree').html('');
+      this.toc = new TOC({ model: this.model, el: this.$('#toc_wrapper').get(0) });
+      this.toc.render();
       $(this.node.render().el).appendTo(this.$('#document_tree'));
     }
   },

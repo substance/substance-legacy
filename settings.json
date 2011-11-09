@@ -60,10 +60,10 @@
     "source": [
       "/client/notifier.js",
       "/client/helpers.js",
-      "/client/renderers/html_renderer.js",
       "/client/ui/common.js",
       "/client/ui/string_editor.js",
       "/client/ui/multi_string_editor.js",
+      "/client/views/toc.js",
       "/client/views/document.js",
       "/client/views/document_settings.js",
       "/client/views/publish_settings.js",
