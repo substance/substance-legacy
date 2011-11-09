@@ -120,21 +120,6 @@ var HTMLRenderer = function(root, parent, lvl) {
   
   // Implement node types
   var renderers = {
-    "/type/image": function(node, parent, level) {
-      return _.tpl('image', {
-        node: node,
-        comments: node.get('comment_count'), // node.get('comments') && node.get('comments').length>0 ? node.get('comments').length : "",
-        parent: parent,
-        edit: app.document.mode === 'edit',
-        url: node.get('url'),
-        original_url: node.get('original_url'),
-        level: level,
-        empty: app.document.mode === 'edit' && (!node.get('caption') || node.get('caption') === ''),
-        caption: node.get('caption'),
-        transloadit_params: config.transloadit
-      });
-    },
-    
     "/type/resource": function(node, parent, level) {
       return Helpers.renderTemplate('resource', {
         node: node,

@@ -414,10 +414,67 @@
     </div>
   </script>
   
-  <script type="text/x-handlebars-template" name="document_wrapper">
-    <div id="document_inner_wrapper">
-      <div id="document">
-        <p>No document loaded... You can either create a <em>New Document</em> or <em>Browse</em> existing ones.</p>
+<script type="text/x-handlebars-template" name="document_wrapper">
+  <div id="document_inner_wrapper">
+    <div id="document">
+      <div id="toc_wrapper">
+        <div class="toc-header">Table Of Contents</div>
+        <div id="toc">
+          <%= toc %>
+        </div>
+        <div style="document-separator">&nbsp;</div>
+      </div>
+      
+      <div class="board">
+        <div class="toggle-toc"><div class="label">Contents</div></div>
+        
+        <div id="document_actions" class="view-actions">
+          <a href="/" title="Read Document" class="toggle-show-mode view-action-icon read active"><span>Read</span></a>
+
+          <% if (doc && doc.get('creator')._id === '/user/'+app.username) { %>
+            <a href="/" title="Write Document" class="toggle-edit-mode view-action-icon write"><span>Write</span></a>
+            <a href="/" title="Delete Document" class="delete-document view-action-icon delete"><span>Delete</span></a>
+          <% } %>
+          
+          <a href="/" title="<%= doc && doc.get('subscribed') ? "Unsubscribe" : "Subscribe document and get notified about updates" %> " class="view-action-icon <%= doc && doc.get('subscribed') ? "unsubscribe-document" : "subscribe-document" %>"><div class="subscription-count"><%= doc && doc.get('subscribers') > 0 ? doc.get('subscribers') : "" %></div><span>Subscribe document and get notified about updates</span></a>
+          
+          <% if (doc && doc.authorized) { %>
+              <a href="#" class="toggle-settings view-action-icon settings" title="Collaborators"><span>Collaborators</span></a>
+              <a href="#" class="toggle-publish-settings view-action-icon publish-settings<%= doc.published ? " pub" : "" %>" title="Publish"><span>Publish Settings</span></a>
+            <% } %>
+            
+            <a href="#" class="export-document view-action-icon export" title="Export Document (Experimental)"><span>Export</span></a>
+          </div>
+          
+          <div id="document_settings"></div>
+          
+          <div id="publish_settings"></div>
+          
+          <div id="document_export">
+            <h7>Export Document</h7>
+            <div class="formats">
+              <a href="<%= document.location.href %>.pdf" target="_blank" class="format pdf" title="Adobe PDF"><div class="label">PDF</div></a>
+              <a href="<%= document.location.href %>.odt" target="_blank" class="format odf" title="OpenDocument Text"><div class="label">ODT</div></a>
+              <a href="<%= document.location.href %>.rtf" target="_blank" class="format rtf" title="Rich Text Format"><div class="label">RTF</div></a>
+              <a href="<%= document.location.href %>.epub" target="_blank" class="format epub" title="Electronic Publication"><div class="label">EPUB</div></a>
+              <a href="<%= document.location.href %>.shower" target="_blank" class="format shower" title="Shower Slideshow"><div class="label">SHWR</div></a>
+            </div>
+            <h7>Additional Formats</h7>
+            <div class="additional-formats">
+              <a href="<%= document.location.href %>.html" target="_blank" class="format html" title="HTML"><div class="label">HTML</div></a>
+              <a href="<%= document.location.href %>.latex" target="_blank" class="format latex"><div class="label">LaTeX</div></a>
+              <a href="<%= document.location.href %>.markdown" target="_blank" class="format markdown"><div class="label">Markdown</div></a>
+              <a href="<%= document.location.href %>.textile" target="_blank" class="format textile"><div class="label">Textile</div></a>
+              <a href="<%= document.location.href %>.mediawiki" target="_blank" class="format mediawiki"><div class="label">MediaWiki</div></a>
+              <a href="<%= document.location.href %>.texinfo" target="_blank" class="format texinfo"><div class="label">Texinfo</div></a>
+              <a href="<%= document.location.href %>.org" target="_blank" class="format org"><div class="label">Emacs Org-Mode</div></a>
+              <a href="<%= document.location.href %>.rst" target="_blank" class="format rst"><div class="label">ReStructuredText</div></a>
+            </div>
+          </div>
+        </div>
+        <div id="document_tree">
+          <p>No document loaded... You can either create a <em>New Document</em> or <em>Browse</em> existing ones.</p>
+        </div>
       </div>
       <div id="attributes"></div>
     </div>
@@ -909,66 +966,22 @@
   </script>
   
   <!-- content-node templates for the editor -->
-  <script type="text/x-ejs-template" name="document">
-    
-    <div id="toc_wrapper">
-      <div class="toc-header">Table Of Contents</div>
-      <div id="toc">
-        <%= toc %>
-      </div>
-      <div style="document-separator">&nbsp;</div>
-    </div>
-    
-    <div class="board">
-      <div class="toggle-toc"><div class="label">Contents</div></div>
-      
-      <div id="document_actions" class="view-actions">
-        <a href="/" title="Read Document" class="toggle-show-mode view-action-icon read<%= edit ? '' : ' active' %>"><span>Read</span></a>
-
-        <% if (node && node.get('creator')._id === '/user/'+app.username) { %>
-          <a href="/" title="Write Document" class="toggle-edit-mode view-action-icon write<%= edit ? ' active' : '' %>"><span>Write</span></a>
-          <a href="/" title="Delete Document" class="delete-document view-action-icon delete"><span>Delete</span></a>
-        <% } %>
-        
-        <a href="/" title="<%= node.get('subscribed') ? "Unsubscribe" : "Subscribe document and get notified about updates" %> " class="view-action-icon <%= node.get('subscribed') ? "unsubscribe-document" : "subscribe-document" %>"><div class="subscription-count"><%= node.get('subscribers') > 0 ? node.get('subscribers') : "" %></div><span>Subscribe document and get notified about updates</span></a>
-        
-        <% if (app.document.authorized) { %>
-          <a href="#" class="toggle-settings view-action-icon settings" title="Collaborators"><span>Collaborators</span></a>
-          <a href="#" class="toggle-publish-settings view-action-icon publish-settings<%= app.document.published ? " pub" : "" %>" title="Publish"><span>Publish Settings</span></a>
-        <% } %>
-        
-        <a href="#" class="export-document view-action-icon export" title="Export Document (Experimental)"><span>Export</span></a>
-      </div>
-      
-      <div id="document_settings">
-        
-      </div>
-      
-      <div id="publish_settings">
-        
-      </div>
-      
-      <div id="document_export">
-        <h7>Export Document</h7>
-        <div class="formats">
-          <a href="<%= document.location.href %>.pdf" target="_blank" class="format pdf" title="Adobe PDF"><div class="label">PDF</div></a>
-          <a href="<%= document.location.href %>.odt" target="_blank" class="format odf" title="OpenDocument Text"><div class="label">ODT</div></a>
-          <a href="<%= document.location.href %>.rtf" target="_blank" class="format rtf" title="Rich Text Format"><div class="label">RTF</div></a>
-          <a href="<%= document.location.href %>.epub" target="_blank" class="format epub" title="Electronic Publication"><div class="label">EPUB</div></a>
-          <a href="<%= document.location.href %>.shower" target="_blank" class="format shower" title="Shower Slideshow"><div class="label">SHWR</div></a>
+  <script type="text/x-ejs-template" name="image_editor">
+    <div class="image-editor">
+      <form class="upload-image-form" action="http://api2.transloadit.com/assemblies" enctype="multipart/form-data" method="POST">
+        <div class="image-drop-area">
+          <div class="info">Drop image here or <a href="/">choose a file</a></div>
+          <div class="image-progress">
+            <div class="label">Uploading image ...</div>
+            <div class="progress-container">
+              <div class="progress-bar" style="width:60%"></div>
+            </div>
+          </div>
+          <div class="credits">Image hosting sponsored by <a href="http://transloadit.com" target="_blank">Transloadit</a></div>
+          <input type="file" class="image-file" name="image-file" />
+          <input type="hidden" name="params" value="<%= transloadit_params %>" />
         </div>
-        <h7>Additional Formats</h7>
-        <div class="additional-formats">
-          <a href="<%= document.location.href %>.html" target="_blank" class="format html" title="HTML"><div class="label">HTML</div></a>
-          <a href="<%= document.location.href %>.latex" target="_blank" class="format latex"><div class="label">LaTeX</div></a>
-          <a href="<%= document.location.href %>.markdown" target="_blank" class="format markdown"><div class="label">Markdown</div></a>
-          <a href="<%= document.location.href %>.textile" target="_blank" class="format textile"><div class="label">Textile</div></a>
-          <a href="<%= document.location.href %>.mediawiki" target="_blank" class="format mediawiki"><div class="label">MediaWiki</div></a>
-          <a href="<%= document.location.href %>.texinfo" target="_blank" class="format texinfo"><div class="label">Texinfo</div></a>
-          <a href="<%= document.location.href %>.org" target="_blank" class="format org"><div class="label">Emacs Org-Mode</div></a>
-          <a href="<%= document.location.href %>.rst" target="_blank" class="format rst"><div class="label">ReStructuredText</div></a>
-        </div>
-      </div>
+      </form>
     </div>
   </script>
   
@@ -1005,57 +1018,6 @@
         {{#empty}}&laquo; Enter Caption &raquo;{{/empty}}
       </div>
       <div class="comments-wrapper{{^edit}} expanded{{/edit}}"></div>
-    </div>
-  </script>
-  
-  <script type="text/x-handlebars-template" name="image">
-    <div id="<%= node.html_id %>" name=<%= node.key %> parent="<%= parent._id %>" level="<%= level %>" draggable="false" class="content-node image level-<%= level %>">
-      
-      <div class="content-node-outline"><div class="cursor"><span></span></div></div>
-      <div class="operations">
-        <a href="/" class="toggle-comments" title="Toggle comments for Image"></a>
-        <% if (edit) { %>
-          <a href="/" class="remove-node" title="Remove Node" node="<%= node.key %>" parent="<%= parent._id %>"></a>
-          <a href="/" class="toggle-move-node" title="Move Image — Use placeholders as targets"></a>
-        <% } %>
-      </div>
-      <div class="pilcrow">&#182;</div>
-      
-      <div class="image-content<%= !url ? " placehoder" : ""%>">
-        <% if (url) { %>
-          <% if (edit) { %>
-            <img src="<%= url %>"/>
-          <% } else { %>
-            <a href="<%= original_url %>" target="_blank"><img src="<%= url %>"/></a>
-          <% } %>
-        <% } else { %>
-          <img src="/images/image_placeholder.png"/>
-        <% } %>
-        
-        <% if (edit) { %>
-          <div class="image-editor">
-            <form class="upload-image-form" action="http://api2.transloadit.com/assemblies" enctype="multipart/form-data" method="POST">
-              <div class="image-drop-area">
-                <div class="info">Drop image here or <a href="/">choose a file</a></div>
-                <div class="image-progress">
-                  <div class="label">Uploading image ...</div>
-                  <div class="progress-container">
-                    <div class="progress-bar" style="width:60%"></div>
-                  </div>
-                </div>
-                <div class="credits">Image hosting sponsored by <a href="http://transloadit.com" target="_blank">Transloadit</a></div>
-                <input type="file" class="image-file" name="image-file" />
-                <input type="hidden" name="params" value="<%= transloadit_params %>" />
-              </div>
-            </form>
-          </div>
-        <% } %>
-      </div>
-      
-      <div class="caption content<%= empty ? " empty" : "" %>">
-        <%= !empty ? caption : "&laquo; Enter Caption &raquo;" %>
-      </div>
-      <div class="comments-wrapper <%= !edit ? "expanded" : ""%>"></div>
     </div>
   </script>
   

@@ -44,7 +44,7 @@ var Document = Backbone.View.extend({
     this.$('.toggle-edit-mode').addClass('active');
     
     if (this.node) {
-      this.node.readwrite();
+      this.node.transitionTo('write');
     }
   },
   
@@ -60,7 +60,7 @@ var Document = Backbone.View.extend({
     this.$('.toggle-show-mode').addClass('active');
     
     if (this.node) {
-      this.node.readonly();
+      this.node.transitionTo('read');
     }
   },
   
@@ -319,6 +319,7 @@ var Document = Backbone.View.extend({
   render: function() {
     // Render all relevant sub views
     $(this.el).html(_.tpl('document_wrapper', {
+      toc: this.model ? new TOCRenderer(this.model).render() : '',
       mode: this.mode,
       doc: this.model
     }));
@@ -328,10 +329,10 @@ var Document = Backbone.View.extend({
       // Render Attributes
       this.attributes.render();
       this.node = Node.create({ model: this.model });
-      this.$('#document').html(''); // remove the no document notice
       this.$('#attributes').show();
       this.$('#document').show();
-      $(this.node.render().el).appendTo(this.$('#document'));
+      $('#document_tree').html('');
+      $(this.node.render().el).appendTo(this.$('#document_tree'));
     }
   },
   

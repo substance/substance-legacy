@@ -14,7 +14,7 @@ Node.define([ '/type/document', '/type/article', '/type/story'
   },
 
   transitionTo: function (state) {
-    StateMachine.transitionTo.apply(this);
+    StateMachine.transitionTo.call(this, state);
     this.nodeList.transitionTo(state);
   },
 

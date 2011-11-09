@@ -20,7 +20,7 @@ Node.define('/type/section', 'Section', {
   },
 
   transitionTo: function (state) {
-    StateMachine.transitionTo.apply(this);
+    StateMachine.transitionTo.call(this, state);
     this.nodeList.transitionTo(state);
   },
 
