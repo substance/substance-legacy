@@ -2246,7 +2246,7 @@ pre {
   border-radius:        10px;
 }
 
-#document .resource-editor input.resource-url {
+#document .resource-editor .resource-url {
   width: 350px;
   color: #000;
   background: #ccc;

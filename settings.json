@@ -61,7 +61,6 @@
       "/client/notifier.js",
       "/client/helpers.js",
       "/client/renderers/html_renderer.js",
-      "/client/node_editors/resource_editor.js",
       "/client/ui/common.js",
       "/client/ui/string_editor.js",
       "/client/ui/multi_string_editor.js",
@@ -93,6 +92,7 @@
       "/client/views/node/image.js",
       "/client/views/node/question.js",
       "/client/views/node/quote.js",
+      "/client/views/node/resource.js",
       "/client/views/node/section.js",
       "/client/views/node/text.js"
     ]

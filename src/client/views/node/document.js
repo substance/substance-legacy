@@ -42,8 +42,13 @@ Node.define([ '/type/document', '/type/article', '/type/story'
 
   states: {
     write: {
+      enter: function () {
+        Node.states.write.enter.apply(this);
+        $(this.el).addClass('edit');
+      },
       leave: function () {
         Node.states.write.leave.apply(this);
+        $(this.el).removeClass('edit');
         window.editor.deactivate();
       }
     },

@@ -985,42 +985,6 @@
     </div>
   </script>
   
-  <script type="text/x-handlebars-template" name="resource">
-    <div id="{{node/html_id}}" name={{node/key}} parent="{{parent/_id}}" level="{{level}}" draggable="false" class="content-node resource level-{{level}}">
-      <div class="content-node-outline"><div class="cursor"><span></span></div></div>
-      
-      <div class="operations">
-        <a href="/" class="toggle-comments" title="Toggle comments for Resource"></a>
-        {{#edit}}
-          <a href="/" class="remove-node" title="Remove Node" node="{{node/key}}" parent="{{parent/_id}}"><img src="/images/icons/white/x_alt_16x16.png"/></a>
-          <a href="/" class="toggle-move-node" title="Move Resource — Use placeholders as targets"><img src="/images/icons/white/arrow_right_16x16.png"/></a>
-        {{/edit}}
-      </div>
-      {{#edit}}<div class="pilcrow">&#182;</div>{{/edit}}
-      
-      <div class="resource-content{{^url}} placeholder{{/url}}">
-        {{#url}}<img src="{{.}}"/>{{/url}}
-        {{^url}}<img src="/images/image_placeholder.png"/>{{/url}}
-        
-        <div class="resource-editor">
-          <div class="resource-url-area">
-            <div class="url-label">Resource URL (Images are supported yet)</div>
-            <div class="url-container">
-              <input class="resource-url" type="text" name="url" value="{{url}}"/>
-              <div class="status">Enter URL</div>
-            </div>
-          </div>
-        </div>
-      </div>
-      
-      <div class="caption content{{#empty}} empty{{/empty}}">
-        {{^empty}}{{{caption}}}{{/empty}}
-        {{#empty}}&laquo; Enter Caption &raquo;{{/empty}}
-      </div>
-      <div class="comments-wrapper{{^edit}} expanded{{/edit}}"></div>
-    </div>
-  </script>
-  
   <script type="text/x-handlebars-template" name="multi_string_editor">
     <div class="items">
       {{#items}}

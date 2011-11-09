@@ -36,7 +36,7 @@ Node.define('/type/image', 'Image', {
   onStart: function () {
     this.$('.image-progress').show();
     this.$('.info').hide();
-    this.$('.image-progress .label').html('Uploading ...');
+    this.$('.image-progress .label').html("Uploading &hellip;");
     this.$('.progress-bar').css('width', '0%');
   },
 

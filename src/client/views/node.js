@@ -88,7 +88,7 @@ var Node = Backbone.View.extend(_.extend({}, StateMachine, {
 
   focus: function () {},
 
-  makeEditable: function (el, attr, dflt, options) {
+  makeEditable: function (el, attr, dflt, options, updateFn) {
     dflt = dflt || '';
     options = _.extend({
       placeholder: dflt,
@@ -96,6 +96,12 @@ var Node = Backbone.View.extend(_.extend({}, StateMachine, {
       multiline: false,
       codeFontFamily: 'Monaco, Consolas, "Lucida Console", monospace'
     }, options || {});
+    updateFn = updateFn || function (node, attr, val) {
+      var update = {};
+      update[attr] = val;
+      updateNode(node, update);
+    };
+    
     var self = this;
     
     var value = this.model.get(attr);
@@ -115,9 +121,7 @@ var Node = Backbone.View.extend(_.extend({}, StateMachine, {
         if (self.state === 'write') {
           window.editor.activate($(el), options);
           window.editor.bind('changed', function () {
-            var update = {};
-            update[attr] = window.editor.content();
-            updateNode(self.model, update);
+            updateFn(self.model, attr, window.editor.content());
           });
         }
       });

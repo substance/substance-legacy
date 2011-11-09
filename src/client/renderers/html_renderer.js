@@ -120,20 +120,6 @@ var HTMLRenderer = function(root, parent, lvl) {
   
   // Implement node types
   var renderers = {
-    "/type/resource": function(node, parent, level) {
-      return Helpers.renderTemplate('resource', {
-        node: node,
-        comments: node.get('comment_count'), // node.get('comments') && node.get('comments').length>0 ? node.get('comments').length : "",
-        parent: parent,
-        edit: app.document.mode === 'edit',
-        url: node.get('url'),
-        level: level,
-        empty: app.document.mode === 'edit' && (!node.get('caption') || node.get('caption') === ''),
-        caption: node.get('caption'),
-        transloadit_params: config.transloadit
-      });
-    },
-    
     "/type/visualization": function(node, parent, level) {
       return Helpers.renderTemplate('visualization', {
         node: node,
@@ -163,6 +149,7 @@ var TOCRenderer = function(root) {
     "/type/document": function(node) {
       content = '<ol>';
       node.all('children').each(function(child) {
+        console.log(child);
         if (child.type.key !== '/type/section') return;
         content += '<li><a class="toc-item" node="'+child.html_id+'" href="#'+root.get('creator')._id.split('/')[2]+'/'+root.get('name')+'/'+child.html_id+'">'+child.get('name')+'</a>';
         
