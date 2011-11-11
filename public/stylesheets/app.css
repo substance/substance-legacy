@@ -2388,7 +2388,7 @@ pre {
   background: #F5F5F3;
 }
 
-#document.edit-mode .content-node:not(.selected) > .controls .actions { background: rgba(255,255,255, 0.8); }
+#document.edit-mode .content-node:not(.selected) > .content > div > .controls .actions { background: rgba(255,255,255, 0.8); }
 
 #document .content-node { }
 
@@ -2670,8 +2670,10 @@ pre {
 
 #document.move-mode .controls .actions { background: #fff; }
 
-#document .content-node .controls .actions .move-node { display: none; }
-
+#document .controls ul {
+  list-style: none;
+  margin-bottom: 0;
+}
 
 .controls .handle {
   position: absolute;
@@ -2711,6 +2713,12 @@ pre {
 .controls .handle:hover a {
   opacity:1;
 }
+
+.controls, .actions { display: none; }
+.edit .controls, .edit .actions.insert { display: block; }
+.move-mode .controls, .move-mode .actions.move { display: block; }
+
+.being-moved .controls * { display: none; }
 
 .controls .actions {
   /* border: 1px solid #eee; */

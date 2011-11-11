@@ -21,19 +21,15 @@ var Document = Backbone.View.extend({
     'click a.unsubscribe-document': 'unsubscribeDocument',
     'click a.export-document': 'toggleExport',
     'click a.toggle-settings': 'toggleSettings',
-    'click a.toggle-publish-settings': 'togglePublishSettings',
-    
-    // Actions
-    //'click a.add_child': 'addChild',
-    //'click a.add_sibling': 'addSibling',
+    'click a.toggle-publish-settings': 'togglePublishSettings'
   },
 
   toggleEditMode: function(e) {
     e.preventDefault();
     
-    var user = app.document.model.get('creator')._id.split('/')[2];
-    var name = app.document.model.get('name');
-    $('#document_wrapper').attr('url', user+"/"+name);
+    //var user = app.document.model.get('creator')._id.split('/')[2];
+    //var name = app.document.model.get('name');
+    //$('#document_wrapper').attr('url', user+"/"+name);
     
     $('#document').addClass('edit-mode');
     this.$('.toggle-show-mode').removeClass('active');
@@ -41,22 +37,24 @@ var Document = Backbone.View.extend({
     
     if (this.node) {
       this.node.transitionTo('write');
+      this.node.select(); // select root node
     }
   },
   
   toggleShowMode: function(e) {
     e.preventDefault();
     
-    var user = app.document.model.get('creator')._id.split('/')[2];
-    var name = app.document.model.get('name');
-    $('#document_wrapper').attr('url', user+"/"+name);
+    //var user = app.document.model.get('creator')._id.split('/')[2];
+    //var name = app.document.model.get('name');
+    //$('#document_wrapper').attr('url', user+"/"+name);
     
-    $('#document').addClass('edit-mode');
+    $('#document').removeClass('edit-mode');
     this.$('.toggle-edit-mode').removeClass('active');
     this.$('.toggle-show-mode').addClass('active');
     
     if (this.node) {
       this.node.transitionTo('read');
+      this.node.deselect();
     }
   },
   
@@ -71,9 +69,6 @@ var Document = Backbone.View.extend({
     $('.view-action-icon.export').removeClass('active');
     
     this.publishSettings.load();
-    
-    
-    
     
     if ($('#publish_settings').is(':visible')) {
       $('.view-action-icon.publish-settings').removeClass('active');
@@ -114,97 +109,6 @@ var Document = Backbone.View.extend({
   
   
   
-  // Enable move mode
-  toggleMoveNode: function() {
-    /*
-    var that = this;
-    
-    $('#document').addClass('move-mode');
-    
-    // Hide other move-node controls
-    $('.move-node').hide();
-    var $controls = $('.content-node .controls');
-    
-    // Show previously hidden labels
-    $controls.find(".placeholder.move").show();
-    
-    $controls.each(function() {
-      var $control = $(this);
-      
-      var node = that.selectedNode;
-      var nodeType = that.selectedNode.type.key == "/type/section" ? "container-node" : "leaf-node";
-      var count = 0;
-      var depth = 0;
-
-      function calcDepth(node) {
-        if (!node.get('children')) return;
-        var found = false;
-        node.get('children').each(function(n) {
-          if (n.type.key === "/type/section") {
-            if (!found) depth += 1;
-            found = true;
-            calcDepth(n);
-          }
-        });
-      }
-      
-      calcDepth(node);
-      
-      function checkDepth(level) {
-        if (node.type.key !== "/type/section") return true;
-        return level+depth <= 3;
-      }
-      
-      // Detect cyclic references
-      var cyclic = false;
-      function isCyclic(n) {
-        if (n===node) {
-          cyclic = true;
-        } else {
-          var parent = that.getParent(n);
-          if (parent) isCyclic(parent);
-        }
-        return cyclic;
-      }
-
-      $control.find('.move-node.'+nodeType).each(function() {
-        var insertionType = $(this).hasClass('child') ? "child" : "sibling";
-        var level = parseInt($(this).attr('level'));
-        var ref = graph.get($(this).attr('node'));
-        var parent = that.getParent(ref);
-        
-        // Skip if source node is referenced by the target node or one of its anchestors
-        cyclic = false;
-        if (isCyclic(ref)) return;
-        
-        // For sibling insertion mode
-        if (insertionType === "sibling") {
-          var allowedNodes = parent.properties().get('children').expectedTypes;
-          if (_.include(allowedNodes, that.selectedNode.type.key)) {
-            if (checkDepth(level)) {
-              $(this).show();
-              count++;            
-            }
-          }
-        } else {
-          $(this).show();
-          count++;
-        }
-      });
-      
-      // Hide move label if there are no drop targets
-      if (count === 0) {
-        $control.find(".placeholder.move").hide();
-      }
-      
-      // Hide move controls inside the selected node
-      $('.content-node.selected .controls .move-node').hide();
-      $controls = $('.content-node .controls');
-    });
-    return false;
-    */
-  },
-  
   // For a given node find the parent node
   getParent: function(node) {
     if (!node) return null;
@@ -221,87 +125,11 @@ var Document = Backbone.View.extend({
     this.app = this.options.app;
     this.mode = 'show';
     
-    this.bind('status:changed', function() {
-      that.updateCursors();
-    });
-    
     this.bind('changed', function() {
       document.title = that.model.get('title') || 'Untitled';
       // Re-render Document browser
       that.app.browser.render();
     });
-  },
-  
-  moveNode: function(e) {
-    var node = this.selectedNode;
-    var nodeParent = this.getParent(node);
-    
-    var ref = graph.get($(e.currentTarget).attr('node'));
-    var refParent = this.getParent(ref);
-    var destination = $(e.currentTarget).attr('destination');
-    var insertionType = $(e.currentTarget).hasClass('child') ? "child" : "sibling";
-    
-    // Remove from prev. position
-    nodeParent.all('children').del(node._id);
-    nodeParent._dirty = true;
-    
-    this.trigger('change:node', nodeParent);
-    
-    if (insertionType === "child") {
-      ref.all('children').set(node._id, node);
-      ref._dirty = true;
-      this.trigger('change:node', ref);
-    } else {
-      // Register at new position
-      var targetIndex = refParent.all('children').index(ref._id);
-      if (destination === 'after') targetIndex += 1;
-
-      // Cleanup: Move all subsequent leaf nodes inside the new section
-      if (node.type.key === '/type/section') {
-        var successors = refParent.get('children').rest(targetIndex);
-        var done = false;
-        successors = successors.select(function(node) {
-          if (!done && node.type.key !== "/type/section") {
-            // Remove non-section successors from parent node
-            refParent.all('children').del(node._id);
-            return true;
-          } else {
-            done = true;
-            return false;
-          }
-        });
-        var children = new Data.Hash();
-        var idx = 0;
-        while (idx < node.get('children').length && node.get('children').at(idx).type.key !== "/type/section") {
-          var n = node.get('children').at(idx);
-          children.set(n._id, n);
-          idx += 1;
-        }
-        children = children.union(successors);
-        children = children.union(node.get('children').rest(idx));
-        node.set({
-          children: children.keys()
-        });
-      }
-      // Connect to parent
-      refParent.all('children').set(node._id, node, targetIndex);
-      refParent._dirty = true;
-      graph.trigger('dirty');
-      this.trigger('change:node', refParent);
-    }
-    // Select node
-    this.selectedNode = node;
-    this.trigger('select:node', this.selectedNode);
-    return false;
-  },
-  
-  updateCursors: function() {
-    // $('.content-node.occupied').removeClass('occupied');
-    // _.each(this.status.cursors, function(user, nodeKey) {
-    //   var n = graph.get(nodeKey);
-    //   $('#'+n.html_id).addClass('occupied');
-    //   $('#'+n.html_id+' .cursor span').html(user);
-    // });
   },
   
   render: function() {
@@ -354,7 +182,6 @@ var Document = Backbone.View.extend({
     this.unbind('select:node');
     
     this.bind('select:node', function(node) {
-      that.resetSelection();
       $('#'+node.html_id).addClass('selected');
       $('#document').addClass('edit-mode');
       
@@ -369,13 +196,6 @@ var Document = Backbone.View.extend({
     
     // Points to the selected
     that.selectedNode = null;
-
-    // TODO: Select the document node on-init
-    $(document).unbind('keyup');
-    $(document).keyup(function(e) {
-      if (e.keyCode == 27) { that.reset(); } // ESC
-      e.stopPropagation();
-    });
     
     // New node
     $(document).bind('keydown', 'alt+down', function(e) {
@@ -440,7 +260,6 @@ var Document = Backbone.View.extend({
       if (that.model) {
         that.render();
         that.init();
-        that.reset();
         
         // window.positionBoard();
         that.trigger('changed');
@@ -579,164 +398,12 @@ var Document = Backbone.View.extend({
     }, 300);
     notifier.notify(Notifications.DOCUMENT_DELETED);
   },
-  
-  // Reset to view mode (aka unselect everything)
-  reset: function(noBlur) {
-    if (!this.model) return;
-    
-    // if (!noBlur) $('.content').blur();
-    if (!noBlur) $(document.activeElement).blur();
-    
-    this.app.document.selectedNode = null;
-    this.resetSelection();
-
-    // Broadcast
-    // remote.Session.selectNode(null);
-    return false;
-  },
-  
-  resetSelection: function() {
-    this.$('.content-node.selected').removeClass('selected');
-    $('#document .controls.active').removeClass('active');
-    
-    $('#document').removeClass('edit-mode');
-    $('#document').removeClass('insert-mode');
-    //$('.proper-commands').hide();
-    
-    // Reset node-editor-placeholders
-    $('.node-editor-placeholder').html('');
-    
-    // Rest move-node mode, if active
-    //$('.move-node').hide();
-    $('#document').removeClass('move-mode');
-  },
-  
-  updateNode: function(nodeKey, attrs) {
-    var node = graph.get(nodeKey);
-    node.set(attrs);
-    this.trigger('change:node', node);
-  },
-  
-  // Update attributes of selected node
-  updateSelectedNode: function(attrs) {
-    if (!this.selectedNode) return;
-    this.selectedNode.set(attrs);
-    
-    // Update modification date on original document
-    this.model.set({
-      updated_at: new Date()
-    });
-    
-    // Only set dirty if explicitly requested    
-    if (attrs.dirty) {
-      this.trigger('change:node', this.selectedNode);
-    }
-    
-    if (this.selectedNode.type.key === '/type/document') {
-      this.trigger('changed');
-    }
-    
-    // Notify all collaborators about the changed node
-    if (this.status && this.status.collaborators.length > 1) {
-      var serializedNode = this.selectedNode.toJSON();
-      delete serializedNode.children;
-      // remote.Session.registerNodeChange(this.selectedNode._id, serializedNode);
-    }
-  },
-  
 
   // Update the document's name
   updateName: function(name) {
     this.model.set({
       name: name
     });
-  },
-  
-  addChild: function(e) {
-    if (arguments.length === 1) {
-      // Setup node
-      var type = $(e.currentTarget).attr('type');
-      var refNode = graph.get($(e.currentTarget).attr('node'));
-      
-      var newNode = graph.set(null, {"type": type, "document": this.model._id});
-    } else {
-      var refNode = graph.get(arguments[1]);
-      var newNode = graph.set(arguments[0].nodeId, arguments[0]);
-    }
-    
-    // Connect child node
-    refNode.all('children').set(newNode._id, newNode);
-    refNode._dirty = true;
-    
-    this.trigger('change:node', refNode);
-    
-    // Select newly created node
-    this.selectedNode = newNode;
-    this.trigger('select:node', this.selectedNode);
-    
-    if (arguments.length === 1) {
-      // Broadcast insert node command
-      // remote.Session.insertNode('child', newNode.toJSON(), $(e.currentTarget).attr('node'), null, 'after');
-    }
-    return false;
-  },
-  
-  // TODO: cleanup!
-  addSibling: function(e) {
-    if (arguments.length === 1) {
-      // Setup node
-      var type = $(e.currentTarget).attr('type');
-      var refNode = graph.get($(e.currentTarget).attr('node'));
-      var parentNode = graph.get($(e.currentTarget).attr('parent'));
-      var destination = $(e.currentTarget).attr('destination');
-      
-      // newNode gets populated with default values
-      var newNode = graph.set(null, {"type": type, "document": this.model._id});
-    } else {
-      var refNode = graph.get(arguments[1]);
-      var parentNode = graph.get(arguments[2]);
-      var destination = arguments[3];
-      var newNode = graph.set(arguments[0].nodeId, arguments[0]);
-    }
-
-    var targetIndex = parentNode.all('children').index(refNode._id);
-    if (destination === 'after') targetIndex += 1;
-    
-    if (type === '/type/section') {
-      // Move all successors inside the new section
-      var successors = parentNode.get('children').rest(targetIndex);
-      
-      var done = false;
-      successors = successors.select(function(node) {
-        if (!done && node.type.key !== "/type/section") {
-          // Remove non-section successors from parent node
-          parentNode.all('children').del(node._id);
-          return true;
-        } else {
-          done = true;
-          return false;
-        }
-      });
-      
-      // Append successors to the new node
-      newNode.set({
-        children: successors.keys()
-      });
-    }
-    
-    // Connect to parent
-    parentNode.all('children').set(newNode._id, newNode, targetIndex);
-    parentNode._dirty = true;
-    this.trigger('change:node', parentNode);
-
-    // Select newly created node
-    this.selectedNode = newNode;
-    this.trigger('select:node', this.selectedNode);
-    
-    if (arguments.length === 1) {
-      // Broadcast insert node command
-      // remote.Session.insertNode('sibling', newNode.toJSON(), refNode._id, parentNode._id, destination);      
-    }
-    return false;
   }
+  
 });

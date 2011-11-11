@@ -473,12 +473,6 @@ var Application = Backbone.View.extend({
     this.header = new Header({el: '#header', app: this});
     this.activeUsers = [];
     
-    // Reset when clicking on the body
-    $('body').click(function(e) {
-      app.document.reset(true);
-      return true;
-    });
-    
     // Cookie-based auto-authentication
     if (session.username) {
       graph.merge(session.seed);      

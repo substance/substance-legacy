@@ -82,8 +82,27 @@ function updateNode (node, attrs) {
 }
 
 function possibleChildTypes (node) {
-  // TODO
-  return ['/type/section', '/type/text', '/type/image', '/type/resource', '/type/quote', '/type/code'];
+  var defaultOrder = [ '/type/section'
+                     , '/type/text'
+                     , '/type/image'
+                     , '/type/resource'
+                     , '/type/quote'
+                     , '/type/code' ]
+  
+  function indexOf (element, array) {
+    var i = array.indexOf(element);
+    return i >= 0 ? i : Infinity;
+  }
+  
+  function compareByDefaultOrder (a, b) {
+    return indexOf(a, defaultOrder) < indexOf(b, defaultOrder) ? -1 : 1;
+  }
+  
+  return node.properties().get('children').expectedTypes.sort(compareByDefaultOrder);
+}
+
+function getTypeName (type) {
+  return graph.get(type).name;
 }
 
 function canBeMovedHere (newParent, node) {

@@ -45,6 +45,7 @@ var Node = Backbone.View.extend(_.extend({}, StateMachine, {
   toggleMoveNode: function (e) {
     e.preventDefault();
     e.stopPropagation();
+    
     if (this.state === 'move') {
       this.root.transitionTo('write');
     } else {
@@ -62,7 +63,9 @@ var Node = Backbone.View.extend(_.extend({}, StateMachine, {
   selectNode: function (e) {
     // the parent view shouldn't deselect this view when the event bubbles up
     e.stopPropagation();
-    this.select();
+    if (this.state === 'write') {
+      this.select();
+    }
   },
 
   highlight: function (e) {
@@ -114,7 +117,7 @@ var Node = Backbone.View.extend(_.extend({}, StateMachine, {
         $(el).text(value);
       }
     } else {
-      $(el).text(dflt).addClass('empty');
+      $(el).html('&laquo; '+dflt+' &raquo;').addClass('empty');
     }
     
     $(el)

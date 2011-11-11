@@ -53,8 +53,8 @@ var Controls = Backbone.View.extend(_.extend({}, StateMachine, {
   className: 'controls',
 
   events: {
-    'click .add': 'insert',
-    'click .move-node': 'moveHere'
+    'click .insert a': 'insert',
+    'click .move a': 'move'
   },
 
   initialize: function (options) {
@@ -62,9 +62,18 @@ var Controls = Backbone.View.extend(_.extend({}, StateMachine, {
     this.position = options.position;
   },
 
-  moveHere: function (e) {
+  insert: function (e) {
     e.preventDefault();
     e.stopPropagation();
+    
+    var type = $(e.target).attr('data-type');
+    createNode(type, this.position);
+  },
+
+  move: function (e) {
+    e.preventDefault();
+    e.stopPropagation();
+    
     if (this.state === 'moveTarget') {
       removeChildTemporary(this.root.movedParent, this.root.movedNode);
       addChild(this.root.movedNode, this.position);
@@ -72,23 +81,22 @@ var Controls = Backbone.View.extend(_.extend({}, StateMachine, {
     }
   },
 
-  insert: function (event) {
-    event.preventDefault();
-    event.stopPropagation();
-    var type = $(event.target).attr('data-type');
-    createNode(type, this.position);
-  },
-
   render: function () {
-    var actions = $('<div class="actions" />').appendTo(this.el);
-    $('<div class="placeholder insert" />').text("Insert Content").appendTo(actions);
-    $('<div class="placeholder move" />').text("Move").appendTo(actions);
-    _.each(possibleChildTypes(this.model), function (type) {
-      var name = type;
-      $('<span><a href="/" data-type="' + type + '" class="add add_child">' + name + '</a></span>').appendTo(actions);
-    });
-    $('<div class="move-targets"><a href="/" class="move-node">Here</a></div>').appendTo(this.el);
-    $('<br class="clear" />').appendTo(actions);
+    this.insertActions = $('<div class="actions insert" />').appendTo(this.el);
+    $('<div class="placeholder" />').text("Insert Content").appendTo(this.insertActions);
+    var insertMenu = $('<ul />').appendTo(this.insertActions);
+    _.each(possibleChildTypes(this.model), _.bind(function (type) {
+      var name = getTypeName(type);
+      $('<li><a href="/" data-type="' + type + '">' + name + '</a></li>').appendTo(insertMenu);
+    }, this));
+    $('<br class="clear" />').appendTo(this.insertActions);
+    
+    this.moveActions = $('<div class="actions move" />').appendTo(this.el);
+    $('<div class="placeholder" />').text("Move").appendTo(this.moveActions);
+    var moveMenu = $('<ul />').appendTo(this.moveActions);
+    $('<li><a href="/" class="move-node">Here</a></li>').appendTo(moveMenu);
+    $('<br class="clear" />').appendTo(this.moveActions);
+    
     return this;
   }
 
@@ -97,16 +105,8 @@ var Controls = Backbone.View.extend(_.extend({}, StateMachine, {
   states: {
     read: {},
     write: {},
-    move: {
-      enter: function (node, position) {
-        if (canBeMovedHere(this.model, node)) {
-          $(this.el).addClass('move-mode');
-        }
-      },
-      leave: function () {
-        $(this.el).removeClass('move-mode');
-      }
-    }
+    move: {},
+    moveTarget: {}
   }
 
 });

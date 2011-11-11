@@ -27,6 +27,10 @@ Node.define([ '/type/document', '/type/article', '/type/story'
 
   render: function () {
     Node.prototype.render.apply(this, arguments);
+    this.$('.content-node-outline').remove();
+    this.operationsEl.remove();
+    this.commentsEl.remove();
+    
     var creator = this.model.get('creator')
     ,   publishedOn = this.model.get('published_on');
     this.titleEl     = this.makeEditable($('<div class="document-title content" />'), 'title', "Enter Title").appendTo(this.contentEl);
