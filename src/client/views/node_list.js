@@ -45,7 +45,7 @@ var NodeList = Backbone.View.extend({
     
     this.childViews.splice(index, 0, childView);
     rendered.insertAfter(index === 0 ? this.firstControls.el
-                                     : $(childView.afterControls.el));
+                                     : $(this.childViews[index-1].afterControls.el));
     
     childView.transitionTo('write');
     childView.select();
