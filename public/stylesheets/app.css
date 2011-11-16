@@ -2714,12 +2714,6 @@ pre {
   opacity:1;
 }
 
-.controls, .actions { display: none; }
-.edit .controls, .edit .actions.insert { display: block; }
-.move-mode .controls, .move-mode .actions.move { display: block; }
-
-.being-moved .controls * { display: none; }
-
 .controls .actions {
   /* border: 1px solid #eee; */
   background: rgba(243,244,239, 0.8);
@@ -2734,15 +2728,15 @@ pre {
 
 /* Multiselect */
 
-.controls .actions span.container {
-  position: relative;
-  cursor: pointer;
+.controls .actions li {
+  float: left;
 }
 
-.controls .actions span.container div {
+.controls .actions li ul {
   position: absolute;
   left: -5px;
   padding-top: 5px;
+  padding-left: 0;
   top: 20px;
   background: #F9FAF7;
   width: 100px;
@@ -2750,16 +2744,16 @@ pre {
   display: none;
 }
 
-#document.edit-mode .controls .actions span.container div {
+#document.edit-mode .controls .actions li ul {
   background: #fff;
 }
 
-.controls .actions span.container div a {
+.controls .actions li ul a {
   display: block;
   width: 100px;
 }
 
-.controls .actions span.container:hover div {
+.controls .actions li:hover ul {
   display: block;
 }
 
@@ -2771,7 +2765,11 @@ pre {
   display: block;
 }
 
-#document .controls .actions a, #document .controls .actions span.container {
+.controls .actions li.container {
+  position: relative;
+}
+
+#document .controls .actions a, #document .controls .actions span {
   font-family: Helvetica;
   /*  text-transform: uppercase;*/
   font-size: 12px;
@@ -2780,7 +2778,6 @@ pre {
   margin: 0 1px;
   padding: 0 4px;
   display: block;
-  float: left;
   text-decoration: none;
 }
 

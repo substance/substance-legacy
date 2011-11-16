@@ -81,7 +81,7 @@ function updateNode (node, attrs) {
   //}
 }
 
-function possibleChildTypes (node) {
+function possibleChildTypes (position) {
   var defaultOrder = [ '/type/section'
                      , '/type/text'
                      , '/type/image'
@@ -98,16 +98,64 @@ function possibleChildTypes (node) {
     return indexOf(a, defaultOrder) < indexOf(b, defaultOrder) ? -1 : 1;
   }
   
-  return node.properties().get('children').expectedTypes.sort(compareByDefaultOrder);
+  // Haskell's 'on' function from Data.Function
+  function on (fn1, fn2) {
+    return function (a, b) {
+      return fn1(fn2(a), fn2(b));
+    };
+  }
+  
+  function getKey (val) { return val.key; }
+  
+  function recurse (position, val) {
+    var parent = position.parent
+    ,   after  = position.after;
+    
+    var expectedTypes = parent.properties().get('children').expectedTypes;
+    _.each(expectedTypes, function (type) {
+      var curr = val.get(type);
+      if (curr) {
+        curr.push(position);
+      } else {
+        val.set(type, [position]);
+      }
+    });
+    
+    if (after && after.properties().get('children')) {
+      recurse(new Position(after, after.all('children').last()), val);
+    }
+    
+    return val;
+  }
+  
+  return recurse(position, new Data.Hash()).sort(on(compareByDefaultOrder, getKey));
 }
 
 function getTypeName (type) {
   return graph.get(type).name;
 }
 
-function canBeMovedHere (newParent, node) {
-  // TODO
-  return true;
+function moveTargetPositions (node, position) {
+  function has (arr, el) {
+    return arr.indexOf(el) >= 0;
+  }
+  
+  function recurse (position, arr) {
+    var parent = position.parent
+    ,   after  = position.after;
+    
+    if (has(parent.properties().get('children').expectedTypes, node.type.key)) {
+      arr.push(position);
+    }
+    
+    if (after && after.properties().get('children')) {
+      recurse(new Position(after, after.all('children').last()), arr);
+    }
+    
+    return arr;
+  }
+  
+  return recurse(position, []);
 }
 
 function getTeaser (node) {

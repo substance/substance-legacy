@@ -50,6 +50,7 @@ var NodeList = Backbone.View.extend({
                                      : $(this.childViews[index-1].afterControls.el));
     
     childView.transitionTo('write');
+    childView.afterControls.transitionTo('write');
     childView.select();
     childView.focus();
   },
@@ -66,6 +67,7 @@ var NodeList = Backbone.View.extend({
   renderChildView: function (childView) {
     var controls = new Controls({
       root: this.root,
+      level: this.level,
       model: this.model,
       position: new Position(this.model, childView.model)
     });

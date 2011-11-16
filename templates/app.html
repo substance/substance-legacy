@@ -638,10 +638,33 @@
     <div class="actions insert">
       <div class="placeholder">Insert Content</div>
       <ul>
-        <% _.each(childTypes, function (type) { %>
-          <li>
-            <a href="/" data-type="<%= type[0] %>"><%= type[1] %></a>
-          </li>
+        <% childTypes.each(function (position, type) { %>
+          <% if (_.isArray(position)) { %>
+            <li class="container">
+              <span><%= getTypeName(type) %></span>
+              <ul>
+                <% _.each(position, function (position) { %>
+                  <li>
+                    <a href="/"
+                       data-parent="<%= position.parent._id %>"
+                       data-after="<%= position.after ? position.after._id : ''%>"
+                       data-type="<%= type %>">
+                      Level <%= position.level %>
+                    </a>
+                  </li>
+                <% }); %>
+              </ul>
+            </li>
+          <% } else { %>
+            <li>
+              <a href="/"
+                 data-parent="<%= position.parent._id %>"
+                 data-after="<%= position.after ? position.after._id : ''%>"
+                 data-type="<%= type %>">
+                <%= getTypeName(type) %>
+              </a>
+            </li>
+          <% } %>
         <% }); %>
       </ul>
       <br class="clear" />
@@ -656,12 +679,35 @@
   
   <script type="text/x-handlebars-template" name="controls-movetarget">
     <div class="actions move">
-      <div class="placeholder">Move</div>
-      <ul>
-        <li>
-          <a href="/" class="move-node">Here</a>
-        </li>
-      </ul>
+      <% if (moveTargets.length > 0) { %>
+        <div class="placeholder">Move</div>
+        <ul>
+          <% if (moveTargets.length === 1) { %>
+            <li>
+              <a href="/"
+                 data-parent="<%= moveTargets[0].parent._id %>"
+                 data-after="<%= moveTargets[0].after ? moveTargets[0].after._id : '' %>">
+                Here
+              </a>
+            </li>
+          <% } else { %>
+            <li class="container">
+              <span>Here</span>
+              <ul>
+                <% _.each(moveTargets, function (position) { %>
+                  <li>
+                    <a href="/"
+                       data-parent="<%= position.parent._id %>"
+                       data-after="<%= position.after ? position.after._id : '' %>">
+                      At Level <%= position.level %>
+                    </a>
+                  </li>
+                <% }); %>
+              </ul>
+            </li>
+          <% } %>
+        </ul>
+      <% } %>
       <br class="clear" />
     </div>
   </script>
