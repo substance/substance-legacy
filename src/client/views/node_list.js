@@ -1,5 +1,7 @@
 var NodeList = Backbone.View.extend({
 
+  className: 'node-list',
+
   initialize: function (options) {
     this.state = 'read';
     this.level = options.level;

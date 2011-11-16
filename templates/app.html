@@ -634,54 +634,35 @@
     </div>
   </script>
   
-  <script type="text/x-handlebars-template" name="controls">
-    <div class="controls" node="<%= node._id %>" destination="<%= destination %>">
-      <div class="handle">
-        <a href="/">--&gt; INSERT</a>
-      </div>
-      <div class="actions">
-        <div class="placeholder insert">Insert Content</div>
-        <div class="placeholder move">Move</div>
-        <% actions.each(function(action) { %>
-            <% if (action.length === 0) return; %>
-            <% if (action.length === 1) { %>
-              <% _.each(action, function(v) { %>
-                <span>
-                <a href="/" type="<%= v.nodeType %>" destination="<%= destination %>" node="<%= v.node %>" parent="<%= v.parentNode %>" class="add add_<%= v.insertionType %>"><%= v.nodeTypeName %></a>
-                </span>
-              <% }); %>
-            <% } else { %>
-              <span class="container add">
-              <%= action[0].nodeTypeName %>
-              <div>
-                <% _.each(action, function(v) { %>
-                  <a href="/" type="<%= v.nodeType %>" destination="<%= destination %>" node="<%= v.node %>" parent="<%= v.parentNode %>" class="add add_<%= v.insertionType %>">Level <%= v.level %></a>
-                <% }); %>
-              </div>
-              </span>
-            <% } %>
+  <script type="text/x-handlebars-template" name="controls-insert">
+    <div class="actions insert">
+      <div class="placeholder">Insert Content</div>
+      <ul>
+        <% _.each(childTypes, function (type) { %>
+          <li>
+            <a href="/" data-type="<%= type[0] %>"><%= type[1] %></a>
+          </li>
         <% }); %>
-        
-        <div class="move-targets">
-          <!-- container node targets  -->
-          <% _.each(path, function(n, index) { %>
-            <span><a class="move-node container-node" href="/" node="<%= n._id %>" destination="<%= destination %>" level="<%= (index+1) %>"><!--<%= destination %>--> Here <!--&quot;<%= ContentNode.getTeaser(n).trim() %>&quot;--> at level <%= n.level %></a></span>
-          <% }); %>
-          
-          <!-- allow child insertion for empty container nodes -->
-          <% if (insertion_type === 'child' && node.level < 3) { %>
-            <span><a class="move-node container-node <%= insertion_type %>" href="/" node="<%= node._id %>" destination="<%= destination %>"><!--Inside--> Here <!--&quot;<%= ContentNode.getTeaser(node).trim() %>&quot;--> at level <%= (node.level+1) %></a></span>
-          <% } %>
-          
-          <!-- leaf node target  -->
-          <span><a class="move-node leaf-node <%= insertion_type %>" href="/" node="<%= node._id %>" destination="<%= destination %>"><!--<%= insertion_type == "sibling" ? destination : "inside" %>--> Here <!--&quot;<%= ContentNode.getTeaser(node).trim() %>&quot;--></a></span>
-        </div>
-        
-        <span class="message">
-          
-        </span>
-        <br class="clear"/>
-      </div>
+      </ul>
+      <br class="clear" />
+    </div>
+  </script>
+  
+  <script type="text/x-handlebars-template" name="controls-move">
+    <div class="actions">
+      <br class="clear" />
+    </div>
+  </script>
+  
+  <script type="text/x-handlebars-template" name="controls-movetarget">
+    <div class="actions move">
+      <div class="placeholder">Move</div>
+      <ul>
+        <li>
+          <a href="/" class="move-node">Here</a>
+        </li>
+      </ul>
+      <br class="clear" />
     </div>
   </script>
   

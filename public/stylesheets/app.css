@@ -2816,6 +2816,10 @@ pre {
   border-radius:        3px;
 }
 
+.section .node-list > .controls:last-child {
+  display: none;
+}
+
 /* Proper Editor
 -------------------------------------------------------------------------------*/
 

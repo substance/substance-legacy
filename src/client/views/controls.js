@@ -58,8 +58,14 @@ var Controls = Backbone.View.extend(_.extend({}, StateMachine, {
   },
 
   initialize: function (options) {
+    this.state    = 'read';
     this.root     = options.root;
     this.position = options.position;
+  },
+
+  transitionTo: function (state) {
+    StateMachine.transitionTo.call(this, state);
+    this.render();
   },
 
   insert: function (e) {
@@ -82,31 +88,39 @@ var Controls = Backbone.View.extend(_.extend({}, StateMachine, {
   },
 
   render: function () {
-    this.insertActions = $('<div class="actions insert" />').appendTo(this.el);
-    $('<div class="placeholder" />').text("Insert Content").appendTo(this.insertActions);
-    var insertMenu = $('<ul />').appendTo(this.insertActions);
-    _.each(possibleChildTypes(this.model), _.bind(function (type) {
-      var name = getTypeName(type);
-      $('<li><a href="/" data-type="' + type + '">' + name + '</a></li>').appendTo(insertMenu);
-    }, this));
-    $('<br class="clear" />').appendTo(this.insertActions);
-    
-    this.moveActions = $('<div class="actions move" />').appendTo(this.el);
-    $('<div class="placeholder" />').text("Move").appendTo(this.moveActions);
-    var moveMenu = $('<ul />').appendTo(this.moveActions);
-    $('<li><a href="/" class="move-node">Here</a></li>').appendTo(moveMenu);
-    $('<br class="clear" />').appendTo(this.moveActions);
-    
+    $(this.el).html(this.invokeForState('render'));
     return this;
   }
 
 }), {
 
   states: {
-    read: {},
-    write: {},
-    move: {},
-    moveTarget: {}
+    read: {
+      render: function () {
+        return '';
+      }
+    },
+    write: {
+      render: function () {
+        var types = possibleChildTypes(this.model)
+        ,   names = _.map(types, getTypeName)
+        ,   childTypes = _.zip(types, names);
+        
+        return _.tpl('controls-insert', {
+          childTypes: childTypes
+        });
+      }
+    },
+    move: {
+      render: function () {
+        return _.tpl('controls-move', {});
+      }
+    },
+    moveTarget: {
+      render: function () {
+        return _.tpl('controls-movetarget', {});
+      }
+    }
   }
 
 });
