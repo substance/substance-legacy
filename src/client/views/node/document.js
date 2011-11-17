@@ -1,6 +1,6 @@
 Node.define([ '/type/document', '/type/article', '/type/story'
             , '/type/conversation', '/type/manual', '/type/qaa'
-            ], 'Document', {
+            ], {
 
   className: 'content-node document',
 

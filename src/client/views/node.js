@@ -185,9 +185,8 @@ var Node = Backbone.View.extend(_.extend({}, StateMachine, {
 
   subclasses: {},
 
-  define: function (types, name, protoProps, classProps) {
+  define: function (types, protoProps, classProps) {
     classProps = classProps || {};
-    protoProps.name = classProps.name = name;
     var subclass = this.extend(protoProps, classProps);
     
     function toArray (a) { return _.isArray(a) ? a : [a] }

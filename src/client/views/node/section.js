@@ -1,12 +1,4 @@
-/*
-  <h{{heading_level}} class="content{{#empty}} empty{{/empty}}"{{#edit}} title="Click To Edit Section Name"{{/edit}}>
-    {{^empty}}{{{name}}}{{/empty}}
-    {{#empty}}&laquo; Enter Section Name &raquo;{{/empty}}
-  </h{{heading_level}}>
-*/
-
-
-Node.define('/type/section', 'Section', {
+Node.define('/type/section', {
 
   className: 'content-node section',
 

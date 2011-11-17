@@ -1,4 +1,4 @@
-Node.define('/type/image', 'Image', {
+Node.define('/type/image', {
 
   className: 'content-node image',
 

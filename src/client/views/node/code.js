@@ -1,4 +1,4 @@
-Node.define('/type/code', 'Code', {
+Node.define('/type/code', {
 
   className: 'content-node code',
 

@@ -1,4 +1,4 @@
-Node.define('/type/quote', "Quote", {
+Node.define('/type/quote', {
 
   className: 'content-node quote',
 

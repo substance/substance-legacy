@@ -1,4 +1,4 @@
-Node.define('/type/resource', 'Resource', {
+Node.define('/type/resource', {
 
   className: 'content-node resource',
 
