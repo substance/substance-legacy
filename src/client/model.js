@@ -18,17 +18,25 @@ function getDocument (node) {
   return node.get('document') || node; // node can be the document itself
 }
 
-function removeChild (parent, child) {
+function isSection (node) {
+  return node.type.key === '/type/section';
+}
+
+function isLastChild (parent, child) {
+  return parent.all('children').last() === child;
+}
+
+function removeChild (parent, child, temporary) {
+  var wasLastChild = isLastChild(parent, child);
   parent.all('children').del(child._id);
-  graph.del(child._id);
+  if (!temporary) { graph.del(child._id); }
   parent._dirty = true;
   child.trigger('removed');
+  if (wasLastChild) { parent.trigger('last-child-changed'); }
 }
 
 function removeChildTemporary (parent, child) {
-  parent.all('children').del(child._id);
-  parent._dirty = true;
-  child.trigger('removed');
+  removeChild(parent, child, true);
 }
 
 function addChild (node, position) {
@@ -46,7 +54,24 @@ function addChild (node, position) {
   parent.all('children').set(node._id, node, targetIndex);
   parent._dirty = true;
   
+  if (isSection(node)) {
+    var lastSection = node, lastChild;
+    while ((lastChild = lastSection.all('children').last()) && isSection(lastChild)) {
+      lastSection = lastChild;
+    }
+    
+    addFollowingSiblings(new Position(parent, node), lastSection);
+  }
+  
   parent.trigger('added-child', node, targetIndex);
+  if (isLastChild(parent, node)) {
+    parent.trigger('last-child-changed');
+  }
+}
+
+function moveChild (oldParent, node, newPosition) {
+  removeChildTemporary(oldParent, node);
+  addChild(node, newPosition);
 }
 
 function createNode (type, position) {
@@ -56,6 +81,38 @@ function createNode (type, position) {
   });
   
   addChild(newNode, position);
+}
+
+function getFollowingSiblings (position) {
+  function slice (hash, n) {
+    var sliced = new Data.Hash();
+    hash.each(function (val, key, index) {
+      if (index >= n) {
+        sliced.set(key, val);
+      }
+    });
+    return sliced;
+  }
+  
+  var parent = position.parent
+  ,   after  = position.after;
+  
+  var children = parent.all('children');
+  return after === null ? children
+                        : slice(children, children.index(after._id) + 1);
+}
+
+function addFollowingSiblings (position, section) {
+  var parent = position.parent;
+  var stop = false;
+  getFollowingSiblings(position).each(function (sibling) {
+    if (stop || isSection(sibling)) {
+      stop = true;
+    } else {
+      var position = new Position(section, section.all('children').last() || null);
+      moveChild(parent, sibling, position);
+    }
+  });
 }
 
 function updateNode (node, attrs) {

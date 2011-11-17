@@ -21,7 +21,7 @@ var Controls = Backbone.View.extend(_.extend({}, StateMachine, {
 
   getPositionFromEl: function (el) {
     var parentId = el.attr('data-parent')
-    ,   afterId = el.attr('data-after')
+    ,   afterId = el.attr('data-after');
     
     return new Position(
       graph.get(parentId),
@@ -47,8 +47,7 @@ var Controls = Backbone.View.extend(_.extend({}, StateMachine, {
     var target = $(e.target)
     ,   position = this.getPositionFromEl(target);
     
-    removeChildTemporary(this.root.movedParent, this.root.movedNode);
-    addChild(this.root.movedNode, position);
+    moveChild(this.root.movedParent, this.root.movedNode, position);
     this.root.transitionTo('write');
   },
 
@@ -74,7 +73,7 @@ var Controls = Backbone.View.extend(_.extend({}, StateMachine, {
           if (type !== '/type/section' || val.length == 1) {
             childTypes.set(type, _.last(val));
           } else {
-            var level = self.level + 1;
+            var level = self.level;
             childTypes.set(type, _.map(val, function (position) {
               position.level = level;
               level++;
@@ -96,10 +95,10 @@ var Controls = Backbone.View.extend(_.extend({}, StateMachine, {
     moveTarget: {
       render: function () {
         var movedNode = this.root.movedNode
-        ,   level = this.level + 1;
+        ,   level = this.level;
         
         var moveTargets = moveTargetPositions(movedNode, this.position);
-        if (movedNode.type.key !== '/type/section') {
+        if (!isSection(movedNode)) {
           moveTargets = [_.last(moveTargets)];
         } else {
           moveTargets = _.map(moveTargets, function (position) {

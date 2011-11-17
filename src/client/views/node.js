@@ -7,14 +7,40 @@ var Node = Backbone.View.extend(_.extend({}, StateMachine, {
   },
 
   initialize: function (options) {
-    this.state    = 'read';
-    this.parent   = options.parent;
-    this.level    = options.level;
-    this.root     = options.root;
+    this.state  = 'read';
+    this.parent = options.parent;
+    this.level  = options.level;
+    this.root   = options.root;
+    
     this.comments = new Comments({ model: this.model });
+    this.afterControls = new Controls({
+      root: this.root,
+      level: this.level,
+      model: this.parent,
+      position: new Position(this.parent, this.model)
+    });
     
     $(this.el).attr({ id: this.model.html_id });
+    
+    _.bindAll(this, 'lastChildChanged');
+    this.model.bind('last-child-changed', this.lastChildChanged);
   },
+
+  transitionTo: function (state) {
+    StateMachine.transitionTo.call(this, state);
+    if (this.state === state) {
+      this.afterControls.transitionTo(state);
+    }
+  },
+
+  lastChildChanged: function () {
+    this.afterControls.render();
+    
+    if (this.parent && isLastChild(this.parent, this.model)) {
+      this.parent.trigger('last-child-changed');
+    }
+  },
+
 
 
   // Events
@@ -145,7 +171,9 @@ var Node = Backbone.View.extend(_.extend({}, StateMachine, {
     ).appendTo(this.el);
     //{{#edit}}<div class="pilcrow">&#182;</div>{{/edit}}
     this.contentEl = $('<div class="content" />').appendTo(this.el);
-    this.commentsEl = $(this.comments.render().el).appendTo(this.el);
+    if (this.comments) {
+      this.commentsEl = $(this.comments.render().el).appendTo(this.el);
+    }
     return this;
   },
 

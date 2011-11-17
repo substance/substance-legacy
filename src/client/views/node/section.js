@@ -6,14 +6,22 @@ Node.define('/type/section', {
     Node.prototype.initialize.apply(this, arguments);
     this.nodeList = new NodeList({
       model: this.model,
+      parent: this.parent,
       level: options.level,
       root: this.root
     });
   },
 
+  remove: function () {
+    this.nodeList.remove();
+    $(this.el).remove();
+  },
+
   transitionTo: function (state) {
-    StateMachine.transitionTo.call(this, state);
-    this.nodeList.transitionTo(state);
+    Node.prototype.transitionTo.call(this, state);
+    if (this.state === state) {
+      this.nodeList.transitionTo(state);
+    }
   },
 
   //select: function () {},

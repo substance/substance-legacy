@@ -6,8 +6,11 @@ Node.define([ '/type/document', '/type/article', '/type/story'
 
   initialize: function (options) {
     Node.prototype.initialize.apply(this, arguments);
+    delete this.comments;
+    delete this.afterControls;
     this.nodeList = new NodeList({
       model: this.model,
+      parent: null,
       level: 0,
       root: this
     });
@@ -15,8 +18,12 @@ Node.define([ '/type/document', '/type/article', '/type/story'
 
   transitionTo: function (state) {
     StateMachine.transitionTo.call(this, state);
-    this.nodeList.transitionTo(state);
+    if (this.state === state) {
+      this.nodeList.transitionTo(state);
+    }
   },
+
+  lastChildChanged: function () {},
 
   //select: function () {},
 
@@ -29,7 +36,6 @@ Node.define([ '/type/document', '/type/article', '/type/story'
     Node.prototype.render.apply(this, arguments);
     this.$('.content-node-outline').remove();
     this.operationsEl.remove();
-    this.commentsEl.remove();
     
     var creator = this.model.get('creator')
     ,   publishedOn = this.model.get('published_on');
