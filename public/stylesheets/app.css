@@ -1984,21 +1984,13 @@ dd { color: #444; font-size: 1em;	margin: 0 0 0 155px; padding: 0; padding-left:
   padding: 10px 0;
 }
 
-.content-node.quote > blockquote {
-  margin: 10px 100px;
-}
-
-blockquote p {
-  padding: 0px 20px 10px 0px;
-  font-size: 1.2em;
-  font-style: italic;
-  float: left;
-  background: url(../images/icons/black/right_quote_16x16.png) bottom right no-repeat;
+.content-node.quote > .content {
+  margin: 0 100px;
+  padding: 10px 0;
 }
 
 blockquote {
-  min-width: 200px;
-  float: left;
+  display: table;
   margin: 20px 0 10px 0;
   padding: 0px 20px;
   font-size: 1.4em;
@@ -2007,8 +1999,22 @@ blockquote {
   margin-bottom: 10px;
 }
 
-cite.quote-author {
-  display: block;
+blockquote > div {
+  display: table-row;
+}
+
+blockquote p.quote-content {
+  min-width: 200px;
+  display: table-cell;
+  padding: 0 20px 0 0;
+  font-size: 1.2em;
+  font-style: italic;
+  background: url(../images/icons/black/right_quote_16x16.png) bottom right no-repeat;
+}
+
+blockquote cite.quote-author {
+  display: table-cell;
+  padding: 20px 0 0;
   font-size:16px;
   text-align: right;
 }
@@ -2035,12 +2041,9 @@ div.answer.content {
   padding: 0 100px 0 100px;
 }
 
-code, pre {
+code {
   font-family: Monaco, Consolas, "Lucida Console", monospace;
   font-size: 12px;
-}
-
-code {
   padding: 0px 3px;
   background: white;
   border: 1px solid #DDD;
