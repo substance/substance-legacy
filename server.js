@@ -53,12 +53,9 @@ app.configure(function() {
   app.use(CookieStore({secret: config.secret}));
   app.use(app.router);
   app.use(express.static(__dirname+"/public", { maxAge: 41 }));
-  app.use(express.logger({ format: ':method :url' }));
-});
-
-app.configure('development', function() {
-  // Expose source file in development mode
+  app.use(express.static(__dirname+"/test", { maxAge: 41 }));
   app.use(express.static(__dirname+"/src", { maxAge: 41 }));
+  app.use(express.logger({ format: ':method :url' }));
 });
 
 

@@ -1,0 +1,26 @@
+<!doctype html>
+<html>
+
+<head>
+  <title>Substance – Tests</title>
+  <link rel="stylesheet" href="/jasmine/jasmine.css" />
+</head>
+
+<body>
+  <script src="/jasmine/jasmine.js"></script>
+  <script src="/jasmine/jasmine-html.js"></script>
+
+  <script src="/client/model.js"></script>
+
+  <script src="/spec/model.js"></script>
+
+  <script>
+    var reporter = new jasmine.TrivialReporter()
+    ,   env = jasmine.getEnv();
+    
+    env.addReporter(reporter);
+    env.execute();
+  </script>
+</body>
+
+</html>
