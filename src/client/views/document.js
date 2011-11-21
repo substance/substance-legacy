@@ -23,9 +23,49 @@ var Document = Backbone.View.extend({
     'click a.toggle-settings': 'toggleSettings',
     'click a.toggle-publish-settings': 'togglePublishSettings'
   },
+  
+  initialize: function() {
+    var that = this;
+    this.attributes = new Attributes({model: this.model});
+    this.settings = new DocumentSettings();
+    
+    this.publishSettings = new PublishSettings();
+    
+    this.app = this.options.app;
+    this.mode = 'show';
+    
+    this.bind('changed', function() {
+      document.title = that.model.get('title') || 'Untitled';
+      // Re-render Document browser
+      that.app.browser.render();
+    });
+  },
+  
+  render: function() {
+    // Render all relevant sub views
+    $(this.el).html(_.tpl('document_wrapper', {
+      mode: this.mode,
+      doc: this.model
+    }));
+    this.renderMenu();
+
+    if (this.model) {
+      // Render Attributes
+      this.node = Node.create({ model: this.model });
+      this.attributes.render();
+      this.$('#attributes').show();
+      this.$('#document').show();
+      $('#document_tree').html('');
+      this.toc = new TOC({ model: this.model, el: this.$('#toc_wrapper').get(0) });
+      this.toc.render();
+      $(this.node.render().el).appendTo(this.$('#document_tree'));
+      
+      if (this.authorized && !this.version) this.toggleEditMode();
+    }
+  },
 
   toggleEditMode: function(e) {
-    e.preventDefault();
+    if (e) e.preventDefault();
     
     //var user = app.document.model.get('creator')._id.split('/')[2];
     //var name = app.document.model.get('name');
@@ -42,7 +82,7 @@ var Document = Backbone.View.extend({
   },
   
   toggleShowMode: function(e) {
-    e.preventDefault();
+    if (e) e.preventDefault();
     
     //var user = app.document.model.get('creator')._id.split('/')[2];
     //var name = app.document.model.get('name');
@@ -108,51 +148,6 @@ var Document = Backbone.View.extend({
   },
   
   
-  
-  // For a given node find the parent node
-  getParent: function(node) {
-    if (!node) return null;
-    return graph.get($('#'+node._id.replace(/\//g, '_')).attr('parent'));
-  },
-  
-  initialize: function() {
-    var that = this;
-    this.attributes = new Attributes({model: this.model});
-    this.settings = new DocumentSettings();
-    
-    this.publishSettings = new PublishSettings();
-    
-    this.app = this.options.app;
-    this.mode = 'show';
-    
-    this.bind('changed', function() {
-      document.title = that.model.get('title') || 'Untitled';
-      // Re-render Document browser
-      that.app.browser.render();
-    });
-  },
-  
-  render: function() {
-    // Render all relevant sub views
-    $(this.el).html(_.tpl('document_wrapper', {
-      mode: this.mode,
-      doc: this.model
-    }));
-    this.renderMenu();
-
-    if (this.model) {
-      // Render Attributes
-      this.node = Node.create({ model: this.model });
-      this.attributes.render();
-      this.$('#attributes').show();
-      this.$('#document').show();
-      $('#document_tree').html('');
-      this.toc = new TOC({ model: this.model, el: this.$('#toc_wrapper').get(0) });
-      this.toc.render();
-      $(this.node.render().el).appendTo(this.$('#document_tree'));
-    }
-  },
-  
   // Extract available documentTypes from config
   documentTypes: function() {
     var result = [];
@@ -175,59 +170,14 @@ var Document = Backbone.View.extend({
     }
   },
   
-  init: function() {
-    var that = this;
-    
-    // Inject node editor on every select:node
-    this.unbind('select:node');
-    
-    this.bind('select:node', function(node) {
-      $('#'+node.html_id).addClass('selected');
-      $('#document').addClass('edit-mode');
-      
-      // Deactivate Richtext Editor
-      //editor.deactivate();
-    });
-    
-    // Former DocumentView stuff
-    this.bind('change:node', function(node) {
-      that.renderNode(node);
-    });
-    
-    // Points to the selected
-    that.selectedNode = null;
-    
-    // New node
-    $(document).bind('keydown', 'alt+down', function(e) {
-      if (that.selectedNode) {
-        var controls = $('.controls[node='+that.selectedNode._id+'][destination=after]');
-        if (controls) {
-          controls.addClass('active');
-          // Enable insert mode
-          $('#document').addClass('insert-mode');
-        }
-      }
-    });
-    
-    $(document).bind('keydown', 'right', function(e) {
-      // TODO: implement cycle through node insertion buttons
-    });
-    
-    $(document).bind('keydown', 'left', function(e) {
-      // TODO: implement cycle through node insertion buttons
-    });
-  },
-  
   newDocument: function(type, name, title) {
     this.model = addEmptyDoc(type, name, title);
     
     this.status = null;
-    this.mode = 'edit';
     this.authorized = true;
     $(this.el).show();
     this.render();
     this.loadedDocuments[app.username+"/"+name] = this.model._id;
-    this.init();
     
     // Update browser graph
     if (app.browser && app.browser.query && app.browser.query.type === "user" && app.browser.query.value === app.username) {
@@ -252,14 +202,13 @@ var Document = Backbone.View.extend({
     function init(id) {
       that.model = graph.get(id);
       
-      if (that.mode === 'edit' && !(head.browser.webkit || head.browser.mozilla)) {
+      if (!(head.browser.webkit || head.browser.mozilla)) {
+        // TODO: prevent write mode
         alert("Your browser is not yet supported. We recommend Google Chrome and Safari, but you can also use Firefox.");
-        that.mode = 'show';
       }
       
       if (that.model) {
         that.render();
-        that.init();
         
         // window.positionBoard();
         that.trigger('changed');
@@ -269,6 +218,8 @@ var Document = Backbone.View.extend({
         app.browser.graph.set('nodes', id, that.model);
         app.toggleView('document');
         
+        // TODO: scroll to desired part of the document
+        /*
         // Scroll to target node
         if (nodeid && !commentid) app.scrollTo(nodeid);
         
@@ -277,13 +228,13 @@ var Document = Backbone.View.extend({
           var targetNode = graph.get(nodeid.replace(/_/g, '/'));
           
           that.selectedNode = targetNode;
-          that.trigger('select:node', that.selectedNode);
           
           that.enableCommentEditor(targetNode, function() {
             $('#'+nodeid+' > .comments-wrapper').show();
             graph.get(commentid.replace(/_/g, '/')) ? app.scrollTo(commentid) : app.scrollTo('comments'+nodeid);
           });
         }
+        */
       } else {
         $('#document_wrapper').html('Document loading failed');
       }
@@ -318,7 +269,6 @@ var Document = Backbone.View.extend({
         that.version = res.version;
         that.authorized = res.authorized;
         that.published = res.published;
-        that.mode = mode || (res.authorized && !version ? "edit" : "show");
         if (res.status === 'error') {
           printError(res.error);
         } else {
