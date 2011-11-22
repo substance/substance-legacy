@@ -7,8 +7,23 @@
 </head>
 
 <body>
+  <script>
+    var seed = {{{seed}}};
+  </script>
+  <script src="/javascripts/underscore.js"></script>
+  <script src="/datajs/data.js"></script>
+
   <script src="/jasmine/jasmine.js"></script>
   <script src="/jasmine/jasmine-html.js"></script>
+
+  <script>
+    // Jasmine helpers
+    function bindSpy (obj, eventName) {
+      var spy = jasmine.createSpy();
+      obj.bind(eventName, spy);
+      return spy;
+    }
+  </script>
 
   <script src="/client/model.js"></script>
 

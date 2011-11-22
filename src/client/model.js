@@ -81,6 +81,8 @@ function createNode (type, position) {
   });
   
   addChild(newNode, position);
+  
+  return newNode;
 }
 
 function getFollowingSiblings (position) {
@@ -98,14 +100,14 @@ function getFollowingSiblings (position) {
   ,   after  = position.after;
   
   var children = parent.all('children');
-  return after === null ? children
+  return after === null ? children.clone()
                         : slice(children, children.index(after._id) + 1);
 }
 
 function addFollowingSiblings (position, section) {
   var parent = position.parent;
   var stop = false;
-  getFollowingSiblings(position).each(function (sibling) {
+  getFollowingSiblings(position).each(function (sibling, ii, i) {
     if (stop || isSection(sibling)) {
       stop = true;
     } else {
@@ -206,29 +208,13 @@ function moveTargetPositions (node, position) {
     }
     
     if (after && after.properties().get('children')) {
-      recurse(new Position(after, after.all('children').last()), arr);
+      recurse(new Position(after, after.all('children').last() || null), arr);
     }
     
     return arr;
   }
   
   return recurse(position, []);
-}
-
-function getTeaser (node) {
-  if (node.type.key === "/type/section")
-    return node.get('name') ? node.get('name').trim().substring(0, 15)+" ..." : "Section";
-  else if (node.type.key === "/type/text")
-    return _.stripTags(node.get('content')).trim().substring(0, 15)+" ...";
-  else if (node.type.key === "/type/image")
-    return "Image";
-  else if (node.type.key === "/type/resource")
-    return "Resource";
-  else if (node.type.key === "/type/quote")
-    return "Quote";
-  else if (node.type.key === "/type/code")
-    return "Code";
-  return "N/A";
 }
 
 

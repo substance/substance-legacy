@@ -96,6 +96,12 @@ function letterpress(graph, id, format, response) {
 
 
 app.use(function(req, res) {
+  if (req.url === '/test') {
+    var testTemplate = fs.readFileSync(__dirname + '/templates/test.html', 'utf-8');
+    res.send(testTemplate.replace('{{{seed}}}', JSON.stringify(seed)));
+    return;
+  }
+  
   var path = require('url').parse(req.url).pathname
   var fragments = path.split('/');
   

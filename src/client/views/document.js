@@ -1,3 +1,4 @@
+// TODO: move to model
 function addEmptyDoc(type, name, title) {
   var docType = graph.get(type);
   var doc = graph.set(Data.uuid('/document/'+ app.username +'/'), docType.meta.template);
