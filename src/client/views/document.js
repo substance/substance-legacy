@@ -1,17 +1,3 @@
-// TODO: move to model
-function addEmptyDoc(type, name, title) {
-  var docType = graph.get(type);
-  var doc = graph.set(Data.uuid('/document/'+ app.username +'/'), docType.meta.template);
-  doc.set({
-    creator: "/user/"+app.username,
-    created_at: new Date(),
-    updated_at: new Date(),
-    name: name,
-    title: title
-  });
-  return doc;
-};
-
 // The Document Editor View
 
 var Document = Backbone.View.extend({
@@ -172,7 +158,7 @@ var Document = Backbone.View.extend({
   },
   
   newDocument: function(type, name, title) {
-    this.model = addEmptyDoc(type, name, title);
+    this.model = createDoc(type, name, title);
     
     this.status = null;
     this.authorized = true;

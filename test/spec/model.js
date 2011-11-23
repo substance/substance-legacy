@@ -46,6 +46,33 @@ describe("Model", function () {
     delete window.graph;
   });
 
+  describe("createDoc", function () {
+    it("should create a document with the given type, name and title", function () {
+      var user = graph.set('/user/mrfoo', {
+        type: '/type/user',
+        username: 'mrfoo',
+        name: "Mr. Thomas Foo"
+      });
+      
+      var type  = '/type/qaa'
+      ,   name  = 'faq'
+      ,   title = "Frequently Asked Questions";
+      window.app = { username: 'mrfoo' };
+      
+      var doc = createDoc(type, name, title);
+      expect(graph.get(doc._id)).toBe(doc);
+      expect(doc._dirty).toBe(true);
+      expect(doc._id).toMatch(/^\/document\/mrfoo\/.+/);
+      expect(doc.get('name')).toBe(name);
+      expect(doc.get('title')).toBe(title);
+      expect(doc.get('creator')).toBe(user);
+      expect(doc.get('created_at') instanceof Date).toBe(true);
+      expect(doc.get('updated_at') instanceof Date).toBe(true);
+      
+      delete window.app;
+    });
+  });
+
   describe("Position", function () {
     it("should save the parent and the previous sibling", function () {
       var p = new Position(doc, text);

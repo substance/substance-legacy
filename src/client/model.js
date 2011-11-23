@@ -1,3 +1,20 @@
+// Document
+// ========
+
+function createDoc (type, name, title) {
+  var docType = graph.get(type);
+  var doc = graph.set(Data.uuid('/document/'+app.username+'/'), docType.meta.template);
+  doc.set({
+    creator: "/user/" + app.username,
+    created_at: new Date(),
+    updated_at: new Date(),
+    name: name,
+    title: title
+  });
+  return doc;
+}
+
+
 // Nodes
 // =====
 
