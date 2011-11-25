@@ -35,15 +35,6 @@ if (!window.console) {
   }
 }
 
-var Helpers = {};
-
-// Templates for the moment are recompiled every time
-Helpers.renderTemplate = _.renderTemplate = function(tpl, view, helpers) {
-  source = $("script[name="+tpl+"]").html();
-  var template = Handlebars.compile(source);
-  return template(view, helpers || {});
-};
-
 
 
 _.slug = function(str) {
@@ -71,7 +62,6 @@ _.scrollTop = function() {
 // Render Underscore templates
 _.tpl = function(tpl, ctx) {
   var source = templates[tpl];
-  console.log(tpl, source, ctx);
   return _.template(source, ctx);
 };
 

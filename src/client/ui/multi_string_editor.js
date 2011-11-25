@@ -104,7 +104,7 @@ UI.MultiStringEditor = Backbone.View.extend({
   
   // Render the editor, including the display of values
   render: function() {
-    $(this.el).html(_.renderTemplate('multi_string_editor', {
+    $(this.el).html(_.tpl('multi_string_editor', {
       items: this._items
     }));
   }

@@ -1,0 +1,30 @@
+<div class="list">
+  <% if (facets.length === 0) { %>
+    <p class="no-filters">No filters available</p>
+  <% } %>
+  
+  <% _.each(facets, function (facet) { %>
+    <div class="facet" id="facet_<%= facet.property %>">
+      <h3><%= facet.property_name %></h3>
+      <ul class="facet-choices">
+        <!-- TODO: remove redundancy -->
+        
+        <% _.each(facet.selected_facet_choices, function (choice) { %>
+          <li class="facet-choice selected">
+            <a href="/" class="remove-criterion" property="<%= facet.property %>" operator="CONTAINS" value="<%= choice.key %>">
+              <%= choice.value %><span class="item-count"><%= choice.item_count %></span>
+            </a>
+          </li>
+        <% }); %>
+        
+        <% _.each(facet.facet_choices, function (choice) { %>
+          <li class="facet-choice selected">
+            <a href="/" class="remove-criterion" property="<%= facet.property %>" operator="CONTAINS" value="<%= choice.key %>">
+              <%= choice.value %><span class="item-count"><%= choice.item_count %></span>
+            </a>
+          </li>
+        <% }); %>
+      </ul>
+    </div>
+  <% }); %>
+</div>

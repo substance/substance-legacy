@@ -1,0 +1,11 @@
+<h3>Currently active Collaborators</h3>
+<ul>
+  <% _.each(status.collaborators, function (collaborator) { %>
+    <li><%= collaborator %></li>
+  <% }); %>
+</ul>
+<p></p>
+<p>Invite new collaborators by sharing this link:</p>
+<p>
+  <input type="text" value="<%= url %>" style="width: 450px;" />
+</p>

@@ -34,7 +34,7 @@ UI.StringEditor = Backbone.View.extend({
   
   // Render the editor, including the display of values
   render: function() {
-    $(this.el).html(_.renderTemplate('string_editor', {
+    $(this.el).html(_.tpl('string_editor', {
       value: this._value
     }));
   }

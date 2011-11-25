@@ -56,6 +56,6 @@ var Facets = Backbone.View.extend({
   
   render: function() {
     var that = this;
-    $(this.el).html(_.renderTemplate('facets', this.buildView()));
+    $(this.el).html(_.tpl('facets', this.buildView()));
   }
 });
