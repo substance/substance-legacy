@@ -1,0 +1,32 @@
+<div class="actions move">
+  <% if (moveTargets.length > 0) { %>
+    <div class="placeholder">Move</div>
+    <ul>
+      <% if (moveTargets.length === 1) { %>
+        <li>
+          <a href="/"
+             data-parent="<%= moveTargets[0].parent._id %>"
+             data-after="<%= moveTargets[0].after ? moveTargets[0].after._id : '' %>">
+            Here
+          </a>
+        </li>
+      <% } else { %>
+        <li class="container">
+          <span>Here</span>
+          <ul>
+            <% _.each(moveTargets, function (position) { %>
+              <li>
+                <a href="/"
+                   data-parent="<%= position.parent._id %>"
+                   data-after="<%= position.after ? position.after._id : '' %>">
+                  At Level <%= position.level %>
+                </a>
+              </li>
+            <% }); %>
+          </ul>
+        </li>
+      <% } %>
+    </ul>
+  <% } %>
+  <br class="clear" />
+</div>

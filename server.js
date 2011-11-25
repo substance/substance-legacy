@@ -97,7 +97,7 @@ function letterpress(graph, id, format, response) {
 
 app.use(function(req, res) {
   if (req.url === '/test') {
-    var testTemplate = fs.readFileSync(__dirname + '/templates/test.html', 'utf-8');
+    var testTemplate = fs.readFileSync(__dirname + '/layouts/test.html', 'utf-8');
     res.send(testTemplate.replace('{{{seed}}}', JSON.stringify(seed)));
     return;
   }
@@ -121,7 +121,7 @@ app.use(function(req, res) {
       } else {
         var graph = new Data.Graph(seed);
         graph.merge(nodes);
-        html = fs.readFileSync(__dirname+ '/templates/doc.html', 'utf-8');
+        html = fs.readFileSync(__dirname+ '/layouts/doc.html', 'utf-8');
         var content = new HTMLRenderer(graph.get(id)).render();
         res.send(html.replace('{{{{document}}}}', content));
       }
@@ -135,7 +135,7 @@ app.use(function(req, res) {
 app.enable("jsonp callback");
 
 function serveStartpage(req, res) {
-  html = fs.readFileSync(__dirname+ '/templates/app.html', 'utf-8');
+  html = fs.readFileSync(__dirname+ '/layouts/app.html', 'utf-8');
   req.session = req.session ? req.session : {username: null};
 
   function serve() {
@@ -145,7 +145,8 @@ function serveStartpage(req, res) {
                    .replace('{{{{session}}}}', JSON.stringify(req.session))
                    .replace('{{{{config}}}}', JSON.stringify(clientConfig()))
                    .replace('{{{{ga}}}}', gaScript)
-                   .replace('{{{{scripts}}}}', JSON.stringify(scripts())));
+                   .replace('{{{{scripts}}}}', JSON.stringify(scripts()))
+                   .replace('{{{{templates}}}}', JSON.stringify(templates())));
     });
   }
   
@@ -228,9 +229,9 @@ var encryptPassword = function (password) {
   return hash.digest('hex');
 }
 
-// Templates for the moment are recompiled every time
+// Layouts for the moment are recompiled every time
 _.renderTemplate = function(tpl, view, helpers) {
-  var source = fs.readFileSync(__dirname+ '/templates/' + tpl + '.html', 'utf-8');
+  var source = fs.readFileSync(__dirname+ '/layouts/' + tpl + '.html', 'utf-8');
   var template = Handlebars.compile(source);
   return template(view, helpers || {});
 };
@@ -254,6 +255,21 @@ function scripts() {
     return settings.scripts.development.concat(settings.scripts.source);
   }
 }
+
+function loadTemplates () {
+  var tpls = {};
+  var files = fs.readdirSync(__dirname + '/templates');
+  _.each(files, function (file) {
+    var name    = file.replace(/\.ejs$/, '')
+    ,   content = fs.readFileSync(__dirname + '/templates/' + file, 'utf-8');
+    tpls[name] = content;
+  });
+  return tpls;
+}
+
+var templates = process.env.NODE_ENV === 'production'
+              ? _.once(loadTemplates)
+              : loadTemplates;
 
 
 // Web server

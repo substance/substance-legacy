@@ -1,0 +1,18 @@
+<dl class="document-attributes">
+  <dt>Creator</dt>
+  <dd><%= doc.get('creator').get('username') %></dd>
+  
+  <dt>Created On</dt>
+  <dd><%= _.date(doc.get('created_at')) %></dd>
+  
+  <dt>Last modified</dt>
+  <dd><%= _.prettyDate(new Date(doc.get('updated_at')).toJSON()) %></dd>
+  
+  <dt>Views</dt>
+  <dd><%= doc.get('views') %></dd>
+  
+  <% attributes.each(function(attribute) { %>
+    <dt><%= attribute.name %></dt>
+    <dd id="property_<%= attribute.key %>" property="/<%= attribute.type._id.split('/')[2] %>/<%= attribute.key %>" key="<%= attribute.key %>" type="string" class="attribute-editor <%= attribute.unique ? "unique" : "non-unique"%>"></dd>
+  <% }); %>
+</dl>
