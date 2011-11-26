@@ -12,6 +12,7 @@ var async = require('async');
 
 var Document = require('./src/server/document');
 var User = require('./src/server/user');
+var Util = require('./src/server/util');
 var Filters = require('./src/server/filters');
 var HTMLRenderer = require('./src/server/renderers/html_renderer');
 
@@ -672,21 +673,6 @@ app.get('/avatar/:username/:size', function(req, res) {
 });
 
 
-// Increments or initializes a counter
-// TODO: put into separate module
-function count(counterId, callback) {
-  db.get(counterId, function(err, node) {
-    var node = node ? node : { _id: counterId, type: ["/type/counter"] };
-    node.value = err ? 1 : node.value + 1;
-    
-    db.save(node, function(err, node) {
-      if (err) return callback(err);
-      callback(null, node.value);
-    });
-  });
-}
-
-
 // Creates a new version from the current document state
 // TODO: check if authorized
 app.post('/publish', function(req, res) {
@@ -695,7 +681,7 @@ app.post('/publish', function(req, res) {
   var graph = new Data.Graph(seed).connect('couch', {url: config.couchdb_url});
   
   Document.getContent(document, function(err, data, id) {
-    count('/counter/document/'+document.split('/')[3], function(err, versionCount) {
+    Util.count('/counter/document/'+document.split('/')[3], function(err, versionCount) {
       // Create a new version
       var version = graph.set({
         _id: "/version/"+document.split('/')[3]+"/"+versionCount,
