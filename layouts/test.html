@@ -9,8 +9,14 @@
 <body>
   <script>
     var seed = {{{seed}}};
+    var templates = {{{{templates}}}};
   </script>
+
   <script src="/javascripts/underscore.js"></script>
+  <script src="/javascripts/jquery.min.js"></script>
+  <script src="/javascripts/backbone.js"></script>
+  <script src="/javascripts/proper.js"></script>
+  <script>window.editor = new Proper();</script>
   <script src="/datajs/data.js"></script>
 
   <script src="/jasmine/jasmine.js"></script>
@@ -26,15 +32,29 @@
   </script>
 
   <script src="/client/model.js"></script>
-
   <script src="/spec/model.js"></script>
+
+  <script src="/client/state_machine.js"></script>
+  <!--<script src="/spec/state_machine.js"></script>-->
+
+  <script src="/client/helpers.js"></script>
+  <!--<script src="/spec/helpers.js"></script>-->
+
+  <script src="/client/views/comments.js"></script>
+  <!--<script src="/spec/views/comments.js"></script>-->
+
+  <script src="/client/views/controls.js"></script>
+  <!--<script src="/spec/views/controls.js"></script>-->
+
+  <script src="/client/views/node.js"></script>
+  <script src="/spec/views/node.js"></script>
 
   <script>
     var reporter = new jasmine.TrivialReporter()
     ,   env = jasmine.getEnv();
     
     env.addReporter(reporter);
-    env.execute();
+    $(document).ready(function () { env.execute(); });
   </script>
 </body>
 

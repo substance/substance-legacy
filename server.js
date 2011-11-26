@@ -98,7 +98,8 @@ function letterpress(graph, id, format, response) {
 app.use(function(req, res) {
   if (req.url === '/test') {
     var testTemplate = fs.readFileSync(__dirname + '/layouts/test.html', 'utf-8');
-    res.send(testTemplate.replace('{{{seed}}}', JSON.stringify(seed)));
+    res.send(testTemplate.replace('{{{seed}}}', JSON.stringify(seed))
+                         .replace('{{{{templates}}}}', JSON.stringify(templates())));
     return;
   }
   

@@ -169,7 +169,6 @@ var Node = Backbone.View.extend(_.extend({}, StateMachine, {
         '<a href="/" class="toggle-move-node" title="Move Section — Use placeholders as targets"></a>' +
       '</div>'
     ).appendTo(this.el);
-    //{{#edit}}<div class="pilcrow">&#182;</div>{{/edit}}
     this.contentEl = $('<div class="content" />').appendTo(this.el);
     if (this.comments) {
       this.commentsEl = $(this.comments.render().el).appendTo(this.el);
@@ -177,12 +176,11 @@ var Node = Backbone.View.extend(_.extend({}, StateMachine, {
     return this;
   },
 
+}), {
+
 
   // States
   // ------
-
-
-}), {
 
   states: {
     read: {
@@ -210,6 +208,10 @@ var Node = Backbone.View.extend(_.extend({}, StateMachine, {
       leave: function () {}
     }
   },
+
+
+  // Inheritance & Instantiation
+  // ---------------------------
 
   subclasses: {},
 
