@@ -40,7 +40,7 @@ function removeViewEvents(callback) {
   db.view('substance/document_views_raw', {}, function(err, res) {
     console.log('Deleting '+ res.rows.length+ ' rows...');
     res.rows.forEach(function(row) {
-      db.save({ _id: row.id, _rev: row.value }, function() {
+      db.save({ _id: row.id, _rev: row.value, _deleted: true }, function() {
         console.log('deleted'+row.id);
       });
     });
