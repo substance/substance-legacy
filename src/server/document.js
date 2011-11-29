@@ -2,6 +2,7 @@ var _ = require('underscore');
 var async = require('async');
 var Data = require ('../../lib/data/data')
 var Filters = require('./filters');
+var Util = require('./util');
 
 
 // Document
@@ -23,31 +24,31 @@ function fetchNode(id, callback) {
 // Stats
 // -----------
 
-function logView(documentId, username, callback) {
-  db.save({
-    _id: Data.uuid("/event/"),
-    type: ["/type/event"],
-    event_type: "view-document",
-    creator: username ? "/user/"+username : null,
-    message: "",
-    link: "",
-    object: documentId,
-    created_at: new Date()
-  }, function(err, event) {
-    callback();
-  });
-}
-
-
-function getViewCount(documentId, callback) {
-  db.view('substance/document_views', {key: documentId}, function(err, res) {
-    if (err) {
-      callback(err);
-    } else {
-      callback(null, res.rows[0].value);
-    }
-  });
-}
+// function logView(documentId, username, callback) {
+//   db.save({
+//     _id: Data.uuid("/event/"),
+//     type: ["/type/event"],
+//     event_type: "view-document",
+//     creator: username ? "/user/"+username : null,
+//     message: "",
+//     link: "",
+//     object: documentId,
+//     created_at: new Date()
+//   }, function(err, event) {
+//     callback();
+//   });
+// }
+// 
+// 
+// function getViewCount(documentId, callback) {
+//   db.view('substance/document_views', {key: documentId}, function(err, res) {
+//     if (err) {
+//       callback(err);
+//     } else {
+//       callback(null, res.rows[0].value);
+//     }
+//   });
+// }
 
 // Document usage grouped by day
 function getUsage(documentId, callback) {
@@ -311,19 +312,17 @@ function loadDocument(id, version, reader, edit, callback) {
     }
     
     result[id].published_on = published_on;
-    logView(id, reader, function() {
-      getViewCount(id, function(err, views) {
-        result[id].views = views;
+    
+    Util.count('/counter/document/'+id.split('/')[3]+'/views', function(err, views) {
+      result[id].views = views;
+      // Check subscriptions
+      graph.fetch({type: "/type/subscription", "document": id}, function(err, nodes) {
+        if (err) return callback(err);
+        result[id].subscribed = graph.find({"user": "/user/"+reader, "document": id}).length > 0 ? true : false;
+        result[id].subscribers = nodes.length;
         
-        // Check subscriptions
-        graph.fetch({type: "/type/subscription", "document": id}, function(err, nodes) {
-          if (err) return callback(err);
-          result[id].subscribed = graph.find({"user": "/user/"+reader, "document": id}).length > 0 ? true : false;
-          result[id].subscribers = nodes.length;
-          
-          calcCommentCount(function() {
-            fetchAttributesAndUser(callback);
-          });
+        calcCommentCount(function() {
+          fetchAttributesAndUser(callback);
         });
       });
     });
