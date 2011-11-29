@@ -416,5 +416,110 @@ describe("Model", function () {
     });
   });
 
-  // TODO: test comments
+  describe("loadComments", function () {
+    it("should use graph.fetch to get the comments and call the callback with the comments ordered by date", function () {
+      var opts;
+      spyOn(graph, 'fetch').andCallFake(function (options, callback) {
+        opts = options;
+        
+        var comment1 = graph.set(null, {
+          type: '/type/comment',
+          document: doc._id,
+          node: text._id,
+          creator: null,
+          created_at: new Date(2011, 11, 11),
+          content: "Hey, look, I'm on the internets!"
+        });
+        var comment2 = graph.set(null, {
+          type: '/type/comment',
+          document: doc._id,
+          node: text._id,
+          creator: null,
+          created_at: new Date(2011, 11, 15),
+          content: "Boring..."
+        });
+        var comment3 = graph.set(null, {
+          type: '/type/comment',
+          document: doc._id,
+          node: text._id,
+          creator: null,
+          created_at: new Date(2042, 12, 24),
+          content: "I'm from the future!"
+        });
+        
+        var hash = new Data.Hash();
+        hash.set('/comment/first', comment1);
+        hash.set('/comment/third', comment3);
+        hash.set('/comment/second', comment2);
+        
+        callback(null, hash);
+      });
+      
+      var callback = jasmine.createSpy();
+      loadComments(text, callback);
+      expect(opts.type).toBe('/type/comment');
+      expect(opts.node).toBe(text._id);
+      expect(callback).toHaveBeenCalled();
+      expect(callback.mostRecentCall.args[0]).toBe(null);
+      var comments = callback.mostRecentCall.args[1];
+      expect(comments instanceof Data.Hash).toBe(true);
+      expect(comments.at(0).get('created_at')).toBeLessThan(comments.at(1).get('created_at'));
+      expect(comments.at(1).get('created_at')).toBeLessThan(comments.at(2).get('created_at'));
+    });
+  });
+
+  describe("createComment", function () {
+    it("should create a new comment for the current user", function () {
+      var fritz = graph.set('/user/fritz', {
+        type: '/type/user',
+        username: 'fritz',
+        name: "Fritz"
+      });
+      window.app = { username: 'fritz' };
+      
+      spyOn(graph, 'sync').andCallFake(function (callback) {
+        expect(window.pendingSync).toBe(true);
+        callback(null);
+      });
+      
+      var callback = jasmine.createSpy();
+      var content = "There's a typo in line 3: aparantly";
+      createComment(text, content, callback);
+      expect(window.pendingSync).toBe(false);
+      expect(callback).toHaveBeenCalled();
+      expect(callback.mostRecentCall.args[0]).toBe(null);
+      var comment = callback.mostRecentCall.args[1];
+      expect(comment.get('content')).toBe(content);
+      expect(comment.get('node')).toBe(text);
+      expect(comment.get('document')).toBe(doc);
+      expect(comment.get('creator')).toBe(fritz);
+      expect(comment.get('created_at') instanceof Date).toBe(true);
+      // TODO: test version
+    });
+  });
+
+  describe("removeComment", function () {
+    it("should well I think you can guess that", function () {
+      spyOn(graph, 'sync').andCallFake(function (callback) {
+        expect(window.pendingSync).toBe(true);
+        callback(null);
+      });
+      
+      var comment = graph.set(null, {
+        type: '/type/comment',
+        creator: null,
+        created_at: null,
+        content: "I would expand this section a bit.",
+        node: section._id,
+        doc: doc._id
+      });
+      
+      var callback = jasmine.createSpy();
+      expect(comment._deleted).toBeFalsy();
+      expect(window.pendingSync).toBe(false);
+      removeComment(comment, callback);
+      expect(callback).toHaveBeenCalled();
+      expect(comment._deleted).toBe(true);
+    });
+  });
 });

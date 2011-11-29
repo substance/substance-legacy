@@ -259,14 +259,16 @@ function createComment (node, content, callback) {
     created_at: new Date(),
     content: content,
     node: node._id,
-    document: node.get('document')._id,
-    version: this.version ? '/version/'+this.model._id.split('/')[3]+'/'+this.version : null
+    document: node.get('document')._id
+    // TODO:
+    //version: this.version ? '/version/'+this.model._id.split('/')[3]+'/'+this.version : null
   });
   
   // Trigger immediate sync
   graph.sync(function (err) {
     window.pendingSync = false;
-    callback(err);
+    if (err) callback(err, null);
+    else     callback(null, comment);
   });
 }
 
