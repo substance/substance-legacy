@@ -449,8 +449,8 @@
     // Returns the current selection as a dom range.
     function saveSelection() {
       if (window.getSelection) {
-        sel = window.getSelection();
-        if (sel.getRangeAt && sel.rangeCount) {
+        var sel = window.getSelection();
+        if (sel.rangeCount > 0) {
           return sel.getRangeAt(0);
         }
       } else if (document.selection && document.selection.createRange) { // IE
@@ -484,26 +484,30 @@
     function doWithSelection (fn) {
       // Before
       var sel = saveSelection()
-      ,   startContainer = sel.startContainer
-      ,   startOffset    = sel.startOffset
-      ,   endContainer   = sel.endContainer
-      ,   endOffset      = sel.endOffset;
+      if (sel) {
+        var startContainer = sel.startContainer
+        ,   startOffset    = sel.startOffset
+        ,   endContainer   = sel.endContainer
+        ,   endOffset      = sel.endOffset;
+      }
       
       fn();
       
-      // After
-      function isInDom(node) {
-        if (node === document.body) return true;
-        if (node.parentNode) return isInDom(node.parentNode);
-        return false;
+      if (sel) {
+        // After
+        function isInDom(node) {
+          if (node === document.body) return true;
+          if (node.parentNode) return isInDom(node.parentNode);
+          return false;
+        }
+        if (isInDom(startContainer)) {
+          sel.setStart(startContainer, startOffset);
+        }
+        if (isInDom(endContainer)) {
+          sel.setEnd(endContainer, endOffset);
+        }
+        restoreSelection(sel);
       }
-      if (isInDom(startContainer)) {
-        sel.setStart(startContainer, startOffset);
-      }
-      if (isInDom(endContainer)) {
-        sel.setEnd(endContainer, endOffset);
-      }
-      restoreSelection(sel);
     }
     
     

@@ -3,12 +3,17 @@ var NodeList = Backbone.View.extend({
   className: 'node-list',
 
   initialize: function (options) {
-    this.parent = options.parent;
-    this.level  = options.level;
-    this.root   = options.root;
+    this.level = options.level;
+    this.root  = options.root;
     
     _.bindAll(this, 'addChild');
     this.model.bind('added-child', this.addChild);
+    
+    this.firstControls = new Controls({
+      root: this.root,
+      model: this.model,
+      position: new Position(this.model, null)
+    });
     
     var childViews = this.childViews = [];
     this.model.get('children').each(_.bind(function (child) {
@@ -34,8 +39,6 @@ var NodeList = Backbone.View.extend({
     this.eachChildView(transition);
   },
 
-  //select: function () {},
-
   deselect: function () {
     this.eachChildView(function (childView) {
       childView.deselect();
@@ -48,7 +51,7 @@ var NodeList = Backbone.View.extend({
     
     this.childViews.splice(index, 0, childView);
     rendered.insertAfter(index === 0 ? this.firstControls.el
-                                     : $(this.childViews[index-1].afterControls.el));
+                                     : this.childViews[index-1].afterControls.el);
     
     childView.transitionTo('write');
     childView.select();
@@ -68,31 +71,23 @@ var NodeList = Backbone.View.extend({
     var controls = childView.afterControls;
     var rendered = $([childView.render().el, controls.render().el]);
     
-    var self = this;
-    childView.model.bind('removed', function () {
+    childView.model.bind('removed', _.bind(function () {
       controls.remove();
       childView.remove();
       // Remove childView from the childViews array
-      self.childViews = _.select(self.childViews, function (cv) {
+      this.childViews = _.select(this.childViews, function (cv) {
         return cv !== childView;
       });
-    });
+    }, this));
     return rendered;
   },
 
   render: function () {
-    var self = this;
+    $(this.firstControls.render().el).appendTo(this.el);
     
-    this.firstControls = new Controls({
-      root: this.root,
-      model: self.model,
-      position: new Position(self.model, null)
-    });
-    $(this.firstControls.render().el).appendTo(self.el);
-    
-    this.eachChildView(function (childView) {
-      var rendered = self.renderChildView(childView).appendTo(self.el);
-    });
+    this.eachChildView(_.bind(function (childView) {
+      this.renderChildView(childView).appendTo(this.el);
+    }, this));
     
     return this;
   }

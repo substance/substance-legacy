@@ -287,6 +287,9 @@ describe("Node", function () {
     });
     
     it("should create the instance of the right class", function () {
+      var tmp = Node.subclasses;
+      Node.subclasses = {};
+      
       expect(function () { Node.create(parent); }).toThrow();
       expect(function () { Node.create(child); }).toThrow();
       
@@ -304,8 +307,7 @@ describe("Node", function () {
       expect(textView.isText).toBe(true);;
       expect(textView.level).toBe(42);
       
-      delete Node.subclasses['/type/section'];
-      delete Node.subclasses['/type/text'];
+      Node.subclasses = tmp;
     });
   });
 

@@ -6,7 +6,6 @@ Node.define('/type/section', {
     Node.prototype.initialize.apply(this, arguments);
     this.nodeList = new NodeList({
       model: this.model,
-      parent: this.parent,
       level: options.level,
       root: this.root
     });

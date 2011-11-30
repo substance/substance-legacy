@@ -10,7 +10,6 @@ Node.define([ '/type/document', '/type/article', '/type/story'
     delete this.afterControls;
     this.nodeList = new NodeList({
       model: this.model,
-      parent: null,
       level: 0,
       root: this
     });
