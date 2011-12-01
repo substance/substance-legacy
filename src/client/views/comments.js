@@ -25,11 +25,9 @@ var Comments = Backbone.View.extend({
     this.expanded = true;
     
     if (!this.comments) {
-      var self = this;
-      this.load(function () {
-        self.render();
-        self.scrollTo();
-      });
+      this.load(_.bind(function () {
+        this.scrollTo();
+      }, this));
     } else {
       this.scrollTo();
     }
