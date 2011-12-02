@@ -163,7 +163,6 @@ var Node = Backbone.View.extend(_.extend({}, StateMachine, {
   },
 
   render: function () {
-    $('<div class="content-node-outline"><div class="cursor"><span></span></div></div>').appendTo(this.el);
     this.operationsEl = $(
       '<div class="operations">' +
         '<a href="/" class="toggle-comments sticky" title="Toggle comments for Section"><span>' + (this.model.get('comment_count') || "") + '</span></a>' +
@@ -176,7 +175,7 @@ var Node = Backbone.View.extend(_.extend({}, StateMachine, {
       this.commentsEl = $(this.comments.render().el).appendTo(this.el);
     }
     return this;
-  },
+  }
 
 }), {
 
