@@ -34,7 +34,7 @@ Node.define([ '/type/document', '/type/article', '/type/story'
   render: function () {
     Node.prototype.render.apply(this, arguments);
     this.$('.content-node-outline').remove();
-    this.operationsEl.remove();
+    this.operationsEl.empty();
     
     var creator = this.model.get('creator')
     ,   publishedOn = this.model.get('published_on');
