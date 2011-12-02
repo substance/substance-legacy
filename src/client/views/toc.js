@@ -36,7 +36,7 @@ var TOC = Backbone.View.extend({
 
   render: function () {
     $(this.el).html(
-      '<div class="toc-header">Table Of Contents</div>' +
+      '<div class="toc-header">Table of Contents</div>' +
       '<div id="toc">' +
         renderTOC(this.model) +
       '</div>' +
