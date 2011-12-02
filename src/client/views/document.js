@@ -58,13 +58,11 @@ var Document = Backbone.View.extend({
     //var name = app.document.model.get('name');
     //$('#document_wrapper').attr('url', user+"/"+name);
     
-    $('#document').addClass('edit-mode');
     this.$('.toggle-show-mode').removeClass('active');
     this.$('.toggle-edit-mode').addClass('active');
     
     if (this.node) {
       this.node.transitionTo('write');
-      this.node.select(); // select root node
     }
   },
   

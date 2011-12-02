@@ -111,10 +111,12 @@ var Node = Backbone.View.extend(_.extend({}, StateMachine, {
       this.deselect();
     }
     $(this.el).addClass('selected');
+    $('#document').addClass('edit-mode');
   },
 
   deselect: function () {
     $(this.el).removeClass('selected');
+    $('#document').removeClass('edit-mode');
   },
 
   focus: function () {},
