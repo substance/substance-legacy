@@ -153,20 +153,26 @@ describe("Node", function () {
 
   describe("select", function () {
     it("should call the root views deselect method and add the class 'selected'", function () {
+      var docEl = $('<div id="document" />').appendTo(document.body);
       spyOn(parentView, 'deselect');
       expect($(childView.el).hasClass('selected')).toBe(false);
       childView.select();
       expect($(childView.el).hasClass('selected')).toBe(true);
+      expect(docEl.hasClass('edit-mode')).toBe(true);
       expect(parentView.deselect).toHaveBeenCalled();
+      docEl.remove();
     });
   });
 
   describe("deselect", function () {
     it("should remove the 'selected' class", function () {
+      var docEl = $('<div id="document" class="edit-mode" />').appendTo(document.body);
       childView.select();
       expect($(childView.el).hasClass('selected')).toBe(true);
       childView.deselect();
       expect($(childView.el).hasClass('selected')).toBe(false);
+      expect(docEl.hasClass('edit-mode')).toBe(false);
+      docEl.remove();
     });
   });
 
