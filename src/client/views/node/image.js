@@ -6,9 +6,8 @@ Node.define('/type/image', {
     'change .image-file': 'upload'
   }, Node.prototype.events),
 
-  initialize: function () {
-    Node.prototype.initialize.apply(this, arguments);
-    this.initializeUploadForm();
+  focus: function () {
+    this.caption.click();
   },
 
   initializeUploadForm: function () {
@@ -54,7 +53,6 @@ Node.define('/type/image', {
       dirty: true
     });
     
-    app.document.reset();
     this.$('.progress-container').hide();
     this.$('.info').show();
   },
@@ -76,7 +74,6 @@ Node.define('/type/image', {
     this.$('.progress-container').hide();
     
     setTimeout(_.bind(function () {
-      app.document.reset();
       this.$('.info').show();
     }, this), 3000);
   },
@@ -102,6 +99,7 @@ Node.define('/type/image', {
     this.imageEditor = $(_.tpl('image_editor', {
       transloadit_params: config.transloadit
     })).hide().appendTo(this.imageContent);
+    this.initializeUploadForm();
     
     this.caption = this.makeEditable($('<div class="caption content" />'), 'caption', "Enter Caption")
       .appendTo(this.contentEl);
@@ -114,6 +112,8 @@ Node.define('/type/image', {
   states: {
     write: {
       enter: function () {
+        Node.states.write.enter.apply(this);
+        
         this.imageEditor.show();
         
         this.img.unwrap();
@@ -123,9 +123,8 @@ Node.define('/type/image', {
         
         this.imageEditor.hide();
         
-        $('<a target="_blank" />')
-          .attr({ href: this.model.get('original_url') })
-          .wrapAll(this.img);
+        this.img.wrap($('<a target="_blank" />')
+          .attr({ href: this.model.get('original_url') }));
       }
     },
   }

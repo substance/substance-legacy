@@ -7,7 +7,7 @@ Node.define('/type/code', {
   }, Node.prototype.events),
 
   languages: [ 'JavaScript', 'Python', 'Ruby', 'PHP', 'HTML', 'CSS', 'Haskell'
-             , 'CoffeeScript', 'Java', 'C', 'C++', 'CSharp', 'Other'
+             , 'CoffeeScript', 'Java', 'C', 'C++', 'C#', 'Other'
              ],
 
   modeForLanguage: function (language) {
@@ -23,7 +23,7 @@ Node.define('/type/code', {
       java: 'text/x-java',
       c: 'text/x-csrc',
       'c++': 'text/x-c++src',
-      csharp: 'text/x-csharp'
+      'c#': 'text/x-csharp'
     }[language] || 'null';
   },
 
@@ -36,10 +36,6 @@ Node.define('/type/code', {
   focus: function () {
     this.codeMirror.focus();
   },
-
-  /*select: function () {
-    Node.prototype.select.apply(this);
-  },*/
 
   codeMirrorConfig: {
     lineNumbers: true,

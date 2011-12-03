@@ -7,6 +7,10 @@ Node.define('/type/resource', {
     this.updateUrl = _.throttle(this.updateUrl, 500);
   },
 
+  focus: function () {
+    this.caption.click();
+  },
+
   resourceExists: function (url, callback) {
     var img = new Image();
     img.onload  = function () { callback(true); }
@@ -19,10 +23,7 @@ Node.define('/type/resource', {
       if (doesIt) {
         this.img.attr({ src: url });
         this.status.addClass('image').text("Image");
-        
-        var update = {};
-        update[attr] = val;
-        updateNode(node, update);
+        updateNode(this.model, { url: url });
       } else {
         this.status.prop({ className: 'status' }).text("Invalid URL");
       }
@@ -39,28 +40,12 @@ Node.define('/type/resource', {
       .attr({ src: this.model.get('url') || '/images/image_placeholder.png' })
       .appendTo(this.resourceContent);
     
-    var resourceEditor = $(
-      '<div class="resource-editor">' +
-        '<div class="resource-url-area">' +
-          '<div class="url-label">Resource URL (Images are supported yet)</div>' +
-          '<div class="url-container">' +
-            '<input class="resource-url" type="text" name="url" value="" />' +
-            '<div class="status">Enter URL</div>' +
-          '</div>' +
-        '</div>' +
-      '</div>'
-    ).appendTo(this.contentEl);
+    var resourceEditor = $(_.tpl('resource_editor', {})).appendTo(this.contentEl);
     
     this.status = resourceEditor.find('.status');
     
     this.resourceUrl = resourceEditor.find('.resource-url')
       .val(this.model.get('url'))
-      .click(_.bind(function (e) {
-        if (this.state !== 'write') {
-          e.preventDefault();
-          e.stopPropagation();
-        }
-      }, this))
       .keyup(_.bind(function () {
         this.updateUrl($(this.resourceUrl).val());
       }, this));
@@ -69,6 +54,21 @@ Node.define('/type/resource', {
       .appendTo(this.contentEl);
     
     return this;
+  }
+
+}, {
+
+  states: {
+    write: {
+      enter: function () {
+        Node.states.write.enter.apply(this);
+        this.$('.resource-url').removeAttr('readonly');
+      },
+      leave: function () {
+        Node.states.write.leave.apply(this);
+        this.$('.resource-url').attr({ readonly: 'readonly' });
+      }
+    }
   }
 
 });

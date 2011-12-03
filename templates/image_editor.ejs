@@ -1,0 +1,16 @@
+<div class="image-editor">
+  <form class="upload-image-form" action="http://api2.transloadit.com/assemblies" enctype="multipart/form-data" method="POST">
+    <div class="image-drop-area">
+      <div class="info">Drop image here or <a href="/">choose a file</a></div>
+      <div class="image-progress">
+        <div class="label">Uploading image ...</div>
+        <div class="progress-container">
+          <div class="progress-bar" style="width:60%"></div>
+        </div>
+      </div>
+      <div class="credits">Image hosting sponsored by <a href="http://transloadit.com" target="_blank">Transloadit</a></div>
+      <input type="file" class="image-file" name="image-file" />
+      <input type="hidden" name="params" value="<%= transloadit_params %>" />
+    </div>
+  </form>
+</div>

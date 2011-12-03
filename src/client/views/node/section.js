@@ -27,8 +27,6 @@ Node.define('/type/section', {
     }
   },
 
-  //select: function () {},
-
   deselect: function () {
     Node.prototype.deselect.apply(this);
     this.nodeList.deselect();
