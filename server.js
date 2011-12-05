@@ -4,6 +4,7 @@ var http = require('http');
 var crypto = require('crypto');
 var fs = require('fs');
 var url = require('url');
+var less = require('less');
 var Data = require('./lib/data/data');
 var _ = require('underscore');
 var CouchClient = require('./lib/data/lib/couch-client');
@@ -259,7 +260,7 @@ function scripts() {
   }
 }
 
-function loadTemplates () {
+function loadTemplates() {
   var tpls = {};
   var files = fs.readdirSync(__dirname + '/templates');
   _.each(files, function (file) {
@@ -270,13 +271,43 @@ function loadTemplates () {
   return tpls;
 }
 
+var styles;
+function loadStyles(callback) {
+  if (process.env.NODE_ENV === 'production' && styles) return callback(styles);
+  styles = "";
+  console.log('compiling styles.');
+  var source = "";
+  _.each(fs.readdirSync(__dirname + '/styles'), function (file) {
+    source += fs.readFileSync(__dirname + '/styles/' + file, 'utf-8')+"\n\n";
+  });
+
+  try {
+    less.render(source, function (err, css) {
+      if (err) return callback(JSON.stringify(err));
+      styles = css;
+      callback(css);
+    });
+  } catch (e) {
+    callback(JSON.stringify(e));
+  }
+}
+
+
 var templates = process.env.NODE_ENV === 'production'
               ? _.once(loadTemplates)
               : loadTemplates;
-
+              
 
 // Web server
 // -----------
+
+app.get('/styles.css', function(req, res) {
+  res.writeHead(200, {'Content-Type': 'text/css'});
+  loadStyles(function(css) {
+    res.write(css);
+    res.end();
+  });
+});
 
 app.get('/sitemap.xml', function(req, res) {
  Document.recent(3000, '', function(err, nodes, count) {
