@@ -1,0 +1,189 @@
+#tabs {
+  z-index: 10000;
+  overflow: visible;
+  height: 60px;
+  margin: 0 180px 10px 100px;
+}
+
+#tabs a { border: none; }
+
+#tabs .tab {
+  float: left;
+  margin-right: 4px;
+  padding: 10px 10px 10px 0;
+  width: 290px;
+  height: 45px;
+  position: relative;
+/*  cursor: pointer;*/
+  
+  -moz-border-radius: 2px;
+  -webkit-border-radius: 2px;
+  border-radius: 2px;
+  color: white;
+}
+
+#tabs input {
+  -moz-box-shadow: none;
+  box-shadow: none;
+  -webkit-box-shadow: none;  
+  background: transparent;
+}
+
+#tabs input { 
+  border-color: transparent;
+  width: 150px;
+  margin-left: 5px;
+  padding-left: 5px;
+  height: 26px; 
+  color: white;
+}
+
+#tabs .tab:hover input {
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+#tabs .tab input:focus {
+  border-color: rgba(255, 255, 255, 0.7);
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.tab input {
+  padding-left: 0px;
+  padding-right: 0px;
+}
+
+.tab .tab-label {
+  position: absolute;
+  font-style: normal;
+  font-style: italic;
+  display: none;
+  top: -23px;
+  line-height: 26px;
+  font-size: 14px;
+  color: #888;
+}
+
+/* Browser Tab */
+
+#browser_tab.active, #browser_tab:hover {
+  background: rgba(88,108,114, 1.0);
+}
+
+#document_tab.active, #document_tab:hover {
+  background: rgba(99,88,73, 1.0);
+}
+
+#tabs .action { float: right; }
+
+#tabs .cursor {
+  display: none;
+  position: absolute;
+  top: 45px;
+  left: 40px;
+
+  border-left: 7px solid transparent;
+  border-right: 7px solid transparent;
+  border-top: 7px solid transparent;
+}
+
+#browser_tab .cursor {
+  border-top: 7px solid #586C72;
+}
+
+#document_tab .cursor {
+  border-top: 7px solid #635849;
+}
+
+#tabs .tab.active .cursor {
+  display: block;
+}
+
+#browser_tab { background: rgba(88,108,114, 0.7); }
+
+.tab .icon { margin-left: 6px; }
+
+#browser_tab .count { 
+  font-family: 'Palatino Linotype', 'Book Antiqua', Palatino, FreeSerif, serif;
+  font-style: italic;
+  font-weight: bold;
+  font-size: 18px;
+  position: absolute; bottom: 5px; right: 10px; color: rgba(255,255,255, 0.5);
+}
+
+#browser_tab .options {
+  position: absolute;
+  right: 10px;
+  top: 10px;
+}
+
+#browser_tab .options .icon {
+  opacity: 0.5;
+}
+
+#browser_tab .options .icon:hover {
+  opacity: 1.0;
+}
+
+#browser_tab .results {
+  position: absolute;
+  top: 57px;
+  left: 0px;
+  width: 350px;
+  display: none;
+  overflow: auto;
+  max-height: 400px;
+  z-index: 5000;
+}
+
+#browser_tab .results a {color: white; }
+
+#browser_tab .results .result-item {
+  background: #586C72;
+  display: block;
+  height: 50px;
+  padding: 10px;
+  margin-top: 1px;
+  position: relative;
+}
+
+#browser_tab .results a {
+  border: none;
+}
+
+#browser_tab .results .result-item.documents {
+  font-size: 27px;
+  padding-left: 20px;
+  padding-top: 15px;
+  font-family: Helvetica;
+  font-style: normal;
+}
+
+.result-item .username {
+  position: absolute;
+  top: 5px;
+  left: 20px;
+  font-size: 14px;
+  font-family: Helvetica;
+  font-style: normal;
+  font-weight: bold;
+}
+
+.result-item .full-name {
+  position: absolute;
+  top: 26px;
+  left: 20px;
+  font-size: 16px;
+}
+
+#tabs .tab:not(.active) input { cursor: pointer; }
+
+#document_tab { background: rgba(99,88,73, 0.7); /* background: #635849; */ }
+#document_tab .user-name {padding-left: 10px; max-width: 210px; overflow: hidden; white-space: nowrap; }
+#document_tab > div {height: 26px; float: left; line-height: 26px;}
+
+#document_tab input { 
+  width: 100px; 
+  position: relative;
+  top: -1px;
+  margin-left: 0;
+}
