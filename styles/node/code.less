@@ -1,6 +1,22 @@
+.content-node.code select {
+  position: absolute;
+  top: 20px;
+  right: 100px;
+  z-index: 1000;
+  display: none;
+}
+
+.content-node.code.selected select {
+  display: inline;
+}
+
+.content-node.code {
+  padding: 10px 0;
+}
+
+
 /* CodeMirror Styles
 -------------------------------------------------------------------------------*/
-
 
 .CodeMirror {
   margin: 10px 100px;
@@ -74,8 +90,6 @@ span.CodeMirror-selected {
 
 .CodeMirror-matchingbracket {color: #0f0 !important;}
 .CodeMirror-nonmatchingbracket {color: #f22 !important;}
-
-
 
 
 .cm-s-elegant span.cm-number, .cm-s-elegant span.cm-string, .cm-s-elegant span.cm-atom {color: #219161;}
