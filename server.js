@@ -278,7 +278,7 @@ function loadStyles(callback) {
   var mainFile = __dirname + '/styles/main.less';
   child_process.exec('lessc ' + mainFile, function (error, stdout, stderr) {
     if (error) {
-      styles = '';
+      styles = '/* An error occurred: ' + stderr + ' */';
       console.log(stderr);
     } else {
       styles = stdout;
@@ -291,7 +291,7 @@ function loadStyles(callback) {
 var templates = process.env.NODE_ENV === 'production'
               ? _.once(loadTemplates)
               : loadTemplates;
-              
+
 
 // Web server
 // -----------

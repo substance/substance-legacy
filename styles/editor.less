@@ -59,22 +59,22 @@
   display: none;
 }
 
-.view-action-icon.read { background: url(../images/icons/black/article_32x32.png) center no-repeat; }
-.view-action-icon.write { background: url(../images/icons/black/pen_32x32.png) center no-repeat; }
-.view-action-icon.delete { background: url(../images/icons/black/x_28x28.png) center no-repeat; }
-.view-action-icon.export { background: url(../images/icons/black/export.png) center no-repeat; }
-.view-action-icon.settings { background: url(../images/icons/black/user_24x32.png) center no-repeat; }
+.view-action-icon.read { background: url("@{images}/icons/black/article_32x32.png") center no-repeat; }
+.view-action-icon.write { background: url("@{images}/icons/black/pen_32x32.png") center no-repeat; }
+.view-action-icon.delete { background: url("@{images}/icons/black/x_28x28.png") center no-repeat; }
+.view-action-icon.export { background: url("@{images}/icons/black/export.png") center no-repeat; }
+.view-action-icon.settings { background: url("@{images}/icons/black/user_24x32.png") center no-repeat; }
 
-.view-action-icon.publish-settings { background: url(../images/icons/black/lock_stroke_24x32.png) center no-repeat; }
-.view-action-icon.publish-settings.pub { background: url(../images/icons/black/unlock_stroke_32x24.png) center no-repeat; }
+.view-action-icon.publish-settings { background: url("@{images}/icons/black/lock_stroke_24x32.png") center no-repeat; }
+.view-action-icon.publish-settings.pub { background: url("@{images}/icons/black/unlock_stroke_32x24.png") center no-repeat; }
 
-.view-action-icon.subscribe-document { background: url(../images/icons/black/rss_32x32.png) center no-repeat; }
-.view-action-icon.unsubscribe-document { background: url(../images/icons/black/rss_32x32.png) center no-repeat; opacity: 1.0; }
-.view-action-icon.new { background: url(../images/icons/black/document_stroke_32x32.png) center no-repeat; }
+.view-action-icon.subscribe-document { background: url("@{images}/icons/black/rss_32x32.png") center no-repeat; }
+.view-action-icon.unsubscribe-document { background: url("@{images}/icons/black/rss_32x32.png") center no-repeat; opacity: 1.0; }
+.view-action-icon.new { background: url("@{images}/icons/black/document_stroke_32x32.png") center no-repeat; }
 
-.view-action-icon.browse-user { background: url(../images/icons/black/document_stroke_32x32.png) center no-repeat; }
-.view-action-icon.browse-recent { background: url(../images/icons/black/document_stroke_32x32.png) center no-repeat; }
-.view-action-icon.browse-search { background: url(../images/icons/black/document_stroke_32x32.png) center no-repeat; }
+.view-action-icon.browse-user { background: url("@{images}/icons/black/document_stroke_32x32.png") center no-repeat; }
+.view-action-icon.browse-recent { background: url("@{images}/icons/black/document_stroke_32x32.png") center no-repeat; }
+.view-action-icon.browse-search { background: url("@{images}/icons/black/document_stroke_32x32.png") center no-repeat; }
 
 
 /* Document Export Dialogue
@@ -114,7 +114,7 @@
   height: 48px;
   width: 48px;
   margin: 10px;
-  background: url(/images/formats/document.png);
+  background: url("@{images}/formats/document.png");
 }
 
 .formats .format .label {
@@ -136,7 +136,7 @@
   height: 32px;
   width: 150px;
   margin: 10px;
-  background: url(/images/formats/document_small.png) no-repeat center left;
+  background: url("@{images}/formats/document_small.png") no-repeat center left;
 }
 
 .additional-formats .format .label {
@@ -186,7 +186,7 @@
   height: 30px;
   display: block;
   opacity: 0.6;
-  background: url('/images/icons/black/x_alt_16x16.png') center center no-repeat;
+  background: url("@{images}/icons/black/x_alt_16x16.png") center center no-repeat;
 }
 
 #document_settings .remove-collaborator:hover {
@@ -313,7 +313,7 @@
   width: 48px;
   opacity: 0.5;
   margin: 10px 25px 30px 25px;
-  background: url(/images/formats/document.png);
+  background: url("@{images}/formats/document.png");
   position: relative;
 }
 
@@ -340,7 +340,7 @@
   top: -3px;
   width: 18px;
   height: 18px;
-  background: url('/images/icons/black/x_alt_16x16.png') center center no-repeat;
+  background: url("@{images}/icons/black/x_alt_16x16.png") center center no-repeat;
 }
 
 
@@ -510,7 +510,7 @@
   cursor: pointer;
   opacity: 0.8;
   font-weight: normal;
-  background: url(../images/contents-toggle.png) right repeat-y;
+  background: url("@{images}/contents-toggle.png") right repeat-y;
   z-index: 100000;
 }
 
@@ -547,11 +547,11 @@
 
 /* Meta Data DT DD */
 
-dl { margin: 0;	padding: 0; }
+dl { margin: 0; padding: 0; }
 dt {
-  color: padding-left: 5px; position: relative; left: 0; top: 20px; width: 150px; font-size: 14px; font-style: normal; margin: 0; padding: 0;
+  padding-left: 5px; position: relative; left: 0; top: 20px; width: 150px; font-size: 14px; font-style: normal; margin: 0; padding: 0;
 }
-dd { color: #444; font-size: 1em;	margin: 0 0 0 155px; padding: 0; padding-left: 20px; }
+dd { color: #444; font-size: 1em; margin: 0 0 0 155px; padding: 0; padding-left: 20px; }
 
 #attributes a { border: none; }
 
@@ -608,7 +608,7 @@ dd { color: #444; font-size: 1em;	margin: 0 0 0 155px; padding: 0; padding-left:
 }
 
 #attributes .items .item a.remove-item:hover {
-  color: rgba(100, 100, 100, 1.0);;
+  color: rgba(100, 100, 100, 1.0);
 }
 
 #attributes .items .item a:hover { text-decoration: none; color: white; }
