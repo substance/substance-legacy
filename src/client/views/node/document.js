@@ -15,6 +15,17 @@ Node.define([ '/type/document', '/type/article', '/type/story'
     });
   },
 
+  events: _.extend({
+    'mouseover .editable': 'mouseoverEditable'
+  }, Node.prototype.events),
+
+  mouseoverEditable: function (e) {
+    var title = this.state === 'write'
+              ? "Click to Edit"
+              : "";
+    $(e.target).attr({ title: title });
+  },
+
   transitionTo: function (state) {
     StateMachine.transitionTo.call(this, state);
     if (this.state === state) {

@@ -88,6 +88,18 @@ describe("Document (node)", function () {
     testIsEditable(view, '.lead');
   });
 
+  it("should add a title to editable nodes in write mode on hover", function () {
+    var ed = view.$('.document-title');
+    ed.mouseover();
+    expect(ed.attr('title')).toBeFalsy();
+    view.transitionTo('write');
+    ed.mouseover();
+    expect(ed.attr('title')).toMatch(/click to edit/i);
+    view.transitionTo('read');
+    ed.mouseover();
+    expect(ed.attr('title')).toBeFalsy();
+  });
+
   describe("deselect", function () {
     it("should recursively call deselect", function () {
       spyOn(view.nodeList, 'deselect');

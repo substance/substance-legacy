@@ -149,7 +149,7 @@ var Node = Backbone.View.extend(_.extend({}, StateMachine, {
     }
     
     $(el)
-      .attr({ title: "Click to Edit" })
+      .addClass('editable')
       .click(function () {
         if (self.state === 'write') {
           window.editor.activate($(el), options);
@@ -163,13 +163,9 @@ var Node = Backbone.View.extend(_.extend({}, StateMachine, {
   },
 
   render: function () {
-    this.operationsEl = $(
-      '<div class="operations">' +
-        '<a href="/" class="toggle-comments sticky" title="Toggle comments for Section"><span>' + (this.model.get('comment_count') || "") + '</span></a>' +
-        '<a href="/" class="remove-node" title="Remove Node"></a>' +
-        '<a href="/" class="toggle-move-node" title="Move Section — Use placeholders as targets"></a>' +
-      '</div>'
-    ).appendTo(this.el);
+    this.operationsEl = $(_.tpl('operations', {
+      commentCount: this.model.get('comment_count') || ""
+    })).appendTo(this.el);
     this.contentEl = $('<div class="content" />').appendTo(this.el);
     if (this.comments) {
       this.commentsEl = $(this.comments.render().el).appendTo(this.el);

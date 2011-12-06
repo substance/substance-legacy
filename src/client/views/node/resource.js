@@ -50,7 +50,7 @@ Node.define('/type/resource', {
         this.updateUrl($(this.resourceUrl).val());
       }, this));
     
-    this.caption = this.makeEditable($('<div class="caption content" />'), 'caption', "Enter Caption")
+    this.caption = this.makeEditable($('<div class="caption" />'), 'caption', "Enter Caption")
       .appendTo(this.contentEl);
     
     return this;

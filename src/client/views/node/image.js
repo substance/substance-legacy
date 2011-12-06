@@ -101,7 +101,7 @@ Node.define('/type/image', {
     })).hide().appendTo(this.imageContent);
     this.initializeUploadForm();
     
-    this.caption = this.makeEditable($('<div class="caption content" />'), 'caption', "Enter Caption")
+    this.caption = this.makeEditable($('<div class="caption" />'), 'caption', "Enter Caption")
       .appendTo(this.contentEl);
     
     return this;

@@ -43,8 +43,7 @@ var Document = Backbone.View.extend({
       this.$('#attributes').show();
       this.$('#document').show();
       $('#document_tree').html('');
-      this.toc = new TOC({ model: this.model, el: this.$('#toc_wrapper').get(0) });
-      this.toc.render();
+      this.toc = new TOC({ model: this.model, el: this.$('#toc_wrapper').get(0) }).render();
       $(this.node.render().el).appendTo(this.$('#document_tree'));
       
       if (this.authorized && !this.version) this.toggleEditMode();
