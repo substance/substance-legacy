@@ -102,7 +102,7 @@ Node.define('/type/image', {
     this.initializeUploadForm();
     
     this.caption = this.makeEditable($('<div class="caption" />'), 'caption', "Enter Caption")
-      .appendTo(this.contentEl);
+      .appendTo(this.el);
     
     return this;
   }

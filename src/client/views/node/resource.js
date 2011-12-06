@@ -21,6 +21,7 @@ Node.define('/type/resource', {
   updateUrl: function (url) {
     this.resourceExists(url, _.bind(function (doesIt) {
       if (doesIt) {
+        console.log("Valid resource: " + url);
         this.img.attr({ src: url });
         this.status.addClass('image').text("Image");
         updateNode(this.model, { url: url });
@@ -51,7 +52,7 @@ Node.define('/type/resource', {
       }, this));
     
     this.caption = this.makeEditable($('<div class="caption" />'), 'caption', "Enter Caption")
-      .appendTo(this.contentEl);
+      .appendTo(this.el);
     
     return this;
   }
