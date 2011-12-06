@@ -4,7 +4,7 @@ var http = require('http');
 var crypto = require('crypto');
 var fs = require('fs');
 var url = require('url');
-var less = require('less');
+var child_process = require('child_process');
 var Data = require('./lib/data/data');
 var _ = require('underscore');
 var CouchClient = require('./lib/data/lib/couch-client');
@@ -274,22 +274,17 @@ function loadTemplates() {
 var styles;
 function loadStyles(callback) {
   if (process.env.NODE_ENV === 'production' && styles) return callback(styles);
-  styles = "";
-  console.log('compiling styles.');
-  var source = "";
-  _.each(fs.readdirSync(__dirname + '/styles'), function (file) {
-    source += fs.readFileSync(__dirname + '/styles/' + file, 'utf-8')+"\n\n";
+  
+  var mainFile = __dirname + '/styles/main.less';
+  child_process.exec('lessc ' + mainFile, function (error, stdout, stderr) {
+    if (error) {
+      styles = '';
+      console.log(stderr);
+    } else {
+      styles = stdout;
+    }
+    callback(styles);
   });
-
-  try {
-    less.render(source, function (err, css) {
-      if (err) return callback(JSON.stringify(err));
-      styles = css;
-      callback(css);
-    });
-  } catch (e) {
-    callback(JSON.stringify(e));
-  }
 }
 
 
