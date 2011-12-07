@@ -86,6 +86,8 @@ var Document = Backbone.View.extend({
   deselect: function () {
     if (this.node) {
       this.node.deselect();
+      window.editor.deactivate();
+      this.$(':focus').blur();
     }
   },
   
