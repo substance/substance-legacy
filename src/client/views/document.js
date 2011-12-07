@@ -26,6 +26,17 @@ var Document = Backbone.View.extend({
       // Re-render Document browser
       that.app.browser.render();
     });
+    
+    _.bindAll(this, 'deselect', 'onKeydown');
+    $(document.body)
+      .click(this.deselect)
+      .keydown(this.onKeydown);
+  },
+
+  remove: function () {
+    $(document.body)
+      .unbind('click', this.deselect)
+      .unbind('keydown', this.onKeydown);
   },
   
   render: function() {
@@ -62,6 +73,19 @@ var Document = Backbone.View.extend({
     
     if (this.node) {
       this.node.transitionTo('write');
+    }
+  },
+
+  onKeydown: function (e) {
+    if (e.keyCode === 27) {
+      // Escape key
+      this.deselect();
+    }
+  },
+
+  deselect: function () {
+    if (this.node) {
+      this.node.deselect();
     }
   },
   
@@ -203,22 +227,6 @@ var Document = Backbone.View.extend({
         app.toggleView('document');
         
         // TODO: scroll to desired part of the document
-        /*
-        // Scroll to target node
-        if (nodeid && !commentid) app.scrollTo(nodeid);
-        
-        // Scroll to comment
-        if (nodeid && commentid) {
-          var targetNode = graph.get(nodeid.replace(/_/g, '/'));
-          
-          that.selectedNode = targetNode;
-          
-          that.enableCommentEditor(targetNode, function() {
-            $('#'+nodeid+' > .comments-wrapper').show();
-            graph.get(commentid.replace(/_/g, '/')) ? app.scrollTo(commentid) : app.scrollTo('comments'+nodeid);
-          });
-        }
-        */
       } else {
         $('#document_wrapper').html('Document loading failed');
       }
