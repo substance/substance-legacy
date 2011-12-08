@@ -30,9 +30,12 @@ describe("NodeList", function () {
       root: root,
       model: doc
     });
+    
+    $(list.render().el).appendTo(document.body);
   });
 
   afterEach(function () {
+    list.remove();
     delete window.graph;
   });
 
@@ -107,11 +110,8 @@ describe("NodeList", function () {
 
   describe("Adding nodes", function () {
     var quote;
-    
+
     beforeEach(function () {
-      list.render();
-      $(document.body).append(list.el);
-      
       quote = graph.set(null, {
         type: '/type/quote',
         content: "I Have a Dream",
@@ -120,10 +120,6 @@ describe("NodeList", function () {
       });
       doc.all('children').set(quote._id, quote, 1);
       doc.trigger('added-child', quote, 1);
-    });
-
-    afterEach(function () {
-      list.remove();
     });
 
     it("should update the childViews array", function () {
@@ -147,7 +143,6 @@ describe("NodeList", function () {
 
   describe("Removing nodes", function () {
     it("should automatically update the com", function () {
-      list.render();
       var el = $(list.el);
       expect(el.find('> *').length).toBe(5);
       text.trigger('removed');
@@ -158,7 +153,6 @@ describe("NodeList", function () {
 
   describe("render", function () {
     it("should render alternatingly controls and node views", function () {
-      list.render();
       var el = $(list.el);
       expect(el.find('> *').length).toBe(5);
       expect(el.find('> .controls').length).toBe(3);

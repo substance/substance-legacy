@@ -719,7 +719,11 @@
       // Use <b>, <i> and <font face="monospace"> instead of style attributes.
       // This is convenient because these inline element can easily be replaced
       // by their more semantic counterparts (<strong>, <em> and <code>).
-      document.execCommand('styleWithCSS', false, false);
+      try {
+        document.execCommand('styleWithCSS', false, false);
+      } catch (exc) {
+        // This fails in Firefox.
+      }
       
       $('.proper-commands a.command').click(function(e) {
         e.preventDefault();

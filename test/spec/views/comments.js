@@ -81,10 +81,12 @@ describe("Comments", function () {
       callback(null, commentsHash);
     });
     
+    $(comments.el).appendTo(document.body);
     comments.render();
   });
 
   afterEach(function () {
+    comments.remove();
     delete window.graph;
     delete window.app;
   });
@@ -128,7 +130,6 @@ describe("Comments", function () {
   describe("scrollTo", function () {
     it("should scroll to the comments element", function () {
       comments.expand();
-      $(comments.el).appendTo(document.body);
       spyOn($.fn, 'animate').andCallFake(function (properties) {
         expect(typeof properties.scrollTop).toBe('number');
         expect(properties.scrollTop).toBeLessThan($(comments.el).offset().top);
