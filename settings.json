@@ -2,7 +2,6 @@
   "scripts": {
     "development": [
       "/javascripts/sanitize.js",
-      "/javascripts/hi.js",
       "/javascripts/jquery.min.js",
       "/javascripts/showdown.js",
       "/javascripts/jquery.transloadit2.js",
@@ -29,7 +28,6 @@
     ],
     "production": [
       "/javascripts/sanitize.js",
-      "/javascripts/hi.js",
       "/javascripts/jquery.min.js",
       "/javascripts/showdown.js",
       "/javascripts/jquery.transloadit2.js",
