@@ -98,7 +98,7 @@ Node.define('/type/image', {
     
     this.imageEditor = $(_.tpl('image_editor', {
       transloadit_params: config.transloadit
-    })).hide().appendTo(this.imageContent);
+    })).appendTo(this.imageContent);
     this.initializeUploadForm();
     
     this.caption = this.makeEditable($('<div class="caption" />'), 'caption', "Enter Caption")
@@ -114,14 +114,10 @@ Node.define('/type/image', {
       enter: function () {
         Node.states.write.enter.apply(this);
         
-        this.imageEditor.show();
-        
         this.img.unwrap();
       },
       leave: function () {
         Node.states.write.leave.apply(this);
-        
-        this.imageEditor.hide();
         
         this.img.wrap($('<a target="_blank" />')
           .attr({ href: this.model.get('original_url') }));

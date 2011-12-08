@@ -54,18 +54,15 @@ describe("Image", function () {
   });
 
   describe("State", function () {
-    it("should show the image editor in edit state and make the image clickable in read state", function () {
+    it("should make the image clickable in read state", function () {
       var el = $(view.el);
       expect(el.find('a img').length).toBe(1);
       expect(el.find('a img').parent().attr('href')).toBe(url);
-      expect(el.find('.image-editor').css('display')).toBe('none');
       view.transitionTo('write');
       expect(el.find('a img').length).toBe(0);
-      expect(el.find('.image-editor').css('display')).not.toBe('none');
       view.transitionTo('read');
       expect(el.find('a img').length).toBe(1);
       expect(el.find('a img').parent().attr('href')).toBe(url);
-      expect(el.find('.image-editor').css('display')).toBe('none');
     });
   });
 
