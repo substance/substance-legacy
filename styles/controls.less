@@ -37,9 +37,7 @@
   width: 25px;
   height:25px;
   padding:0px;
-  -webkit-border-radius:4px;
-  -moz-border-radius:   4px;
-  border-radius:        4px;
+  .border-radius(4px);
   
   text-align: center;
 }
@@ -69,11 +67,8 @@
 }
 
 .controls .actions {
-  /* border: 1px solid #eee; */
   background: rgba(243,244,239, 0.8);
-  -webkit-border-radius: 5px;
-  -moz-border-radius: 5px;
-  border-radius: 5px;
+  .border-radius(5px);
   margin: 15px 100px;
   padding: 4px;
   padding-left: 0px;
@@ -124,8 +119,7 @@
 }
 
 #document .controls .actions a, #document .controls .actions span {
-  font-family: Helvetica;
-  /*  text-transform: uppercase;*/
+  .ui-font;
   font-size: 12px;
   border: none;
   color: rgba(89,71,51,0.5);
@@ -139,7 +133,7 @@
 #document .controls:hover .actions span.container { color: rgba(89,71,51,1); }
 
 #document .controls .actions .placeholder {
-  font-family: 'Palatino Linotype', 'Book Antiqua', Palatino, FreeSerif, serif;
+  .document-font;
   font-style: italic;
   color: rgba(89,71,51, 0.4);
   font-size: 14px;
@@ -152,9 +146,7 @@
 #document .controls .actions span.container:hover {
   color: #594733; 
   background: rgba(0,0,0, 0.05);
-  -webkit-border-radius:3px;
-  -moz-border-radius:   3px;
-  border-radius:        3px;
+  .border-radius(3px);
 }
 
 #document .controls:hover a { display: block; }
@@ -162,9 +154,7 @@
 #document .controls .actions a:hover { 
   color: #594733; 
   background: rgba(0,0,0, 0.05);
-  -webkit-border-radius:3px;
-  -moz-border-radius:   3px;
-  border-radius:        3px;
+  .border-radius(3px);
 }
 
 .section .node-list > .controls:last-child {

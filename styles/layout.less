@@ -6,7 +6,7 @@
   font-weight: bold;
 }
 
-/* Footer
+/* body > #container > #footer
 -------------------------------------------------------------------------------*/
 
 #footer {
@@ -25,3 +25,57 @@ pre .string, pre .regexp  { color: #219161 }
 /* code .class, code .special { font-weight: bold; } */
 /* code .number               { color: pink } */
 pre .comment              { color: #888 }
+
+
+/* body > #container
+-------------------------------------------------------------------------------*/
+
+#container { margin: auto; padding: 0; width: 1200px; display:none; }
+
+
+
+/* body > #container > #header
+-------------------------------------------------------------------------------*/
+
+#header {
+  margin: 0 180px 10px 100px;
+  height: 65px;
+  font-style: italic;
+}
+
+#header .title {
+  .document-font;
+  font-style: normal;
+  font-size: 30px;
+  line-height: 60px;
+  float: left;
+}
+
+#header .title a { border: none; }
+
+#header #login_state {
+  float: right;
+  position: relative;
+  left: 2px;
+}
+
+@-webkit-keyframes rotate {
+  from {
+    -webkit-transform: rotate(0deg);
+  }
+  to { 
+    -webkit-transform: rotate(360deg);
+  }
+}
+
+#sync_state {
+  position: fixed;
+  padding-top: 15px;
+  right: 20px;
+  top: 10px;
+  display: none;
+  background: #ccc;
+  width: 50px;
+  height: 50px;
+  background: url("@{images}/load.gif") center center no-repeat;
+}

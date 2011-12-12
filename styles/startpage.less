@@ -8,13 +8,11 @@
 }
 
 div.intro {
+  .document-font;
+    
   text-align: center;
   font-size: 38px;
   line-height: 50px;
-  /*  padding: 30px 0;*/
-  /*  margin-bottom: 20px;*/
-  font-family: 'Palatino Linotype', 'Book Antiqua', Palatino, FreeSerif, serif;
-  font-weight: lighter;
   
   height: 220px;
   -webkit-transition: all 0.5s ease-in-out;
@@ -36,9 +34,7 @@ div .intro .intro-text a {
   color: #fff;
   padding: 10px;
   padding-left: 35px;
-  -moz-border-radius: 6px;
-  -webkit-border-radius: 6px;
-  border-radius: 6px;
+  .border-radius(6px);
   opacity: 0.8;
 }
 
@@ -111,17 +107,19 @@ div .intro .video {
 }
 
 #example_documents_header {
+  .document-font;
+  
   text-align: center;
   font-size: 25px;
   padding: 30px 0;
-  font-family: 'Palatino Linotype', 'Book Antiqua', Palatino, FreeSerif, serif;
   font-weight: lighter;
 }
 
 #example_documents .document .title {
+  .document-font;
+  
   margin-top: 20px;
   padding: 10px;
-  font-family: 'Palatino Linotype', 'Book Antiqua', Palatino, FreeSerif, serif;
   font-size: 20px;
   font-weight: bold;
 }
@@ -192,7 +190,8 @@ div .intro .video {
 }
 
 #features .feature-properties {
-  font-family: Helvetica;
+  .ui-font;
+  
   list-style-type:square;
   list-style-image:url("@{images}/icons/black/pen_12x12.png");
   padding-left: 20px;
@@ -210,10 +209,9 @@ div .intro .video {
 }
 
 #donations_total {
+  .document-font;
   margin-top: 40px;
   font-size: 45px;
-  font-family: 'Palatino Linotype', 'Book Antiqua', Palatino, FreeSerif, serif;
-  font-weight: lighter;
   font-style: italic;
 }
 

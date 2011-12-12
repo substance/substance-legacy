@@ -20,8 +20,7 @@
 .right-align {text-align: right; }
 
 .serif {
-  font-family: 'Palatino Linotype', 'Book Antiqua', Palatino, FreeSerif, serif;
-  font-weight: lighter;
+  .document-font;
 }
 
 .italic {
@@ -39,10 +38,11 @@ html {
 img { border: none; }
 
 body { 
+  .ui-font;
+  font-size: 14px;
   margin: 0; padding: 0;
   background: #F0F1EB;
   color:#444;
-  font:14px/26px "Helvetica Neue", Arial, Helvetica, Geneva, sans-serif; color:#111;
   line-height:1.5em;
 }
 
@@ -102,13 +102,10 @@ img       {  -webkit-transition: opacity 0.35s linear; }
 /* Form input */
 
 input[type=search], input[type=text], input[type=email], input[type=password], textarea {
-  -moz-border-radius: 2px;
-  -webkit-border-radius: 2px;
-  border-radius: 2px;
+  .border-radius(2px);
   background-color: #F6F7F2;
 
   border: solid 1px #d4d4d4;
-/*  height: 28px;*/
   color: #777;
   width: 100%;
   padding: 5px 6px;
@@ -155,9 +152,7 @@ input[type=submit] {
   display: block;
   -webkit-transition: background-color 400ms;
   -moz-transition: background-color 400ms;
-  -moz-border-radius: 2px;
-  -webkit-border-radius: 2px;
-  border-radius: 2px;
+  .border-radius(2px);
 }
 
 input[type=submit]:hover {
@@ -183,9 +178,7 @@ a.button {
   color: white;
   background: #A2C44E;
   padding: 7px 10px;
-  -webkit-border-radius:4px;
-  -moz-border-radius:   4px;
-  border-radius:        4px;
+  .border-radius(4px);
 }
 
 a.button.contribute { margin-top: 20px; }
@@ -200,7 +193,8 @@ a.button:active { background: #98B247; }
 -------------------------------------------------------------------------------*/
 
 div.browser-not-supported {
-  font-family: 'Palatino Linotype', 'Book Antiqua', Palatino, FreeSerif, serif;
+  .document-font;
+    
   margin-top: 20px;
   position: absolute;
   top: 40px;
@@ -214,8 +208,9 @@ div.browser-not-supported h1 {
 }
 
 div.browser-not-supported h1 p {
+  .ui-font;
+  
   position: relative;
-  font-family: Helvetica, Arial;
   color: #777;
   top: 10px;
   font-size: 15px;
@@ -253,57 +248,7 @@ div.browser-not-supported a:hover {
 }
 
 
-/* body > #container
--------------------------------------------------------------------------------*/
 
-#container { margin: auto; padding: 0; width: 1200px; display:none; }
-
-/* body > #container > #header
--------------------------------------------------------------------------------*/
-
-#header {
-  margin: 0 180px 10px 100px;
-  height: 65px;
-  font-style: italic;
-}
-
-#header .title {
-  font-family: 'Palatino Linotype', 'Book Antiqua', Palatino, FreeSerif, serif;
-  font-weight: lighter;
-  font-style: normal;
-  font-size: 30px;
-  line-height: 60px;
-  float: left;
-}
-
-#header .title a { border: none; }
-
-#header #login_state {
-  float: right;
-  position: relative;
-  left: 2px;
-}
-
-@-webkit-keyframes rotate {
-  from {
-    -webkit-transform: rotate(0deg);
-  }
-  to { 
-    -webkit-transform: rotate(360deg);
-  }
-}
-
-#sync_state {
-  position: fixed;
-  padding-top: 15px;
-  right: 20px;
-  top: 10px;
-  display: none;
-  background: #ccc;
-  width: 50px;
-  height: 50px;
-  background: url("@{images}/load.gif") center center no-repeat;
-}
 
 /* body > #container > #content_wrapper
 -------------------------------------------------------------------------------*/
@@ -317,13 +262,13 @@ div.browser-not-supported a:hover {
 -------------------------------------------------------------------------------*/
 
 .page-content {
-  font-family: 'Palatino Linotype', 'Book Antiqua', Palatino, FreeSerif, serif;
+  .document-font;
   padding: 50px 50px;
   background: #fff;
 }
 
 .page-content h1, #confirm_collaboration h1 {
-  font-family: 'Palatino Linotype', 'Book Antiqua', Palatino, FreeSerif, serif;
+  .document-font;
   font-size: 34px;
   color: #000;
   padding: 20px 0;
@@ -334,14 +279,14 @@ div.browser-not-supported a:hover {
 
 .page-content input.error { border: 2px solid red; }
 .page-content label { display: block; float: left; width: 300px; position: relative; font-size: 16px; font-style: italic; }
-.page-content label span { position: absolute; top: 20px; left: 0px; font-family: Helvetica; color: #888; font-size: 12px; font-style: normal; }
+.page-content label span { .ui-font; position: absolute; top: 20px; left: 0px; color: #888; font-size: 12px; font-style: normal; }
 .page-content div { padding: 20px 0; overflow: auto }
 .page-content input[type=submit] { background: #A2C44E; color: white; border: none; }
 
 /* Messages for input fields */
 .page-content .input-message { float: left; padding: 0 20px; margin: 0; 
+  .ui-font;
   max-width: 200px;
-  font-family: Helvetica;
   font-size: 12px;
 }
 
@@ -364,9 +309,9 @@ div.browser-not-supported a:hover {
 }
 
 #browser_wrapper h2 {
+  .document-font;
   padding-top: 20px;
   padding-bottom: 20px;
-  font-family: 'Palatino Linotype', 'Book Antiqua', Palatino, FreeSerif, serif;
 }
 
 #browser {
@@ -400,13 +345,13 @@ div.browser-not-supported a:hover {
 }
 
 #card_file h2 {
+  .ui-font;
   font-size: 20px;
   position: absolute;
   bottom: 30px;
   right: 30px;
   padding: 0;
   color: #635849;
-  font-family: 'Helvetica Neue', Helvetica, Arial;
 }
 
 #card_file .avatar {
@@ -457,14 +402,13 @@ div.browser-not-supported a:hover {
 
 /* name the menu panel */
 .menu div.header {
+  .document-font;
   font-size: 18px;
   font-style: italic;
   position: absolute;
   left: -210px;
   width: 209px;
   padding-left: 0px;
-  font-family: 'Palatino Linotype', 'Book Antiqua', Palatino, FreeSerif, serif;
-  font-weight: lighter;
 }
 
 .menu .label {
@@ -563,9 +507,7 @@ div.browser-not-supported a:hover {
 #login_state.logged-in {
   cursor: pointer;
   background: #D5D6D2;
-  -moz-border-radius: 2px;
-  -webkit-border-radius: 2px;
-  border-radius: 2px;
+  .border-radius(2px);
 }
 
 
@@ -604,9 +546,7 @@ div.browser-not-supported a:hover {
   padding: 2px 4px 1px 4px;
   color: #fff;
   background: rgba(0,0,0, 0.2);
-  -moz-border-radius: 2px;
-  -webkit-border-radius: 2px;
-  border-radius: 2px;
+  .border-radius(2px);
 }
 
 .toggle.notifications .icon { background: url("@{images}/icons/black/rss_16x16.png") center center no-repeat; }
@@ -794,10 +734,10 @@ div.browser-not-supported a:hover {
 }
 
 #facets .no-filters {
+  .document-font;
+  
   padding: 20px 0;
   padding-top: 9px;
-  font-family: 'Palatino Linotype', 'Book Antiqua', Palatino, FreeSerif, serif;
-  font-weight: lighter;
   font-style: italic;
 }
 
@@ -826,9 +766,9 @@ div.browser-not-supported a:hover {
 #facets .facet li a:hover .tick-icon { border-color: #000; }
 
 #facets .facet li a span.item-count {
+  .document-font;
   position: absolute;
   right: 0px;
-  font-family: 'Palatino Linotype', 'Book Antiqua', Palatino, FreeSerif, serif;
   font-style: italic;
   font-weight: bold;
   color: #bbb; margin-left: 5px; padding: 0 5px; font-size: 18px;
@@ -851,9 +791,7 @@ div.browser-not-supported a:hover {
 #facets .facet li.facet-choice.selected a { 
   color: #515151; 
   background: #E8E8E6;
-  -moz-border-radius: 2px;
-  -webkit-border-radius: 2px;
-  border-radius: 2px;
+  .border-radius(2px);
 }
 
 #facets .facet li.facet-choice.selected a div.tick-icon {
