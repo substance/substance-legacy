@@ -35,9 +35,19 @@ Node.define([ '/type/document', '/type/article', '/type/story'
 
   lastChildChanged: function () {},
 
-  deselect: function () {
-    Node.prototype.deselect.apply(this);
-    this.nodeList.deselect();
+  selectNode: function (view) {
+    this.deselectNode();
+    $(this.el).addClass('something-selected');
+    view.select();
+    this.selected = view;
+  },
+
+  deselectNode: function () {
+    if (this.selected) {
+      $(this.el).removeClass('something-selected');
+      this.selected.deselect();
+      delete this.selected;
+    }
   },
 
   render: function () {

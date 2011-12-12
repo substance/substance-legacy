@@ -27,11 +27,6 @@ Node.define('/type/section', {
     }
   },
 
-  deselect: function () {
-    Node.prototype.deselect.apply(this);
-    this.nodeList.deselect();
-  },
-
   render: function () {
     Node.prototype.render.apply(this, arguments);
     var level = Math.min(6, this.level);

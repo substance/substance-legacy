@@ -12,9 +12,8 @@ describe("Section", function () {
     child.set({
       content: "Substance has been started in 2010 by Michael Aufreiter."
     });
-    root = {
-      deselect: jasmine.createSpy()
-    };
+    root = Node.create({ model: doc });
+    spyOn(root, 'deselect');
     view = Node.create({
       model: node,
       parent: doc,
@@ -65,16 +64,6 @@ describe("Section", function () {
 
   it("should have an editable name", function () {
     testIsEditable(view, 'h1');
-  });
-
-  describe("deselect", function () {
-    it("should recursively call deselect", function () {
-      spyOn(view.nodeList, 'deselect');
-      spyOn(Node.prototype, 'deselect');
-      view.deselect();
-      expect(view.nodeList.deselect).toHaveBeenCalled();
-      expect(Node.prototype.deselect).toHaveBeenCalled();
-    });
   });
 
 });

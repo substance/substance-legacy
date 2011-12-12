@@ -39,12 +39,6 @@ var NodeList = Backbone.View.extend({
     this.eachChildView(transition);
   },
 
-  deselect: function () {
-    this.eachChildView(function (childView) {
-      childView.deselect();
-    });
-  },
-
   addChild: function (child, index) {
     var childView = this.createChildView(child)
     ,   rendered  = this.renderChildView(childView);
@@ -54,7 +48,7 @@ var NodeList = Backbone.View.extend({
                                      : this.childViews[index-1].afterControls.el);
     
     childView.transitionTo('write');
-    childView.select();
+    childView.selectThis();
     childView.focus();
   },
 
