@@ -344,7 +344,7 @@ describe("Model", function () {
         title: "Question and Answer",
         name: 'question-and-answer'
       }));
-      var result = possibleChildTypes(new Position(doc, null));
+      var result = possibleChildTypes(new Position(doc, null), 1);
       expect(result.length).toBe(2);
       expect(result.get('/type/question')).toBeTruthy();
       expect(result.get('/type/answer')).toBeTruthy();
@@ -356,7 +356,7 @@ describe("Model", function () {
     });
 
     it("should have the right order", function () {
-      var result = possibleChildTypes(new Position(doc, null));
+      var result = possibleChildTypes(new Position(doc, null), 1);
       
       function testBefore(a, b) {
         expect(result.index(a)).toBeLessThan(result.index(b));
@@ -369,7 +369,7 @@ describe("Model", function () {
     });
 
     it("should return all possible positions", function () {
-      var result = possibleChildTypes(new Position(doc, section));
+      var result = possibleChildTypes(new Position(doc, section), 1);
       
       result.each(function (positions, type) {
         expect(positions.length).toBe(2);
@@ -378,6 +378,28 @@ describe("Model", function () {
         expect(positions[1].parent).toBe(section);
         expect(positions[1].after).toBe(resource);
       });
+    });
+
+    it("shouldn't allow a nesting depth of 4 or more", function () {
+      var subsection = graph.set(null, {
+        type: '/type/section',
+        name: "At level 2",
+        document: doc._id
+      });
+      section.all('children').set(subsection._id, subsection, 2);
+      
+      var subsubsection = graph.set(null, {
+        type: '/type/section',
+        name: "At level 2",
+        document: doc._id
+      });
+      subsection.all('children').set(subsubsection._id, subsubsection, 0);
+      
+      var result = possibleChildTypes(new Position(doc, section), 1);
+      expect(result.get('/type/section').length).toBe(3);
+      
+      var result = possibleChildTypes(new Position(section, subsection), 2);
+      expect(result.get('/type/section').length).toBe(2);
     });
   });
 
@@ -396,7 +418,7 @@ describe("Model", function () {
         name: "Subsection"
       });
       addChild(nestedSection, new Position(section, resource));
-      var result = moveTargetPositions(text, new Position(doc, section));
+      var result = moveTargetPositions(text, new Position(doc, section), 1);
       expect(result.length).toBe(3);
       expect(result[0].parent).toBe(doc);
       expect(result[0].after).toBe(section);
@@ -411,8 +433,50 @@ describe("Model", function () {
         title: "Question and Answer",
         name: 'question-and-answer'
       }));
-      var result = moveTargetPositions(text, new Position(doc, null));
+      var result = moveTargetPositions(text, new Position(doc, null), 1);
       expect(result.length).toBe(0);
+    });
+
+    it("shouldn't allow a nesting depth of 4 or more", function () {
+      var subsection = graph.set(null, {
+        type: '/type/section',
+        name: "Subsection"
+      });
+      section.all('children').set(subsection._id, subsection, 1);
+      
+      var movedNode = graph.set(null, {
+        type: '/type/section',
+        name: "This is a moved node"
+      });
+      
+      var result = moveTargetPositions(movedNode, new Position(doc, section), 1);
+      expect(result.length).toBe(3);
+      expect(result[0].parent).toBe(doc);
+      expect(result[0].after).toBe(section);
+      expect(result[1].parent).toBe(section);
+      expect(result[1].after).toBe(subsection);
+      expect(result[2].parent).toBe(subsection);
+      expect(result[2].after).toBe(null);
+      
+      var result = moveTargetPositions(movedNode, new Position(section, subsection), 2);
+      expect(result.length).toBe(2);
+      expect(result[0].parent).toBe(section);
+      expect(result[0].after).toBe(subsection);
+      expect(result[1].parent).toBe(subsection);
+      expect(result[1].after).toBe(null);
+      
+      var subMoved = graph.set(null, {
+        type: '/type/section',
+        name: "And this is a subsection of that moved node"
+      });
+      movedNode.all('children').set(subMoved._id, subMoved, 0);
+      
+      var result = moveTargetPositions(movedNode, new Position(doc, section), 1);
+      expect(result.length).toBe(2);
+      expect(result[0].parent).toBe(doc);
+      expect(result[0].after).toBe(section);
+      expect(result[1].parent).toBe(section);
+      expect(result[1].after).toBe(subsection);
     });
   });
 
