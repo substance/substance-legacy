@@ -29,7 +29,6 @@ var Router = Backbone.Router.extend({
     
     app.toggleView('content');
     $('#header').hide();
-    $('#tabs').hide();
     $('#footer').hide();
     
     return false;
@@ -41,7 +40,6 @@ var Router = Backbone.Router.extend({
     
     app.toggleView('content');
     $('#header').hide();
-    $('#tabs').hide();
     $('#footer').hide();
     
     return false;
@@ -53,7 +51,6 @@ var Router = Backbone.Router.extend({
     
     app.toggleView('content');
     $('#header').hide();
-    $('#tabs').hide();
     $('#footer').hide();
     
     return false;
@@ -121,29 +118,30 @@ var Application = Backbone.View.extend({
     return false;
   },
   
+  // TODO: make obsolete?
   toggleRecent: function() {
     this.recentDocs();
     return false;
   },
   
+  // TODO: make obsolete?
   toggleSubscribed: function() {
     this.subscribedDocs();
     return false;
   },
   
+  // TODO: make obsolete?  
   toggleUserDocs: function() {
     this.userDocs(app.username);
     return false;
   },
   
+  // TODO: make obsolete?
   userDocs: function(username) {
-    app.browser.load({"type": "user", "value": username});
+    app.browser.subview.load({"type": "user", "value": username});
     $('#browser_wrapper').attr('url', username);
+    app.toggleView('browser');
     
-    app.browser.bind('loaded', function() {
-      app.toggleView('browser');
-      app.browser.unbind('loaded');
-    });
     return false;
   },
   
@@ -219,13 +217,8 @@ var Application = Backbone.View.extend({
   },
   
   toggleStartpage: function() {
-    app.browser.browserTab.render();
+    // app.browser.browserTab.render();
     $('#content_wrapper').html(_.tpl('startpage'));
-    
-    // Initialize Slider
-    $('#slider').nivoSlider({
-      manualAdvance: true
-    });
     
     // Initialize Flattr
     var s = document.createElement('script'), t = document.getElementsByTagName('script')[0];
@@ -333,7 +326,7 @@ var Application = Backbone.View.extend({
   
   toggleSignup: function() {
     $('#content_wrapper').attr('url', "register");
-    app.browser.browserTab.render();
+    // app.browser.browserTab.render();
     $('#content_wrapper').html(_.tpl('signup'));
     app.toggleView('content');
     return false;
@@ -344,10 +337,10 @@ var Application = Backbone.View.extend({
   },
   
   toggleView: function(view) {
+	console.log('toggling viiiiiew');
     $('.tab').removeClass('active');
     $('#'+view+'_tab').addClass('active');
-    if (view === 'browser' && !this.browser.loaded) return;
-    $('.view').hide();
+    // $('.view').hide();
     $('#'+view+'_wrapper').show();
     
     // Show stuff - inverting of this.collaborate();
@@ -463,7 +456,7 @@ var Application = Backbone.View.extend({
     var that = this;
     
     // Initialize browser
-    this.browser = new DocumentBrowser({
+    this.browser = new Browser({
       el: this.$('#browser_wrapper'),
       app: this
     });
@@ -640,29 +633,6 @@ var remote,                              // Remote handle for server-side method
     }
     
     $('#container').show();
-    
-    window.positionBoard = function() {
-      var wrapper = document.getElementById('document_wrapper');
-      if (wrapper.offsetTop - _.scrollTop() < 0) {
-        $('#document .board').addClass('docked');
-        $('#document .board').css('left', ($('#document').offset().left)+'px');
-        $('#document .board').css('width', ($('#document').width())+'px');
-        
-        var tocOffset = $('#toc_wrapper').offset();
-        if (tocOffset && _.scrollTop() < tocOffset.top) {
-          $('#toc_wrapper').css('top', _.scrollTop()-$('#document').offset().top+"px");
-        }
-      } else {
-        $('#document .board').css('left', '');
-        $('#toc_wrapper').css('top', 0);
-        $('#document .board').removeClass('docked');
-      }
-    }
-    
-    positionBoard();
-    
-    $(window).bind('scroll', positionBoard);
-    $(window).bind('resize', positionBoard);
     
     // Start the engines
     app = new Application({el: $('#container'), session: session});
