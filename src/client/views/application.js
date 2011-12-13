@@ -247,6 +247,7 @@ var Application = Backbone.View.extend({
   
   toggleTOC: function() {
     if ($('#toc_wrapper').is(":hidden")) {
+      app.document.toc.render();
       $('#document .board').addClass('active');
       $('#toc_wrapper').slideDown();
       $('#toc_wrapper').css('top', Math.max(_.scrollTop()-$('#document').offset().top, 0));
