@@ -52,7 +52,7 @@ Node.define('/type/resource', {
       }, this));
     
     this.caption = this.makeEditable($('<div class="caption" />'), 'caption', "Enter Caption")
-      .appendTo(this.el);
+      .insertAfter(this.contentEl);
     
     return this;
   }

@@ -10,7 +10,8 @@ describe("Answer", function () {
     });
     view = Node.create({
       model: node,
-      parent: doc
+      parent: doc,
+      root: Node.create({ model: doc })
     }).render();
     $(view.el).appendTo(document.body);
   });

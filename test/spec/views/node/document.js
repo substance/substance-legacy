@@ -100,13 +100,35 @@ describe("Document (node)", function () {
     expect(ed.attr('title')).toBeFalsy();
   });
 
-  describe("deselect", function () {
-    it("should recursively call deselect", function () {
-      spyOn(view.nodeList, 'deselect');
-      spyOn(Node.prototype, 'deselect');
-      view.deselect();
-      expect(view.nodeList.deselect).toHaveBeenCalled();
-      expect(Node.prototype.deselect).toHaveBeenCalled();
+  describe("selectNode and deselectNode", function () {
+    it("it should make sure that only one node is focused at a time", function () {
+      var a = {
+        select:   jasmine.createSpy(),
+        deselect: jasmine.createSpy()
+      };
+      var b = {
+        select:   jasmine.createSpy(),
+        deselect: jasmine.createSpy()
+      };
+      
+      expect($(view.el).hasClass('something-selected')).toBe(false);
+      expect(view.selected).toBeUndefined();
+      
+      view.selectNode(a);
+      expect(a.select).toHaveBeenCalled();
+      expect($(view.el).hasClass('something-selected')).toBe(true);
+      expect(view.selected).toBe(a);
+      
+      view.selectNode(b);
+      expect(b.select).toHaveBeenCalled();
+      expect(a.deselect).toHaveBeenCalled();
+      expect($(view.el).hasClass('something-selected')).toBe(true);
+      expect(view.selected).toBe(b);
+      
+      view.deselectNode();
+      expect(view.selected).toBeUndefined();
+      expect($(view.el).hasClass('something-selected')).toBe(false);
+      expect(b.deselect).toHaveBeenCalled();
     });
   });
 });

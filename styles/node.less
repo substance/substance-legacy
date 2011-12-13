@@ -25,7 +25,7 @@
 
 .content-node .operations a.sticky { display: block; }
 
-.content-node.selected > .operations a { display: block; }
+.edit .content-node.selected > .operations a { display: block; }
 
 #document .content-node .operations a:hover { opacity: 1.0; }
 
@@ -78,8 +78,8 @@
   padding: 10px 0;
 }
 
-#document.edit-mode .content-node { color: #aaa; }
-#document.edit-mode .content-node a { color: #aaa; }
+.something-selected .content-node { color: #aaa; }
+.something-selected .content-node a { color: #aaa; }
 
 #document .content-node {
   -webkit-transition: min-height 0.5s;
@@ -97,11 +97,11 @@
   box-shadow:         0px 1px 4px rgba(0,0,0,0.35), inset 0px 0px 1px rgba(255,255,255,0.15);
 }
 
-#document.edit-mode .content-node.selected > .content {color: #000; }
-#document.edit-mode .content-node.selected blockquote > .content {color: #000; }
-#document.edit-mode .content-node.selected > .CodeMirror pre { color: #000; }
-#document.edit-mode .content-node.selected > .content a {color: #000; }
-#document.edit-mode .content-node.selected blockquote > .content a {color: #000; }
+.something-selected .content-node.selected > .content {color: #000; }
+.something-selected .content-node.selected blockquote > .content {color: #000; }
+.something-selected .content-node.selected > .CodeMirror pre { color: #000; }
+.something-selected .content-node.selected > .content a {color: #000; }
+.something-selected .content-node.selected blockquote > .content a {color: #000; }
 #document.insert-mode .content-node { color: #aaa; }
 #document.insert-mode .content-node { background: transparent; -webkit-box-shadow: none; }
 

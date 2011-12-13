@@ -84,7 +84,7 @@ Node.define('/type/code', {
       onFocus: function () {
         // Without this, there is the possibility to focus the editor without
         // activating the code node. Don't ask me why.
-        self.select();
+        self.selectThis();
       },
       onBlur: function () {
         // Try to prevent multiple selections in multiple CodeMirror instances

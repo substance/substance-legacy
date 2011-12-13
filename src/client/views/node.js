@@ -51,7 +51,7 @@ var Node = Backbone.View.extend(_.extend({}, StateMachine, {
     'click .remove-node':      'removeNode',
     'click .toggle-move-node': 'toggleMoveNode',
     
-    'click': 'selectNode',
+    'click': 'selectThis',
     'mouseover': 'highlight',
     'mouseout': 'unhighlight'
   },
@@ -86,11 +86,14 @@ var Node = Backbone.View.extend(_.extend({}, StateMachine, {
     }
   },
 
-  selectNode: function (e) {
+  selectThis: function (e) {
     // the parent view shouldn't deselect this view when the event bubbles up
-    e.stopPropagation();
-    if (this.state === 'write') {
-      this.select();
+    if (e) { e.stopPropagation(); }
+    
+    if (this.root) {
+      this.root.selectNode(this);
+    } else {
+      this.selectNode(this);
     }
   },
 
@@ -105,18 +108,11 @@ var Node = Backbone.View.extend(_.extend({}, StateMachine, {
   },
 
   select: function (e) {
-    if (this.root) {
-      this.root.deselect();
-    } else {
-      this.deselect();
-    }
     $(this.el).addClass('selected');
-    $('#document').addClass('edit-mode');
   },
 
   deselect: function () {
     $(this.el).removeClass('selected');
-    $('#document').removeClass('edit-mode');
   },
 
   focus: function () {},

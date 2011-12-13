@@ -13,7 +13,6 @@ var Document = Backbone.View.extend({
   
   initialize: function() {
     var that = this;
-    this.attributes = new Attributes({model: this.model});
     this.settings = new DocumentSettings();
     
     this.publishSettings = new PublishSettings();
@@ -48,12 +47,10 @@ var Document = Backbone.View.extend({
     this.renderMenu();
 
     if (this.model) {
-      // Render Attributes
       this.node = Node.create({ model: this.model });
-      this.attributes.render();
-      this.$('#attributes').show();
+      this.attributes = new Attributes({ model: this.model, el: this.$('#attributes').get(0) }).render();
       this.$('#document').show();
-      $('#document_tree').html('');
+      $('#document_tree').empty();
       this.toc = new TOC({ model: this.model, el: this.$('#toc_wrapper').get(0) }).render();
       $(this.node.render().el).appendTo(this.$('#document_tree'));
       
@@ -85,7 +82,7 @@ var Document = Backbone.View.extend({
 
   deselect: function () {
     if (this.node) {
-      this.node.deselect();
+      this.node.deselectNode();
       window.editor.deactivate();
       this.$(':focus').blur();
     }

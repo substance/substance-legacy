@@ -81,16 +81,6 @@ describe("NodeList", function () {
     });
   });
 
-  describe("deselect", function () {
-    it("should call the deselect method on each child", function () {
-      spyOn(list.childViews[0], 'deselect');
-      spyOn(list.childViews[1], 'deselect');
-      list.deselect();
-      expect(list.childViews[0].deselect).toHaveBeenCalled();
-      expect(list.childViews[1].deselect).toHaveBeenCalled();
-    });
-  });
-
   describe("createChildView", function () {
     it("should inherit settings from the list", function () {
       var resource = graph.set(null, {
