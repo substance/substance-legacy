@@ -82,7 +82,7 @@
 
 #document_export {
   background: #eaebe5;
-  font-family: Helvetica, Arial;
+  .ui-font;
   font-weight: bold;
   padding: 20px;
   
@@ -118,7 +118,7 @@
 }
 
 .formats .format .label {
-  font-family: Helvetica, Arial;
+  .ui-font;
   font-size: 9px;
   line-height: 11px;
   background: #666;
@@ -140,9 +140,11 @@
 }
 
 .additional-formats .format .label {
+  .ui-font;
+  
   padding-left: 40px;
   line-height: 32px;
-  font-family: Helvetica, Arial;
+  
   font-size: 12px;
   font-weight: normal;
 }
@@ -159,12 +161,12 @@
 
 
 #document_settings {
+  .ui-font;
+  
   background: #eaebe5;
-  font:14px/26px "Helvetica Neue", Arial, Helvetica, Geneva, sans-serif; color:#111;
+  font-size:14px/26px;
   padding: 20px;
   color: #444;
-  
-  -webkit-font-smoothing: antialiased;
   
   position: absolute;
   top: 0px;
@@ -203,9 +205,7 @@
   text-transform: uppercase;
   background: #555;
   color: white;
-  -webkit-border-radius: 3px;
-  -moz-border-radius:    3px;
-  border-radius:         3px;
+  .border-radius(3px);
 }
 
 #document_settings .collaborators span.confirmed {
@@ -249,12 +249,13 @@
 
 
 #publish_settings {
+  .ui-font;
   background: #eaebe5;
-  font:14px/26px "Helvetica Neue", Arial, Helvetica, Geneva, sans-serif; color:#111;
+  
+  font-size: 14px;
+  
   padding: 20px;
   color: #444;
-  
-  -webkit-font-smoothing: antialiased;
   
   position: absolute;
   top: 0px;
@@ -289,9 +290,7 @@
   display: block;
   float: right;
   
-  -webkit-border-radius:3px;
-  -moz-border-radius:   3px;
-  border-radius:        3px;
+  .border-radius(3px);
 }
 
 #publish_settings #new_version input {
@@ -301,8 +300,7 @@
   -moz-box-shadow: none;
   box-shadow: none;
   font-size: 20px;
-  font-family: "Helvetica Neue", Arial, Helvetica, Geneva, sans-serif;
-  -webkit-font-smoothing: antialiased;
+  .ui-font;
 }
 
 .versions .version {
@@ -322,7 +320,7 @@
 }
 
 .versions .version .label {
-  font-family: Helvetica, Arial;
+  .ui-font;
   font-size: 11px;
   line-height: 11px;
   padding: 2px 3px 0px 1px;
@@ -398,19 +396,19 @@
 }
 
 #confirm_collaboration .title, #recover_password .title, #reset_password .title {
-  font-family: 'Palatino Linotype', 'Book Antiqua', Palatino, FreeSerif, serif;
+  .document-font;
   font-size: 40px;
   line-height: 100px;
   height: 100px;
 }
 
 #confirm_collaboration .lead {
+  .document-font;
   font-size: 20px;
   margin-top: 10px;
   line-height: 1.5;
   font-style: italic;
   color: #555;
-  font-family: 'Palatino Linotype', 'Book Antiqua', Palatino, FreeSerif, serif;
 }
 
 #confirm_collaboration .option.active {
@@ -457,6 +455,7 @@
 -------------------------------------------------------------------------------*/
 
 #document {
+  .document-font;
   color: #000;
   position:relative;
   margin: 0;
@@ -465,18 +464,17 @@
   -moz-box-shadow:    0px 1px 4px rgba(0,0,0,0.35), inset 0px 0px 1px rgba(255,255,255,0.15);
   box-shadow:         0px 1px 4px rgba(0,0,0,0.35), inset 0px 0px 1px rgba(255,255,255,0.15);
   background: #fff;
-  font-family: 'Palatino Linotype', 'Book Antiqua', Palatino, FreeSerif, serif;
   -webkit-font-smoothing: subpixel-antialiased;
   font-size: 16px;
   line-height: 1.4em;
 }
 
 #document_wrapper .notification.error {
+  .document-font;
   -webkit-box-shadow: 0px 1px 4px rgba(0,0,0,0.35), inset 0px 0px 1px rgba(255,255,255,0.15);
   -moz-box-shadow:    0px 1px 4px rgba(0,0,0,0.35), inset 0px 0px 1px rgba(255,255,255,0.15);
   box-shadow:         0px 1px 4px rgba(0,0,0,0.35), inset 0px 0px 1px rgba(255,255,255,0.15);
   
-  font-family: 'Palatino Linotype', 'Book Antiqua', Palatino, FreeSerif, serif;
   font-size: 20px;
   background: #fff;
   padding: 30px;
@@ -612,7 +610,6 @@ dd { color: #444; font-size: 1em; margin: 0 0 0 155px; padding: 0; padding-left:
 }
 
 #attributes .items .item a:hover { text-decoration: none; color: white; }
-
 
 
 /* Node Types

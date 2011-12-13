@@ -14,11 +14,8 @@
   width: 290px;
   height: 45px;
   position: relative;
-/*  cursor: pointer;*/
-  
-  -moz-border-radius: 2px;
-  -webkit-border-radius: 2px;
-  border-radius: 2px;
+
+  .border-radius(2px);
   color: white;
 }
 
@@ -102,8 +99,8 @@
 
 .tab .icon { margin-left: 6px; }
 
-#browser_tab .count { 
-  font-family: 'Palatino Linotype', 'Book Antiqua', Palatino, FreeSerif, serif;
+#browser_tab .count {
+  .document-font;
   font-style: italic;
   font-weight: bold;
   font-size: 18px;
@@ -151,20 +148,21 @@
 }
 
 #browser_tab .results .result-item.documents {
+  .ui-font;
   font-size: 27px;
   padding-left: 20px;
   padding-top: 15px;
-  font-family: Helvetica;
+  
   font-style: normal;
 }
 
 .result-item .username {
+  .ui-font;
+  
   position: absolute;
   top: 5px;
   left: 20px;
   font-size: 14px;
-  font-family: Helvetica;
-  font-style: normal;
   font-weight: bold;
 }
 
