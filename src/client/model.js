@@ -157,7 +157,7 @@ function updateNode (node, attrs) {
   //}
 }
 
-function possibleChildTypes (position) {
+function possibleChildTypes (position, level) {
   var defaultOrder = [ '/type/section'
                      , '/type/text'
                      , '/type/image'
@@ -183,55 +183,67 @@ function possibleChildTypes (position) {
   
   function getKey (val) { return val.key; }
   
-  function recurse (position, val) {
+  function recurse (position, val, level) {
     var parent = position.parent
     ,   after  = position.after;
     
     var expectedTypes = parent.properties().get('children').expectedTypes;
     _.each(expectedTypes, function (type) {
-      var curr = val.get(type);
-      if (curr) {
-        curr.push(position);
-      } else {
-        val.set(type, [position]);
+      if (!(type === '/type/section' && level > 3)) {
+        var curr = val.get(type);
+        if (curr) {
+          curr.push(position);
+        } else {
+          val.set(type, [position]);
+        }
       }
     });
     
     if (after && after.properties().get('children')) {
-      recurse(new Position(after, after.all('children').last()), val);
+      recurse(new Position(after, after.all('children').last()), val, level + 1);
     }
     
     return val;
   }
   
-  return recurse(position, new Data.Hash()).sort(on(compareByDefaultOrder, getKey));
+  return recurse(position, new Data.Hash(), level).sort(on(compareByDefaultOrder, getKey));
 }
 
 function getTypeName (type) {
   return graph.get(type).name;
 }
 
-function moveTargetPositions (node, position) {
+function moveTargetPositions (node, position, level) {
   function has (arr, el) {
     return arr.indexOf(el) >= 0;
   }
   
-  function recurse (position, arr) {
+  function depth (n) {
+    return isSection(n)
+         ? 1 + Math.max(_.max(_.map(n.all('children').values(), depth)), 0)
+         : 0;
+  }
+  
+  var maxLevel = 4 - depth(node);
+  
+  function recurse (position, arr, level) {
     var parent = position.parent
     ,   after  = position.after;
+    
+    if (level > maxLevel) { return arr; }
     
     if (has(parent.properties().get('children').expectedTypes, node.type.key)) {
       arr.push(position);
     }
     
     if (after && after.properties().get('children')) {
-      recurse(new Position(after, after.all('children').last() || null), arr);
+      recurse(new Position(after, after.all('children').last() || null), arr, level + 1);
     }
     
     return arr;
   }
   
-  return recurse(position, []);
+  return recurse(position, [], level);
 }
 
 

@@ -69,7 +69,7 @@ var Controls = Backbone.View.extend(_.extend({}, StateMachine, {
         var self = this;
         
         var childTypes = new Data.Hash();
-        possibleChildTypes(this.position).each(function (val, type) {
+        possibleChildTypes(this.position, this.level).each(function (val, type) {
           if (type !== '/type/section' || val.length == 1) {
             childTypes.set(type, _.last(val));
           } else {
@@ -97,7 +97,7 @@ var Controls = Backbone.View.extend(_.extend({}, StateMachine, {
         var movedNode = this.root.movedNode
         ,   level = this.level;
         
-        var moveTargets = moveTargetPositions(movedNode, this.position);
+        var moveTargets = moveTargetPositions(movedNode, this.position, this.level);
         if (!isSection(movedNode)) {
           moveTargets = [_.last(moveTargets)];
         } else {

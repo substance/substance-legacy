@@ -66,6 +66,13 @@ describe("Controls", function () {
   describe("Write state", function () {
     beforeEach(function () { controls.transitionTo('write'); });
 
+    it("should use 'possibleChildTypes' internally", function () {
+      spyOn(window, 'possibleChildTypes').andCallThrough();
+      controls.render();
+      expect(possibleChildTypes).toHaveBeenCalled();
+      expect(possibleChildTypes.mostRecentCall.args[1]).toBe(1);
+    });
+
     it("should have links to insert content", function () {
       var el = $(controls.el);
       expect(el.html()).toMatch(/Insert Content/);
@@ -129,9 +136,14 @@ describe("Controls", function () {
       });
       doc.set(newSection._id, newSection, 0);
       
+      spyOn(window, 'moveTargetPositions').andCallThrough();
+      
       root.movedParent = doc;
       root.movedNode = newSection;
       controls.transitionTo('moveTarget');
+      
+      expect(moveTargetPositions).toHaveBeenCalled();
+      expect(moveTargetPositions.mostRecentCall.args[2]).toBe(1);
       
       var el = $(controls.el);
       expect(el.find('ul ul').length).toBe(1);
