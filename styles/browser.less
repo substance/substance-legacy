@@ -21,13 +21,13 @@
   height: 40px;
 }
 
-#browser_navigation .modes {
+#browser_navigation .views {
   padding-top: 10px;
   margin-left: 30px;
   overflow: auto;
 }
 
-#browser_navigation .modes .mode {
+#browser_navigation .views .view {
   float: left;
   .border-top-radius(5px);
   background: #444;
@@ -39,7 +39,7 @@
   cursor: pointer;
 }
 
-#browser_navigation .modes .mode:hover, #browser_navigation .modes .mode.selected {
+#browser_navigation .views .view:hover, #browser_navigation .views .view.selected {
 	background: #000;
 }
 
@@ -47,26 +47,29 @@
 -------------------------------------------------------------------------------*/
 
 #browser_shelf {
+  height: 0px;
+  
+  overflow: auto;
   -webkit-transition-property: height;
   -webkit-transition-duration: 0.6s;
   background: #CDCECA;
 }
 
-#browser_shelf.open {
-  height: 200px;
+#browser_shelf .shelf-content {
+  
 }
+
 
 /* #browser_wrapper > #browser_content
 -------------------------------------------------------------------------------*/
 
 #browser_content {
+  /*margin-top: 400px;*/
+  background: #ccc;
   -webkit-transition-property: margin-top;
   -webkit-transition-duration: 0.6s;
+  
 }
-
-
-
-
 
 
 

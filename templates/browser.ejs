@@ -1,9 +1,9 @@
 <div id="browser_controls" class="view-controls">
   <div id="browser_navigation">
-    <div class="modes">
-      <div class="mode<%= mode === 'user' ? ' selected' : '' %>" mode="user">My Documents</div>
-      <div class="mode<%= mode === 'explore' ? ' selected' : '' %>" mode="explore">Explore</div>
-      <div class="mode<%= mode === 'search' ? ' selected' : '' %>" mode="search">Search</div>
+    <div class="views">
+      <div class="browser view user<%= selectedView === 'user' ? ' selected' : '' %>" view="user">My Documents</div>
+      <div class="browser view explore<%= selectedView === 'explore' ? ' selected' : '' %>" view="explore">Explore</div>
+      <div class="browser view search<%= selectedView === 'search' ? ' selected' : '' %>" view="search">Search</div>
     </div>
   </div>
 
@@ -11,7 +11,5 @@
     
   </div>
 </div>
-
-<div id="spacer" style="height: 400px;"></div>
 
 <div id="browser_content"></div>

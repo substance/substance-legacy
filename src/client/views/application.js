@@ -27,7 +27,7 @@ var Router = Backbone.Router.extend({
     $('#content_wrapper').attr('url', "collaborate/"+tan);
     var view = new ConfirmCollaboration(tan);
     
-    app.toggleView('content');
+    app.navigate('content');
     $('#header').hide();
     $('#footer').hide();
     
@@ -38,7 +38,7 @@ var Router = Backbone.Router.extend({
     $('#content_wrapper').attr('url', "recover");
     var view = new RecoverPassword();
     
-    app.toggleView('content');
+    app.navigate('content');
     $('#header').hide();
     $('#footer').hide();
     
@@ -49,7 +49,7 @@ var Router = Backbone.Router.extend({
     $('#content_wrapper').attr('url', "reset/"+username+"/"+tan);
     var view = new ResetPassword(username, tan);
     
-    app.toggleView('content');
+    app.navigate('content');
     $('#header').hide();
     $('#footer').hide();
     
@@ -79,7 +79,7 @@ var Application = Backbone.View.extend({
     'click .new-document': 'newDocument',
     'click a.load-document': 'loadDocument',
     'click a.signup': 'toggleSignup',
-    'click .tab': 'switchTab',
+    'click .toggle-view': 'toggleView',
     'click a.show-attributes': 'showAttributes',
     'submit #create_document': 'createDocument',
     'submit #login-form': 'login',
@@ -96,9 +96,6 @@ var Application = Backbone.View.extend({
     'click #toc_wrapper': 'toggleTOC',
     'click a.open-notification': 'openNotification',
     'change #document_name': 'updateDocumentName',
-    'click a.toggle-recent': 'toggleRecent',
-    'click a.toggle-subscribed': 'toggleSubscribed',
-    'click a.toggle-userdocs': 'toggleUserDocs',
     'click a.watch-intro': 'watchIntro'
   },
   
@@ -118,29 +115,29 @@ var Application = Backbone.View.extend({
     return false;
   },
   
-  // TODO: make obsolete?
-  toggleRecent: function() {
-    this.recentDocs();
+  toggleView: function(e) {
+    this.navigate($(e.currentTarget).attr('view'));
+  },
+  
+  navigate: function(view) {
+    console.log('navigating...'+ view);
+    this.$('.app.view').hide();
+    $('#'+view+'_wrapper').show();
+    
+    // // Wait until url update got injected
+    // setTimeout(function() {
+    //   router.navigate($('#'+view+'_wrapper').attr('url'));
+    // }, 10);
     return false;
   },
   
-  // TODO: make obsolete?
-  toggleSubscribed: function() {
-    this.subscribedDocs();
-    return false;
-  },
   
-  // TODO: make obsolete?  
-  toggleUserDocs: function() {
-    this.userDocs(app.username);
-    return false;
-  },
-  
-  // TODO: make obsolete?
+
+  // TODO: make obsolete
   userDocs: function(username) {
     app.browser.subview.load({"type": "user", "value": username});
     $('#browser_wrapper').attr('url', username);
-    app.toggleView('browser');
+    app.navigate('browser');
     
     return false;
   },
@@ -191,7 +188,7 @@ var Application = Backbone.View.extend({
     $('#browser_wrapper').attr('url', "recent");
     
     app.browser.bind('loaded', function() {
-      app.toggleView('browser');
+      app.navigate('browser');
       app.browser.unbind('loaded');
     });
     return false;
@@ -202,7 +199,7 @@ var Application = Backbone.View.extend({
     $('#browser_wrapper').attr('url', "subscribed");
     
     app.browser.bind('loaded', function() {
-      app.toggleView('browser');
+      app.navigate('browser');
       app.browser.unbind('loaded');
     });
     return false;
@@ -212,7 +209,7 @@ var Application = Backbone.View.extend({
     app.browser.load({"type": "keyword", "value": encodeURI(searchstr)});
     $('#browser_wrapper').attr('url', 'search/'+encodeURI(searchstr));
     app.browser.bind('loaded', function() {
-      app.toggleView('browser');
+      app.navigate('browser');
     });
   },
   
@@ -227,7 +224,7 @@ var Application = Backbone.View.extend({
     s.src = 'http://api.flattr.com/js/0.6/load.js?mode=auto';
     t.parentNode.insertBefore(s, t);
     
-    app.toggleView('content');
+    app.navigate('content');
     return false;
   },
     
@@ -294,7 +291,7 @@ var Application = Backbone.View.extend({
     var that = this;
     app.browser.load({"type": "user", "value": this.username});
     app.browser.bind('loaded', function() {
-      app.toggleView('browser');
+      app.navigate('browser');
       $('#browser_wrapper').attr('url', that.username);
       app.browser.unbind('loaded');
     });
@@ -308,7 +305,7 @@ var Application = Backbone.View.extend({
     this.content = new NewDocument({el: '#content_wrapper'});
     this.content.render();
     
-    this.toggleView('content');
+    this.navigate('content');
     return false;
   },
   
@@ -321,7 +318,7 @@ var Application = Backbone.View.extend({
   toggleUserSettings: function() {
     this.content = new UserSettings({el: '#content_wrapper'});
     this.content.render();
-    this.toggleView('content');    
+    this.navigate('content');    
     return false;
   },
   
@@ -329,30 +326,7 @@ var Application = Backbone.View.extend({
     $('#content_wrapper').attr('url', "register");
     // app.browser.browserTab.render();
     $('#content_wrapper').html(_.tpl('signup'));
-    app.toggleView('content');
-    return false;
-  },
-  
-  switchTab: function(e) {
-    this.toggleView($(e.currentTarget).attr('view'));
-  },
-  
-  toggleView: function(view) {
-	console.log('toggling viiiiiew');
-    $('.tab').removeClass('active');
-    $('#'+view+'_tab').addClass('active');
-    // $('.view').hide();
-    $('#'+view+'_wrapper').show();
-    
-    // Show stuff - inverting of this.collaborate();
-    $('#header').show();
-    $('#tabs').show();
-    $('#footer').show();
-
-    // Wait until url update got injected
-    setTimeout(function() {
-      router.navigate($('#'+view+'_wrapper').attr('url'));
-    }, 10);
+    app.navigate('content');
     return false;
   },
   

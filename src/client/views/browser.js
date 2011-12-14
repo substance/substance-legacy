@@ -4,7 +4,7 @@
 var Results = Backbone.View.extend({
   initialize: function(options) {
     this.documents = new Data.Hash();
-		this.subview = options.subview;
+		this.view = options.view;
   },
   
   render: function() {
@@ -12,8 +12,8 @@ var Results = Backbone.View.extend({
 		if (this.documents.length > 0) {			
       $('#browser_content').html(_.tpl('browser_results', {
         documents: this.documents,
-        user: this.subview.query.type === 'user' ? this.subview.graph.get('/user/'+this.subview.query.value) : null,
-        query: this.subview.query
+        user: this.view.query.type === 'user' ? this.view.graph.get('/user/'+this.view.query.value) : null,
+        query: this.view.query
       }));
 			
 		} else {
@@ -31,7 +31,7 @@ var BrowserModes = {};
 BrowserModes["user"] = Backbone.View.extend({
   initialize: function(options) {
     this.browser = options.browser;
-    this.results = new Results({subview: this});
+    this.results = new Results({view: this});
   },
   
   load: function(query) {
@@ -94,33 +94,47 @@ BrowserModes["search"] = Backbone.View.extend({
 
 var Browser = Backbone.View.extend({
   events: {
-    'click .modes .mode': 'switchMode'
+    'click .views .browser.view': 'toggleView'
   },
   
   initialize: function(options) {
     this.app = options.app;
-    this.mode = "user";
+    this.selectedView = "user";
     this.documents = [];
     this.graph = new Data.Graph(seed);
-    this.subview = new BrowserModes[this.mode]({browser: this});
+    this.view = new BrowserModes[this.selectedView]({browser: this});
   },
   
-  switchMode: function(e) {
-		this.mode = $(e.currentTarget).attr('mode');
-		this.$('.modes .mode').removeClass('selected');
-		$(e.currentTarget).addClass('selected');
-		this.subview = new BrowserModes[this.mode]({browser: this});
-		if (this.mode === "user") this.subview.load({"type": "user", "value": app.username});
-		this.render();
+  // Handlers
+  // -------------
+  
+  toggleView: function(e) {
+    this.navigate($(e.currentTarget).attr('view'))
+  },
+  
+  
+  // Methods
+  // -------------
+  
+  navigate: function(view) {
+		this.$('.views .browser.view').removeClass('selected');
+		
+    $('.browser.view.'+view).addClass('selected');
+    this.selectedView = view;
+		this.view = new BrowserModes[this.selectedView]({browser: this});
+		if (this.selectedView === "user") this.view.load({"type": "user", "value": app.username});
+		
+		this.view.render();
+		
+		$('#browser_shelf').css('height', $('#browser_shelf .shelf-content').height());
+		$('#browser_content').css('margin-top', $('#browser_shelf .shelf-content').height()+100);
   },
   
   render: function() {
     // Render parent view
     $(this.el).html(_.tpl('browser', {
-      mode: this.mode
+      selectedView: this.selectedView
     }));
-    
-    this.subview.render();
   }
   
 });
