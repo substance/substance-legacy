@@ -1,3 +1,89 @@
+/* #document_wrapper > #document_controls
+-------------------------------------------------------------------------------*/
+
+#document_controls {
+  position: fixed;
+  z-index: 200000;
+  top: 30px;
+  left: 0px;
+  right: 0px;
+}
+
+/* #document_wrapper > #document_controls > #document_navigation
+-------------------------------------------------------------------------------*/
+
+#document_navigation {
+  background: #989B99;
+  height: 40px;
+}
+
+#document_navigation .views {
+  padding-top: 10px;
+  margin-left: 30px;
+  overflow: auto;
+}
+
+#document_navigation .views .view {
+  float: left;
+  .border-top-radius(5px);
+  background: #444;
+  color: #fff;
+  margin-right: 5px;
+  padding: 0 3px;
+  height: 30px;
+  line-height: 30px;
+  cursor: pointer;
+}
+
+#document_navigation .views .view:hover, #document_navigation .views .view.selected {
+	background: #000;
+}
+
+/* #document_wrapper > #document_controls > #document_shelf
+-------------------------------------------------------------------------------*/
+
+#document_shelf {
+  height: 0px;
+  
+  overflow: auto;
+  -webkit-transition-property: height;
+  -webkit-transition-duration: 0.6s;
+  background: #CDCECA;
+}
+
+#document_shelf .shelf-content {
+  
+}
+
+
+/* #document_wrapper > #document_content
+-------------------------------------------------------------------------------*/
+
+#document_content {
+  margin-top: 100px;
+  width: 920px;
+  -webkit-transition-property: margin-top;
+  -webkit-transition-duration: 0.6s;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 /* body > #container > #document_wrapper
 -------------------------------------------------------------------------------*/
 

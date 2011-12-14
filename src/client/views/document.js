@@ -1,4 +1,43 @@
-// The Document Editor View
+// Document Views
+// -------------
+
+var DocumentViews = {};
+
+DocumentViews["publish"] = Backbone.View.extend({
+  initialize: function(options) {
+    this.document = options.document;
+  },
+  
+  render: function() {
+    $('#document_shelf').html(_.tpl('document_publish'), {
+      
+    });
+  }
+});
+
+
+DocumentViews["export"] = Backbone.View.extend({
+  render: function() {
+    $('#document_shelf').html(_.tpl('document_export'));
+  }
+});
+
+
+DocumentViews["invite"] = Backbone.View.extend({
+  render: function() {
+    $('#document_shelf').html(_.tpl('document_invite'));
+  }
+});
+
+
+
+
+
+
+
+
+// Document
+// -------------
 
 var Document = Backbone.View.extend({
   events: {
@@ -6,19 +45,40 @@ var Document = Backbone.View.extend({
     'click a.toggle-show-mode': 'toggleShowMode',
     'click a.subscribe-document': 'subscribeDocument',
     'click a.unsubscribe-document': 'unsubscribeDocument',
-    'click a.export-document': 'toggleExport',
-    'click a.toggle-settings': 'toggleSettings',
-    'click a.toggle-publish-settings': 'togglePublishSettings'
+    'click .views .document.view': 'toggleView'
+  },
+  
+  // Handlers
+  // -------------
+  
+  toggleView: function(e) {
+    this.navigate($(e.currentTarget).attr('view'))
+  },
+  
+  // Methods
+  // -------------
+  
+  navigate: function(view) {
+    this.$('.views .document.view').removeClass('selected');
+    $('.document.view.'+view).addClass('selected');
+    this.selectedView = view;
+    
+    console.log(view);
+    this.view = new DocumentViews[this.selectedView]({document: this});
+    this.view.render();
+    $('#document_shelf').css('height', $('#document_shelf .shelf-content').height());
+    $('#document_content').css('margin-top', $('#document_shelf .shelf-content').height()+100);
   },
   
   initialize: function() {
     var that = this;
-    this.settings = new DocumentSettings();
-    
-    this.publishSettings = new PublishSettings();
     
     this.app = this.options.app;
     this.mode = 'show';
+    
+    this.selectedView = "publish";
+    
+    this.view = new DocumentViews[this.selectedView]({document: this});
     
     this.bind('changed', function() {
       document.title = that.model.get('title') || 'Untitled';
@@ -40,11 +100,14 @@ var Document = Backbone.View.extend({
   
   render: function() {
     // Render all relevant sub views
-    $(this.el).html(_.tpl('document_wrapper', {
+    $(this.el).html(_.tpl('document', {
       mode: this.mode,
-      doc: this.model
+      doc: this.model,
+      selectedView: this.selectedView
     }));
-    this.renderMenu();
+    
+    // TODO: 
+    // this.renderMenu();
 
     if (this.model) {
       this.node = Node.create({ model: this.model });
@@ -60,11 +123,7 @@ var Document = Backbone.View.extend({
 
   toggleEditMode: function(e) {
     if (e) e.preventDefault();
-    
-    //var user = app.document.model.get('creator')._id.split('/')[2];
-    //var name = app.document.model.get('name');
-    //$('#document_wrapper').attr('url', user+"/"+name);
-    
+        
     this.$('.toggle-show-mode').removeClass('active');
     this.$('.toggle-edit-mode').addClass('active');
     
@@ -90,11 +149,7 @@ var Document = Backbone.View.extend({
   
   toggleShowMode: function(e) {
     if (e) e.preventDefault();
-    
-    //var user = app.document.model.get('creator')._id.split('/')[2];
-    //var name = app.document.model.get('name');
-    //$('#document_wrapper').attr('url', user+"/"+name);
-    
+        
     $('#document').removeClass('edit-mode');
     this.$('.toggle-edit-mode').removeClass('active');
     this.$('.toggle-show-mode').addClass('active');
@@ -168,13 +223,13 @@ var Document = Backbone.View.extend({
   },
   
   renderMenu: function() {
-    if (this.model) {
-      $('#document_tab').show();
-      $('#document_tab').html(_.tpl('document_tab', {
-        username: this.model.get('creator')._id.split('/')[2],
-        document_name: this.model.get('name')
-      }));
-    }
+    // if (this.model) {
+    //   $('#document_tab').show();
+    //   $('#document_tab').html(_.tpl('document_tab', {
+    //     username: this.model.get('creator')._id.split('/')[2],
+    //     document_name: this.model.get('name')
+    //   }));
+    // }
   },
   
   newDocument: function(type, name, title) {
@@ -192,7 +247,7 @@ var Document = Backbone.View.extend({
     }
     
     // Move to the actual document
-    app.toggleView('document');
+    app.navigate('document');
     
     router.navigate(this.app.username+'/'+name);
     $('#document_wrapper').attr('url', '#'+this.app.username+'/'+name);
@@ -223,7 +278,7 @@ var Document = Backbone.View.extend({
         
         // Update browser graph reference
         app.browser.graph.set('nodes', id, that.model);
-        app.toggleView('document');
+        app.navigate('document');
         
         // TODO: scroll to desired part of the document
       } else {
@@ -234,24 +289,16 @@ var Document = Backbone.View.extend({
     var id = that.loadedDocuments[username+"/"+docname];
     $('#document_tab').show();
     
-    // Already loaded - no need to fetch it
-    // if (id) {
-    //   // TODO: check if there are changes from a realtime session
-    //   init(id);
-    // } else {
-      
+
     function printError(error) {
       if (error === "not_authorized") {
-        $('#document_tab').html('&nbsp;&nbsp;&nbsp; Not Authorized');
         $('#document_wrapper').html("<div class=\"notification error\">You are not authorized to access this document.</div>");
       } else {
-        $('#document_tab').html('&nbsp;&nbsp;&nbsp; Document not found');
         $('#document_wrapper').html("<div class=\"notification error\">The requested document couldn't be found.</div>");
       }
-      app.toggleView('document');
+      app.navigate('document');
     }
 
-    $('#document_tab').html('&nbsp;&nbsp;&nbsp;Loading...');
     $.ajax({
       type: "GET",
       url: version ? "/documents/"+username+"/"+docname+"/"+version : "/documents/"+username+"/"+docname,
@@ -271,7 +318,6 @@ var Document = Backbone.View.extend({
         printError(JSON.parse(err.responseText).error);
       }
     });
-    // }
   },
   
   subscribeDocument: function() {
@@ -320,22 +366,17 @@ var Document = Backbone.View.extend({
     this.model = null;
     router.navigate(this.app.username);
     $('#document_wrapper').attr('url', '#'+this.app.username);
-    $('#document_tab').hide();
-    app.toggleView('content');
+    app.navigate('content');
     this.render();
   },
-  
-  // Delete an existing document, given that the user is authorized
-  // -------------
   
   deleteDocument: function(id) {
     var that = this;
     graph.del(id);
     app.browser.graph.del(id);
     app.browser.render();
-    $('#document_tab').hide();
     setTimeout(function() {
-      app.toggleView('browser');
+      app.navigate('browser');
     }, 300);
     notifier.notify(Notifications.DOCUMENT_DELETED);
   },
@@ -346,5 +387,4 @@ var Document = Backbone.View.extend({
       name: name
     });
   }
-  
 });

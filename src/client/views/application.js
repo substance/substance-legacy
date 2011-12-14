@@ -60,7 +60,7 @@ var Router = Backbone.Router.extend({
     var version = !p1 || p1.indexOf("_") >= 0 ? null : p1;
     var node = version ? p2 : p1;
     var comment = version ? p3 : p2;
-    app.browser.load({"type": "user", "value": username});
+    app.browser.view.load({"type": "user", "value": username});
     app.document.loadDocument(username, docname, version, node, comment);
     
     $('#document_wrapper').attr('url', username+'/'+docname+(p1 ? "/"+p1 : "")+(p2 ? "/"+p2 : "")+(p3 ? "/"+p3 : ""));
@@ -80,7 +80,6 @@ var Application = Backbone.View.extend({
     'click a.load-document': 'loadDocument',
     'click a.signup': 'toggleSignup',
     'click .toggle-view': 'toggleView',
-    'click a.show-attributes': 'showAttributes',
     'submit #create_document': 'createDocument',
     'submit #login-form': 'login',
     'click a.delete-document': 'deleteDocument',
@@ -369,26 +368,20 @@ var Application = Backbone.View.extend({
   },
   
   loadDocument: function(e) {
-      var user = $(e.currentTarget).attr('user').toLowerCase();
-          name = $(e.currentTarget).attr('name');
+    var user = $(e.currentTarget).attr('user').toLowerCase();
+        name = $(e.currentTarget).attr('name');
 
-      app.document.loadDocument(user, name, null,  null, null);
-      if (router) {
-        router.navigate($(e.currentTarget).attr('href'));
-        $('#document_wrapper').attr('url', $(e.currentTarget).attr('href'));
-      }
+    app.document.loadDocument(user, name, null,  null, null);
+    if (router) {
+      router.navigate($(e.currentTarget).attr('href'));
+      $('#document_wrapper').attr('url', $(e.currentTarget).attr('href'));
+    }
     return false;
   },
   
   // Handle top level events
   // -------------
-  
-  showAttributes: function() {
-    app.document.drawer.toggle('Attributes');
-    $('.show-attributes').toggleClass('selected');
-    return false;
-  },
-  
+    
   logout: function() {
     var that = this;
     
@@ -397,10 +390,6 @@ var Application = Backbone.View.extend({
       url: "/logout",
       dataType: "json",
       success: function(res) {
-        // that.username = null;
-        // that.authenticated = false;
-        // that.render();
-        // $('.new-document').hide();
         window.location.reload();
       }
     });
@@ -454,14 +443,6 @@ var Application = Backbone.View.extend({
     }
     
     this.bind('authenticated', function() {
-      // that.authenticated = true;
-      // // Re-render browser
-      // $('#tabs').show();
-      // $('.new-document').show();
-      // that.render();
-      // that.browser.load(that.query());
-      
-      // Reload current page
       window.location.reload();
     });
     
