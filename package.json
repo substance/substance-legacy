@@ -1,0 +1,18 @@
+{
+  "name": "substance",
+  "description": "Substance is a web-based document authoring and publishing engine developed in the open and available to everyone.",
+  "version": "0.4.0",
+  "homepage": "http://substance.io/",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/michael/substance"
+  },
+  "dependencies": {
+    "underscore": "1.2.3",
+    "async": "0.1.15",
+    "cookie-sessions": "0.0.2",
+    "nodemailer": "0.2.4",
+    "express": "2.5.2",
+    "now": "0.7.6"
+  }
+}
