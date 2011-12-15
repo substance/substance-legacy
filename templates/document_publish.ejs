@@ -1,7 +1,13 @@
 <div class="shelf-content">
   <div id="document_publish">
     <div class="settings-title">Publish</div>
-
+    
+    <select name="networks" class="networks-selection" multiple="multiple">
+      <option value="/network/javascript">Javascript</option>
+      <option value="/network/nodejs">Node.js</option>
+      <option value="/network/jazz">Jazz</option>
+    </select>
+    
     <% if (versions.length === 0) { %>
       <p>Not published yet</p>
     <% } %>
@@ -14,12 +20,10 @@
         </div>
       </div>
     <% } %>
-
-    <!--
+    
     <% if (versions.length > 0) { %>
       <h6>Published Versions</h6>
       <div class="versions">
-
         <% versions.each(function(version) { %>
           <a title="<%= version.get('remark') %>"class="version" href="/<%= document.get('creator')._id.split('/')[2] %>/<%= document.get('name') %>/<%= version._id.split('/')[3] %>">
             <div class="label"><%= _.date(version.get('created_at')) %></div>
@@ -28,6 +32,5 @@
         <% }); %>
       </div>
     <% } %>
-    -->
   </div>
 </div>

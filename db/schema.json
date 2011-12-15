@@ -511,6 +511,96 @@
       "key": ["creator", "name"]
     }
   },
+  
+  "/type/network": {
+    "_id": "/type/network",
+    "type": "/type/type",
+    "properties": {
+      "name": {
+        "name": "Network Name",
+        "type": "string",
+        "unique": true,
+        "required": true
+      },
+      "creator": {
+        "name": "Creator",
+        "unique": true,
+        "type": "/type/user",
+        "required": true,
+        "meta": {}
+      },
+      "created_at": {
+        "name": "Created at",
+        "unique": true,
+        "type": "date",
+        "required": true
+      }
+    },
+    "indexes": {
+      "by_creator": ["creator"]
+    }
+  },
+  
+  "/type/membership": {
+    "_id": "/type/membership",
+    "type": "/type/type",
+    "properties": {
+      "network": {
+        "name": "Network",
+        "type": "/type/network",
+        "unique": true,
+        "required": true
+      },
+      "user": {
+        "name": "User",
+        "type": "/type/user",
+        "unique": true,
+        "required": true
+      },
+      "created_at": {
+        "name": "Created at",
+        "unique": true,
+        "type": "date",
+        "required": true
+      }
+    },
+    "indexes": {
+      "by_user": ["user"],
+      "by_network": ["network"],
+      "by_user_and_network": ["user", "network"]
+    }
+  },
+  
+  "/type/publication": {
+    "_id": "/type/publication",
+    "type": "/type/type",
+    "properties": {
+      "document": {
+        "name": "Document",
+        "type": "/type/document",
+        "unique": true,
+        "required": true
+      },
+      "network": {
+        "name": "Network",
+        "type": "/type/network",
+        "unique": true,
+        "required": true
+      },
+      "created_at": {
+        "name": "Created at",
+        "unique": true,
+        "type": "date",
+        "required": true
+      }
+    },
+    "indexes": {
+      "by_document": ["document"],
+      "by_network": ["network"],
+      "by_document_and_network": ["document", "network"]
+    }
+  },
+  
 
   "/type/qaa": {
     "type": "/type/type",
