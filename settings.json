@@ -61,7 +61,6 @@
       "/client/views/browser.js",
       "/client/views/user_settings.js",
       "/client/views/new_document.js",
-      "/client/views/browser_tab.js",
       "/client/views/header.js",
       "/client/views/application.js",
       "/client/views/comments.js",
