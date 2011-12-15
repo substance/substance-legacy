@@ -13,8 +13,6 @@
         <div class="body">
           <% var version = comment.get('version') ? comment.get('version')._id.split('/')[3] : null; %>
           
-          <!--Version: <%= version %> / <%= app.document.version %>-->
-          
           <% if (version !== app.document.version || !(!!version === !!app.document.version)) { %>
             <div class="different-version" title="This comment belongs to a different document version.">
               <a href="/<%= username %>/<%= doc.get('name') %><%= version ? "/"+version : "" %>/<%= node.html_id %>/<%= comment.html_id %>">different version</a>

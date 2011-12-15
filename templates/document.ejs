@@ -6,7 +6,21 @@
       <div class="document view export<%= selectedView === 'export' ? ' selected' : '' %>" view="export">Export</div>
     </div>
   </div>
-
+  
+  <!--<div class="document-identifier">
+    <span><%= "username" %> / </span><input type="text" id="document_name" name="document_name" value="<%= "document_name" %>"/>
+  </div>-->
+  
+  <!-- <dt>Creator</dt>
+  <dt>Created On</dt>
+  <dd><%= _.date(doc.get('created_at')) %></dd>
+  
+  <dt>Last modified</dt>
+  <dd><%= _.prettyDate(new Date(doc.get('updated_at')).toJSON()) %></dd>
+  
+  <dt>Views</dt>
+  <dd><%= doc.get('views') %></dd> -->
+  
   <div id="document_shelf">
     
   </div>
@@ -31,43 +45,10 @@
         
         <a href="/" title="<%= doc && doc.get('subscribed') ? "Unsubscribe" : "Subscribe document and get notified about updates" %> " class="view-action-icon <%= doc && doc.get('subscribed') ? "unsubscribe-document" : "subscribe-document" %>"><div class="subscription-count"><%= doc && doc.get('subscribers') > 0 ? doc.get('subscribers') : "" %></div><span>Subscribe document and get notified about updates</span></a>
         
-        <% if (doc && doc.authorized) { %>
-          <a href="#" class="toggle-settings view-action-icon settings" title="Collaborators"><span>Collaborators</span></a>
-          <a href="#" class="toggle-publish-settings view-action-icon publish-settings<%= doc.published ? " pub" : "" %>" title="Publish"><span>Publish Settings</span></a>
-        <% } %>
-        
-        <a href="#" class="export-document view-action-icon export" title="Export Document (Experimental)"><span>Export</span></a>
-      </div>
-      
-      <div id="document_settings"></div>
-      
-      <div id="publish_settings"></div>
-      
-      <div id="document_export">
-        <h7>Export Document</h7>
-        <div class="formats">
-          <a href="<%= document.location.href %>.pdf" target="_blank" class="format pdf" title="Adobe PDF"><div class="label">PDF</div></a>
-          <a href="<%= document.location.href %>.odt" target="_blank" class="format odf" title="OpenDocument Text"><div class="label">ODT</div></a>
-          <a href="<%= document.location.href %>.rtf" target="_blank" class="format rtf" title="Rich Text Format"><div class="label">RTF</div></a>
-          <a href="<%= document.location.href %>.epub" target="_blank" class="format epub" title="Electronic Publication"><div class="label">EPUB</div></a>
-          <a href="<%= document.location.href %>.shower" target="_blank" class="format shower" title="Shower Slideshow"><div class="label">SHWR</div></a>
-        </div>
-        <h7>Additional Formats</h7>
-        <div class="additional-formats">
-          <a href="<%= document.location.href %>.html" target="_blank" class="format html" title="HTML"><div class="label">HTML</div></a>
-          <a href="<%= document.location.href %>.latex" target="_blank" class="format latex"><div class="label">LaTeX</div></a>
-          <a href="<%= document.location.href %>.markdown" target="_blank" class="format markdown"><div class="label">Markdown</div></a>
-          <a href="<%= document.location.href %>.textile" target="_blank" class="format textile"><div class="label">Textile</div></a>
-          <a href="<%= document.location.href %>.mediawiki" target="_blank" class="format mediawiki"><div class="label">MediaWiki</div></a>
-          <a href="<%= document.location.href %>.texinfo" target="_blank" class="format texinfo"><div class="label">Texinfo</div></a>
-          <a href="<%= document.location.href %>.org" target="_blank" class="format org"><div class="label">Emacs Org-Mode</div></a>
-          <a href="<%= document.location.href %>.rst" target="_blank" class="format rst"><div class="label">ReStructuredText</div></a>
-        </div>
       </div>
     </div>
     <div id="document_tree">
       <p>No document loaded... You can either create a <em>New Document</em> or <em>Browse</em> existing ones.</p>
     </div>
   </div>
-  <div id="attributes"></div>
 </div>

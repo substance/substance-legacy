@@ -1,39 +1,216 @@
-// Document Views
-// -------------
-
 var DocumentViews = {};
 
+// Publish
+// -------------
+
 DocumentViews["publish"] = Backbone.View.extend({
-  initialize: function(options) {
-    this.document = options.document;
+  events: {
+    'click a.publish-document': 'publishDocument',
+    'click .remove-version': 'removeVersion',
+    'focus #version_remark': 'focusRemark',
+    'blur #version_remark': 'blurRemark'
   },
   
-  render: function() {
-    $('#document_shelf').html(_.tpl('document_publish'), {
-      
+  focusRemark: function(e) {
+    var input = $('#version_remark');
+    if (input.val() === 'Enter optional remark.') input.val('');
+  },
+  
+  blurRemark: function(e) {
+    var input = $('#version_remark');
+    if (input.val() === '') input.val('Enter optional remark.');
+  },
+  
+  publishDocument: function(e) {
+    var that = this;
+    var remark = $('#version_remark').val();
+    
+    $.ajax({
+      type: "POST",
+      url: "/publish",
+      data: {
+        document: app.document.model._id,
+        remark: remark === 'Enter optional remark.' ? '' : remark
+      },
+      dataType: "json",
+      success: function(res) {
+        if (res.error) return alert(res.error);
+        that.load();
+        app.document.published = true;
+        app.document.render();
+        $('#publish_settings').show();
+      },
+      error: function(err) {
+        console.log(err);
+        alert("Unknown error occurred");
+      }
     });
+    
+    return false;
+  },
+  
+  removeVersion: function(e) {
+    var version = $(e.currentTarget).attr('version');
+    var that = this;
+    
+    window.pendingSync = true;
+    graph.del(version);
+    
+    // Trigger immediate sync
+    graph.sync(function (err) {
+      window.pendingSync = false;
+      that.load();
+      
+      if (that.versions.length === 1) {
+        app.document.published = false;
+        app.document.render();
+        $('#publish_settings').show();
+      }
+    });
+    
+    return false;
+  },
+  
+  load: function(callback) {
+    var that = this;
+    // Load versions
+    graph.fetch({"type": "/type/version", "document": app.document.model._id}, function(err, versions) {
+      var ASC_BY_CREATED_AT = function(item1, item2) {
+        var v1 = item1.value.get('created_at'),
+            v2 = item2.value.get('created_at');
+        return v1 === v2 ? 0 : (v1 < v2 ? -1 : 1);
+      };
+      
+      that.versions = versions.sort(ASC_BY_CREATED_AT);
+      that.loaded = true;
+      that.render(callback);
+    });
+  },
+  
+  
+  initialize: function(options) {
+    this.document = options.document;
+    this.el = '#document_shelf';
+  },
+  
+  render: function(callback) {
+    if (!this.loaded) return this.load(callback);
+    $(this.el).html(_.tpl('document_publish', {
+      versions: this.versions,
+      document: app.document.model
+    }));
+    this.delegateEvents();
+    callback();
   }
 });
 
+
+
+
+// Export
+// -------------
 
 DocumentViews["export"] = Backbone.View.extend({
-  render: function() {
+  render: function(callback) {
     $('#document_shelf').html(_.tpl('document_export'));
+    callback();
   }
 });
 
+
+// Invite
+// -------------
 
 DocumentViews["invite"] = Backbone.View.extend({
-  render: function() {
-    $('#document_shelf').html(_.tpl('document_invite'));
+  events: {
+    'submit form': 'invite',
+    'change select.change-mode': 'changeMode',
+    'click a.remove-collaborator': 'removeCollaborator'
+  },
+  
+  changeMode: function(e) {
+    var collaboratorId = $(e.currentTarget).attr('collaborator');
+    var mode = $(e.currentTarget).val();
+    var that = this;
+    
+    window.pendingSync = true;
+    
+    graph.get(collaboratorId).set({
+      mode: mode
+    });
+    
+    // trigger immediate sync
+    graph.sync(function(err) {
+      window.pendingSync = false;
+      that.render();
+    });
+    
+    return false;
+  },
+  
+  removeCollaborator: function(e) {
+    var collaboratorId = $(e.currentTarget).attr('collaborator');
+    var that = this;
+    
+    window.pendingSync = true;
+    graph.del(collaboratorId);
+    
+    // trigger immediate sync
+    graph.sync(function(err) {
+      window.pendingSync = false;
+      that.collaborators.del(collaboratorId);
+      that.render();
+    });
+
+    return false;
+  },
+  
+  invite: function() {
+    var that = this;
+    $.ajax({
+      type: "POST",
+      url: "/invite",
+      data: {
+        email: $('#collaborator_email').val(),
+        document: app.document.model._id,
+        mode: $('#collaborator_mode').val()
+      },
+      dataType: "json",
+      success: function(res) {
+        if (res.error) return alert(res.error);
+        that.load();
+      },
+      error: function(err) {
+        alert("Unknown error occurred");
+      }
+    });
+    return false;
+  },
+  
+  load: function(callback) {
+    var that = this;
+    graph.fetch({"type": "/type/collaborator", "document": app.document.model._id}, function(err, nodes) {
+      that.collaborators = nodes;
+      that.loaded = true;
+      that.render(callback);
+    });
+  },
+  
+  initialize: function(options) {
+    this.document = options.document;
+    this.el = '#document_shelf';
+  },
+  
+  render: function(callback) {
+    if (!this.loaded) return this.load(callback);
+    $(this.el).html(_.tpl('document_invite', {
+      collaborators: this.collaborators,
+      document: this.document.model
+    }));
+    this.delegateEvents();
+    callback();
   }
 });
-
-
-
-
-
-
 
 
 // Document
@@ -52,7 +229,7 @@ var Document = Backbone.View.extend({
   // -------------
   
   toggleView: function(e) {
-    this.navigate($(e.currentTarget).attr('view'))
+    this.navigate($(e.currentTarget).attr('view'));
   },
   
   // Methods
@@ -65,9 +242,11 @@ var Document = Backbone.View.extend({
     
     console.log(view);
     this.view = new DocumentViews[this.selectedView]({document: this});
-    this.view.render();
-    $('#document_shelf').css('height', $('#document_shelf .shelf-content').height());
-    $('#document_content').css('margin-top', $('#document_shelf .shelf-content').height()+100);
+    this.view.render(function() {
+      $('#document_shelf').css('height', $('#document_shelf .shelf-content').height());
+      $('#document_content').css('margin-top', $('#document_shelf .shelf-content').height()+100);
+    });
+    
   },
   
   initialize: function() {
@@ -82,23 +261,24 @@ var Document = Backbone.View.extend({
     
     this.bind('changed', function() {
       document.title = that.model.get('title') || 'Untitled';
-      // Re-render Document browser
       that.app.browser.render();
     });
     
     _.bindAll(this, 'deselect', 'onKeydown');
     $(document.body)
-      .click(this.deselect)
+      // .click(this.deselect) // Disabled for now as it breaks interaction with the shelf
       .keydown(this.onKeydown);
   },
 
   remove: function () {
     $(document.body)
-      .unbind('click', this.deselect)
+      // .unbind('click', this.deselect) // Disabled for now as it breaks interaction with the shelf
       .unbind('keydown', this.onKeydown);
   },
   
   render: function() {
+    if (!this.model) return;
+    
     // Render all relevant sub views
     $(this.el).html(_.tpl('document', {
       mode: this.mode,
@@ -106,12 +286,8 @@ var Document = Backbone.View.extend({
       selectedView: this.selectedView
     }));
     
-    // TODO: 
-    // this.renderMenu();
-
     if (this.model) {
       this.node = Node.create({ model: this.model });
-      this.attributes = new Attributes({ model: this.model, el: this.$('#attributes').get(0) }).render();
       this.$('#document').show();
       $('#document_tree').empty();
       this.toc = new TOC({ model: this.model, el: this.$('#toc_wrapper').get(0) }).render();
@@ -161,55 +337,6 @@ var Document = Backbone.View.extend({
   },
   
   
-  loadedDocuments: {},
-  
-  togglePublishSettings: function() {
-    $('#document_settings').hide();
-    $('.view-action-icon.settings').removeClass('active');
-    
-    $('#document_export').hide();
-    $('.view-action-icon.export').removeClass('active');
-    
-    this.publishSettings.load();
-    
-    if ($('#publish_settings').is(':visible')) {
-      $('.view-action-icon.publish-settings').removeClass('active');
-    } else {
-      $('.view-action-icon.publish-settings').addClass('active');
-    }
-    
-    $('#publish_settings').slideToggle();
-
-    return false;
-  },
-  
-  toggleExport: function() {
-    $('#document_settings').hide();
-    $('.view-action-icon.settings').removeClass('active');
-    
-    $('#publish_settings').hide();
-    $('.view-action-icon.publish-settings').removeClass('active');
-    
-    $('#document_export').slideToggle();
-    $('.view-action-icon.export').toggleClass('active');
-    return false;
-  },
-  
-  toggleSettings: function() {
-    $('#document_export').hide();
-    $('.view-action-icon.export').removeClass('active');
-    
-    $('#publish_settings').hide();
-    $('.view-action-icon.publish-settings').removeClass('active');
-    
-    this.settings.load();
-    
-    $('#document_settings').slideToggle();
-    $('.view-action-icon.settings').toggleClass('active');
-    return false;
-  },
-  
-  
   // Extract available documentTypes from config
   documentTypes: function() {
     var result = [];
@@ -222,16 +349,6 @@ var Document = Backbone.View.extend({
     return result;
   },
   
-  renderMenu: function() {
-    // if (this.model) {
-    //   $('#document_tab').show();
-    //   $('#document_tab').html(_.tpl('document_tab', {
-    //     username: this.model.get('creator')._id.split('/')[2],
-    //     document_name: this.model.get('name')
-    //   }));
-    // }
-  },
-  
   newDocument: function(type, name, title) {
     this.model = createDoc(type, name, title);
     
@@ -239,7 +356,6 @@ var Document = Backbone.View.extend({
     this.authorized = true;
     $(this.el).show();
     this.render();
-    this.loadedDocuments[app.username+"/"+name] = this.model._id;
     
     // Update browser graph
     if (app.browser && app.browser.query && app.browser.query.type === "user" && app.browser.query.value === app.username) {
@@ -264,17 +380,14 @@ var Document = Backbone.View.extend({
     function init(id) {
       that.model = graph.get(id);
       
-      if (!(head.browser.webkit || head.browser.mozilla)) {
+      if (!(head.browser.webkit || head.browser.mozilla)) {
         // TODO: prevent write mode
         alert("Your browser is not yet supported. We recommend Google Chrome and Safari, but you can also use Firefox.");
       }
       
       if (that.model) {
         that.render();
-        
-        // window.positionBoard();
         that.trigger('changed');
-        that.loadedDocuments[username+"/"+docname] = id;
         
         // Update browser graph reference
         app.browser.graph.set('nodes', id, that.model);
@@ -286,7 +399,6 @@ var Document = Backbone.View.extend({
       }
     }
     
-    var id = that.loadedDocuments[username+"/"+docname];
     $('#document_tab').show();
     
 
@@ -337,7 +449,7 @@ var Document = Backbone.View.extend({
       subscribers: this.model.get('subscribers') + 1
     });
     
-    this.model._dirty = false; // Don't make dirty
+    this.model._dirty = false;
     this.render();
     return false;
   },
@@ -355,7 +467,7 @@ var Document = Backbone.View.extend({
         subscribed: false,
         subscribers: that.model.get('subscribers') - 1
       });
-      that.model._dirty = false; // Don't make dirty
+      that.model._dirty = false;
       that.render();
     });
     
