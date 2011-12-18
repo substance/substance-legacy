@@ -1,7 +1,7 @@
 // Invite
 // -------------
 
-DocumentViews["invite"] = Backbone.View.extend({
+s.views.Invite = Backbone.View.extend({
   events: {
     'submit form': 'invite',
     'change select.change-mode': 'changeMode',
@@ -83,7 +83,7 @@ DocumentViews["invite"] = Backbone.View.extend({
   
   render: function(callback) {
     if (!this.loaded) return this.load(callback);
-    $(this.el).html(_.tpl('document_invite', {
+    $(this.el).html(s.util.tpl('document_invite', {
       collaborators: this.collaborators,
       document: this.document.model
     }));

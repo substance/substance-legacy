@@ -1,0 +1,31 @@
+<div id="login_state" class="logged-in">
+  <div class="toggle notifications<%= notifications_active ? " active" : "" %>" title="Notifications">
+    <div class="icon"></div>
+    <div class="count"><span><%= count %></span></div>
+  </div>
+  <div class="toggle user-profile" title="User Profile">
+    <div class="icon"><img src="/avatar/<%= user._id.split('/')[2] %>/25"/></div>
+    <div class="lbl"><span><%= user.get('name') %></span></div>
+  </div>
+  <div class="toggle user-settings" title="User Settings">
+    <div class="icon"></div>
+  </div>
+  <div class="toggle logout" title="Logout">
+    <div class="icon"></div>
+  </div>
+  
+  <div id="event_notifications" class="<%= notifications_active ? "active" : "" %>">
+    <% notifications.each(function(n) { %>
+      <a class="open-notification" href="<%= n.get('event').get('link') %>"><div class="notification<%= n.get('read') ? " read": " unread" %>">
+        <img src="/avatar/<%= n.get('event').get('creator')._id.split('/')[2]%>/30">
+        <div class="message"><%= n.get('event').get('message') %></div>
+        <div class="timestamp"><%= _.prettyDate(n.get('event').get('created_at')) %></div>
+      </div></a>
+    <% }); %>
+    <% if (notifications.length === 0) { %>
+      <div class="notification">
+        <div class="message">Currently no notifications</div>
+      </div>
+    <% } %>
+  </div>
+</div>

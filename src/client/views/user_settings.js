@@ -1,4 +1,4 @@
-var UserSettings = Backbone.View.extend({
+s.views.UserSettings = Backbone.View.extend({
   events: {
     'submit form': 'updateUser'
   },
@@ -60,8 +60,9 @@ var UserSettings = Backbone.View.extend({
   },
   
   render: function() {
-    $(this.el).html(_.tpl('user_settings', {
+    $(this.el).html(s.util.tpl('user_settings', {
       user: graph.get('/user/'+app.username)
     }));
+    return this;
   }
 });

@@ -1,9 +1,9 @@
 // Export
 // -------------
 
-DocumentViews["export"] = Backbone.View.extend({
+s.views.Export = Backbone.View.extend({
   render: function(callback) {
-    $('#document_shelf').html(_.tpl('document_export'));
+    $('#document_shelf').html(s.util.tpl('document_export'));
     callback();
   }
 });

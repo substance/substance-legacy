@@ -1,41 +1,4 @@
-<div id="card_file">
-  <% if (user) { %>
-    <div class="container">
-      <div class="avatar">
-        <img<% if (user.get('username') === app.username) { %> title="Change your avatar at Gravatar.com"<% } %> class="left" src="/avatar/<%= user._id.split('/')[2] %>/100"/>
-      </div>
-      <div class="username">
-        <h1><%= user.get('name') %></h1>
-        <p><em>as</em> <b><%= user.get('username') %></b> <em>since</em> <%= _.date(user.get('created_at')) %></p>
-        
-        <div class="attributes">
-          <% if (user.get('location')) { %>
-            <div><em>Located in</em> <%= user.get('location') %></div>
-          <% } %>
-
-          <% if (user.get('company')) { %>
-            <div><em>Works at</em> <%= user.get('company') %></div>
-          <% } %>
-
-          <% if (user.get('website')) { %>
-            <div><em>Website at</em> <a target="_blank" href="<%= user.get('website') %>"><%= user.get('website') %></a></div>
-          <% } %>
-        </div>
-      </div>
-    </div>
-  <% } else { %>
-    <% if (query.type == "recent") { %>
-      <h1>Recent Documents</h1>
-    <% } else if (query.type === "subscribed") { %>
-      <h1>Subscribed Documents</h1>
-    <% } else { %>
-      <h1>Documents matching &quot;<%= query.value %>&quot;</h1>
-    <% } %>
-  <% } %>
-  
-  <h2><%= documents.length %> Document<%= documents.length !== 1 ? 's' : '' %></h2>
-</div>
-
+<h2><%= documents.length %> Document<%= documents.length !== 1 ? 's' : '' %></h2>
 <% if (documents.length > 0) { %>
   <div id="browser">
     <div id="facets">

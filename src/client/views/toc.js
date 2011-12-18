@@ -19,7 +19,7 @@ function renderTOC (node, root) {
 }
 
 
-var TOC = Backbone.View.extend({
+s.views.TOC = Backbone.View.extend({
 
   events: {
     'click a': 'scrollTo'

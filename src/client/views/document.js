@@ -1,16 +1,16 @@
-var DocumentViews = {};
-
-
 // Document
 // -------------
 
-var Document = Backbone.View.extend({
+s.views.Document = Backbone.View.extend({
   events: {
     'click a.toggle-edit-mode': 'toggleEditMode',
     'click a.toggle-show-mode': 'toggleShowMode',
-    'click a.subscribe-document': 'subscribeDocument',
-    'click a.unsubscribe-document': 'unsubscribeDocument',
-    'click .views .document.view': 'toggleView'
+    'click a.subscribe-document': 'subscribe',
+    'click a.unsubscribe-document': 'unsubscribe',
+    'click .views .document.view': 'toggleView',
+    'click #toc_wrapper': 'toggleTOC',
+    'click .toggle-toc': 'toggleTOC',
+    'click a.delete-document': 'deleteDocument'
   },
   
   // Handlers
@@ -20,10 +20,26 @@ var Document = Backbone.View.extend({
     this.navigate($(e.currentTarget).attr('view'));
   },
   
+  toggleTOC: function() {
+    if ($('#toc_wrapper').is(":hidden")) {
+      app.document.toc.render();
+      $('#document .board').addClass('active');
+      $('#toc_wrapper').slideDown();
+      $('#toc_wrapper').css('top', Math.max(_.scrollTop()-$('#document').offset().top, 0));
+    } else {
+      $('#document .board').removeClass('active');
+      $('#toc_wrapper').slideUp();
+    }
+
+    return false;
+  },
+
   // Methods
   // -------------
-  
+
   navigate: function(view) {
+    // TODO
+    /*
     this.$('.views .document.view').removeClass('selected');
     $('.document.view.'+view).addClass('selected');
     this.selectedView = view;
@@ -34,23 +50,17 @@ var Document = Backbone.View.extend({
       $('#document_shelf').css('height', $('#document_shelf .shelf-content').height());
       $('#document_content').css('margin-top', $('#document_shelf .shelf-content').height()+100);
     });
-    
+    */
   },
-  
+
   initialize: function() {
     var that = this;
     
     this.app = this.options.app;
-    this.mode = 'show';
     
-    this.selectedView = "publish";
+    this.selectedView = 'publish';
     
-    this.view = new DocumentViews[this.selectedView]({document: this});
-    
-    this.bind('changed', function() {
-      document.title = that.model.get('title') || 'Untitled';
-      that.app.browser.render();
-    });
+    this.view = new s.views[this.selectedView]({document: this});
     
     _.bindAll(this, 'deselect', 'onKeydown');
     $(document.body)
@@ -62,27 +72,26 @@ var Document = Backbone.View.extend({
     $(document.body)
       // .unbind('click', this.deselect) // Disabled for now as it breaks interaction with the shelf
       .unbind('keydown', this.onKeydown);
+    $(this.el).remove();
+    return this;
   },
-  
+
   render: function() {
-    if (!this.model) return;
-    
     // Render all relevant sub views
     $(this.el).html(_.tpl('document', {
-      mode: this.mode,
       doc: this.model,
       selectedView: this.selectedView
     }));
     
-    if (this.model) {
-      this.node = Node.create({ model: this.model });
-      this.$('#document').show();
-      $('#document_tree').empty();
-      this.toc = new TOC({ model: this.model, el: this.$('#toc_wrapper').get(0) }).render();
-      $(this.node.render().el).appendTo(this.$('#document_tree'));
-      
-      if (this.authorized && !this.version) this.toggleEditMode();
-    }
+    this.node = Node.create({ model: this.model });
+    this.$('#document').show();
+    $('#document_tree').empty();
+    this.toc = new TOC({ model: this.model, el: this.$('#toc_wrapper').get(0) }).render();
+    $(this.node.render().el).appendTo(this.$('#document_tree'));
+    
+    if (this.authorized && !this.version) this.toggleEditMode();
+    
+    return this;
   },
 
   toggleEditMode: function(e) {
@@ -93,6 +102,19 @@ var Document = Backbone.View.extend({
     
     if (this.node) {
       this.node.transitionTo('write');
+    }
+  },
+
+  toggleShowMode: function(e) {
+    if (e) e.preventDefault();
+        
+    $('#document').removeClass('edit-mode');
+    this.$('.toggle-edit-mode').removeClass('active');
+    this.$('.toggle-show-mode').addClass('active');
+    
+    if (this.node) {
+      this.node.transitionTo('read');
+      this.node.deselect();
     }
   },
 
@@ -110,33 +132,7 @@ var Document = Backbone.View.extend({
       this.$(':focus').blur();
     }
   },
-  
-  toggleShowMode: function(e) {
-    if (e) e.preventDefault();
-        
-    $('#document').removeClass('edit-mode');
-    this.$('.toggle-edit-mode').removeClass('active');
-    this.$('.toggle-show-mode').addClass('active');
-    
-    if (this.node) {
-      this.node.transitionTo('read');
-      this.node.deselect();
-    }
-  },
-  
-  
-  // Extract available documentTypes from config
-  documentTypes: function() {
-    var result = [];
-    graph.get('/config/substance').get('document_types').each(function(type, key) {
-      result.push({
-        type: key,
-        name: graph.get(key).name
-      });
-    });
-    return result;
-  },
-  
+
   newDocument: function(type, name, title) {
     this.model = createDoc(type, name, title);
     
@@ -145,146 +141,41 @@ var Document = Backbone.View.extend({
     $(this.el).show();
     this.render();
     
-    // Update browser graph
-    if (app.browser && app.browser.query && app.browser.query.type === "user" && app.browser.query.value === app.username) {
-      app.browser.graph.set('nodes', this.model._id, this.model);
-    }
-    
-    // Move to the actual document
-    app.navigate('document');
-    
     router.navigate(this.app.username+'/'+name);
     $('#document_wrapper').attr('url', '#'+this.app.username+'/'+name);
     
-    this.trigger('changed');
     notifier.notify(Notifications.BLANK_DOCUMENT);
     return false;
   },
-  
-  loadDocument: function(username, docname, version, nodeid, commentid, mode) {
-    var that = this;
-    
-    $('#tabs').show();
-    function init(id) {
-      that.model = graph.get(id);
-      
-      if (!(head.browser.webkit || head.browser.mozilla)) {
-        // TODO: prevent write mode
-        alert("Your browser is not yet supported. We recommend Google Chrome and Safari, but you can also use Firefox.");
-      }
-      
-      if (that.model) {
-        that.render();
-        that.trigger('changed');
-        
-        // Update browser graph reference
-        app.browser.graph.set('nodes', id, that.model);
-        app.navigate('document');
-        
-        // TODO: scroll to desired part of the document
-      } else {
-        $('#document_wrapper').html('Document loading failed');
-      }
-    }
-    
-    $('#document_tab').show();
-    
 
-    function printError(error) {
-      if (error === "not_authorized") {
-        $('#document_wrapper').html("<div class=\"notification error\">You are not authorized to access this document.</div>");
-      } else {
-        $('#document_wrapper').html("<div class=\"notification error\">The requested document couldn't be found.</div>");
-      }
-      app.navigate('document');
-    }
-
-    $.ajax({
-      type: "GET",
-      url: version ? "/documents/"+username+"/"+docname+"/"+version : "/documents/"+username+"/"+docname,
-      dataType: "json",
-      success: function(res) {
-        that.version = res.version;
-        that.authorized = res.authorized;
-        that.published = res.published;
-        if (res.status === 'error') {
-          printError(res.error);
-        } else {
-          graph.merge(res.graph);
-          init(res.id);
-        }
-      },
-      error: function(err) {
-        printError(JSON.parse(err.responseText).error);
-      }
-    });
-  },
-  
-  subscribeDocument: function() {
+  subscribe: function (e) {
     if (!app.username) {
       alert('Please log in to make a subscription.');
       return false;
     }
     
-    graph.set(null, {
-      type: "/type/subscription",
-      user: "/user/"+app.username,
-      document: this.model._id
-    });
-    
-    this.model.set({
-      subscribed: true,
-      subscribers: this.model.get('subscribers') + 1
-    });
-    
-    this.model._dirty = false;
-    this.render();
-    return false;
-  },
-  
-  unsubscribeDocument: function() {
     var that = this;
-    
-    // Fetch the subscription object
-    graph.fetch({type: "/type/subscription", "user": "/user/"+app.username, "document": this.model._id}, function(err, nodes) {
-      if (nodes.length === 0) return;
-      
-      // Unsubscribe
-      graph.del(nodes.first()._id);
-      that.model.set({
-        subscribed: false,
-        subscribers: that.model.get('subscribers') - 1
-      });
-      that.model._dirty = false;
-      that.render();
+    subscribeDocument(this.model, function (err) {
+      //that.render();
     });
-    
     return false;
-  },
-  
-  closeDocument: function() {
-    this.model = null;
-    router.navigate(this.app.username);
-    $('#document_wrapper').attr('url', '#'+this.app.username);
-    app.navigate('content');
-    this.render();
-  },
-  
-  deleteDocument: function(id) {
-    var that = this;
-    graph.del(id);
-    app.browser.graph.del(id);
-    app.browser.render();
-    setTimeout(function() {
-      app.navigate('browser');
-    }, 300);
-    notifier.notify(Notifications.DOCUMENT_DELETED);
   },
 
-  // Update the document's name
-  updateName: function(name) {
-    this.model.set({
-      name: name
+  unsubscribe: function (e) {
+    var that = this;
+    unsubscribeDocument(this.model, function (err) {
+      //that.render();
     });
+    return false;
+  },
+
+  deleteDocument: function () {
+    if (confirm('Are you sure you want to delete this document?')) {
+      deleteDocument(this.model, function (err) {
+        router.navigate('', true); // TODO
+      });
+    }
+    return false;
   }
+
 });

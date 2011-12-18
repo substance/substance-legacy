@@ -1,4 +1,4 @@
-Node.define('/type/quote', {
+s.views.Node.define('/type/quote', {
 
   className: 'content-node quote',
 

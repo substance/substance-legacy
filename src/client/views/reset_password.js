@@ -1,4 +1,4 @@
-var ResetPassword = Backbone.View.extend({
+s.views.ResetPassword = Backbone.View.extend({
   events: {
     'submit form': 'resetPassword'
   },
@@ -37,7 +37,7 @@ var ResetPassword = Backbone.View.extend({
   },
   
   render: function() {
-    $(this.el).html(_.tpl('reset_password', {}));
-    this.delegateEvents();
+    $(this.el).html(s.util.tpl('reset_password', {}));
+    return this;
   }
 });

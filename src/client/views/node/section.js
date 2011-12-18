@@ -1,4 +1,4 @@
-Node.define('/type/section', {
+s.views.Node.define('/type/section', {
 
   className: 'content-node section',
 

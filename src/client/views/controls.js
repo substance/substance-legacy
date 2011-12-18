@@ -1,4 +1,4 @@
-var Controls = Backbone.View.extend(_.extend({}, StateMachine, {
+s.views.Controls = Backbone.View.extend(_.extend({}, StateMachine, {
 
   className: 'controls',
 
@@ -82,14 +82,14 @@ var Controls = Backbone.View.extend(_.extend({}, StateMachine, {
           }
         });
         
-        return _.tpl('controls_insert', {
+        return s.util.tpl('controls_insert', {
           childTypes: childTypes
         });
       }
     },
     move: {
       render: function () {
-        return _.tpl('controls_move', {});
+        return s.util.tpl('controls_move', {});
       }
     },
     moveTarget: {
@@ -108,7 +108,7 @@ var Controls = Backbone.View.extend(_.extend({}, StateMachine, {
           });
         }
         
-        return _.tpl('controls_movetarget', {
+        return s.util.tpl('controls_movetarget', {
           moveTargets: moveTargets
         });
       }

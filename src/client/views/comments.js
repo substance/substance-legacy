@@ -1,4 +1,4 @@
-var Comments = Backbone.View.extend({
+s.views.Comments = Backbone.View.extend({
 
   className: 'comments-wrapper',
 
@@ -104,7 +104,7 @@ var Comments = Backbone.View.extend({
     ,   comments = this.comments;
     
     if (comments) {
-      wrapper.html(_.tpl('comments', {
+      wrapper.html(s.util.tpl('comments', {
         doc: this.model.get('document'),
         node: this.model,
         comments: comments

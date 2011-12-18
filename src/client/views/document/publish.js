@@ -1,24 +1,12 @@
 // Publish
 // -------------
 
-DocumentViews["publish"] = Backbone.View.extend({
+s.views.Publish = Backbone.View.extend({
   events: {
     'click a.publish-document': 'publishDocument',
-    'click .remove-version': 'removeVersion',
-    'focus #version_remark': 'focusRemark',
-    'blur #version_remark': 'blurRemark'
+    'click .remove-version': 'removeVersion'
   },
-  
-  focusRemark: function(e) {
-    var input = $('#version_remark');
-    if (input.val() === 'Enter optional remark.') input.val('');
-  },
-  
-  blurRemark: function(e) {
-    var input = $('#version_remark');
-    if (input.val() === '') input.val('Enter optional remark.');
-  },
-  
+
   publishDocument: function(e) {
     var that = this;
     var remark = $('#version_remark').val();
@@ -100,7 +88,7 @@ DocumentViews["publish"] = Backbone.View.extend({
   
   render: function(callback) {
     if (!this.loaded) return this.load(callback);
-    $(this.el).html(_.tpl('document_publish', {
+    $(this.el).html(s.util.tpl('document_publish', {
       versions: this.versions,
       networks: this.availableNetworks,
       document: app.document.model

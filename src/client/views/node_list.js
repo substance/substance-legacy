@@ -1,4 +1,4 @@
-var NodeList = Backbone.View.extend({
+s.views.NodeList = Backbone.View.extend({
 
   className: 'node-list',
 
