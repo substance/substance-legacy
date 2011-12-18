@@ -10,7 +10,6 @@ var _ = require('underscore');
 var CouchClient = require('./lib/data/lib/couch-client');
 var async = require('async');
 
-
 var Document = require('./src/server/document');
 var User = require('./src/server/user');
 var Util = require('./src/server/util');
@@ -724,9 +723,32 @@ app.get('/avatar/:username/:size', function(req, res) {
 // TODO: check if authorized
 app.post('/publish', function(req, res) {
   var document = req.body.document;
+  var networks = req.body.networks;
   var remark = req.body.remark;
   var graph = new Data.Graph(seed).connect('couch', {url: config.couchdb_url});
   
+
+  function createPublications(callback) {
+    graph.fetch({"type": "/type/publication", "document": document}, function(err, nodes) {
+      var remoteNetworks = nodes.map(function(n) { return n.get('network')._id }).values(),
+          newNetworks = _.difference(networks, remoteNetworks),
+          deletedNetworks = _.difference(remoteNetworks, networks);
+
+      _.each(newNetworks, function(network) {
+        graph.set({
+          type: "/type/publication",
+          document: document,
+          network: network
+        });
+      });
+      _.each(deletedNetworks, function(network) {
+        var pub = graph.find({type: "/type/publication", "network": network}).first()._id;
+        graph.del(pub);
+      });
+      callback();
+    });
+  }
+
   Document.getContent(document, function(err, data, id) {
     Util.count('/counter/document/'+document.split('/')[3], function(err, versionCount) {
       // Create a new version
@@ -739,9 +761,12 @@ app.post('/publish', function(req, res) {
         data: data
       });
 
-      graph.sync(function(err) {
-        if (err) res.send({"status": "error"}, 500);
-        res.send({"status": "ok", "version": version._id});
+      // Create publications
+      createPublications(function() {
+        graph.sync(function(err) {
+          if (err) res.send({"status": "error"}, 500);
+          res.send({"status": "ok", "version": version._id});
+        });
       });
     });
   });

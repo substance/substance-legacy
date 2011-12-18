@@ -22,23 +22,21 @@ DocumentViews["publish"] = Backbone.View.extend({
   publishDocument: function(e) {
     var that = this;
     var remark = $('#version_remark').val();
-    var networks = this.$('.networks-selection').val();
-    console.log(networks);
+    var networks = this.$('.networks-selection').val() || [];
     
-    
-    return;
     $.ajax({
       type: "POST",
       url: "/publish",
-      data: {
+      data: JSON.stringify({
         document: app.document.model._id,
         networks: networks,
         remark: remark === 'Enter optional remark.' ? '' : remark
-      },
+      }),
+      contentType: 'application/json',
       dataType: "json",
       success: function(res) {
         if (res.error) return alert(res.error);
-        that.load();
+
         app.document.published = true;
         app.document.render();
         $('#publish_settings').show();
@@ -76,6 +74,7 @@ DocumentViews["publish"] = Backbone.View.extend({
   
   load: function(callback) {
     var that = this;
+
     // Load versions
     graph.fetch({"type": "/type/version", "document": app.document.model._id}, function(err, versions) {
       var ASC_BY_CREATED_AT = function(item1, item2) {
@@ -85,15 +84,11 @@ DocumentViews["publish"] = Backbone.View.extend({
       };
       
       that.versions = versions.sort(ASC_BY_CREATED_AT);
-      that.loaded = true;
-      
-      
-      // graph.fetch({"type": "/type/network", "document": app.document.model._id}, function(err, versions) {
-      // 
-      // });
-      
-      
-      that.render(callback);
+      graph.fetch({"type": "/type/network"}, function(err, networks) {
+        that.availableNetworks = networks;
+        that.loaded = true;
+        that.render(callback);
+      });
     });
   },
   
@@ -107,6 +102,7 @@ DocumentViews["publish"] = Backbone.View.extend({
     if (!this.loaded) return this.load(callback);
     $(this.el).html(_.tpl('document_publish', {
       versions: this.versions,
+      networks: this.availableNetworks,
       document: app.document.model
     }));
     this.delegateEvents();

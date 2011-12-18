@@ -3,9 +3,9 @@
     <div class="settings-title">Publish</div>
     
     <select name="networks" class="networks-selection" multiple="multiple">
-      <option value="/network/javascript">Javascript</option>
-      <option value="/network/nodejs">Node.js</option>
-      <option value="/network/jazz">Jazz</option>
+      <% networks.each(function(network) { %>
+       <option value=" <%= network._id %>"> <%= network.get('name') %></option>
+      <% }); %>
     </select>
     
     <% if (versions.length === 0) { %>
