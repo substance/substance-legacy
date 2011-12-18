@@ -586,12 +586,6 @@
         "type": "/type/network",
         "unique": true,
         "required": true
-      },
-      "created_at": {
-        "name": "Created at",
-        "unique": true,
-        "type": "date",
-        "required": true
       }
     },
     "indexes": {
