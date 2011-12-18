@@ -5,10 +5,10 @@ s.views.Node.define([ '/type/document', '/type/article', '/type/story'
   className: 'content-node document',
 
   initialize: function (options) {
-    Node.prototype.initialize.apply(this, arguments);
+    s.views.Node.prototype.initialize.apply(this, arguments);
     delete this.comments;
     delete this.afterControls;
-    this.nodeList = new NodeList({
+    this.nodeList = new s.views.NodeList({
       model: this.model,
       level: 0,
       root: this
@@ -17,7 +17,7 @@ s.views.Node.define([ '/type/document', '/type/article', '/type/story'
 
   events: _.extend({
     'mouseover .editable': 'mouseoverEditable'
-  }, Node.prototype.events),
+  }, s.views.Node.prototype.events),
 
   mouseoverEditable: function (e) {
     var title = this.state === 'write'
@@ -51,7 +51,7 @@ s.views.Node.define([ '/type/document', '/type/article', '/type/story'
   },
 
   render: function () {
-    Node.prototype.render.apply(this, arguments);
+    s.views.Node.prototype.render.apply(this, arguments);
     this.$('.content-node-outline').remove();
     this.operationsEl.empty();
     
@@ -71,11 +71,11 @@ s.views.Node.define([ '/type/document', '/type/article', '/type/story'
   states: {
     write: {
       enter: function () {
-        Node.states.write.enter.apply(this);
+        s.views.Node.states.write.enter.apply(this);
         $(this.el).addClass('edit');
       },
       leave: function () {
-        Node.states.write.leave.apply(this);
+        s.views.Node.states.write.leave.apply(this);
         $(this.el).removeClass('edit');
         window.editor.deactivate();
       }

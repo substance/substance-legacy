@@ -3,7 +3,7 @@ s.views.Node.define('/type/resource', {
   className: 'content-node resource',
 
   initialize: function () {
-    Node.prototype.initialize.apply(this, arguments);
+    s.views.Node.prototype.initialize.apply(this, arguments);
     this.updateUrl = _.throttle(this.updateUrl, 500);
   },
 

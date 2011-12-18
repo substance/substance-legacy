@@ -81,6 +81,10 @@ s.util.browserSupported = function () {
   return false;
 };
 
+s.util.classify = function(str) {
+  return str[0].toUpperCase() + str.slice(1);
+};
+
 
 _.fullSelection = function(contentEditableElement)
 {

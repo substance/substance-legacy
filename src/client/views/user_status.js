@@ -83,6 +83,7 @@ s.views.UserStatus = Backbone.View.extend(_.extend({}, StateMachine, {
         
         return s.util.tpl('user_navigation', {
           notifications: notifications,
+          user: currentUser(),
           count: notifications.select(function(n) { return !n.get('read')}).length,
           notifications_active: true
         });

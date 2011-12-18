@@ -9,7 +9,7 @@ s.views.NodeList = Backbone.View.extend({
     _.bindAll(this, 'addChild');
     this.model.bind('added-child', this.addChild);
     
-    this.firstControls = new Controls({
+    this.firstControls = new s.views.Controls({
       root: this.root,
       model: this.model,
       position: new Position(this.model, null)
@@ -53,7 +53,7 @@ s.views.NodeList = Backbone.View.extend({
   },
 
   createChildView: function (child) {
-    return Node.create({
+    return s.views.Node.create({
       parent: this.model,
       model: child,
       level: this.level + 1,

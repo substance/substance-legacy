@@ -38,11 +38,9 @@ s.views.Document = Backbone.View.extend({
   // -------------
 
   navigate: function(view) {
-    // TODO
-    /*
     this.$('.views .document.view').removeClass('selected');
     $('.document.view.'+view).addClass('selected');
-    this.selectedView = view;
+    this.selectedView = classify(view);
     
     console.log(view);
     this.view = new DocumentViews[this.selectedView]({document: this});
@@ -50,7 +48,7 @@ s.views.Document = Backbone.View.extend({
       $('#document_shelf').css('height', $('#document_shelf .shelf-content').height());
       $('#document_content').css('margin-top', $('#document_shelf .shelf-content').height()+100);
     });
-    */
+    
   },
 
   initialize: function() {
@@ -58,8 +56,7 @@ s.views.Document = Backbone.View.extend({
     
     this.app = this.options.app;
     
-    this.selectedView = 'publish';
-    
+    this.selectedView = 'Publish';
     this.view = new s.views[this.selectedView]({document: this});
     
     _.bindAll(this, 'deselect', 'onKeydown');
@@ -77,16 +74,17 @@ s.views.Document = Backbone.View.extend({
   },
 
   render: function() {
-    // Render all relevant sub views
-    $(this.el).html(_.tpl('document', {
-      doc: this.model,
+
+    $(this.el).html(s.util.tpl('document', {
+      doc: this.model.doc,
       selectedView: this.selectedView
     }));
-    
-    this.node = Node.create({ model: this.model });
+  
+    this.node = s.views.Node.create({ model: this.model.doc });
+
     this.$('#document').show();
     $('#document_tree').empty();
-    this.toc = new TOC({ model: this.model, el: this.$('#toc_wrapper').get(0) }).render();
+    this.toc = new s.views.TOC({ model: this.model.doc, el: this.$('#toc_wrapper').get(0) }).render();
     $(this.node.render().el).appendTo(this.$('#document_tree'));
     
     if (this.authorized && !this.version) this.toggleEditMode();
@@ -142,7 +140,6 @@ s.views.Document = Backbone.View.extend({
     this.render();
     
     router.navigate(this.app.username+'/'+name);
-    $('#document_wrapper').attr('url', '#'+this.app.username+'/'+name);
     
     notifier.notify(Notifications.BLANK_DOCUMENT);
     return false;

@@ -4,7 +4,7 @@ s.views.Node.define('/type/code', {
 
   events: _.extend({
     'change select': 'changeLanguageSelect'
-  }, Node.prototype.events),
+  }, s.views.Node.prototype.events),
 
   languages: [ 'JavaScript', 'Python', 'Ruby', 'PHP', 'HTML', 'CSS', 'Haskell'
              , 'CoffeeScript', 'Java', 'C', 'C++', 'C#', 'Other'
@@ -75,7 +75,7 @@ s.views.Node.define('/type/code', {
     
     var self = this;
     
-    Node.prototype.render.apply(this, arguments);
+    s.views.Node.prototype.render.apply(this, arguments);
     this.languageSelect = $(createSelect(this.model.get('language'), this.languages)).appendTo(this.contentEl);
     var codeMirrorConfig = _.extend({}, this.codeMirrorConfig, {
       mode: this.modeForLanguage(this.model.get('language')),
@@ -109,11 +109,11 @@ s.views.Node.define('/type/code', {
   states: {
     write: {
       enter: function () {
-        Node.states.write.enter.apply(this);
+        s.views.Node.states.write.enter.apply(this);
         this.codeMirror.setOption('readOnly', false);
       },
       leave: function () {
-        Node.states.write.leave.apply(this);
+        s.views.Node.states.write.leave.apply(this);
         this.codeMirror.setOption('readOnly', true);
       }
     }

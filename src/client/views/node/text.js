@@ -7,17 +7,17 @@ s.views.Node.define('/type/text', {
   },
 
   select: function () {
-    Node.prototype.select.apply(this);
+    s.views.Node.prototype.select.apply(this);
     this.$('.proper-commands').show();
   },
 
   deselect: function () {
-    Node.prototype.deselect.apply(this);
+    s.views.Node.prototype.deselect.apply(this);
     this.$('.proper-commands').hide();
   },
 
   render: function () {
-    Node.prototype.render.apply(this, arguments);
+    s.views.Node.prototype.render.apply(this, arguments);
     this.textEl = this.makeEditable(this.contentEl, 'content', "Enter Text", {
       markup: true,
       multiline: true,

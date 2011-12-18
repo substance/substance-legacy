@@ -4,7 +4,7 @@ s.views.Node.define('/type/image', {
 
   events: _.extend({
     'change .image-file': 'upload'
-  }, Node.prototype.events),
+  }, s.views.Node.prototype.events),
 
   focus: function () {
     this.caption.click();
@@ -83,7 +83,7 @@ s.views.Node.define('/type/image', {
   },
 
   render: function () {
-    Node.prototype.render.apply(this);
+    s.views.Node.prototype.render.apply(this);
     
     this.imageContent = $('<div class="image-content" />').appendTo(this.contentEl);
     if (!this.model.get('url')) { this.imageContent.addClass('placeholder'); }
@@ -112,12 +112,12 @@ s.views.Node.define('/type/image', {
   states: {
     write: {
       enter: function () {
-        Node.states.write.enter.apply(this);
+        s.views.Node.states.write.enter.apply(this);
         
         this.img.unwrap();
       },
       leave: function () {
-        Node.states.write.leave.apply(this);
+        s.views.Node.states.write.leave.apply(this);
         
         this.img.wrap($('<a target="_blank" />')
           .attr({ href: this.model.get('original_url') }));

@@ -90,7 +90,8 @@ s.views.Application = Backbone.View.extend({
     loadDocument(username, docname, version, nodeid, commentid, mode, _.bind(function (err, doc) {
       // TODO: scroll to desired part of the document
       // TODO: error handling
-      this.replaceMainView(new s.views.Document(doc).render());
+
+      this.replaceMainView(new s.views.Document({model: doc}).render());
     }, this));
   },
 

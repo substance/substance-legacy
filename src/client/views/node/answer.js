@@ -7,7 +7,7 @@ s.views.Node.define('/type/answer', {
   },
 
   render: function () {
-    Node.prototype.render.apply(this, arguments);
+    s.views.Node.prototype.render.apply(this, arguments);
     this.answerEl = this.makeEditable($('<p class="answer" />'), 'content', "Enter Answer", {
       markup: true,
       multiline: true

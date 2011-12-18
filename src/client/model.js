@@ -514,16 +514,22 @@ function loggedIn () {
   return !!(app || session).username;
 }
 
+function currentUser () {
+  return graph.get('/user/'+session.username);
+}
+
 function isCurrentUser (user) {
   return (app || session).username === user.get('username');
 }
+
+
 
 
 // Notifications
 // =============
 
 function getNotifications () {
-  var username = this.options.app.username;
+  var username = session.username;
   var notifications = graph.find({"type|=": "/type/notification", "recipient": "/user/"+username});
 
   var SORT_BY_DATE_DESC = function(v1, v2) {

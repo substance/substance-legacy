@@ -7,7 +7,7 @@ s.views.Node.define('/type/quote', {
   },
 
   render: function () {
-    Node.prototype.render.apply(this);
+    s.views.Node.prototype.render.apply(this);
     
     var blockquoteEl = $('<blockquote />').appendTo(this.contentEl);
     this.quoteContentEl = this.makeEditable($('<p class="quote-content" />'), 'content', "Enter Quote")

@@ -12,8 +12,8 @@ s.views.Node = Backbone.View.extend(_.extend({}, StateMachine, {
     this.level  = options.level;
     this.root   = options.root;
     
-    this.comments = new Comments({ model: this.model });
-    this.afterControls = new Controls({
+    this.comments = new s.views.Comments({ model: this.model });
+    this.afterControls = new s.views.Controls({
       root: this.root,
       level: this.level,
       model: this.parent,
