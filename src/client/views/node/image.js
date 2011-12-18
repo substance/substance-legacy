@@ -1,4 +1,4 @@
-Node.define('/type/image', {
+s.views.Node.define('/type/image', {
 
   className: 'content-node image',
 
@@ -96,7 +96,7 @@ Node.define('/type/image', {
       .append(this.img)
       .appendTo(this.imageContent);
     
-    this.imageEditor = $(_.tpl('image_editor', {
+    this.imageEditor = $(s.util.tpl('image_editor', {
       transloadit_params: config.transloadit
     })).appendTo(this.imageContent);
     this.initializeUploadForm();

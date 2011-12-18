@@ -60,9 +60,25 @@ _.scrollTop = function() {
 }
 
 // Render Underscore templates
-_.tpl = function(tpl, ctx) {
+s.util.tpl = function(tpl, ctx) {
   var source = templates[tpl];
   return _.template(source, ctx);
+};
+
+s.util.browserSupported = function () {
+  if (head.browser.mozilla && head.browser.version > "1.9.2") {
+    return true;
+  }
+  if (head.browser.webkit && head.browser.version > "533.0") {
+    return true;
+  }
+  if (head.browser.opera && head.browser.version > "11.0") {
+    return true;
+  }
+  // if (head.browser.ie && head.browser.version > "9.0") {
+  //   return true;
+  // }
+  return false;
 };
 
 

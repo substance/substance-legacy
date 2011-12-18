@@ -1,4 +1,4 @@
-var RecoverPassword = Backbone.View.extend({
+s.views.RecoverPassword = Backbone.View.extend({
   events: {
     'submit form': 'requestReset'
   },
@@ -24,13 +24,8 @@ var RecoverPassword = Backbone.View.extend({
     return false;
   },
   
-  initialize: function() {
-    this.el = '#content_wrapper';
-    this.render();
-  },
-  
   render: function() {
-    $(this.el).html(_.tpl('recover_password', {}));
-    this.delegateEvents();
+    $(this.el).html(s.util.tpl('recover_password', {}));
+    return this;
   }
 });

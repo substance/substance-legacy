@@ -1,4 +1,4 @@
-var ConfirmCollaboration = Backbone.View.extend({
+s.views.ConfirmCollaboration = Backbone.View.extend({
   
   events: {
     "click a.option-tab": "selectOption",
@@ -110,10 +110,11 @@ var ConfirmCollaboration = Backbone.View.extend({
       return;
     }
     
-    $(this.el).html(_.tpl('confirm_collaboration', {
+    $(this.el).html(s.util.tpl('confirm_collaboration', {
       collaborator: this.collaborator,
       document: this.document
     }));
     this.delegateEvents();
+    return this;
   }
 });

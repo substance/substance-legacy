@@ -46,8 +46,9 @@
       "/codemirror/mode/coffeescript/coffeescript.js"
     ],
     "source": [
+      "/client/substance.js",
       "/client/notifier.js",
-      "/client/helpers.js",
+      "/client/util.js",
       "/client/ui/common.js",
       "/client/ui/string_editor.js",
       "/client/ui/multi_string_editor.js",
@@ -60,8 +61,15 @@
       "/client/views/recover_password.js",
       "/client/views/reset_password.js",
       "/client/model.js",
+      "/client/router.js",
       "/client/state_machine.js",
-      "/client/views/browser.js",
+      "/client/views/user_status.js",
+      "/client/views/home.js",
+      "/client/views/results.js",
+      "/client/views/signup.js",
+      "/client/views/user_browser.js",
+      "/client/views/explore.js",
+      "/client/views/search.js",
       "/client/views/user_settings.js",
       "/client/views/new_document.js",
       "/client/views/header.js",
@@ -78,7 +86,8 @@
       "/client/views/node/quote.js",
       "/client/views/node/resource.js",
       "/client/views/node/section.js",
-      "/client/views/node/text.js"
+      "/client/views/node/text.js",
+      "/client/boot.js"
     ]
   }
 }

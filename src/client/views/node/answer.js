@@ -1,4 +1,4 @@
-Node.define('/type/answer', {
+s.views.Node.define('/type/answer', {
 
   className: 'content-node answer',
 

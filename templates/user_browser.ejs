@@ -1,0 +1,37 @@
+<div id="browser_controls" class="view-controls">
+  <div id="browser_shelf">
+    <div class="shelf-content" style="height: 200px;">
+      <p style="padding: 50px;">
+        My Documents
+      </p>
+    </div>
+  </div>
+</div>
+<div id="card_file">
+    <div class="container">
+      <div class="avatar">
+        <img<% if (isCurrentUser(user)) { %> title="Change your avatar at Gravatar.com"<% } %> class="left" src="/avatar/<%= user._id.split('/')[2] %>/100"/>
+      </div>
+      <div class="username">
+        <h1><%= user.get('name') %></h1>
+        <p><em>as</em> <b><%= user.get('username') %></b> <em>since</em> <%= _.date(user.get('created_at')) %></p>
+        
+        <div class="attributes">
+          <% if (user.get('location')) { %>
+            <div><em>Located in</em> <%= user.get('location') %></div>
+          <% } %>
+
+          <% if (user.get('company')) { %>
+            <div><em>Works at</em> <%= user.get('company') %></div>
+          <% } %>
+
+          <% if (user.get('website')) { %>
+            <div><em>Website at</em> <a target="_blank" href="<%= user.get('website') %>"><%= user.get('website') %></a></div>
+          <% } %>
+        </div>
+      </div>
+    </div>
+  
+</div>
+
+<div id="browser_content"></div>

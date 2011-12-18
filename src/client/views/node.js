@@ -1,4 +1,4 @@
-var Node = Backbone.View.extend(_.extend({}, StateMachine, {
+s.views.Node = Backbone.View.extend(_.extend({}, StateMachine, {
 
   className: 'content-node',
 
@@ -159,7 +159,7 @@ var Node = Backbone.View.extend(_.extend({}, StateMachine, {
   },
 
   render: function () {
-    this.operationsEl = $(_.tpl('operations', {
+    this.operationsEl = $(s.util.tpl('operations', {
       commentCount: this.model.get('comment_count') || ""
     })).appendTo(this.el);
     this.contentEl = $('<div class="content" />').appendTo(this.el);

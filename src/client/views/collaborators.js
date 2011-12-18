@@ -1,4 +1,4 @@
-var Collaborators = Backbone.View.extend({
+s.views.Collaborators = Backbone.View.extend({
   
   initialize: function () {
     this.render();
@@ -10,9 +10,10 @@ var Collaborators = Backbone.View.extend({
     ,   hostname = window.location.hostname + (window.location.port !== 80 ? ":" + window.location.port : "")
     ,   url = 'http://'+hostname+'/#'+author+'/'+name;
     
-    $(this.el).html(_.tpl('collaborators', {
+    $(this.el).html(s.util.tpl('collaborators', {
       status: app.editor.status,
       url: url
     }));
+    return this;
   }
 });

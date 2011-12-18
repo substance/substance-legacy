@@ -139,22 +139,6 @@ function updateNode (node, attrs) {
   
   // Update modification date on original document
   getDocument(node).set({ updated_at: new Date() });
-  
-  //// Only set dirty if explicitly requested    
-  //if (attrs.dirty) {
-  //  this.trigger('change:node', this.selectedNode);
-  //}
-  //
-  //if (this.selectedNode.type.key === '/type/document') {
-  //  this.trigger('changed');
-  //}
-  //
-  //// Notify all collaborators about the changed node
-  //if (this.status && this.status.collaborators.length > 1) {
-  //  var serializedNode = this.selectedNode.toJSON();
-  //  delete serializedNode.children;
-  //  // remote.Session.registerNodeChange(this.selectedNode._id, serializedNode);
-  //}
 }
 
 function possibleChildTypes (position, level) {
@@ -290,5 +274,282 @@ function removeComment (comment, callback) {
   graph.sync(function (err) {
     window.pendingSync = false;
     callback(err);
+  });
+}
+
+function loadDocument (username, docname, version, nodeid, commentid, mode, callback) {
+  $.ajax({
+    type: "GET",
+    url: version ? "/documents/"+username+"/"+docname+"/"+version : "/documents/"+username+"/"+docname,
+    dataType: "json",
+    success: function (res) {
+      if (res.error) {
+        callback(res.error, null);
+      } else {
+        graph.merge(res.graph);
+        callback(null, {
+          version: res.version,
+          authorized: res.authorized,
+          published: res.published,
+          doc: graph.get(res.id)
+        });
+      }
+    },
+    error: function (err) {
+      callback(err, null);
+    }
+  });
+}
+
+function loadDocuments (query, callback) {
+  var that = this;
+  this.query = query;
+  
+  $.ajax({
+    type: "GET",
+    url: "/documents/search/"+query.type+"/"+encodeURI(query.value),
+    dataType: "json",
+    success: function (res) {
+      var graph = new Data.Graph(seed);
+      graph.merge(res.graph);
+      // Populate results
+      var documents = graph.find({"type|=": "/type/document"});
+      var DESC_BY_UPDATED_AT = function(item1, item2) {
+        var v1 = item1.value.get('updated_at'),
+            v2 = item2.value.get('updated_at');
+        return v1 === v2 ? 0 : (v1 > v2 ? -1 : 1);
+      };
+      
+      callback(null, {
+        documents: documents.sort(DESC_BY_UPDATED_AT),
+        user: query.type === "user" ? graph.get('/user/'+query.value) : null
+      });
+    },
+    error: function(err) {
+      callback(err);
+    }
+  });
+}
+
+function loadExplore (callback) {
+  // TODO
+  callback(null, null);
+}
+
+function search (queryString, callback) {
+  // TODO
+  callback(null, null);
+}
+
+
+// Document
+// ========
+
+// var Document = {};
+// 
+// 
+// Document.getUsername = function() {
+//   return app.username;
+// }
+// 
+// 
+// Document.isHead = function(doc) {
+//   return !doc.version;
+// }
+// 
+// Document.isAuthorized = function(doc) {
+//   // 
+// }
+//
+
+function deleteDocument (doc, callback) {
+  graph.del(doc._id);
+  setTimeout(function () {
+    callback(null);
+  }, 300);
+  notifier.notify(Notifications.DOCUMENT_DELETED); // TODO
+}
+
+function checkDocumentName (name, callback) {
+  if (new RegExp(graph.get('/type/document').get('properties', 'name').validator).test(name)) {
+    // TODO: find a more efficient way to check for existing docs.
+    $.ajax({
+      type: "GET",
+      url: "/documents/"+app.username+"/"+name,
+      dataType: "json",
+      success: function(res) {
+        callback(res.status === 'error');
+      },
+      error: function(err) {
+        callback(true); // Not found. Fine.
+      }
+    });
+  } else {
+    callback(false);
+  }
+}
+
+function updateDocumentName (doc, name, callback) {
+  this.checkDocumentName(name, function (valid) {
+    if (valid) {
+      doc.set({ name: name });
+      callback(null);
+    } else {
+      callback(new Error('Sorry, this name is already taken.'));
+    }
+  });
+}
+
+function subscribeDocument (doc, callback) {
+  graph.set(null, {
+    type: "/type/subscription",
+    user: "/user/"+app.username,
+    document: doc._id
+  });
+  
+  this.model.set({
+    subscribed: true,
+    subscribers: this.model.get('subscribers') + 1
+  });
+  
+  this.model._dirty = false;
+  
+  setTimeout(function () {
+    callback(null);
+  }, 300);
+}
+
+function unsubscribeDocument (doc, callback) {
+  // Fetch the subscription object
+  graph.fetch({type: "/type/subscription", "user": "/user/"+app.username, "document": doc._id}, function (err, nodes) {
+    graph.del(nodes.first()._id);
+    doc.set({
+      subscribed: false,
+      subscribers: doc.get('subscribers') - 1
+    });
+    doc._dirty = false;
+    
+    callback(null);
+  });
+}
+
+/*
+// Extract available documentTypes from config
+function documentTypes () {
+  var result = [];
+  graph.get('/config/substance').get('document_types').each(function(type, key) {
+    result.push({
+      type: key,
+      name: graph.get(key).name
+    });
+  });
+  return result;
+}
+*/
+
+
+// User
+// ====
+
+function login (username, password, callback) {
+  $.ajax({
+    type: "POST",
+    url: "/login",
+    data: {
+      username: username,
+      password: password
+    },
+    dataType: "json",
+    success: function (res) {
+      if (res.status === 'error') {
+        callback({ error: "authentication_failed" }, null);
+      } else {
+        graph.merge(res.seed);
+        app.username = res.username; // TODO
+        callback(null, res.username);
+      }
+    },
+    error: function (err) {
+      callback({ error: "authentication_failed" }, null);
+    }
+  });
+}
+
+function logout (callback) {
+  $.ajax({
+    type: "POST",
+    url: "/logout",
+    dataType: "json",
+    success: function (res) {
+      callback(null);
+    },
+    error: function (err) {
+      callback(err);
+    }
+  });
+}
+
+function createUser (username, name, email, password, callback) {
+  $.ajax({
+    type: "POST",
+    url: "/register",
+    data: {
+      username: username,
+      name: name,
+      email: email,
+      password: password
+    },
+    dataType: "json",
+    success: function (res) {
+      res.status === 'error' ? callback('error', res) : callback(null, res);
+    },
+    error: function (err) {
+      console.log("Unknown error. Couldn't create user.")
+      //callback(err);
+    }
+  });
+}
+
+function loggedIn () {
+  return !!(app || session).username;
+}
+
+function isCurrentUser (user) {
+  return (app || session).username === user.get('username');
+}
+
+
+// Notifications
+// =============
+
+function getNotifications () {
+  var username = this.options.app.username;
+  var notifications = graph.find({"type|=": "/type/notification", "recipient": "/user/"+username});
+
+  var SORT_BY_DATE_DESC = function(v1, v2) {
+    var v1 = v1.value.get('created_at'),
+        v2 = v2.value.get('created_at');
+    return v1 === v2 ? 0 : (v1 > v2 ? -1 : 1);
+  }
+  
+  return notifications.sort(SORT_BY_DATE_DESC);
+}
+
+function loadNotifications (callback) {
+  $.ajax({
+    type: "GET",
+    url: "/notifications",
+    dataType: "json",
+    success: function (notifications) {
+      var newNodes = {};
+      _.each(notifications, function (n, key) {
+        // Only merge in if not already there
+        if (!graph.get(key)) {
+          newNodes[key] = n;
+        }
+      });
+      graph.merge(newNodes);
+      callback(null);
+    }
   });
 }

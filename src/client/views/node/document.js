@@ -1,4 +1,4 @@
-Node.define([ '/type/document', '/type/article', '/type/story'
+s.views.Node.define([ '/type/document', '/type/article', '/type/story'
             , '/type/conversation', '/type/manual', '/type/qaa'
             ], {
 

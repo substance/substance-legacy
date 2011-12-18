@@ -1,4 +1,4 @@
-Node.define('/type/text', {
+s.views.Node.define('/type/text', {
 
   className: 'content-node text',
 

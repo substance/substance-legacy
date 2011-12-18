@@ -1,4 +1,4 @@
-Node.define('/type/resource', {
+s.views.Node.define('/type/resource', {
 
   className: 'content-node resource',
 
@@ -41,7 +41,7 @@ Node.define('/type/resource', {
       .attr({ src: this.model.get('url') || '/images/image_placeholder.png' })
       .appendTo(this.resourceContent);
     
-    var resourceEditor = $(_.tpl('resource_editor', {})).appendTo(this.contentEl);
+    var resourceEditor = $(s.util.tpl('resource_editor', {})).appendTo(this.contentEl);
     
     this.status = resourceEditor.find('.status');
     
