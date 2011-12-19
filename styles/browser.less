@@ -1,72 +1,57 @@
 
-/* #browser_wrapper > #browser_controls
--------------------------------------------------------------------------------*/
-
-/*#browser_controls {
-  position: fixed;
-  z-index: 200000;
-  top: 30px;
-  left: 0px;
-  right: 0px;
-}*/
-
-/* #browser_wrapper > #browser_controls > #browser_navigation
--------------------------------------------------------------------------------*/
-
-/*#browser_navigation {
-  background: #989B99;
-  height: 40px;
-}
-
-#browser_navigation .views {
-  padding-top: 10px;
-  margin-left: 30px;
-  overflow: auto;
-}
-
-#browser_navigation .views .view {
-  float: left;
-  .border-top-radius(5px);
-  background: #444;
-  color: #fff;
-  margin-right: 5px;
-  padding: 0 3px;
-  height: 30px;
-  line-height: 30px;
-  cursor: pointer;
-}
-
-#browser_navigation .views .view:hover, #browser_navigation .views .view.selected {
-	background: #000;
-}*/
-
-/* #browser_wrapper > #browser_controls > #browser_shelf
--------------------------------------------------------------------------------*/
-
-/*#browser_shelf {
-  height: 200px;
-  
-  overflow: auto;
-  -webkit-transition-property: height;
-  -webkit-transition-duration: 0.6s;
-  background: #CDCECA;
-}
-
-#browser_shelf .shelf-content {
-  
-}*/
-
-
 /* #browser_wrapper > #browser_content
 -------------------------------------------------------------------------------*/
 
-#browser_content {
-  margin-top: 300px;
-  background: #ccc;
-  -webkit-transition-property: margin-top;
-  -webkit-transition-duration: 0.6s;
-  
+#card_file {
+  overflow: auto;
+  margin: 0px 0px 0px 0px;
+  min-height: 100px;
+  background: #DCDDD9;
+  padding: 20px 30px;
+  color: #635849;
+  position: relative;
+  -webkit-box-shadow: 0px 1px 4px rgba(0,0,0,0.5), inset 0px 0px 1px rgba(255,255,255,0.15);
+  -moz-box-shadow:    0px 1px 4px rgba(0,0,0,0.5), inset 0px 0px 1px rgba(255,255,255,0.15);
+  box-shadow:         0px 1px 4px rgba(0,0,0,0.5), inset 0px 0px 1px rgba(255,255,255,0.15);
 }
 
+#card_file h1 {
+  font-size: 28px;
+  padding: 0;
+  color: #635849;
+}
 
+#card_file h2 {
+  .ui-font;
+  font-size: 20px;
+  position: absolute;
+  bottom: 30px;
+  right: 30px;
+  padding: 0;
+  color: #635849;
+}
 
+#card_file .avatar {
+  width: 120px;
+  float: left;
+}
+
+#card_file img {
+  margin: 3px 0;
+}
+
+#card_file .username {
+  float: left;
+}
+
+#card_file .container {
+  background: #ccc;
+}
+
+#card_file .attributes span {
+  padding-right: 10px;
+}
+
+#card_file em {
+  color: #888;
+}
