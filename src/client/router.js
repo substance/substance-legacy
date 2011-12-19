@@ -20,7 +20,10 @@ s.Router = Backbone.Router.extend({
     this.route("recover", "recover", app.recoverPassword);
     this.route("new", "new", app.newDocument);
     
+
+    this.route("dashboard", "dashboard", app.dashboard);
     this.route("explore", "explore", app.explore);
+    this.route("networks", "networks", app.explore);
     this.route("search", "search", app.search);
     
     this.route("", "home", app.home);

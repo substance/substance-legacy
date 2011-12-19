@@ -1,4 +1,4 @@
-s.views.UserBrowser = Backbone.View.extend({
+s.views.UserProfile = Backbone.View.extend({
 
   events: {
     
@@ -9,7 +9,7 @@ s.views.UserBrowser = Backbone.View.extend({
   },
 
   render: function() {
-    $(this.el).html(s.util.tpl('user_browser', {
+    $(this.el).html(s.util.tpl('user_profile', {
       user: this.model.user
     }));
     

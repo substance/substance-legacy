@@ -14,7 +14,7 @@ s.views.Application = Backbone.View.extend({
   },
   
   initialize: function () {
-    _.bindAll(this, 'home', 'explore', 'search', 'user', 'newDocument', 'loadDocument', 'register');
+    _.bindAll(this, 'home', 'explore', 'dashboard', 'search', 'user', 'newDocument', 'loadDocument', 'register');
     var that = this;
     
     // Initialize document
@@ -56,7 +56,14 @@ s.views.Application = Backbone.View.extend({
   user: function(username) {
     var that = this;
     loadDocuments({"type": "user", "value": username}, function (err, data) {
-      that.replaceMainView(new s.views.UserBrowser({ model: data }).render());
+      that.replaceMainView(new s.views.UserProfile({ model: data }).render());
+    });
+  },
+
+  dashboard: function() {
+    var that = this;
+    loadDocuments({"type": "user", "value": session.username}, function (err, data) {
+      that.replaceMainView(new s.views.Dashboard({ model: data }).render());
     });
   },
 
@@ -94,13 +101,11 @@ s.views.Application = Backbone.View.extend({
     }, this));
   },
 
-
   scrollTo: function(id) {
     var offset = $('#'+id).offset();
     offset ? $('html, body').animate({scrollTop: offset.top}, 'slow') : null;
     return false;
   },
-
 
   // Application Setup
   // -------------
