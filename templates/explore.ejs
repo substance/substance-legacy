@@ -1,5 +1,10 @@
-<div class="shelf-content" style="height: 300px;">
-	<p style="padding: 50px;">
-	  Explore Networks. Under construction.
-	</p>
+<div id="networks">
+	<% networks.each(function(network) { %>
+    <div class="network" data-network="<%= network._id %>">
+      <div class="title"><%= network.get('name') %></div>
+      
+      <div class="document-count">4 documents</div>
+      <div class="member-count">15 members</div>
+    </div>
+	<% }); %>
 </div>

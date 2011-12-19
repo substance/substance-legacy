@@ -1,3 +1,6 @@
+// The global graph instance
+var graph = new Data.Graph(seed, {dirty: false, syncMode: 'push'}).connect('ajax'); // The database
+
 $(function () {
   if (!s.util.browserSupported()) {
     $('#container').html(s.util.tpl('browser_not_supported'));

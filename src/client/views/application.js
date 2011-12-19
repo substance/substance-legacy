@@ -9,7 +9,7 @@ s.views.Application = Backbone.View.extend({
   },
 
   toggleView: function (e) {
-    router.navigate($(e.currentTarget).attr('href'), true);
+    router.navigate($(e.currentTarget).attr('href').slice(1), true);
     return false;
   },
   
