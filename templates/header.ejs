@@ -3,8 +3,7 @@
 </div>
 
 <div id="navigation">
-  <a class="toggle-view" href="/michael">My Documents</a>
+  <% if (session.username) { %><a class="toggle-view" href="/dashboard">My Documents</a><% } %>
   <a class="toggle-view" href="/explore">Explore</a>
   <a class="toggle-view" href="/search">Search</a>
 </div>
-

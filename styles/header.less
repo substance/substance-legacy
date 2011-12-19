@@ -8,7 +8,7 @@
   left: 0px;
   right: 0px;
   z-index: 200000;
-  background: #293335;
+  background: #2B2B2B;
   height: 30px; line-height: 30px;
   font-style: italic;
 }
@@ -36,18 +36,46 @@
 }
 
 #header #navigation .toggle-view {
+  display: block;
+  border: none;
   float: left;
-  background: #444;
-  color: #fff;
+  font-style: normal;
+  color: #bbb;
   margin-right: 5px;
   padding: 0 10px;
   height: 30px;
   line-height: 30px;
-  cursor: pointer;
+  border-top: 2px solid transparent;
 }
 
 #header #navigation .toggle-view:hover, #header #navigation .toggle-view.selected {
+<<<<<<< HEAD
   background: #000;
+=======
+	color: #fff;
+  border-top: 2px solid #fff;
+}
+
+
+/* #header > #login_state
+-------------------------------------------------------------------------------*/
+
+#header #login_state {
+  float: right;
+  position: relative;
+  left: 2px;
+  top: 0px;
+  margin-right: 10px;
+}
+
+@-webkit-keyframes rotate {
+  from {
+    -webkit-transform: rotate(0deg);
+  }
+  to { 
+    -webkit-transform: rotate(360deg);
+  }
+>>>>>>> d34c2718968b0efbddb273cb3cc147bbcbd8f2fc
 }
 
 

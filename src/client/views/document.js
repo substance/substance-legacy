@@ -40,10 +40,10 @@ s.views.Document = Backbone.View.extend({
   navigate: function(view) {
     this.$('.views .document.view').removeClass('selected');
     $('.document.view.'+view).addClass('selected');
-    this.selectedView = classify(view);
+    this.selectedView = s.util.classify(view);
     
     console.log(view);
-    this.view = new DocumentViews[this.selectedView]({document: this});
+    this.view = new s.views[this.selectedView]({document: this});
     this.view.render(function() {
       $('#document_shelf').css('height', $('#document_shelf .shelf-content').height());
       $('#document_content').css('margin-top', $('#document_shelf .shelf-content').height()+100);

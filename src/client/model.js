@@ -332,9 +332,14 @@ function loadDocuments (query, callback) {
 }
 
 function loadExplore (callback) {
-  // TODO
-  callback(null, null);
+  var graph = new Data.Graph(seed).connect('ajax');
+
+  graph.fetch({type: "/type/network"}, function(err, nodes) {
+    err ? callback(err) : callback(null, {networks: nodes});
+    callback
+  });
 }
+
 
 function search (queryString, callback) {
   // TODO

@@ -9,12 +9,12 @@ s.views.Application = Backbone.View.extend({
   },
 
   toggleView: function (e) {
-    router.navigate($(e.currentTarget).attr('href'), true);
+    router.navigate($(e.currentTarget).attr('href').slice(1), true);
     return false;
   },
   
   initialize: function () {
-    _.bindAll(this, 'home', 'explore', 'search', 'user', 'newDocument', 'loadDocument', 'register', 'userSettings');
+    _.bindAll(this, 'home', 'explore', 'dashboard', 'search', 'user', 'newDocument', 'loadDocument', 'register', 'userSettings');
     var that = this;
     
     // Initialize document
@@ -56,7 +56,14 @@ s.views.Application = Backbone.View.extend({
   user: function(username) {
     var that = this;
     loadDocuments({"type": "user", "value": username}, function (err, data) {
-      that.replaceMainView(new s.views.UserBrowser({ model: data }).render());
+      that.replaceMainView(new s.views.UserProfile({ model: data }).render());
+    });
+  },
+
+  dashboard: function() {
+    var that = this;
+    loadDocuments({"type": "user", "value": session.username}, function (err, data) {
+      that.replaceMainView(new s.views.Dashboard({ model: data }).render());
     });
   },
 
@@ -98,13 +105,11 @@ s.views.Application = Backbone.View.extend({
     }, this));
   },
 
-
   scrollTo: function(id) {
     var offset = $('#'+id).offset();
     offset ? $('html, body').animate({scrollTop: offset.top}, 'slow') : null;
     return false;
   },
-
 
   // Application Setup
   // -------------
