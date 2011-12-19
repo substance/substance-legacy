@@ -299,205 +299,6 @@ div.browser-not-supported a:hover {
   overflow: hidden;
 }
 
-/* body > #container > #browser_wrapper
--------------------------------------------------------------------------------*/
-
-#browser_wrapper {
-  margin: 0 180px 0px 100px;
-  padding: 0px 0 20px 0;
-  position: relative;
-}
-
-#browser_wrapper h2 {
-  .document-font;
-  padding-top: 20px;
-  padding-bottom: 20px;
-}
-
-#browser {
-  overflow: auto;
-  position: relative;
-  margin: 0;
-  background: #fff url("@{images}/browser-background.png") right repeat-y;
-
-  -webkit-box-shadow: 0px 1px 4px rgba(0,0,0,0.5), inset 0px 0px 1px rgba(255,255,255,0.15);
-  -moz-box-shadow:    0px 1px 4px rgba(0,0,0,0.5), inset 0px 0px 1px rgba(255,255,255,0.15);
-  box-shadow:         0px 1px 4px rgba(0,0,0,0.5), inset 0px 0px 1px rgba(255,255,255,0.15);
-}
-
-#card_file {
-  overflow: auto;
-  margin: 0px 0px 0px 0px;
-  min-height: 100px;
-  background: #DCDDD9;
-  padding: 20px 30px;
-  color: #635849;
-  position: relative;
-  -webkit-box-shadow: 0px 1px 4px rgba(0,0,0,0.5), inset 0px 0px 1px rgba(255,255,255,0.15);
-  -moz-box-shadow:    0px 1px 4px rgba(0,0,0,0.5), inset 0px 0px 1px rgba(255,255,255,0.15);
-  box-shadow:         0px 1px 4px rgba(0,0,0,0.5), inset 0px 0px 1px rgba(255,255,255,0.15);
-}
-
-#card_file h1 {
-  font-size: 28px;
-  padding: 0;
-  color: #635849;
-}
-
-#card_file h2 {
-  .ui-font;
-  font-size: 20px;
-  position: absolute;
-  bottom: 30px;
-  right: 30px;
-  padding: 0;
-  color: #635849;
-}
-
-#card_file .avatar {
-  width: 120px;
-  float: left;
-}
-
-#card_file img {
-  margin: 3px 0;
-}
-
-#card_file .username {
-  float: left;
-}
-
-#card_file .container {
-  background: #ccc;
-}
-
-#card_file .attributes span {
-  padding-right: 10px;
-}
-
-#card_file em {
-  color: #888;
-}
-
-
-
-/* body > #container > .menu
--------------------------------------------------------------------------------*/
-
-.menu {
-  box-sizing:content-box;
-  -webkit-box-sizing:content-box;
-  -moz-box-sizing:content-box;
-  
-  position: absolute;
-  left: 230px;
-  right: 180px;
-  background: #635849;
-  height: 26px;
-  line-height: 26px;
-  padding: 0 0px 0 20px;
-  color: white;
-}
-
-
-/* name the menu panel */
-.menu div.header {
-  .document-font;
-  font-size: 18px;
-  font-style: italic;
-  position: absolute;
-  left: -210px;
-  width: 209px;
-  padding-left: 0px;
-}
-
-.menu .label {
-  margin-bottom: 1px;
-  display: block;
-  overflow: auto;
-}
-
-.label.choice.hidden { display: none; }
-
-.menu a {
-  color: #fff;
-}
-
-.menu .label .text {
-  vertical-align: bottom;
-  width: 182px;
-  line-height: 26px;
-  padding-left: 5px;
-  display: block;
-  float: left;
-  margin-left: 1px;
-}
-
-#document_menu .text { background: #635849; }
-#document_menu .icon { background-color: #635849; }
-#browser_menu .text { background: #586C72; }
-#browser_menu .icon { background-color: #586C72; }
-
-
-/* commonly used */
-.menu-content {
-  overflow: auto;
-  height: 26px;
-  color: white;
-  font-size: 13px;
-  padding: 0 5px 0 0;
-  position:  relative;
-}
-
-.menu-activity {
-  display: none;
-}
-
-
-/* body > #container > #browser_wrapper > #browser_menu
--------------------------------------------------------------------------------*/
-
-#browser_menu {
-  position: fixed;
-  top: 60px;
-  left: 230px;
-  
-  right: 180px;
-  height: 26px;
-  background: #586C72;
-  
-  line-height: 26px;
-  padding: 0 180px 0 20px;
-  z-index: 10000;
-}
-
-#browser_menu .document-type-selection {
-  display: none;
-  position: absolute;
-  top: 30px;
-  background: #F0F1EB;
-  width: 150px;
-}
-
-.document-type-selection a {
-  color: #929292;
-  padding: 3px;
-  text-decoration: none;
-}
-
-.document-type-selection a:hover {
-  background: black;
-  color: white;
-}
-
-#browser_menu #title {
-  position: absolute;
-  left: 20px;
-  z-index: 5000;
-}
-
-
-
 
 /* Event Notifications
 -------------------------------------------------------------------------------*/
@@ -534,7 +335,6 @@ div.browser-not-supported a:hover {
   padding-top: 10px;
   font-size: 12px;
   margin-left: 0px;
-/*  border-left: 2px solid transparent;*/
 }
 
 
@@ -555,16 +355,11 @@ div.browser-not-supported a:hover {
   margin-left: 45px;
 }
 
+
 /* Highlight unread notifications */
 #event_notifications div.notification.unread { background: rgba(0,0,0,0.05); }
-
 #event_notifications div.notification img { float: left; }
-
 #login #event_notifications a { margin: 0; }
-
-#event_notifications div.notification:hover { /*border-left: 2px solid #444;*/ }
-
-
 
 
 
@@ -640,10 +435,6 @@ div.browser-not-supported a:hover {
 #confirm_collaboration .option.active {
   display: block;
 }
-
-
-
-
 
 
 /* Recover Password

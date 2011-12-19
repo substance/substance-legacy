@@ -1,10 +1,11 @@
 s.views.UserBrowser = Backbone.View.extend({
 
   events: {
+    
   },
 
   initialize: function(options) {
-    this.results = new s.views.Results({ model: this.model });
+    this.results = new s.views.Results({ model: this.model, id: "results" });
   },
 
   render: function() {
@@ -12,7 +13,7 @@ s.views.UserBrowser = Backbone.View.extend({
       user: this.model.user
     }));
     
-    $(this.results.render().el).appendTo(this.el);
+    this.$(this.results.render().el).appendTo(this.el);
     return this;
   }
 

@@ -55,7 +55,6 @@ s.views.Application = Backbone.View.extend({
 
   user: function(username) {
     var that = this;
-    
     loadDocuments({"type": "user", "value": username}, function (err, data) {
       that.replaceMainView(new s.views.UserBrowser({ model: data }).render());
     });
