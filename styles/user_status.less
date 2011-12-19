@@ -1,0 +1,90 @@
+.icon (@name, @color: "white", @size: "16") {
+  .icon {
+    float: none; margin-right: 0; height: auto;
+    display: inline-block;
+    min-width: 16px;
+    text-decoration: none; border-bottom: none;
+    text-indent: -1337em;
+    background: url("@{images}/icons/@{color}/@{name}_@{size}x@{size}.png") center no-repeat;
+  }
+}
+
+#user_status {
+  float: right;
+  margin-right: 10px;
+  
+  input {
+    width: 100px;
+    margin: 0;
+    margin-left: 10px;
+    float: left;
+  }
+  input[type=submit] {
+    background: #8C8C84;
+    width: auto;
+    font-weight: normal;
+    font-size: 12px;
+  }
+  input[type=submit]:hover {
+    background: #70706B;
+  }
+  
+  ul {
+    list-style: none;
+  }
+  
+  li {
+    float: left;
+    position: relative;
+  }
+  
+  a {
+    padding: 0 5px;
+    display: block;
+    color: #eee; border-bottom: none; display: inline-block;
+    &:hover { background: #000; }
+  }
+  
+  .notifications {
+    .icon("rss");
+    position: relative;
+    
+    .count {
+      font-size: 12px; line-height: 16px;
+      font-style: normal;
+      margin-left: -2px;
+      line-height: 25px;
+      padding: 0 4px;
+      color: #fff;
+      background: #000;
+      .border-radius(2px);
+    }
+  }
+  &.notifications-active .notifications, .notifications:hover {
+    background-color: #000;
+    .count { background-color: #293335; }
+  }
+  .user-profile {
+    img {
+      vertical-align: middle;
+    }
+  }
+  .user-settings { .icon("cog_alt"); }
+  .logout        { .icon("eject"); }
+  .signup {
+    color: #777;
+    padding-top: 10px;
+    text-align: right;
+    font-style: normal;
+  }
+  
+  #event_notifications {
+    position: absolute;
+    top: 30px; left: 0;
+    width: 200px;
+    display: none;
+  }
+  &.notifications-active #event_notifications {
+    display: block;
+  }
+}

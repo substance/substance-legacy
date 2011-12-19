@@ -1,7 +1,9 @@
 s.views.UserStatus = Backbone.View.extend(_.extend({}, StateMachine, {
 
+  id: 'user_status',
+
   events: {
-    'click .toggle.logout': 'logout',
+    'click .logout': 'logout',
     'submit #login-form': 'login',
     
     'click .toggle.notifications': 'toggleNotifications',
@@ -53,6 +55,7 @@ s.views.UserStatus = Backbone.View.extend(_.extend({}, StateMachine, {
   // Triggered by toggleNotifications
   // Triggers markAllRead
   showNotifications: function() {
+    $(this.el).addClass('notifications-active');
     this.notificationsActive = true;
   },
   
@@ -65,12 +68,17 @@ s.views.UserStatus = Backbone.View.extend(_.extend({}, StateMachine, {
     unread.each(function(n) {
       n.set({read: true});
     });
+    
+    $(this.el).removeClass('notifications-active');
     this.notificationsActive = false;
   },
   
   toggleNotifications: function (e) {
-    $('#event_notifications').hasClass('active') ? this.hideNotifications()
-                                                 : this.showNotifications();
+    if (this.notificationsActive) {
+      this.hideNotifications();
+    } else {
+      this.showNotifications();
+    }
     return false;
   }
 

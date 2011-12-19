@@ -14,7 +14,7 @@ s.views.Application = Backbone.View.extend({
   },
   
   initialize: function () {
-    _.bindAll(this, 'home', 'explore', 'search', 'user', 'newDocument', 'loadDocument', 'register');
+    _.bindAll(this, 'home', 'explore', 'search', 'user', 'newDocument', 'loadDocument', 'register', 'userSettings');
     var that = this;
     
     // Initialize document
@@ -83,6 +83,10 @@ s.views.Application = Backbone.View.extend({
 
   register: function () {
     this.replaceMainView(new s.views.Signup({}).render());
+  },
+
+  userSettings: function () {
+    this.replaceMainView(new s.views.UserSettings({}).render());
   },
 
   loadDocument: function (username, docname, version, nodeid, commentid, mode) {
