@@ -1,22 +1,28 @@
 s.views.Signup = Backbone.View.extend({
 
+  id: 'signup',
+  className: 'page-content',
+
   events: {
-    'submit #signup-form': 'registerUser'
+    'submit form': 'registerUser'
   },
 
   render: function () {
-    // TODO
+    $(this.el).html(s.util.tpl('signup', {}));
     return this;
   },
 
-  registerUser: function() {
-    var that = this;
-    
+  registerUser: function (e) {
     $('.page-content .input-message').empty();
     $('#registration_error_message').empty();
     $('.page-content input').removeClass('error');
     
-    createUser($('#signup_user').val(), $('#signup_name').val(), $('#signup_email').val(), $('#signup_password').val(), function(err, res) {
+    var user     = this.$('#signup_user').val()
+    ,   name     = this.$('#signup_name').val()
+    ,   email    = this.$('#signup_email').val()
+    ,   password = this.$('#signup_password').val();
+    
+    createUser(user, name, email, password, function (err, res) {
       if (err) {
         if (res.field === "username") {
           $('#signup_user').addClass('error');
@@ -27,16 +33,8 @@ s.views.Signup = Backbone.View.extend({
       } else {
         graph.merge(res.seed);
         notifier.notify(Notifications.AUTHENTICATED);
-        that.username = res.username;          
-        window.location.href = "/"+res.username;
+        router.navigate(res.username);
       }
-    });
-    return false;
-  },
-  
-  logout: function (e) {
-    logout(function () {
-      window.location.reload();
     });
     return false;
   }

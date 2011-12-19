@@ -9,7 +9,7 @@ $(function () {
   }
   
   // Start the engines
-  window.app = new s.views.Application({ el: $('#container') });
+  window.app = new s.views.Application({ el: '#container' }).render();
   
   // Set up a global instance of the Proper Richtext Editor
   window.editor = new Proper();

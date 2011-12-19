@@ -1,7 +1,7 @@
 s.views.Home = Backbone.View.extend({
 
   events: {
-    'click a.watch-intro': 'watchIntro'
+    'click .watch-intro': 'watchIntro'
   },
 
   watchIntro: function() {

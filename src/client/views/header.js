@@ -1,8 +1,8 @@
 s.views.Header = Backbone.View.extend({
-  events: {
-  },
-  
-  initialize: function(options) {
+
+  id: 'header',
+
+  initialize: function (options) {
     this.userStatus = new s.views.UserStatus({});
   },
 
@@ -14,4 +14,5 @@ s.views.Header = Backbone.View.extend({
     
     return this;
   }
+
 });

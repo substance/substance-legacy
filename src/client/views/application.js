@@ -4,29 +4,57 @@
 // This is the top-level piece of UI.
 s.views.Application = Backbone.View.extend({
 
+  // Events
+  // ------
+
   events: {
     'click .toggle-view': 'toggleView'
   },
 
   toggleView: function (e) {
-    router.navigate($(e.currentTarget).attr('href').slice(1), true);
-    return false;
+    e.preventDefault();
+    e.stopPropagation();
+    
+    var link  = $(e.currentTarget)
+    ,   route = link.attr('href').replace(/^\//, '');
+    
+    $('.toggle-view.active').removeClass('active');
+    link.addClass('active');
+    
+    router.navigate(route, true);
   },
-  
+
+
+  // Initialize
+  // ----------
+
   initialize: function () {
-    _.bindAll(this, 'home', 'explore', 'dashboard', 'search', 'user', 'newDocument', 'loadDocument', 'register', 'userSettings');
-    var that = this;
+    _.bindAll(this);
     
     // Initialize document
-    this.header = new s.views.Header({el: '#header', app: this});
+    this.header = new s.views.Header({});
     
     // Cookie-based auto-authentication
     if (session.username) {
       graph.merge(session.seed);
       this.username = session.username;
     }
-    
-    that.render(); // TODO
+  },
+
+  // Should be rendered just once
+  render: function () {
+    $(this.header.render().el).prependTo(this.el);
+    return this;
+  },
+
+
+  // Helpers
+  // -------
+
+  scrollTo: function (id) {
+    var offset = $('#'+id).offset();
+    offset ? $('html, body').animate({scrollTop: offset.top}, 'slow') : null;
+    return false;
   },
 
   replaceMainView: function (view) {
@@ -36,6 +64,10 @@ s.views.Application = Backbone.View.extend({
     this.mainView = view;
     $(view.el).appendTo(this.$('#main'));
   },
+
+
+  // Main Views
+  // ----------
 
   explore: function () {
     loadExplore(_.bind(function (err, res) {
@@ -72,12 +104,12 @@ s.views.Application = Backbone.View.extend({
     this.replaceMainView(new s.views.ConfirmCollaboration({ tan: tan }).render());
   },
 
-  recoverPassword: function() {
-    this.replaceMainView(new s.views.RecoverPassword({}));
+  recoverPassword: function () {
+    this.replaceMainView(new s.views.RecoverPassword({}).render());
   },
 
-  resetPassword: function(username, tan) {
-    this.replaceMainView(new s.views.ResetPassword({ username: username, tan: tan }));
+  resetPassword: function (username, tan) {
+    this.replaceMainView(new s.views.ResetPassword({ username: username, tan: tan }).render());
   },
 
   newDocument: function () {
@@ -103,25 +135,6 @@ s.views.Application = Backbone.View.extend({
 
       this.replaceMainView(new s.views.Document({model: doc}).render());
     }, this));
-  },
-
-  scrollTo: function(id) {
-    var offset = $('#'+id).offset();
-    offset ? $('html, body').animate({scrollTop: offset.top}, 'slow') : null;
-    return false;
-  },
-
-  // Application Setup
-  // -------------
-  
-  query: function() {
-    return loggedIn() ? { "type": "user", "value": this.username }
-                      : { "type": "user", "value": "demo" }
-  },
-
-  // Should be rendered just once
-  render: function() {
-    this.header.render();
-    return this;
   }
+
 });

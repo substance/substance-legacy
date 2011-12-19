@@ -1,31 +1,25 @@
 s.views.RecoverPassword = Backbone.View.extend({
+
   events: {
     'submit form': 'requestReset'
   },
-  
-  requestReset: function() {
-    var that = this;
-    $.ajax({
-      type: "POST",
-      url: "/recover_password",
-      data: {
-        username: $('#username').val()
-      },
-      dataType: "json",
-      success: function(res) {
-        if (res.error) return $('#registration_error_message').html('Username does not exist.');
+
+  requestReset: function (e) {
+    var username = $('#username').val();
+    requestPasswordReset(username, _.bind(function (err, res) {
+      if (err) {
+        $('#registration_error_message').html('Username does not exist.');
+      } else {
         $('.recover').hide();
         $('.success').show();
-      },
-      error: function(err) {
-        $('#registration_error_message').html('Username does not exist.');
       }
-    });
+    }, this));
     return false;
   },
-  
-  render: function() {
+
+  render: function () {
     $(this.el).html(s.util.tpl('recover_password', {}));
     return this;
   }
+
 });

@@ -1,17 +1,18 @@
 s.views.Explore = Backbone.View.extend({
+
   events: {
-  	'click .network': '__toggleNetwork'
+    'click .network': '__toggleNetwork'
   },
 
   __toggleNetwork: function(e) {
-  	this.updateResults($(e.currentTarget).attr('data-network'));
-  	return false;
+    this.updateResults($(e.currentTarget).attr('data-network'));
+    return false;
   },
 
   // For a particular network selection load results
   updateResults: function(network) {
-  	var that = this;
-
+    var that = this;
+    
     loadDocuments({"type": "user", "value": "michael"}, function (err, data) {
       that.results = new s.views.UserBrowser({ model: data, el: "#results" }).render();
     });
@@ -23,4 +24,5 @@ s.views.Explore = Backbone.View.extend({
     }));
     return this;
   }
+
 });

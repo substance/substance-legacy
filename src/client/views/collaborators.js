@@ -1,9 +1,5 @@
 s.views.Collaborators = Backbone.View.extend({
-  
-  initialize: function () {
-    this.render();
-  },
-  
+
   render: function () {
     var author = app.editor.model.author
     ,   name = app.editor.model.name
@@ -16,4 +12,5 @@ s.views.Collaborators = Backbone.View.extend({
     }));
     return this;
   }
+
 });

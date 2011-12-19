@@ -1,8 +1,5 @@
-/* body > #container > #header
--------------------------------------------------------------------------------*/
-
 #header {
-/*  margin: 0 180px 10px 100px;*/
+  //margin: 0 180px 10px 100px;
   position: fixed;
   top: 0px;
   left: 0px;
@@ -11,71 +8,38 @@
   background: #2B2B2B;
   height: 30px; line-height: 30px;
   font-style: italic;
-}
-
-
-/* #header > #navigation
--------------------------------------------------------------------------------*/
-
-#header_title {
-  float: left;
-  margin: 0 10px;
-
-  a {
-    text-decoration: none;
-    border: none;
-    font-style: normal;
-    color: white;
+  #header_title {
+    float: left;
+    margin: 0 10px;
+    
+    a {
+      text-decoration: none;
+      border: none;
+      font-style: normal;
+      color: white;
+    }
   }
-}
 
-#navigation {
-  width: 300px;
-  float: left;
-  height: 30px;
-}
-
-#header #navigation .toggle-view {
-  display: block;
-  border: none;
-  float: left;
-  font-style: normal;
-  color: #bbb;
-  margin-right: 5px;
-  padding: 0 10px;
-  height: 30px;
-  line-height: 30px;
-  border-top: 2px solid transparent;
-}
-
-#header #navigation .toggle-view:hover, #header #navigation .toggle-view.selected {
-<<<<<<< HEAD
-  background: #000;
-=======
-	color: #fff;
-  border-top: 2px solid #fff;
-}
-
-
-/* #header > #login_state
--------------------------------------------------------------------------------*/
-
-#header #login_state {
-  float: right;
-  position: relative;
-  left: 2px;
-  top: 0px;
-  margin-right: 10px;
-}
-
-@-webkit-keyframes rotate {
-  from {
-    -webkit-transform: rotate(0deg);
+  #navigation {
+    width: 300px;
+    float: left;
+    height: 30px;
+    .toggle-view {
+      display: block;
+      border: none;
+      float: left;
+      font-style: normal;
+      color: #bbb;
+      margin-right: 5px;
+      padding: 0 10px;
+      height: 30px;
+      line-height: 30px;
+      border-top: 2px solid transparent;
+      &.active {
+        color: #fff;
+      }
+    }
   }
-  to { 
-    -webkit-transform: rotate(360deg);
-  }
->>>>>>> d34c2718968b0efbddb273cb3cc147bbcbd8f2fc
 }
 
 

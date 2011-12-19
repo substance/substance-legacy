@@ -302,7 +302,6 @@ function loadDocument (username, docname, version, nodeid, commentid, mode, call
 }
 
 function loadDocuments (query, callback) {
-  var that = this;
   this.query = query;
   
   $.ajax({
@@ -511,6 +510,50 @@ function createUser (username, name, email, password, callback) {
     error: function (err) {
       console.log("Unknown error. Couldn't create user.")
       //callback(err);
+    }
+  });
+}
+
+function requestPasswordReset (username, callback) {
+  $.ajax({
+    type: 'POST',
+    url: '/recover_password',
+    data: {
+      username: username
+    },
+    dataType: 'json',
+    success: function (res) {
+      if (res.error) {
+        callback(res.error, null);
+      } else {
+        callback(null, res);
+      }
+    },
+    error: function (err) {
+      callback(err, null);
+    }
+  });
+}
+
+function resetPassword (username, tan, password, callback) {
+  $.ajax({
+    type: 'POST',
+    url: '/reset_password',
+    data: {
+      username: username,
+      tan: tan,
+      password: password
+    },
+    dataType: 'json',
+    success: function (res) {
+      if (res.status === 'error') {
+        callback(new Error(res.message), null);
+      } else {
+        callback(null, res);
+      }
+    },
+    error: function (err) {
+      callback(err, null);
     }
   });
 }
