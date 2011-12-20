@@ -26,7 +26,7 @@
       <div class="versions">
         <% versions.each(function(version) { %>
           <a title="<%= version.get('remark') %>"class="version" href="/<%= document.get('creator')._id.split('/')[2] %>/<%= document.get('name') %>/<%= version._id.split('/')[3] %>">
-            <div class="label"><%= _.date(version.get('created_at')) %></div>
+            <div class="label"><%= s.util.date(version.get('created_at')) %></div>
             <div class="remove-version" version="<%= version._id %>"></div>
           </a>
         <% }); %>

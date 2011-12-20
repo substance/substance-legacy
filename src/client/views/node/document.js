@@ -59,7 +59,7 @@ s.views.Node.define([ '/type/document', '/type/article', '/type/story'
     ,   publishedOn = this.model.get('published_on');
     this.titleEl     = this.makeEditable($('<div class="document-title" />'), 'title', "Enter Title").appendTo(this.contentEl);
     this.authorEl    = $('<p class="author" />').text(creator.get('name') || creator.get('username')).appendTo(this.contentEl);
-    this.publishedEl = $('<p class="published" />').text(publishedOn ? _.date(publishedOn) : '').appendTo(this.contentEl);
+    this.publishedEl = $('<p class="published" />').text(publishedOn ? s.util.date(publishedOn) : '').appendTo(this.contentEl);
     this.leadEl      = this.makeEditable($('<p class="lead" id="document_lead" />'), 'lead', "Enter Lead").appendTo(this.contentEl);
     $('<div class="document-separator" />').appendTo(this.contentEl);
     this.nodeListEl  = $(this.nodeList.render().el).appendTo(this.contentEl);

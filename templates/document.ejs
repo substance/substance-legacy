@@ -13,10 +13,10 @@
   
   <!-- <dt>Creator</dt>
   <dt>Created On</dt>
-  <dd><%= _.date(doc.get('created_at')) %></dd>
+  <dd><%= s.util.date(doc.get('created_at')) %></dd>
   
   <dt>Last modified</dt>
-  <dd><%= _.prettyDate(new Date(doc.get('updated_at')).toJSON()) %></dd>
+  <dd><%= s.util.prettyDate(new Date(doc.get('updated_at')).toJSON()) %></dd>
   
   <dt>Views</dt>
   <dd><%= doc.get('views') %></dd> -->

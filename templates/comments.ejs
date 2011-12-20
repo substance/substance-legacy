@@ -6,7 +6,7 @@
         <% username = comment.get('creator')._id.split('/')[2]; %>
         <div class="header">
           <a href="/<%= username%>"><%= username %></a>
-          commented <%= _.prettyDate(comment.get('created_at')) %>
+          commented <%= s.util.prettyDate(comment.get('created_at')) %>
           <% if (app.username === username) { %>
             <a href="/" comment="<%= comment._id %>" class="remove-comment">Remove</a></div>
           <% } %>

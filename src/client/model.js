@@ -5,7 +5,7 @@ function createDoc (type, name, title) {
   var docType = graph.get(type);
   var doc = graph.set(Data.uuid('/document/'+app.username+'/'), docType.meta.template);
   doc.set({
-    creator: "/user/" + app.username,
+    creator: '/user/' + app.username,
     created_at: new Date(),
     updated_at: new Date(),
     name: name,
@@ -277,7 +277,7 @@ function removeComment (comment, callback) {
   });
 }
 
-function loadDocument (username, docname, version, nodeid, commentid, mode, callback) {
+function loadDocument (username, docname, version, callback) {
   $.ajax({
     type: "GET",
     url: version ? "/documents/"+username+"/"+docname+"/"+version : "/documents/"+username+"/"+docname,
@@ -394,7 +394,7 @@ function checkDocumentName (name, callback) {
 }
 
 function updateDocumentName (doc, name, callback) {
-  this.checkDocumentName(name, function (valid) {
+  checkDocumentName(name, function (valid) {
     if (valid) {
       doc.set({ name: name });
       callback(null);
@@ -569,8 +569,6 @@ function currentUser () {
 function isCurrentUser (user) {
   return (app || session).username === user.get('username');
 }
-
-
 
 
 // Notifications

@@ -9,7 +9,7 @@
         <a class="open-notification" href="<%= n.get('event').get('link') %>"><div class="notification<%= n.get('read') ? " read": " unread" %>">
           <img src="/avatar/<%= n.get('event').get('creator')._id.split('/')[2]%>/30" />
           <div class="message"><%= n.get('event').get('message') %></div>
-          <div class="timestamp"><%= _.prettyDate(n.get('event').get('created_at')) %></div>
+          <div class="timestamp"><%= s.util.prettyDate(n.get('event').get('created_at')) %></div>
         </div></a>
       <% }); %>
       <% if (notifications.length === 0) { %>
@@ -36,6 +36,13 @@
   <li>
     <a href="#" class="logout" title="Logout">
       <span class="icon">Logout</span>
+    </a>
+  </li>
+
+  <li>
+    <a href="/new" class="toggle-view new-doc" title="Logout">
+      <span class="icon">Create</span>
+      New Doc
     </a>
   </li>
 </ul>

@@ -25,7 +25,7 @@ s.views.Document = Backbone.View.extend({
       app.document.toc.render();
       $('#document .board').addClass('active');
       $('#toc_wrapper').slideDown();
-      $('#toc_wrapper').css('top', Math.max(_.scrollTop()-$('#document').offset().top, 0));
+      $('#toc_wrapper').css('top', Math.max(s.util.scrollTop()-$('#document').offset().top, 0));
     } else {
       $('#document .board').removeClass('active');
       $('#toc_wrapper').slideUp();
@@ -52,10 +52,6 @@ s.views.Document = Backbone.View.extend({
   },
 
   initialize: function() {
-    var that = this;
-    
-    this.app = this.options.app;
-    
     this.selectedView = 'Publish';
     this.view = new s.views[this.selectedView]({document: this});
     
@@ -74,17 +70,16 @@ s.views.Document = Backbone.View.extend({
   },
 
   render: function() {
-
     $(this.el).html(s.util.tpl('document', {
-      doc: this.model.doc,
+      doc: this.model,
       selectedView: this.selectedView
     }));
-  
-    this.node = s.views.Node.create({ model: this.model.doc });
-
+    
+    this.node = s.views.Node.create({ model: this.model });
+    
     this.$('#document').show();
     $('#document_tree').empty();
-    this.toc = new s.views.TOC({ model: this.model.doc, el: this.$('#toc_wrapper').get(0) }).render();
+    this.toc = new s.views.TOC({ model: this.model, el: this.$('#toc_wrapper').get(0) }).render();
     $(this.node.render().el).appendTo(this.$('#document_tree'));
     
     if (this.authorized && !this.version) this.toggleEditMode();
@@ -131,42 +126,26 @@ s.views.Document = Backbone.View.extend({
     }
   },
 
-  newDocument: function(type, name, title) {
-    this.model = createDoc(type, name, title);
-    
-    this.status = null;
-    this.authorized = true;
-    $(this.el).show();
-    this.render();
-    
-    router.navigate(this.app.username+'/'+name);
-    
-    notifier.notify(Notifications.BLANK_DOCUMENT);
-    return false;
-  },
-
   subscribe: function (e) {
     if (!app.username) {
       alert('Please log in to make a subscription.');
       return false;
     }
     
-    var that = this;
     subscribeDocument(this.model, function (err) {
-      //that.render();
+      // render
     });
     return false;
   },
 
   unsubscribe: function (e) {
-    var that = this;
     unsubscribeDocument(this.model, function (err) {
-      //that.render();
+      // render
     });
     return false;
   },
 
-  deleteDocument: function () {
+  deleteDocument: function (e) {
     if (confirm('Are you sure you want to delete this document?')) {
       deleteDocument(this.model, function (err) {
         router.navigate('', true); // TODO

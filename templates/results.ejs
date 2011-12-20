@@ -6,13 +6,13 @@
       <% documents.each(function(doc) { %> 
       <div class="document">
         <div class="icon published"></div>
-        <div class="title"><a class="link load-document" href="/<%= doc.get('creator')._id.split('/')[2] %>/<%= doc.get('name') %>" document="<%= doc._id %>" user="<%= doc.get('creator')._id.split('/')[2] %>" name="<%= doc.get('name') %>"><%= doc.get('title') || 'Untitled' %></a></div>
+        <div class="title"><a class="link load-document toggle-view" href="/<%= doc.get('creator')._id.split('/')[2] %>/<%= doc.get('name') %>" document="<%= doc._id %>" user="<%= doc.get('creator')._id.split('/')[2] %>" name="<%= doc.get('name') %>"><%= doc.get('title') || 'Untitled' %></a></div>
         <div class="author"><%= doc.get('creator').get('name') || doc.get('creator').get('username') || doc.get('creator')._id.split('/')[2] %></div>
         <div class="dates">
           <% if (doc.get('published_on')) { %>
-            <div class="published-on" title="Published on"><%= _.date(doc.get('published_on')) %></div>
+            <div class="published-on" title="Published on"><%= s.util.date(doc.get('published_on')) %></div>
           <% } %>
-          <div class="updated-at"><span>updated </span><%= _.prettyDate(doc.get('updated_at')) %></div>
+          <div class="updated-at"><span>updated </span><%= s.util.prettyDate(doc.get('updated_at')) %></div>
         </div>
       </div>
       <% }); %>

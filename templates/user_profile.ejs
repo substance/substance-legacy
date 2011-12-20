@@ -5,7 +5,7 @@
       </div>
       <div class="username">
         <h1><%= user.get('name') %></h1>
-        <p><em>as</em> <b><%= user.get('username') %></b> <em>since</em> <%= _.date(user.get('created_at')) %></p>
+        <p><em>as</em> <b><%= user.get('username') %></b> <em>since</em> <%= s.util.date(user.get('created_at')) %></p>
         
         <div class="attributes">
           <% if (user.get('location')) { %>

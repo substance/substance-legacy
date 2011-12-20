@@ -128,13 +128,21 @@ s.views.Application = Backbone.View.extend({
     this.replaceMainView(new s.views.UserSettings({}).render());
   },
 
-  loadDocument: function (username, docname, version, nodeid, commentid, mode) {
-    loadDocument(username, docname, version, nodeid, commentid, mode, _.bind(function (err, doc) {
-      // TODO: scroll to desired part of the document
-      // TODO: error handling
-
-      this.replaceMainView(new s.views.Document({model: doc}).render());
-    }, this));
+  loadDocument: function (username, docname, version, nodeid, commentid) {
+    var render = _.bind(function (doc) {
+      this.replaceMainView(new s.views.Document({ model: doc }).render());
+    }, this);
+    
+    var id = '/document/'+username+'/'+docname;
+    if (graph.get(id)) {
+      render(graph.get(id));
+    } else {
+      loadDocument(username, docname, version, _.bind(function (err, res) {
+        // TODO: scroll to desired part of the document
+        // TODO: error handling
+        render(res.doc);
+      }, this));
+    }
   }
 
 });
