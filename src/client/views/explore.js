@@ -14,7 +14,7 @@ s.views.Explore = Backbone.View.extend({
     var that = this;
     
     loadDocuments({"type": "user", "value": "michael"}, function (err, data) {
-      that.results = new s.views.UserBrowser({ model: data, el: "#results" }).render();
+      that.results = new s.views.UserProfile({ model: data, el: "#results" }).render();
     });
   },
 

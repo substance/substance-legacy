@@ -437,6 +437,53 @@ function unsubscribeDocument (doc, callback) {
   });
 }
 
+
+function loadPublish(doc, callback) {
+  // Load versions
+  graph.fetch({"type": "/type/version", "document": doc._id}, function(err, versions) {
+    var ASC_BY_CREATED_AT = function(item1, item2) {
+      var v1 = item1.value.get('created_at'),
+          v2 = item2.value.get('created_at');
+      return v1 === v2 ? 0 : (v1 < v2 ? -1 : 1);
+    };
+    
+    graph.fetch({"type": "/type/network"}, function(err, networks) {
+      callback(null, {
+        versions: versions.sort(ASC_BY_CREATED_AT),
+        networks: networks,
+        document: doc
+      });
+    });
+  });
+}
+
+function publishDocument(data, callback) {
+  $.ajax({
+    type: "POST",
+    url: "/publish",
+    data: JSON.stringify(data),
+    contentType: 'application/json',
+    dataType: "json",
+    success: function(res) {
+      res.error ? callback(res.error) : callback(null, res);
+    },
+    error: function(err) {
+      callback(err);
+    }
+  });
+}
+
+function removeVersion(document, version, callback) {
+    window.pendingSync = true;
+    graph.del(version);
+    
+    // Trigger immediate sync
+    graph.sync(function (err) {
+      window.pendingSync = false;
+      callback(null);
+    });
+}
+
 /*
 // Extract available documentTypes from config
 function documentTypes () {

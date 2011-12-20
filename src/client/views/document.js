@@ -17,7 +17,14 @@ s.views.Document = Backbone.View.extend({
   // -------------
   
   toggleView: function(e) {
-    this.navigate($(e.currentTarget).attr('view'));
+    var view = $(e.currentTarget).attr('view');
+
+    this.$('.views .document.view').removeClass('selected');
+    $('.document.view.'+view).addClass('selected');
+    this.selectedView = s.util.classify(view);
+
+    this[view]();
+    return false;
   },
   
   toggleTOC: function() {
@@ -37,19 +44,40 @@ s.views.Document = Backbone.View.extend({
   // Methods
   // -------------
 
-  navigate: function(view) {
-    this.$('.views .document.view').removeClass('selected');
-    $('.document.view.'+view).addClass('selected');
-    this.selectedView = s.util.classify(view);
-    
-    console.log(view);
-    this.view = new s.views[this.selectedView]({document: this});
-    this.view.render(function() {
-      $('#document_shelf').css('height', $('#document_shelf .shelf-content').height());
-      $('#document_content').css('margin-top', $('#document_shelf .shelf-content').height()+100);
-    });
+  adjustShelf: function() {
+    $('#document_shelf').css('height', $('#document_shelf .shelf-content').height());
+    $('#document_content').css('margin-top', $('#document_shelf .shelf-content').height()+100);
+  },
+
+  publish: function() {
+    loadPublish(this.model.doc, _.bind(function (err, data) {
+      this.view = new s.views[this.selectedView]({model: data, el: "#document_shelf"}).render();
+      this.adjustShelf();
+    }, this));
+  },
+
+  export: function() {
+    this.view = new s.views[this.selectedView]({el: "#document_shelf"}).render();
+    this.adjustShelf();
+  },
+
+  invite: function() {
     
   },
+
+  // navigate: function(view) {
+  //   this.$('.views .document.view').removeClass('selected');
+  //   $('.document.view.'+view).addClass('selected');
+  //   this.selectedView = s.util.classify(view);
+    
+  //   console.log(view);
+  //   this.view = new s.views[this.selectedView]({document: this});
+  //   this.view.render(function() {
+  //     $('#document_shelf').css('height', $('#document_shelf .shelf-content').height());
+  //     $('#document_content').css('margin-top', $('#document_shelf .shelf-content').height()+100);
+  //   });
+    
+  // },
 
   initialize: function() {
     var that = this;
