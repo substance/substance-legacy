@@ -70,6 +70,7 @@
       "/client/views/dashboard.js",
       "/client/views/user_profile.js",
       "/client/views/explore.js",
+      "/client/views/network.js",
       "/client/views/search.js",
       "/client/views/user_settings.js",
       "/client/views/new_document.js",

@@ -71,7 +71,13 @@ s.views.Application = Backbone.View.extend({
 
   explore: function () {
     loadExplore(_.bind(function (err, res) {
-      this.replaceMainView(new s.views.Explore({ model: res }).render());
+      this.replaceMainView(new s.views.Explore({ model: res, id: 'explore' }).render());
+    }, this));
+  },
+
+  network: function (network) {
+    loadNetwork(network, _.bind(function (err, res) {
+      this.replaceMainView(new s.views.Network({ model: res, id: 'network' }).render());
     }, this));
   },
 
@@ -95,7 +101,7 @@ s.views.Application = Backbone.View.extend({
   dashboard: function() {
     var that = this;
     loadDocuments({"type": "user", "value": session.username}, function (err, data) {
-      that.replaceMainView(new s.views.Dashboard({ model: data }).render());
+      that.replaceMainView(new s.views.Dashboard({ model: data, id: 'dashboard' }).render());
     });
   },
 

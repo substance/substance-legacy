@@ -3,6 +3,7 @@
 
 s.Router = Backbone.Router.extend({
   initialize: function() {
+
     // Using this.route, because order matters
     this.route(":username", "user", app.user);
     
@@ -23,7 +24,7 @@ s.Router = Backbone.Router.extend({
     this.route("settings", "settings", app.userSettings);
     this.route("dashboard", "dashboard", app.dashboard);
     this.route("explore", "explore", app.explore);
-    this.route("networks", "networks", app.explore);
+    this.route("network/:network", "network", app.network);
     this.route("search", "search", app.search);
     
     this.route("", "home", app.home);

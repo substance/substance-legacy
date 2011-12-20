@@ -311,6 +311,7 @@ function loadDocuments (query, callback) {
     success: function (res) {
       var graph = new Data.Graph(seed);
       graph.merge(res.graph);
+      
       // Populate results
       var documents = graph.find({"type|=": "/type/document"});
       var DESC_BY_UPDATED_AT = function(item1, item2) {
@@ -335,7 +336,16 @@ function loadExplore (callback) {
 
   graph.fetch({type: "/type/network"}, function(err, nodes) {
     err ? callback(err) : callback(null, {networks: nodes});
-    callback
+  });
+}
+
+function loadNetwork (network, callback) {
+  var graph = new Data.Graph(seed).connect('ajax');
+
+  graph.fetch({type: "/type/network", _id: "/network/"+network}, function(err, nodes) {
+    err ? callback(err) : callback(null, {
+      network: nodes.first()
+    });
   });
 }
 

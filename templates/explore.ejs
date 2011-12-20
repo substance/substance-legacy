@@ -1,14 +1,13 @@
 <div id="networks">
 	<% networks.each(function(network) { %>
-    <div class="network" data-network="<%= network._id %>">
-      <div class="title"><%= network.get('name') %></div>
+    
+    <a class="toggle-view" href="<%= network._id %>">
+    	<div class="network" data-network="<%= network._id %>">
+     	  <div class="title"><%= network.get('name') %></div>
       
-      <div class="document-count">4 documents</div>
-      <div class="member-count">15 members</div>
-    </div>
+     		<div class="document-count">4 documents</div>
+      	<div class="member-count">15 members</div>
+    	</div>
+    </a>
 	<% }); %>
-</div>
-
-<div id="results">
-
 </div>
