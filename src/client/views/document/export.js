@@ -2,8 +2,7 @@
 // -------------
 
 s.views.Export = Backbone.View.extend({
-  render: function(callback) {
+  render: function() {
     $('#document_shelf').html(s.util.tpl('document_export'));
-    callback();
   }
 });
