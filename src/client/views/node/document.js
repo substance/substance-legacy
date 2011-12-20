@@ -55,10 +55,14 @@ s.views.Node.define([ '/type/document', '/type/article', '/type/story'
     this.$('.content-node-outline').remove();
     this.operationsEl.empty();
     
-    var creator = this.model.get('creator')
+    var creator     = this.model.get('creator')
     ,   publishedOn = this.model.get('published_on');
+    
     this.titleEl     = this.makeEditable($('<div class="document-title" />'), 'title', "Enter Title").appendTo(this.contentEl);
-    this.authorEl    = $('<p class="author" />').text(creator.get('name') || creator.get('username')).appendTo(this.contentEl);
+    var authorLink = $('<a class="toggle-view" />')
+      .attr({ href: '/'+creator.get('username') })
+      .text(creator.get('name') || creator.get('username'));
+    this.authorEl    = $('<p class="author" />').append(authorLink).appendTo(this.contentEl);
     this.publishedEl = $('<p class="published" />').text(publishedOn ? s.util.date(publishedOn) : '').appendTo(this.contentEl);
     this.leadEl      = this.makeEditable($('<p class="lead" id="document_lead" />'), 'lead', "Enter Lead").appendTo(this.contentEl);
     $('<div class="document-separator" />').appendTo(this.contentEl);

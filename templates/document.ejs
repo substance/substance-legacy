@@ -1,54 +1,29 @@
 <div id="document_controls" class="view-controls">
+  <ul>
+    <li>
+      <a href="#"
+         title="<%= doc.get('subscribed') ? "Unsubscribe" : "Subscribe document and get notified about updates" %>"
+         class="toggle-subscription <%= doc.get('subscribed') ? 'active' : '' %>">
+        <span class="icon">Subscription</span>
+        <% if (doc.get('subscribers') > 0) { %>
+          <span class="count"><%= doc.get('subscribers') %></span>
+        <% } %>
+      </a>
+    </li>
+  </ul>
+  
   <div id="document_navigation">
     <div class="views">
-      <div class="document view publish<%= selectedView === 'user' ? ' selected' : '' %>" view="publish">Publish</div>
-      <div class="document view invite<%= selectedView === 'invite' ? ' selected' : '' %>" view="invite">Invite</div>
-      <div class="document view export<%= selectedView === 'export' ? ' selected' : '' %>" view="export">Export</div>
+      <div class="document view publish">Publish</div>
+      <div class="document view invite">Invite</div>
+      <div class="document view export">Export</div>
     </div>
   </div>
   
-  <!--<div class="document-identifier">
-    <span><%= "username" %> / </span><input type="text" id="document_name" name="document_name" value="<%= "document_name" %>"/>
-  </div>-->
-  
-  <!-- <dt>Creator</dt>
-  <dt>Created On</dt>
-  <dd><%= s.util.date(doc.get('created_at')) %></dd>
-  
-  <dt>Last modified</dt>
-  <dd><%= s.util.prettyDate(new Date(doc.get('updated_at')).toJSON()) %></dd>
-  
-  <dt>Views</dt>
-  <dd><%= doc.get('views') %></dd> -->
-  
-  <div id="document_shelf">
-    
-  </div>
+  <div id="document_shelf"></div>
 </div>
 
-
-
 <div id="document_content">
-  <div id="document">
-    <div id="toc_wrapper"></div>
-    
-    <div class="board">
-      <div class="toggle-toc"><div class="label">Contents</div></div>
-      
-      <div id="document_actions" class="view-actions">
-        <a href="/" title="Read Document" class="toggle-show-mode view-action-icon read active"><span>Read</span></a>
-
-        <% if (doc && doc.get('creator')._id === '/user/'+app.username) { %>
-          <a href="/" title="Write Document" class="toggle-edit-mode view-action-icon write"><span>Write</span></a>
-          <a href="/" title="Delete Document" class="delete-document view-action-icon delete"><span>Delete</span></a>
-        <% } %>
-        
-        <a href="/" title="<%= doc && doc.get('subscribed') ? "Unsubscribe" : "Subscribe document and get notified about updates" %> " class="view-action-icon <%= doc && doc.get('subscribed') ? "unsubscribe-document" : "subscribe-document" %>"><div class="subscription-count"><%= doc && doc.get('subscribers') > 0 ? doc.get('subscribers') : "" %></div><span>Subscribe document and get notified about updates</span></a>
-        
-      </div>
-    </div>
-    <div id="document_tree">
-    
-    </div>
-  </div>
+  <div class="toggle-toc"><div class="label">Contents</div></div>
+  <div id="document"></div>
 </div>

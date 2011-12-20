@@ -1,4 +1,5 @@
-#document #toc_wrapper {
+#toc {
+  margin: 0 100px;
   -webkit-box-shadow: 0px 1px 4px rgba(0,0,0,0.35), inset 0px 0px 1px rgba(255,255,255,0.15);
   -moz-box-shadow:    0px 1px 4px rgba(0,0,0,0.35), inset 0px 0px 1px rgba(255,255,255,0.15);
   box-shadow:         0px 1px 4px rgba(0,0,0,0.35), inset 0px 0px 1px rgba(255,255,255,0.15);
@@ -12,89 +13,80 @@
   left: 0px;
   right: 0px;
   z-index: 50000;
-}
 
-#document #toc_wrapper a {
-  background: #fff;
-}
+  a {
+    background: #fff;
+  }
 
-#document #toc {
-  margin: 0 100px;
-}
+  .toc-header {
+    font-size: 30px;
+    padding-top: 90px;
+    padding-bottom: 20px;
+    margin-left: 100px;
+  }
 
-.toc-header {
-  font-size: 30px;
-  padding-top: 90px;
-  padding-bottom: 20px;
-  margin-left: 100px;
-}
+  ol {
+    margin: 0 2em;
+    padding: .5em;
+    list-style: none;
+    counter-reset: item;
+  }
 
-#toc ol {
-  margin: 0 2em;
-  padding: .5em;
-  list-style: none;
-  counter-reset: item;
-}
+  a {
+    border: none;
+    padding: 0 4px;
+  }
 
-#toc a {
-  border: none;
-  padding: 0 4px;
-}
+  > ol {
+    margin: 30px 0;
+    padding: 0;
+  }
 
-#document #toc > ol {
-  margin: 30px 0;
-  padding: 0;
-}
+  ol li {
+      display: block;
+      padding-left: 3em;
+      font-size: 16px;
+  }
 
-#toc ol li {
+  ol ol > li {
     display: block;
-    padding-left: 3em;
     font-size: 16px;
+  }
+
+  > ol > li {
+    font-size: 23px;
+  }
+
+
+  ol li:before {
+    display: inline-block; 
+    margin-left: -3em;
+    margin-right: 20px;
+    font-weight: bold;
+    content: counters(item, ".") " ";
+    counter-increment: item;
+  }
+
+  /*resets from parent OL*/
+  ol ol {
+    width: auto;
+    margin: 0;
+    padding: 15px 0 .5em;
+  }
+
+  /*remove the trailing period*/
+  ol li li:before {
+    content: counters(item, ".") " ";
+  }
+
+  ol ol ol {
+    padding: .5em 0 0;
+  }
+
+  ol li li { }
+
+  ol li li li{ }
+
+  /*target third level*/
+  ol li li li:before {}
 }
-
-#toc ol ol > li {
-  display: block;
-  font-size: 16px;
-}
-
-#toc > ol > li {
-  font-size: 23px;
-}
-
-
-#toc ol li:before {
-  display: inline-block; 
-  margin-left: -3em;
-  margin-right: 20px;
-  font-weight: bold;
-  content: counters(item, ".") " ";
-  counter-increment: item;
-}
-
-/*resets from parent OL*/
-#toc ol ol {
-  width: auto;
-  margin: 0;
-  padding: .5em 0;
-}
-
-#toc ol ol {
-  padding-top: 15px;
-}
-
-
-/*remove the trailing period*/
-#toc ol li li:before {
-  content: counters(item, ".") " ";
-}
-
-#toc ol ol ol {
-  padding: .5em 0 0;
-}
-
-#toc ol li li { }
-
-#toc ol li li li{ }
-
-/*target third level*/
-#toc ol li li li:before {}

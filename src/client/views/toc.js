@@ -21,6 +21,8 @@ function renderTOC (node, root) {
 
 s.views.TOC = Backbone.View.extend({
 
+  id: 'toc',
+
   events: {
     'click a': 'scrollTo'
   },
@@ -37,9 +39,7 @@ s.views.TOC = Backbone.View.extend({
   render: function () {
     $(this.el).html(
       '<div class="toc-header">Table of Contents</div>' +
-      '<div id="toc">' +
         renderTOC(this.model) +
-      '</div>' +
       '<div style="document-separator">&nbsp;</div>'
     );
     return this;

@@ -3,14 +3,10 @@
 
 s.views.Document = Backbone.View.extend({
   events: {
-    'click a.toggle-edit-mode': 'toggleEditMode',
-    'click a.toggle-show-mode': 'toggleShowMode',
-    'click a.subscribe-document': 'subscribe',
-    'click a.unsubscribe-document': 'unsubscribe',
+    'click .toggle-subscription': 'toggleSubscription',
     'click .views .document.view': 'toggleView',
-    'click #toc_wrapper': 'toggleTOC',
-    'click .toggle-toc': 'toggleTOC',
-    'click a.delete-document': 'deleteDocument'
+    'click #toc': 'toggleTOC',
+    'click .toggle-toc': 'toggleTOC'
   },
   
   // Handlers
@@ -18,26 +14,37 @@ s.views.Document = Backbone.View.extend({
   
   toggleView: function(e) {
     var view = $(e.currentTarget).attr('view');
-
+    
     this.$('.views .document.view').removeClass('selected');
     $('.document.view.'+view).addClass('selected');
     this.selectedView = s.util.classify(view);
-
+    
     this[view]();
     return false;
   },
-  
-  toggleTOC: function() {
-    if ($('#toc_wrapper').is(":hidden")) {
-      app.document.toc.render();
-      $('#document .board').addClass('active');
-      $('#toc_wrapper').slideDown();
-      $('#toc_wrapper').css('top', Math.max(s.util.scrollTop()-$('#document').offset().top, 0));
-    } else {
-      $('#document .board').removeClass('active');
-      $('#toc_wrapper').slideUp();
-    }
 
+  toggleSubscription: function (e) {
+    if (!this.model.get('subscribed')) {
+      subscribeDocument(this.model, _.bind(function (err) {
+        this.$('.toggle-subscription').addClass('active')
+          .find('.count').text(this.model.get('subscribers'));
+      }, this));
+    } else {
+      unsubscribeDocument(this.model, _.bind(function (err) {
+        this.$('.toggle-subscription').removeClass('active')
+          .find('.count').text(this.model.get('subscribers'));
+      }, this));
+    }
+    return false;
+  },
+
+  toggleTOC: function (e) {
+    if ($(this.toc.el).is(":hidden")) {
+      $(this.toc.render().el).slideDown();
+    } else {
+      $(this.toc.el).slideUp();
+    }
+    
     return false;
   },
 
@@ -83,10 +90,24 @@ s.views.Document = Backbone.View.extend({
     this.selectedView = 'Publish';
     this.view = new s.views[this.selectedView]({document: this});
     
+    this.node = s.views.Node.create({ model: this.model });
+    this.toc = new s.views.TOC({ model: this.model });
+    
     _.bindAll(this, 'deselect', 'onKeydown');
     $(document.body)
       // .click(this.deselect) // Disabled for now as it breaks interaction with the shelf
       .keydown(this.onKeydown);
+    
+    var render = this.render;
+    var called = false;
+    this.render = function () {
+      if (called) {
+        throw new Error("s.views.Document#render should be called only once");
+      } else {
+        called = true;
+        return render.call(this);
+      }
+    }
   },
 
   remove: function () {
@@ -97,18 +118,13 @@ s.views.Document = Backbone.View.extend({
     return this;
   },
 
-  render: function() {
+  render: function () {
     $(this.el).html(s.util.tpl('document', {
-      doc: this.model,
-      selectedView: this.selectedView
+      doc: this.model
     }));
     
-    this.node = s.views.Node.create({ model: this.model });
-    
-    this.$('#document').show();
-    $('#document_tree').empty();
-    this.toc = new s.views.TOC({ model: this.model, el: this.$('#toc_wrapper').get(0) }).render();
-    $(this.node.render().el).appendTo(this.$('#document_tree'));
+    $(this.toc.render().el).hide().appendTo(this.$('#document'));
+    $(this.node.render().el).appendTo(this.$('#document'));
     
     if (this.authorized && !this.version) this.toggleEditMode();
     

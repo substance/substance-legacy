@@ -406,17 +406,16 @@ function updateDocumentName (doc, name, callback) {
 
 function subscribeDocument (doc, callback) {
   graph.set(null, {
-    type: "/type/subscription",
-    user: "/user/"+app.username,
+    type: '/type/subscription',
+    user: '/user/'+app.username,
     document: doc._id
   });
   
-  this.model.set({
+  doc.set({
     subscribed: true,
-    subscribers: this.model.get('subscribers') + 1
+    subscribers: doc.get('subscribers') + 1
   });
-  
-  this.model._dirty = false;
+  doc._dirty = false;
   
   setTimeout(function () {
     callback(null);
@@ -424,8 +423,11 @@ function subscribeDocument (doc, callback) {
 }
 
 function unsubscribeDocument (doc, callback) {
-  // Fetch the subscription object
-  graph.fetch({type: "/type/subscription", "user": "/user/"+app.username, "document": doc._id}, function (err, nodes) {
+  graph.fetch({
+    type: '/type/subscription',
+    user: '/user/'+app.username,
+    document: doc._id
+  }, function (err, nodes) {
     graph.del(nodes.first()._id);
     doc.set({
       subscribed: false,
@@ -433,7 +435,7 @@ function unsubscribeDocument (doc, callback) {
     });
     doc._dirty = false;
     
-    callback(null);
+    callback(err);
   });
 }
 

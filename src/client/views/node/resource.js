@@ -32,7 +32,7 @@ s.views.Node.define('/type/resource', {
   },
 
   render: function () {
-    Node.prototype.render.apply(this);
+    s.views.Node.prototype.render.apply(this);
     
     this.resourceContent = $('<div class="resource-content" />').appendTo(this.contentEl);
     if (!this.model.get('url')) { this.resourceContent.addClass('placeholder'); }
@@ -62,11 +62,11 @@ s.views.Node.define('/type/resource', {
   states: {
     write: {
       enter: function () {
-        Node.states.write.enter.apply(this);
+        s.views.Node.states.write.enter.apply(this);
         this.$('.resource-url').removeAttr('readonly');
       },
       leave: function () {
-        Node.states.write.leave.apply(this);
+        s.views.Node.states.write.leave.apply(this);
         this.$('.resource-url').attr({ readonly: 'readonly' });
       }
     }

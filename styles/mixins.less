@@ -24,3 +24,14 @@
   -webkit-border-top-left-radius: @radius;
   -webkit-border-top-right-radius: @radius;
 }
+
+.icon (@name, @color: "white", @size: "16") {
+  .icon {
+    float: none; margin-right: 0; height: auto;
+    display: inline-block;
+    min-width: 16px;
+    text-decoration: none; border-bottom: none;
+    text-indent: -1337em;
+    background: url("@{images}/icons/@{color}/@{name}_@{size}x@{size}.png") center no-repeat;
+  }
+}
