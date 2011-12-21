@@ -1,0 +1,221 @@
+/* Startpage
+-------------------------------------------------------------------------------*/
+
+#startpage {
+  margin: 0 180px 0 100px;
+  font-size: 17px;
+  color: #444;
+}
+
+.intro {
+  .document-font;
+    
+  text-align: center;
+  font-size: 38px;
+  line-height: 50px;
+  
+  height: 220px;
+  -webkit-transition: all 0.5s ease-in-out;
+  -moz-transition: all 0.5s ease-in-out;
+  -o-transition: all 0.5s ease-in-out;
+  -ms-transition: all 0.5s ease-in-out;
+
+  .intro-text {
+    padding: 20px;
+    a {
+      border: none;
+      font-size: 22px;
+      background: url("@{images}/icons/white/play_12x16.png") 14px 17px no-repeat;
+      background-color: #A2C44E;
+      font-style: italic;
+      color: #fff;
+      padding: 10px;
+      padding-left: 35px;
+      .border-radius(6px);
+      
+      opacity: 0.8;
+      &:hover { opacity: 1.0; }
+    }
+  }
+
+  .video {
+    height: 400px;
+  }
+}
+
+
+
+#plot {
+  overflow: auto;
+  padding-bottom: 20px;
+
+  h2 {
+    padding-top: 0px;
+    font-size: 16px;
+    font-weight: bold;
+  }
+  .description {
+    margin-right: 500px;
+  }
+  .characteristics {
+    width: 440px;
+    float: right;
+  }
+}
+
+.intro b {
+  font-weight: bold;
+  
+}
+
+.intro a {
+  color: #51483D;
+}
+
+.intro a:hover {
+  color: #000;
+}
+
+
+#example_documents {
+  overflow: auto;
+  height: 270px;
+  width: 840px;
+  margin: auto;
+  .document {
+    margin: 30px;
+    width: 150px;
+    height: 200px;
+    background: white;
+    float: left;
+    
+    -webkit-box-shadow: 0px 1px 4px rgba(0,0,0,0.35), inset 0px 0px 1px rgba(255,255,255,0.15);
+    -moz-box-shadow:    0px 1px 4px rgba(0,0,0,0.35), inset 0px 0px 1px rgba(255,255,255,0.15);
+    box-shadow:         0px 1px 4px rgba(0,0,0,0.35), inset 0px 0px 1px rgba(255,255,255,0.15);
+    background: #fff;
+    text-align: center;
+    
+    -moz-transition-duration: 0.4s;
+    -webkit-transition-duration: 0.4s;
+    -o-transition-duration: 0.4s;
+    transition-duration: 0.4s;
+
+    .title {
+      .document-font;
+      
+      margin-top: 20px;
+      padding: 10px;
+      font-size: 20px;
+      font-weight: bold;
+    }
+
+    .author {
+      margin-top: 10px;
+      color: #777;
+      font-size: 13px;
+    }
+  }
+
+  #example_documents_header {
+    .document-font;
+    
+    text-align: center;
+    font-size: 25px;
+    padding: 30px 0;
+    font-weight: lighter;
+  }
+}
+
+
+#features {
+  overflow: auto;
+  font-size: 14px;
+  .feature {
+    width: 293px;
+    float: left;
+    margin-right: 20px;
+  }
+  .feature.contribute {
+    margin-right: 0px;
+  }
+  .feature .feature-wrapper {
+    max-width: 250px;
+  }
+  .feature-descr {
+    font-size: 15px;
+    margin-bottom: 20px;
+  }
+  .feature-properties {
+    .ui-font;
+    
+    list-style-type:square;
+    list-style-image:url("@{images}/icons/black/pen_12x12.png");
+    padding-left: 20px;
+    li {
+      margin-bottom: 5px;
+      color: #444;
+      .descr {
+        color: #888;
+        font-size: 12px;
+      }
+    }
+  }
+}
+
+.feature {
+  .feature-title {
+    color:#111;
+    text-transform:uppercase;
+    font-weight: bold;
+    font-size: 1.17em;
+    line-height: 16px;
+    color: #444;
+    margin-bottom: 20px;
+    margin-top: 10px;
+    .icon {
+      margin-right: 10px;
+      width: 16px;
+      height: 16px;
+      opacity: 0.7;
+    }
+  }
+
+  &.browse .feature-title .icon {
+    background: url("@{images}/icons/black/article_16x16.png") center left no-repeat;
+  }
+
+  &.write .feature-title .icon {
+    background: url("@{images}/icons/black/pen_16x16.png") center left no-repeat;
+  }
+
+  &.contribute .feature-title .icon {
+    background: url("@{images}/icons/black/heart_fill_16x14.png") center left no-repeat;
+  }
+}
+
+
+#donations_total {
+  .document-font;
+  margin-top: 40px;
+  font-size: 45px;
+  font-style: italic;
+}
+
+#donations_total_label {
+  font-size: 17px;
+  position: relative;
+  top: 10px;
+  left: 0px;
+}
+
+#new_document {
+  margin: 0 180px 0 100px;
+}
+
+#user_settings {
+  margin: 0 180px 0 100px;
+}
+
+#signup {
+  margin: 0 180px 0 100px;
+}

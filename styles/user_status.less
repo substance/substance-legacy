@@ -73,10 +73,60 @@
   #event_notifications {
     position: absolute;
     top: 30px; left: 0;
-    width: 200px;
+    width: 320px;
     display: none;
   }
   &.notifications-active #event_notifications {
     display: block;
   }
 }
+
+#event_notifications {
+  background: #C0C1BD;
+  font-style: normal;
+  position: absolute;
+  top: 34px;
+  right: 0px;
+  z-index: 10000000;
+  
+  box-sizing: content-box;
+  -webkit-box-sizing: content-box;
+  -moz-box-sizing: content-box;
+  
+  display: none;
+
+  &.active {
+    display: block;
+  }
+  a { margin: 0; }
+  strong {
+    font-weight: bold;
+  }
+
+  div.notification {
+    padding-top: 10px;
+    font-size: 12px; line-height: 18px;
+    margin-left: 0px;
+    img {
+      padding: 9px;
+    }
+    .message {
+      color: #666;
+      padding: 0 5px;
+      margin-left: 45px;
+    }
+    &:hover .message { color: #444; }
+    .timestamp {
+      color: #888;
+      font-size: 12px;
+      padding: 0 5px;
+      margin-left: 45px;
+    }
+    &:hover .timestamp { color: #666; }
+    
+    /* Highlight unread notifications */
+    &.unread { background: rgba(0,0,0,0.05); }
+    img { float: left; }
+  }
+}
+

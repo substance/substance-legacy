@@ -1,0 +1,57 @@
+#confirm_collaboration {
+  margin: 0 180px 80px 100px;
+  .option {
+    padding: 30px;
+    background: #fff;
+  }
+  .or {
+    text-align: center;
+    padding: 10px;
+  }
+  h1 {
+    border: none;
+  }
+  .option-tabs {
+    overflow: auto;
+    a.option-tab {
+      display: block;
+      float: left;
+      margin-right: 10px;
+      padding: 10px 50px;
+      border: none;
+      background: rgba(0,0,0, 0.1);
+      &.active {
+        background: white;
+      }
+    }
+  }
+  .option {
+    display: none;
+    &.active { display: block; }
+  }
+  .summary {
+    background: rgba(0,0,0, 0.1);
+    padding: 30px;
+    text-align: center;
+    margin-bottom: 30px;
+  }
+  .document {
+    padding: 20px 0 30px 0;
+  }
+  .lead {
+    .document-font;
+    font-size: 20px;
+    margin-top: 10px;
+    line-height: 1.5;
+    font-style: italic;
+    color: #555;
+  }
+}
+
+
+#confirm_collaboration .title, #recover_password .title, #reset_password .title {
+  .document-font;
+  font-size: 40px;
+  line-height: 100px;
+  height: 100px;
+}

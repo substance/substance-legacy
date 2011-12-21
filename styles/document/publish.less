@@ -8,75 +8,72 @@
   width: 500px;
   padding: 30px;
   color: #444;
-}
 
-#document_publish #new_version {
-  margin-top: 40px;
-  background: white;
-  border: 1px solid #ccc;
-}
+  #new_version {
+    margin-top: 40px;
+    background: white;
+    border: 1px solid #ccc;
+    .panel {
+      background: #efefef;
+      padding: 3px;
+      overflow: auto;
+      a {
+        border: none;
+        background: #555;
+        padding: 1px 5px;
+        color: #fff;
+        display: block;
+        float: right;
+        
+        .border-radius(3px);
+      }
+    }
+    input {
+      background: white;
+      border: none;
+      -webkit-box-shadow: none;
+      -moz-box-shadow: none;
+      box-shadow: none;
+      font-size: 20px;
+      .ui-font;
+    }
+  }
 
-#document_publish #new_version .panel {
-  background: #efefef;
-  padding: 3px;
-  overflow: auto;
-}
-
-#document_publish #new_version .panel a {
-  border: none;
-  background: #555;
-  padding: 1px 5px;
-  color: #fff;
-  display: block;
-  float: right;
-  
-  .border-radius(3px);
-}
-
-#document_publish #new_version input {
-  background: white;
-  border: none;
-  -webkit-box-shadow: none;
-  -moz-box-shadow: none;
-  box-shadow: none;
-  font-size: 20px;
-  .ui-font;
-}
-
-#document_publish .versions .version {
-  border: none;
-  display: block;
-  float: left;
-  height: 48px;
-  width: 48px;
-  opacity: 0.5;
-  margin: 10px 25px 30px 25px;
-  background: url("@{images}/formats/document.png");
-  position: relative;
-}
-
-#document_publish .versions .version:last-child {
-  opacity: 1.0;
-}
-
-#document_publish .versions .version .label {
-  .ui-font;
-  font-size: 11px;
-  line-height: 11px;
-  padding: 2px 3px 0px 1px;
-  
-  position: absolute;
-  width: 120px;
-  left: -30px;
-  bottom: -20px;
-  text-align: center;
-}
-
-#document_publish .versions .version:hover .remove-version {
-  position: absolute;
-  left: 0px;
-  top: -3px;
-  width: 18px;
-  height: 18px;
-  background: url("@{images}/icons/black/x_alt_16x16.png") center center no-repeat;
+  .versions {
+    .version {
+      border: none;
+      display: block;
+      float: left;
+      height: 48px;
+      width: 48px;
+      margin: 10px 25px 30px 25px;
+      background: url("@{images}/formats/document.png");
+      position: relative;
+      
+      opacity: 0.5;
+      &:last-child { opacity: 1.0; }
+      
+      &:hover .remove-version {
+        position: absolute;
+        left: 0px;
+        top: -3px;
+        width: 18px;
+        height: 18px;
+        background: url("@{images}/icons/black/x_alt_16x16.png") center center no-repeat;
+      }
+      
+      .label {
+        .ui-font;
+        font-size: 11px;
+        line-height: 11px;
+        padding: 2px 3px 0px 1px;
+        
+        position: absolute;
+        width: 120px;
+        left: -30px;
+        bottom: -20px;
+        text-align: center;
+      }
+    }
+  }
 }
