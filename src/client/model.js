@@ -450,37 +450,51 @@ function unsubscribeDocument (doc, callback) {
 }
 
 
-function loadPublish(doc, callback) {
-  // Load versions
-  graph.fetch({"type": "/type/version", "document": doc._id}, function(err, versions) {
-    var ASC_BY_CREATED_AT = function(item1, item2) {
-      var v1 = item1.value.get('created_at'),
-          v2 = item2.value.get('created_at');
-      return v1 === v2 ? 0 : (v1 < v2 ? -1 : 1);
-    };
-    
-    graph.fetch({"type": "/type/network"}, function(err, networks) {
+function loadPublish (doc, callback) {
+  function byCreatedAt (item1, item2) {
+    var v1 = item1.value.get('created_at')
+    ,   v2 = item2.value.get('created_at');
+    return v1 === v2 ? 0 : (v1 < v2 ? -1 : 1);
+  }
+  
+  graph.fetch({ type: '/type/version', document: doc._id }, function (err, versions) {
+    if (err) {
+      callback(err, null);
+      return;
+    }
+    graph.fetch({ type: '/type/network' }, function (err, networks) {
+      if (err) {
+        callback(err, null);
+        return;
+      }
       callback(null, {
-        versions: versions.sort(ASC_BY_CREATED_AT),
-        networks: networks,
-        document: doc
+        versions: versions.sort(byCreatedAt),
+        networks: networks
       });
     });
   });
 }
 
-function publishDocument(data, callback) {
+function publishDocument (doc, networks, remark, callback) {
   $.ajax({
-    type: "POST",
-    url: "/publish",
-    data: JSON.stringify(data),
+    type: 'POST',
+    url: '/publish',
+    data: JSON.stringify({
+      document: doc._id,
+      networks: networks,
+      remark: remark
+    }),
     contentType: 'application/json',
-    dataType: "json",
-    success: function(res) {
-      res.error ? callback(res.error) : callback(null, res);
+    dataType: 'json',
+    success: function (res) {
+      if (res.error) {
+        callback(res.error, null);
+      } else {
+        callback(null, res);
+      }
     },
-    error: function(err) {
-      callback(err);
+    error: function (err) {
+      callback(err, null);
     }
   });
 }
@@ -627,6 +641,68 @@ function currentUser () {
 
 function isCurrentUser (user) {
   return (app || session).username === user.get('username');
+}
+
+
+// Collaboration
+// -------------
+
+function invite (email, doc, mode, callback) {
+  $.ajax({
+    type: 'POST',
+    url: '/invite',
+    data: {
+      email: email,
+      document: doc._id,
+      mode: mode
+    },
+    dataType: 'json',
+    success: function (res) {
+      if (res.error) {
+        callback(res.error);
+      } else {
+        callback(null);
+      }
+    },
+    error: function (err) {
+      callback(err);
+    }
+  });
+}
+
+function getCollaborators (doc, callback) {
+  graph.fetch({
+    type: '/type/collaborator',
+    document: doc._id
+  }, function (err, nodes) {
+    callback(err, nodes);
+  });
+}
+
+function removeCollaborator (collaboratorId, callback) {
+  window.pendingSync = true;
+  graph.del(collaboratorId);
+  
+  // trigger immediate sync
+  graph.sync(function (err) {
+    window.pendingSync = false;
+    //that.collaborators.del(collaboratorId);
+    callback(err);
+  });
+}
+
+function changeCollaboratorMode (collaboratorId, mode, callback) {
+  window.pendingSync = true;
+  
+  graph.get(collaboratorId).set({
+    mode: mode
+  });
+  
+  // trigger immediate sync
+  graph.sync(function (err) {
+    window.pendingSync = false;
+    callback(err);
+  });
 }
 
 

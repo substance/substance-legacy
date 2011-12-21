@@ -1,39 +1,37 @@
-<div class="shelf-content">
-  <div id="document_invite">
-    <div class="settings-title">Collaborators</div>
-    <table class="collaborators">
-      <% collaborators.each(function(collaborator) { %>
-        <tr class="collaborator">
-          <td><%= collaborator.get('email') %></td>
-          <td><%= collaborator.get('user') ? "<strong>"+collaborator.get('user')._id.split('/')[2]+"</strong>" : "" %></td>
-
-          <td><%= collaborator.get('user') ? '<span class="confirmed">Confirmed</span>' : '<span class="invited">Invited</span>' %></td>
-          <% if (document.get('creator')._id === '/user/'+app.username) { %>
-          <td class="right-align">
-            <select class="change-mode" collaborator="<%= collaborator._id %>">
-              <option value="edit">Can edit</option>
-              <option value="view"<%= collaborator.get('mode') === "view" ? ' selected="selected"' : "" %>>Can view</option>
-            </select>
-          </td>
-          <td class="right-align">
-            <a href="#" class="remove-collaborator" collaborator="<%= collaborator._id %>"><span>x</span></a>
-          </td>
-          <% } %>
-        </tr>
-      <% }); %>
-    </table>
-    
-    <% if (document.get('creator')._id === '/user/'+app.username) { %>
-      <h6>Invite Collaborator</h6>
-      <form>
-        <label>Enter Email Address</label><br/>
-        <input type="text" id="collaborator_email" name="collaborator_email"/>
-        <select name="mode" id="collaborator_mode">
-          <option value="edit">Can edit</option>
-          <option value="view">Can view</option>
-        </select>
-        <input type="submit" value="Invite"/>
-      </form>
-    <% } %>
-  </div>
+<div id="document_invite">
+  <div class="settings-title">Collaborators</div>
+  <table class="collaborators">
+    <% collaborators.each(function(collaborator) { %>
+      <tr class="collaborator">
+        <td><%= collaborator.get('email') %></td>
+        <td><%= collaborator.get('user') ? "<strong>"+collaborator.get('user')._id.split('/')[2]+"</strong>" : "" %></td>
+        
+        <td><%= collaborator.get('user') ? '<span class="confirmed">Confirmed</span>' : '<span class="invited">Invited</span>' %></td>
+        <% if (document.get('creator')._id === '/user/'+app.username) { %>
+        <td class="right-align">
+          <select class="change-mode" data-collaborator="<%= collaborator._id %>">
+            <option value="edit">Can edit</option>
+            <option value="view"<%= collaborator.get('mode') === "view" ? ' selected="selected"' : "" %>>Can view</option>
+          </select>
+        </td>
+        <td class="right-align">
+          <a href="#" class="remove-collaborator" data-collaborator="<%= collaborator._id %>"><span>x</span></a>
+        </td>
+        <% } %>
+      </tr>
+    <% }); %>
+  </table>
+  
+  <% if (document.get('creator')._id === '/user/'+app.username) { %>
+    <h6>Invite Collaborator</h6>
+    <form>
+      <label>Enter Email Address</label><br/>
+      <input type="text" id="collaborator_email" name="collaborator_email"/>
+      <select name="mode" id="collaborator_mode">
+        <option value="edit">Can edit</option>
+        <option value="view">Can view</option>
+      </select>
+      <input type="submit" value="Invite"/>
+    </form>
+  <% } %>
 </div>

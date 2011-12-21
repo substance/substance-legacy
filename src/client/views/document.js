@@ -2,96 +2,18 @@
 // -------------
 
 s.views.Document = Backbone.View.extend({
-  events: {
-    'click .toggle-subscription': 'toggleSubscription',
-    'click .views .document.view': 'toggleView',
-    'click #toc': 'toggleTOC',
-    'click .toggle-toc': 'toggleTOC'
-  },
-  
-  // Handlers
-  // -------------
-  
-  toggleView: function(e) {
-    var view = $(e.currentTarget).attr('view');
+
+  initialize: function () {
+    _.bindAll(this);
     
-    this.$('.views .document.view').removeClass('selected');
-    $('.document.view.'+view).addClass('selected');
-    this.selectedView = s.util.classify(view);
+    this.node     = s.views.Node.create({ model: this.model });
+    this.toc      = new s.views.TOC({ model: this.model });
+    this.settings = new s.views.DocumentSettings({ model: this.model });
+    this.publish  = new s.views.Publish({ model: this.model });
+    this.invite   = new s.views.Invite({ model: this.model });
+    this.export   = new s.views.Export({ model: this.model });
     
-    this[view]();
-    return false;
-  },
-
-  toggleSubscription: function (e) {
-    if (!this.model.get('subscribed')) {
-      subscribeDocument(this.model, _.bind(function (err) {
-        this.$('.toggle-subscription').addClass('active')
-          .find('.count').text(this.model.get('subscribers'));
-      }, this));
-    } else {
-      unsubscribeDocument(this.model, _.bind(function (err) {
-        this.$('.toggle-subscription').removeClass('active')
-          .find('.count').text(this.model.get('subscribers'));
-      }, this));
-    }
-    return false;
-  },
-
-  toggleTOC: function (e) {
-    if ($(this.toc.el).is(":hidden")) {
-      $(this.toc.render().el).slideDown();
-    } else {
-      $(this.toc.el).slideUp();
-    }
-    
-    return false;
-  },
-
-  // Methods
-  // -------------
-
-  adjustShelf: function() {
-    $('#document_shelf').css('height', $('#document_shelf .shelf-content').height());
-    $('#document_content').css('margin-top', $('#document_shelf .shelf-content').height()+100);
-  },
-
-  publish: function() {
-    loadPublish(this.model.doc, _.bind(function (err, data) {
-      this.view = new s.views[this.selectedView]({model: data, el: "#document_shelf"}).render();
-      this.adjustShelf();
-    }, this));
-  },
-
-  export: function() {
-    this.view = new s.views[this.selectedView]({el: "#document_shelf"}).render();
-    this.adjustShelf();
-  },
-
-  invite: function() {
-    
-  },
-
-  // navigate: function(view) {
-  //   this.$('.views .document.view').removeClass('selected');
-  //   $('.document.view.'+view).addClass('selected');
-  //   this.selectedView = s.util.classify(view);
-    
-  //   console.log(view);
-  //   this.view = new s.views[this.selectedView]({document: this});
-  //   this.view.render(function() {
-  //     $('#document_shelf').css('height', $('#document_shelf .shelf-content').height());
-  //     $('#document_content').css('margin-top', $('#document_shelf .shelf-content').height()+100);
-  //   });
-    
-  // },
-
-  initialize: function() {
-    this.selectedView = 'Publish';
-    this.view = new s.views[this.selectedView]({document: this});
-    
-    this.node = s.views.Node.create({ model: this.model });
-    this.toc = new s.views.TOC({ model: this.model });
+    this.currentView = null;
     
     _.bindAll(this, 'deselect', 'onKeydown');
     $(document.body)
@@ -110,14 +32,6 @@ s.views.Document = Backbone.View.extend({
     }
   },
 
-  remove: function () {
-    $(document.body)
-      // .unbind('click', this.deselect) // Disabled for now as it breaks interaction with the shelf
-      .unbind('keydown', this.onKeydown);
-    $(this.el).remove();
-    return this;
-  },
-
   render: function () {
     $(this.el).html(s.util.tpl('document', {
       doc: this.model
@@ -131,28 +45,59 @@ s.views.Document = Backbone.View.extend({
     return this;
   },
 
-  toggleEditMode: function(e) {
-    if (e) e.preventDefault();
-        
-    this.$('.toggle-show-mode').removeClass('active');
-    this.$('.toggle-edit-mode').addClass('active');
-    
-    if (this.node) {
-      this.node.transitionTo('write');
-    }
+  remove: function () {
+    $(document.body)
+      // .unbind('click', this.deselect) // Disabled for now as it breaks interaction with the shelf
+      .unbind('keydown', this.onKeydown);
+    $(this.el).remove();
+    return this;
   },
 
-  toggleShowMode: function(e) {
-    if (e) e.preventDefault();
-        
-    $('#document').removeClass('edit-mode');
-    this.$('.toggle-edit-mode').removeClass('active');
-    this.$('.toggle-show-mode').addClass('active');
-    
-    if (this.node) {
-      this.node.transitionTo('read');
-      this.node.deselect();
+
+  // Events
+  // ------
+
+  events: {
+    'click .toggle-subscription': 'toggleSubscription',
+    'click .settings': 'toggleSettings',
+    'click .publish':  'togglePublish',
+    'click .invite':   'toggleInvite',
+    'click .export':   'toggleExport',
+    'click #toc': 'toggleTOC',
+    'click .toggle-toc': 'toggleTOC'
+  },
+
+  // Handlers
+  // --------
+
+  toggleSubscription: function (e) {
+    if (!this.model.get('subscribed')) {
+      subscribeDocument(this.model, _.bind(function (err) {
+        this.$('.toggle-subscription').addClass('active')
+          .find('.count').text(this.model.get('subscribers'));
+      }, this));
+    } else {
+      unsubscribeDocument(this.model, _.bind(function (err) {
+        this.$('.toggle-subscription').removeClass('active')
+          .find('.count').text(this.model.get('subscribers'));
+      }, this));
     }
+    return false;
+  },
+
+  toggleSettings: function (e) { this.toggleView(this.settings); return false; },
+  togglePublish:  function (e) { this.toggleView(this.publish);  return false; },
+  toggleInvite:   function (e) { this.toggleView(this.invite);   return false; },
+  toggleExport:   function (e) { this.toggleView(this.export);   return false; },
+
+  toggleTOC: function (e) {
+    if ($(this.toc.el).is(":hidden")) {
+      $(this.toc.render().el).slideDown();
+    } else {
+      $(this.toc.el).slideUp();
+    }
+    
+    return false;
   },
 
   onKeydown: function (e) {
@@ -162,6 +107,10 @@ s.views.Document = Backbone.View.extend({
     }
   },
 
+
+  // Helpers
+  // -------
+
   deselect: function () {
     if (this.node) {
       this.node.deselectNode();
@@ -170,32 +119,37 @@ s.views.Document = Backbone.View.extend({
     }
   },
 
-  subscribe: function (e) {
-    if (!app.username) {
-      alert('Please log in to make a subscription.');
-      return false;
+  resizeShelf: function () {
+    var shelfHeight   = this.currentView ? $(this.currentView.el).height() : 0
+    ,   contentMargin = shelfHeight + 100;
+    this.$('#document_shelf').css({ height: shelfHeight + 'px' });
+    this.$('#document_content').css({ 'margin-top': contentMargin + 'px' });
+  },
+
+  toggleView: function (view) {
+    var shelf   = this.$('#document_shelf')
+    ,   content = this.$('#document_content');
+    
+    if (this.currentView) {
+      this.currentView.unbind('resize', this.resizeShelf);
+      // It's important to use detach (not remove) to retain the view's event
+      // handlers
+      $(this.currentView.el).detach();
     }
     
-    subscribeDocument(this.model, function (err) {
-      // render
-    });
-    return false;
-  },
-
-  unsubscribe: function (e) {
-    unsubscribeDocument(this.model, function (err) {
-      // render
-    });
-    return false;
-  },
-
-  deleteDocument: function (e) {
-    if (confirm('Are you sure you want to delete this document?')) {
-      deleteDocument(this.model, function (err) {
-        router.navigate('', true); // TODO
-      });
+    if (view === this.currentView) {
+      this.currentView = null;
+      this.resizeShelf();
+    } else {
+      view.load(_.bind(function (err) {
+        view.bind('resize', this.resizeShelf);
+        shelf.append(view.el)
+        this.currentView = view;
+        view.render();
+      }, this));
     }
-    return false;
+    //this.$('.views .document.view').removeClass('selected');
+    //$('.document.view.'+view).addClass('selected');
   }
 
 });

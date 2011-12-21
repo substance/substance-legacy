@@ -1,93 +1,77 @@
-// Invite
-// -------------
-
 s.views.Invite = Backbone.View.extend({
-  events: {
-    'submit form': 'invite',
-    'change select.change-mode': 'changeMode',
-    'click a.remove-collaborator': 'removeCollaborator'
-  },
-  
-  changeMode: function(e) {
-    var collaboratorId = $(e.currentTarget).attr('collaborator');
-    var mode = $(e.currentTarget).val();
-    var that = this;
-    
-    window.pendingSync = true;
-    
-    graph.get(collaboratorId).set({
-      mode: mode
-    });
-    
-    // trigger immediate sync
-    graph.sync(function(err) {
-      window.pendingSync = false;
-      that.render();
-    });
-    
-    return false;
-  },
-  
-  removeCollaborator: function(e) {
-    var collaboratorId = $(e.currentTarget).attr('collaborator');
-    var that = this;
-    
-    window.pendingSync = true;
-    graph.del(collaboratorId);
-    
-    // trigger immediate sync
-    graph.sync(function(err) {
-      window.pendingSync = false;
-      that.collaborators.del(collaboratorId);
-      that.render();
-    });
 
-    return false;
+  className: 'shelf-content',
+
+  initialize: function () {
+    _.bindAll(this);
+    this.collaborators = null;
   },
-  
-  invite: function() {
-    var that = this;
-    $.ajax({
-      type: "POST",
-      url: "/invite",
-      data: {
-        email: $('#collaborator_email').val(),
-        document: app.document.model._id,
-        mode: $('#collaborator_mode').val()
-      },
-      dataType: "json",
-      success: function(res) {
-        if (res.error) return alert(res.error);
-        that.load();
-      },
-      error: function(err) {
-        alert("Unknown error occurred");
-      }
-    });
-    return false;
-  },
-  
-  load: function(callback) {
-    var that = this;
-    graph.fetch({"type": "/type/collaborator", "document": app.document.model._id}, function(err, nodes) {
-      that.collaborators = nodes;
-      that.loaded = true;
-      that.render(callback);
-    });
-  },
-  
-  initialize: function(options) {
-    this.document = options.document;
-    this.el = '#document_shelf';
-  },
-  
-  render: function(callback) {
-    if (!this.loaded) return this.load(callback);
+
+  render: function () {
     $(this.el).html(s.util.tpl('document_invite', {
       collaborators: this.collaborators,
-      document: this.document.model
+      document: this.model
     }));
-    this.delegateEvents();
-    callback();
+    this.trigger('resize');
+    return this;
+  },
+
+  load: function (callback) {
+    if (this.collaborators) {
+      callback(null);
+    } else {
+      getCollaborators(this.model, _.bind(function (err, nodes) {
+        if (!err) {
+          this.collaborators = nodes;
+        }
+        callback(err);
+      }, this));
+    }
+  },
+
+
+  // Events
+  // ------
+
+  events: {
+    'submit form': 'invite',
+    'change .change-mode': 'changeMode',
+    'click .remove-collaborator': 'removeCollaborator'
+  },
+
+  changeMode: function (e) {
+    var collaboratorId = $(e.currentTarget).attr('data-collaborator')
+    ,   mode           = $(e.currentTarget).val();
+    
+    changeCollaboratorMode(collaboratorId, mode, _.bind(function (err) {
+      this.render();
+    }, this));
+    
+    return false;
+  },
+
+  removeCollaborator: function (e) {
+    var collaboratorId = $(e.currentTarget).attr('data-collaborator');
+    
+    removeCollaborator(collaboratorId, _.bind(function (err) {
+      this.collaborators.del(collaboratorId);
+      this.render();
+    }, this));
+    
+    return false;
+  },
+
+  invite: function (e) {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    var email = this.$('#collaborator_email').val()
+    ,   mode  = this.$('#collaborator_mode').val();
+    
+    invite(email, this.model, mode, _.bind(function (err) {
+      this.collaborators = null;
+      this.load(this.render);
+    }, this));
   }
+
 });

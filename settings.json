@@ -57,6 +57,7 @@
       "/client/views/document/export.js",
       "/client/views/document/invite.js",
       "/client/views/document/publish.js",
+      "/client/views/document/settings.js",
       "/client/views/confirm_collaboration.js",
       "/client/views/recover_password.js",
       "/client/views/reset_password.js",

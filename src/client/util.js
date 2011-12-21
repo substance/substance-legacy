@@ -48,11 +48,7 @@ s.util.slug = function (str) {
     .replace(/-+/g, '-'); // collapse dashes
   
   return str;
-}
-
-s.util.scrollTop = function() {
-  return document.body.scrollTop || document.documentElement.scrollTop;
-}
+};
 
 // Render Underscore templates
 s.util.tpl = function (tpl, ctx) {
@@ -74,10 +70,6 @@ s.util.browserSupported = function () {
   //   return true;
   // }
   return false;
-};
-
-s.util.classify = function(str) {
-  return str[0].toUpperCase() + str.slice(1);
 };
 
 s.util.prettyDate = function (time) {
