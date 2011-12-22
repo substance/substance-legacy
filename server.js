@@ -346,7 +346,7 @@ app.get('/documents/search/:type/:search_str', function (req, res) {
   }
 });
 
-app.get('/dashboard', function (req, res) {
+app.get('/dashboard.json', function (req, res) {
   if (!req.session) {
     res.json({ error: "Not logged in" });
     return;

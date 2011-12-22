@@ -92,17 +92,15 @@ s.views.Application = Backbone.View.extend({
   },
 
   user: function (username) {
-    var that = this;
-    loadDocuments({ type: 'user', value: username }, function (err, data) {
-      that.replaceMainView(new s.views.UserProfile({ model: data }).render());
-    });
+    loadDocuments({ type: 'user', value: username }, _.bind(function (err, data) {
+      this.replaceMainView(new s.views.UserProfile({ model: data }).render());
+    }, this));
   },
 
   dashboard: function () {
-    var that = this;
-    loadDocuments({ type: 'user', value: session.username }, function (err, data) {
-      that.replaceMainView(new s.views.Dashboard({ model: data, id: 'dashboard' }).render());
-    });
+    loadDashboard({ type: 'user', value: session.username }, _.bind(function (err, data) {
+      this.replaceMainView(new s.views.Dashboard({ model: data, id: 'dashboard' }).render());
+    }, this));
   },
 
   // Confirm invitation
