@@ -11,6 +11,7 @@ var CouchClient = require('./lib/data/lib/couch-client');
 var async = require('async');
 
 var Document = require('./src/server/document');
+var Network = require('./src/server/network');
 var User = require('./src/server/user');
 var Util = require('./src/server/util');
 var Filters = require('./src/server/filters');
@@ -357,6 +358,12 @@ app.get('/dashboard.json', function (req, res) {
   });
 });
 
+app.get('/network/:network.json', function(req, res) {
+  Network.get(req.params.network, function(err, graph) {
+    if (err) return res.json({status: "error", error: err});
+    res.json({status: "ok", graph: graph});
+  });
+});
 
 // Find documents by search string (full text search in future)
 // Or find by user

@@ -358,7 +358,6 @@ function loadDashboard (query, callback) {
       });
     },
     error: function(err) {
-      console.log(err);
       callback(err);
     }
   });
@@ -373,12 +372,23 @@ function loadExplore (callback) {
 }
 
 function loadNetwork (network, callback) {
-  var graph = new Data.Graph(seed).connect('ajax');
+  $.ajax({
+    type: "GET",
+    url: "/network/"+network+".json",
+    dataType: "json",
+    success: function (res) {
+      var graph = new Data.Graph(seed);
+      graph.merge(res.graph);
 
-  graph.fetch({type: "/type/network", _id: "/network/"+network}, function(err, nodes) {
-    err ? callback(err) : callback(null, {
-      network: nodes.first()
-    });
+      callback(null, {
+        members: graph.find({"type": "/type/user"}),
+        network: graph.find({"type": "/type/network"}).first(),
+        documents: graph.find({"type": "/type/document"})
+      });
+    },
+    error: function(err) {
+      callback(err);
+    }
   });
 }
 
