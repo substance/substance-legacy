@@ -133,18 +133,26 @@ s.views.Application = Backbone.View.extend({
   },
 
   loadDocument: function (username, docname, version, nodeid, commentid) {
-    var render = _.bind(function (doc) {
-      this.replaceMainView(new s.views.Document({ model: doc }).render());
+    var render = _.bind(function (options) {
+      this.replaceMainView(new s.views.Document(options).render());
     }, this);
     
     var id = '/document/'+username+'/'+docname;
     if (graph.get(id)) {
-      render(graph.get(id));
+      render({
+        model: graph.get(id)
+        // TODO
+      });
     } else {
       loadDocument(username, docname, version, _.bind(function (err, res) {
         // TODO: scroll to desired part of the document
         // TODO: error handling
-        render(res.doc);
+        render({
+          model: res.doc,
+          authorized: res.authorized,
+          version: res.version,
+          published: res.published
+        });
       }, this));
     }
   }

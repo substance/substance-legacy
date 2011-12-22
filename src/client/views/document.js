@@ -3,8 +3,12 @@
 
 s.views.Document = Backbone.View.extend({
 
-  initialize: function () {
+  initialize: function (options) {
     _.bindAll(this);
+    
+    this.authorized = options.authorized;
+    this.published  = options.published;
+    this.version    = options.version;
     
     this.node     = s.views.Node.create({ model: this.model });
     this.toc      = new s.views.TOC({ model: this.model });
@@ -19,17 +23,6 @@ s.views.Document = Backbone.View.extend({
     $(document.body)
       // .click(this.deselect) // Disabled for now as it breaks interaction with the shelf
       .keydown(this.onKeydown);
-    
-    var render = this.render;
-    var called = false;
-    this.render = function () {
-      if (called) {
-        throw new Error("s.views.Document#render should be called only once");
-      } else {
-        called = true;
-        return render.call(this);
-      }
-    }
   },
 
   render: function () {
@@ -40,7 +33,7 @@ s.views.Document = Backbone.View.extend({
     $(this.toc.render().el).hide().appendTo(this.$('#document'));
     $(this.node.render().el).appendTo(this.$('#document'));
     
-    if (this.authorized && !this.version) this.toggleEditMode();
+    if (this.authorized && !this.version) { this.edit(); }
     
     return this;
   },
@@ -110,6 +103,10 @@ s.views.Document = Backbone.View.extend({
 
   // Helpers
   // -------
+
+  edit: function () {
+    this.node.transitionTo('write');
+  },
 
   deselect: function () {
     if (this.node) {
