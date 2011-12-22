@@ -3,7 +3,7 @@
   
   <select name="networks" class="networks-selection" multiple="multiple">
     <% networks.each(function(network) { %>
-     <option value=" <%= network._id %>"> <%= network.get('name') %></option>
+     <option value="<%= network._id %>"> <%= network.get('name') %></option>
     <% }); %>
   </select>
   
