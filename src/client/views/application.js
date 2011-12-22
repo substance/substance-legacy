@@ -91,16 +91,16 @@ s.views.Application = Backbone.View.extend({
     this.replaceMainView(new s.views.Home({}).render());
   },
 
-  user: function(username) {
+  user: function (username) {
     var that = this;
-    loadDocuments({"type": "user", "value": username}, function (err, data) {
+    loadDocuments({ type: 'user', value: username }, function (err, data) {
       that.replaceMainView(new s.views.UserProfile({ model: data }).render());
     });
   },
 
-  dashboard: function() {
+  dashboard: function () {
     var that = this;
-    loadDocuments({"type": "user", "value": session.username}, function (err, data) {
+    loadDocuments({ type: 'user', value: session.username }, function (err, data) {
       that.replaceMainView(new s.views.Dashboard({ model: data, id: 'dashboard' }).render());
     });
   },

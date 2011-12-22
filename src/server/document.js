@@ -158,31 +158,29 @@ Document.subscribed = function(username, callback) {
 Document.find = function(searchstr, type, username, callback) {
   db.view('substance/documents_by_keyword', function(err, res) {
     if (err) return callback(err);
+    
     var documents = [];
-
+    function add (row) { documents.push(row.value._id); }
+    
     async.forEach(res.rows, function(row, callback) {
-      var matched = type === "keyword" ? row.key && row.key.match(new RegExp("("+searchstr+")", "i"))
-                                   : row.value.creator.match(new RegExp("/user/("+searchstr+")$", "i"));
-                                   
-      function add() {
-        documents.push(row.value._id)
-      }
-                
+      var matched = type === "keyword"
+                  ? row.key && row.key.match(new RegExp("("+searchstr+")", "i"))
+                  : row.value.creator.match(new RegExp("/user/("+searchstr+")$", "i"));
+      
       if (matched && documents.length < 200) {
         if (row.value.creator === '/user/'+username) {
-          add(); return callback();
+          add(row); return callback();
         } else {
           // check if published
           db.view('substance/versions', {endkey: [row.value._id], startkey: [row.value._id, {}], limit: 1, descending: true}, function(err, res) {
             if (err || res.rows.length === 0) return callback();
-            add(); return callback(null, false);
+            add(row); return callback(null, false);
           });
         }
-        
       } else {
         callback();
       }
-    }, function() {
+    }, function () {
       fetchDocuments(documents, fetchDocuments, function(err, nodes, count) {
         if (type === "user" && !nodes["/user/"+searchstr]) {
           db.get("/user/"+searchstr, function(err, node) {
@@ -194,6 +192,49 @@ Document.find = function(searchstr, type, username, callback) {
         }
       });
     });
+  });
+};
+
+Document.dashboard = function (username, callback) {
+  var userId = '/user/' + username;
+  
+  async.parallel([
+    // The user's own documents
+    function (cb) {
+      db.view('document/key', { startkey: [userId], endkey: [userId, {}] }, function (err, res) {
+        if (err) {
+          cb(err, null);
+        } else {
+          cb(null, _.map(res.rows, function (row) { return row.value._id; }));
+        }
+      });
+    },
+    
+    // Watched documents
+    function (cb) {
+      db.view('subscription/by_user', { key: [userId] }, function (err, res) {
+        if (err) {
+          cb(err, null);
+        } else {
+          cb(null, _.map(res.rows, function (row) { return row.value.document; }));
+        }
+      });
+    },
+    
+    // Documents the user has contributed to
+    function (cb) {
+      db.view('collaborator/by_user', { key: [userId] }, function (err, res) {
+        if (err) {
+          cb(err, null);
+        } else {
+          cb(null, _.map(res.rows, function (row) { return row.value.document; }));
+        }
+      });
+    }
+    
+    // TODO: Documents in networks the user has contributed to
+  ], function (err, results) {
+    fetchDocuments(_.flatten(results), fetchDocuments, callback);
   });
 };
 

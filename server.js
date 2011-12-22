@@ -61,7 +61,7 @@ app.configure(function() {
 
 
 function urlToHttpOptions(u) {
-  fragments = url.parse(u);
+  var fragments = url.parse(u);
   return {
     host: fragments.hostname,
     port: fragments.port,
@@ -105,7 +105,7 @@ app.use(function(req, res) {
     return;
   }
   
-  var path = require('url').parse(req.url).pathname
+  var path = url.parse(req.url).pathname
   var fragments = path.split('/');
   
   var username = fragments[1];
@@ -251,8 +251,12 @@ function clientConfig() {
   };
 }
 
+function isProduction () {
+  return process.env.NODE_ENV === 'production';
+}
+
 function scripts() {
-  if (process.env.NODE_ENV === 'production') {
+  if (isProduction()) {
     return settings.scripts.production;
   } else {
     return settings.scripts.development.concat(settings.scripts.source);
@@ -272,7 +276,7 @@ function loadTemplates() {
 
 var styles;
 function loadStyles(callback) {
-  if (process.env.NODE_ENV === 'production' && styles) return callback(styles);
+  if (isProduction() && styles) return callback(styles);
   
   var mainFile = __dirname + '/styles/main.less';
   child_process.exec('lessc ' + mainFile, function (error, stdout, stderr) {
@@ -287,7 +291,7 @@ function loadStyles(callback) {
 }
 
 
-var templates = process.env.NODE_ENV === 'production'
+var templates = isProduction()
               ? _.once(loadTemplates)
               : loadTemplates;
 
@@ -325,21 +329,32 @@ app.get('/quicksearch/:search_str', function(req, res) {
 });
 
 // Find documents by search string or user
-app.get('/documents/search/:type/:search_str', function(req, res) {
+app.get('/documents/search/:type/:search_str', function (req, res) {
   var username = req.session ? req.session.username : null
   if (req.params.type === 'recent') {
-    Document.recent(req.params.search_str, username, function(err, graph, count) {
-      res.send(JSON.stringify({graph: graph, count: count}));
+    Document.recent(req.params.search_str, username, function (err, graph, count) {
+      res.json({graph: graph, count: count});
     });
-  } else if(req.params.type === 'subscribed') {
-    Document.subscribed(username, function(err, graph, count) {
-      res.send(JSON.stringify({graph: graph, count: count}));
+  } else if (req.params.type === 'subscribed') {
+    Document.subscribed(username, function (err, graph, count) {
+      res.json({graph: graph, count: count});
     });
   } else {
-    Document.find(req.params.search_str, req.params.type, username, function(err, graph, count) {
-      res.send(JSON.stringify({graph: graph, count: count}));
+    Document.find(req.params.search_str, req.params.type, username, function (err, graph, count) {
+      res.json({graph: graph, count: count});
     });
   }
+});
+
+app.get('/dashboard', function (req, res) {
+  if (!req.session) {
+    res.json({ error: "Not logged in" });
+    return;
+  }
+  var username = req.session.username;
+  Document.dashboard(username, function (err, graph, count) {
+    res.json({ graph: graph, count: count });
+  });
 });
 
 
@@ -800,5 +815,6 @@ app.get('/documents/:username/:name', function(req, res) {
 //   });
 // });
 
-console.log('READY: Substance is listening http://'+config['server_host']+':'+config['server_port']);
-app.listen(config['server_port'], config['server_host']);
+app.listen(config['server_port'], config['server_host'], function (err) {
+  console.log('READY: Substance is listening http://'+config['server_host']+':'+config['server_port']);
+});
