@@ -11,27 +11,21 @@
   counter-increment: figure;
 }
 
-.content-node .caption {
-  margin: 0px 100px;
-  padding: 15px 0;
-}
-
-.caption:before {
-  content: "Fig. " counter(figure) " ";
+.content-node {
+  .caption {
+    margin: 0px 100px;
+    padding: 15px 0;
+    &.empty { display: none; }
+    &:before { content: "Fig. " counter(figure) " "; }
+  }
+  &.selected .caption { display: block; }
 }
 
 .content-node.image {
   text-align: center;
-}
-
-.image-content img {
-  padding: 0;
-  margin: 0;
-  max-width: 720px;
-  min-width: 200px;
-  min-height: 150px;
-  display: block;
-  padding: 5px 0;
+  &.selected {
+    .image-editor { display: block; }
+  }
 }
 
 .image-content {
@@ -40,6 +34,30 @@
   text-align: center;
   padding: 0;
   margin: 0;
+  img {
+    padding: 0;
+    margin: 0;
+    max-width: 720px;
+    min-width: 200px;
+    min-height: 150px;
+    display: block;
+    padding: 5px 0;
+  }
+
+  &.placeholder {
+    .image-drop-area .credits { display: block; }
+    .image-file { bottom: 30px; }
+  }
+
+  .image-editor .heading {
+    .document-font;
+    font-size: 20px;
+    text-align: center;
+  }
+}
+
+.content-node.document.edit .content-node.image.selected .image-content img {
+  opacity: 0.1;
 }
 
 .image-editor {
@@ -50,84 +68,64 @@
   bottom: 0px;
   right: 0px;
   left: 0px;
-}
 
-.content-node.image.selected .image-editor {
-  display: block;
-}
+  .image-drop-area {
+    position: absolute;
+    top: 20px; right: 20px; left: 20px; bottom: 20px;
+    
+    border: 2px dashed #aaa;
+    -webkit-border-radius:10px;
+    -moz-border-radius:   10px;
+    border-radius:        10px;
 
-.content-node.document.edit .content-node.image.selected .image-content img {
-  opacity: 0.1;
-}
+    .info {
+      color: #666;
+      text-align: center;
+      line-height: 45px;
+      font-style: italic;
+    }
 
-.image-editor .image-drop-area {
-  position: absolute;
-  top: 20px; right: 20px; left: 20px; bottom: 20px;
-  
-  border: 2px dashed #aaa;
-  -webkit-border-radius:10px;
-  -moz-border-radius:   10px;
-  border-radius:        10px;
-}
+    .credits {
+      display: none;
+      color: #666;
+      font-style: italic;
+      font-size: 12px;
+      text-align: center;
+      position: absolute;
+      left: -150px;
+      right: -150px;
+      bottom: 5px;
+    }
+  }
 
-.image-editor .image-drop-area .info {
-  color: #666;
-  text-align: center;
-  line-height: 45px;
-  font-style: italic;
-}
+  .image-file {
+    display: block;
+    position: absolute;
+    top: 0px;
+    bottom: 0px;
+    left: 0px;
+    right: 0px;
+    opacity: 0;
+    padding: 0;
+    margin: 0;
+  }
 
-.image-editor .image-drop-area .credits {
-  display: none;
-  color: #666;
-  font-style: italic;
-  font-size: 12px;
-  text-align: center;
-  position: absolute;
-  left: -150px;
-  right: -150px;
-  bottom: 5px;
-}
+  .image-url-area {
+    padding-top: 40px;
 
-.image-content.placeholder .image-drop-area .credits { display: block; }
-
-.image-editor .image-file {
-  display: block;
-  position: absolute;
-  top: 0px;
-  bottom: 0px;
-  left: 0px;
-  right: 0px;
-  opacity: 0;
-  padding: 0;
-  margin: 0;
-}
-
-.image-content.placeholder .image-file { bottom: 30px; }
-
-.image-editor .image-url-area {
-  padding-top: 40px;
-}
-
-.image-editor .image-url-area input {
-  width: 100%;
-  background: #fff;
-  border: 1px solid #ccc;
-}
-
-.image-content .image-editor .heading {
-  .document-font;
-  font-size: 20px;
-  text-align: center;
+    input {
+      width: 100%;
+      background: #fff;
+      border: 1px solid #ccc;
+    }
+  }
 }
 
 .image-progress {
   display: none;
+  .label { padding: 10px; }
 }
 
-.image-progress .label {
-  padding: 10px;
-}
 
 /* ImageEditor Widget */
 .progress-container {
