@@ -1,5 +1,17 @@
+#explore {
+  background: #373737;
+  overflow: auto;
+}
+
+#explore h2 {
+  color: #777;
+  font-weight: light;
+}
+
 #networks {
-  background: #2B2B2B;
+
+  h2 { margin-left: 20px; margin-top: 20px; }
+
   overflow: auto;
   padding-bottom: 50px;
 
@@ -7,7 +19,7 @@
     .border-radius(5px);
     width: 150px;
     height: 100px;
-    background: #3D3D3D;
+    background: #303030;
     float: left;
     margin-left: 20px;
     margin-top: 20px;
@@ -40,10 +52,37 @@
   }
 
   .network:hover {
-     background: #1C1C1C;
-    color: #fff;
+     background: #222;
+     color: #fff;
     
     .member-count { color: #ddd; }
-      .document-count { color: #ddd; }
+    .document-count { color: #ddd; }
+  }
+}
+
+#recent_documents {
+  float: right;
+  padding: 20px;
+  width: 300px;
+
+
+  .document {
+    padding: 5px 10px;
+    background: #303030;
+    margin-bottom: 1px;
+    color: #eee;
+
+    .title {
+      font-size: 20px;
+    }
+
+    .author {
+      color: #aaa;
+    }
+
+    .updated_at {
+      font-size: 11px;
+      color: #666;
+    }
   }
 }

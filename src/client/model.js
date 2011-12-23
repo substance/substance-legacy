@@ -366,8 +366,28 @@ function loadDashboard (query, callback) {
 function loadExplore (callback) {
   var graph = new Data.Graph(seed).connect('ajax');
 
-  graph.fetch({type: "/type/network"}, function(err, nodes) {
-    err ? callback(err) : callback(null, {networks: nodes});
+  $.ajax({
+    type: "GET",
+    url: "/documents/search/recent/50",
+    dataType: "json",
+    success: function (res) {
+
+      graph.merge(res.graph);
+
+      // Populate results
+      var documents = graph.find({"type|=": "/type/document"});
+      
+      graph.fetch({type: "/type/network"}, function(err, nodes) {
+        console.log('JOJO');
+        err ? callback(err) : callback(null, {
+          networks: nodes,
+          documents: sortDocuments(documents)
+        });
+      });
+    },
+    error: function(err) {
+      callback(err);
+    }
   });
 }
 
@@ -418,6 +438,10 @@ function search (queryString, callback) {
 //   // 
 // }
 //
+
+function documentURL(doc) {
+  return "" + doc.get('creator')._id.split("/")[2] + "/" + doc.get('name');
+}
 
 function deleteDocument (doc, callback) {
   graph.del(doc._id);

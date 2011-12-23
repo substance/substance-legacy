@@ -1,4 +1,18 @@
+<div id="recent_documents">
+	<h2>Recent Documents</h2>
+  <% documents.each(function(doc) { %>
+    <a href="<%= documentURL(doc) %>">
+      <div class="document">
+      	<div class="author"><%= doc.get('creator').get('name') %></div>
+      	<div class="title"><%= doc.get('title') %></div>
+      	<div class="updated_at"><%= s.util.prettyDate(doc.get('updated_at')) %></div>
+      </div>
+    </a>
+  <% }); %>
+</div>
+
 <div id="networks">
+	<h2>Networks</h2>
 	<% networks.each(function(network) { %>
     
     <a class="toggle-view" href="<%= network._id %>">
