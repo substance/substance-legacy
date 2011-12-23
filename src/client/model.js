@@ -375,7 +375,6 @@ function loadExplore (callback) {
 
       // Populate results
       var documents = graph.find({"type|=": "/type/document"});
-      
       graph.fetch({type: "/type/network"}, function(err, nodes) {
         err ? callback(err) : callback(null, {
           networks: nodes,

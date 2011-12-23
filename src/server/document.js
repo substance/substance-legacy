@@ -24,31 +24,6 @@ function fetchNode(id, callback) {
 // Stats
 // -----------
 
-// function logView(documentId, username, callback) {
-//   db.save({
-//     _id: Data.uuid("/event/"),
-//     type: ["/type/event"],
-//     event_type: "view-document",
-//     creator: username ? "/user/"+username : null,
-//     message: "",
-//     link: "",
-//     object: documentId,
-//     created_at: new Date()
-//   }, function(err, event) {
-//     callback();
-//   });
-// }
-// 
-// 
-// function getViewCount(documentId, callback) {
-//   db.view('substance/document_views', {key: documentId}, function(err, res) {
-//     if (err) {
-//       callback(err);
-//     } else {
-//       callback(null, res.rows[0].value);
-//     }
-//   });
-// }
 
 // Document usage grouped by day
 function getUsage(documentId, callback) {

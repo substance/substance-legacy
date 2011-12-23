@@ -215,6 +215,7 @@ graph.connect('couch', {
   filters: [
     Filters.ensureAuthorized(),
     Filters.sanitizeUserInput(),
+    Filters.addMeta(),
     Filters.logEvents()
   ]
 });

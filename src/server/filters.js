@@ -233,4 +233,27 @@ Filters.logEvents = function() {
   }
 };
 
+
+Filters.addMeta = function() {
+  return {
+    read: function(node, next, session) {
+      if (_.include(node.type, "/type/network")) {
+        node.meta = {};
+        this.db.view('substance/publication_count', {key: ["/network/" + node._id.split('/')[2]]}, _.bind(function(err, res) {
+          node.meta.documents = res.rows[0].value;
+          this.db.view('substance/member_count', {key: ["/network/" + node._id.split('/')[2]]}, function(err, res) {
+            node.meta.members = res.rows.length > 0 ? res.rows[0].value : 0;
+            next(node);
+          });
+        }, this));
+      } else {
+        next(node);
+      }
+    },
+    write: function(node, next, session) {
+      next(node);
+    }
+  }
+};
+
 module.exports = Filters;

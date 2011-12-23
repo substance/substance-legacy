@@ -19,8 +19,8 @@
     	<div class="network" data-network="<%= network._id %>">
      	  <div class="title"><%= network.get('name') %></div>
       
-     		<div class="document-count">4 documents</div>
-      	<div class="member-count">15 members</div>
+     	  <div class="document-count"><%= network.meta.documents %> documents</div>
+        <div class="member-count"><%= network.meta.members %> members</div>
     	</div>
     </a>
 	<% }); %>
