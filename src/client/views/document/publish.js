@@ -1,6 +1,7 @@
 s.views.Publish = Backbone.View.extend({
 
   className: 'shelf-content',
+  id: 'document_publish',
 
   initialize: function () {
     _.bindAll(this);

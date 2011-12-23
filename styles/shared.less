@@ -153,17 +153,17 @@ input[type=submit] {
   -webkit-transition: background-color 400ms;
   -moz-transition: background-color 400ms;
   .border-radius(2px);
-}
 
-input[type=submit]:hover {
-  cursor: pointer;
-  background-color: #333;
-  -webkit-transition: background-color 0ms;
-  -moz-transition: background-color 0ms;
-}
+  &:hover:not(:disabled) {
+    cursor: pointer;
+    background-color: #333;
+    -webkit-transition: background-color 0ms;
+    -moz-transition: background-color 0ms;
+  }
 
-input[type=submit]:active {
-  opacity: 0.7;
+  &:active:not(:disabled) {
+    opacity: 0.7;
+  }
 }
 
 

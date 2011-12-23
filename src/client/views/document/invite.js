@@ -1,6 +1,7 @@
 s.views.Invite = Backbone.View.extend({
 
   className: 'shelf-content',
+  id: 'document_invite',
 
   initialize: function () {
     _.bindAll(this);
