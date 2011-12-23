@@ -2,8 +2,8 @@
   <div class="settings-title">Publish</div>
   
   <select name="networks" class="networks-selection" multiple="multiple">
-    <% networks.each(function(network) { %>
-     <option value="<%= network._id %>"> <%= network.get('name') %></option>
+    <% availableNetworks.each(function(network) { %>
+     <option value="<%= network._id %>"<%= networks.get(network._id) ? ' selected="selected"' : '' %>> <%= network.get('name') %></option>
     <% }); %>
   </select>
   

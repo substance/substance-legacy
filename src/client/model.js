@@ -505,14 +505,23 @@ function loadPublish (doc, callback) {
       callback(err, null);
       return;
     }
-    graph.fetch({ type: '/type/network' }, function (err, networks) {
-      if (err) {
-        callback(err, null);
-        return;
-      }
-      callback(null, {
-        versions: versions.sort(byCreatedAt),
-        networks: networks
+    graph.fetch({ type: '/type/network' }, function (err, availableNetworks) {
+      if (err) return callback(err, null);
+
+      graph.fetch({type: '/type/publication', document: doc._id}, function(err, publications) {
+        if (err) return callback(err, null);
+        var networks = new Data.Hash();
+        publications.each(function(pub) {
+          var networkId = pub.get('network')._id;
+          networks.set(networkId, availableNetworks.get(networkId));
+        });
+
+        callback(null, {
+          versions: versions.sort(byCreatedAt),
+          availableNetworks: availableNetworks,
+          networks: networks,
+          document: doc
+        });
       });
     });
   });

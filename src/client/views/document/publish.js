@@ -4,29 +4,27 @@ s.views.Publish = Backbone.View.extend({
 
   initialize: function () {
     _.bindAll(this);
-    this.networks = null;
-    this.versions = null;
+    this.data = null;
   },
 
   render: function () {
     $(this.el).html(s.util.tpl('document_publish', {
-      networks: this.networks,
-      versions: this.versions,
+      availableNetworks: this.data.availableNetworks,
+      networks: this.data.networks,
+      versions: this.data.versions,
       document: this.model
     }));
+
     this.trigger('resize');
     return this;
   },
 
   load: function (callback) {
-    if (this.networks && this.versions) {
+    if (this.data) {
       callback(null);
     } else {
       loadPublish(this.model, _.bind(function (err, res) {
-        if (!err) {
-          this.networks = res.networks;
-          this.versions = res.versions;
-        }
+        if (!err) { this.data = res; }
         callback(err);
       }, this));
     }
@@ -45,7 +43,7 @@ s.views.Publish = Backbone.View.extend({
     var networks = this.$('.networks-selection').val() || []
     ,   remark   = this.$('#version_remark').val();
     publishDocument(this.model, networks, remark, _.bind(function (err, res) {
-      this.versions = this.networks = null;
+      this.data = null;
       this.load(this.render);
     }, this));
     return false;
@@ -54,7 +52,7 @@ s.views.Publish = Backbone.View.extend({
   removeVersion: function (e) {
     var version = $(e.currentTarget).attr('data-version');
     removeVersion(this.model, version, _.bind(function () {
-      this.versions = this.networks = null;
+      this.data = null;
       this.load(this.render);
     }, this));
     return false;
