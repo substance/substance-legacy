@@ -171,8 +171,10 @@ Document.find = function(searchstr, type, username, callback) {
 };
 
 Document.dashboard = function (username, callback) {
-  var userId = '/user/' + username;
+  var userId = '/user/' + username,
+      graph = new Data.Graph(seed).connect('couch', {url: config.couchdb_url});
   
+
   async.parallel([
     // The user's own documents
     function (cb) {
@@ -185,7 +187,7 @@ Document.dashboard = function (username, callback) {
       });
     },
     
-    // Watched documents
+    // Subscribed documents
     function (cb) {
       db.view('subscription/by_user', { key: [userId] }, function (err, res) {
         if (err) {
@@ -205,11 +207,27 @@ Document.dashboard = function (username, callback) {
           cb(null, _.map(res.rows, function (row) { return row.value.document; }));
         }
       });
-    }
+    },
     
-    // TODO: Documents in networks the user has contributed to
+    // Documents resulting from network memberships
+    function (cb) {
+      graph.fetch({type: "/type/membership", user: userId}, function(err, memberships) {
+        var networks = memberships.map(function(m) { return m.get('network')._id; }).values();
+        var results = [];
+      
+        async.forEach(networks, function(network, cb) {
+          graph.fetch({type: "/type/publication", network: network }, function(err, publications) {
+            var documents = publications.map(function(m) { return m.get('document')._id; }).values();
+            results = results.concat(documents);
+            cb();
+          });
+        }, function(err) {
+          cb(null, results);
+        });
+      });
+    }
   ], function (err, results) {
-    fetchDocuments(_.flatten(results), fetchDocuments, callback);
+    fetchDocuments(_.uniq(_.flatten(results)), username, callback);
   });
 };
 
