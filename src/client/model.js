@@ -476,7 +476,7 @@ function updateDocumentName (doc, name, callback) {
       doc.set({ name: name });
       callback(null);
     } else {
-      callback(new Error('Sorry, this name is already taken.'));
+      callback(new Error("Sorry, this name is already taken."));
     }
   });
 }

@@ -1,1 +1,14 @@
-<a href="#" class="delete">Delete Document</a>
+<p class="error"></p>
+
+<form class="rename">
+  <label for="new_name">Name</label>
+  <input id="new_name" type="text" value="<%= doc.get('name') %>" />
+  <input type="submit" value="Change" disabled="disabled" />
+</form>
+
+<p>
+  <a href="#" class="delete">
+    <span class="icon">Trash</span>
+    Delete Document
+  </a>
+</p>

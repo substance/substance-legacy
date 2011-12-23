@@ -117,7 +117,7 @@ s.views.Document = Backbone.View.extend({
   },
 
   resizeShelf: function () {
-    var shelfHeight   = this.currentView ? $(this.currentView.el).height() : 0
+    var shelfHeight   = this.currentView ? $(this.currentView.el).outerHeight() : 0
     ,   contentMargin = shelfHeight + 100;
     this.$('#document_shelf').css({ height: shelfHeight + 'px' });
     this.$('#document_content').css({ 'margin-top': contentMargin + 'px' });
