@@ -240,7 +240,7 @@ Filters.addMeta = function() {
       if (_.include(node.type, "/type/network")) {
         node.meta = {};
         this.db.view('substance/publication_count', {key: ["/network/" + node._id.split('/')[2]]}, _.bind(function(err, res) {
-          node.meta.documents = res.rows[0].value;
+          node.meta.documents = res.rows.length > 0 ? res.rows[0].value : 0;
           this.db.view('substance/member_count', {key: ["/network/" + node._id.split('/')[2]]}, function(err, res) {
             node.meta.members = res.rows.length > 0 ? res.rows[0].value : 0;
             next(node);
