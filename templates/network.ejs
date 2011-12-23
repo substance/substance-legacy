@@ -1,1 +1,20 @@
-<h1><%= network.get('name') %></h1>
+<div id="network_header">
+  <div class="members">
+  	<h2>Members</h2>
+  	<% members.each(function(user) { %>
+  		<div class="member">
+  			<%= user.get('name') %>
+  		</div>
+  	<% }); %>
+
+  	<% if (isMember) { %>
+  		<a href="#" class="leave-network">Leave Network</a>
+  	<% } else { %>
+  		<a href="#" class="join-network">Join Network</a>
+  	<% } %>    
+  </div>
+
+	<h2><%= network.get('name') %></h2>
+  <p>Network description goes here.</p>
+
+</div>

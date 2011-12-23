@@ -371,14 +371,12 @@ function loadExplore (callback) {
     url: "/documents/search/recent/50",
     dataType: "json",
     success: function (res) {
-
       graph.merge(res.graph);
 
       // Populate results
       var documents = graph.find({"type|=": "/type/document"});
       
       graph.fetch({type: "/type/network"}, function(err, nodes) {
-        console.log('JOJO');
         err ? callback(err) : callback(null, {
           networks: nodes,
           documents: sortDocuments(documents)
@@ -403,7 +401,8 @@ function loadNetwork (network, callback) {
       callback(null, {
         members: graph.find({"type": "/type/user"}),
         network: graph.find({"type": "/type/network"}).first(),
-        documents: graph.find({"type": "/type/document"})
+        documents: graph.find({"type": "/type/document"}),
+        isMember: res.isMember
       });
     },
     error: function(err) {
@@ -600,6 +599,41 @@ function documentTypes () {
 }
 */
 
+// Network
+// ========
+
+function networkSlug (network) {
+  return network._id.split('/')[2];
+}
+
+function joinNetwork (network, callback) {
+  $.ajax({
+    type: "POST",
+    url: "/network/"+network+"/join",
+    dataType: "json",
+    success: function (res) {
+      callback(null);
+    },
+    error: function (err) {
+      callback(err);
+    }
+  });
+}
+
+
+function leaveNetwork (network, callback) {
+  $.ajax({
+    type: "PUT",
+    url: "/network/"+network+"/leave",
+    dataType: "json",
+    success: function (res) {
+      callback(null);
+    },
+    error: function (err) {
+      callback(err);
+    }
+  });
+}
 
 // User
 // ====

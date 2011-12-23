@@ -347,6 +347,7 @@ app.get('/documents/search/:type/:search_str', function (req, res) {
   }
 });
 
+
 app.get('/dashboard.json', function (req, res) {
   if (!req.session) {
     res.json({ error: "Not logged in" });
@@ -358,12 +359,31 @@ app.get('/dashboard.json', function (req, res) {
   });
 });
 
-app.get('/network/:network.json', function(req, res) {
-  Network.get(req.params.network, function(err, graph) {
-    if (err) return res.json({status: "error", error: err});
-    res.json({status: "ok", graph: graph});
+
+app.post('/network/:network/join', function(req, res) {
+  Network.join(req.params.network, req.session.username, function(err) {
+    if (err) return res.json({status: "error"});
+    res.json({status: "ok"});
   });
 });
+
+
+app.put('/network/:network/leave', function(req, res) {
+  console.log('leaving network...');
+  Network.leave(req.params.network, req.session.username, function(err) {
+    if (err) return res.json({status: "error"});
+    res.json({status: "ok"});
+  });
+});
+
+
+app.get('/network/:network.json', function(req, res) {
+  Network.get(req.params.network, req.session.username, function(err, data) {
+    if (err) return res.json({status: "error", error: err});
+    res.json(_.extend(data, {status: "ok"}));
+  });
+});
+
 
 // Find documents by search string (full text search in future)
 // Or find by user
