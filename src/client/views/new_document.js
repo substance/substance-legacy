@@ -20,16 +20,17 @@ s.views.NewDocument = Backbone.View.extend({
     ,   title = this.$('#new_document_name').val()
     ,   name = s.util.slug(title);
     
-    checkDocumentName(name, function (valid) {
+    checkDocumentName(name, _.bind(function (valid) {
       if (valid) {
         notifier.notify(Notifications.BLANK_DOCUMENT);
         var doc = createDoc(type, name, title);
-        console.log(doc);
-        router.navigate(doc._id.replace(/^\/document\//, ''), true);
+        graph.sync(function (err) {
+          router.navigate(documentURL(doc), true);
+        });
       } else {
         this.$('#new_document_name').addClass('error');
         this.$('#new_document_name_message').html("This document name is already taken.");
       }
-    });
+    }, this));
   }
 });

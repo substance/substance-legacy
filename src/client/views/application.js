@@ -138,23 +138,16 @@ s.views.Application = Backbone.View.extend({
     }, this);
     
     var id = '/document/'+username+'/'+docname;
-    if (graph.get(id)) {
+    loadDocument(username, docname, version, _.bind(function (err, res) {
+      // TODO: scroll to desired part of the document
+      // TODO: error handling
       render({
-        model: graph.get(id)
-        // TODO
+        model: res.doc,
+        authorized: res.authorized,
+        version: res.version,
+        published: res.published
       });
-    } else {
-      loadDocument(username, docname, version, _.bind(function (err, res) {
-        // TODO: scroll to desired part of the document
-        // TODO: error handling
-        render({
-          model: res.doc,
-          authorized: res.authorized,
-          version: res.version,
-          published: res.published
-        });
-      }, this));
-    }
+    }, this));
   }
 
 });
