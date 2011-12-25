@@ -1,109 +1,92 @@
-/* Operations panel */
-
-.content-node .operations {
-  position: absolute;
-  right: -26px;
-  top: 0px;
-  width: 26px;
-  bottom: 0px;
-  background: transparent;
-  border-top-right-radius: 4px;
-  border-bottom-right-radius: 4px;
-}
-
-.content-node.active > .operations {
-  background: rgba(0,0,0, 0.1);
-}
-
-.content-node .operations a {
-  padding: 5px;
-  display: none;
-  border: none;
-  opacity: 0.4;
-  position: relative;
-}
-
-.content-node .operations a.sticky { display: block; }
-
-.edit .content-node.selected > .operations a { display: block; }
-
-#document .content-node .operations a:hover { opacity: 1.0; }
-
-.operations a.toggle-comments span { 
-  .ui-font;
-  font-size: 14px;
-  font-weight: bold;
-  position: absolute;
-  left: 30px;
-  top: 1px;
-}
-
-
-/* Icons */
-.operations a {
-  width: 26px;
-  background: blue;
-  height: 26px;
-}
-
-.operations a img {
-  display: none;
-}
-
-.operations a {
-  background: url("@{images}/icons/black/comment_stroke_16x14.png") center center no-repeat;
-}
-
-.content-node.selected .operations a {
-  opacity: 0.5;
-  background: url("@{images}/icons/white/comment_stroke_16x14.png") center center no-repeat;
-}
-
-.content-node .operations a.remove-node { background: url("@{images}/icons/white/x_alt_16x16.png") center center no-repeat; }
-.content-node .operations a.toggle-move-node { background: url("@{images}/icons/white/move_16x16.png") center center no-repeat; }
-
-
-.content-node.selected > .operations {
-  display: block;
-  background: #747260;
-}
-
-.content-node { 
+#document .content-node {
   position: relative; 
   margin: 10px 0;
-}
-
-/* Overthink this */
-#document .content-node.text .content {
-  padding: 10px 0;
-}
-
-.something-selected .content-node { color: #aaa; }
-.something-selected .content-node a { color: #aaa; }
-
-#document .content-node {
   -webkit-transition: min-height 0.5s;
   -moz-transition: min-height 0.5s;
+
+  &.selected {
+    background: #fff;
+    min-height: 150px;
+    
+    -webkit-box-shadow: 0px 1px 4px rgba(0,0,0,0.35), inset 0px 0px 1px rgba(255,255,255,0.15);
+    -moz-box-shadow:    0px 1px 4px rgba(0,0,0,0.35), inset 0px 0px 1px rgba(255,255,255,0.15);
+    box-shadow:         0px 1px 4px rgba(0,0,0,0.35), inset 0px 0px 1px rgba(255,255,255,0.15);
+  }
+
+  .operations {
+    position: absolute;
+    right: -26px;
+    top: 0px;
+    width: 26px;
+    bottom: 0px;
+    background: transparent;
+    border-top-right-radius: 4px;
+    border-bottom-right-radius: 4px;
+
+    a {
+      padding: 5px;
+      border: none;
+      position: relative;
+      width: 26px; height: 26px;
+
+      display: none;
+      &.toggle-comments {
+        display: block;
+        span { 
+          .ui-font;
+          font-size: 14px;
+          font-weight: bold;
+          position: absolute;
+          left: 30px;
+          top: 1px;
+        }
+      }
+
+      opacity: 0.5;
+      &:hover { opacity: 1; }
+
+      &.toggle-comments  { background: url("@{images}/icons/white/comment_stroke_16x14.png") center center no-repeat; }
+      &.remove-node      { background: url("@{images}/icons/white/x_alt_16x16.png") center center no-repeat; }
+      &.toggle-move-node { background: url("@{images}/icons/white/move_16x16.png") center center no-repeat; }
+    }
+  }
+
+  &.active {
+    > .operations {
+      background: rgba(0,0,0, 0.1);
+    }
+  }
+
+  &.selected {
+    > .operations {
+      display: block;
+      background: #747260;
+    }
+  }
+
+  &.active, &.selected {
+    > a.remove-node { display: block; }
+  }
 }
 
-#document > .content-node { }
+.something-selected .content-node {
+  color: #aaa;
+  a { color: #aaa; }
 
-#document .content-node.selected {
-  background: #fff;
-  min-height: 150px;
-  
-  -webkit-box-shadow: 0px 1px 4px rgba(0,0,0,0.35), inset 0px 0px 1px rgba(255,255,255,0.15);
-  -moz-box-shadow:    0px 1px 4px rgba(0,0,0,0.35), inset 0px 0px 1px rgba(255,255,255,0.15);
-  box-shadow:         0px 1px 4px rgba(0,0,0,0.35), inset 0px 0px 1px rgba(255,255,255,0.15);
+  &.selected {
+    > .content,
+    blockquote > .content,
+    > .CodeMirror pre,
+    blockquote > .content a {
+      color: #000;
+    }
+  }
 }
 
-.something-selected .content-node.selected > .content {color: #000; }
-.something-selected .content-node.selected blockquote > .content {color: #000; }
-.something-selected .content-node.selected > .CodeMirror pre { color: #000; }
-.something-selected .content-node.selected > .content a {color: #000; }
-.something-selected .content-node.selected blockquote > .content a {color: #000; }
-#document.insert-mode .content-node { color: #aaa; }
-#document.insert-mode .content-node { background: transparent; -webkit-box-shadow: none; }
+#document.edit .content-node {
+  background: transparent;
+  -webkit-box-shadow: none;
+  color: #aaa;
 
-.content-node.selected > a.remove-node { display: block; }
-.content-node.active > a.remove-node { display: block; }
+  &.selected > .operations a { display: block; }
+}
