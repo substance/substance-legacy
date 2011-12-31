@@ -13,6 +13,10 @@
     "cookie-sessions": "0.0.2",
     "nodemailer": "0.2.4",
     "express": "2.5.2",
+    "less": "1.1.6",
     "now": "0.7.6"
+  },
+  "devDependencies": {
+    "coffee-script": "1.2.0"
   }
 }
