@@ -1,0 +1,5 @@
+<div id="bins">
+  <% _.each(bins, function(bin, key) { %>
+    <a href="#" class="toggle-bin<%= key === activeBin ? ' selected' : '' %>" data-bin="<%= key %>"><%= bin.name %></a>
+  <% }); %>
+</div>

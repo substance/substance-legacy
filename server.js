@@ -355,8 +355,8 @@ app.get('/dashboard.json', function (req, res) {
     return;
   }
   var username = req.session.username;
-  Document.dashboard(username, function (err, graph, count) {
-    res.json({ graph: graph, count: count });
+  Document.dashboard(username, function (err, graph, count, bins) {
+    res.json({ graph: graph, count: count, bins: bins });
   });
 });
 

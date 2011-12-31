@@ -172,8 +172,18 @@ Document.find = function(searchstr, type, username, callback) {
 
 Document.dashboard = function (username, callback) {
   var userId = '/user/' + username,
-      graph = new Data.Graph(seed).connect('couch', {url: config.couchdb_url});
-  
+      graph = new Data.Graph(seed).connect('couch', {url: config.couchdb_url}),
+      bins = {
+        user: {
+          name: "My documents"
+        },
+        involved: {
+          name: "Involved documents"
+        },
+        subscribed: {
+          name: "Subscribed documents"
+        }
+      };
 
   async.parallel([
     // The user's own documents
@@ -182,7 +192,8 @@ Document.dashboard = function (username, callback) {
         if (err) {
           cb(err, null);
         } else {
-          cb(null, _.map(res.rows, function (row) { return row.value._id; }));
+          bins.user.documents = _.map(res.rows, function (row) { return row.value._id; });
+          cb(null, bins.user.documents);
         }
       });
     },
@@ -193,7 +204,8 @@ Document.dashboard = function (username, callback) {
         if (err) {
           cb(err, null);
         } else {
-          cb(null, _.map(res.rows, function (row) { return row.value.document; }));
+          bins.subscribed.documents = _.map(res.rows, function (row) { return row.value.document; });
+          cb(null, bins.subscribed.documents);
         }
       });
     },
@@ -204,7 +216,8 @@ Document.dashboard = function (username, callback) {
         if (err) {
           cb(err, null);
         } else {
-          cb(null, _.map(res.rows, function (row) { return row.value.document; }));
+          bins.involved.documents = _.map(res.rows, function (row) { return row.value.document; });
+          cb(null, bins.involved.documents);
         }
       });
     },
@@ -217,8 +230,11 @@ Document.dashboard = function (username, callback) {
       
         async.forEach(networks, function(network, cb) {
           graph.fetch({type: "/type/publication", network: network }, function(err, publications) {
-            var documents = publications.map(function(m) { return m.get('document')._id; }).values();
-            results = results.concat(documents);
+            bins[network] = {
+              name: network,
+              documents: publications.map(function(m) { return m.get('document')._id; }).values()
+            };
+            results = results.concat(bins[network].documents);
             cb();
           });
         }, function(err) {
@@ -227,7 +243,9 @@ Document.dashboard = function (username, callback) {
       });
     }
   ], function (err, results) {
-    fetchDocuments(_.uniq(_.flatten(results)), username, callback);
+    fetchDocuments(_.uniq(_.flatten(results)), username, function(err, g, count) {
+      callback(err, g, count, bins);
+    });
   });
 };
 

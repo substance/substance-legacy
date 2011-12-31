@@ -354,7 +354,8 @@ function loadDashboard (query, callback) {
       
       callback(null, {
         documents: sortDocuments(documents),
-        user: graph.get('/user/'+session.username)
+        user: graph.get('/user/'+session.username),
+        bins: res.bins
       });
     },
     error: function(err) {
