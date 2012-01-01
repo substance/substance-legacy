@@ -75,3 +75,19 @@ s.util.browserSupported = function () {
 s.util.prettyDate = function (time) {
   return jQuery.timeago(time);
 };
+
+s.util.escape = function (s) {
+  return s.replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;')
+          .replace(/'/g, '&apos;');
+};
+
+s.util.unescape = function (s) {
+  return s.replace(/&apos;/g, "'")
+          .replace(/&quot;/g, '"')
+          .replace(/&gt;/g,   '>')
+          .replace(/&lt;/g,   '<')
+          .replace(/&amp;/g,  '&');
+};

@@ -867,14 +867,15 @@ function importFromPandoc (doc, pandoc) {
     if (typeof obj === 'string') {
       return funs[obj]();
     } else {
-      var key = _.keys(obj)[0]
-      ,   val = obj[key];
-      return funs[key](val);
+      for (var key in obj) {
+        if (obj.hasOwnProperty(key)) { break; }
+      }
+      return funs[key](obj[key]);
     }
   }
   
   function appendNode (node) {
-    var parent = _.last(stack)
+    var parent = stack[stack.length-1]
     ,   children = parent.all('children');
     children.set(node._id, node, children.length);
   }
@@ -920,12 +921,12 @@ function importFromPandoc (doc, pandoc) {
     SmallCaps: inlinesToHtml,
     Quoted: function (a) { return inlinesToHtml(a[1]); },
     Cite: function (a) { return inlinesToHtml(a[1]); },
-    Code: function (a) { return wrapWith('code')(a[1]); },
+    Code: function (a) { return '<code>' + a[1] + '</code>'; },
     Space: ret(" "),
-    EmDash: ret("&mdash;"),
-    EnDash: ret("&ndash;"),
-    Apostrophe: ret("&apos;"),
-    Ellipses: ret("&hellip;"),
+    EmDash: ret("—"),
+    EnDash: ret("–"),
+    Apostrophe: ret("’"),
+    Ellipses: ret("…"),
     LineBreak: ret("<br />"),
     Math: ret(" <em>Inline Math is not supported yet.</em> "),
     RawInline: ret(""),
@@ -936,9 +937,9 @@ function importFromPandoc (doc, pandoc) {
   
   function inlinesToHtml (inlines) {
     var html = '';
-    _.each(inlines, function (inline) {
-      html += dispatch(inline, inlineToHtml);
-    });
+    for (var i = 0, l = inlines.length; i < l; i++) {
+      html += dispatch(inlines[i], inlineToHtml);
+    }
     return html;
   }
   
@@ -978,10 +979,21 @@ function importFromPandoc (doc, pandoc) {
     },
     CodeBlock: function (a) {
       endTextNode();
+      
+      var classes = a[0][1];
+      var languages = [ 'javascript', 'python', 'ruby', 'php', 'html', 'css'
+                      , 'haskell', 'coffeescript', 'java', 'c'
+                      ]
+      var language = 'null';
+      _.each(classes, function (klass) {
+        klass = klass.toLowerCase();
+        if (languages.indexOf(klass) >= 0) { language = klass; }
+      });
+      
       var code = graph.set(null, {
         type: '/type/code',
-        language: '', // TODO: find out using the attributes
-        content: a[1],
+        language: language,
+        content: s.util.escape(a[1]),
         document: doc._id
       });
       appendNode(code);
@@ -1010,9 +1022,12 @@ function importFromPandoc (doc, pandoc) {
       function li (b) { return '<li>' + inlinesToHtml(b) + '</li>'; }
       appendText('<ul>' + _.map(a, li).join('') + '</ul>');
     },
-    DefinitionList: function () {
-      startTextNode();
-      // TODO
+    DefinitionList: function (a) {
+      _.each(a, function (pair) {
+        startTextNode();
+        appendText('<p><strong>' + inlinesToHtml(pair[0]) + '</strong></p>');
+        _.each(pair[1], importBlocks);
+      });
     },
     Header: function (a) {
       endTextNode();
@@ -1043,15 +1058,37 @@ function importFromPandoc (doc, pandoc) {
     }
   };
   
+  var blockToText = {
+    Plain: function (inlines) {
+      return this.Para(inlines);
+    },
+    Para: function (inlines) {
+      return inlinesToText(inlines);
+    },
+    CodeBlock: ret(''),
+    RawBlock: ret(''),
+    BlockQuote: ret(''),
+    OrderedList: ret(''),
+    BulletList: ret(''),
+    DefinitionList: ret(''),
+    Header: ret(''),
+    HorizontalRule: ret(''),
+    Table: ret(''),
+    Null: ret('')
+  };
+  
   function blocksToText (blocks) {
-    // TODO
-    return "";
+    var text = '';
+    for (var i = 0, l = blocks.length; i < l; i++) {
+      text += dispatch(blocks[i], blockToText);
+    }
+    return text;
   }
   
   function importBlocks (blocks) {
-    _.each(blocks, function (block) {
-      dispatch(block, importBlock);
-    });
+    for (var i = 0, l = blocks.length; i < l; i++) {
+      dispatch(blocks[i], importBlock);
+    }
   }
   
   importBlocks(pandoc[1]);

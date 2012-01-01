@@ -34,6 +34,7 @@ s.views.Import = Backbone.View.extend({
         notifier.notify(Notifications.BLANK_DOCUMENT);
         var doc = createDoc(type, name, title);
         importFromText(doc, format, text, function (err) {
+          if (err) { console.error(err); }
           graph.sync(function (err) {
             router.navigate(documentURL(doc), true);
           });
