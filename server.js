@@ -70,16 +70,9 @@ function urlToHttpOptions(u) {
   }
 }
 
-
-function letterpress(graph, id, format, response) {
-  var postData = JSON.stringify({
-    'format' : format,
-    'graph': graph,
-    'id': id
-  });
-
-  var postOptions = urlToHttpOptions(config.letterpress_url+"/convert");
-  _.extend(postOptions, {
+function postToLetterpress (path, data, callback) {
+  var postData = JSON.stringify(data);
+  var postOptions = _.extend(urlToHttpOptions(config.letterpress_url+path), {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -87,14 +80,31 @@ function letterpress(graph, id, format, response) {
     }
   });
   
-  var req = http.request(postOptions, function(res) {
-    response.writeHead(200, res.headers);
-    res.pipe(response)
-  });
-
+  var req = http.request(postOptions, callback);
   req.write(postData);
   req.end();
-};
+}
+
+function letterpress (graph, id, format, response) {
+  postToLetterpress('/convert', {
+    format: format,
+    graph: graph,
+    id: id
+  }, function (res) {
+    response.writeHead(res.statusCode, res.headers);
+    res.pipe(response);
+  });
+}
+
+function parse (format, text, response) {
+  postToLetterpress('/parse', {
+    format: format,
+    text: text
+  }, function (res) {
+    response.writeHead(res.statusCode, res.headers);
+    res.pipe(response);
+  });
+}
 
 
 app.use(function(req, res) {
@@ -874,6 +884,13 @@ app.get('/documents/:username/:name', function(req, res) {
     if (err) return res.json({status: "error", error: err});
     res.json({status: "ok", graph: graph, id: id, authorized: authorized, version: version, published: published});
   });
+});
+
+app.post('/parse', function (req, res) {
+  var format = req.body.format
+  ,   text   = req.body.text;
+  
+  parse(format, text, res);
 });
 
 

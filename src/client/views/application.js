@@ -1,6 +1,3 @@
-// The Application
-// ---------------
-
 // This is the top-level piece of UI.
 s.views.Application = Backbone.View.extend({
 
@@ -130,6 +127,10 @@ s.views.Application = Backbone.View.extend({
 
   userSettings: function () {
     this.replaceMainView(new s.views.UserSettings({}).render());
+  },
+
+  import: function () {
+    this.replaceMainView(new s.views.Import({}).render());
   },
 
   loadDocument: function (username, docname, version, nodeid, commentid) {

@@ -876,3 +876,271 @@ function loadNotifications (callback) {
     }
   });
 }
+
+
+// Import
+// ======
+
+function importFromPandoc (doc, pandoc) {
+  // Pandoc's JSON representation is derived from it's Haskell data types at
+  // https://github.com/jgm/pandoc-types/blob/master/Text/Pandoc/Definition.hs
+  // I've summarized the rules here: http://substance.io/timbaumann/letterpress
+  
+  var stack    = [doc]
+  ,   textNode = null;
+  
+  function dispatch (obj, funs) {
+    if (typeof obj === 'string') {
+      return funs[obj]();
+    } else {
+      for (var key in obj) {
+        if (obj.hasOwnProperty(key)) { break; }
+      }
+      return funs[key](obj[key]);
+    }
+  }
+  
+  function appendNode (node) {
+    var parent = stack[stack.length-1]
+    ,   children = parent.all('children');
+    children.set(node._id, node, children.length);
+  }
+  
+  function startTextNode () {
+    if (!textNode) {
+      textNode = graph.set(null, {
+        type: '/type/text',
+        content: ' ',
+        document: doc._id
+      });
+      appendNode(textNode);
+    }
+  }
+  
+  function appendText (html) {
+    textNode.set({
+      content: textNode.get('content') + html
+    });
+  }
+  
+  function endTextNode () {
+    textNode = null;
+  }
+  
+  function wrapWith (tagName) {
+    return function (s) {
+      return '<' + tagName + '>' + inlinesToHtml(s) + '</' + tagName + '>';
+    };
+  }
+  
+  function ret (v) {
+    return function () { return v; };
+  }
+  
+  var inlineToHtml = {
+    Str: function (s) { return s; },
+    Emph: wrapWith('em'),
+    Strong: wrapWith('strong'),
+    Strikeout: inlinesToHtml,
+    Superscript: inlinesToHtml,
+    Subscript: inlinesToHtml,
+    SmallCaps: inlinesToHtml,
+    Quoted: function (a) { return inlinesToHtml(a[1]); },
+    Cite: function (a) { return inlinesToHtml(a[1]); },
+    Code: function (a) { return '<code>' + a[1] + '</code>'; },
+    Space: ret(" "),
+    EmDash: ret("—"),
+    EnDash: ret("–"),
+    Apostrophe: ret("’"),
+    Ellipses: ret("…"),
+    LineBreak: ret("<br />"),
+    Math: ret(" <em>Inline Math is not supported yet.</em> "),
+    RawInline: ret(""),
+    Link: function (a) { return '<a href="' + a[1][0] + '">' + inlinesToHtml(a[0]) + '</a>'; },
+    Image: ret(" <em>Inline Images are not supported yet.</em> "),
+    Note: ret(" <em>Footnotes are not supported yet.</em> ")
+  };
+  
+  function inlinesToHtml (inlines) {
+    var html = '';
+    for (var i = 0, l = inlines.length; i < l; i++) {
+      html += dispatch(inlines[i], inlineToHtml);
+    }
+    return html;
+  }
+  
+  function inlinesToText (inlines) {
+    return inlinesToHtml(inlines).replace(/<[^>]*>/g, '');
+  }
+  
+  var importBlock = {
+    Plain: function (inlines) {
+      this.Para(inlines);
+    },
+    Para: function (inlines) {
+      function isWhitespace (a) { return ['Space', 'LineBreak'].indexOf(a) >= 0; }
+      function trimLeft () { while (isWhitespace(inlines[0])) { inlines.shift(); } }
+      
+      trimLeft();
+      while (_.keys(inlines[0])[0] === 'Image') {
+        var a = inlines[0].Image
+        ,   url = a[1][0]
+        ,   caption = url[0];
+        
+        endTextNode();
+        var image = graph.set(null, {
+          type: '/type/image',
+          url: url,
+          caption: inlinesToText(caption),
+          document: doc._id
+        });
+        
+        trimLeft();
+      }
+      
+      if (inlines.length) {
+        startTextNode();
+        appendText('<p>' + inlinesToHtml(inlines) + '</p>');
+      }
+    },
+    CodeBlock: function (a) {
+      endTextNode();
+      
+      var classes = a[0][1];
+      var languages = [ 'javascript', 'python', 'ruby', 'php', 'html', 'css'
+                      , 'haskell', 'coffeescript', 'java', 'c'
+                      ]
+      var language = 'null';
+      _.each(classes, function (klass) {
+        klass = klass.toLowerCase();
+        if (languages.indexOf(klass) >= 0) { language = klass; }
+      });
+      
+      var code = graph.set(null, {
+        type: '/type/code',
+        language: language,
+        content: s.util.escape(a[1]),
+        document: doc._id
+      });
+      appendNode(code);
+    },
+    RawBlock: function () {
+      endTextNode();
+      // do nothing
+    },
+    BlockQuote: function (a) {
+      endTextNode();
+      var quote = graph.set(null, {
+        type: '/type/quote',
+        content: blocksToText(a),
+        author: "",
+        document: doc._id
+      });
+      appendNode(quote);
+    },
+    OrderedList: function () {
+      startTextNode();
+      function li (b) { return '<li>' + inlinesToHtml(b) + '</li>'; }
+      appendText('<ul>' + _.map(a, li).join('') + '</ul>');
+    },
+    BulletList: function (a) {
+      startTextNode();
+      function li (b) { return '<li>' + inlinesToHtml(b) + '</li>'; }
+      appendText('<ul>' + _.map(a, li).join('') + '</ul>');
+    },
+    DefinitionList: function (a) {
+      _.each(a, function (pair) {
+        startTextNode();
+        appendText('<p><strong>' + inlinesToHtml(pair[0]) + '</strong></p>');
+        _.each(pair[1], importBlocks);
+      });
+    },
+    Header: function (a) {
+      endTextNode();
+      
+      var level = a[0]
+      ,   name  = a[1];
+      
+      var section = graph.set(null, {
+        type: '/type/section',
+        document: doc._id,
+        name: inlinesToText(name)
+      });
+      
+      while (stack.length > level) { stack.pop(); }
+      appendNode(section);
+      stack.push(section);
+    },
+    HorizontalRule: function () {
+      endTextNode();
+      // do nothing
+    },
+    Table: function () {
+      endTextNode();
+      // TODO: implement when tables are supported
+    },
+    Null: function () {
+      endTextNode();
+    }
+  };
+  
+  var blockToText = {
+    Plain: function (inlines) {
+      return this.Para(inlines);
+    },
+    Para: function (inlines) {
+      return inlinesToText(inlines);
+    },
+    CodeBlock: ret(''),
+    RawBlock: ret(''),
+    BlockQuote: ret(''),
+    OrderedList: ret(''),
+    BulletList: ret(''),
+    DefinitionList: ret(''),
+    Header: ret(''),
+    HorizontalRule: ret(''),
+    Table: ret(''),
+    Null: ret('')
+  };
+  
+  function blocksToText (blocks) {
+    var text = '';
+    for (var i = 0, l = blocks.length; i < l; i++) {
+      text += dispatch(blocks[i], blockToText);
+    }
+    return text;
+  }
+  
+  function importBlocks (blocks) {
+    for (var i = 0, l = blocks.length; i < l; i++) {
+      dispatch(blocks[i], importBlock);
+    }
+  }
+  
+  importBlocks(pandoc[1]);
+}
+
+function importFromText (doc, format, text, callback) {
+  $.ajax({
+    type: 'POST',
+    url: '/parse',
+    contentType: 'application/json',
+    dataType: 'json',
+    data: JSON.stringify({
+      format: format,
+      text: text
+    }),
+    success: function (pandocJson) {
+      try {
+        importFromPandoc(doc, pandocJson);
+      } catch (exc) {
+        callback(exc);
+        return;
+      }
+      callback();
+    },
+    error: function (err) {
+      callback(err);
+    }
+  });
+}

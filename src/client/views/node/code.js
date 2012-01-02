@@ -57,29 +57,13 @@ s.views.Node.define('/type/code', {
       return html;
     }
     
-    function escape (s) {
-      return s.replace(/&/g, '&amp;')
-              .replace(/</g, '&lt;')
-              .replace(/>/g, '&gt;')
-              .replace(/"/g, '&quot;')
-              .replace(/'/g, '&apos;');
-    }
-    
-    function unescape (s) {
-      return s.replace(/&apos;/g, "'")
-              .replace(/&quot;/g, '"')
-              .replace(/&gt;/g,   '>')
-              .replace(/&lt;/g,   '<')
-              .replace(/&amp;/g,  '&');
-    }
-    
     var self = this;
     
     s.views.Node.prototype.render.apply(this, arguments);
     this.languageSelect = $(createSelect(this.model.get('language'), this.languages)).appendTo(this.contentEl);
     var codeMirrorConfig = _.extend({}, this.codeMirrorConfig, {
       mode: this.modeForLanguage(this.model.get('language')),
-      value: unescape(this.model.get('content') || ''),
+      value: s.util.unescape(this.model.get('content') || ''),
       readOnly: true,
       onFocus: function () {
         // Without this, there is the possibility to focus the editor without
@@ -91,7 +75,7 @@ s.views.Node.define('/type/code', {
         self.codeMirror.setSelection({ line:0, ch:0 }, { line:0, ch:0 });
       },
       onChange: _.throttle(function () {
-        updateNode(self.model, { content: escape(self.codeMirror.getValue()) });
+        updateNode(self.model, { content: s.util.escape(self.codeMirror.getValue()) });
       }, 500)
     });
     this.codeMirror = CodeMirror(this.contentEl.get(0), codeMirrorConfig);
