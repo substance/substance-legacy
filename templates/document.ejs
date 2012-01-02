@@ -15,7 +15,15 @@
   <div id="document_navigation">
     <div class="views">
       <div class="document view settings">Settings</div>
-      <div class="document view publish">Publish</div>
+      <div class="document view publish">Publish
+        <% if (!doc.get('published_version')) { %>
+          <span class="publish-state"> &nbsp;</span>
+        <% } else if (doc.get('published_on') == doc.get('updated_at')) { %>
+          <span class="publish-state"> &radic;</span>
+        <% } else { %>
+          <span class="publish-state"> *</span>
+        <% } %>
+      </div>
       <div class="document view invite">Invite</div>
       <div class="document view export">Export</div>
     </div>

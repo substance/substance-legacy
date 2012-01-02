@@ -14,9 +14,10 @@
   <div id="new_version">
     <div><input type="text" id="version_remark" name="remark" placeholder="Enter optional remark." value="" /></div>
     <div class="panel">
-      <% if (!document.get('published_version')) { %>
-        <a href="#" class="publish-document">Publish</a>
-      <% } else { %>
+      <% if (document.get('published_on') != document.get('updated_at')) { %>
+        <a href="#" class="publish-document"><%= document.get('published_version') ? "Republish": "Publish" %> </a>
+      <% } %>
+      <% if (document.get('published_version')) { %>
         <a href="#" class="unpublish-document">Unpublish</a>
       <% } %>
     </div>

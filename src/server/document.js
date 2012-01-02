@@ -294,7 +294,11 @@ function loadDocument(id, version, reader, edit, callback) {
       graph.fetch(qry, function(err, nodes) {
         if (err) return callback(err);
         _.extend(result, nodes.toJSON());
-        callback(null, result, edit, null);
+
+        graph.fetch({_id: nodes.get(id).get('published_version')._id}, function(err, nodes) {
+          published_on = nodes.length > 0 ? nodes.first().get('created_at') : null;
+          callback(null, result, edit, null);
+        });
       });
     }
 
