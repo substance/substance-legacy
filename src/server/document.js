@@ -268,7 +268,6 @@ Document.getContent = function(documentId, callback) {
 };
 
 
-
 function loadDocument(id, version, reader, edit, callback) {
   
   var graph = new Data.Graph(seed).connect('couch', {
@@ -299,16 +298,22 @@ function loadDocument(id, version, reader, edit, callback) {
       });
     }
 
-    // Load latest version, if exists
+    // Load published version, if exists
     // ------------------
 
-    function loadLatestVersion(callback) {
-      console.log('Loading latest version.');
-      db.view('substance/versions', {endkey: [id], startkey: [id, {}], limit: 1, descending: true}, function(err, res) {
-        if (err || res.rows.length === 0) return callback('not_found');
-        _.extend(result, res.rows[0].value.data);
-        published_on = res.rows[0].value.created_at;
-        callback(null, result, false, res.rows[0].value._id.split('/')[3]);
+    function loadPublishedVersion(callback) {
+      console.log('Loading published version.');
+
+      graph.fetch({"type": "/type/document", "_id": id}, function(err, nodes) {
+        var version = nodes.first().get('published_version');
+        if (!version) return callback('not_found');
+        
+        graph.fetch({"type": "/type/version", "_id": version._id}, function(err, nodes) {
+          var doc = nodes.first().get('data');
+          _.extend(result, doc);
+          published_on = nodes.first().get('created_at');
+          callback(null, result, false, nodes.first()._id.split('/')[3]);
+        });
       });
     }
 
@@ -332,7 +337,7 @@ function loadDocument(id, version, reader, edit, callback) {
     } else if (version) {
       loadVersion(version, callback);
     } else {
-      loadLatestVersion(function(err, result, authorized, version) {
+      loadPublishedVersion(function(err, result, authorized, version) {
         if (err) return loadHead(callback);
         callback(null, result, false, version);
       });
