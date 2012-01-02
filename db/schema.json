@@ -461,6 +461,11 @@
         "type": "date",
         "required": true
       },
+      "published_version": {
+        "name": "Currently Published Version",
+        "type": "/type/version",
+        "unique": true
+      },
       "published_on": {
         "name": "Publication Date",
         "unique": true,
