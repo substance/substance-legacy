@@ -606,8 +606,6 @@ app.post('/recover_password', function(req, res) {
 });
 
 
-
-
 // Confirm collaboration on a document
 
 app.post('/confirm_collaborator', function(req, res) {
@@ -795,20 +793,65 @@ app.post('/publish', function(req, res) {
   Document.getContent(document, function(err, data, id) {
     Util.count('/counter/document/'+document.split('/')[3], function(err, versionCount) {
       // Create a new version
+      var currentDate = new Date();
       var version = graph.set({
         _id: "/version/"+document.split('/')[3]+"/"+versionCount,
         type: "/type/version",
         document: document,
         remark: remark,
-        created_at: new Date(),
+        created_at: currentDate,
         data: data
       });
+
+      // Update version link
+      graph.set(_.extend(data[id], {
+        published_version: version._id,
+        updated_at: currentDate
+      }));
 
       // Create publications
       createPublications(function() {
         graph.sync(function(err) {
           if (err) res.send({"status": "error"}, 500);
-          res.send({"status": "ok", "version": version._id});
+          var newGraph = {};
+          newGraph[id] = graph.get(id);
+          res.send({
+            "status": "ok",
+            "version": version._id, 
+            "graph": newGraph
+          });
+        });
+      });
+    });
+  });
+});
+
+
+app.post('/unpublish', function(req, res) {
+  var document = req.body.document;
+  var graph = new Data.Graph(seed).connect('couch', {url: config.couchdb_url});
+
+  graph.fetch({"type": "/type/document", "_id": document}, function(err, nodes) {
+    var doc = nodes.first();
+    
+    doc.set({
+      published_version: null,
+      updated_at: new Date()
+    });
+
+    graph.fetch({"type": "/type/publication", "document": document}, function(err, nodes) {
+      nodes.each(function(n) {
+        graph.del(n._id);
+      });
+      graph.sync(function(err) {
+        if (err) res.send({"status": "error"}, 500);
+        var newGraph = {};
+        newGraph[document] = graph.get(document).toJSON();
+        newGraph[document].published_version = null;
+        res.send({
+          "status": "ok",
+          "version": null,
+          "graph": newGraph
         });
       });
     });

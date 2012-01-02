@@ -565,6 +565,32 @@ function publishDocument (doc, networks, remark, callback) {
       if (res.error) {
         callback(res.error, null);
       } else {
+        graph.merge(res.graph);
+        callback(null, res);
+      }
+    },
+    error: function (err) {
+      callback(err, null);
+    }
+  });
+}
+
+function unpublishDocument (doc, callback) {
+  $.ajax({
+    type: 'POST',
+    url: '/unpublish',
+    data: JSON.stringify({
+      document: doc._id
+    }),
+    contentType: 'application/json',
+    dataType: 'json',
+    success: function (res) {
+      if (res.error) {
+        callback(res.error, null);
+      } else {
+        console.log(res.graph);
+        graph.merge(res.graph);
+        
         callback(null, res);
       }
     },

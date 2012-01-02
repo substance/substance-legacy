@@ -6,7 +6,7 @@
   <% }); %>
 </select>
 
-<% if (versions.length === 0) { %>
+<% if (!document.get('published_version')) { %>
   <p>Not published yet</p>
 <% } %>
 
@@ -14,12 +14,16 @@
   <div id="new_version">
     <div><input type="text" id="version_remark" name="remark" placeholder="Enter optional remark." value="" /></div>
     <div class="panel">
-      <a href="#" class="publish-document">Publish new version</a>
+      <% if (!document.get('published_version')) { %>
+        <a href="#" class="publish-document">Publish</a>
+      <% } else { %>
+        <a href="#" class="unpublish-document">Unpublish</a>
+      <% } %>
     </div>
   </div>
 <% } %>
 
-<% if (versions.length > 0) { %>
+<!--<% if (versions.length > 0) { %>
   <h6>Published Versions</h6>
   <div class="versions">
     <% versions.each(function(version) { %>
@@ -31,3 +35,4 @@
     <br class="clear" />
   </div>
 <% } %>
+-->

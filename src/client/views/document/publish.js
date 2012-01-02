@@ -37,7 +37,8 @@ s.views.Publish = Backbone.View.extend({
 
   events: {
     'click .publish-document': 'publishDocument',
-    'click .remove-version': 'removeVersion'
+    'click .unpublish-document': 'unpublishDocument'
+    // 'click .remove-version': 'removeVersion'
   },
 
   publishDocument: function (e) {
@@ -50,13 +51,21 @@ s.views.Publish = Backbone.View.extend({
     return false;
   },
 
-  removeVersion: function (e) {
-    var version = $(e.currentTarget).attr('data-version');
-    removeVersion(this.model, version, _.bind(function () {
+  unpublishDocument: function(e) {
+    unpublishDocument(this.model, _.bind(function(err, res) {
       this.data = null;
       this.load(this.render);
     }, this));
     return false;
   }
+
+  // removeVersion: function (e) {
+  //   var version = $(e.currentTarget).attr('data-version');
+  //   removeVersion(this.model, version, _.bind(function () {
+  //     this.data = null;
+  //     this.load(this.render);
+  //   }, this));
+  //   return false;
+  // }
 
 });
