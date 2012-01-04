@@ -70,13 +70,13 @@ s.views.Document = Backbone.View.extend({
   toggleSubscription: function (e) {
     if (!this.model.get('subscribed')) {
       subscribeDocument(this.model, _.bind(function (err) {
-        this.$('.toggle-subscription').addClass('active')
-          .find('.count').text(this.model.get('subscribers'));
+        this.$('.meta.subscribe').html('Unsubscribe');
+        this.$('.meta.subscribers').html(this.model.get('subscribers'));
       }, this));
     } else {
       unsubscribeDocument(this.model, _.bind(function (err) {
-        this.$('.toggle-subscription').removeClass('active')
-          .find('.count').text(this.model.get('subscribers'));
+        this.$('.meta.subscribe').html('Subscribe');
+        this.$('.meta.subscribers').html(this.model.get('subscribers'));
       }, this));
     }
     return false;

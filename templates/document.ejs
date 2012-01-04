@@ -1,17 +1,4 @@
-<div id="document_controls" class="view-controls">
-  <!--<ul>
-    <li>
-      <a href="#"
-         title="<%= doc.get('subscribed') ? "Unsubscribe" : "Subscribe document and get notified about updates" %>"
-         class="toggle-subscription <%= doc.get('subscribed') ? 'active' : '' %>">
-        <span class="icon">Subscription</span>
-        <% if (doc.get('subscribers') > 0) { %>
-          <span class="count"><%= doc.get('subscribers') %></span>
-        <% } %>
-      </a>
-    </li>
-  </ul>-->
-  
+<div id="document_controls" class="view-controls">  
   <div id="document_identifier">
     <span class="username"><a class="toggle-view" href="/<%= userName(doc.get('creator')) %>"><%= userName(doc.get('creator')) %></a> / </span>
     <span class="name"><%= doc.get('name') %></span>
@@ -20,6 +7,11 @@
   <div id="document_meta">
     <a href="#" class="document view subscribers"><div class="meta subscribers"><%= doc.get('subscribers') || 0 %></div></a>
     <div class="meta views"><%= doc.get('views') %></div>
+    <a href="#"
+       title="<%= doc.get('subscribed') ? "Unsubscribe" : "Subscribe document and get notified about updates" %>"
+       class="toggle-subscription <%= doc.get('subscribed') ? 'active' : '' %>">
+      <div class="meta subscribe"><%= doc.get('subscribed') ? "Unsubscribe" : "Subscribe" %></div>
+    </a>
   </div>
 
   <div id="document_navigation">
