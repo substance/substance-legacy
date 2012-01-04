@@ -32,7 +32,7 @@ describe("Comments", function () {
     });
     code.html_id = 'asdfasdff';
     
-    comments = new Comments({
+    comments = new s.views.Comments({
       model: code
     });
     

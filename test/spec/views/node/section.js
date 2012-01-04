@@ -12,9 +12,9 @@ describe("Section", function () {
     child.set({
       content: "Substance has been started in 2010 by Michael Aufreiter."
     });
-    root = Node.create({ model: doc });
+    root = s.views.Node.create({ model: doc });
     spyOn(root, 'deselect');
-    view = Node.create({
+    view = s.views.Node.create({
       model: node,
       parent: doc,
       level: 1,
@@ -30,7 +30,7 @@ describe("Section", function () {
 
   it("should create a NodeList subview", function () {
     var nl = view.nodeList;
-    expect(nl instanceof NodeList).toBe(true);
+    expect(nl instanceof s.views.NodeList).toBe(true);
     expect(nl.level).toBe(1);
     expect(nl.root).toBe(root);
   });

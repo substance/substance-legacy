@@ -23,9 +23,9 @@ describe("NodeList", function () {
     });
     doc.all('children').set(section._id, section, 1);
     
-    root = Node.create({ model: doc });
+    root = s.views.Node.create({ model: doc });
     
-    list = new NodeList({
+    list = new s.views.NodeList({
       level: 0,
       root: root,
       model: doc
@@ -46,7 +46,7 @@ describe("NodeList", function () {
     });
 
     it("should create the first controls", function () {
-      expect(list.firstControls instanceof Controls).toBe(true);
+      expect(list.firstControls instanceof s.views.Controls).toBe(true);
       expect(list.firstControls.root).toBe(root);
       expect(list.firstControls.model).toBe(doc);
       expect(list.firstControls.position.parent).toBe(doc);
@@ -56,8 +56,8 @@ describe("NodeList", function () {
     it("should create the first childviews", function () {
       expect(_.isArray(list.childViews)).toBe(true);
       expect(list.childViews.length).toBe(2);
-      expect(list.childViews[0] instanceof Node.subclasses['/type/text']).toBe(true);
-      expect(list.childViews[1] instanceof Node.subclasses['/type/section']).toBe(true);
+      expect(list.childViews[0] instanceof s.views.Node.subclasses['/type/text']).toBe(true);
+      expect(list.childViews[1] instanceof s.views.Node.subclasses['/type/section']).toBe(true);
     });
   });
 
@@ -67,7 +67,7 @@ describe("NodeList", function () {
       list.eachChildView(iterator);
       expect(iterator).toHaveBeenCalled();
       expect(iterator.callCount).toBe(2);
-      expect(iterator.mostRecentCall.args[0] instanceof Node.subclasses['/type/section']).toBe(true);
+      expect(iterator.mostRecentCall.args[0] instanceof s.views.Node.subclasses['/type/section']).toBe(true);
     });
   });
 
@@ -114,7 +114,7 @@ describe("NodeList", function () {
 
     it("should update the childViews array", function () {
       expect(list.childViews.length).toBe(3);
-      expect(list.childViews[1] instanceof Node.subclasses['/type/quote']).toBe(true);
+      expect(list.childViews[1] instanceof s.views.Node.subclasses['/type/quote']).toBe(true);
       expect(list.childViews[1].state).toBe('write');
     });
 

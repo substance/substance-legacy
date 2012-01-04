@@ -33,7 +33,7 @@ describe("TOC (Table of Contents)", function () {
     second.html_id = 'b';
     doc.all('children').set(second._id, second, 1);
     
-    toc = new TOC({ model: doc }).render();
+    toc = new s.views.TOC({ model: doc }).render();
   });
 
   afterEach(function () {

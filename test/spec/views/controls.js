@@ -35,7 +35,7 @@ describe("Controls", function () {
       transitionTo: jasmine.createSpy()
     };
     
-    controls = new Controls({
+    controls = new s.views.Controls({
       root: root,
       level: 1,
       position: new Position(doc, section)

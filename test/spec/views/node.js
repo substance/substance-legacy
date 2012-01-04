@@ -1,5 +1,7 @@
 describe("Node", function () {
 
+  var Node = s.views.Node;
+
   var parent, child, root;
   var parentView, childView;
 
@@ -57,9 +59,9 @@ describe("Node", function () {
       expect(childView.level).toBe(1);
     });
     it("should controls and afterControls subviews", function () {
-      expect(childView.comments instanceof Comments).toBe(true);
+      expect(childView.comments instanceof s.views.Comments).toBe(true);
       expect(childView.comments.model).toBe(child);
-      expect(childView.afterControls instanceof Controls).toBe(true);
+      expect(childView.afterControls instanceof s.views.Controls).toBe(true);
       expect(childView.afterControls.root).toBe(root);
       expect(childView.afterControls.level).toBe(1);
       expect(childView.afterControls.model).toBe(parent);

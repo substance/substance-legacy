@@ -15,7 +15,7 @@ describe("Document (node)", function () {
     child.set({
       content: "Substance has been started in 2010 by Michael Aufreiter."
     });
-    view = Node.create({
+    view = s.views.Node.create({
       model: doc
     }).render();
     $(view.el).appendTo(document.body);
@@ -28,7 +28,7 @@ describe("Document (node)", function () {
 
   it("should create a NodeList subview", function () {
     var nl = view.nodeList;
-    expect(nl instanceof NodeList).toBe(true);
+    expect(nl instanceof s.views.NodeList).toBe(true);
     expect(nl.level).toBe(0);
     expect(nl.root).toBe(view);
   });
