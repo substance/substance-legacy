@@ -980,8 +980,12 @@ function importFromPandoc (doc, pandoc) {
     return html;
   }
   
+  function stripHtml (html) {
+    return html.replace(/<[^>]*>/g, '');
+  }
+  
   function inlinesToText (inlines) {
-    return inlinesToHtml(inlines).replace(/<[^>]*>/g, '');
+    return stripHtml(inlinesToHtml(inlines));
   }
   
   var importBlock = {
@@ -1049,15 +1053,13 @@ function importFromPandoc (doc, pandoc) {
       });
       appendNode(quote);
     },
-    OrderedList: function () {
+    OrderedList: function (a) {
       startTextNode();
-      function li (b) { return '<li>' + inlinesToHtml(b) + '</li>'; }
-      appendText('<ul>' + _.map(a, li).join('') + '</ul>');
+      appendText(blockToHtml.OrderedList(a));
     },
     BulletList: function (a) {
       startTextNode();
-      function li (b) { return '<li>' + inlinesToHtml(b) + '</li>'; }
-      appendText('<ul>' + _.map(a, li).join('') + '</ul>');
+      appendText(blockToHtml.BulletList(a));
     },
     DefinitionList: function (a) {
       _.each(a, function (pair) {
@@ -1095,31 +1097,43 @@ function importFromPandoc (doc, pandoc) {
     }
   };
   
-  var blockToText = {
+  var blockToHtml = {
     Plain: function (inlines) {
       return this.Para(inlines);
     },
     Para: function (inlines) {
-      return inlinesToText(inlines);
+      return inlinesToHtml(inlines);
     },
     CodeBlock: ret(''),
     RawBlock: ret(''),
     BlockQuote: ret(''),
-    OrderedList: ret(''),
-    BulletList: ret(''),
+    OrderedList: function (a) {
+      function li (b) { return '<li>' + blocksToHtml(b) + '</li>'; }
+      return '<ol>' + _.map(a[1], li).join('') + '</ol>';
+    },
+    BulletList: function (a) {
+      function li (b) { return '<li>' + blocksToHtml(b) + '</li>'; }
+      return '<ul>' + _.map(a, li).join('') + '</ul>';
+    },
     DefinitionList: ret(''),
-    Header: ret(''),
+    Header: function (a) {
+      return '<strong>' + inlinesToHtml(a[1]) + '</strong>';
+    },
     HorizontalRule: ret(''),
     Table: ret(''),
     Null: ret('')
   };
   
-  function blocksToText (blocks) {
-    var text = '';
+  function blocksToHtml (blocks) {
+    var html = '';
     for (var i = 0, l = blocks.length; i < l; i++) {
-      text += dispatch(blocks[i], blockToText);
+      html += dispatch(blocks[i], blockToHtml);
     }
-    return text;
+    return html;
+  }
+  
+  function blocksToText (blocks) {
+    return stripHtml(blocksToHtml(blocks));
   }
   
   function importBlocks (blocks) {
