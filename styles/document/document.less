@@ -1,4 +1,5 @@
 #document_controls {
+  background: #989B99;
   position: fixed;
   z-index: 999;
   top: 30px;
@@ -15,7 +16,42 @@
   }
 }
 
+#document_identifier {
+  margin: 9px 40px;
+  float: left;
+
+  font-size: 16px;
+  a {
+    border: none;
+    font-weight: bold;
+  }
+
+
+}
+
+#document_meta {
+  float: left;
+  margin: 6px 0 0 0;
+
+  .meta {
+    float: left;
+    padding: 3px 5px 3px 30px;
+    margin-right: 4px;
+    border: 1px solid #888;
+    .border-radius(3px);
+  }
+
+  .meta.views {
+    background: url("@{images}/icons/black/cursor_16x16.png") 5px no-repeat;
+  }
+
+  .meta.subscribers {
+    background: url("@{images}/icons/black/rss_16x16.png") 5px no-repeat;
+  }
+}
+
 #document_navigation {
+  float: right;
   background: #989B99;
   height: 40px;
 

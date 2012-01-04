@@ -6,16 +6,18 @@ s.views.Document = Backbone.View.extend({
   initialize: function (options) {
     _.bindAll(this);
     
-    this.authorized = options.authorized;
-    this.published  = options.published;
-    this.version    = options.version;
-    
-    this.node     = s.views.Node.create({ model: this.model });
-    this.toc      = new s.views.TOC({ model: this.model });
-    this.settings = new s.views.DocumentSettings({ model: this.model });
-    this.publish  = new s.views.Publish({ model: this.model });
-    this.invite   = new s.views.Invite({ model: this.model });
-    this.export   = new s.views.Export({ model: this.model });
+    this.authorized  = options.authorized;
+    this.published   = options.published;
+    this.version     = options.version;
+     
+    this.node        = s.views.Node.create({ model: this.model });
+    this.toc         = new s.views.TOC({ model: this.model });
+    this.settings    = new s.views.DocumentSettings({ model: this.model });
+    this.publish     = new s.views.Publish({ model: this.model });
+    this.invite      = new s.views.Invite({ model: this.model });
+    this.export      = new s.views.Export({ model: this.model });
+    this.subscribers = new s.views.Subscribers({ model: this.model });
+    this.versions    = new s.views.Versions({ model: this.model });
     
     this.currentView = null;
     
@@ -52,12 +54,14 @@ s.views.Document = Backbone.View.extend({
 
   events: {
     'click .toggle-subscription': 'toggleSubscription',
-    'click .settings': 'toggleSettings',
-    'click .publish':  'togglePublish',
-    'click .invite':   'toggleInvite',
-    'click .export':   'toggleExport',
-    'click #toc': 'toggleTOC',
-    'click .toggle-toc': 'toggleTOC'
+    'click .settings':    'toggleSettings',
+    'click .publish':     'togglePublish',
+    'click .invite':      'toggleInvite',
+    'click .subscribers': 'toggleSubscribers',
+    'click .versions':    'toggleVersions',
+    'click .export':      'toggleExport',
+    'click #toc':         'toggleTOC',
+    'click .toggle-toc':  'toggleTOC'
   },
 
   // Handlers
@@ -78,10 +82,12 @@ s.views.Document = Backbone.View.extend({
     return false;
   },
 
-  toggleSettings: function (e) { this.toggleView(this.settings); return false; },
-  togglePublish:  function (e) { this.toggleView(this.publish);  return false; },
-  toggleInvite:   function (e) { this.toggleView(this.invite);   return false; },
-  toggleExport:   function (e) { this.toggleView(this.export);   return false; },
+  toggleSettings:    function (e) { this.toggleView(this.settings);    return false; },
+  togglePublish:     function (e) { this.toggleView(this.publish);     return false; },
+  toggleSubscribers: function (e) { this.toggleView(this.subscribers); return false; },
+  toggleVersions:    function (e) { this.toggleView(this.versions);    return false; },
+  toggleInvite:      function (e) { this.toggleView(this.invite);      return false; },
+  toggleExport:      function (e) { this.toggleView(this.export);      return false; },
 
   toggleTOC: function (e) {
     if ($(this.toc.el).is(":hidden")) {

@@ -1,5 +1,5 @@
 <div id="document_controls" class="view-controls">
-  <ul>
+  <!--<ul>
     <li>
       <a href="#"
          title="<%= doc.get('subscribed') ? "Unsubscribe" : "Subscribe document and get notified about updates" %>"
@@ -10,8 +10,18 @@
         <% } %>
       </a>
     </li>
-  </ul>
+  </ul>-->
   
+  <div id="document_identifier">
+    <span class="username"><a class="toggle-view" href="/<%= userName(doc.get('creator')) %>"><%= userName(doc.get('creator')) %></a> / </span>
+    <span class="name"><%= doc.get('name') %></span>
+  </div>
+
+  <div id="document_meta">
+    <a href="#" class="document view subscribers"><div class="meta subscribers"><%= doc.get('subscribers') || 0 %></div></a>
+    <div class="meta views"><%= doc.get('views') %></div>
+  </div>
+
   <div id="document_navigation">
     <div class="views">
       <div class="document view settings">Settings</div>
@@ -26,8 +36,10 @@
       </div>
       <div class="document view invite">Invite</div>
       <div class="document view export">Export</div>
+      <div class="document view versions">Versions</div>
     </div>
   </div>
+  <br class="clear"/>
   
   <div id="document_shelf"></div>
 </div>

@@ -442,6 +442,10 @@ function documentURL(doc) {
   return "" + doc.get('creator')._id.split("/")[2] + "/" + doc.get('name');
 }
 
+function userName(user) {
+  return user._id.split('/')[2];
+}
+
 function deleteDocument (doc, callback) {
   graph.del(doc._id);
   setTimeout(function () {
@@ -512,6 +516,13 @@ function unsubscribeDocument (doc, callback) {
     doc._dirty = false;
     
     callback(err);
+  });
+}
+
+function loadSubscribers (doc, callback) {
+  graph.fetch({"type": "/type/subscription", "document": doc._id}, function(err, subscriptions) {
+    if (err) return callback(err, null);
+    callback(err, {subscriptions: subscriptions});
   });
 }
 

@@ -58,6 +58,8 @@
       "/client/views/document/invite.js",
       "/client/views/document/publish.js",
       "/client/views/document/settings.js",
+      "/client/views/document/subscribers.js",
+      "/client/views/document/versions.js",
       "/client/views/confirm_collaboration.js",
       "/client/views/recover_password.js",
       "/client/views/reset_password.js",

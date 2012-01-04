@@ -1,0 +1,7 @@
+<h1>Subscribers</h1>
+
+<div id="subscriptions">
+  <% subscriptions.each(function(subscription) { %>
+    <div class="subscription"><a href="/<%= userName(subscription.get('user')) %>"><%= userName(subscription.get('user')) %></a></div>
+  <% }); %>
+</div>
