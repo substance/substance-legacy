@@ -1,1 +1,23 @@
-<h1>Versions</h1>
+<h2>Versions</h2>
+
+<% if (versions.length > 0) { %>
+  <table class="versions">
+    <tr>
+      <th>#</th><th>Date</th><th>Remark</th><th>Action</th>
+    </tr>
+    <% versions.each(function(version) { %>
+      <tr>
+        <td>#<%= version._id.split('/')[3] %></td>
+        <td>
+          <a class="toggle-version" href="/<%= document.get('creator')._id.split('/')[2] %>/<%= document.get('name') %>/<%= version._id.split('/')[3] %>">
+            <%= s.util.date(version.get('created_at')) %>
+            <!-- TODO: Doesn't work when a particular version is loaded, we need to adapt the published_version property accordingly -->
+            <%= document.get('published_version') === version ? "(Published Version)" : "" %>
+          </a>
+        </td>
+        <td><%= version.get('remark') %></td>
+        <td><a href="#" class="remove-version" data-version="<%= version._id %>">Delete</a></td>
+      </tr>
+    <% }); %>
+  </table>
+<% } %>

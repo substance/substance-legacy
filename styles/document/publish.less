@@ -36,42 +36,4 @@
       .ui-font;
     }
   }
-
-  .versions {
-    .version {
-      border: none;
-      display: block;
-      float: left;
-      height: 48px;
-      width: 48px;
-      margin: 10px 25px 30px 25px;
-      background: url("@{images}/formats/document.png");
-      position: relative;
-      
-      opacity: 0.5;
-      &:last-child { opacity: 1.0; }
-      
-      &:hover .remove-version {
-        position: absolute;
-        left: 0px;
-        top: -3px;
-        width: 18px;
-        height: 18px;
-        background: url("@{images}/icons/black/x_alt_16x16.png") center center no-repeat;
-      }
-      
-      .label {
-        .ui-font;
-        font-size: 11px;
-        line-height: 11px;
-        padding: 2px 3px 0px 1px;
-        
-        position: absolute;
-        width: 120px;
-        left: -30px;
-        bottom: -20px;
-        text-align: center;
-      }
-    }
-  }
 }
