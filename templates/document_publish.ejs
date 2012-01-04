@@ -1,4 +1,4 @@
-<div class="settings-title">Publish</div>
+<h2>Publish</h2>
 
 <select name="networks" class="networks-selection" multiple="multiple">
   <% availableNetworks.each(function(network) { %>
@@ -23,17 +23,3 @@
     </div>
   </div>
 <% } %>
-
-<!--<% if (versions.length > 0) { %>
-  <h6>Published Versions</h6>
-  <div class="versions">
-    <% versions.each(function(version) { %>
-      <a title="<%= version.get('remark') %>"class="version" href="/<%= document.get('creator')._id.split('/')[2] %>/<%= document.get('name') %>/<%= version._id.split('/')[3] %>">
-        <div class="label"><%= s.util.date(version.get('created_at')) %></div>
-        <div class="remove-version" data-version="<%= version._id %>"></div>
-      </a>
-    <% }); %>
-    <br class="clear" />
-  </div>
-<% } %>
--->

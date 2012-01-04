@@ -454,6 +454,12 @@ function deleteDocument (doc, callback) {
   notifier.notify(Notifications.DOCUMENT_DELETED); // TODO
 }
 
+function byCreatedAt (item1, item2) {
+  var v1 = item1.value.get('created_at')
+  ,   v2 = item2.value.get('created_at');
+  return v1 === v2 ? 0 : (v1 < v2 ? -1 : 1);
+}
+
 function checkDocumentName (name, callback) {
   if (new RegExp(graph.get('/type/document').get('properties', 'name').validator).test(name)) {
     // TODO: find a more efficient way to check for existing docs.
@@ -527,35 +533,32 @@ function loadSubscribers (doc, callback) {
 }
 
 
+function loadVersions (doc, callback) {
+  graph.fetch({ "type": "/type/version", "document": doc._id }, function (err, versions) {
+    if (err) return callback(err, null);
+    callback(null, {
+      versions: versions.sort(byCreatedAt)
+    });
+  });
+}
+
+
 function loadPublish (doc, callback) {
-  function byCreatedAt (item1, item2) {
-    var v1 = item1.value.get('created_at')
-    ,   v2 = item2.value.get('created_at');
-    return v1 === v2 ? 0 : (v1 < v2 ? -1 : 1);
-  }
-  
-  graph.fetch({ type: '/type/version', document: doc._id }, function (err, versions) {
-    if (err) {
-      callback(err, null);
-      return;
-    }
-    graph.fetch({ type: '/type/network' }, function (err, availableNetworks) {
+  graph.fetch({ type: '/type/network' }, function (err, availableNetworks) {
+    if (err) return callback(err, null);
+
+    graph.fetch({type: '/type/publication', document: doc._id}, function(err, publications) {
       if (err) return callback(err, null);
+      var networks = new Data.Hash();
+      publications.each(function(pub) {
+        var networkId = pub.get('network')._id;
+        networks.set(networkId, availableNetworks.get(networkId));
+      });
 
-      graph.fetch({type: '/type/publication', document: doc._id}, function(err, publications) {
-        if (err) return callback(err, null);
-        var networks = new Data.Hash();
-        publications.each(function(pub) {
-          var networkId = pub.get('network')._id;
-          networks.set(networkId, availableNetworks.get(networkId));
-        });
-
-        callback(null, {
-          versions: versions.sort(byCreatedAt),
-          availableNetworks: availableNetworks,
-          networks: networks,
-          document: doc
-        });
+      callback(null, {
+        availableNetworks: availableNetworks,
+        networks: networks,
+        document: doc
       });
     });
   });

@@ -310,27 +310,37 @@ function loadDocument(id, version, reader, edit, callback) {
       console.log('Loading published version.');
 
       graph.fetch({"type": "/type/document", "_id": id}, function(err, nodes) {
-        var version = nodes.first().get('published_version');
+        var doc = nodes.first(),
+            version = doc.get('published_version');
         if (!version) return callback('not_found');
         
         graph.fetch({"type": "/type/version", "_id": version._id}, function(err, nodes) {
-          var doc = nodes.first().get('data');
-          _.extend(result, doc);
+          var data = nodes.first().get('data');
+          data[id].published_version = doc.get('published_version')._id;
+          _.extend(result, data);
           published_on = nodes.first().get('created_at');
           callback(null, result, false, nodes.first()._id.split('/')[3]);
         });
       });
     }
 
-    // Try to load specific version, or latest version, or draft (as a fallback)
+    // Load a specific version
     // ------------------
 
     function loadVersion(version, callback) {
       console.log('loading version: '+ version);
-      graph.fetch({_id: "/version/"+id.split('/')[3]+"/"+version}, function(err, nodes) {
+
+      graph.fetch({_id: "/version/"+id.split('/')[3]+"/"+version, document: {}}, function(err, nodes) {
         if (err || nodes.length === 0) return callback('not_found');
-        var data = nodes.first().get('data');
+
+        var doc = nodes.select(function(n) {
+          return n.type._id === "/type/version"
+        }).first();
+
+        var data = doc.get('data');
+        data[id].published_version = doc.get('document').get('published_version')._id;
         _.extend(result, data);
+
         published_on = nodes.first().get('created_at');
         callback(null, result, false, version);
       });

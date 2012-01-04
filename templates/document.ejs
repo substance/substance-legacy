@@ -12,6 +12,11 @@
        class="toggle-subscription <%= doc.get('subscribed') ? 'active' : '' %>">
       <div class="meta subscribe"><%= doc.get('subscribed') ? "Unsubscribe" : "Subscribe" %></div>
     </a>
+    <a href="#"
+       title="Table Of Contents"
+       class="toggle-toc">
+      <div class="meta toc">Table Of Contents</div>
+    </a>
   </div>
 
   <div id="document_navigation">
@@ -26,7 +31,7 @@
           <span class="publish-state"> *</span>
         <% } %>
       </div>
-      <div class="document view invite">Invite</div>
+      <div class="document view invite">Collaborators</div>
       <div class="document view export">Export</div>
       <div class="document view versions">Versions</div>
     </div>
@@ -37,6 +42,5 @@
 </div>
 
 <div id="document_content">
-  <div class="toggle-toc"><div class="label">Contents</div></div>
   <div id="document"></div>
 </div>

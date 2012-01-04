@@ -1,29 +1,28 @@
 #toc {
   margin: 0 100px;
-  -webkit-box-shadow: 0px 1px 4px rgba(0,0,0,0.35), inset 0px 0px 1px rgba(255,255,255,0.15);
+/*  -webkit-box-shadow: 0px 1px 4px rgba(0,0,0,0.35), inset 0px 0px 1px rgba(255,255,255,0.15);
   -moz-box-shadow:    0px 1px 4px rgba(0,0,0,0.35), inset 0px 0px 1px rgba(255,255,255,0.15);
-  box-shadow:         0px 1px 4px rgba(0,0,0,0.35), inset 0px 0px 1px rgba(255,255,255,0.15);
+  box-shadow:         0px 1px 4px rgba(0,0,0,0.35), inset 0px 0px 1px rgba(255,255,255,0.15);*/
   
   display: none;
   color: #635849;
   background: #DCDDD9;
   
-  position: absolute;
-  top: 0px;
-  left: 0px;
+  padding: 20px;
+  position: fixed;
+  width: 600px;
+  left: 200px;
+  top: 70px;
+  
   right: 0px;
   z-index: 50000;
+  max-height: 400px;
+  overflow: auto;
 
   a {
     background: #fff;
   }
 
-  .toc-header {
-    font-size: 30px;
-    padding-top: 90px;
-    padding-bottom: 20px;
-    margin-left: 100px;
-  }
 
   ol {
     margin: 0 2em;
@@ -45,16 +44,16 @@
   ol li {
       display: block;
       padding-left: 3em;
-      font-size: 16px;
+      font-size: 12px;
   }
 
   ol ol > li {
     display: block;
-    font-size: 16px;
+    font-size: 12px;
   }
 
   > ol > li {
-    font-size: 23px;
+    font-size: 16px;
   }
 
 
