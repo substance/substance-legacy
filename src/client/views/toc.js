@@ -28,20 +28,13 @@ s.views.TOC = Backbone.View.extend({
   },
 
   scrollTo: function (e) {
-    e.preventDefault();
-    e.stopPropagation();
-    
     var node = $(e.currentTarget).attr('href').slice(1);
     app.scrollTo(node);
     app.toggleTOC();
   },
 
   render: function () {
-    $(this.el).html(
-      '<div class="toc-header">Table of Contents</div>' +
-        renderTOC(this.model) +
-      '<div style="document-separator">&nbsp;</div>'
-    );
+    $(this.el).html(renderTOC(this.model));
     return this;
   }
 

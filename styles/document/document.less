@@ -1,5 +1,9 @@
 #document_controls {
-  background: #989B99;
+  background: #DCDDD9;
+  -webkit-box-shadow: 0px 1px 4px rgba(0,0,0,0.35), inset 0px 0px 1px rgba(255,255,255,0.15);
+  -moz-box-shadow:    0px 1px 4px rgba(0,0,0,0.35), inset 0px 0px 1px rgba(255,255,255,0.15);
+  box-shadow:         0px 1px 4px rgba(0,0,0,0.35), inset 0px 0px 1px rgba(255,255,255,0.15);
+
   position: fixed;
   z-index: 999;
   top: 30px;
@@ -56,26 +60,26 @@
 
 #document_navigation {
   float: right;
-  background: #989B99;
+  
   height: 40px;
 
   .views {
     float: right;
-    padding-top: 10px;
+    padding-top: 5px;
     margin-right: 30px;
     overflow: auto;
     .view {
       float: left;
-      .border-top-radius(5px);
-      background: #444;
-      color: #fff;
+      .border-radius(5px);
+      
+      color: #444;
       margin-right: 5px;
       padding: 0 3px;
       height: 30px;
       line-height: 30px;
       cursor: pointer;
       &:hover, &.selected {
-        background: #000;
+        background: #ccc;
       }
     }
   }
@@ -85,41 +89,15 @@
   overflow: auto;
   -webkit-transition-property: height;
   -webkit-transition-duration: 0.6s;
-  background: #CDCECA;
   overflow-y: hidden;
   .shelf-content {}
 }
 
 #document_content {
   margin-top: 80px;
-
   position: relative;
-
   -webkit-transition-property: margin-top;
   -webkit-transition-duration: 0.6s;
-
-  .toggle-toc {
-    position: absolute;
-    right: 30px;
-    top: 0px;
-    width: 35px;
-    height: 122px;
-    color: #fff;
-    cursor: pointer;
-    font-weight: normal;
-    background: url("@{images}/contents-toggle.png") right repeat-y;
-    z-index: 800;
-
-    opacity: 0.8;
-    &:hover { opacity: 1.0; }
-
-    .label {
-      font-style: italic;
-      padding-left: 20px;
-      -webkit-transform: rotate(90deg);
-      -moz-transform: rotate(90deg);
-    }
-  }
 }
 
 #document {

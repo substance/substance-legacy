@@ -91,9 +91,9 @@ s.views.Document = Backbone.View.extend({
 
   toggleTOC: function (e) {
     if ($(this.toc.el).is(":hidden")) {
-      $(this.toc.render().el).slideDown();
+      $(this.toc.render().el).show();
     } else {
-      $(this.toc.el).slideUp();
+      $(this.toc.el).hide();
     }
     
     return false;
