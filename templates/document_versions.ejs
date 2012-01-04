@@ -3,7 +3,7 @@
 <% if (versions.length > 0) { %>
   <table class="versions">
     <tr>
-      <th>#</th><th>Date</th><th>Remark</th><th>Action</th>
+      <th></th><th>Date</th><th>Remark</th><th>Action</th>
     </tr>
     <% versions.each(function(version) { %>
       <tr>
@@ -11,7 +11,6 @@
         <td>
           <a class="toggle-version" href="/<%= document.get('creator')._id.split('/')[2] %>/<%= document.get('name') %>/<%= version._id.split('/')[3] %>">
             <%= s.util.date(version.get('created_at')) %>
-            <!-- TODO: Doesn't work when a particular version is loaded, we need to adapt the published_version property accordingly -->
             <%= document.get('published_version') === version ? "(Published Version)" : "" %>
           </a>
         </td>
