@@ -3,6 +3,8 @@
   "server_host": null,
   "server_port": 3003,
   "secret": "secret option string for session security",
+  "letterpress_url": "http://localhost:4004",
+  "elasticsearch_url": "http://localhost:9200",
   "transloadit": {
     "auth": {
       "key": "your_api_key"

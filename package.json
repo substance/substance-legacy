@@ -14,7 +14,8 @@
     "nodemailer": "0.2.4",
     "express": "2.5.2",
     "less": "1.1.6",
-    "now": "0.7.6"
+    "now": "0.7.6",
+    "request": "2.9.3"
   },
   "devDependencies": {
     "coffee-script": "1.2.0"
