@@ -175,14 +175,17 @@ Document.dashboard = function (username, callback) {
       graph = new Data.Graph(seed).connect('couch', {url: config.couchdb_url}),
       bins = {
         user: {
-          name: "My documents"
+          user: {
+            name: "My documents"
+          },
+          involved: {
+            name: "Involved documents"
+          },
+          subscribed: {
+            name: "Subscribed documents"
+          }
         },
-        involved: {
-          name: "Involved documents"
-        },
-        subscribed: {
-          name: "Subscribed documents"
-        }
+        networks: {}
       };
 
   async.parallel([
@@ -192,8 +195,8 @@ Document.dashboard = function (username, callback) {
         if (err) {
           cb(err, null);
         } else {
-          bins.user.documents = _.map(res.rows, function (row) { return row.value._id; });
-          cb(null, bins.user.documents);
+          bins.user.user.documents = _.map(res.rows, function (row) { return row.value._id; });
+          cb(null, bins.user.user.documents);
         }
       });
     },
@@ -204,8 +207,8 @@ Document.dashboard = function (username, callback) {
         if (err) {
           cb(err, null);
         } else {
-          bins.subscribed.documents = _.map(res.rows, function (row) { return row.value.document; });
-          cb(null, bins.subscribed.documents);
+          bins.user.subscribed.documents = _.map(res.rows, function (row) { return row.value.document; });
+          cb(null, bins.user.subscribed.documents);
         }
       });
     },
@@ -216,8 +219,8 @@ Document.dashboard = function (username, callback) {
         if (err) {
           cb(err, null);
         } else {
-          bins.involved.documents = _.map(res.rows, function (row) { return row.value.document; });
-          cb(null, bins.involved.documents);
+          bins.user.involved.documents = _.map(res.rows, function (row) { return row.value.document; });
+          cb(null, bins.user.involved.documents);
         }
       });
     },
@@ -230,11 +233,11 @@ Document.dashboard = function (username, callback) {
       
         async.forEach(networks, function(network, cb) {
           graph.fetch({type: "/type/publication", network: network }, function(err, publications) {
-            bins[network] = {
+            bins.networks[network] = {
               name: network,
               documents: publications.map(function(m) { return m.get('document')._id; }).values()
             };
-            results = results.concat(bins[network].documents);
+            results = results.concat(bins.networks[network].documents);
             cb();
           });
         }, function(err) {

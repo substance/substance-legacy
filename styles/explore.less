@@ -1,5 +1,4 @@
 #explore {
-  background: #373737;
   overflow: auto;
 }
 
@@ -8,28 +7,36 @@
 }
 
 #networks {
+  margin: 0 80px 0 350px;
 
-  h2 { margin-left: 20px; margin-top: 20px; }
-
-  overflow: auto;
-  padding-bottom: 50px;
+  h2 {
+    padding: 30px 0;
+  }
 
   .network {
-    .border-radius(5px);
-    width: 150px;
-    height: 100px;
-    background: #303030;
-    float: left;
-    margin-left: 20px;
-    margin-top: 20px;
-    padding: 15px;
-    color: #ddd;
-    cursor: pointer;
+    background: #fff;
+    padding: 0px;
     position: relative;
+    float: left;
+    margin-right: 20px;
+    margin-bottom: 20px;
+    width: 200px;
+    height: 220px;
+
+    -webkit-box-shadow: 0px 1px 4px rgba(0,0,0,0.5), inset 0px 0px 1px rgba(255,255,255,0.15);
+    -moz-box-shadow:    0px 1px 4px rgba(0,0,0,0.5), inset 0px 0px 1px rgba(255,255,255,0.15);
+    box-shadow:         0px 1px 4px rgba(0,0,0,0.5), inset 0px 0px 1px rgba(255,255,255,0.15);
     
-    a {
-      border: none;
-      color: #fff
+    .image {
+      overflow: hidden;
+      height: 100px;
+    }
+
+    .title {
+      padding: 10px 10px;
+      font-size: 22px;
+      background: #82AA15;
+      color: #fff;
     }
 
     .document-count {
@@ -40,6 +47,7 @@
       color: #666;
       font-size: 12px;
     }
+
     .member-count {
       position: absolute;
       bottom: 20px;
@@ -50,39 +58,20 @@
     }
   }
 
-  .network:hover {
-     background: #222;
-     color: #fff;
-  }
+  a { border: none; }
 }
 
-#recent_documents {
-  float: right;
-  padding: 20px;
-  width: 300px;
+#network_filters {
+  background: #fff;
+  float: left;
+  width: 230px;
+  margin-top: 100px;
+  margin-left: 80px;
+  padding: 10px;
+}
 
-
-  .document {
-    padding: 5px 10px;
-    background: #303030;
-    margin-bottom: 1px;
-    color: #eee;
-
-    .title {
-      font-size: 20px;
-    }
-
-    .author {
-      color: #aaa;
-    }
-
-    .updated_at {
-      font-size: 11px;
-      color: #666;
-    }
-  }
-  
-  .document:hover {
-    background: #222;
-  }
+#network_filters h2 {
+  font-size: 12px;
+  font-weight: bold;
+  text-transform: uppercase;
 }

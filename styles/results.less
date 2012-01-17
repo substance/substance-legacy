@@ -4,63 +4,57 @@
   overflow: auto;
   position: relative;
   margin: 0;
-  background: #fff;
-  -webkit-box-shadow: 0px 1px 4px rgba(0,0,0,0.5), inset 0px 0px 1px rgba(255,255,255,0.15);
-  -moz-box-shadow:    0px 1px 4px rgba(0,0,0,0.5), inset 0px 0px 1px rgba(255,255,255,0.15);
-  box-shadow:         0px 1px 4px rgba(0,0,0,0.5), inset 0px 0px 1px rgba(255,255,255,0.15);
 }
 
 #results {
-  margin: 0 180px 0 100px;
+  margin: 0 80px 0 350px;
 
   h2 {
     padding: 30px 0;
   }
 
   .document {
-    border-bottom: 1px solid #eee;
-    padding-bottom: 15px;
+    background: #fff;
+    padding: 10px;
     position: relative;
-    &:hover { background: rgba(99,88,73,0.03); }
+    float: left;
+    margin-right: 20px;
+    margin-bottom: 20px;
+    width: 200px;
+    height: 280px;
+
+    -webkit-box-shadow: 0px 1px 4px rgba(0,0,0,0.5), inset 0px 0px 1px rgba(255,255,255,0.15);
+    -moz-box-shadow:    0px 1px 4px rgba(0,0,0,0.5), inset 0px 0px 1px rgba(255,255,255,0.15);
+    box-shadow:         0px 1px 4px rgba(0,0,0,0.5), inset 0px 0px 1px rgba(255,255,255,0.15);
     
-    .icon {
-      position: absolute;
-      left: 30px;
-      top: 20px;
-      width: 40px;
-      height: 40px;
-      opacity: 0.3;
-      background: url("@{images}/icons/black/article_16x16.png") center no-repeat;
+    .image {
+      overflow: hidden;
+      height: 120px;
     }
-    a { color: #635849; }
+
+    .title {
+      .document-font;
+      padding: 10px 0;
+      font-size: 18px;
+
+      a { color: #333; }
+    }
+
+    .author {
+      font-size: 14px;
+      color: #777;
+    }
+
+    .updated-at {
+      font-size: 11px;
+      padding-right: 20px;
+      position: absolute;
+      bottom: 5px;
+      color: #A2AAAA;
+    }
   }
 
-  .title {
-    padding-top: 20px;
-    margin-left: 80px;
-    margin-right: 200px;
-    font-size: 20px;
-  }
 
-  .author {
-    font-size: 14px;
-    color: #999;
-    margin-left: 80px;
-    margin-right: 200px;
-  }
-
-  .dates {
-    text-align: right;
-    float: right;
-    font-size: 13px;
-    padding-right: 20px;
-    position: absolute;
-    bottom: 15px;
-    right: 20px;
-  }
-
-  .dates .updated-at { color: #999; }
-  .dates .published-on { color: #635849; }
 
   a { border: none; }
 }

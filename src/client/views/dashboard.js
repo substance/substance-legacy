@@ -5,6 +5,7 @@ s.views.Dashboard = Backbone.View.extend({
   },
 
   __toggleBin: function(e) {
+    this.activeCategory = $(e.currentTarget).attr('data-category');
     this.activeBin = $(e.currentTarget).attr('data-bin');
     this.updateResults();
     this.render();
@@ -12,13 +13,14 @@ s.views.Dashboard = Backbone.View.extend({
 
   updateResults: function() {
     var docs = this.model.documents.select(_.bind(function(d) {
-      return _.include(this.model.bins[this.activeBin].documents, d._id);
+      return _.include(this.model.bins[this.activeCategory][this.activeBin].documents, d._id);
     }, this));
 
     this.results = new s.views.Results({ model: {documents: docs }, id: "results" });
   },
 
   initialize: function(options) {
+    this.activeCategory = "user";
     this.activeBin = "user";
     this.updateResults();
   },

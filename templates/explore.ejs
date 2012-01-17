@@ -1,4 +1,16 @@
-<div id="recent_documents">
+
+<div id="network_filters">
+  <h2>Topics</h2>
+
+  <div class="topics">
+    <div class="topic">Science / Tech</div>
+    <div class="topic">Music</div>
+    <div class="topic">Politics</div>
+  </div>
+
+</div>
+
+<!--<div id="recent_documents">
 	<h2>Recent Documents</h2>
   <% documents.each(function(doc) { %>
     <a href="<%= documentURL(doc) %>">
@@ -9,7 +21,7 @@
       </div>
     </a>
   <% }); %>
-</div>
+</div>-->
 
 <div id="networks">
 	<h2>Networks</h2>
@@ -17,6 +29,7 @@
     
     <a class="toggle-view" href="<%= network._id %>">
     	<div class="network" data-network="<%= network._id %>">
+        <div class="image"><img src="/images/doc-image.jpeg" width="200"></div>
      	  <div class="title"><%= network.get('name') %></div>
       
      	  <div class="document-count"><%= network.meta.documents %> documents</div>
