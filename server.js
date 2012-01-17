@@ -15,6 +15,7 @@ var Network = require('./src/server/network');
 var User = require('./src/server/user');
 var Util = require('./src/server/util');
 var Filters = require('./src/server/filters');
+var Search = require('./src/server/search');
 var HTMLRenderer = require('./src/server/renderers/html_renderer');
 
 var nodemailer = require('nodemailer');
@@ -67,7 +68,7 @@ function urlToHttpOptions(u) {
     host: fragments.hostname,
     port: fragments.port,
     path: fragments.pathname + (fragments.search || '')
-  }
+  };
 }
 
 function postToLetterpress (path, data, callback) {
@@ -340,9 +341,16 @@ app.get('/quicksearch/:search_str', function(req, res) {
   });
 });
 
+app.get('/fulltextsearch', function (req, res) {
+  var searchstr = req.query.q;
+  Search.search(searchstr, function (err, results) {
+    res.json(results);
+  });
+});
+
 // Find documents by search string or user
 app.get('/documents/search/:type/:search_str', function (req, res) {
-  var username = req.session ? req.session.username : null
+  var username = req.session ? req.session.username : null;
   if (req.params.type === 'recent') {
     Document.recent(req.params.search_str, username, function (err, graph, count) {
       res.json({graph: graph, count: count});

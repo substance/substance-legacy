@@ -412,9 +412,19 @@ function loadNetwork (network, callback) {
 }
 
 
-function search (queryString, callback) {
+function search (searchstr, callback) {
   // TODO
-  callback(null, null);
+  $.ajax({
+    type: 'GET',
+    url: '/fulltextsearch?q=' + encodeURI(searchstr),
+    dataType: 'json',
+    success: function (res) {
+      callback(null, res);
+    },
+    error: function (err) {
+      callback(err, null);
+    }
+  });
 }
 
 

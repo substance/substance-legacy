@@ -1,6 +1,6 @@
 var _ = require('underscore');
 var async = require('async');
-var Data = require ('../../lib/data/data')
+var Data = require ('../../lib/data/data');
 var Filters = require('./filters');
 var Util = require('./util');
 
