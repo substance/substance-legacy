@@ -82,12 +82,12 @@ s.views.Document = Backbone.View.extend({
     return false;
   },
 
-  toggleSettings:    function (e) { this.toggleView(this.settings);    return false; },
-  togglePublish:     function (e) { this.toggleView(this.publish);     return false; },
-  toggleSubscribers: function (e) { this.toggleView(this.subscribers); return false; },
-  toggleVersions:    function (e) { this.toggleView(this.versions);    return false; },
-  toggleInvite:      function (e) { this.toggleView(this.invite);      return false; },
-  toggleExport:      function (e) { this.toggleView(this.export);      return false; },
+  toggleSettings:    function (e) { this.toggleView('settings');    return false; },
+  togglePublish:     function (e) { this.toggleView('publish');     return false; },
+  toggleSubscribers: function (e) { this.toggleView('subscribers'); return false; },
+  toggleVersions:    function (e) { this.toggleView('versions');    return false; },
+  toggleInvite:      function (e) { this.toggleView('invite');      return false; },
+  toggleExport:      function (e) { this.toggleView('export');      return false; },
 
   toggleTOC: function (e) {
     if ($(this.toc.el).is(":hidden")) {
@@ -129,7 +129,8 @@ s.views.Document = Backbone.View.extend({
     this.$('#document_content').css({ 'margin-top': contentMargin + 'px' });
   },
 
-  toggleView: function (view) {
+  toggleView: function (viewname) {
+    var view = this[viewname];
     var shelf   = this.$('#document_shelf')
     ,   content = this.$('#document_content');
     
@@ -140,10 +141,13 @@ s.views.Document = Backbone.View.extend({
       $(this.currentView.el).detach();
     }
     
+    this.$('.document.view').removeClass('selected');
     if (view === this.currentView) {
       this.currentView = null;
       this.resizeShelf();
     } else {
+      console.log(viewname);
+      $('.document.view.'+viewname).addClass('selected');
       view.load(_.bind(function (err) {
         view.bind('resize', this.resizeShelf);
         shelf.append(view.el)
@@ -151,8 +155,9 @@ s.views.Document = Backbone.View.extend({
         view.render();
       }, this));
     }
-    //this.$('.views .document.view').removeClass('selected');
-    //$('.document.view.'+view).addClass('selected');
+
+    
+    
   }
 
 });

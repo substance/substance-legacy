@@ -6,7 +6,7 @@
 
   position: fixed;
   z-index: 999;
-  top: 30px;
+  top: 35px;
   left: 0px;
   right: 0px;
 
@@ -21,7 +21,7 @@
 }
 
 #document_identifier {
-  margin: 9px 40px;
+  margin: 9px 80px;
   float: left;
 
   font-size: 16px;
@@ -32,7 +32,7 @@
 }
 
 
-#document_meta {
+#document_controls #document_meta {
   float: left;
   margin: 6px 0 0 0;
 
@@ -40,8 +40,6 @@
     float: left;
     padding: 3px 5px 3px 30px;
     margin-right: 4px;
-    border: 1px solid #888;
-    .border-radius(3px);
   }
 
   .meta.views {
@@ -62,34 +60,45 @@
   float: right;
   
   height: 40px;
-
+  margin-right: 50px;
   .views {
     float: right;
-    padding-top: 5px;
+    margin-top: 7px;
     margin-right: 30px;
     overflow: auto;
-    .view {
-      float: left;
-      .border-radius(5px);
-      
-      color: #444;
-      margin-right: 5px;
-      padding: 0 3px;
-      height: 30px;
-      line-height: 30px;
-      cursor: pointer;
-      &:hover, &.selected {
-        background: #ccc;
-      }
-    }
+
+  }
+}
+
+#document_controls .view {
+  float: left;
+  .border-top-radius(5px);
+  
+  color: #444;
+  padding: 0 10px;
+  height: 34px;
+  line-height: 27px;
+  cursor: pointer;
+  border: 1px solid transparent;
+
+  &:hover {
+    color: #000;
+  }
+  &.selected {
+    color: #000;
+    background: #F0F1EB;
+    border: 1px solid #bbb;
+    border-bottom: transparent;
   }
 }
 
 #document_shelf {
+  background: #F0F1EB;
   overflow: auto;
   -webkit-transition-property: height;
   -webkit-transition-duration: 0.6s;
   overflow-y: hidden;
+  border-top: 1px solid #bbb;
   .shelf-content {}
 }
 
@@ -104,11 +113,9 @@
   .document-font;
   
   width: 920px;
-  
   color: #000;
   position:relative;
-  margin: 0;
-  margin-left: 40px;
+  margin: 0 auto;
   padding: 0px 0 0px 0;
   -webkit-box-shadow: 0px 1px 4px rgba(0,0,0,0.35), inset 0px 0px 1px rgba(255,255,255,0.15);
   -moz-box-shadow:    0px 1px 4px rgba(0,0,0,0.35), inset 0px 0px 1px rgba(255,255,255,0.15);

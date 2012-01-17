@@ -1,13 +1,15 @@
 <div id="header_title">
-  <a href="/" class="toggle-view">SUBSTANCE</a>
+  <a href="/" class="toggle-view">Substance</a>
 </div>
 
 <div id="navigation">
-  <% if (session.username) { %><a class="toggle-view" href="/dashboard">My Documents</a><% } %>
+  <% if (session.username) { %><a class="toggle-view" href="/dashboard">Dashboard</a><% } %>
   <a class="toggle-view" href="/explore">Explore</a>
   <!--<a class="toggle-view" href="/search">Search</a>-->
 
-  <a href="/new" class="toggle-view" title="Create a new document">
-    New Doc
-  </a>
+  <% if (session.username) { %>
+	  <a href="/new" class="toggle-view" title="Create a new document">
+	    New Doc
+	  </a>
+  <% } %>
 </div>

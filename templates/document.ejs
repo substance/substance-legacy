@@ -5,7 +5,7 @@
   </div>
 
   <div id="document_meta">
-    <a href="#" class="document view subscribers"><div class="meta subscribers"><%= doc.get('subscribers') || 0 %></div></a>
+    <a href="#" class="document view subscribers"><div class="meta view subscribers"><%= doc.get('subscribers') || 0 %></div></a>
     <div class="meta views"><%= doc.get('views') %></div>
     <a href="#"
        title="<%= doc.get('subscribed') ? "Unsubscribe" : "Subscribe document and get notified about updates" %>"
@@ -15,7 +15,7 @@
     <a href="#"
        title="Table Of Contents"
        class="toggle-toc">
-      <div class="meta toc">Table Of Contents</div>
+      <div class="meta toc">Contents</div>
     </a>
   </div>
 
