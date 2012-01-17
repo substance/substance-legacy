@@ -2,17 +2,23 @@ var request = require('request');
 var _ = require('underscore');
 var async = require('async');
 
-var allowedTypes = [
+function filterUsers (results) {
+  return _.filter(results, function (result) {
+    return result.type === '/type/user';
+  });
+}
+
+var documentTypes = [
   '/type/document',
   '/type/section', '/type/text', '/type/quote', '/type/code',
   '/type/image', '/type/resource', '/type/question', '/type/answer'
 ];
 
-function filterTypes (results) {
+function filterDocumentTypes (results) {
   return _.filter(results, function (result) {
     var type = result.type;
     for (var i = 0, l = type.length; i < l; i++) {
-      if (allowedTypes.indexOf(type[i]) >= 0) {
+      if (documentTypes.indexOf(type[i]) >= 0) {
         return true;
       }
     }
@@ -43,7 +49,15 @@ function loadDocuments (groups, callback) {
       if (err) { cb(err); return; }
       delete group.documentId;
       group.document = node;
-      cb(null);
+      if (node) {
+        db.get(node.creator, function (err, user) {
+          if (err) { cb(err); return; }
+          group.creator = user;
+          cb(null);
+        });
+      } else {
+        cb(null);
+      }
     });
   }, callback);
 }
@@ -51,7 +65,7 @@ function loadDocuments (groups, callback) {
 function filterGroups (groups) {
   // There could be nodes that belong to a document that has been deleted
   return _.filter(groups, function (group) {
-    return !!group.document;
+    return group.document && group.document.published_version;
   });
 }
 
@@ -63,12 +77,15 @@ exports.search = function (searchstr, callback) {
     
     body = JSON.parse(body);
     var results = _.pluck(body.hits.hits, '_source');
-    var filtered = filterTypes(results);
+    var users = filterUsers(results);
+    var filtered = filterDocumentTypes(results);
     var groups = groupByDocument(filtered);
     loadDocuments(groups, function (err) {
-      console.log(groups);
       if (err) { callback(err, null); return; }
-      callback(null, filterGroups(groups));
+      callback(null, {
+        users: users,
+        documents: filterGroups(groups)
+      });
     });
   });
 };
