@@ -2,18 +2,20 @@
 -------------------------------------------------------------------------------*/
 
 #startpage {
-  margin: 0 180px 0 100px;
   font-size: 17px;
   color: #444;
 }
 
+#startpage .spacer {
+  background: #E9EAE5;
+  height: 40px;
+}
+
 .intro {
   .document-font;
-    
-  text-align: center;
+  
   font-size: 38px;
   line-height: 50px;
-  
   height: 220px;
   -webkit-transition: all 0.5s ease-in-out;
   -moz-transition: all 0.5s ease-in-out;
@@ -22,6 +24,7 @@
 
   .intro-text {
     padding: 20px;
+    padding-left: 80px;
     a {
       border: none;
       font-size: 22px;
@@ -48,6 +51,8 @@
 #plot {
   overflow: auto;
   padding-bottom: 20px;
+  background: #E9EAE5;
+  padding: 80px;
 
   h2 {
     padding-top: 0px;
@@ -63,9 +68,13 @@
   }
 }
 
+#plot_content {
+  width: 900px;
+  overflow: auto;
+}
+
 .intro b {
   font-weight: bold;
-  
 }
 
 .intro a {
@@ -80,10 +89,10 @@
 #example_documents {
   overflow: auto;
   height: 270px;
-  width: 840px;
-  margin: auto;
+  margin-left: 80px;
   .document {
     margin: 30px;
+    margin-left: 10px;
     width: 150px;
     height: 200px;
     background: white;
@@ -128,6 +137,7 @@
 
 
 #features {
+  padding-left: 80px;
   overflow: auto;
   font-size: 14px;
   .feature {

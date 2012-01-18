@@ -146,7 +146,6 @@ s.views.Document = Backbone.View.extend({
       this.currentView = null;
       this.resizeShelf();
     } else {
-      console.log(viewname);
       $('.document.view.'+viewname).addClass('selected');
       view.load(_.bind(function (err) {
         view.bind('resize', this.resizeShelf);
@@ -155,9 +154,5 @@ s.views.Document = Backbone.View.extend({
         view.render();
       }, this));
     }
-
-    
-    
   }
-
 });
