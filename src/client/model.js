@@ -791,6 +791,16 @@ function resetPassword (username, tan, password, callback) {
   });
 }
 
+function getPublishState(doc) {
+  if (!doc.get('published_version')) {
+    return "unpublished";
+  } else if (doc.get('published_on') == doc.get('updated_at')) {
+    return "published";
+  } else {
+    return "published-outdated";
+  }
+}
+
 function loggedIn () {
   return !!(app || session).username;
 }

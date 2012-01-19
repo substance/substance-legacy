@@ -22,6 +22,7 @@
 
 #document_identifier {
   margin: 9px 80px;
+  margin-right: 20px;
   float: left;
 
   font-size: 16px;
@@ -31,65 +32,116 @@
   }
 }
 
+#document_controls .tab {
+  float: left;
+  margin-right: 20px;
+  line-height: 40px;
+  color: #000;
+  opacity: 0.5;
+
+  -moz-transition: opacity 0.4s;
+  -webkit-transition: opacity 0.4s;
+  -o-transition: opacity 0.4s;
+  transition: opacity 0.4s;
+
+  a {
+    border: none;
+    color: #000;
+  }
+
+  &.selected, &:hover {
+    opacity: 1.0;
+    a {
+      /*color: #333;*/
+    }
+  }
+
+  &.selected {
+    /*background: url("@{images}/tab-arrow.png") bottom center repeat-x;*/
+  }
+
+  &.settings {
+    padding-left: 15px;
+    background: url("@{images}/icons/black/cog_alt_12x12.png") center left no-repeat;
+  }
+
+  &.invite {
+    padding-left: 15px;
+    background: url("@{images}/icons/black/user_9x12.png") center left no-repeat;
+  }
+
+  &.export {
+    padding-left: 15px;
+    background: url("@{images}/icons/black/arrow_right_8x8.png") center left no-repeat;
+  }
+
+  &.versions {
+    padding-left: 15px;
+    background: url("@{images}/icons/black/compass_12x12.png") center left no-repeat;
+  }
+
+  &.subscribers {
+    padding-left: 15px;
+    background: url("@{images}/icons/black/rss_12x12.png") center left no-repeat;
+  }
+
+  &.views {
+    padding-left: 15px;
+    margin-right: 0px;
+    background: url("@{images}/icons/black/cursor_8x8.png") center left no-repeat;
+  }
+
+
+
+  &.publish {
+    margin-right: 30px;
+    font-size: 20px;
+
+    .publish-state {
+      float: left;
+      width: 24px;
+      height: 24px;
+      margin: 8px 5px;
+      background: url("@{images}/icons/white/minus_8x2.png") center center no-repeat #aaa;
+      .border-radius(12px);
+    }
+
+    .publish-state.published {
+      background: url("@{images}/icons/white/check_8x7.png") center center no-repeat #82AA15;
+    }
+
+    .publish-state.published-outdated {
+      background: url("@{images}/icons/white/spin_7x8.png") center center no-repeat #82AA15;
+    }
+  }
+}
+
+
+#document_controls .action {
+  .border-radius(4px);
+  float: left;
+  line-height: 24px;
+  background: #bbb;
+  margin: 8px 0;
+  margin-right: 20px;
+  font-weight: bold;
+  a {
+    padding: 0 5px;
+    border: none;
+  }
+}
+
 
 #document_controls #document_meta {
-  float: left;
-  margin: 6px 0 0 0;
-
-  .meta {
-    float: left;
-    padding: 3px 5px 3px 30px;
-    margin-right: 4px;
-  }
-
-  .meta.views {
-    background: url("@{images}/icons/black/cursor_16x16.png") 5px no-repeat;
-  }
-
-  .meta.subscribers {
-    background: url("@{images}/icons/black/rss_16x16.png") 5px no-repeat;
-  }
-
-  .meta.subscribe {
-    background-color: red;
-    background: url("@{images}/icons/black/rss_16x16.png") 5px no-repeat;
-  }
+  float: right;
+  margin-right: 80px;
 }
 
 #document_navigation {
-  float: right;
+  float: left;
   
   height: 40px;
   margin-right: 50px;
-  .views {
-    float: right;
-    margin-top: 7px;
-    margin-right: 30px;
-    overflow: auto;
-
-  }
-}
-
-#document_controls .view {
-  float: left;
-  .border-top-radius(5px);
-  
-  color: #444;
-  padding: 0 10px;
-  height: 34px;
-  line-height: 27px;
-  cursor: pointer;
-  border: 1px solid transparent;
-
-  &:hover {
-    color: #000;
-  }
-  &.selected {
-    color: #000;
-    background: #F0F1EB;
-    border: 1px solid #bbb;
-    border-bottom: transparent;
-  }
 }
 
 #document_shelf {
@@ -99,6 +151,7 @@
   -webkit-transition-duration: 0.6s;
   overflow-y: hidden;
   border-top: 1px solid #bbb;
+  position: relative;
   .shelf-content {}
 }
 

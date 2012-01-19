@@ -70,13 +70,13 @@ s.views.Document = Backbone.View.extend({
   toggleSubscription: function (e) {
     if (!this.model.get('subscribed')) {
       subscribeDocument(this.model, _.bind(function (err) {
-        this.$('.meta.subscribe').html('Unsubscribe');
-        this.$('.meta.subscribers').html(this.model.get('subscribers'));
+        this.$('.action.toggle-subscription a').html('Unsubscribe');
+        this.$('.tab.subscribers').html(this.model.get('subscribers'));
       }, this));
     } else {
       unsubscribeDocument(this.model, _.bind(function (err) {
-        this.$('.meta.subscribe').html('Subscribe');
-        this.$('.meta.subscribers').html(this.model.get('subscribers'));
+        this.$('.action.toggle-subscription a').html('Subscribe');
+        this.$('.tab.subscribers').html(this.model.get('subscribers'));
       }, this));
     }
     return false;
@@ -141,12 +141,12 @@ s.views.Document = Backbone.View.extend({
       $(this.currentView.el).detach();
     }
     
-    this.$('.document.view').removeClass('selected');
+    this.$('.document.tab').removeClass('selected');
     if (view === this.currentView) {
       this.currentView = null;
       this.resizeShelf();
     } else {
-      $('.document.view.'+viewname).addClass('selected');
+      $('.document.tab.'+viewname).addClass('selected');
       view.load(_.bind(function (err) {
         view.bind('resize', this.resizeShelf);
         shelf.append(view.el)

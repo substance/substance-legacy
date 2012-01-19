@@ -4,38 +4,21 @@
     <span class="name"><%= doc.get('name') %></span>
   </div>
 
-  <div id="document_meta">
-    <a href="#" class="document view subscribers"><div class="meta view subscribers"><%= doc.get('subscribers') || 0 %></div></a>
-    <div class="meta views"><%= doc.get('views') %></div>
-    <a href="#"
-       title="<%= doc.get('subscribed') ? "Unsubscribe" : "Subscribe document and get notified about updates" %>"
-       class="toggle-subscription <%= doc.get('subscribed') ? 'active' : '' %>">
-      <div class="meta subscribe"><%= doc.get('subscribed') ? "Unsubscribe" : "Subscribe" %></div>
-    </a>
-    <a href="#"
-       title="Table Of Contents"
-       class="toggle-toc">
-      <div class="meta toc">Contents</div>
-    </a>
+  <div id="document_navigation">
+      <div class="document tab publish"><a href="#"><div class="publish-state <%= getPublishState(doc) %>"></div>Publish</a></div>
+
+      <div class="document tab settings"><a href="#">Settings</a></div>
+      <div class="document tab invite"><a href="#">Collaborators</a></div>
+      <div class="document tab export"><a href="#">Export</a></div>
+      <div class="document tab versions"><a href="#">Versions</a></div>
   </div>
 
-  <div id="document_navigation">
-    <div class="views">
-      <div class="document view settings">Settings</div>
-      <div class="document view publish">Publish
-        <% if (!doc.get('published_version')) { %>
-          <span class="publish-state"> &nbsp;</span>
-        <% } else if (doc.get('published_on') == doc.get('updated_at')) { %>
-          <span class="publish-state"> &radic;</span>
-        <% } else { %>
-          <span class="publish-state"> *</span>
-        <% } %>
-      </div>
-      <div class="document view invite">Collaborators</div>
-      <div class="document view export">Export</div>
-      <div class="document view versions">Versions</div>
-    </div>
+  <div id="document_meta">
+    <div class="document action toggle-subscription"><a href="#"><%= doc.get('subscribed') ? "Unsubscribe" : "Subscribe" %></a></div>
+    <div class="document tab subscribers" title="Show Subscribers"><a href="#"><%= doc.get('subscribers') || 0 %></a></div>
+    <div class="document tab views" title="Total Views"><%= doc.get('views') %></div>
   </div>
+
   <br class="clear"/>
   
   <div id="document_shelf"></div>
