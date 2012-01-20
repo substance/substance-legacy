@@ -1,13 +1,117 @@
 #network_header {
-  padding: 20px;
-	background: #373737;
+  padding: 10px;
+  padding-right: 80px;
+  padding-left: 80px;
+  position: fixed;
+  top: 36px;
+  left: 0px;
+  right: 0px;
+  z-index: 3000;
+
+  -webkit-box-shadow: 0px 1px 4px rgba(0,0,0,0.35), inset 0px 0px 1px rgba(255,255,255,0.15);
+  -moz-box-shadow:    0px 1px 4px rgba(0,0,0,0.35), inset 0px 0px 1px rgba(255,255,255,0.15);
+  box-shadow:         0px 1px 4px rgba(0,0,0,0.35), inset 0px 0px 1px rgba(255,255,255,0.15);
+
+  overflow: auto;
+	background: #82AA15;
 
   color: #aaa;
   h2 {
-    color: #777;
+    color: #000;
+    opacity: 0.5;
+    padding-bottom: 0px;
+    margin-right: 400px;
   }
 
-  .members {
-    float: right;
+  p {
+    color: #D5E2A6;
+
+    &.meta {
+      color: #000;
+      opacity: 0.5;
+      padding-top: 0px;
+    }
   }
+
+  .descr {
+    max-width: 700px;
+    color: #fff;
+    opacity: 0.5;
+  }
+
+  .image {
+    background: white;
+    background-opacity: 0.4;
+    margin-right: 20px;
+    float: left;
+    padding: 5px;
+
+    -webkit-box-shadow: 0px 1px 4px rgba(0,0,0,0.5), inset 0px 0px 1px rgba(255,255,255,0.15);
+    -moz-box-shadow:    0px 1px 4px rgba(0,0,0,0.5), inset 0px 0px 1px rgba(255,255,255,0.15);
+    box-shadow:         0px 1px 4px rgba(0,0,0,0.5), inset 0px 0px 1px rgba(255,255,255,0.15);
+
+    img {
+      margin: 0;
+      padding: 0;
+      border: 0;
+    }
+  }
+
+  .actions {
+    float: right;
+    
+    .action {
+      text-align: center;
+      .border-radius(5px);
+      border: 0;
+      display: block;
+      color: #fff;
+      padding: 10px;
+      background: #000;
+      opacity: 0.5;
+      margin: 0;
+
+      &:hover {
+        opacity: 0.6;
+      }
+    }
+
+    .tabs {
+      margin-top: 50px;
+      overflow: auto;
+
+      a { border: none; }
+      .tab {
+
+        .number {
+          font-size: 20px;
+          font-weight: bold;
+        }
+
+        text-align: center;
+        padding: 4px 0;
+        color: #fff;
+        width: 80px;
+        margin-left: 5px;
+        
+        opacity: 0.5;
+        .border-radius(5px);
+        float: left;
+
+        &.selected {
+          background: #000;
+        }
+      }
+
+
+    }
+
+
+
+  }
+}
+
+#network #results {
+  padding-top: 230px;
+  margin-left: 80px;
 }

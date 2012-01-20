@@ -1,20 +1,23 @@
-<div id="network_header">
-  <div class="members">
-  	<h2>Members</h2>
-  	<% members.each(function(user) { %>
-  		<div class="member">
-  			<%= user.get('name') %>
-  		</div>
-  	<% }); %>
+<div id="network_header" style="background: <%= network.get('color') %>">
+  <div class="actions">
 
   	<% if (isMember) { %>
-  		<a href="#" class="leave-network">Leave Network</a>
+  		<a href="#leave" class="action leave-network">Leave Network</a>
   	<% } else { %>
-  		<a href="#" class="join-network">Join Network</a>
-  	<% } %>    
+  		<a href="#join" class="action join-network">Join Network</a>
+  	<% } %>
+
+    <div class="tabs">
+      <a href="#" class="tab toggle-documents selected"><div class="number">10</div><div class="label">documents</div></a>
+      <a href="#" class="tab toggle-members"><div class="number"><%= members.length %></div><div class="label">members</div></a>
+    </div>
   </div>
 
+  <div class="image"><img src="/images/doc-image.jpeg" width="180"></div>
+
+
 	<h2><%= network.get('name') %></h2>
-  <p>Network description goes here.</p>
+  <p class="meta">created by <b><%= userName(network.get('creator')) %></b> on <i><%= s.util.date(network.get('created_at')) %></i> </p>
+  <p class="descr"><%= network.get('descr') %></p>
 
 </div>

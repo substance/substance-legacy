@@ -7,30 +7,17 @@
     <div class="topic">Music</div>
     <div class="topic">Politics</div>
   </div>
-
 </div>
 
-<!--<div id="recent_documents">
-	<h2>Recent Documents</h2>
-  <% documents.each(function(doc) { %>
-    <a href="<%= documentURL(doc) %>">
-      <div class="document">
-      	<div class="author"><%= doc.get('creator').get('name') %></div>
-      	<div class="title"><%= doc.get('title') %></div>
-      	<div class="updated_at"><%= s.util.prettyDate(doc.get('updated_at')) %></div>
-      </div>
-    </a>
-  <% }); %>
-</div>-->
 
 <div id="networks">
-	<h2>Networks</h2>
+	<h2>Choose a Network</h2>
 	<% networks.each(function(network) { %>
     
     <a class="toggle-view" href="<%= network._id %>">
     	<div class="network" data-network="<%= network._id %>">
         <div class="image"><img src="/images/doc-image.jpeg" width="200"></div>
-     	  <div class="title"><%= network.get('name') %></div>
+     	  <div class="title" style="background: <%= network.get('color') %>"><%= network.get('name') %></div>
       
      	  <div class="document-count"><%= network.meta.documents %> documents</div>
         <div class="member-count"><%= network.meta.members %> members</div>
