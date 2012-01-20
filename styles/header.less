@@ -17,8 +17,14 @@
       text-decoration: none;
       border: none;
       font-style: normal;
-      color: #ddd;
+      color: #fff;
+      opacity: 0.5;
       font-size: 22px;
+
+      &:hover {
+        opacity: 1.0;
+      }
+
     }
   }
 
@@ -31,11 +37,13 @@
       border: none;
       float: left;
       font-style: normal;
-      color: #bbb;
+      color: #fff;
+      opacity: 0.5;
+      line-height: 35px;
       margin-right: 5px;
       padding: 0 10px;
-      &.active {
-        color: #fff;
+      &.active, &:hover {
+        opacity: 1.0;
       }
     }
   }
