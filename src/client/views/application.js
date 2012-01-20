@@ -85,12 +85,12 @@ s.views.Application = Backbone.View.extend({
   },
 
   home: function () {
-    this.replaceMainView(new s.views.Home({}).render());
+    this.replaceMainView(new s.views.Home({id: 'home'}).render());
   },
 
   user: function (username) {
     loadDocuments({ type: 'user', value: username }, _.bind(function (err, data) {
-      this.replaceMainView(new s.views.UserProfile({ model: data }).render());
+      this.replaceMainView(new s.views.UserProfile({ model: data, id: 'user_profile' }).render());
     }, this));
   },
 
