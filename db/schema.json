@@ -527,6 +527,18 @@
         "unique": true,
         "required": true
       },
+      "descr": {
+        "name": "Network Name",
+        "type": "string",
+        "unique": true,
+        "required": false
+      },
+      "color": {
+        "name": "Color",
+        "type": "string",
+        "unique": true,
+        "required": true
+      },
       "creator": {
         "name": "Creator",
         "unique": true,

@@ -21,6 +21,8 @@ function createNetworks(callback) {
     _id: "/network/javascript",
     type: "/type/network",
     name: "Javascript",
+    descr: "JavaScript is a prototype-based scripting language that is dynamic, weakly typed and has first-class functions. It is a multi-paradigm language, supporting object-oriented imperative, and functional programming styles.",
+    color: "#82AA15",
     creator: "/user/michael",
     created_at: new Date()
   });
@@ -29,6 +31,8 @@ function createNetworks(callback) {
     _id: "/network/nodejs",
     type: "/type/network",
     name: "Node.js",
+    descr: "Node.js is a software system designed for writing highly-scalable internet applications, notably web servers. Programs are written in JavaScript, using event-driven, asynchronous I/O to minimize overhead and maximize scalability. Node.js consists of Google's V8 JavaScript engine plus several built-in libraries.",
+    color: "#BA5219",
     creator: "/user/michael",
     created_at: new Date()
   });
@@ -37,6 +41,8 @@ function createNetworks(callback) {
     _id: "/network/jazz",
     type: "/type/network",
     name: "Jazz",
+    descr: "Jazz is a musical style that originated at the beginning of the 20th century in African American communities in the Southern United States. It was born out of a mix of African and European music traditions.",
+    color: "#36A0A8",
     creator: "/user/michael",
     created_at: new Date()
   });
@@ -45,7 +51,6 @@ function createNetworks(callback) {
     console.log(err);
     console.log('Created a bunch of networks.');
   });
-  
 };
 
 
