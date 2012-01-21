@@ -449,7 +449,7 @@ app.post('/login', function(req, res) {
 
 // Logout
 
-app.post('/logout', function(req, res) {  
+app.post('/logout', function(req, res) {
   req.session = {};
   res.send({status: "ok"});
 });
@@ -516,7 +516,6 @@ app.post('/updateuser', function(req, res) {
     user.set({
       name: req.body.name,
       email: req.body.email,
-      location: req.body.location,
       website: req.body.website,
       company: req.body.company,
       location: req.body.location
@@ -658,7 +657,7 @@ app.post('/confirm_collaborator', function(req, res) {
           
           graph.sync(function(err) {
             return err ? res.send({"status": "error"}) : res.send({"status": "ok", "graph": {}});
-          });          
+          });
         });
         
       });
@@ -789,10 +788,11 @@ app.post('/publish', function(req, res) {
 
   function createPublications(callback) {
     graph.fetch({"type": "/type/publication", "document": document}, function(err, nodes) {
-      var remoteNetworks = nodes.map(function(n) { return n.get('network')._id }).values(),
-          newNetworks = _.difference(networks, remoteNetworks),
-          deletedNetworks = _.difference(remoteNetworks, networks);
-
+      var remoteNetworks  = nodes.map(function(n) { return n.get('network')._id; }).values(),
+          newNetworks     = _.difference(networks, remoteNetworks),
+          deletedNetworks = _.difference(remoteNetworks, networks),
+          changedNetworks = [].concat(newNetworks).concat(deletedNetworks);
+      
       _.each(newNetworks, function(network) {
         graph.set({
           type: "/type/publication",
@@ -804,7 +804,15 @@ app.post('/publish', function(req, res) {
         var pub = graph.find({type: "/type/publication", "network": network}).first()._id;
         graph.del(pub);
       });
-      callback();
+      async.forEach(changedNetworks, function (id, cb) {
+        graph.fetch({ _id: id }, function (err, nodes) {
+          if (err) { cb(err); return; }
+          nodes.each(function (network) {
+            network.set({ updated_at: new Date() });
+          });
+          cb(null);
+        });
+      }, callback);
     });
   }
 
@@ -836,7 +844,7 @@ app.post('/publish', function(req, res) {
           newGraph[id] = graph.get(id);
           res.send({
             "status": "ok",
-            "version": version._id, 
+            "version": version._id,
             "graph": newGraph
           });
         });
@@ -873,6 +881,16 @@ app.post('/unpublish', function(req, res) {
           "graph": newGraph
         });
       });
+    });
+  });
+});
+
+
+app.get('/networks/recent', function (req, res) {
+  Network.getNMostRecent(50, function (err, graph) {
+    res.json({
+      error: err,
+      graph: graph.objects()
     });
   });
 });

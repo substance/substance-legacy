@@ -551,6 +551,12 @@
         "unique": true,
         "type": "date",
         "required": true
+      },
+      "updated_at": {
+        "name": "Last modified",
+        "unique": true,
+        "type": "date",
+        "required": false
       }
     },
     "indexes": {
