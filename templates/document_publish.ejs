@@ -4,21 +4,24 @@
   <div>
     <label for="last_published">Last published:<span></span></label>
     <%= document.get('published_on') ? s.util.prettyDate(document.get('published_on')) : "Not yet published" %>
+    <br class="clear"/>
   </div>
 
   <div>
     <label for="networks">Networks:<span>Choose some Networks your document should appear in.</span></label>
     
-    <select name="networks" class="networks-selection" multiple="multiple">
+    <select name="networks" class="networks-selection" data-placeholder="Choose networks ..." style="width:350px;" multiple="multiple">
       <% availableNetworks.each(function(network) { %>
        <option value="<%= network._id %>"<%= networks.get(network._id) ? ' selected="selected"' : '' %>> <%= network.get('name') %></option>
       <% }); %>
     </select>
+    <br class="clear"/>
   </div>
   
   <div>
     <label for="version_remark">Remark:<span>Enter optional version description</span></label>
     <input type="text" id="version_remark" name="user_name" value="adsgadsf"/>
+    <br class="clear"/>
   </div>
 
   <% if (isCurrentUser(document.get('creator'))) { %>
@@ -30,6 +33,7 @@
     <% if (document.get('published_version')) { %>
       <input class="unpublish-document" type="submit" id="document_name" value="Unpublish"/>
     <% } %>
+    <br class="clear"/>
   </div>
   <% } %>
 </div>

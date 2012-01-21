@@ -18,6 +18,7 @@ s.views.Publish = Backbone.View.extend({
     }));
 
     this.trigger('resize');
+    this.$("select.networks-selection").chosen();
     return this;
   },
 

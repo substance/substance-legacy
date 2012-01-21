@@ -1,11 +1,24 @@
 /* Publish Settings Dialogue
 -------------------------------------------------------------------------------*/
 
+#document_publish * {
+  box-sizing: content-box;
+  -webkit-box-sizing: content-box;
+  -moz-box-sizing: content-box;
+}
+
+#document_publish .form-content > div { overflow: visible; }
+
 #document_publish {
   .ui-font;
 
+
   font-size: 14px;
   color: #444;
+
+  select {
+    width: 300px;
+  }
 
   input.publish-document {
     margin-right: 20px;
@@ -15,5 +28,3 @@
     width: auto;
   }
 }
-
-

@@ -65,7 +65,6 @@ input[type=submit] {
   }
 }
 
-
 /* Form Content
 -------------------------------------------------------------------------------*/
 
@@ -81,8 +80,10 @@ input[type=submit] {
 
 .form-content input.error { border: 2px solid red; }
 .form-content label { display: block; float: left; width: 300px; position: relative; font-size: 16px; }
+
 .form-content label span { .ui-font; position: absolute; top: 20px; left: 0px; color: #888; font-size: 12px; font-style: normal; }
-.form-content div { padding: 20px 0; overflow: auto }
+
+.form-content > div { padding: 20px 0; overflow: auto; }
 
 .form-content input[type=submit] { 
   color: white;
@@ -98,7 +99,6 @@ input[type=submit] {
 }
 
 
-/* Messages for input fields */
 .form-content .input-message { float: left; padding: 0 20px; margin: 0; 
   .ui-font;
   max-width: 200px;
