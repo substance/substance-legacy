@@ -3,19 +3,50 @@
   margin-right: 80px;
   
   input {
+    .ui-font;
     width: 100px;
-    margin: 0;
-    margin-left: 10px;
+    margin: 5px;
+    height: 25px;
+    margin-left: 5px;
     float: left;
+    color: #eee;
+    font-weight: normal;
+    
+    border: 1px solid #555;
+    background: #000;
+    
+    font-size: 15px;
+   -webkit-box-shadow: none;
+   -moz-box-shadow: none;
+   box-shadow: none;
   }
+
+  input::-webkit-input-placeholder {
+    color:    #777;
+  }
+
+  input:-moz-placeholder {
+    color:    #777;
+  }
+
+  input:focus, input:hover {
+    border: 1px solid #777;
+  }
+
   input[type=submit] {
-    background: #8C8C84;
+    color: #aaa;
+    background: #333;
     width: auto;
     font-weight: normal;
-    font-size: 12px;
+    line-height: 25px;
+    font-size: 14px;
+    margin-right: 30px;
   }
+
   input[type=submit]:hover {
-    background: #70706B;
+    color: #eee;
+    border: 1px solid #555;
+    background: #000;
   }
   
   ul {
@@ -28,15 +59,22 @@
   }
   
   a {
-    padding: 0 5px;
+    padding: 0 0px;
     display: block;
-    color: #eee; border-bottom: none; display: inline-block;
-    &:hover { background: #000; }
+    color: #fff;
+    opacity: 0.5;
+    border-bottom: none; 
+    display: inline-block;
+    font-style: normal;
+    
+    &:hover { opacity: 1.0; }
   }
   
   .notifications {
-    .icon("rss");
+    .icon("rss", "white", "12");
+    opacity: 0.5;
     position: relative;
+    margin-right: 10px;
     
     .count {
       font-size: 12px; line-height: 16px;
@@ -50,50 +88,42 @@
     }
   }
   &.notifications-active .notifications, .notifications:hover {
-    background-color: #000;
-    .count { background-color: #293335; }
+    opacity: 1;
   }
   .user-profile {
     img {
       vertical-align: middle;
     }
   }
-  .user-settings { .icon("cog_alt"); }
-  .logout        { .icon("eject"); }
-  .signup {
-    color: #777;
-    padding-top: 10px;
-    text-align: right;
-    font-style: normal;
+
+  .user-settings { 
+    .icon("cog_alt", "white", "12");
+    opacity: 0.5;
+    &:hover { opacity: 1.0; }
   }
-  .new-doc {
-    .icon("plus");
+  .logout { 
+    .icon("eject", "white", "12");
+    opacity: 0.5;
+    &:hover { opacity: 1.0; }
   }
-  
-  #event_notifications {
-    position: absolute;
-    top: 30px; left: 0;
-    width: 320px;
-    display: none;
-  }
+
   &.notifications-active #event_notifications {
     display: block;
   }
 }
 
 #event_notifications {
-  background: #C0C1BD;
+  background: #2b2b2b;
   font-style: normal;
   position: absolute;
-  top: 34px;
-  right: 0px;
+  top: 35px; left: 0;
+  width: 320px;
+  display: none;
   z-index: 10000000;
   
   box-sizing: content-box;
   -webkit-box-sizing: content-box;
   -moz-box-sizing: content-box;
-  
-  display: none;
 
   &.active {
     display: block;
