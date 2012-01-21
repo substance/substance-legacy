@@ -257,7 +257,7 @@ Document.getContent = function(documentId, callback) {
   var qry = {
     "_id": documentId,
     "children": {
-      "_recursive": true,
+      "_recursive": true
     }
   };
   

@@ -373,14 +373,23 @@ function loadExplore (callback) {
     dataType: "json",
     success: function (res) {
       graph.merge(res.graph);
-
-      // Populate results
-      var documents = graph.find({"type|=": "/type/document"});
-      graph.fetch({type: "/type/network"}, function(err, nodes) {
-        err ? callback(err) : callback(null, {
-          networks: nodes,
-          documents: sortDocuments(documents)
-        });
+      
+      $.ajax({
+        type: 'GET',
+        url: '/networks/recent',
+        dataType: 'json',
+        success: function (res) {
+          graph.merge(res.graph);
+          
+          // Populate results
+          var documents = graph.find({"type|=": "/type/document"});
+          var networks  = graph.find({"type":   "/type/network"});
+          callback(null, {
+            networks: networks,
+            documents: sortDocuments(documents)
+          });
+        },
+        error: function (err) { callback(err); }
       });
     },
     error: function(err) {

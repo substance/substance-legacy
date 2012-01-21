@@ -10,12 +10,30 @@ var Util = require('./util');
 
 var Network = {};
 
+Network.getNMostRecent = function (n, callback) {
+  var graph = new Data.Graph(seed).connect('couch', {
+    url: config.couchdb_url,
+    filters: [Filters.addMeta()]
+  });
+  db.view('substance/recent_networks', { limit: n, descending: true }, function (err, res) {
+    if (err) { callback(err); return; }
+    var qry = {
+      type: '/type/network',
+      _id: _.map(res.rows, function (row) { return row.value; })
+    };
+    graph.fetch(qry, function (err) {
+      if (err) { callback(err); return; }
+      callback(null, graph);
+    });
+  });
+};
+
 Network.get = function(network, currentUser, callback) {
 	var graph = new Data.Graph(seed).connect('couch', {url: config.couchdb_url});
   graph.fetch({type: "/type/network", _id: "/network/"+network}, function(err, nodes) {
     graph.fetch({type: "/type/publication", "network": "/network/"+network, "document": {}}, function(err, nodes) {
     	graph.fetch({"type": "/type/membership", "network": "/network/"+network, "user": {}}, function(err, nodes) {
-    		callback(null, {
+        callback(null, {
           graph: graph.objects().toJSON(), 
           isMember: !!nodes.get('/user/'+currentUser)
         });
