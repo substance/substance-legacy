@@ -837,7 +837,7 @@ app.post('/publish', function(req, res) {
       // Create publications
       createPublications(function() {
         graph.sync(function(err) {
-          if (err) res.send({"status": "error"}, 500);
+          if (err) return res.send({"status": "error"}, 500);
           var newGraph = {};
           newGraph[id] = graph.get(id);
           res.send({
