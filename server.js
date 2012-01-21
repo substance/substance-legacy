@@ -226,7 +226,6 @@ graph.connect('couch', {
   filters: [
     Filters.ensureAuthorized(),
     Filters.sanitizeUserInput(),
-    Filters.addMeta(),
     Filters.logEvents()
   ]
 });
@@ -783,8 +782,7 @@ app.post('/publish', function(req, res) {
   var document = req.body.document;
   var networks = req.body.networks;
   var remark = req.body.remark;
-  var graph = new Data.Graph(seed).connect('couch', {url: config.couchdb_url});
-  
+  var graph = new Data.Graph(seed).connect('couch', {url: config.couchdb_url, filters: [Filters.addMeta()]});
 
   function createPublications(callback) {
     graph.fetch({"type": "/type/publication", "document": document}, function(err, nodes) {
@@ -890,7 +888,7 @@ app.get('/networks/recent', function (req, res) {
   Network.getNMostRecent(50, function (err, graph) {
     res.json({
       error: err,
-      graph: graph.objects()
+      graph: graph
     });
   });
 });

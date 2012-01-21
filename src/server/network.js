@@ -23,7 +23,12 @@ Network.getNMostRecent = function (n, callback) {
     };
     graph.fetch(qry, function (err) {
       if (err) { callback(err); return; }
-      callback(null, graph);
+      var res = {};
+      graph.objects().each(function(o, key) {
+        res[key] = _.extend(o.toJSON(), {meta: o.meta});
+      });
+
+      callback(null, res);
     });
   });
 };
