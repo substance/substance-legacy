@@ -824,7 +824,8 @@ app.post('/publish', function(req, res) {
       // Update version link
       graph.set(_.extend(data[id], {
         published_version: version._id,
-        updated_at: currentDate
+        updated_at: currentDate,
+        published_on: currentDate
       }));
 
       // Create publications

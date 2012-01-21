@@ -3,8 +3,9 @@ s.views.Publish = Backbone.View.extend({
   className: 'shelf-content',
   id: 'document_publish',
 
-  initialize: function () {
+  initialize: function (options) {
     _.bindAll(this);
+    this.docView = options.docView;
     this.data = null;
   },
 
@@ -46,6 +47,7 @@ s.views.Publish = Backbone.View.extend({
     publishDocument(this.model, networks, remark, _.bind(function (err, res) {
       this.data = null;
       this.load(this.render);
+      this.docView.updatePublishState();
     }, this));
     return false;
   },
@@ -54,6 +56,7 @@ s.views.Publish = Backbone.View.extend({
     unpublishDocument(this.model, _.bind(function(err, res) {
       this.data = null;
       this.load(this.render);
+      this.docView.updatePublishState();
     }, this));
     return false;
   }

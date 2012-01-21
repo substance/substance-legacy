@@ -612,9 +612,7 @@ function unpublishDocument (doc, callback) {
       if (res.error) {
         callback(res.error, null);
       } else {
-        console.log(res.graph);
         graph.merge(res.graph);
-        
         callback(null, res);
       }
     },
@@ -794,7 +792,7 @@ function resetPassword (username, tan, password, callback) {
 function getPublishState(doc) {
   if (!doc.get('published_version')) {
     return "unpublished";
-  } else if (doc.get('published_on') == doc.get('updated_at')) {
+  } else if (doc.get('published_on') === doc.get('updated_at')) {
     return "published";
   } else {
     return "published-outdated";

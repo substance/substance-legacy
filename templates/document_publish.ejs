@@ -1,25 +1,35 @@
-<h2>Publish</h2>
+<div class="form-content">
+  <h2>Publish</h2>
 
-<select name="networks" class="networks-selection" multiple="multiple">
-  <% availableNetworks.each(function(network) { %>
-   <option value="<%= network._id %>"<%= networks.get(network._id) ? ' selected="selected"' : '' %>> <%= network.get('name') %></option>
-  <% }); %>
-</select>
-
-<% if (!document.get('published_version')) { %>
-  <p>Not published yet</p>
-<% } %>
-
-<% if (isCurrentUser(document.get('creator'))) { %>
-  <div id="new_version">
-    <div><input type="text" id="version_remark" name="remark" placeholder="Enter optional remark." value="" /></div>
-    <div class="panel">
-      <% if (document.get('published_on') != document.get('updated_at')) { %>
-        <a href="#" class="publish-document"><%= document.get('published_version') ? "Republish": "Publish" %> </a>
-      <% } %>
-      <% if (document.get('published_version')) { %>
-        <a href="#" class="unpublish-document">Unpublish</a>
-      <% } %>
-    </div>
+  <div>
+    <label for="last_published">Last published:<span></span></label>
+    <%= document.get('published_on') ? s.util.prettyDate(document.get('published_on')) : "Not yet published" %>
   </div>
-<% } %>
+
+  <div>
+    <label for="networks">Networks:<span>Choose some Networks your document should appear in.</span></label>
+    
+    <select name="networks" class="networks-selection" multiple="multiple">
+      <% availableNetworks.each(function(network) { %>
+       <option value="<%= network._id %>"<%= networks.get(network._id) ? ' selected="selected"' : '' %>> <%= network.get('name') %></option>
+      <% }); %>
+    </select>
+  </div>
+  
+  <div>
+    <label for="version_remark">Remark:<span>Enter optional version description</span></label>
+    <input type="text" id="version_remark" name="user_name" value="adsgadsf"/>
+  </div>
+
+  <% if (isCurrentUser(document.get('creator'))) { %>
+  <div>
+    <label for="">&nbsp;</label>
+    <% if (document.get('published_on') != document.get('updated_at')) { %>
+      <input class="publish-document" type="submit" id="document_name" value="<%= document.get('published_version') ? "Publish Changes": "Publish" %>"/>
+    <% } %>
+    <% if (document.get('published_version')) { %>
+      <input class="unpublish-document" type="submit" id="document_name" value="Unpublish"/>
+    <% } %>
+  </div>
+  <% } %>
+</div>

@@ -13,12 +13,17 @@ s.views.Document = Backbone.View.extend({
     this.node        = s.views.Node.create({ model: this.model });
     this.toc         = new s.views.TOC({ model: this.model });
     this.settings    = new s.views.DocumentSettings({ model: this.model });
-    this.publish     = new s.views.Publish({ model: this.model });
+    this.publish     = new s.views.Publish({ model: this.model, docView: this });
     this.invite      = new s.views.Invite({ model: this.model });
     this.export      = new s.views.Export({ model: this.model });
     this.subscribers = new s.views.Subscribers({ model: this.model });
     this.versions    = new s.views.Versions({ model: this.model });
     
+    // TODO: Instead listen for a document-changed event
+    graph.bind('dirty', _.bind(function() {
+      this.updatePublishState();
+    }, this));
+
     this.currentView = null;
     
     _.bindAll(this, 'deselect', 'onKeydown');
@@ -109,6 +114,12 @@ s.views.Document = Backbone.View.extend({
 
   // Helpers
   // -------
+
+  updatePublishState: function () {
+    $('#document_navigation .publish-state')
+       .removeClass()
+       .addClass("publish-state "+getPublishState(this.model));
+  },
 
   edit: function () {
     this.node.transitionTo('write');

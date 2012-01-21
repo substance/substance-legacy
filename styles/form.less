@@ -1,0 +1,115 @@
+/* Default Form Styles
+-------------------------------------------------------------------------------*/
+
+input[type=search], input[type=text], input[type=email], input[type=password], textarea {
+  .border-radius(2px);
+  background-color: #F6F7F2;
+
+  border: solid 1px #d4d4d4;
+  color: #777;
+  width: 100%;
+  padding: 5px 6px;
+  font-size: 12px;
+  
+  -webkit-box-shadow: inset 1px 1px 4px #ddd;
+  -moz-box-shadow: inset 1px 1px 4px #ddd;
+  box-shadow: inset 1px 1px 4px #ddd;
+  
+  -webkit-appearance: none;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  
+  -webkit-transition: background-color 0.6s;
+  -moz-transition: background-color 0.6s;
+}
+
+
+input[type=search]:focus, input[type=text]:focus, input[type=email]:focus, textarea:focus, input[type=password]:focus {
+  outline: none;
+  background-color: white;
+  -webkit-box-shadow: inset 1px 1px 4px #ddd;
+  -moz-box-shadow: inset 1px 1px 4px #ddd;
+  box-shadow: inset 1px 1px 4px #ddd;
+  -webkit-transition: background-color 0.3s;
+  -moz-transition: background-color 0.3s;
+  border: solid 1px #b4b4b4;
+  color: #444;
+}
+
+
+input[type=submit] {
+  -webkit-appearance: none;
+  margin-bottom: 0;
+  border: none;
+  font-size: 12px;
+  width: auto;
+  text-decoration: none;
+  background-color: #000;
+  padding: 0 10px;
+  height: 28px;
+  line-height: 29px;
+  color: #fff;
+  display: block;
+  -webkit-transition: background-color 400ms;
+  -moz-transition: background-color 400ms;
+  .border-radius(2px);
+
+  &:hover:not(:disabled) {
+    cursor: pointer;
+    -webkit-transition: background-color 0ms;
+    -moz-transition: background-color 0ms;
+  }
+
+  &:active:not(:disabled) {
+    opacity: 0.7;
+  }
+}
+
+
+/* Form Content
+-------------------------------------------------------------------------------*/
+
+.form-content h1, #confirm_collaboration h1 {
+  .document-font;
+  font-size: 34px;
+  color: #000;
+  padding: 20px 0;
+}
+
+.form-content select { float: left; }
+.form-content input { float: left; width: 350px; }
+
+.form-content input.error { border: 2px solid red; }
+.form-content label { display: block; float: left; width: 300px; position: relative; font-size: 16px; }
+.form-content label span { .ui-font; position: absolute; top: 20px; left: 0px; color: #888; font-size: 12px; font-style: normal; }
+.form-content div { padding: 20px 0; overflow: auto }
+
+.form-content input[type=submit] { 
+  color: white;
+  border: none;
+  background: #A2C44E;
+  width: auto;
+  opacity: 0.7;
+  height: 40px;
+
+  &:hover {
+    opacity: 1.0;
+  }
+}
+
+
+/* Messages for input fields */
+.form-content .input-message { float: left; padding: 0 20px; margin: 0; 
+  .ui-font;
+  max-width: 200px;
+  font-size: 12px;
+}
+
+.form-content #registration_error_message {
+  font-size: 18px;
+  padding: 0;
+  margin: 0;
+  color: darkred;
+  margin-top: 20px;
+  overflow: hidden;
+}
