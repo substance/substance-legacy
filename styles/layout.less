@@ -2,6 +2,10 @@ html {
   overflow-y: scroll;
 }
 
+html, body {
+  height: 100%;
+}
+
 /* New Document
 -------------------------------------------------------------------------------*/
 
@@ -9,35 +13,31 @@ html {
   font-weight: bold;
 }
 
-/* body > #container > #footer
--------------------------------------------------------------------------------*/
-
 #footer {
   border-top: 1px solid #C1C1C1;
   background: #E9EAE5;
   color: #7C6E60;
-  margin-top: 20px;
+  height: 142x; margin-top: -142px;
   padding: 30px 80px 30px 80px;
   overflow: auto;
+  
+  .did-you-know {
+    .document-font;
+
+    padding: 20px 0;
+    font-size: 22px;
+    font-style: italic;
+  }
+  .credits { float: left; }
+  .version { float: right; }
 }
-
-#footer .did-you-know {
-  .document-font;
-
-  padding: 20px 0;
-  font-size: 22px;
-  font-style: italic;
-}
-
-#footer .credits { float: left; }
-#footer .version { float: right; }
-
 
 /* body > #container
 -------------------------------------------------------------------------------*/
 
 #container { 
-
+  min-height: 100%;
+  padding-bottom: 180px;
 }
 
 #main {
