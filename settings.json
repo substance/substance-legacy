@@ -71,6 +71,7 @@
       "/client/views/user_status.js",
       "/client/views/home.js",
       "/client/views/results.js",
+      "/client/views/user_list.js",
       "/client/views/signup.js",
       "/client/views/dashboard.js",
       "/client/views/user_profile.js",

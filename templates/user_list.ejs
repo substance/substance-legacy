@@ -1,0 +1,21 @@
+<% if (users.length > 0) { %>
+    <div class="user-list">
+      <% users.each(function(user) { %> 
+      <div class="user">
+        <div class="image">
+          <img src="/images/doc-image.jpeg" width="180">
+        </div>
+
+        <div class="title">
+          <a class="link load-document toggle-view" href="/meh" user="<%= user._id %>"><%= user.get('username') %></a>
+        </div>
+          
+      </div>
+      <% }); %>
+    </div>
+  
+<% } else { %>
+    <div id="documents">
+      <h2>No Documents yet ...</h2>
+    </div>
+<% } %>

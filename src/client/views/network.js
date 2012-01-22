@@ -2,7 +2,9 @@ s.views.Network = Backbone.View.extend({
 
   events: {
     'click .join-network': '__joinNetwork',
-    'click .leave-network': '__leaveNetwork'
+    'click .leave-network': '__leaveNetwork',
+    'click .toggle-documents': '__toggleDocuments',
+    'click .toggle-members': '__toggleMembers'
   },
 
   __joinNetwork: function() {
@@ -19,8 +21,20 @@ s.views.Network = Backbone.View.extend({
     return false;
   },
 
+  __toggleDocuments: function() {
+    this.mode = 'documents';
+    this.render();
+  },
+
+  __toggleMembers: function() {
+    this.mode = 'members';
+    this.render();
+  },
+
   initialize: function(options) {
-    this.results = new s.views.Results({ model: this.model, id: "results" });
+    this.documents = new s.views.Results({ model: this.model, id: "results" });
+    this.members = new s.views.UserList({model: this.model, id: "members"});
+    this.mode = "members";
   },
 
   reload: function() {
@@ -32,7 +46,7 @@ s.views.Network = Backbone.View.extend({
 
   render: function() {
     $(this.el).html(s.util.tpl('network', this.model));
-    this.$(this.results.render().el).appendTo(this.el);
+    this.$(this[this.mode].render().el).appendTo(this.el);
     return this;
   }
 });
