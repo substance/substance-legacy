@@ -1,21 +1,17 @@
 <% if (users.length > 0) { %>
-    <div class="user-list">
-      <% users.each(function(user) { %> 
-      <div class="user">
-        <div class="image">
-          <img src="/images/doc-image.jpeg" width="180">
-        </div>
-
-        <div class="title">
-          <a class="link load-document toggle-view" href="/meh" user="<%= user._id %>"><%= user.get('username') %></a>
-        </div>
-          
-      </div>
-      <% }); %>
+  <% users.each(function(user) { %> 
+  <a class="toggle-view" href="/<%= userName(user) %>" user="<%= user._id %>"><div class="user">
+    <div class="image">
+      <img src="/images/doc-image.jpeg" width="180">
     </div>
+
+    <div class="title">
+      <%= user.get('username') %>
+    </div>
+      
+  </div></a>
+  <% }); %>
   
 <% } else { %>
-    <div id="documents">
-      <h2>No Documents yet ...</h2>
-    </div>
+	<h2>No Members yet ...</h2>
 <% } %>

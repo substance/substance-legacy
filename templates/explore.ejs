@@ -21,6 +21,7 @@
       
      	  <div class="document-count"><%= network.meta.documents %> documents</div>
         <div class="member-count"><%= network.meta.members %> members</div>
+        <div class="updated-at"><%= s.util.prettyDate(network.get('updated_at')) %></div>
     	</div>
     </a>
 	<% }); %>

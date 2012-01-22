@@ -302,7 +302,7 @@ function loadDocument (username, docname, version, callback) {
 }
 
 
-function sortDocuments (documents) {
+function sortByUpdatedAt (documents) {
   var DESC_BY_UPDATED_AT = function(item1, item2) {
     var v1 = item1.value.get('updated_at'),
         v2 = item2.value.get('updated_at');
@@ -327,7 +327,7 @@ function loadDocuments (query, callback) {
       var documents = graph.find({"type|=": "/type/document"});
 
       callback(null, {
-        documents: sortDocuments(documents),
+        documents: sortByUpdatedAt(documents),
         user: query.type === "user" ? graph.get('/user/'+query.value) : null
       });
     },
@@ -353,7 +353,7 @@ function loadDashboard (query, callback) {
       var documents = graph.find({"type|=": "/type/document"});
       
       callback(null, {
-        documents: sortDocuments(documents),
+        documents: sortByUpdatedAt(documents),
         user: graph.get('/user/'+session.username),
         bins: res.bins
       });
@@ -385,8 +385,8 @@ function loadExplore (callback) {
           var documents = graph.find({"type|=": "/type/document"});
           var networks  = graph.find({"type":   "/type/network"});
           callback(null, {
-            networks: networks,
-            documents: sortDocuments(documents)
+            networks: sortByUpdatedAt(networks),
+            documents: sortByUpdatedAt(documents)
           });
         },
         error: function (err) { callback(err); }

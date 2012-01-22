@@ -73,7 +73,7 @@ s.util.browserSupported = function () {
 };
 
 s.util.prettyDate = function (time) {
-  return jQuery.timeago(time);
+  return time ? jQuery.timeago(time) : "";
 };
 
 s.util.escape = function (s) {

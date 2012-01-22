@@ -24,17 +24,22 @@ s.views.Network = Backbone.View.extend({
   __toggleDocuments: function() {
     this.mode = 'documents';
     this.render();
+    this.$('.tab').removeClass('selected');
+    this.$('.tab.toggle-documents').addClass('selected');
   },
 
   __toggleMembers: function() {
     this.mode = 'members';
+    
     this.render();
+    this.$('.tab').removeClass('selected');
+    this.$('.tab.toggle-members').addClass('selected');
   },
 
   initialize: function(options) {
     this.documents = new s.views.Results({ model: this.model, id: "results" });
     this.members = new s.views.UserList({model: this.model, id: "members"});
-    this.mode = "members";
+    this.mode = "documents";
   },
 
   reload: function() {
