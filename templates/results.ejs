@@ -6,7 +6,7 @@
       <% documents.each(function(doc) { %> 
       <div class="document">
         <div class="image">
-          <img src="/images/doc-image.jpeg" width="180">
+          <img src="<%= doc.get('cover') || "/images/document-image-placeholder.png" %>" width="180">
         </div>
 
         <div class="title">
