@@ -436,6 +436,11 @@
         "type": "string",
         "default": ""
       },
+      "cover": {
+        "name": "Cover Image",
+        "unique": true,
+        "type": "string"
+      },
       "creator": {
         "name": "Creator",
         "unique": true,
@@ -532,6 +537,11 @@
         "type": "string",
         "unique": true,
         "required": false
+      },
+      "cover": {
+        "name": "Cover Image",
+        "unique": true,
+        "type": "string"
       },
       "color": {
         "name": "Color",

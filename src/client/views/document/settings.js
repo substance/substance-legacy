@@ -5,10 +5,78 @@ s.views.DocumentSettings = Backbone.View.extend({
 
   initialize: function () {},
 
+  initializeUploadForm: function () {
+    _.bindAll(this, 'onStart', 'onProgress', 'onError');
+
+    this.$('.upload-image-form').transloadit({
+      modal: false,
+      wait: true,
+      autoSubmit: false,
+      onStart: this.onStart,
+      onProgress: this.onProgress,
+      onError: this.onError,
+      onSuccess: _.bind(function (assembly) {
+        if (assembly.results.web_version &&
+            assembly.results.web_version[1] &&
+            assembly.results.web_version[1].url) {
+          this.onSuccess(assembly);
+        } else {
+          this.onInvalid();
+        }
+      }, this)
+    });
+  },
+
+  onStart: function () {
+    this.$('.image-progress').show();
+    this.$('.image-progress .label').html("Uploading &hellip;");
+    this.$('.progress-bar').css('width', '0%');
+  },
+
+  onProgress: function (bytesReceived, bytesExpected) {
+    var percentage = Math.max(0, parseInt(bytesReceived / bytesExpected * 100));
+    this.$('.image-progress .label').html("Uploading &hellip; " + percentage + "%");
+    this.$('.progress-bar').css('width', percentage + '%');
+  },
+
+  onSuccess: function (assembly) {
+    this.model.set({
+      cover: assembly.results.web_version[1].url
+    });
+    
+    this.$('.image-progress').hide();
+    $('.upload-image-form img').attr('src', assembly.results.web_version[1].url);
+  },
+
+  onError: function (assembly) {
+    // TODO
+    //alert(JSON.stringify(assembly));
+    //this.$('.image-progress .label').html("Invalid image. Skipping &hellip;");
+    //this.$('.progress-container').hide();
+    //
+    //setTimeout(_.bind(function () {
+    //  app.document.reset();
+    //  this.$('.info').show();
+    //}, this), 3000);
+  },
+
+  onInvalid: function () {
+    this.$('.image-progress .label').html("Invalid image. Skipping &hellip;");
+    this.$('.image-progress').hide();
+    
+    setTimeout(_.bind(function () {
+      this.$('.info').show();
+    }, this), 3000);
+  },
+
   render: function () {
     $(this.el).html(s.util.tpl('document_settings', {
-      doc: this.model
+      doc: this.model,
+      transloadit_params: config.transloadit.document_cover
     }));
+
+    console.log(config.transloadit);
+    this.initializeUploadForm();
     this.trigger('resize');
     return this;
   },
@@ -22,7 +90,13 @@ s.views.DocumentSettings = Backbone.View.extend({
   events: {
     'click .delete': 'deleteDocument',
     'keyup #new_name': 'changeName',
-    'submit .rename': 'rename'
+    'submit .rename': 'rename',
+    'change .image-file': 'upload'
+  },
+
+  upload: function() {
+    console.log(this.$('.upload-image-form'));
+    this.$('.upload-image-form').submit();
   },
 
   deleteDocument: function (e) {
@@ -40,7 +114,7 @@ s.views.DocumentSettings = Backbone.View.extend({
     e.preventDefault();
     e.stopPropagation();
     
-    this.$('.rename input[type=submit]').attr({ disabled: false });
+    // this.$('.rename input[type=submit]').attr({ disabled: false });
   },
 
   rename: function (e) {
@@ -53,7 +127,7 @@ s.views.DocumentSettings = Backbone.View.extend({
       if (err) {
         this.$('.error').text(err.message);
       } else {
-        this.$('.rename input[type=submit]').attr({ disabled: true });
+        // this.$('.rename input[type=submit]').attr({ disabled: true });
         router.navigate(documentURL(this.model), false);
       }
     }, this));

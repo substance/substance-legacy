@@ -1,15 +1,38 @@
-<h2>Document Settings</h2>
-<p class="error"></p>
+<p class="error"></p>  
+  <div class="image-drop-area" title="Click to upload image">
+    <form class="upload-image-form" action="http://api2.transloadit.com/assemblies" enctype="multipart/form-data" method="POST">
+      <% if (doc.get('cover')) { %>
+        <img src="<%= doc.get('cover') %>"/>
+      <% } else { %>
+        <img src="/images/document-image-placeholder.png"/>
+      <% } %>
 
-<form class="rename">
-  <label for="new_name">Name</label>
-  <input id="new_name" type="text" value="<%= doc.get('name') %>" />
-  <input type="submit" value="Change" disabled="disabled" />
-</form>
 
-<p>
-  <a href="#" class="delete">
-    <span class="icon">Trash</span>
-    Delete Document
-  </a>
-</p>
+      <input type="file" class="image-file" name="image-file" />
+      <input type="hidden" name="params" value="<%= transloadit_params %>" />
+    </form>
+    <div class="info">Click image to change cover</div>
+
+    <div class="image-progress">
+      <div class="label">Uploading image ...</div>
+      <div class="progress-container">
+        <div class="progress-bar" style="width:60%"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="document-settings">
+    <form class="rename form-content">
+      <h2>Document Settings</h2>
+      <div>
+        <label for="new_name">Document Identifier:<span></span></label>
+        <input type="text" id="new_name" name="new_name" value="<%= doc.get('name') %>"/>
+      </div>
+
+      <div>
+        <label for="">&nbsp;</label>
+        <input type="submit" class="save" value="Save"/>
+        <input type="submit" class="delete" value="Delete Document"/>
+      </div>
+    </form>
+  </div>

@@ -97,7 +97,7 @@ s.views.Node.define('/type/image', {
       .appendTo(this.imageContent);
     
     this.imageEditor = $(s.util.tpl('image_editor', {
-      transloadit_params: config.transloadit
+      transloadit_params: config.transloadit.image
     })).appendTo(this.imageContent);
     this.initializeUploadForm();
     

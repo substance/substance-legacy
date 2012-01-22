@@ -259,7 +259,11 @@ _.escapeHTML = function(string) {
 function clientConfig() {
   return {
     "letterpress_url": config.letterpress_url,
-    "transloadit": _.escapeHTML(JSON.stringify(config.transloadit))
+    "transloadit": {
+      "image": _.escapeHTML(JSON.stringify(config.transloadit.image)),
+      "document_cover": _.escapeHTML(JSON.stringify(config.transloadit.document_cover)),
+      "network_cover": _.escapeHTML(JSON.stringify(config.transloadit.network_cover))
+    }
   };
 }
 
