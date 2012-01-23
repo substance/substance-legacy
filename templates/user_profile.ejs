@@ -1,12 +1,16 @@
 <div id="card_file">
     <div class="container">
-      <div class="avatar">
-        <img <% if (isCurrentUser(user)) { %> title="Change your avatar at Gravatar.com"<% } %> class="left" src="/avatar/<%= user._id.split('/')[2] %>/100" width="100" height="100" />
-      </div>
+
       <div class="username">
+        <div class="avatar">
+          <img <% if (isCurrentUser(user)) { %> title="Change your avatar at Gravatar.com"<% } %> src="/avatar/<%= user._id.split('/')[2] %>/200" width="200" height="200" />
+        </div>
+      
         <h1><%= user.get('name') %></h1>
-        <p><em>as</em> <b><%= user.get('username') %></b> <em>since</em> <%= s.util.date(user.get('created_at')) %></p>
+        <p class="slug"><em>as</em> <b><%= user.get('username') %></b> <em>since</em> <%= s.util.date(user.get('created_at')) %></p>
         
+
+
         <div class="attributes">
           <% if (user.get('location')) { %>
             <div><em>Located in</em> <%= user.get('location') %></div>

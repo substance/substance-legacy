@@ -16,12 +16,11 @@
     
     <a class="toggle-view" href="<%= network._id %>">
     	<div class="network" data-network="<%= network._id %>">
-        <div class="image"><img src="/images/doc-image.jpeg" width="200"></div>
-     	  <div class="title" style="background: <%= network.get('color') %>"><%= network.get('name') %></div>
-      
-     	  <div class="document-count"><%= network.meta.documents %> documents</div>
+        <div class="image"><img src="<%= network.get('cover') || "/images/network-image-placeholder.png" %>"/></div>
+     	  <div class="title"><%= network.get('name') %></div>
+      	<div class="document-count"><%= network.meta.documents %> documents</div>
         <div class="member-count"><%= network.meta.members %> members</div>
-        <div class="updated-at"><%= s.util.prettyDate(network.get('updated_at')) %></div>
+        <!--<div class="updated-at"><%= s.util.prettyDate(network.get('updated_at')) %></div>-->
     	</div>
     </a>
 	<% }); %>

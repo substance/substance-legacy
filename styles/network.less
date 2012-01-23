@@ -7,23 +7,20 @@
   -moz-box-shadow:    0px 1px 4px rgba(0,0,0,0.35), inset 0px 0px 1px rgba(255,255,255,0.15);
   box-shadow:         0px 1px 4px rgba(0,0,0,0.35), inset 0px 0px 1px rgba(255,255,255,0.15);
 
+  position: relative;
   overflow: auto;
-	background: #82AA15;
+	background: #DCDDD9;
 
   color: #aaa;
   h2 {
-    color: #000;
-    opacity: 0.5;
+    color: #444;
     padding-bottom: 0px;
     margin-right: 400px;
   }
 
   p {
-    color: #D5E2A6;
-
     &.meta {
-      color: #000;
-      opacity: 0.5;
+      color: #555;
       padding-top: 0px;
     }
   }
@@ -31,29 +28,22 @@
   .network-info {
     float: left;
     .descr {
-      max-width: 700px;
-      color: #fff;
-      opacity: 0.5;
+      color: #555;
+      max-width: 500px;
     }
-
-
   }
   
   .image {
-    background: white;
     background-opacity: 0.4;
     margin-right: 20px;
     float: left;
-    padding: 5px;
-
-    -webkit-box-shadow: 0px 1px 4px rgba(0,0,0,0.5), inset 0px 0px 1px rgba(255,255,255,0.15);
-    -moz-box-shadow:    0px 1px 4px rgba(0,0,0,0.5), inset 0px 0px 1px rgba(255,255,255,0.15);
-    box-shadow:         0px 1px 4px rgba(0,0,0,0.5), inset 0px 0px 1px rgba(255,255,255,0.15);
-
     img {
       margin: 0;
       padding: 0;
       border: 0;
+      -webkit-box-shadow: 0px 1px 4px rgba(0,0,0,0.5), inset 0px 0px 1px rgba(255,255,255,0.15);
+      -moz-box-shadow:    0px 1px 4px rgba(0,0,0,0.5), inset 0px 0px 1px rgba(255,255,255,0.15);
+      box-shadow:         0px 1px 4px rgba(0,0,0,0.5), inset 0px 0px 1px rgba(255,255,255,0.15);
     }
   }
 
@@ -68,42 +58,46 @@
       color: #fff;
       padding: 10px;
       background: #000;
-      opacity: 0.5;
+      opacity: 0.7;
       margin: 0;
 
       &:hover {
-        opacity: 0.6;
+        opacity: 1;
+      }
+
+      &.join-network {
+        background: #82AA15;
       }
     }
+  }
 
-    .tabs {
-      margin-top: 50px;
-      overflow: auto;
+  .tabs {
+    margin-top: 50px;
+    position: absolute;
+    right: 80px;
+    bottom: 0px;
+    overflow: auto;
 
-      a { border: none; }
-      .tab {
+    a { border: none; }
+    .tab {
 
-        .number {
-          font-size: 20px;
-          font-weight: bold;
-        }
-
-        text-align: center;
-        padding: 4px 0;
-        color: #fff;
-        width: 80px;
-        margin-left: 5px;
-        
-        opacity: 0.5;
-        .border-radius(5px);
-        float: left;
-
-        &.selected {
-          background: #000;
-        }
+      .number {
+        font-size: 20px;
+        font-weight: bold;
       }
 
+      text-align: center;
+      padding: 4px 0;
+      color: #999;
+      width: 80px;
+      margin-left: 5px;
+      
+      .border-radius(5px);
+      float: left;
 
+      &.selected {
+        color: #000;
+      }
     }
   }
 }
@@ -120,7 +114,6 @@
     margin-right: 20px;
 
     form {
-      height: 120px;
       width: 180px;
       overflow: hidden;
       position: relative;
@@ -140,7 +133,6 @@
     }
   }
 }
-
 
 #network #results {
   padding-top: 80px;

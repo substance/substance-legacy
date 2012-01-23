@@ -14,46 +14,56 @@
   }
 
   .network {
-    background: #fff;
+    opacity: 0.9;
     padding: 0px;
     position: relative;
     float: left;
-    margin-right: 20px;
-    margin-bottom: 20px;
-    width: 200px;
-    height: 220px;
+    margin-right: 40px;
 
-    -webkit-box-shadow: 0px 1px 4px rgba(0,0,0,0.5), inset 0px 0px 1px rgba(255,255,255,0.15);
-    -moz-box-shadow:    0px 1px 4px rgba(0,0,0,0.5), inset 0px 0px 1px rgba(255,255,255,0.15);
-    box-shadow:         0px 1px 4px rgba(0,0,0,0.5), inset 0px 0px 1px rgba(255,255,255,0.15);
+    width: 180px;
+    &:hover {
+      opacity: 1.0;
+    }
     
     .image {
       overflow: hidden;
-      height: 100px;
+      height: 180px;
+
+      -webkit-box-shadow: 0px 1px 4px rgba(0,0,0,0.5), inset 0px 0px 1px rgba(255,255,255,0.15);
+      -moz-box-shadow:    0px 1px 4px rgba(0,0,0,0.5), inset 0px 0px 1px rgba(255,255,255,0.15);
+      box-shadow:         0px 1px 4px rgba(0,0,0,0.5), inset 0px 0px 1px rgba(255,255,255,0.15);
+
     }
 
     .title {
       padding: 10px 10px;
-      font-size: 22px;
-      background: #82AA15;
-      color: #fff;
+      font-size: 18px;
+      text-align: center;
+      height: 60px;
     }
 
     .document-count {
+
+      background: #fff;
+      opacity: 0.9;
       position: absolute;
-      bottom: 5px;
-      right: 5px;
+      padding: 0 5px;
+      top: 120px;
+      right: 0px;
       text-align: right;
-      color: #666;
+      color: #444;
       font-size: 12px;
     }
 
     .member-count {
+      background: #fff;
+      opacity: 0.9;
       position: absolute;
-      bottom: 20px;
-      right: 5px;
+      padding: 0 5px;
+      top: 145px;
+      right: 0px;
       text-align: right;
-      color: #666;
+      color: #444;
       font-size: 12px;
     }
   }

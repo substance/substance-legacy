@@ -1,21 +1,21 @@
-<div id="network_header" style="background: <%= network.get('color') %>">
+<div id="network_header">
   <div class="actions">
   	<% if (isMember) { %>
   		<a href="#leave" class="action leave-network">Leave Network</a>
   	<% } else { %>
   		<a href="#join" class="action join-network">Join Network</a>
   	<% } %>
+  </div>
 
     <div class="tabs">
       <a href="#" class="tab toggle-documents selected"><div class="number"><%= documents.length %></div><div class="label">documents</div></a>
       <a href="#" class="tab toggle-members"><div class="number"><%= members.length %></div><div class="label">members</div></a>
     </div>
-  </div>
 
   <% if (isCurrentUser(network.get('creator'))) { %>
     <div class="image" title="Click to upload image">
       <form class="upload-image-form" action="http://api2.transloadit.com/assemblies" enctype="multipart/form-data" method="POST">
-        <img src="<%= network.get('cover') || "/images/document-image-placeholder.png" %>"/>
+        <img src="<%= network.get('cover') || "/images/network-image-placeholder.png" %>"/>
         <input type="file" class="image-file" name="image-file" />
         <input type="hidden" name="params" value="<%= transloadit_params %>" />
       </form>
@@ -30,7 +30,7 @@
     </div>
   <% } else { %>
     <div class="image">
-      <img src="<%= network.get('cover') || "/images/document-image-placeholder.png" %>" width="180"/>
+      <img src="<%= network.get('cover') || "/images/network-image-placeholder.png" %>" width="180"/>
     </div>
   <% } %>
 
@@ -39,6 +39,4 @@
     <p class="meta">created by <b><%= userName(network.get('creator')) %></b> on <i><%= s.util.date(network.get('created_at')) %></i> </p>
     <p class="descr"><%= network.get('descr') %></p>
   </div>
-
-
 </div>
