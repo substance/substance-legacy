@@ -50,14 +50,6 @@ s.views.DocumentSettings = Backbone.View.extend({
 
   onError: function (assembly) {
     // TODO
-    //alert(JSON.stringify(assembly));
-    //this.$('.image-progress .label').html("Invalid image. Skipping &hellip;");
-    //this.$('.progress-container').hide();
-    //
-    //setTimeout(_.bind(function () {
-    //  app.document.reset();
-    //  this.$('.info').show();
-    //}, this), 3000);
   },
 
   onInvalid: function () {
@@ -75,7 +67,6 @@ s.views.DocumentSettings = Backbone.View.extend({
       transloadit_params: config.transloadit.document_cover
     }));
 
-    console.log(config.transloadit);
     this.initializeUploadForm();
     this.trigger('resize');
     return this;
@@ -95,7 +86,6 @@ s.views.DocumentSettings = Backbone.View.extend({
   },
 
   upload: function() {
-    console.log(this.$('.upload-image-form'));
     this.$('.upload-image-form').submit();
   },
 
@@ -113,8 +103,6 @@ s.views.DocumentSettings = Backbone.View.extend({
   changeName: function (e) {
     e.preventDefault();
     e.stopPropagation();
-    
-    // this.$('.rename input[type=submit]').attr({ disabled: false });
   },
 
   rename: function (e) {
@@ -127,7 +115,6 @@ s.views.DocumentSettings = Backbone.View.extend({
       if (err) {
         this.$('.error').text(err.message);
       } else {
-        // this.$('.rename input[type=submit]').attr({ disabled: true });
         router.navigate(documentURL(this.model), false);
       }
     }, this));

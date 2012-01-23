@@ -404,14 +404,19 @@ function loadNetwork (network, callback) {
     url: "/network/"+network+".json",
     dataType: "json",
     success: function (res) {
-      var graph = new Data.Graph(seed);
-      graph.merge(res.graph);
+      var g = new Data.Graph(seed);
+      g.merge(res.graph);
+      var network = g.find({"type": "/type/network"}).first();
+      var sg = {};
+      sg[network._id] = network.toJSON();
+      graph.merge(sg, false);
 
       callback(null, {
-        members: graph.find({"type": "/type/user"}),
-        network: graph.find({"type": "/type/network"}).first(),
-        documents: graph.find({"type": "/type/document"}),
-        isMember: res.isMember
+        members: g.find({"type": "/type/user"}),
+        network: graph.get(network._id),
+        documents: g.find({"type": "/type/document"}),
+        isMember: res.isMember,
+        transloadit_params: config.transloadit.network_cover
       });
     },
     error: function(err) {
@@ -817,7 +822,7 @@ function currentUser () {
 }
 
 function isCurrentUser (user) {
-  return (app || session).username === user.get('username');
+  return (app || session).username === user._id.split('/')[2];
 }
 
 

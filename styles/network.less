@@ -28,12 +28,17 @@
     }
   }
 
-  .descr {
-    max-width: 700px;
-    color: #fff;
-    opacity: 0.5;
-  }
+  .network-info {
+    float: left;
+    .descr {
+      max-width: 700px;
+      color: #fff;
+      opacity: 0.5;
+    }
 
+
+  }
+  
   .image {
     background: white;
     background-opacity: 0.4;
@@ -102,6 +107,40 @@
     }
   }
 }
+
+#network {
+  .image {
+    .info {
+      font-size: 12px;
+      padding: 5px;
+      text-align: center;
+    }
+    
+    float: left;
+    margin-right: 20px;
+
+    form {
+      height: 120px;
+      width: 180px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .image-file {
+      cursor: pointer;
+      display: block;
+      position: absolute;
+      top: 0px;
+      bottom: 0px;
+      left: 0px;
+      right: 0px;
+      opacity: 0;
+      padding: 0;
+      margin: 0;
+    }
+  }
+}
+
 
 #network #results {
   padding-top: 80px;
