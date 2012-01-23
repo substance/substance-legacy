@@ -5,11 +5,13 @@ var request = require('request');
 var config = JSON.parse(fs.readFileSync(__dirname + '/../config.json', 'utf-8'));
 
 var fragments  = url.parse(config.couchdb_url)
-,   couch_user = fragments.auth.split(':')[0]
-,   couch_pass = fragments.auth.split(':')[1]
+,   couch_user = fragments.auth ? fragments.auth.split(':')[0] : null
+,   couch_pass = fragments.auth ? fragments.auth.split(':')[1] : null
 ,   couch_host = fragments.hostname
 ,   couch_port = fragments.port
 ,   couch_db   = fragments.pathname.replace(/^\//, '');
+
+
 
 console.log(couch_host, couch_port, couch_db);
 createSchema(function (err) {
