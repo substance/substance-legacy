@@ -28,7 +28,11 @@ s.Router = Backbone.Router.extend({
     this.route("network/:network", "network", app.network);
     this.route("search", "search", app.search);
     
-    this.route("", "home", app.home);
+    this.route("", "home", this.landingPage);
+  },
+
+  landingPage: function() {
+    session && session.username ? app.dashboard() : app.home();
   },
 
   loadDocument: function(username, docname, p1, p2, p3) {

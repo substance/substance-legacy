@@ -5,7 +5,8 @@ s.views.Application = Backbone.View.extend({
   // ------
 
   events: {
-    'click .toggle-view': 'toggleView'
+    'click .toggle-view': 'toggleView',
+    'click .toggle-startpage': 'home'
   },
 
   toggleView: function (e) {
@@ -85,7 +86,9 @@ s.views.Application = Backbone.View.extend({
   },
 
   home: function () {
+    router.navigate('');
     this.replaceMainView(new s.views.Home({id: 'home'}).render());
+    return false;
   },
 
   user: function (username) {
@@ -95,6 +98,7 @@ s.views.Application = Backbone.View.extend({
   },
 
   dashboard: function () {
+    router.navigate('dashboard');
     loadDashboard({ type: 'user', value: session.username }, _.bind(function (err, data) {
       this.replaceMainView(new s.views.Dashboard({ model: data, id: 'dashboard' }).render());
     }, this));
