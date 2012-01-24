@@ -47,8 +47,8 @@ s.views.Publish = Backbone.View.extend({
     ,   remark   = this.$('#version_remark').val();
     publishDocument(this.model, networks, remark, _.bind(function (err, res) {
       this.data = null;
-      this.load(this.render);
       this.docView.updatePublishState();
+      this.docView.closeShelf();
     }, this));
     return false;
   },
@@ -56,8 +56,8 @@ s.views.Publish = Backbone.View.extend({
   unpublishDocument: function(e) {
     unpublishDocument(this.model, _.bind(function(err, res) {
       this.data = null;
-      this.load(this.render);
       this.docView.updatePublishState();
+      this.docView.closeShelf();
     }, this));
     return false;
   }

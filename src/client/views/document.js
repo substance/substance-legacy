@@ -6,6 +6,7 @@ s.views.Document = Backbone.View.extend({
   initialize: function (options) {
     _.bindAll(this);
     
+    
     this.authorized  = options.authorized;
     this.published   = options.published;
     this.version     = options.version;
@@ -21,6 +22,7 @@ s.views.Document = Backbone.View.extend({
     
     // TODO: Instead listen for a document-changed event
     graph.bind('dirty', _.bind(function() {
+      this.closeShelf();
       this.updatePublishState();
     }, this));
 
@@ -140,30 +142,33 @@ s.views.Document = Backbone.View.extend({
     this.$('#document_content').css({ 'margin-top': contentMargin + 'px' });
   },
 
+  closeShelf: function() {
+    if (!this.currentView) return;
+    this.currentView.unbind('resize', this.resizeShelf);
+
+    // It's important to use detach (not remove) to retain the view's event
+    // handlers
+    $(this.currentView.el).detach();
+
+    this.currentView = null;
+    this.$('.document.tab').removeClass('selected');
+    this.resizeShelf();
+  },
+
   toggleView: function (viewname) {
     var view = this[viewname];
     var shelf   = this.$('#document_shelf')
     ,   content = this.$('#document_content');
     
-    if (this.currentView) {
-      this.currentView.unbind('resize', this.resizeShelf);
-      // It's important to use detach (not remove) to retain the view's event
-      // handlers
-      $(this.currentView.el).detach();
-    }
+    if (this.currentView && this.currentView === view) return this.closeShelf();
     
     this.$('.document.tab').removeClass('selected');
-    if (view === this.currentView) {
-      this.currentView = null;
-      this.resizeShelf();
-    } else {
-      $('.document.tab.'+viewname).addClass('selected');
-      view.load(_.bind(function (err) {
-        view.bind('resize', this.resizeShelf);
-        shelf.append(view.el)
-        this.currentView = view;
-        view.render();
-      }, this));
-    }
+    $('.document.tab.'+viewname).addClass('selected');
+    view.load(_.bind(function (err) {
+      view.bind('resize', this.resizeShelf);
+      shelf.append(view.el)
+      this.currentView = view;
+      view.render();
+    }, this));
   }
 });

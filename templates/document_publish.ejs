@@ -8,9 +8,9 @@
   </div>
 
   <div>
-    <label for="networks">Networks:<span>Choose some Networks your document should appear in.</span></label>
+    <label for="networks">Networks:<span></span></label>
     
-    <select name="networks" class="networks-selection" data-placeholder="Choose networks ..." style="width:350px;" multiple="multiple">
+    <select name="networks" class="networks-selection" data-placeholder="Choose some Networks your document should appear in ..." style="width:364px; max-height: 200px" multiple="multiple">
       <% availableNetworks.each(function(network) { %>
        <option value="<%= network._id %>"<%= networks.get(network._id) ? ' selected="selected"' : '' %>> <%= network.get('name') %></option>
       <% }); %>
@@ -19,8 +19,8 @@
   </div>
   
   <div>
-    <label for="version_remark">Remark:<span>Enter optional version description</span></label>
-    <input type="text" id="version_remark" name="user_name" value="adsgadsf"/>
+    <label for="version_remark">Remark:<span></span></label>
+    <input type="text" id="version_remark" name="user_name" value="" placeholder="Enter optional version description"/>
     <br class="clear"/>
   </div>
 
