@@ -49,7 +49,6 @@ function isAuthorized(node, username, callback) {
 }
 
 
-
 function fetchDocuments(documents, username, callback) {
   var graph = new Data.Graph(seed).connect('couch', {url: config.couchdb_url});
   var result = {};
@@ -60,6 +59,7 @@ function fetchDocuments(documents, username, callback) {
         if (err || !version) return callback('not found');
         var data = version.data;
         data[id].name = doc.name;
+        data[id].cover = doc.cover;
         data[id].published_on = version.created_at;
         callback(null, data[id]);
       });
@@ -144,7 +144,6 @@ Document.find = function(searchstr, type, username, callback) {
       
       if (matched && documents.length < 200) {
         if (row.value.creator === '/user/'+username) {
-          console.log('JOJO');
           add(row); return callback();
         } else {
           db.get(row.value._id, function(err, node) {
@@ -324,6 +323,8 @@ function loadDocument(id, version, reader, edit, callback) {
         graph.fetch({"type": "/type/version", "_id": version._id}, function(err, nodes) {
           var data = nodes.first().get('data');
           data[id].published_version = doc.get('published_version')._id;
+          data[id].name = doc.get('name');
+          data[id].cover = doc.get('cover');
           _.extend(result, data);
           published_on = nodes.first().get('created_at');
           callback(null, result, false, nodes.first()._id.split('/')[3]);
@@ -346,10 +347,15 @@ function loadDocument(id, version, reader, edit, callback) {
 
         var data = doc.get('data');
         data[id].published_version = doc.get('document').get('published_version')._id;
-        _.extend(result, data);
 
-        published_on = nodes.first().get('created_at');
-        callback(null, result, false, version);
+        db.get(id, function(err, doc) {
+          if (err || !doc) return callback('not found');
+          data[id].name = doc.name;
+          data[id].cover = doc.cover;
+          _.extend(result, data);
+          published_on = nodes.first().get('created_at');
+          callback(null, result, false, version);
+        });
       });
     }
 
