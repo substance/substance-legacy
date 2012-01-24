@@ -5,12 +5,13 @@
   </div>
 
   <div id="document_navigation">
+    <% if (authorized) { %>
       <div class="document tab publish"><a href="#"><div class="publish-state <%= getPublishState(doc) %>"></div>Publish</a></div>
-
       <div class="document tab settings"><a href="#">Settings</a></div>
-      <div class="document tab invite"><a href="#">Collaborators</a></div>
-      <div class="document tab export"><a href="#">Export</a></div>
-      <div class="document tab versions"><a href="#">Versions</a></div>
+    <% } %>
+    <div class="document tab invite"><a href="#">Collaborators</a></div>
+    <div class="document tab export"><a href="#">Export</a></div>
+    <div class="document tab versions"><a href="#">Versions</a></div>
   </div>
 
   <div id="document_meta">

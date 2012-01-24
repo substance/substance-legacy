@@ -13,8 +13,8 @@ s.views.Application = Backbone.View.extend({
     e.preventDefault();
     e.stopPropagation();
     
-    var link  = $(e.currentTarget)
-    ,   route = link.attr('href').replace(/^\//, '');
+    var link  = $(e.currentTarget),
+        route = link.attr('href').replace(/^\//, '');
     
     $('.toggle-view.active').removeClass('active');
     link.addClass('active');

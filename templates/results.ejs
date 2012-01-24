@@ -5,15 +5,17 @@
     <div id="documents">
       <% documents.each(function(doc) { %> 
       <div class="document">
-        <div class="image">
-          <img src="<%= doc.get('cover') || "/images/document-image-placeholder.png" %>" width="180">
-        </div>
+        <a class="link load-document toggle-view" href="/<%= doc.get('creator')._id.split('/')[2] %>/<%= doc.get('name') %>" document="<%= doc._id %>" user="<%= doc.get('creator')._id.split('/')[2] %>" name="<%= doc.get('name') %>">
+          <div class="image">
+            <img src="<%= doc.get('cover') || "/images/document-image-placeholder.png" %>" width="180">
+          </div>
 
-        <div class="title">
-          <a class="link load-document toggle-view" href="/<%= doc.get('creator')._id.split('/')[2] %>/<%= doc.get('name') %>" document="<%= doc._id %>" user="<%= doc.get('creator')._id.split('/')[2] %>" name="<%= doc.get('name') %>"><%= doc.get('title') || 'Untitled' %></a>
-        </div>
+          <div class="title">
+            <%= doc.get('title') || 'Untitled' %>
+          </div>
+        </a>
 
-        <div class="author"><%= doc.get('creator').get('name') || doc.get('creator').get('username') || doc.get('creator')._id.split('/')[2] %></div>
+        <div class="author"><a href="/<%= userName(doc.get('creator')) %>"><%= doc.get('creator').get('name') || userName(doc.get('creator')) || doc.get('creator')._id.split('/')[2] %></a></div>
           
         <div class="updated-at"><span>updated </span><%= s.util.prettyDate(doc.get('updated_at')) %></div>
       </div>

@@ -6,19 +6,18 @@ s.views.Document = Backbone.View.extend({
   initialize: function (options) {
     _.bindAll(this);
     
-    
     this.authorized  = options.authorized;
     this.published   = options.published;
     this.version     = options.version;
      
     this.node        = s.views.Node.create({ model: this.model });
-    this.toc         = new s.views.TOC({ model: this.model });
-    this.settings    = new s.views.DocumentSettings({ model: this.model });
-    this.publish     = new s.views.Publish({ model: this.model, docView: this });
-    this.invite      = new s.views.Invite({ model: this.model });
-    this.export      = new s.views.Export({ model: this.model });
-    this.subscribers = new s.views.Subscribers({ model: this.model });
-    this.versions    = new s.views.Versions({ model: this.model });
+    this.toc         = new s.views.TOC({ model: this.model, authorized: this.authorized });
+    this.settings    = new s.views.DocumentSettings({ model: this.model, authorized: this.authorized });
+    this.publish     = new s.views.Publish({ model: this.model, docView: this, authorized: this.authorized });
+    this.invite      = new s.views.Invite({ model: this.model, authorized: this.authorized });
+    this.export      = new s.views.Export({ model: this.model, authorized: this.authorized });
+    this.subscribers = new s.views.Subscribers({ model: this.model, authorized: this.authorized });
+    this.versions    = new s.views.Versions({ model: this.model, authorized: this.authorized });
     
     // TODO: Instead listen for a document-changed event
     graph.bind('dirty', _.bind(function() {
@@ -36,7 +35,8 @@ s.views.Document = Backbone.View.extend({
 
   render: function () {
     $(this.el).html(s.util.tpl('document', {
-      doc: this.model
+      doc: this.model,
+      authorized: this.authorized
     }));
     
     $(this.toc.render().el).hide().appendTo(this.$('#document'));
@@ -166,6 +166,7 @@ s.views.Document = Backbone.View.extend({
     $('.document.tab.'+viewname).addClass('selected');
     view.load(_.bind(function (err) {
       view.bind('resize', this.resizeShelf);
+      shelf.empty();
       shelf.append(view.el)
       this.currentView = view;
       view.render();
