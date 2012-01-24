@@ -8,8 +8,8 @@
   </div>
 
     <div class="tabs">
-      <a href="#" class="tab toggle-documents selected"><div class="number"><%= documents.length %></div><div class="label">documents</div></a>
-      <a href="#" class="tab toggle-members"><div class="number"><%= members.length %></div><div class="label">members</div></a>
+      <a href="#" class="tab toggle-documents<%= mode === "documents" ? " selected" : "" %>"><div class="number"><%= documents.length %></div><div class="label">documents</div></a>
+      <a href="#" class="tab toggle-members<%= mode === "members" ? " selected" : "" %>"><div class="number"><%= members.length %></div><div class="label">members</div></a>
     </div>
 
   <% if (isCurrentUser(network.get('creator'))) { %>
@@ -19,7 +19,6 @@
         <input type="file" class="image-file" name="image-file" />
         <input type="hidden" name="params" value="<%= transloadit_params %>" />
       </form>
-      <div class="info">Click image to change cover</div>
 
       <div class="image-progress">
         <div class="label">Uploading image ...</div>

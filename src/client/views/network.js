@@ -24,17 +24,12 @@ s.views.Network = Backbone.View.extend({
 
   __toggleDocuments: function() {
     this.mode = 'documents';
-    this.render();
-    this.$('.tab').removeClass('selected');
-    this.$('.tab.toggle-documents').addClass('selected');
+    this.reload();
   },
 
   __toggleMembers: function() {
-    this.mode = 'members';
-    
-    this.render();
-    this.$('.tab').removeClass('selected');
-    this.$('.tab.toggle-members').addClass('selected');
+    this.mode = 'members';    
+    this.reload();
   },
 
   __upload: function() {
@@ -145,12 +140,14 @@ s.views.Network = Backbone.View.extend({
   reload: function() {
     loadNetwork(networkSlug(this.model.network), _.bind(function(err, data) {
       this.model = data;
+      this.documents = new s.views.Results({ model: this.model, id: "results" });
+      this.members = new s.views.UserList({model: this.model, id: "members"});
       this.render();
     }, this));
   },
 
   render: function() {
-    $(this.el).html(s.util.tpl('network', this.model));
+    $(this.el).html(s.util.tpl('network', _.extend(this.model, {mode: this.mode})));
     this.$(this[this.mode].render().el).appendTo(this.el);
     
     if (isCurrentUser(this.model.network.get('creator'))) {

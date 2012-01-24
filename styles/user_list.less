@@ -1,27 +1,31 @@
 .user-list {
-  margin: 80px;
+  margin: 40px 80px;
+
   overflow: auto;
 
   .user {
-  	background: white;
     float: left;
-    padding: 10px;
+    width: 180px;
     margin-right: 20px;
     margin-bottom: 20px;
-
-    -webkit-box-shadow: 0px 1px 4px rgba(0,0,0,0.5), inset 0px 0px 1px rgba(255,255,255,0.15);
-    -moz-box-shadow:    0px 1px 4px rgba(0,0,0,0.5), inset 0px 0px 1px rgba(255,255,255,0.15);
-    box-shadow:         0px 1px 4px rgba(0,0,0,0.5), inset 0px 0px 1px rgba(255,255,255,0.15);
+    opacity: 0.9;
 
     &:hover {
-      -webkit-box-shadow: 0px 1px 4px rgba(0,0,0,0.9), inset 0px 0px 1px rgba(255,255,255,0.15);
-      -moz-box-shadow:    0px 1px 4px rgba(0,0,0,0.9), inset 0px 0px 1px rgba(255,255,255,0.15);
-      box-shadow:         0px 1px 4px rgba(0,0,0,0.9), inset 0px 0px 1px rgba(255,255,255,0.15);
+      opacity: 1;
+    }
+
+    img {
+      width: 180px;
+      height: 180px;
+      -webkit-box-shadow: 0px 1px 4px rgba(0,0,0,0.5), inset 0px 0px 1px rgba(255,255,255,0.15);
+      -moz-box-shadow:    0px 1px 4px rgba(0,0,0,0.5), inset 0px 0px 1px rgba(255,255,255,0.15);
+      box-shadow:         0px 1px 4px rgba(0,0,0,0.5), inset 0px 0px 1px rgba(255,255,255,0.15);
     }
 
   	.title {
       padding: 10px;
-  		text-align: center;
+      font-size: 18px;
+      text-align: center;
   	}
   }
 }
