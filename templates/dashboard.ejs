@@ -1,21 +1,29 @@
 <div id="bins">
   <h2>My Responsibilities</h2>
+  <div class="bin-group">
   <% _.each(bins.user, function(bin, key) { %>
     <a href="#" 
-       class="toggle-bin<%= key === activeBin ? ' selected' : '' %>"
+       class="toggle-bin <%= key %><%= key === activeBin ? ' selected' : '' %>"
        data-bin="<%= key %>"
        data-category="user">
+       <div class="image"></div>
+       <div class="count"><%= bin.documents.length %></div>
       <%= bin.name %>
     </a>
   <% }); %>
+  </div>
 
   <h2>My Networks</h2>
+  <div class="bin-group">
   <% _.each(bins.networks, function(bin, key) { %>
     <a href="#" 
        class="toggle-bin<%= key === activeBin ? ' selected' : '' %>"
        data-bin="<%= key %>"
        data-category="networks">
+      <img src="<%= bin.cover %>" width="40" height="40"/>
+      <div class="count"><%= bin.documents.length %></div>
       <%= bin.name %>
     </a>
   <% }); %>
+  </div>
 </div>

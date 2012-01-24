@@ -20,7 +20,6 @@ function fetchNode(id, callback) {
   });
 }
 
-
 // Stats
 // -----------
 
@@ -176,13 +175,16 @@ Document.dashboard = function (username, callback) {
       bins = {
         user: {
           user: {
-            name: "My documents"
+            name: "My documents",
+            cover: "/images/my-documents.png"
           },
           involved: {
-            name: "Involved documents"
+            name: "Involved documents",
+            cover: "/images/involved-documents.png"
           },
           subscribed: {
-            name: "Subscribed documents"
+            name: "Subscribed documents",
+            cover: "/images/subscribed-documents.png"
           }
         },
         networks: {}
@@ -233,12 +235,15 @@ Document.dashboard = function (username, callback) {
       
         async.forEach(networks, function(network, cb) {
           graph.fetch({type: "/type/publication", network: network }, function(err, publications) {
-            bins.networks[network] = {
-              name: network,
-              documents: publications.map(function(m) { return m.get('document')._id; }).values()
-            };
-            results = results.concat(bins.networks[network].documents);
-            cb();
+            graph.fetch({_id: network}, function(err, nodes) {
+              bins.networks[network] = {
+                name: nodes.first().get('name'),
+                cover: nodes.first().get('cover'),
+                documents: publications.map(function(m) { return m.get('document')._id; }).values()
+              };
+              results = results.concat(bins.networks[network].documents);
+              cb();
+            });
           });
         }, function(err) {
           cb(null, results);
