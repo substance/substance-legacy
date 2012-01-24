@@ -55,6 +55,7 @@ function fetchDocuments(documents, username, callback) {
   
   function getHeadVersion(id, callback) {
     db.get(id, function(err, doc) {
+      if (err || !doc) return callback('not found');
       db.get(doc.published_version, function(err, version) {
         if (err || !version) return callback('not found');
         var data = version.data;
