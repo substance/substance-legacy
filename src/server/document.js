@@ -14,8 +14,6 @@ var Document = {};
 function fetchNode(id, callback) {
   db.get(id, function(err, node) {
     if (err) return callback(err);
-    
-    // Attach to result graph
     callback(null, node);
   });
 }
@@ -57,11 +55,14 @@ function fetchDocuments(documents, username, callback) {
   var result = {};
   
   function getHeadVersion(id, callback) {
-    db.view('substance/versions', {endkey: [id], startkey: [id, {}], limit: 1, descending: true}, function(err, res) {
-      if (err || res.rows.length === 0) return callback('not found');
-      var data = res.rows[0].value.data;
-      data[id].published_on = res.rows[0].value.created_at;
-      callback(null, data[id]);
+    db.get(id, function(err, doc) {
+      db.get(doc.published_version, function(err, version) {
+        if (err || !version) return callback('not found');
+        var data = version.data;
+        data[id].name = doc.name;
+        data[id].published_on = version.created_at;
+        callback(null, data[id]);
+      });
     });
   }
   
@@ -143,11 +144,11 @@ Document.find = function(searchstr, type, username, callback) {
       
       if (matched && documents.length < 200) {
         if (row.value.creator === '/user/'+username) {
+          console.log('JOJO');
           add(row); return callback();
         } else {
-          // check if published
-          db.view('substance/versions', {endkey: [row.value._id], startkey: [row.value._id, {}], limit: 1, descending: true}, function(err, res) {
-            if (err || res.rows.length === 0) return callback();
+          db.get(row.value._id, function(err, node) {
+            if (err || !node) return callback();
             add(row); return callback(null, false);
           });
         }
@@ -155,6 +156,7 @@ Document.find = function(searchstr, type, username, callback) {
         callback();
       }
     }, function () {
+      console.log(documents);
       fetchDocuments(documents, fetchDocuments, function(err, nodes, count) {
         if (type === "user" && !nodes["/user/"+searchstr]) {
           db.get("/user/"+searchstr, function(err, node) {
@@ -175,16 +177,13 @@ Document.dashboard = function (username, callback) {
       bins = {
         user: {
           user: {
-            name: "My documents",
-            cover: "/images/my-documents.png"
+            name: "My documents"
           },
           involved: {
-            name: "Involved documents",
-            cover: "/images/involved-documents.png"
+            name: "Involved documents"
           },
           subscribed: {
-            name: "Subscribed documents",
-            cover: "/images/subscribed-documents.png"
+            name: "Subscribed documents"
           }
         },
         networks: {}
