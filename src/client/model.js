@@ -414,7 +414,7 @@ function loadNetwork (network, callback) {
       callback(null, {
         members: g.find({"type": "/type/user"}),
         network: graph.get(network._id),
-        documents: g.find({"type": "/type/document"}),
+        documents: sortByUpdatedAt(g.find({"type": "/type/document"})),
         isMember: res.isMember,
         transloadit_params: config.transloadit.network_cover
       });

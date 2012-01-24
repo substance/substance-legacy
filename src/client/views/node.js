@@ -11,7 +11,7 @@ s.views.Node = Backbone.View.extend(_.extend({}, StateMachine, {
     this.parent = options.parent;
     this.level  = options.level;
     this.root   = options.root;
-    
+
     this.comments = new s.views.Comments({ model: this.model });
     this.afterControls = new s.views.Controls({
       root: this.root,
@@ -59,6 +59,7 @@ s.views.Node = Backbone.View.extend(_.extend({}, StateMachine, {
   toggleComments: function (e) {
     e.preventDefault();
     e.stopPropagation();
+    this.selectThis();
     this.comments.toggle();
   },
   

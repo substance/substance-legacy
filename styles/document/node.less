@@ -45,9 +45,9 @@
       opacity: 0.5;
       &:hover { opacity: 1; }
 
-      &.toggle-comments  { background: url("@{images}/icons/white/comment_stroke_16x14.png") center center no-repeat; }
-      &.remove-node      { background: url("@{images}/icons/white/x_alt_16x16.png") center center no-repeat; }
-      &.toggle-move-node { background: url("@{images}/icons/white/move_16x16.png") center center no-repeat; }
+      &.toggle-comments  { background: url("@{images}/icons/black/comment_stroke_16x14.png") center center no-repeat; }
+      &.remove-node      { background: url("@{images}/icons/black/x_alt_16x16.png") center center no-repeat; }
+      &.toggle-move-node { background: url("@{images}/icons/black/move_16x16.png") center center no-repeat; }
     }
   }
 
@@ -57,11 +57,23 @@
     }
   }
 
+  &.selected .operations a {
+    &.toggle-comments  { background: url("@{images}/icons/white/comment_stroke_16x14.png") center center no-repeat; }
+    &.remove-node      { background: url("@{images}/icons/white/x_alt_16x16.png") center center no-repeat; }
+    &.toggle-move-node { background: url("@{images}/icons/white/move_16x16.png") center center no-repeat; }
+  }
+
   &.selected {
     > .operations {
-      display: block;
+      
       background: #747260;
+
+            
+      a {
+        display: block; 
+      }
     }
+
   }
 
   &.active, &.selected {
