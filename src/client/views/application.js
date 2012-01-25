@@ -112,7 +112,7 @@ s.views.Application = Backbone.View.extend({
   },
 
   recoverPassword: function () {
-    this.replaceMainView(new s.views.RecoverPassword({}).render());
+    this.replaceMainView(new s.views.RecoverPassword({id: 'recover_password'}).render());
   },
 
   resetPassword: function (username, tan) {

@@ -567,7 +567,7 @@ app.post('/reset_password', function(req, res) {
     if (user) {
       user.set({
         password: encryptPassword(password),
-        tan: null // reset tan
+        tan: ""
       });
       
       // Auto login

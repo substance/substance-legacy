@@ -12,12 +12,12 @@ s.views.ResetPassword = Backbone.View.extend({
       alert("Password and confirmation do not match!");
       return;
     }
-    
+
     resetPassword(this.username, this.tan, password, _.bind(function (err, res) {
       if (err) {
-        $('#registration_error_message').html("Unknown error.");
+        $('#registration_error_message').html(err);
       } else {
-        router.navigate(this.username);
+        window.location.href = "/";
       }
     }, this));
     

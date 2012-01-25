@@ -771,7 +771,7 @@ function resetPassword (username, tan, password, callback) {
     dataType: 'json',
     success: function (res) {
       if (res.status === 'error') {
-        callback(new Error(res.message), null);
+        callback(res.message, null);
       } else {
         callback(null, res);
       }
