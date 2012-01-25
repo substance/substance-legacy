@@ -114,7 +114,7 @@ function createNetworks(callback) {
     name: "Physics",
     descr: "Physics (from Ancient Greek: φύσις physis \"nature\") is a natural science that involves the study of matter and its motion through spacetime, along with related concepts such as energy and force.",
     color: "#36A0A8",
-    cover: "http://substance-assets.s3.amazonaws.com/ee/cc52e29f6a1b90b8443ad296b00c8d/physics.png",f
+    cover: "http://substance-assets.s3.amazonaws.com/ee/cc52e29f6a1b90b8443ad296b00c8d/physics.png",
     creator: "/user/michael",
     created_at: new Date()
   });
