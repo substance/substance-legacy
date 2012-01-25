@@ -425,9 +425,22 @@ function loadNetwork (network, callback) {
   });
 }
 
+function loadCollaborationConfirmation (tan, callback) {
+  graph.fetch({"type": "/type/collaborator", "tan": tan, "document": {}}, function(err, nodes) {
+    if (err) return callback(err);
+    callback(null, {
+      tan: tan,
+      document: nodes.select(function(n) {
+        return n.types().get('/type/document');
+      }).first(),
+      collaborator: nodes.select(function(n) {
+        return n.types().get('/type/collaborator');
+      }).first()
+    });
+  });
+}
 
 function search (searchstr, callback) {
-  // TODO
   $.ajax({
     type: 'GET',
     url: '/fulltextsearch?q=' + encodeURI(searchstr),
@@ -441,26 +454,6 @@ function search (searchstr, callback) {
   });
 }
 
-
-// Document
-// ========
-
-// var Document = {};
-// 
-// 
-// Document.getUsername = function() {
-//   return app.username;
-// }
-// 
-// 
-// Document.isHead = function(doc) {
-//   return !doc.version;
-// }
-// 
-// Document.isAuthorized = function(doc) {
-//   // 
-// }
-//
 
 function documentURL(doc) {
   return "" + doc.get('creator')._id.split("/")[2] + "/" + doc.get('name');
@@ -646,20 +639,6 @@ function removeVersion(document, version, callback) {
       callback(null);
     });
 }
-
-/*
-// Extract available documentTypes from config
-function documentTypes () {
-  var result = [];
-  graph.get('/config/substance').get('document_types').each(function(type, key) {
-    result.push({
-      type: key,
-      name: graph.get(key).name
-    });
-  });
-  return result;
-}
-*/
 
 // Network
 // ========

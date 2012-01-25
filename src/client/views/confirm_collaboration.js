@@ -9,18 +9,6 @@ s.views.ConfirmCollaboration = Backbone.View.extend({
   
   initialize: function(tan) {
     var that = this;
-    this.el = '#content_wrapper';
-    this.tan = tan;
-    
-    graph.fetch({"type": "/type/collaborator", "tan": this.tan, "document": {}}, function(err, nodes) {
-      that.document = nodes.select(function(n) {
-        return n.types().get('/type/document');
-      }).first();
-      that.collaborator = nodes.select(function(n) {
-        return n.types().get('/type/collaborator');
-      }).first();
-      that.render();
-    });
   },
   
   selectOption: function(e) {
@@ -36,7 +24,7 @@ s.views.ConfirmCollaboration = Backbone.View.extend({
     var that = this;
     this.confirm(function(err) {
       if (err) return alert('Collaboration could not be confirmed. '+err.error);
-      window.location.href = "/"+that.document.get('creator')._id.split('/')[2]+"/"+that.document.get('name');
+      window.location.href = "/"+that.model.document.get('creator')._id.split('/')[2]+"/"+that.model.document.get('name');
     });
     return false;
   },
@@ -46,7 +34,7 @@ s.views.ConfirmCollaboration = Backbone.View.extend({
       type: "POST",
       url: "/confirm_collaborator",
       data: {
-        tan: this.tan,
+        tan: this.model.tan,
         user: app.username
       },
       dataType: "json",
@@ -62,11 +50,11 @@ s.views.ConfirmCollaboration = Backbone.View.extend({
   
   login: function(e) {
     var that = this;
-    app.authenticate(this.$('.username').val(), this.$('.password').val(), function(err) {
+    login(this.$('.username').val(), this.$('.password').val(), function (err) {
       if (err) return notifier.notify(Notifications.AUTHENTICATION_FAILED);
       that.confirm(function(err) {
         if (err) return alert('Collaboration could not be confirmed. '+err.error);
-        window.location.href = "/"+that.document.get('creator')._id.split('/')[2]+"/"+that.document.get('name');
+        window.location.href = "/"+that.model.document.get('creator')._id.split('/')[2]+"/"+that.model.document.get('name');
       });
     });
     return false;
@@ -78,7 +66,7 @@ s.views.ConfirmCollaboration = Backbone.View.extend({
     $('#registration_error_message').empty();
     $('.page-content input').removeClass('error');
     
-    app.createUser($('#signup_user').val(), $('#signup_name').val(), $('#signup_email').val(), $('#signup_password').val(), function(err, res) {
+    createUser($('#signup_user').val(), $('#signup_name').val(), $('#signup_email').val(), $('#signup_password').val(), function (err, res) {
       if (err) {
         if (res.field === "username") {
           $('#signup_user').addClass('error');
@@ -87,16 +75,8 @@ s.views.ConfirmCollaboration = Backbone.View.extend({
           $('#registration_error_message').html(res.message);
         }
       } else {
-        graph.merge(res.seed);
         notifier.notify(Notifications.AUTHENTICATED);
-        app.username = res.username;          
-        that.trigger('authenticated');
-        app.render();
-        
-        that.confirm(function(err) {
-          if (err) return alert('Collaboration could not be confirmed. '+err.error);
-          window.location.href = "/"+that.document.get('creator')._id.split('/')[2]+"/"+that.document.get('name');
-        });
+        window.location.href = "/"+res.username;
       }
     });
     return false;
@@ -104,17 +84,12 @@ s.views.ConfirmCollaboration = Backbone.View.extend({
   
   render: function() {
     // Forward to document if authorized.
-    var user = this.collaborator.get('user');
+    var user = this.model.collaborator.get('user');
     if (user && user._id === "/user/"+app.username) {
       window.location.href = "/"+this.document.get('creator')._id.split('/')[2]+"/"+this.document.get('name');
       return;
-    }
-    
-    $(this.el).html(s.util.tpl('confirm_collaboration', {
-      collaborator: this.collaborator,
-      document: this.document
-    }));
-    this.delegateEvents();
+    }    
+    $(this.el).html(s.util.tpl('confirm_collaboration', this.model));
     return this;
   }
 });

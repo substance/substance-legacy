@@ -31,12 +31,10 @@ s.views.Signup = Backbone.View.extend({
           $('#registration_error_message').html(res.message);
         }
       } else {
-        graph.merge(res.seed);
         notifier.notify(Notifications.AUTHENTICATED);
-        router.navigate(res.username);
+        window.location.href = "/"+res.username;
       }
     });
     return false;
   }
-
 });

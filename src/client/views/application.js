@@ -106,7 +106,9 @@ s.views.Application = Backbone.View.extend({
 
   // Confirm invitation
   collaborate: function(tan) {
-    this.replaceMainView(new s.views.ConfirmCollaboration({ tan: tan }).render());
+    loadCollaborationConfirmation(tan, _.bind(function(err, data) {
+      this.replaceMainView(new s.views.ConfirmCollaboration({ model: data, id: 'confirm_collaboration' }).render());
+    }, this));
   },
 
   recoverPassword: function () {

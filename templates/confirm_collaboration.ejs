@@ -33,8 +33,8 @@
       </div>
     <% } %>
     
-    <div class="option login page-content<%= !app.username ? " active" : "" %>">
-      <form id="login-form">
+    <div class="option login<%= !app.username ? " active" : "" %>">
+      <form id="login-form" class="form-content">
         <h1>Login with your account</h1>
         <p class="info">Once you confirmed this invitation, you can easily lookup the document in your <b>Subscribed Documents</b> bin.</p>
         <div>
@@ -52,12 +52,13 @@
           <input type="submit" value="Login"/>
         </div>
       </form>
+      <br class="clear"/>
     </div>
     
-    <div class="option signup page-content">
-      <form id="signup-form" class="auth-form">
+    <div class="option signup">
+      <form id="signup-form" class="form-content">
         <h1>Create a new account</h1>
-        <p class="info">Once you confirmed this invitation, you can easily lookup the document in your <b>Subscribed Documents</b> bin.</p>
+        <p class="info">Once you confirmed this invitation, you can easily lookup the document in your <b>Dashboard</b>.</p>
         <div id="registration_error_message"></div>
         
         <div>
