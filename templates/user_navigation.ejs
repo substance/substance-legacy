@@ -22,8 +22,7 @@
 
   <li>
     <a href="/<%= user._id.split('/')[2] %>" class="toggle-view user-profile" title="User Profile">
-      <!--<img src="/avatar/<%= user._id.split('/')[2] %>/25" />-->
-      <span class="count"><%= user.get('name') %></span>
+      <%= user.get('name') %>
     </a>
   </li>
 
@@ -34,8 +33,6 @@
   </li>
 
   <li>
-    <a href="#" class="logout" title="Logout">
-      <span class="icon">Logout</span>
-    </a>
+    <a href="#" class="icon logout" title="Logout"></a>
   </li>
 </ul>

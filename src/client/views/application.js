@@ -55,7 +55,8 @@ s.views.Application = Backbone.View.extend({
     return false;
   },
 
-  replaceMainView: function (view) {
+  replaceMainView: function (name, view) {
+    $('body').removeClass().addClass('current-view '+name);
     if (this.mainView) {
       this.mainView.remove();
     }
@@ -69,54 +70,54 @@ s.views.Application = Backbone.View.extend({
 
   explore: function () {
     loadExplore(_.bind(function (err, res) {
-      this.replaceMainView(new s.views.Explore({ model: res, id: 'explore' }).render());
+      this.replaceMainView("explore", new s.views.Explore({ model: res, id: 'explore' }).render());
     }, this));
   },
 
   network: function (network) {
     loadNetwork(network, _.bind(function (err, res) {
-      this.replaceMainView(new s.views.Network({ model: res, id: 'network' }).render());
+      this.replaceMainView("network", new s.views.Network({ model: res, id: 'network' }).render());
     }, this));
   },
 
   search: function (queryString) {
     search(queryString, _.bind(function (err, res) {
-      this.replaceMainView(new s.views.Search({ model: res }).render());
+      this.replaceMainView("search", new s.views.Search({ model: res, id: 'search'  }).render());
     }, this));
   },
 
   home: function () {
     router.navigate('');
-    this.replaceMainView(new s.views.Home({id: 'home'}).render());
+    this.replaceMainView("home", new s.views.Home({id: 'home' }).render());
     return false;
   },
 
   user: function (username) {
     loadDocuments({ type: 'user', value: username }, _.bind(function (err, data) {
-      this.replaceMainView(new s.views.UserProfile({ model: data, id: 'user_profile' }).render());
+      this.replaceMainView("user_profile", new s.views.UserProfile({ model: data, id: 'user_profile' }).render());
     }, this));
   },
 
   dashboard: function () {
     router.navigate('dashboard');
     loadDashboard({ type: 'user', value: session.username }, _.bind(function (err, data) {
-      this.replaceMainView(new s.views.Dashboard({ model: data, id: 'dashboard' }).render());
+      this.replaceMainView("dashboard", new s.views.Dashboard({ model: data, id: 'dashboard' }).render());
     }, this));
   },
 
   // Confirm invitation
   collaborate: function(tan) {
     loadCollaborationConfirmation(tan, _.bind(function(err, data) {
-      this.replaceMainView(new s.views.ConfirmCollaboration({ model: data, id: 'confirm_collaboration' }).render());
+      this.replaceMainView("confirm_collaboration", new s.views.ConfirmCollaboration({ model: data, id: 'confirm_collaboration' }).render());
     }, this));
   },
 
   recoverPassword: function () {
-    this.replaceMainView(new s.views.RecoverPassword({id: 'recover_password'}).render());
+    this.replaceMainView("recover_password", new s.views.RecoverPassword({id: 'recover_password'}).render());
   },
 
   resetPassword: function (username, tan) {
-    this.replaceMainView(new s.views.ResetPassword({ username: username, tan: tan }).render());
+    this.replaceMainView("reset_password", new s.views.ResetPassword({ username: username, tan: tan, id: 'reset_password' }).render());
   },
 
   newDocument: function () {
@@ -124,24 +125,24 @@ s.views.Application = Backbone.View.extend({
       alert("You need to use a Webkit based browser (Google Chrome, Safari) in order to write documents. In future, other browers will be supported too.");
       return false;
     }
-    this.replaceMainView(new s.views.NewDocument({}).render());
+    this.replaceMainView("new_document", new s.views.NewDocument({id: 'new_document' }).render());
   },
 
   register: function () {
-    this.replaceMainView(new s.views.Signup({}).render());
+    this.replaceMainView("signup", new s.views.Signup({id: 'signup' }).render());
   },
 
   userSettings: function () {
-    this.replaceMainView(new s.views.UserSettings({}).render());
+    this.replaceMainView("user_settings", new s.views.UserSettings({id: 'user_settings' }).render());
   },
 
   import: function () {
-    this.replaceMainView(new s.views.Import({}).render());
+    this.replaceMainView("import", new s.views.Import({id: 'import' }).render());
   },
 
   loadDocument: function (username, docname, version, nodeid, commentid) {
     var render = _.bind(function (options) {
-      this.replaceMainView(new s.views.Document(options).render());
+      this.replaceMainView("document", new s.views.Document(_.extend(options, {id: 'document_view' })).render());
     }, this);
     
     var id = '/document/'+username+'/'+docname;
