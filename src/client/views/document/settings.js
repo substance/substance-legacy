@@ -40,12 +40,12 @@ s.views.DocumentSettings = Backbone.View.extend({
   },
 
   onSuccess: function (assembly) {
+    this.$('.image-progress').hide();
+    $('.upload-image-form img').attr('src', assembly.results.web_version[1].url);
+
     this.model.set({
       cover: assembly.results.web_version[1].url
     });
-    
-    this.$('.image-progress').hide();
-    $('.upload-image-form img').attr('src', assembly.results.web_version[1].url);
   },
 
   onError: function (assembly) {

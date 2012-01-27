@@ -39,7 +39,7 @@ s.views.Document = Backbone.View.extend({
       authorized: this.authorized
     }));
     
-    $(this.toc.render().el).hide().appendTo(this.$('#document'));
+    $(this.toc.render().el).appendTo(this.$('#document'));
     $(this.node.render().el).appendTo(this.$('#document'));
     
     if (this.authorized && !this.version) { this.edit(); }

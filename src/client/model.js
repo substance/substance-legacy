@@ -368,33 +368,20 @@ function loadExplore (callback) {
   var graph = new Data.Graph(seed).connect('ajax');
 
   $.ajax({
-    type: "GET",
-    url: "/documents/search/recent/50",
-    dataType: "json",
+    type: 'GET',
+    url: '/networks/recent',
+    dataType: 'json',
     success: function (res) {
       graph.merge(res.graph);
       
-      $.ajax({
-        type: 'GET',
-        url: '/networks/recent',
-        dataType: 'json',
-        success: function (res) {
-          graph.merge(res.graph);
-          
-          // Populate results
-          var documents = graph.find({"type|=": "/type/document"});
-          var networks  = graph.find({"type":   "/type/network"});
-          callback(null, {
-            networks: sortByUpdatedAt(networks),
-            documents: sortByUpdatedAt(documents)
-          });
-        },
-        error: function (err) { callback(err); }
+      // Populate results
+      var documents = graph.find({"type|=": "/type/document"});
+      var networks  = graph.find({"type":   "/type/network"});
+      callback(null, {
+        networks: sortByUpdatedAt(networks)
       });
     },
-    error: function(err) {
-      callback(err);
-    }
+    error: function (err) { callback(err); }
   });
 }
 
