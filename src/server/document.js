@@ -433,15 +433,15 @@ Document.get = function(username, docname, version, reader, callback) {
   db.view('substance/documents', {key: username+'/'+docname}, function(err, res) {
 
     if (err) return callback(err);
-    if (res.rows.length == 0) return callback("not_found");
+    if (res.rows.length == 0) return callback({"status": "error", "error": "not_found", "message": "The requested document couldn't be found."});
     
     var node = res.rows[0].value;
     
     isAuthorized(node, reader, function(err, edit) {
-      if (err) return callback("not_authorized");
+      if (err) return callback({"status": "error", "error": "not_authorized", "message": "Not authorized to request that document."});
       
       loadDocument(node._id, version, reader, edit, function(err, result, edit, version, published) {
-        if (err) return callback("not_found");
+        if (err) return callback({"status": "error", "error": "not_found", "message": "The requested document couldn't be found"});
         callback(null, result, node._id, edit, version, published);
       });
     });

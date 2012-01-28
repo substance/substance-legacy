@@ -128,7 +128,7 @@ app.use(function(req, res) {
   if (username && docname && (req.headers["user-agent"].indexOf('bot.html')>=0 || req.query.static || format)) {
 
     Document.get(username, docname, version, req.session ? req.session.username : null, function(err, nodes, id, authorized, version, published) {
-      if (err) return res.send({status: "error", error: err});
+      if (err) return res.send(err);
 
       if (format) {
         if (format === "json") return res.json({status: "ok", graph: nodes, id: id, authorized: authorized, version: version, published: published });
@@ -901,7 +901,7 @@ app.get('/networks/recent', function (req, res) {
 // Returns a specific version of the requested doc
 app.get('/documents/:username/:name/:version', function(req, res) {
   Document.get(req.params.username, req.params.name, req.params.version, req.session ? req.session.username : null, function(err, graph, id, authorized, version, published) {
-    if (err) return res.json({status: "error", error: err});
+    if (err) return res.json(err);
     res.json({status: "ok", graph: graph, id: id, authorized: authorized, version: version, published: published });
   });
 });
@@ -910,7 +910,7 @@ app.get('/documents/:username/:name/:version', function(req, res) {
 // Returns the latest version of the requested doc
 app.get('/documents/:username/:name', function(req, res) {
   Document.get(req.params.username, req.params.name, null, req.session ? req.session.username : null, function(err, graph, id, authorized, version, published) {
-    if (err) return res.json({status: "error", error: err});
+    if (err) return res.json(err);
     res.json({status: "ok", graph: graph, id: id, authorized: authorized, version: version, published: published});
   });
 });

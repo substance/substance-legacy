@@ -18,7 +18,6 @@ s.views.Application = Backbone.View.extend({
     
     $('.toggle-view.active').removeClass('active');
     link.addClass('active');
-    
     router.navigate(route, true);
   },
 
@@ -51,7 +50,7 @@ s.views.Application = Backbone.View.extend({
 
   scrollTo: function (id) {
     var offset = $('#'+id).offset();
-    offset ? $('html, body').animate({scrollTop: offset.top}, 'slow') : null;
+    offset ? $('html, body').animate({scrollTop: offset.top-90}, 'slow') : null;
     return false;
   },
 
@@ -147,14 +146,22 @@ s.views.Application = Backbone.View.extend({
     
     var id = '/document/'+username+'/'+docname;
     loadDocument(username, docname, version, _.bind(function (err, res) {
-      // TODO: scroll to desired part of the document
-      // TODO: error handling
+      if (err) return $('#main').html('<div class="notification error">'+err.message+'</div>');
+
       render({
         model: res.doc,
         authorized: res.authorized,
         version: res.version,
         published: res.published
       });
+
+      if (commentid) {
+        var node = app.mainView.node.nodes[nodeid.replace(/_/g, "/")];
+        node.selectThis();
+        node.comments.toggle();
+      } else if (nodeid) {
+        this.scrollTo(nodeid)
+      }
     }, this));
   }
 

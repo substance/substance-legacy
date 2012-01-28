@@ -284,7 +284,7 @@ function loadDocument (username, docname, version, callback) {
     dataType: "json",
     success: function (res) {
       if (res.error) {
-        callback(res.error, null);
+        callback(res, null);
       } else {
         graph.merge(res.graph);
         callback(null, {

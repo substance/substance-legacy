@@ -7,7 +7,23 @@ s.views.UserStatus = Backbone.View.extend(_.extend({}, StateMachine, {
     'submit #login-form': 'login',
     
     'click .toggle.notifications': 'toggleNotifications',
-    'click #event_notifications a .notification': 'hideNotifications'
+    'click #event_notifications a .notification': 'hideNotifications',
+    'click a.open-notification': 'openNotification',
+  },
+
+  openNotification: function(e) {
+    var url = $(e.currentTarget).attr('href');
+    var p = url.replace('#', '/').split('/');
+    var user = p[1];
+    var doc = p[2];
+
+    var version = !p[3] || p[3].indexOf("_") >= 0 ? null : p[3];
+    var node = version ? p[4] : p[3];
+    var comment = version ? p[5] : p[4];
+    
+    app.loadDocument(user, doc, version, node, comment);
+    router.navigate(url);
+    return false;
   },
 
   initialize: function () {
