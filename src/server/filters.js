@@ -138,7 +138,7 @@ Filters.sanitizeUserInput = function() {
       next(node);
     },
     write: function(node, next, session) {
-      if (!node) return next(node); // skip      
+      if (!node) return next(node); // skip
       next(san(node));
     }
   }
