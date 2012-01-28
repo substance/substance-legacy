@@ -139,7 +139,7 @@ s.views.Node = Backbone.View.extend(_.extend({}, StateMachine, {
       if (options.markup) {
         $(el).html(value);
       } else {
-        $(el).text(value);
+        $(el).text(s.util.unescape(value));
       }
     } else {
       $(el).html('&laquo; '+dflt+' &raquo;').addClass('empty');

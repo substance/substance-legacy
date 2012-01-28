@@ -132,6 +132,10 @@
           markup: true,
           placeholder: 'Enter Text',
           codeFontFamily: 'Monaco, Consolas, "Lucida Console", monospace'
+        },
+        Node = window.Node || { // not available in IE
+          TEXT_NODE: 3,
+          COMMENT_NODE: 8
         };
     
     
@@ -284,9 +288,9 @@
       // stack (e.g. `Monaco, Consolas, "Lucida Console", monospace`).
       if ($.browser.msie) {
         if (a.split(',').length === 1) {
-          return b.split(',').indexOf(a) > -1;
+          return _.indexOf(b.split(','), a) > -1;
         } else if (b.split(',').length === 1) {
-          return a.split(',').indexOf(b) > -1;
+          return _.indexOf(a.split(','), b) > -1;
         } else {
           return a === b;
         }
@@ -422,7 +426,7 @@
     // If the activeElement has no content, display the placeholder and give
     // the element the class `empty`.
     function maybeInsertPlaceholder() {
-      if ($(activeElement).text().trim().length === 0) {
+      if ($.trim($(activeElement).text()).length === 0) {
         $(activeElement).addClass('empty');
         if (options.markup) {
           $(activeElement).html('<p>&laquo; '+options.placeholder+' &raquo;</p>');
@@ -474,8 +478,18 @@
     
     // Selects the whole editing area.
     function selectAll() {
-      var range = document.createRange();
-      range.selectNodeContents($(activeElement)[0]);
+      var el = $(activeElement)[0],
+        range;
+      
+      if (document.body.createTextRange) { // IE < 9
+        range = document.body.createTextRange();
+        range.moveToElementText(el);
+        range.select();
+      } else {
+        range = document.createRange();
+        range.selectNodeContents(el);
+      }
+
       restoreSelection(range);
     }
     
@@ -496,8 +510,10 @@
       if (sel) {
         // After
         function isInDom(node) {
-          if (node === document.body) return true;
-          if (node.parentNode) return isInDom(node.parentNode);
+          if (node) {
+            if (node === document.body) return true;
+            if (node.parentNode) return isInDom(node.parentNode);
+          }
           return false;
         }
         if (isInDom(startContainer)) {
@@ -520,7 +536,11 @@
     function getPastedContent (callback) {
       // TODO: michael, explain why these css properties are needed -- timjb
       var tmpEl = $('<div id="proper_tmp_el" contenteditable="true" />')
-        .css({ position: 'fixed', top: '20px', left: '20px', opacity: '0' })
+        .css({
+          position: 'fixed', top: '20px', left: '20px',
+          opacity: '0', 'z-index': '10000',
+          width: '1px', height: '1px'
+        })
         .appendTo(document.body)
         .focus();
       setTimeout(function () {
@@ -617,7 +637,7 @@
           return;
         }
         if (e.keyCode === 8 &&
-            $(activeElement).text().trim() === '' &&
+            $.trim($(activeElement).text()) === '' &&
             $(activeElement).find('p, li').length === 1) {
           // backspace is pressed and the editor is empty
           // prevent the removal of the last paragraph
@@ -745,10 +765,10 @@
         return clone.html();
       } else {
         if (options.multiline) {
-          return _.stripTags($(activeElement).html().replace(/<div>/g, '\n')
-                                             .replace(/<\/div>/g, '')).trim();
+          return $.trim(_.stripTags($(activeElement).html().replace(/<div>/g, '\n')
+                                             .replace(/<\/div>/g, '')));
         } else {
-          return _.stripTags($(activeElement).html()).trim();
+          return $.trim(_.stripTags($(activeElement).html()));
         }
       }
     };
