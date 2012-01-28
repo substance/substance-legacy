@@ -104,6 +104,7 @@ s.views.Network = Backbone.View.extend({
 
   onProgress: function (bytesReceived, bytesExpected) {
     var percentage = Math.max(0, parseInt(bytesReceived / bytesExpected * 100));
+    if (!percentage) percentage = 0;
     this.$('.image-progress .label').html("Uploading &hellip; " + percentage + "%");
     this.$('.progress-bar').css('width', percentage + '%');
   },
