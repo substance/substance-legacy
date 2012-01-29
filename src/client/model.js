@@ -312,12 +312,10 @@ function sortByUpdatedAt (documents) {
 }
 
 
-function loadDocuments (query, callback) {
-  this.query = query;
-  
+function loadUserProfile (username, callback) {
   $.ajax({
     type: "GET",
-    url: "/documents/search/"+query.type+"/"+encodeURI(query.value),
+    url: "/documents/"+username,
     dataType: "json",
     success: function (res) {
       var graph = new Data.Graph(seed);
@@ -325,10 +323,9 @@ function loadDocuments (query, callback) {
       
       // Populate results
       var documents = graph.find({"type|=": "/type/document"});
-
       callback(null, {
         documents: sortByUpdatedAt(documents),
-        user: query.type === "user" ? graph.get('/user/'+query.value) : null
+        user: graph.get('/user/'+username)
       });
     },
     error: function(err) {

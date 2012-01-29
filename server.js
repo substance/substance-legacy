@@ -335,15 +335,6 @@ app.get('/sitemap.xml', function(req, res) {
  });
 });
 
-// Quick search interface (returns found users and a documentset)
-app.get('/quicksearch/:search_str', function(req, res) {
-  Document.find(req.params.search_str, 'keyword', req.session.username, function(err, graph, count) {
-    User.find(req.params.search_str, function(err, users) {
-      res.send(JSON.stringify({document_count: count, users: users}));
-    });
-  });
-});
-
 app.get('/fulltextsearch', function (req, res) {
   var searchstr = req.query.q;
   Search.search(searchstr, function (err, results) {
@@ -367,6 +358,12 @@ app.get('/documents/search/:type/:search_str', function (req, res) {
       res.json({graph: graph, count: count});
     });
   }
+});
+
+app.get('/documents/:user', function (req, res) {
+  Document.user(req.params.user, function (err, graph, count) {
+    res.json({graph: graph, count: count});
+  });
 });
 
 
@@ -403,15 +400,6 @@ app.get('/network/:network.json', function(req, res) {
   Network.get(req.params.network, req.session.username, function(err, data) {
     if (err) return res.json({status: "error", error: err});
     res.json(_.extend(data, {status: "ok"}));
-  });
-});
-
-
-// Find documents by search string (full text search in future)
-// Or find by user
-app.get('/attributes', function(req, res) {
-  findAttributes(req.query.member, req.query.search_str, function(err, graph) {
-    res.send(JSON.stringify({graph: graph}));
   });
 });
 

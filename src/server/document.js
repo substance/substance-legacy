@@ -127,49 +127,22 @@ Document.subscribed = function(username, callback) {
   });
 };
 
+Document.user = function(username, callback) {
+  var graph = new Data.Graph(seed).connect('couch', {url: config.couchdb_url});
 
-// We are aware that this is not a performant solution.
-// But search functionality needed to be there, quickly.
-// We'll replace it with a speedy fulltext search asap.
-Document.find = function(searchstr, type, username, callback) {
-  db.view('substance/documents_by_keyword', function(err, res) {
-    if (err) return callback(err);
-    
-    var documents = [];
-    function add (row) { documents.push(row.value._id); }
-    
-    async.forEach(res.rows, function(row, callback) {
-      var matched = type === "keyword"
-                  ? row.key && row.key.match(new RegExp("("+searchstr+")", "i"))
-                  : row.value.creator.match(new RegExp("/user/("+searchstr+")$", "i"));
-      
-      if (matched && documents.length < 200) {
-        if (row.value.creator === '/user/'+username) {
-          add(row); return callback();
-        } else {
-          db.get(row.value._id, function(err, node) {
-            if (err || !node) return callback();
-            add(row); return callback(null, false);
-          });
-        }
-      } else {
-        callback();
-      }
-    }, function () {
-      console.log(documents);
-      fetchDocuments(documents, fetchDocuments, function(err, nodes, count) {
-        if (type === "user" && !nodes["/user/"+searchstr]) {
-          db.get("/user/"+searchstr, function(err, node) {
-            if (!err) nodes[node._id] = node;
-            callback(null, nodes, count);
-          });
-        } else {
-          callback(err, nodes, count);
-        }
-      });
+  var qry = {
+    "type": "/type/document",
+    "creator": "/user/"+username
+  };
+  
+  graph.fetch(qry, function(err, documents) {
+    documents = documents.select(function(n) {
+      return !!n.get('published_version');
     });
+    fetchDocuments(documents.keys(), username, callback);
   });
-};
+}
+
 
 Document.dashboard = function (username, callback) {
   var userId = '/user/' + username,
@@ -183,7 +156,7 @@ Document.dashboard = function (username, callback) {
             name: "Involved documents"
           },
           subscribed: {
-            name: "Subscribed documents"
+            name: "Bookmarks"
           }
         },
         networks: {}
@@ -388,9 +361,9 @@ function loadDocument(id, version, reader, edit, callback) {
       }, callback);
     }
     
-    function fetchAttributesAndUser(callback) {
+    function fetchUser(callback) {
       var doc = result[id];
-      graph.fetch({_id: [doc.creator].concat(doc.entities).concat(doc.subjects) }, function(err, nodes) {
+      graph.fetch({_id: doc.creator }, function(err, nodes) {
         if (err) return callback();
         _.extend(result, nodes.toJSON());
         callback();
@@ -408,7 +381,7 @@ function loadDocument(id, version, reader, edit, callback) {
         result[id].subscribers = nodes.length;
         
         calcCommentCount(function() {
-          fetchAttributesAndUser(callback);
+          fetchUser(callback);
         });
       });
     });
