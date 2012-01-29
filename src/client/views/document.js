@@ -27,9 +27,7 @@ s.views.Document = Backbone.View.extend({
     this.currentView = null;
     
     _.bindAll(this, 'deselect', 'onKeydown');
-    $(document.body)
-      // .click(this.deselect) // Disabled for now as it breaks interaction with the shelf
-      .keydown(this.onKeydown);
+    $(document.body).keydown(this.onKeydown);
   },
 
   render: function () {
@@ -40,16 +38,14 @@ s.views.Document = Backbone.View.extend({
     
     $(this.toc.render().el).appendTo(this.$('#document'));
     $(this.node.render().el).appendTo(this.$('#document'));
-    
     if (this.authorized && !this.version) { this.edit(); }
-    
+    this.$('#document_content').click(this.deselect);
     return this;
   },
 
   remove: function () {
-    $(document.body)
-      // .unbind('click', this.deselect) // Disabled for now as it breaks interaction with the shelf
-      .unbind('keydown', this.onKeydown);
+    $(document.body).unbind('keydown', this.onKeydown);
+    this.$('#document_content').unbind('click', this.deselect);
     $(this.el).remove();
     return this;
   },
