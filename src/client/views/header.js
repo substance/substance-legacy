@@ -8,7 +8,7 @@ s.views.Header = Backbone.View.extend({
 
   render: function() {
     $(this.el).html(s.util.tpl('header', {
-      user: graph.get('/user/' + session.username),
+      user: graph.get('/user/' + session.username)
     }));
     $(this.userStatus.render().el).appendTo(this.el);
     

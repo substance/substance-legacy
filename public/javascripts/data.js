@@ -811,6 +811,11 @@
           res.set(index, val);
           return;
         }
+        // Skip registration of null values
+        if (v === null) {
+          res.set(index, null);
+          return res;
+        }
         
         // Check if we can recycle an old value of that object
         if (obj.all(that.key)) val = obj.all(that.key).get(v);
@@ -965,6 +970,7 @@
       this.key = id; // TODO: remove in favor of _id
       this._id = id;
       this.html_id = id.replace(/\//g, '_');
+      this.meta = data ? data.meta || {} : {};
       
       this.errors = []; // Stores validation errors
       this._types = new Data.Hash();
@@ -1126,7 +1132,7 @@
         _.each(properties, function(value, key) {
           var p = that.properties().get(key);
           if (!p) return; // Property not found on type
-          
+
           // Setup values
           that.replace(p.key, p.registerValues(_.isArray(value) ? value : [value], that));
           

@@ -42,7 +42,7 @@ s.views.Node.define('/type/code', {
     theme: 'elegant',
     indentUnit: 2,
     indentWithTabs: false,
-    tabMode: 'shift',
+    tabMode: 'shift'
   },
 
   render: function () {
@@ -101,6 +101,6 @@ s.views.Node.define('/type/code', {
         this.codeMirror.setOption('readOnly', true);
       }
     }
-  },
+  }
 
 });

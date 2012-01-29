@@ -135,7 +135,7 @@ s.views.Application = Backbone.View.extend({
     this.replaceMainView("user_settings", new s.views.UserSettings({id: 'user_settings' }).render());
   },
 
-  import: function () {
+  "import": function () {
     this.replaceMainView("import", new s.views.Import({id: 'import' }).render());
   },
 

@@ -1,3 +1,13 @@
+// Provide top-level namespaces for our javascript.
+
+(function() {
+  window.s = {};
+  s.model = {};
+  s.util = {};
+  s.views = {};
+  s.app = {};
+}());
+
 // Register Notifications
 var Notifications = {
   CONNECTED: {
@@ -156,108 +166,38 @@ notifier.bind('message:arrived', function(message) {
 // Helpers
 // ---------------
 
-/**
- * Date.parse with progressive enhancement for ISO-8601, version 2
- * © 2010 Colin Snover <http://zetafleet.com>
- * Released under MIT license.
- */
-(function () {
-    _.date = function (date) {
-        var timestamp = Date.parse(date), minutesOffset = 0, struct;
-        if (isNaN(timestamp) && (struct = /^(\d{4}|[+\-]\d{6})-(\d{2})-(\d{2})(?:[T ](\d{2}):(\d{2})(?::(\d{2})(?:\.(\d{3,}))?)?(?:(Z)|([+\-])(\d{2})(?::?(\d{2}))?))?/.exec(date))) {
-            if (struct[8] !== 'Z') {
-                minutesOffset = +struct[10] * 60 + (+struct[11]);
-
-                if (struct[9] === '+') {
-                    minutesOffset = 0 - minutesOffset;
-                }
-            }
-
-            timestamp = Date.UTC(+struct[1], +struct[2] - 1, +struct[3], +struct[4], +struct[5] + minutesOffset, +struct[6], +struct[7].substr(0, 3));
-        }
-
-        return new Date(timestamp).toDateString();
-    };
-}());
-
-
 // A fake console to calm down some browsers.
 if (!window.console) {
   window.console = {
     log: function(msg) {
       // No-op
     }
-  }
+  };
 }
 
-var Helpers = {};
-
-// Templates for the moment are recompiled every time
-Helpers.renderTemplate = _.renderTemplate = function(tpl, view, helpers) {
-  source = $("script[name="+tpl+"]").html();
-  var template = Handlebars.compile(source);
-  return template(view, helpers || {});
+/**
+ * Date.parse with progressive enhancement for ISO-8601, version 2
+ * © 2010 Colin Snover <http://zetafleet.com>
+ * Released under MIT license.
+ */
+s.util.date = function (date) {
+  var timestamp = Date.parse(date), minutesOffset = 0, struct;
+  if (isNaN(timestamp) && (struct = /^(\d{4}|[+\-]\d{6})-(\d{2})-(\d{2})(?:[T ](\d{2}):(\d{2})(?::(\d{2})(?:\.(\d{3,}))?)?(?:(Z)|([+\-])(\d{2})(?::?(\d{2}))?))?/.exec(date))) {
+    if (struct[8] !== 'Z') {
+      minutesOffset = +struct[10] * 60 + (+struct[11]);
+      
+      if (struct[9] === '+') {
+        minutesOffset = 0 - minutesOffset;
+      }
+    }
+    
+    timestamp = Date.UTC(+struct[1], +struct[2] - 1, +struct[3], +struct[4], +struct[5] + minutesOffset, +struct[6], +struct[7].substr(0, 3));
+  }
+  
+  return new Date(timestamp).toDateString();
 };
 
-function getCodeMirrorModeForLanguage (language) {
-  return {
-    javascript: 'javascript',
-    python: { name: 'python', version: 3 },
-    ruby: 'ruby',
-    php: 'php',
-    html: 'htmlmixed',
-    css: 'css',
-    haskell: 'haskell',
-    coffeescript: 'coffeescript',
-    java: 'text/x-java',
-    c: 'text/x-csrc',
-    'c++': 'text/x-c++src',
-    csharp: 'text/x-csharp'
-  }[language] || 'null';
-}
-
-function activateCodeMirror(el) {
-  var escape = function (str) {
-    return str.replace(/&/g, '&amp;')
-              .replace(/</g, '&lt;')
-              .replace(/>/g, '&gt;')
-              .replace(/"/g, '&quot;')
-  };
-  
-  el = $(el);
-  
-  if (!el.data('codemirror')) {
-    var cm = CodeMirror.fromTextArea(el.get(0), {
-      mode: getCodeMirrorModeForLanguage(el.attr('data-language')),
-      lineNumbers: true,
-      theme: 'elegant',
-      indentUnit: 2,
-      indentWithTabs: false,
-      tabMode: 'shift',
-      readOnly: app.document.mode !== 'edit',
-      onFocus: function () {
-        // Without this, there is the possibility to focus the editor without
-        // activating the code node. Don't ask me why.
-        el.trigger('click');
-      },
-      onBlur: function () {
-        cm.setSelection({line:0,ch:0}, {line:0,ch:0});
-      },
-      onChange: _.throttle(function () {
-        app.document.updateSelectedNode({
-          content: escape(cm.getValue())
-        });
-      }, 500)
-    });
-    setTimeout(function () { cm.refresh(); }, 10);
-    el.data('codemirror', cm);
-  }
-  
-  return el.data('codemirror');
-}
-
-
-_.slug = function(str) {
+s.util.slug = function (str) {
   str = str.replace(/^\s+|\s+$/g, ''); // trim
   str = str.toLowerCase();
   
@@ -267,859 +207,55 @@ _.slug = function(str) {
   for (var i=0, l=from.length ; i<l ; i++) {
     str = str.replace(new RegExp(from.charAt(i), 'g'), to.charAt(i));
   }
-
+  
   str = str.replace(/[^a-z0-9 -]/g, '') // remove invalid chars
     .replace(/\s+/g, '-') // collapse whitespace and replace by -
     .replace(/-+/g, '-'); // collapse dashes
-
+  
   return str;
-}
-
-_.scrollTop = function() {
-  return document.body.scrollTop || document.documentElement.scrollTop;
-}
+};
 
 // Render Underscore templates
-_.tpl = function(tpl, ctx) {
-  source = $("script[name="+tpl+"]").html();
+s.util.tpl = function (tpl, ctx) {
+  var source = templates[tpl];
   return _.template(source, ctx);
 };
 
-
-_.fullSelection = function(contentEditableElement)
-{
-  var range,selection;
-  if(document.createRange)//Firefox, Chrome, Opera, Safari, IE 9+
-  {
-      range = document.createRange();//Create a range (a range is a like the selection but invisible)
-      range.selectNodeContents(contentEditableElement);//Select the entire contents of the element with the range
-      //range.collapse(false);//collapse the range to the end point. false means collapse to end rather than the start
-      selection = window.getSelection();//get the selection object (allows you to change selection)
-      selection.removeAllRanges();//remove any selections already made
-      selection.addRange(range);//make the range you have just created the visible selection
-  }
-  else if(document.selection)//IE 8 and lower
-  {
-      range = document.body.createTextRange();//Create a range (a range is a like the selection but invisible)
-      range.moveToElementText(contentEditableElement);//Select the entire contents of the element with the range
-      range.collapse(false);//collapse the range to the end point. false means collapse to end rather than the start
-      range.select();//Select the range (make it the visible selection
-  }
-}
-
-_.prettyDate = function(time) {
-  return jQuery.timeago(time);
-};
-
-
-_.stripTags = function(input, allowed) {
-// Strips HTML and PHP tags from a string
-//
-// version: 1009.2513
-// discuss at: http://phpjs.org/functions/strip_tags
-// +   original by: Kevin van Zonneveld (http://kevin.vanzonneveld.net)
-// +   improved by: Luke Godfrey
-// +      input by: Pul
-// +   bugfixed by: Kevin van Zonneveld (http://kevin.vanzonneveld.net)
-// +   bugfixed by: Onno Marsman
-// +      input by: Alex
-// +   bugfixed by: Kevin van Zonneveld (http://kevin.vanzonneveld.net)
-// +      input by: Marc Palau
-// +   improved by: Kevin van Zonneveld (http://kevin.vanzonneveld.net)
-// +      input by: Brett Zamir (http://brett-zamir.me)
-// +   bugfixed by: Kevin van Zonneveld (http://kevin.vanzonneveld.net)
-// +   bugfixed by: Eric Nagel
-// +      input by: Bobby Drake
-// +   bugfixed by: Kevin van Zonneveld (http://kevin.vanzonneveld.net)
-// +   bugfixed by: Tomasz Wesolowski
-// +      input by: Evertjan Garretsen
-// +    revised by: Rafał Kukawski (http://blog.kukawski.pl/)
-// *     example 1: strip_tags('<p>Kevin</p> <b>van</b> <i>Zonneveld</i>', '<i><b>');
-// *     returns 1: 'Kevin <b>van</b> <i>Zonneveld</i>'
-// *     example 2: strip_tags('<p>Kevin <img src="someimage.png" onmouseover="someFunction()">van <i>Zonneveld</i></p>', '<p>');
-// *     returns 2: '<p>Kevin van Zonneveld</p>'
-// *     example 3: strip_tags("<a href='http://kevin.vanzonneveld.net'>Kevin van Zonneveld</a>", "<a>");
-// *     returns 3: '<a href='http://kevin.vanzonneveld.net'>Kevin van Zonneveld</a>'
-// *     example 4: strip_tags('1 < 5 5 > 1');
-// *     returns 4: '1 < 5 5 > 1'
-// *     example 5: strip_tags('1 <br/> 1');
-// *     returns 5: '1  1'
-// *     example 6: strip_tags('1 <br/> 1', '<br>');
-// *     returns 6: '1  1'
-// *     example 7: strip_tags('1 <br/> 1', '<br><br/>');
-// *     returns 7: '1 <br/> 1'
-   allowed = (((allowed || "") + "")
-      .toLowerCase()
-      .match(/<[a-z][a-z0-9]*>/g) || [])
-      .join(''); // making sure the allowed arg is a string containing only tags in lowercase (<a><b><c>)
-   var tags = /<\/?([a-z][a-z0-9]*)\b[^>]*>/gi,
-       commentsAndPhpTags = /<!--[\s\S]*?-->|<\?(?:php)?[\s\S]*?\?>/gi;
-   return input.replace(commentsAndPhpTags, '').replace(tags, function($0, $1){
-      return allowed.indexOf('<' + $1.toLowerCase() + '>') > -1 ? $0 : '';
-   });
-}
-
-// Collection of functions operating on content nodes
-var ContentNode = {
-  getTeaser: function(node) {
-    if (node.type.key === "/type/section")
-      return node.get('name') ? node.get('name').trim().substring(0, 15)+" ..." : "Section";      
-    else if (node.type.key === "/type/text")
-      return _.stripTags(node.get('content')).trim().substring(0, 15)+" ...";
-    else if (node.type.key === "/type/image")
-      return "Image";
-    else if (node.type.key === "/type/resource")
-      return "Resource";
-    else if (node.type.key === "/type/quote")
-      return "Quote";
-    else if (node.type.key === "/type/code")
-      return "Code";  
-    return "N/A"
-  }
-}
-var renderControls = function(node, first, last, parent, level) {
-  
-  function render(node, destination, consolidate) {
-    var actions = new Data.Hash();
-    var innerNode = null;
-    var path = [];
-    
-    // Ensure correct order
-    actions.set('/type/section', []);
-    actions.set('/type/text', []);
-    actions.set('/type/image', []);
-    actions.set('/type/resource', []);
-    actions.set('/type/quote', []);
-    actions.set('/type/code', []);
-    
-    function computeActions(n, parent) {
-      function registerAction(action) {
-        if (action.nodeType === '/type/section' && action.level > 3) return;
-        // if (actions.get(action.nodeType)) {
-        if (action.nodeType === '/type/section') {
-          var SORT_BY_LEVEL = function(v1, v2) {
-            return v1.level === v2.level ? 0 : (v1.level < v2.level ? -1 : 1);
-          }
-          var choices = actions.get(action.nodeType);
-          choices.push(action);
-          choices.sort(SORT_BY_LEVEL);
-          actions.set(action.nodeType, choices);
-        } else if (!actions.get(action.nodeType)[0] || action.level > actions.get(action.nodeType)[0].level) {
-          // Always use deepest level for leave nodes!
-          actions.set(action.nodeType, [action]);
-        }
-      }
-      
-      var nlevel = parseInt($('#'+n.html_id).attr('level'));
-      innerNode = n;
-      n.level = nlevel;
-      if (nlevel<=3) path.push(n);
-      
-      // Possible children
-      if (n.all('children') && n.all('children').length === 0 && destination === 'after') {
-        var children = n.properties().get('children').expectedTypes;
-        
-        _.each(children, function(type) {
-          registerAction({
-            node: n._id,
-            parentNode: parent ? parent._id : null,
-            nodeType: type,
-            nodeTypeName: graph.get(type).name,
-            insertionType: 'child',
-            level: nlevel+1
-          });
-        });
-      }
-
-      // Possible siblings
-      if (parent) {
-        var siblings = parent.properties().get('children').expectedTypes;
-        _.each(siblings, function(type) {
-          registerAction({
-            node: n._id,
-            parentNode: parent ? parent._id : null,
-            nodeType: type,
-            nodeTypeName: graph.get(type).name,
-            insertionType: 'sibling',
-            level: nlevel
-          });
-        });
-      }
-      
-      // Consolidate actions for child elements
-      if (consolidate && n.all('children') && n.all('children').length > 0) {
-        computeActions(n.all('children').last(), n);
-      }
-      return actions;
-    }
-    computeActions(node, parent);
-    
-    // Move insertion type for leaf nodes
-    var moveInsertionType = innerNode.all('children') && innerNode.all('children').length === 0 && destination === 'after' ? "child" : "sibling";
-    
-    return _.tpl('controls', {
-      node: innerNode,
-      insertion_type: moveInsertionType,
-      destination: destination,
-      actions: actions,
-      path: path
-    });
-  }
-  
-  // Top level
-  if (!parent) {
-    // Cleanup
-    $('#document .controls').remove();
-    if (!node.all('children') || node.all('children').length === 0) {
-      $(render(node, 'after')).appendTo($('#'+node.html_id));
-    }
-  } else {
-    //  Insert before, but only for starting nodes (first=true)
-    if (first) $(render(node, 'before')).insertBefore($('#'+node.html_id));
-    
-    if (!last || parent.types().get('/type/document')) {
-      $(render(node, 'after', true)).insertAfter($('#'+node.html_id));
-    }
-  }
-  
-  if (node.all('children')) {
-    // Do the same for all children
-    node.all('children').each(function(child, key, index) {
-      var first = index === 0;
-      var last = index === node.all('children').length-1;
-      renderControls(child, first, last, node, level + 1);
-    });
-  }
-};
-
-// HTMLRenderer
-// ---------------
-
-var HTMLRenderer = function(root, parent, lvl) {
-  
-  // Implement node types
-  var renderers = {
-    "/type/document": function(node, parent, level) {
-      var content = '',
-          children = node.all('children');
-      
-      if (children) {
-        children.each(function(child, key, index) {
-          if (!child.type) console.log(node._id+ "has an unreferenced child" + key);
-          content += renderers[child.type._id](child, node, level+1);
-        });
-      }
-      
-      return _.tpl('document', {
-        node: node,
-        toc: new TOCRenderer(node).render(),
-        content: content,
-        edit: app.document.mode === 'edit',
-        title: app.document.mode === 'edit' ? node.get('title') : node.get('title') || 'Untitled',
-        lead: node.get('lead'),
-        empty_lead: app.document.mode === 'edit' && (!node.get('lead') || node.get('lead') === ''),
-        empty_title: app.document.mode === 'edit' && (!node.get('title') || node.get('title') === ''),
-        level: level
-      });
-    },
-    
-    "/type/story": function(node, parent, level) {
-      return renderers["/type/document"](node, parent, level)
-    },
-    
-    "/type/conversation": function(node, parent, level) {
-      return renderers["/type/document"](node, parent, level)
-    },
-    
-    "/type/article": function(node, parent, level) {
-      return renderers["/type/document"](node, parent, level)
-    },
-    
-    "/type/manual": function(node, parent, level) {
-      return renderers["/type/document"](node, parent, level)
-    },
-    
-    "/type/qaa": function(node, parent, level) {
-      return renderers["/type/document"](node, parent, level)
-    },
-    
-    "/type/section": function(node, parent, level) {
-      var content = '',
-          children = node.all('children');
-      
-      if (children) {
-        node.all('children').each(function(child, key, index) { 
-          content += renderers[child.type._id](child, node, level+1);
-        });
-      }
-      
-      return Helpers.renderTemplate('section', {
-        node: node,
-        comments: node.get('comment_count'), // node.get('comments') && node.get('comments').length>0 ? node.get('comments').length : "",
-        parent: parent,
-        content: content,
-        heading_level: level,
-        level: level,
-        edit: app.document.mode === 'edit',
-        name: node.get('name'),
-        empty: app.document.mode === 'edit' && (!node.get('name') || node.get('name') === '')
-      });
-    },
-    
-    "/type/text": function(node, parent, level) {
-      return _.tpl('text', {
-        node: node,
-        comments: node.get('comment_count'), // node.get('comments') && node.get('comments').length>0 ? node.get('comments').length : "",
-        parent: parent,
-        edit: app.document.mode === 'edit',
-        content: node.get('content'),
-        empty: app.document.mode === 'edit' && (!node.get('content') || node.get('content') === '<p></p>'),
-        level: level
-      });
-    },
-    
-    "/type/quote": function(node, parent, level) {
-      return Helpers.renderTemplate('quote', {
-        node: node,
-        comments: node.get('comment_count'), // node.get('comments') && node.get('comments').length>0 ? node.get('comments').length : "",
-        parent: parent,
-        edit: app.document.mode === 'edit',
-        content: node.get('content'),
-        author: node.get('author'),
-        empty_content: app.document.mode === 'edit' && (!node.get('content') || node.get('content') === ''),
-        empty_author: app.document.mode === 'edit' && (!node.get('author') || node.get('author') === ''),
-        level: level
-      });
-    },
-    
-    "/type/code": function(node, parent, level) {
-      var languages = ['JavaScript', 'Python', 'Ruby', 'PHP', 'HTML', 'CSS', 'Haskell', 'CoffeeScript', 'Java', 'C', 'C++', 'CSharp', 'Other'];
-      
-      function createSelect (dflt, opts) {
-        var html = '<select>';
-        _.each(opts, function (lang) {
-          var value = lang.toLowerCase();
-          selected = dflt === value ? ' selected="selected"' : '';
-          html += '<option value="' + value + '"' + selected + '>' + lang + '</option>';
-        });
-        html += '</select>';
-        return html;
-      }
-      
-      return Helpers.renderTemplate('code', {
-        node: node,
-        comments: node.get('comment_count'), // node.get('comments') && node.get('comments').length>0 ? node.get('comments').length : "",
-        parent: parent,
-        edit: app.document.mode === 'edit',
-        content: node.get('content'),
-        language: node.get('language'),
-        languageSelect: createSelect(node.get('language'), languages),
-        empty: app.document.mode === 'edit' && (!node.get('content') || node.get('content') === ''),
-        level: level
-      });
-    },
-    
-    "/type/question": function(node, parent, level) {
-      return Helpers.renderTemplate('question', {
-        node: node,
-        comments: node.get('comment_count'), // node.get('comments') && node.get('comments').length>0 ? node.get('comments').length : "",
-        parent: parent,
-        edit: app.document.mode === 'edit',
-        content: node.get('content'),
-        empty: app.document.mode === 'edit' && (!node.get('content') || node.get('content') === ''),
-        level: level
-      });
-    },
-    
-    "/type/answer": function(node, parent, level) {
-      return Helpers.renderTemplate('answer', {
-        node: node,
-        comments: node.get('comment_count'), // node.get('comments') && node.get('comments').length>0 ? node.get('comments').length : "",
-        parent: parent,
-        edit: app.document.mode === 'edit',
-        content: node.get('content'),
-        empty: app.document.mode === 'edit' && (!node.get('content') || node.get('content') === ''),
-        level: level
-      });
-    },
-    
-    "/type/image": function(node, parent, level) {
-      return _.tpl('image', {
-        node: node,
-        comments: node.get('comment_count'), // node.get('comments') && node.get('comments').length>0 ? node.get('comments').length : "",
-        parent: parent,
-        edit: app.document.mode === 'edit',
-        url: node.get('url'),
-        original_url: node.get('original_url'),
-        level: level,
-        empty: app.document.mode === 'edit' && (!node.get('caption') || node.get('caption') === ''),
-        caption: node.get('caption'),
-        transloadit_params: config.transloadit
-      });
-    },
-    
-    "/type/resource": function(node, parent, level) {
-      return Helpers.renderTemplate('resource', {
-        node: node,
-        comments: node.get('comment_count'), // node.get('comments') && node.get('comments').length>0 ? node.get('comments').length : "",
-        parent: parent,
-        edit: app.document.mode === 'edit',
-        url: node.get('url'),
-        level: level,
-        empty: app.document.mode === 'edit' && (!node.get('caption') || node.get('caption') === ''),
-        caption: node.get('caption'),
-        transloadit_params: config.transloadit
-      });
-    },
-    
-    "/type/visualization": function(node, parent, level) {
-      return Helpers.renderTemplate('visualization', {
-        node: node,
-        comments: node.get('comment_count'), // node.get('comments') && node.get('comments').length>0 ? node.get('comments').length : "",
-        parent: parent,
-        edit: app.document.mode === 'edit',
-        visualization_type: node.get('visualization_type'),
-        data_source: node.get('data_source'),
-        level: level
-      });
-    }
-  };
-
-  return {
-    render: function() {
-      // Traverse the document
-      return renderers[root.type._id](root, parent, parseInt(lvl));
-    }
-  };
-};
-
-
-var TOCRenderer = function(root) {
-  
-  // Known node types
-  var renderers = {
-    "/type/document": function(node) {
-      content = '<ol>';
-      node.all('children').each(function(child) {
-        if (child.type.key !== '/type/section') return;
-        content += '<li><a class="toc-item" node="'+child.html_id+'" href="#'+root.get('creator')._id.split('/')[2]+'/'+root.get('name')+'/'+child.html_id+'">'+child.get('name')+'</a>';
-        
-        content += renderers["/type/document"](child);
-        content += '</li>';
-      });
-      content += '</ol>';
-      return content;
-    },
-    
-    "/type/story": function(node) {
-      return renderers["/type/document"](node);
-    },
-    
-    "/type/conversation": function(node) {
-      return "";
-    },
-    
-    "/type/manual": function(node, parent) {
-      return renderers["/type/document"](node, parent);
-    },
-    
-    "/type/article": function(node, parent) {
-      return renderers["/type/document"](node, parent);
-    },
-    
-    "/type/qaa": function(node, parent) {
-      return renderers["/type/document"](node, parent);
-    }
-  };
-
-  return {
-    render: function() {
-      // Traverse the document
-      return renderers[root.type._id](root);
-    }
-  };
-};
-
-var DocumentEditor = Backbone.View.extend({
-  events: {
-    'keydown .property': 'updateNode'
-  },
-  
-  initialize: function() {
-    var that = this;
-    
-    this.$node = $('#' + app.document.selectedNode.html_id + ' > .document-title.content').unbind();
-    this.$lead = $('#' + app.document.selectedNode.html_id + ' #document_lead').unbind();
-    
-    function activateTitleEditor() {
-      editor.activate(that.$node, {
-        multiline: false,
-        markup: false,
-        placeholder: 'Enter Title'
-      });
-      editor.bind('changed', function() {
-        that.updateNode({title: editor.content()});
-      });
-    }
-    
-    function activateLeadEditor() {
-      editor.activate(that.$lead, {
-        multiline: false,
-        markup: false,
-        placeholder: 'Enter lead'
-      });
-      editor.bind('changed', function() {
-        that.updateNode({lead: editor.content()});
-      });
-    }
-    
-    that.$node.bind('click', activateTitleEditor);
-    that.$lead.bind('click', activateLeadEditor);
-    
-    function makeSelection() {
-      if (document.activeElement === that.$node[0]) {
-        activateTitleEditor();
-      } else {
-        activateLeadEditor();
-      }
-    }
-    makeSelection();
+s.util.browserSupported = function () {
+  if (head.browser.mozilla && head.browser.version > "1.9.2") {
     return true;
-  },
-  
-  updateNode: function(attrs) {
-    app.document.updateSelectedNode(attrs);
-    app.document.trigger('changed');
   }
-});
-var SectionEditor = Backbone.View.extend({
-  
-  initialize: function() {
-    var that = this;
-    this.render();
-    this.$node = $('#' + app.document.selectedNode.html_id + ' > .content').attr('contenteditable', true).unbind();
-    
-    editor.activate(this.$node, {
-      placeholder: 'Enter Section Name',
-      multiline: false,
-      markup: false
-    });
-    
-    editor.bind('changed', function() {
-      app.document.updateSelectedNode({
-        name: editor.content()
-      });
-    });
-  },
-  
-  render: function() {
-  }
-});
-
-var TextEditor = Backbone.View.extend({
-  events: {
-
-  },
-  
-  initialize: function() {
-    var that = this;
-    this.render();
-
-    this.$content = this.$('div.content');
-    editor.activate(this.$content, {
-      placeholder: 'Enter Text',
-      controlsTarget: $(this.el) // $('#document_actions')
-    });
-    
-    // Update node when editor commands are applied
-    editor.bind('changed', function() {
-      app.document.updateSelectedNode({
-        content: editor.content()
-      });
-    });
-  },
-  
-  render: function() {
-    
-  }
-});
-
-var QuoteEditor = Backbone.View.extend({
-  events: {
-    
-  },
-  
-  initialize: function() {
-    var that = this;
-
-    this.$content = this.$('.quote-content').unbind();
-    this.$author = this.$('.quote-author').unbind();
-    
-    function activateContentEditor() {
-      editor.activate(that.$content, {
-        multiline: false,
-        markup: false,
-        placeholder: 'Enter Quote'
-      });
-      editor.bind('changed', function() {
-        that.updateNode({content: editor.content()});
-      });
-    }
-    
-    function activateAuthorEditor() {
-      editor.activate(that.$author, {
-        multiline: false,
-        markup: false,
-        placeholder: 'Enter Author'
-      });
-      editor.bind('changed', function() {
-        that.updateNode({author: editor.content()});
-      });
-    }
-    
-    that.$content.bind('click', activateContentEditor);
-    that.$author.bind('click', activateAuthorEditor);
-    
-    function makeSelection() {
-      if (document.activeElement === that.$author[0]) {
-        activateAuthorEditor();
-      } else {
-        activateContentEditor();
-      }
-    }
-    
-    makeSelection();
+  if (head.browser.webkit && head.browser.version > "533.0") {
     return true;
-  },
-  
-  updateNode: function(attrs) {
-    app.document.updateSelectedNode(attrs);
-    app.document.trigger('changed');
-  },
-  
-  render: function() {
-    // $(this.el).html(Helpers.renderTemplate('edit_text', app.editor.model.selectedNode.data));
   }
-});
-
-var CodeEditor = Backbone.View.extend({
-  events: {},
-  
-  initialize: function () {
-    var cm = activateCodeMirror(this.$('textarea').get(0));
-    cm.focus();
-    
-    this.$('select').change(function () {
-      var language = $(this).val();
-      app.document.updateSelectedNode({
-        language: language
-      });
-      cm.setOption('mode', getCodeMirrorModeForLanguage(language));
-    });
+  if (head.browser.opera && head.browser.version > "11.0") {
+    return true;
   }
-});
+  // if (head.browser.ie && head.browser.version > "9.0") {
+  //   return true;
+  // }
+  return false;
+};
 
-var QuestionEditor = Backbone.View.extend({
-  events: {
+s.util.prettyDate = function (time) {
+  return time ? jQuery.timeago(time) : "";
+};
 
-  },
-  
-  initialize: function() {
-    var that = this;
-    this.render();
-    
-    this.$content = this.$('.content');
-    
-    editor.activate(this.$content, {
-      multiline: false,
-      markup: false
-    });
-    
-    // Update node when editor commands are applied
-    editor.bind('changed', function() {
-      app.document.updateSelectedNode({
-        content: editor.content()
-      });
-    });
-  },
-  
-  render: function() {
-    // $(this.el).html(Helpers.renderTemplate('edit_text', app.editor.model.selectedNode.data));
-  }
-});
+s.util.escape = function (s) {
+  return s.replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;')
+          .replace(/'/g, '&apos;');
+};
 
-var AnswerEditor = Backbone.View.extend({
-  events: {
-
-  },
-  
-  initialize: function() {
-    var that = this;
-    this.render();
-    
-    this.$content = this.$('.content');
-    editor.activate(this.$content, {
-      placeholder: 'Enter Answer',
-      controlsTarget: $('#document_actions')
-    });
-    
-    // Update node when editor commands are applied
-    editor.bind('changed', function() {
-      that.updateNode();
-    });
-  },
-
-  updateNode: function() {
-    var that = this;
-    
-    setTimeout(function() {
-      app.document.updateSelectedNode({
-        content: editor.content()
-      });
-    }, 5);
-  },
-  
-  render: function() {
-    // $(this.el).html(Helpers.renderTemplate('edit_text', app.editor.model.selectedNode.data));
-  }
-});
-
-var ImageEditor = Backbone.View.extend({
-  events: {
-    'change .image-file ': 'upload'
-  },
-  
-  upload: function() {
-    this.$('.upload-image-form').submit();
-  },
-  
-  initialize: function() {
-    var that = this;
-    
-    this.$caption = this.$('.caption');
-    
-    editor.activate(this.$caption, {
-      placeholder: 'Enter Caption',
-      multiline: false,
-      markup: false
-    });
-    
-    editor.bind('changed', function() {
-      app.document.updateSelectedNode({
-        caption: editor.content()
-      });
-    });
-    
-    this.$('.upload-image-form').transloadit({
-      modal: false,
-      wait: true,
-      autoSubmit: false,
-      onProgress: function(bytesReceived, bytesExpected) {
-        var percentage = parseInt(bytesReceived / bytesExpected * 100);
-        if (!(percentage >= 0)) percentage = 0;
-        that.$('.image-progress .label').html('Uploading ... '+ percentage+'%');
-        that.$('.progress-bar').attr('style', 'width:' + percentage +'%');
-      },
-      // onError: function(assembly) {
-      //   alert(JSON.stringify(assembly));
-      //   that.$('.image-progress .label').html('Invalid image. Skipping ...');
-      //   that.$('.progress-container').hide();
-      // 
-      //   setTimeout(function() {
-      //     app.document.reset();
-      //     that.$('.info').show();
-      //   }, 3000);                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
-      // },
-      onStart: function() {
-        that.$('.image-progress').show();
-        that.$('.info').hide();
-        that.$('.image-progress .label').html('Uploading ...');
-        that.$('.progress-bar').attr('style', 'width: 0%');
-      },
-      onSuccess: function(assembly) {
-        // This triggers a node re-render
-        if (assembly.results.web_version && assembly.results.web_version[1] && assembly.results.web_version[1].url) {
-          app.document.updateSelectedNode({
-            url: assembly.results.web_version[1].url,
-            original_url: assembly.results.print_version[1].url,
-            dirty: true
-          });
-          
-          app.document.reset();
-          that.$('.progress-container').hide();
-          that.$('.info').show();
-        } else {
-          that.$('.image-progress .label').html('Invalid image. Skipping ...');
-          that.$('.progress-container').hide();
-
-          setTimeout(function() {
-            app.document.reset();
-            that.$('.info').show();
-          }, 3000);
-        }
-      }
-    });
-  },
-  
-  render: function() {
-    // this.$('.node-editor-placeholder').html(Helpers.renderTemplate('edit_image', app.document.selectedNode.data));
-  }
-});
-var ResourceEditor = Backbone.View.extend({
-  events: {
-    'keydown .resource-url': 'update'
-  },
-  
-  resourceExists: function(url, callback) {
-    var img = new Image();
-    img.onload = function() { callback(null); }
-    img.onerror = function() { callback('not found'); }
-    img.src = url;
-  },
-  
-  update: function() {
-    var that = this;
-    
-    function perform() {
-      var url = that.$('.resource-url').val();
-      that.resourceExists(url, function(err) {
-        if (!err) {
-          that.$('.resource-content img').attr('src', url);
-          that.$('.status').replaceWith('<div class="status image">Image</div>');
-          app.document.updateSelectedNode({
-            url: url
-          });
-        } else {
-          that.$('.status').replaceWith('<div class="status">Invalid URL</div>');
-        }
-      });      
-    }
-    
-    setTimeout(perform, 500);
-  },
-  
-  initialize: function() {
-    var that = this;
-    
-    this.pendingCheck = false;
-    this.$caption = this.$('.caption');
-    editor.activate(this.$caption, {
-      placeholder: 'Enter Caption',
-      multiline: false,
-      markup: false
-    });
-    
-    editor.bind('changed', function() {
-      app.document.updateSelectedNode({
-        caption: editor.content()
-      });
-    });
-  },
-  
-  render: function() {
-    
-  }
-});
+s.util.unescape = function (s) {
+  return s.replace(/&apos;/g, "'")
+          .replace(/&quot;/g, '"')
+          .replace(/&gt;/g,   '>')
+          .replace(/&lt;/g,   '<')
+          .replace(/&amp;/g,  '&');
+};
 // Top level UI namespace
 
 var UI = {};
@@ -1160,11 +296,12 @@ UI.StringEditor = Backbone.View.extend({
   
   // Render the editor, including the display of values
   render: function() {
-    $(this.el).html(_.renderTemplate('string_editor', {
+    $(this.el).html(_.tpl('string_editor', {
       value: this._value
     }));
   }
 });
+
 UI.MultiStringEditor = Backbone.View.extend({
   events: {
     'submit form': 'newItem',
@@ -1271,1167 +408,609 @@ UI.MultiStringEditor = Backbone.View.extend({
   
   // Render the editor, including the display of values
   render: function() {
-    $(this.el).html(_.renderTemplate('multi_string_editor', {
+    $(this.el).html(_.tpl('multi_string_editor', {
       items: this._items
     }));
   }
 });
-function addEmptyDoc(type, name, title) {
-  var docType = graph.get(type);
-  var doc = graph.set(Data.uuid('/document/'+ app.username +'/'), docType.meta.template);
-  doc.set({
-    creator: "/user/"+app.username,
-    created_at: new Date(),
-    updated_at: new Date(),
-    name: name,
-    title: title
+
+function renderTOC (node, root) {
+  root = root || node;
+  var content = '';
+  
+  content += '<ol>';
+  node.all('children').each(function (child) {
+    if (child.type.key !== '/type/section') return;
+    
+    content += '<li>'
+             +    '<a href="#'+child.html_id+'">'
+             +      child.get('name')
+             +    '</a>'
+             +   renderTOC(child, root)
+             + '</li>';
   });
-  return doc;
-};
+  content += '</ol>';
+  
+  return content;
+}
 
-// The Document Editor View
 
-var Document = Backbone.View.extend({
+s.views.TOC = Backbone.View.extend({
+
+  id: 'toc',
+
   events: {
-    'mouseover .content-node': 'highlightNode',
-    'mouseout .content-node': 'unhighlightNode',
-    'click .content-node': 'selectNode',
-    'click .toc-item': 'scrollTo',
-    'click a.move-node': 'moveNode',
-    'click a.toggle-move-node': 'toggleMoveNode',
-    'click a.toggle-comments': 'toggleComments',
-    'click a.create-comment': 'createComment',
-    'click a.remove-comment': 'removeComment',
-    'click a.subscribe-document': 'subscribeDocument',
-    'click a.unsubscribe-document': 'unsubscribeDocument',
-    'click a.export-document': 'toggleExport',
-    'click a.toggle-settings': 'toggleSettings',
-    'click a.toggle-publish-settings': 'togglePublishSettings',
-    
-    // Actions
-    'click a.add_child': 'addChild',
-    'click a.add_sibling': 'addSibling',
-    'click a.remove-node': 'removeNode'
+    'click a': 'scrollTo'
   },
-  
-  loadedDocuments: {},
-  
-  togglePublishSettings: function() {
-    $('#document_settings').hide();
-    $('.view-action-icon.settings').removeClass('active');
-    
-    $('#document_export').hide();
-    $('.view-action-icon.export').removeClass('active');
-    
-    this.publishSettings.load();
-    
-    
-    
-    
-    if ($('#publish_settings').is(':visible')) {
-      $('.view-action-icon.publish-settings').removeClass('active');
-    } else {
-      $('.view-action-icon.publish-settings').addClass('active');
-    }
-    
-    $('#publish_settings').slideToggle();
 
-    return false;
-  },
-  
-  toggleExport: function() {
-    $('#document_settings').hide();
-    $('.view-action-icon.settings').removeClass('active');
-    
-    $('#publish_settings').hide();
-    $('.view-action-icon.publish-settings').removeClass('active');
-    
-    $('#document_export').slideToggle();
-    $('.view-action-icon.export').toggleClass('active');
-    return false;
-  },
-  
-  toggleSettings: function() {
-    $('#document_export').hide();
-    $('.view-action-icon.export').removeClass('active');
-    
-    $('#publish_settings').hide();
-    $('.view-action-icon.publish-settings').removeClass('active');
-    
-    this.settings.load();
-    
-    $('#document_settings').slideToggle();
-    $('.view-action-icon.settings').toggleClass('active');
-    return false;
-  },
-  
-  
-  createComment: function(e) {
-    var that = this;
-    
-    window.pendingSync = true;
-    
-    var comment = graph.set(null, {
-      type: "/type/comment",
-      node: this.selectedNode._id,
-      document: this.model._id,
-      created_at: new Date(),
-      version: this.version ? '/version/'+this.model._id.split('/')[3]+'/'+this.version : null,
-      creator: '/user/'+app.username,
-      content: this.commentEditor.content()
-    });
-    
-    // Trigger immediate sync
-    graph.sync(function (err) {
-      window.pendingSync = false;
-      that.enableCommentEditor(null, function() {
-        // ready.
-      });
-    });
-
-    return false;
-  },
-  
-  removeComment: function(e) {
-    var that = this;
-    var comment = graph.get($(e.currentTarget).attr('comment'));
-    
-    // Remove comment
-    graph.del(comment._id);
-    
-    window.pendingSync = true;
-    
-    graph.sync(function (err) {
-      window.pendingSync = false;
-      that.enableCommentEditor(null, function() {
-        // ready.
-      });
-    });
-    
-    return false;
-  },
-  
-  loadComments: function(node, callback) {
-    graph.fetch({"type": "/type/comment", "node": node}, function(err, nodes) {
-      var ASC_BY_CREATED_AT = function(item1, item2) {
-        var v1 = item1.value.get('created_at'),
-            v2 = item2.value.get('created_at');
-        return v1 === v2 ? 0 : (v1 < v2 ? -1 : 1);
-      };
-      callback(nodes.sort(ASC_BY_CREATED_AT));
-    });
-    
-    return false;
-  },
-  
-  
-  enableCommentEditor: function(node, callback) {
-    node = node ? node : this.selectedNode;
-    var that = this;
-    
-    // Load comments for a certain node
-    this.loadComments(node._id, function(comments) {
-      // Render comments
-      var wrapper = $('#'+node.html_id+' > .comments-wrapper');
-      if (wrapper.length === 0) return;
-      
-      wrapper.html(_.tpl('comments', {
-        doc: that.model,
-        node: node,
-        comments: comments
-      }));
-
-      var count = comments && comments.length > 0 ? comments.length : "";
-
-      // Update comment count
-      $('#'+node.html_id+' > .operations a.toggle-comments span').html(count);
-
-      var $content = $('#'+node.html_id+' > .comments-wrapper .comment-content');
-      function activate() {
-        that.commentEditor = new Proper();
-        that.commentEditor.activate($content, {
-          multiline: true,
-          markup: true,
-          placeholder: 'Enter Comment'
-        });
-        return false;
-      }
-
-      $content.unbind();
-      $content.click(activate);
-      callback();
-    });
-  },
-  
-  toggleComments: function(e) {
-    var nodeId = $(e.currentTarget).parent().parent().attr('name');
-    var that = this;
-    
-    
-    var changed = false;
-    if (!that.selectedNode || that.selectedNode._id !== nodeId) {
-      // First select node
-      that.selectedNode = graph.get(nodeId);
-      that.trigger('select:node', that.selectedNode);
-      changed = true;
-    }
-    
-    that.enableCommentEditor(null, function() {
-      
-      // Toggle them
-      var wrapper = $('#'+that.selectedNode.html_id+' > .comments-wrapper');
-      wrapper.toggleClass('expanded');
-      if (changed) wrapper.addClass('expanded'); // overrule
-      
-      if (wrapper.hasClass('expanded')) {
-        // Scroll to the comments wrapper
-        var offset = wrapper.offset();
-        $('html, body').animate({scrollTop: offset.top-100}, 'slow');
-      }
-      
-    });
-
-    return false;
-  },
-  
-  
-  // Enable move mode
-  toggleMoveNode: function() {
-    var that = this;
-    
-    $('#document').addClass('move-mode');
-    
-    // Hide other move-node controls
-    $('.move-node').hide();
-    var $controls = $('.content-node .controls');
-    
-    // Show previously hidden labels
-    $controls.find(".placeholder.move").show();
-    
-    $controls.each(function() {
-      var $control = $(this);
-      
-      var node = that.selectedNode;
-      var nodeType = that.selectedNode.type.key == "/type/section" ? "container-node" : "leaf-node";
-      var count = 0;
-      var depth = 0;
-
-      function calcDepth(node) {
-        if (!node.get('children')) return;
-        var found = false;
-        node.get('children').each(function(n) {
-          if (n.type.key === "/type/section") {
-            if (!found) depth += 1;
-            found = true;
-            calcDepth(n);
-          }
-        });
-      }
-      
-      calcDepth(node);
-      
-      function checkDepth(level) {
-        if (node.type.key !== "/type/section") return true;
-        return level+depth <= 3;
-      }
-      
-      // Detect cyclic references
-      var cyclic = false;
-      function isCyclic(n) {
-        if (n===node) {
-          cyclic = true;
-        } else {
-          var parent = that.getParent(n);
-          if (parent) isCyclic(parent);
-        }
-        return cyclic;
-      }
-
-      $control.find('.move-node.'+nodeType).each(function() {
-        var insertionType = $(this).hasClass('child') ? "child" : "sibling";
-        var level = parseInt($(this).attr('level'));
-        var ref = graph.get($(this).attr('node'));
-        var parent = that.getParent(ref);
-        
-        // Skip if source node is referenced by the target node or one of its anchestors
-        cyclic = false;
-        if (isCyclic(ref)) return;
-        
-        // For sibling insertion mode
-        if (insertionType === "sibling") {
-          var allowedNodes = parent.properties().get('children').expectedTypes;
-          if (_.include(allowedNodes, that.selectedNode.type.key)) {
-            if (checkDepth(level)) {
-              $(this).show();
-              count++;            
-            }
-          }
-        } else {
-          $(this).show();
-          count++;
-        }
-      });
-      
-      // Hide move label if there are no drop targets
-      if (count === 0) {
-        $control.find(".placeholder.move").hide();
-      }
-      
-      // Hide move controls inside the selected node
-      $('.content-node.selected .controls .move-node').hide();
-      $controls = $('.content-node .controls');
-    });
-    return false;
-  },
-  
-  // For a given node find the parent node
-  getParent: function(node) {
-    if (!node) return null;
-    return graph.get($('#'+node._id.replace(/\//g, '_')).attr('parent'));
-  },
-  
-  initialize: function() {
-    var that = this;
-    this.attributes = new Attributes({model: this.model});
-    this.settings = new DocumentSettings();
-    
-    this.publishSettings = new PublishSettings();
-    
-    this.app = this.options.app;
-    this.mode = 'show';
-    
-    this.bind('status:changed', function() {
-      that.updateCursors();
-    });
-    
-    this.bind('changed', function() {
-      document.title = that.model.get('title') || 'Untitled';
-      // Re-render Document browser
-      that.app.browser.render();
-    });
-  },
-  
-  moveNode: function(e) {
-    var node = this.selectedNode;
-    var nodeParent = this.getParent(node);
-    
-    var ref = graph.get($(e.currentTarget).attr('node'));
-    var refParent = this.getParent(ref);
-    var destination = $(e.currentTarget).attr('destination');
-    var insertionType = $(e.currentTarget).hasClass('child') ? "child" : "sibling";
-    
-    // Remove from prev. position
-    nodeParent.all('children').del(node._id);
-    nodeParent._dirty = true;
-    
-    this.trigger('change:node', nodeParent);
-    
-    if (insertionType === "child") {
-      ref.all('children').set(node._id, node);
-      ref._dirty = true;
-      this.trigger('change:node', ref);
-    } else {
-      // Register at new position
-      var targetIndex = refParent.all('children').index(ref._id);
-      if (destination === 'after') targetIndex += 1;
-
-      // Cleanup: Move all subsequent leaf nodes inside the new section
-      if (node.type.key === '/type/section') {
-        var successors = refParent.get('children').rest(targetIndex);
-        var done = false;
-        successors = successors.select(function(node) {
-          if (!done && node.type.key !== "/type/section") {
-            // Remove non-section successors from parent node
-            refParent.all('children').del(node._id);
-            return true;
-          } else {
-            done = true;
-            return false;
-          }
-        });
-        var children = new Data.Hash();
-        var idx = 0;
-        while (idx < node.get('children').length && node.get('children').at(idx).type.key !== "/type/section") {
-          var n = node.get('children').at(idx);
-          children.set(n._id, n);
-          idx += 1;
-        }
-        children = children.union(successors);
-        children = children.union(node.get('children').rest(idx));
-        node.set({
-          children: children.keys()
-        });
-      }
-      // Connect to parent
-      refParent.all('children').set(node._id, node, targetIndex);
-      refParent._dirty = true;
-      graph.trigger('dirty');
-      this.trigger('change:node', refParent);
-    }
-    // Select node
-    this.selectedNode = node;
-    this.trigger('select:node', this.selectedNode);
-    return false;
-  },
-  
-  scrollTo: function(e) {
-    var node = $(e.currentTarget).attr('node');
+  scrollTo: function (e) {
+    var node = $(e.currentTarget).attr('href').slice(1);
     app.scrollTo(node);
-    router.navigate($(e.currentTarget).attr('href'));
     app.toggleTOC();
-    return false;
   },
-  
-  updateCursors: function() {
-    // $('.content-node.occupied').removeClass('occupied');
-    // _.each(this.status.cursors, function(user, nodeKey) {
-    //   var n = graph.get(nodeKey);
-    //   $('#'+n.html_id).addClass('occupied');
-    //   $('#'+n.html_id+' .cursor span').html(user);
-    // });
+
+  render: function () {
+    $(this.el).html(renderTOC(this.model));
+    return this;
+  }
+
+});
+
+// Document
+// -------------
+
+s.views.Document = Backbone.View.extend({
+
+  initialize: function (options) {
+    _.bindAll(this);
+    
+    this.authorized  = options.authorized;
+    this.published   = options.published;
+    this.version     = options.version;
+     
+    this.node        = s.views.Node.create({ model: this.model, document: this });
+    this.toc         = new s.views.TOC({ model: this.model, authorized: this.authorized });
+    this.settings    = new s.views.DocumentSettings({ model: this.model, authorized: this.authorized });
+    this.publish     = new s.views.Publish({ model: this.model, docView: this, authorized: this.authorized });
+    this.invite      = new s.views.Invite({ model: this.model, authorized: this.authorized });
+    this["export"]   = new s.views.Export({ model: this.model, authorized: this.authorized });
+    this.subscribers = new s.views.Subscribers({ model: this.model, authorized: this.authorized });
+    this.versions    = new s.views.Versions({ model: this.model, authorized: this.authorized });
+    
+    // TODO: Instead listen for a document-changed event
+    graph.bind('dirty', _.bind(function() {
+      this.updatePublishState();
+    }, this));
+
+    this.currentView = null;
+    
+    _.bindAll(this, 'deselect', 'onKeydown');
+    $(document.body).keydown(this.onKeydown);
   },
-  
-  render: function() {
-    // Render all relevant sub views
-    $(this.el).html(_.tpl('document_wrapper', {
-      mode: this.mode,
-      doc: this.model
+
+  render: function () {
+    $(this.el).html(s.util.tpl('document', {
+      doc: this.model,
+      authorized: this.authorized
     }));
-    this.renderMenu();
-
-    if (this.model) {
-      // Render Attributes
-      this.attributes.render();
-      // Render the acutal document
-      this.renderDocument();
-    }
-  },
-  
-  // Re-renders a particular node and all child nodes
-  renderNode: function(node) {
-    var $node = $('#'+node.html_id);
-    var parent = graph.get($node.attr('parent'));
-    var level = parseInt($node.attr('level'));
     
-    if (_.include(node.types().keys(), '/type/document')) {
-      $('#document').html(new HTMLRenderer(node, parent, level).render());
+    $(this.toc.render().el).appendTo(this.$('#document'));
+    $(this.node.render().el).appendTo(this.$('#document'));
+    if (this.authorized && !this.version) { this.edit(); }
+    this.$('#document_content').click(this.deselect);
+    return this;
+  },
+
+  remove: function () {
+    $(document.body).unbind('keydown', this.onKeydown);
+    this.$('#document_content').unbind('click', this.deselect);
+    $(this.el).remove();
+    return this;
+  },
+
+
+  // Events
+  // ------
+
+  events: {
+    'click .toggle-subscription': 'toggleSubscription',
+    'click .settings':    'toggleSettings',
+    'click .publish':     'togglePublish',
+    'click .invite':      'toggleInvite',
+    'click .subscribers': 'toggleSubscribers',
+    'click .versions':    'toggleVersions',
+    'click .export':      'toggleExport',
+    'click #toc':         'toggleTOC',
+    'click .toggle-toc':  'toggleTOC'
+  },
+
+  // Handlers
+  // --------
+
+  toggleSubscription: function (e) {
+    if (!this.model.get('subscribed')) {
+      subscribeDocument(this.model, _.bind(function (err) {
+        this.$('.action.toggle-subscription a').html('Remove Bookmark');
+        this.$('.tab.subscribers a').html(this.model.get('subscribers'));
+      }, this));
     } else {
-      $('#'+node.html_id).replaceWith(new HTMLRenderer(node, parent, level).render());
+      unsubscribeDocument(this.model, _.bind(function (err) {
+        this.$('.action.toggle-subscription a').html('Bookmark');
+        this.$('.tab.subscribers a').html(this.model.get('subscribers'));
+      }, this));
     }
-    
-    if (this.mode === 'edit') {
-      renderControls(this.model, null, null, null, 0);
-    }
-    
-    //setTimeout(function() {
-      $('.content-node.code textarea').each(function() {
-        var cm = activateCodeMirror(this);
-        $(this).data('codemirror', cm);
-      });
-    //}, 10);
+    return false;
   },
-  
-  renderDocument: function() {
-    this.$('#document').html(new HTMLRenderer(this.model, null, 0).render());
-    this.$('#attributes').show();
-    this.$('#document').show();
-    
-    // Render controls
-    if (this.mode === 'edit') {
-      renderControls(this.model, null, null, null, 0);
-    }
-    
-    //setTimeout(function() {
-      $('.content-node.code textarea').each(function() {
-        activateCodeMirror(this);
-      });
-    //}, 10);
-  },
-  
-  // Extract available documentTypes from config
-  documentTypes: function() {
-    var result = [];
-    graph.get('/config/substance').get('document_types').each(function(type, key) {
-      result.push({
-        type: key,
-        name: graph.get(key).name
-      });
-    });
-    return result;
-  },
-  
-  renderMenu: function() {
-    if (this.model) {
-      $('#document_tab').show();
-      $('#document_tab').html(_.tpl('document_tab', {
-        username: this.model.get('creator')._id.split('/')[2],
-        document_name: this.model.get('name')
-      }));
-    }
-  },
-  
-  init: function() {
-    var that = this;
-    
-    // Inject node editor on every select:node
-    this.unbind('select:node');
-    
-    this.bind('select:node', function(node) {
-      that.resetSelection();
-      $('#'+node.html_id).addClass('selected');
-      $('#document').addClass('edit-mode');
-      
-      // Deactivate Richtext Editor
-      editor.deactivate();
-      
-      // Render inline Node editor
-      that.renderNodeEditor(node);
-    });
-    
-    // Former DocumentView stuff
-    this.bind('change:node', function(node) {
-      that.renderNode(node);
-    });
-    
-    // Points to the selected
-    that.selectedNode = null;
 
-    // TODO: Select the document node on-init
-    $(document).unbind('keyup');
-    $(document).keyup(function(e) {
-      if (e.keyCode == 27) { that.reset(); } // ESC
-      e.stopPropagation();
-    });
-    
-    // New node
-    $(document).bind('keydown', 'alt+down', function(e) {
-      if (that.selectedNode) {
-        var controls = $('.controls[node='+that.selectedNode._id+'][destination=after]');
-        if (controls) {
-          controls.addClass('active');
-          // Enable insert mode
-          $('#document').addClass('insert-mode');
-        }
-      }
-    });
-    
-    $(document).bind('keydown', 'right', function(e) {
-      // TODO: implement cycle through node insertion buttons
-    });
-    
-    $(document).bind('keydown', 'left', function(e) {
-      // TODO: implement cycle through node insertion buttons
-    });
-  },
-  
-  newDocument: function(type, name, title) {
-    this.model = addEmptyDoc(type, name, title);
-    
-    this.status = null;
-    this.mode = 'edit';
-    this.authorized = true;
-    $(this.el).show();
-    this.render();
-    this.loadedDocuments[app.username+"/"+name] = this.model._id;
-    this.init();
-    
-    // Update browser graph
-    if (app.browser && app.browser.query && app.browser.query.type === "user" && app.browser.query.value === app.username) {
-      app.browser.graph.set('nodes', this.model._id, this.model);
-    }
-    
-    // Move to the actual document
-    app.toggleView('document');
-    
-    router.navigate(this.app.username+'/'+name);
-    $('#document_wrapper').attr('url', '#'+this.app.username+'/'+name);
-    
-    this.trigger('changed');
-    notifier.notify(Notifications.BLANK_DOCUMENT);
-    return false;
-  },
-  
-  loadDocument: function(username, docname, version, nodeid, commentid, mode) {
-    var that = this;
-    
-    $('#tabs').show();
-    function init(id) {
-      that.model = graph.get(id);
-      
-      if (that.mode === 'edit' && !(head.browser.webkit || head.browser.mozilla)) {
-        alert("Your browser is not yet supported. We recommend Google Chrome and Safari, but you can also use Firefox.");
-        that.mode = 'show';
-      }
-      
-      if (that.model) {
-        that.render();
-        that.init();
-        that.reset();
-        
-        // window.positionBoard();
-        that.trigger('changed');
-        that.loadedDocuments[username+"/"+docname] = id;
-        
-        // Update browser graph reference
-        app.browser.graph.set('nodes', id, that.model);
-        app.toggleView('document');
-        
-        // Scroll to target node
-        if (nodeid && !commentid) app.scrollTo(nodeid);
-        
-        // Scroll to comment
-        if (nodeid && commentid) {
-          var targetNode = graph.get(nodeid.replace(/_/g, '/'));
-          
-          that.selectedNode = targetNode;
-          that.trigger('select:node', that.selectedNode);
-          
-          that.enableCommentEditor(targetNode, function() {
-            $('#'+nodeid+' > .comments-wrapper').show();
-            graph.get(commentid.replace(/_/g, '/')) ? app.scrollTo(commentid) : app.scrollTo('comments'+nodeid);
-          });
-        }
-      } else {
-        $('#document_wrapper').html('Document loading failed');
-      }
-    }
-    
-    var id = that.loadedDocuments[username+"/"+docname];
-    $('#document_tab').show();
-    
-    // Already loaded - no need to fetch it
-    // if (id) {
-    //   // TODO: check if there are changes from a realtime session
-    //   init(id);
-    // } else {
-      
-    function printError(error) {
-      if (error === "not_authorized") {
-        $('#document_tab').html('&nbsp;&nbsp;&nbsp; Not Authorized');
-        $('#document_wrapper').html("<div class=\"notification error\">You are not authorized to access this document.</div>");
-      } else {
-        $('#document_tab').html('&nbsp;&nbsp;&nbsp; Document not found');
-        $('#document_wrapper').html("<div class=\"notification error\">The requested document couldn't be found.</div>");
-      }
-      app.toggleView('document');
-    }
+  toggleSettings:    function (e) { this.toggleView('settings');    return false; },
+  togglePublish:     function (e) { this.toggleView('publish');     return false; },
+  toggleSubscribers: function (e) { this.toggleView('subscribers'); return false; },
+  toggleVersions:    function (e) { this.toggleView('versions');    return false; },
+  toggleInvite:      function (e) { this.toggleView('invite');      return false; },
+  toggleExport:      function (e) { this.toggleView('export');      return false; },
 
-    $('#document_tab').html('&nbsp;&nbsp;&nbsp;Loading...');
-    $.ajax({
-      type: "GET",
-      url: version ? "/documents/"+username+"/"+docname+"/"+version : "/documents/"+username+"/"+docname,
-      dataType: "json",
-      success: function(res) {
-        that.version = res.version;
-        that.authorized = res.authorized;
-        that.published = res.published;
-        that.mode = mode || (res.authorized && !version ? "edit" : "show");
-        if (res.status === 'error') {
-          printError(res.error);
-        } else {
-          graph.merge(res.graph);
-          init(res.id);
-        }
-      },
-      error: function(err) {
-        printError(JSON.parse(err.responseText).error);
-      }
-    });
-    // }
-  },
-  
-  subscribeDocument: function() {
-    if (!app.username) {
-      alert('Please log in to make a subscription.');
-      return false;
-    }
-    
-    graph.set(null, {
-      type: "/type/subscription",
-      user: "/user/"+app.username,
-      document: this.model._id
-    });
-    
-    this.model.set({
-      subscribed: true,
-      subscribers: this.model.get('subscribers') + 1
-    });
-    
-    this.model._dirty = false; // Don't make dirty
-    this.render();
-    return false;
-  },
-  
-  unsubscribeDocument: function() {
-    var that = this;
-    
-    // Fetch the subscription object
-    graph.fetch({type: "/type/subscription", "user": "/user/"+app.username, "document": this.model._id}, function(err, nodes) {
-      if (nodes.length === 0) return;
-      
-      // Unsubscribe
-      graph.del(nodes.first()._id);
-      that.model.set({
-        subscribed: false,
-        subscribers: that.model.get('subscribers') - 1
-      });
-      that.model._dirty = false; // Don't make dirty
-      that.render();
-    });
-    
-    return false;
-  },
-  
-  closeDocument: function() {
-    this.model = null;
-    router.navigate(this.app.username);
-    $('#document_wrapper').attr('url', '#'+this.app.username);
-    $('#document_tab').hide();
-    app.toggleView('content');
-    this.render();
-  },
-  
-  // Delete an existing document, given that the user is authorized
-  // -------------
-  
-  deleteDocument: function(id) {
-    var that = this;
-    graph.del(id);
-    app.browser.graph.del(id);
-    app.browser.render();
-    $('#document_tab').hide();
-    setTimeout(function() {
-      app.toggleView('browser');
-    }, 300);
-    notifier.notify(Notifications.DOCUMENT_DELETED);
-  },
-  
-  // Reset to view mode (aka unselect everything)
-  reset: function(noBlur) {
-    if (!this.model) return;
-    
-    // if (!noBlur) $('.content').blur();
-    if (!noBlur) $(document.activeElement).blur();
-    
-    this.app.document.selectedNode = null;
-    this.resetSelection();
-
-    // Broadcast
-    // remote.Session.selectNode(null);
-    return false;
-  },
-  
-  resetSelection: function() {
-    this.$('.content-node.selected').removeClass('selected');
-    $('#document .controls.active').removeClass('active');
-    
-    $('#document').removeClass('edit-mode');
-    $('#document').removeClass('insert-mode');
-    $('.proper-commands').hide();
-    
-    // Reset node-editor-placeholders
-    $('.node-editor-placeholder').html('');
-    
-    // Rest move-node mode, if active
-    $('.move-node').hide();
-    $('#document').removeClass('move-mode');
-  },
-  
-  renderNodeEditor: function(node) {
-    var $node = $('#'+node.html_id);
-    if (this.mode !== 'edit') return;
-    
-    // Depending on the selected node's type, render the right editor
-    if (_.include(this.selectedNode.types().keys(), '/type/document')) {
-      this.nodeEditor = new DocumentEditor({el: $('#drawer_content')});
-    } else if (this.selectedNode.type._id === '/type/text') {
-      this.nodeEditor = new TextEditor({el: $node});
-    } else if (this.selectedNode.type._id === '/type/section') {
-      this.nodeEditor = new SectionEditor({el: $node});
-    } else if (this.selectedNode.type._id === '/type/image') {
-      this.nodeEditor = new ImageEditor({el: $node});
-    } else if (this.selectedNode.type._id === '/type/resource') {
-      this.nodeEditor = new ResourceEditor({el: $node});
-    } else if (this.selectedNode.type._id === '/type/quote') {
-      this.nodeEditor = new QuoteEditor({el: $node});
-    } else if (this.selectedNode.type._id === '/type/code') {
-      this.nodeEditor = new CodeEditor({el: $node});
-    } else if (this.selectedNode.type._id === '/type/question') {
-      this.nodeEditor = new QuestionEditor({el: $node});
-    } else if (this.selectedNode.type._id === '/type/answer') {
-      this.nodeEditor = new AnswerEditor({el: $node});
-    }
-  },
-  
-  updateNode: function(nodeKey, attrs) {
-    var node = graph.get(nodeKey);
-    node.set(attrs);
-    this.trigger('change:node', node);
-  },
-  
-  // Update attributes of selected node
-  updateSelectedNode: function(attrs) {
-    if (!this.selectedNode) return;
-    this.selectedNode.set(attrs);
-    
-    // Update modification date on original document
-    this.model.set({
-      updated_at: new Date()
-    });
-    
-    // Only set dirty if explicitly requested    
-    if (attrs.dirty) {
-      this.trigger('change:node', this.selectedNode);
-    }
-    
-    if (this.selectedNode.type.key === '/type/document') {
-      this.trigger('changed');
-    }
-    
-    // Notify all collaborators about the changed node
-    if (this.status && this.status.collaborators.length > 1) {
-      var serializedNode = this.selectedNode.toJSON();
-      delete serializedNode.children;
-      // remote.Session.registerNodeChange(this.selectedNode._id, serializedNode);
-    }
-  },
-  
-  highlightNode: function(e) {
-    $(e.currentTarget).addClass('active');
-    return false;
-  },
-  
-  unhighlightNode: function(e) {
-    $(e.currentTarget).removeClass('active');
-    return false;
-  },
-  
-
-  
-  selectNode: function(e) {
-    var that = this;
-    // if (this.mode === 'show') return; // Skip for show mode
-    
-    var key = $(e.currentTarget).attr('name');
-    if (!e.stopProp && (!this.selectedNode || this.selectedNode.key !== key)) {
-      var node = graph.get(key);
-      this.selectedNode = node;
-      this.trigger('select:node', this.selectedNode);
-      e.stopProp = true;
-      // The server will respond with a status package containing my own cursor position
-      // remote.Session.selectNode(key);
-      
-      var wrapper = $('#'+this.selectedNode.html_id+' > .comments-wrapper');
-      wrapper.removeClass('expanded');
-      // this.enableCommentEditor();
-    }
-    e.stopPropagation();
-    // return false;
-  },
-  
-  // Update the document's name
-  updateName: function(name) {
-    this.model.set({
-      name: name
-    });
-  },
-  
-  addChild: function(e) {
-    if (arguments.length === 1) {
-      // Setup node
-      var type = $(e.currentTarget).attr('type');
-      var refNode = graph.get($(e.currentTarget).attr('node'));
-      
-      var newNode = graph.set(null, {"type": type, "document": this.model._id});
+  toggleTOC: function (e) {
+    if ($(this.toc.el).is(":hidden")) {
+      $(this.toc.render().el).show();
     } else {
-      var refNode = graph.get(arguments[1]);
-      var newNode = graph.set(arguments[0].nodeId, arguments[0]);
+      $(this.toc.el).hide();
     }
     
-    // Connect child node
-    refNode.all('children').set(newNode._id, newNode);
-    refNode._dirty = true;
-    
-    this.trigger('change:node', refNode);
-    
-    // Select newly created node
-    this.selectedNode = newNode;
-    this.trigger('select:node', this.selectedNode);
-    
-    if (arguments.length === 1) {
-      // Broadcast insert node command
-      // remote.Session.insertNode('child', newNode.toJSON(), $(e.currentTarget).attr('node'), null, 'after');
-    }
     return false;
   },
-  
-  // TODO: cleanup!
-  addSibling: function(e) {
-    if (arguments.length === 1) {
-      // Setup node
-      var type = $(e.currentTarget).attr('type');
-      var refNode = graph.get($(e.currentTarget).attr('node'));
-      var parentNode = graph.get($(e.currentTarget).attr('parent'));
-      var destination = $(e.currentTarget).attr('destination');
-      
-      // newNode gets populated with default values
-      var newNode = graph.set(null, {"type": type, "document": this.model._id});
-    } else {
-      var refNode = graph.get(arguments[1]);
-      var parentNode = graph.get(arguments[2]);
-      var destination = arguments[3];
-      var newNode = graph.set(arguments[0].nodeId, arguments[0]);
-    }
 
-    var targetIndex = parentNode.all('children').index(refNode._id);
-    if (destination === 'after') targetIndex += 1;
-    
-    if (type === '/type/section') {
-      // Move all successors inside the new section
-      var successors = parentNode.get('children').rest(targetIndex);
-      
-      var done = false;
-      successors = successors.select(function(node) {
-        if (!done && node.type.key !== "/type/section") {
-          // Remove non-section successors from parent node
-          parentNode.all('children').del(node._id);
-          return true;
-        } else {
-          done = true;
-          return false;
-        }
-      });
-      
-      // Append successors to the new node
-      newNode.set({
-        children: successors.keys()
-      });
+  onKeydown: function (e) {
+    if (e.keyCode === 27) {
+      // Escape key
+      this.deselect();
     }
-    
-    // Connect to parent
-    parentNode.all('children').set(newNode._id, newNode, targetIndex);
-    parentNode._dirty = true;
-    this.trigger('change:node', parentNode);
-
-    // Select newly created node
-    this.selectedNode = newNode;
-    this.trigger('select:node', this.selectedNode);
-    
-    if (arguments.length === 1) {
-      // Broadcast insert node command
-      // remote.Session.insertNode('sibling', newNode.toJSON(), refNode._id, parentNode._id, destination);      
-    }
-    return false;
   },
-  
-  removeNode: function(e) {
-    if (arguments.length === 1) {
-      var node = graph.get($(e.currentTarget).attr('node'));
-      var parent = graph.get($(e.currentTarget).attr('parent'));
-    } else {
-      var node = graph.get(arguments[0]);
-      var parent = graph.get(arguments[1]);
-    }
-    
-    parent.all('children').del(node._id);
-    graph.del(node._id);
-    parent._dirty = true;
-    this.trigger('change:node', parent);
 
-    if (arguments.length === 1) {
-      // Broadcast insert node command
-      // remote.Session.removeNode(node._id, parent._id);
+
+  // Helpers
+  // -------
+
+  updatePublishState: function () {
+    $('#document_navigation .publish-state')
+       .removeClass()
+       .addClass("publish-state "+getPublishState(this.model));
+  },
+
+  edit: function () {
+    this.node.transitionTo('write');
+  },
+
+  deselect: function () {
+    if (this.node) {
+      this.node.deselectNode();
+      window.editor.deactivate();
+      this.$(':focus').blur();
     }
-    this.reset();
-    return false;
+  },
+
+  resizeShelf: function () {
+    var shelfHeight   = this.currentView ? $(this.currentView.el).outerHeight() : 0
+    ,   contentMargin = shelfHeight + 100;
+    this.$('#document_shelf').css({ height: shelfHeight + 'px' });
+    this.$('#document_content').css({ 'margin-top': contentMargin + 'px' });
+  },
+
+  closeShelf: function() {
+    if (!this.currentView) return;
+    this.currentView.unbind('resize', this.resizeShelf);
+
+    // It's important to use detach (not remove) to retain the view's event
+    // handlers
+    $(this.currentView.el).detach();
+
+    this.currentView = null;
+    this.$('.document.tab').removeClass('selected');
+    this.resizeShelf();
+  },
+
+  toggleView: function (viewname) {
+    var view = this[viewname];
+    var shelf   = this.$('#document_shelf')
+    ,   content = this.$('#document_content');
+    
+    if (this.currentView && this.currentView === view) return this.closeShelf();
+    
+    this.$('.document.tab').removeClass('selected');
+    $('.document.tab.'+viewname).addClass('selected');
+    view.load(_.bind(function (err) {
+      view.bind('resize', this.resizeShelf);
+      shelf.empty();
+      shelf.append(view.el)
+      this.currentView = view;
+      view.render();
+    }, this));
   }
 });
 
-var DocumentSettings = Backbone.View.extend({
+s.views.Export = Backbone.View.extend({
+
+  className: 'shelf-content',
+  id: 'document_export',
+
+  render: function () {
+    $(this.el).html(s.util.tpl('document_export', {
+      baseUrl: document.location.href
+    }));
+    this.trigger('resize');
+    return this;
+  },
+
+  load: function (callback) { callback(null); }
+
+});
+
+s.views.Invite = Backbone.View.extend({
+
+  className: 'shelf-content',
+  id: 'document_invite',
+
+  initialize: function () {
+    _.bindAll(this);
+    this.collaborators = null;
+  },
+
+  render: function () {
+    $(this.el).html(s.util.tpl('document_invite', {
+      collaborators: this.collaborators,
+      document: this.model
+    }));
+    this.trigger('resize');
+    return this;
+  },
+
+  load: function (callback) {
+    if (this.collaborators) {
+      callback(null);
+    } else {
+      getCollaborators(this.model, _.bind(function (err, nodes) {
+        if (!err) {
+          this.collaborators = nodes;
+        }
+        callback(err);
+      }, this));
+    }
+  },
+
+
+  // Events
+  // ------
+
   events: {
     'submit form': 'invite',
-    'change select.change-mode': 'changeMode',
-    'click a.remove-collaborator': 'removeCollaborator'
+    'change .change-mode': 'changeMode',
+    'click .remove-collaborator': 'removeCollaborator'
   },
-  
-  changeMode: function(e) {
-    var collaboratorId = $(e.currentTarget).attr('collaborator');
-    var mode = $(e.currentTarget).val();
-    var that = this;
-    
-    window.pendingSync = true;
-    
-    graph.get(collaboratorId).set({
-      mode: mode
-    });
-    
-    // trigger immediate sync
-    graph.sync(function(err) {
-      window.pendingSync = false;
-      that.render();
-    });
-    
-    return false;
-  },
-  
-  removeCollaborator: function(e) {
-    var collaboratorId = $(e.currentTarget).attr('collaborator');
-    var that = this;
-    
-    window.pendingSync = true;
-    graph.del(collaboratorId);
-    
-    // trigger immediate sync
-    graph.sync(function(err) {
-      window.pendingSync = false;
-      that.collaborators.del(collaboratorId);
-      that.render();
-    });
 
-    return false;
-  },
-  
-  invite: function() {
-    var that = this;
-    $.ajax({
-      type: "POST",
-      url: "/invite",
-      data: {
-        email: $('#collaborator_email').val(),
-        document: app.document.model._id,
-        mode: $('#collaborator_mode').val()
-      },
-      dataType: "json",
-      success: function(res) {
-        if (res.error) return alert(res.error);
-        that.load();
-      },
-      error: function(err) {
-        alert("Unknown error occurred");
-      }
-    });
+  changeMode: function (e) {
+    var collaboratorId = $(e.currentTarget).attr('data-collaborator')
+    ,   mode           = $(e.currentTarget).val();
+    
+    changeCollaboratorMode(collaboratorId, mode, _.bind(function (err) {
+      this.render();
+    }, this));
     
     return false;
   },
-  
-  load: function() {
-    var that = this;
-    graph.fetch({"type": "/type/collaborator", "document": app.document.model._id}, function(err, nodes) {
-      that.collaborators = nodes;
-      that.render();
-    });
+
+  removeCollaborator: function (e) {
+    var collaboratorId = $(e.currentTarget).attr('data-collaborator');
+    
+    removeCollaborator(collaboratorId, _.bind(function (err) {
+      this.collaborators.del(collaboratorId);
+      this.render();
+    }, this));
+    
+    return false;
   },
-  
-  initialize: function() {
-    this.el = '#document_settings';
-  },
-  
-  render: function() {
-    $(this.el).html(_.tpl('document_settings', {
-      collaborators: this.collaborators,
-      document: app.document.model
-    }));
-    this.delegateEvents();
+
+  invite: function (e) {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    var email = this.$('#collaborator_email').val()
+    ,   mode  = this.$('#collaborator_mode').val();
+    
+    invite(email, this.model, mode, _.bind(function (err) {
+      this.collaborators = null;
+      this.load(this.render);
+    }, this));
   }
+
 });
 
-var PublishSettings = Backbone.View.extend({
+s.views.Publish = Backbone.View.extend({
+
+  className: 'shelf-content',
+  id: 'document_publish',
+
+  initialize: function (options) {
+    _.bindAll(this);
+    this.docView = options.docView;
+    this.data = null;
+  },
+
+  render: function () {
+    $(this.el).html(s.util.tpl('document_publish', {
+      availableNetworks: this.data.availableNetworks,
+      networks: this.data.networks,
+      versions: this.data.versions,
+      document: this.model
+    }));
+
+    this.trigger('resize');
+    this.$("select.networks-selection").chosen();
+    return this;
+  },
+
+  load: function (callback) {
+    if (this.data) {
+      callback(null);
+    } else {
+      loadPublish(this.model, _.bind(function (err, res) {
+        if (!err) { this.data = res; }
+        callback(err);
+      }, this));
+    }
+  },
+
+
+  // Events
+  // ------
+
   events: {
-    'click a.publish-document': 'publishDocument',
-    'click .remove-version': 'removeVersion',
-    'focus #version_remark': 'focusRemark',
-    'blur #version_remark': 'blurRemark'
+    'click .publish-document': 'publishDocument',
+    'click .unpublish-document': 'unpublishDocument'
   },
-  
-  focusRemark: function(e) {
-    var input = $('#version_remark');
-    if (input.val() === 'Enter optional remark.') input.val('');
-  },
-  
-  blurRemark: function(e) {
-    var input = $('#version_remark');
-    if (input.val() === '') input.val('Enter optional remark.');
-  },
-  
-  publishDocument: function(e) {
-    var that = this;
-    var remark = $('#version_remark').val();
-    
-    $.ajax({
-      type: "POST",
-      url: "/publish",
-      data: {
-        document: app.document.model._id,
-        remark: remark === 'Enter optional remark.' ? '' : remark
-      },
-      dataType: "json",
-      success: function(res) {
-        if (res.error) return alert(res.error);
-        that.load();
-        app.document.published = true;
-        app.document.render();
-        $('#publish_settings').show();
-      },
-      error: function(err) {
-        console.log(err);
-        alert("Unknown error occurred");
-      }
-    });
-    
+
+  publishDocument: function (e) {
+    var networks = this.$('.networks-selection').val() || []
+    ,   remark   = this.$('#version_remark').val();
+    publishDocument(this.model, networks, remark, _.bind(function (err, res) {
+      this.data = null;
+      this.docView.updatePublishState();
+      this.docView.closeShelf();
+    }, this));
     return false;
   },
-  
-  removeVersion: function(e) {
-    var version = $(e.currentTarget).attr('version');
-    var that = this;
-    
-    window.pendingSync = true;
-    graph.del(version);
-    
-    // Trigger immediate sync
-    graph.sync(function (err) {
-      window.pendingSync = false;
-      that.load();
-      
-      if (that.versions.length === 1) {
-        app.document.published = false;
-        app.document.render();
-        $('#publish_settings').show();
-      }
-    });
-    
+
+  unpublishDocument: function(e) {
+    unpublishDocument(this.model, _.bind(function(err, res) {
+      this.data = null;
+      this.docView.updatePublishState();
+      this.docView.closeShelf();
+    }, this));
     return false;
-  },
-  
-  load: function() {
-    var that = this;
-    // Load versions
-    graph.fetch({"type": "/type/version", "document": app.document.model._id}, function(err, versions) {
-      var ASC_BY_CREATED_AT = function(item1, item2) {
-        var v1 = item1.value.get('created_at'),
-            v2 = item2.value.get('created_at');
-        return v1 === v2 ? 0 : (v1 < v2 ? -1 : 1);
-      };
-      
-      that.versions = versions.sort(ASC_BY_CREATED_AT);
-      that.render();
-    });
-  },
-  
-  initialize: function() {
-    this.el = '#publish_settings';
-  },
-  
-  render: function() {
-    $(this.el).html(_.tpl('publish_settings', {
-      versions: this.versions,
-      document: app.document.model
-    }));
-    this.delegateEvents();
   }
+
 });
 
-var ConfirmCollaboration = Backbone.View.extend({
+s.views.DocumentSettings = Backbone.View.extend({
+
+  className: 'shelf-content',
+  id: 'document_settings',
+
+  initialize: function () {},
+
+  initializeUploadForm: function () {
+    _.bindAll(this, 'onStart', 'onProgress', 'onError');
+
+    this.$('.upload-image-form').transloadit({
+      modal: false,
+      wait: true,
+      autoSubmit: false,
+      onStart: this.onStart,
+      onProgress: this.onProgress,
+      onError: this.onError,
+      onSuccess: _.bind(function (assembly) {
+        if (assembly.results.web_version &&
+            assembly.results.web_version[1] &&
+            assembly.results.web_version[1].url) {
+          this.onSuccess(assembly);
+        } else {
+          this.onInvalid();
+        }
+      }, this)
+    });
+  },
+
+  onStart: function () {
+    this.$('.image-progress').show();
+    this.$('.image-progress .label').html("Uploading &hellip;");
+    this.$('.progress-bar').css('width', '0%');
+  },
+
+  onProgress: function (bytesReceived, bytesExpected) {
+    var percentage = Math.max(0, parseInt(bytesReceived / bytesExpected * 100));
+    if (!percentage) percentage = 0;
+    this.$('.image-progress .label').html("Uploading &hellip; " + percentage + "%");
+    this.$('.progress-bar').css('width', percentage + '%');
+  },
+
+  onSuccess: function (assembly) {
+    this.$('.image-progress').hide();
+    $('.upload-image-form img').attr('src', assembly.results.web_version[1].url);
+
+    this.model.set({
+      cover: assembly.results.web_version[1].url
+    });
+  },
+
+  onError: function (assembly) {
+    // TODO
+  },
+
+  onInvalid: function () {
+    this.$('.image-progress .label').html("Invalid image. Skipping &hellip;");
+    this.$('.image-progress').hide();
+    
+    setTimeout(_.bind(function () {
+      this.$('.info').show();
+    }, this), 3000);
+  },
+
+  render: function () {
+    $(this.el).html(s.util.tpl('document_settings', {
+      doc: this.model,
+      transloadit_params: config.transloadit.document_cover
+    }));
+
+    this.initializeUploadForm();
+    this.trigger('resize');
+    return this;
+  },
+
+  load: function (callback) { callback(null); },
+
+
+  // Events
+  // ------
+
+  events: {
+    'click .delete': 'deleteDocument',
+    'keyup #new_name': 'changeName',
+    'submit .rename': 'rename',
+    'change .image-file': 'upload'
+  },
+
+  upload: function() {
+    this.$('.upload-image-form').submit();
+  },
+
+  deleteDocument: function (e) {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    if (confirm("Are you sure you want to delete this document?")) {
+      deleteDocument(this.model, function (err) {
+        router.navigate('', true); // TODO
+      });
+    }
+  },
+
+  changeName: function (e) {
+    e.preventDefault();
+    e.stopPropagation();
+  },
+
+  rename: function (e) {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    var name = this.$('#new_name').val();
+    this.$('.error').text("");
+    updateDocumentName(this.model, name, _.bind(function (err) {
+      if (err) {
+        this.$('.error').text(err.message);
+      } else {
+        router.navigate(documentURL(this.model), false);
+      }
+    }, this));
+  }
+
+});
+
+s.views.Subscribers = Backbone.View.extend({
+
+  className: 'shelf-content',
+  id: 'document_subscribers',
+
+  initialize: function () {
+    _.bindAll(this);
+    this.data = null;
+  },
+
+  render: function () {
+    $(this.el).html(s.util.tpl('document_subscribers', {
+      document: this.model,
+      subscriptions: this.data.subscriptions
+    }));
+
+    this.trigger('resize');
+    return this;
+  },
+
+  load: function (callback) {
+    if (this.data) {
+      callback(null);
+    } else {
+      loadSubscribers(this.model, _.bind(function (err, res) {
+        if (!err) { this.data = res; }
+        callback(err);
+      }, this));
+    }
+  },
+
+
+  // Events
+  // ------
+
+  events: {
+    
+  }
+});
+s.views.Versions = Backbone.View.extend({
+
+  className: 'shelf-content',
+  id: 'document_versions',
+
+  // Events
+  // ------
+
+  events: {
+    'click .remove-version': '__removeVersion',
+    'click .toggle-version': '__toggleVersion'
+  },
+
+  __toggleVersion: function(e) {
+    
+    var link  = $(e.currentTarget)
+    ,   route = link.attr('href').replace(/^\//, '');
+    router.navigate(route, true);
+    return false;
+  },
+
+  __removeVersion: function (e) {
+    var version = $(e.currentTarget).attr('data-version');
+    removeVersion(this.model, version, _.bind(function () {
+      this.data = null;
+      this.load(this.render);
+    }, this));
+    return false;
+  },
+
+  initialize: function () {
+    _.bindAll(this);
+    this.data = null;
+  },
+
+  render: function () {
+    $(this.el).html(s.util.tpl('document_versions', {
+      document: this.model,
+      versions: this.data.versions
+    }));
+
+    this.trigger('resize');
+    return this;
+  },
+
+  load: function (callback) {
+    if (this.data) {
+      callback(null);
+    } else {
+      loadVersions(this.model, _.bind(function (err, res) {
+        if (!err) { this.data = res; }
+        callback(err);
+      }, this));
+    }
+  }
+
+});
+s.views.ConfirmCollaboration = Backbone.View.extend({
   
   events: {
     "click a.option-tab": "selectOption",
@@ -2442,18 +1021,6 @@ var ConfirmCollaboration = Backbone.View.extend({
   
   initialize: function(tan) {
     var that = this;
-    this.el = '#content_wrapper';
-    this.tan = tan;
-    
-    graph.fetch({"type": "/type/collaborator", "tan": this.tan, "document": {}}, function(err, nodes) {
-      that.document = nodes.select(function(n) {
-        return n.types().get('/type/document');
-      }).first();
-      that.collaborator = nodes.select(function(n) {
-        return n.types().get('/type/collaborator');
-      }).first();
-      that.render();
-    });
   },
   
   selectOption: function(e) {
@@ -2469,7 +1036,7 @@ var ConfirmCollaboration = Backbone.View.extend({
     var that = this;
     this.confirm(function(err) {
       if (err) return alert('Collaboration could not be confirmed. '+err.error);
-      window.location.href = "/"+that.document.get('creator')._id.split('/')[2]+"/"+that.document.get('name');
+      window.location.href = "/"+that.model.document.get('creator')._id.split('/')[2]+"/"+that.model.document.get('name');
     });
     return false;
   },
@@ -2479,7 +1046,7 @@ var ConfirmCollaboration = Backbone.View.extend({
       type: "POST",
       url: "/confirm_collaborator",
       data: {
-        tan: this.tan,
+        tan: this.model.tan,
         user: app.username
       },
       dataType: "json",
@@ -2495,11 +1062,11 @@ var ConfirmCollaboration = Backbone.View.extend({
   
   login: function(e) {
     var that = this;
-    app.authenticate(this.$('.username').val(), this.$('.password').val(), function(err) {
+    login(this.$('.username').val(), this.$('.password').val(), function (err) {
       if (err) return notifier.notify(Notifications.AUTHENTICATION_FAILED);
       that.confirm(function(err) {
         if (err) return alert('Collaboration could not be confirmed. '+err.error);
-        window.location.href = "/"+that.document.get('creator')._id.split('/')[2]+"/"+that.document.get('name');
+        window.location.href = "/"+that.model.document.get('creator')._id.split('/')[2]+"/"+that.model.document.get('name');
       });
     });
     return false;
@@ -2511,7 +1078,7 @@ var ConfirmCollaboration = Backbone.View.extend({
     $('#registration_error_message').empty();
     $('.page-content input').removeClass('error');
     
-    app.createUser($('#signup_user').val(), $('#signup_name').val(), $('#signup_email').val(), $('#signup_password').val(), function(err, res) {
+    createUser($('#signup_user').val(), $('#signup_name').val(), $('#signup_email').val(), $('#signup_password').val(), function (err, res) {
       if (err) {
         if (res.field === "username") {
           $('#signup_user').addClass('error');
@@ -2520,16 +1087,8 @@ var ConfirmCollaboration = Backbone.View.extend({
           $('#registration_error_message').html(res.message);
         }
       } else {
-        graph.merge(res.seed);
         notifier.notify(Notifications.AUTHENTICATED);
-        app.username = res.username;          
-        that.trigger('authenticated');
-        app.render();
-        
-        that.confirm(function(err) {
-          if (err) return alert('Collaboration could not be confirmed. '+err.error);
-          window.location.href = "/"+that.document.get('creator')._id.split('/')[2]+"/"+that.document.get('name');
-        });
+        window.location.href = "/"+res.username;
       }
     });
     return false;
@@ -2537,526 +1096,1852 @@ var ConfirmCollaboration = Backbone.View.extend({
   
   render: function() {
     // Forward to document if authorized.
-    var user = this.collaborator.get('user');
+    var user = this.model.collaborator.get('user');
     if (user && user._id === "/user/"+app.username) {
       window.location.href = "/"+this.document.get('creator')._id.split('/')[2]+"/"+this.document.get('name');
       return;
-    }
-    
-    $(this.el).html(_.tpl('confirm_collaboration', {
-      collaborator: this.collaborator,
-      document: this.document
-    }));
-    this.delegateEvents();
+    }    
+    $(this.el).html(s.util.tpl('confirm_collaboration', this.model));
+    return this;
   }
 });
 
-var RecoverPassword = Backbone.View.extend({
+s.views.RecoverPassword = Backbone.View.extend({
+
   events: {
     'submit form': 'requestReset'
   },
-  
-  requestReset: function() {
-    var that = this;
-    $.ajax({
-      type: "POST",
-      url: "/recover_password",
-      data: {
-        username: $('#username').val()
-      },
-      dataType: "json",
-      success: function(res) {
-        if (res.error) return $('#registration_error_message').html('Username does not exist.');
+
+  requestReset: function (e) {
+    var username = $('#username').val();
+    requestPasswordReset(username, _.bind(function (err, res) {
+      if (err) {
+        $('#registration_error_message').html('Username does not exist.');
+      } else {
         $('.recover').hide();
         $('.success').show();
-      },
-      error: function(err) {
-        $('#registration_error_message').html('Username does not exist.');
       }
-    });
+    }, this));
     return false;
   },
-  
-  initialize: function() {
-    this.el = '#content_wrapper';
-    this.render();
-  },
-  
-  render: function() {
-    $(this.el).html(_.tpl('recover_password', {}));
-    this.delegateEvents();
+
+  render: function () {
+    $(this.el).html(s.util.tpl('recover_password', {}));
+    return this;
   }
+
 });
-var ResetPassword = Backbone.View.extend({
+
+s.views.ResetPassword = Backbone.View.extend({
+
   events: {
     'submit form': 'resetPassword'
   },
-  
-  resetPassword: function() {
-    if ($('#password').val() !== $('#password_confirmation').val()) {
-      return alert('Password and confirmation do not match!');
-    }
+
+  resetPassword: function (e) {
+    var password     = this.$('#password').val()
+    ,   confirmation = this.$('#password_confirmation').val();
     
-    var that = this;
-    $.ajax({
-      type: "POST",
-      url: "/reset_password",
-      data: {
-        username: that.username,
-        tan: that.tan,
-        password: $('#password').val()
-      },
-      dataType: "json",
-      success: function(res) {
-        if (res.status === "error") return $('#registration_error_message').html(res.message);
-        window.location.href = "/"+that.username;
-      },
-      error: function(err) {
-        $('#registration_error_message').html('Unknown error.');
+    if (password !== confirmation) {
+      alert("Password and confirmation do not match!");
+      return;
+    }
+
+    resetPassword(this.username, this.tan, password, _.bind(function (err, res) {
+      if (err) {
+        $('#registration_error_message').html(err);
+      } else {
+        window.location.href = "/";
       }
-    });
+    }, this));
+    
     return false;
   },
-  
-  initialize: function(username, tan) {
-    this.username = username;
-    this.tan = tan;
-    this.el = '#content_wrapper';
-    this.render();
-  },
-  
-  render: function() {
-    $(this.el).html(_.tpl('reset_password', {}));
-    this.delegateEvents();
-  }
-});
-var Attributes = Backbone.View.extend({
-  
-  initialize: function() {
-    this.el = '#attributes';
-  },
-  
-  render: function() {
-    app.document.mode === 'edit' ? this.renderEdit() : this.renderShow();
-  },
-  
-  renderShow: function() {
-    var that = this; 
-    var doc = app.document.model;
-    var attributes = [];
-    
-    var attributes = doc.properties().select(function(property) {
-      if (property.expectedTypes[0] === '/type/attribute') {
-        return true;
-      }
-    });
-    
-    $(this.el).html(_.tpl('show_attributes', {
-      attributes: attributes,
-      doc: doc
-    }));
-  },
-  
-  availableAttributes: function(property) {
-    return graph.find({
-      "type|=": ['/type/attribute'],
-      member_of: '/'+ property.type._id.split('/')[2]+'/'+property.key
-    });
-  },
-  
-  renderEdit: function() {
-    var that = this; 
-    var doc = app.document.model;
-    var attributes = [];
-    
-    var attributes = doc.properties().select(function(property) {
-      if (property.expectedTypes[0] === '/type/attribute') {
-        return true;
-      }
-    });
-    
-    $(this.el).html(_.tpl('edit_attributes', {
-      attributes: attributes,
-      doc: doc
-    }));
-    
-    // Initialize AttributeEditors for non-unique-strings
-    $('.attribute-editor').each(function() {
-      var member_of = $(this).attr('property');
-      var property = graph.get('/type/'+member_of.split('/')[1]).get('properties', member_of.split('/')[2]),
-          key = $(this).attr('key'),
-          unique = $(this).hasClass('unique'),
-          type = $(this).attr('type');
-          
-          // property value / might be an array or a single value
-          value = unique 
-                  ? app.document.model.get(key).get('name') 
-                  : _.map(app.document.model.get(key).values(), function(v) { return v.get('name'); });
-    
-      var editor = that.createAttributeEditor(key, type, unique, value, $(this));
-      editor.bind('input:changed', function(value) {
-        if (value.length < 2) return editor.updateSuggestions({});
-        $.ajax({
-          type: "GET",
-          data: {
-            member: member_of,
-            search_str: value
-          },
-          url: "/attributes",
-          dataType: "json"
-        }).success(function(res) {
-          graph.merge(res.graph);
-          editor.updateSuggestions(res.graph);
-        });
-      });
-      
-      editor.bind('changed', function() {        
-        var attrs = [];
 
-        _.each(editor.value(), function(val) {
-          // Find existing attribute
-          var attr = graph.find({
-            "type|=": ['/type/attribute'],
-            member_of: member_of,
-            name: val
-          }).first();
-          
-          if (!attr) {
-            // Create attribute as it doesn't exist
-            attr = graph.set(null, {
-              type: ["/type/attribute"],
-              member_of: member_of,
-              name: val
-            });
-          }
-          attrs.push(attr._id);
-        });
-        
-        // Update document
-        var tmp = {};
-        tmp[key] = attrs;
-        app.document.model.set(tmp);
-        app.document.trigger('changed');
-      });
-    });
+  initialize: function (options) {
+    this.username = options.username;
+    this.tan      = options.tan;
   },
+
+  render: function() {
+    $(this.el).html(s.util.tpl('reset_password', {}));
+    return this;
+  }
+
+});
+
+// Document
+// ========
+
+function createDoc (type, name, title) {
+  var docType = graph.get(type);
+  var doc = graph.set(Data.uuid('/document/'+app.username+'/'), docType.meta.template);
+  doc.set({
+    creator: '/user/' + app.username,
+    created_at: new Date(),
+    updated_at: new Date(),
+    name: name,
+    title: title
+  });
+  return doc;
+}
+
+
+// Nodes
+// =====
+
+// Position
+// --------
+
+function Position (parent, after) {
+  this.parent = parent;
+  this.after  = after;
+}
+
+Position.prototype.toString = function () {
+  return 'new Position(' + this.parent + ', ' + this.after + ')';
+};
+
+
+function getDocument (node) {
+  return node.get('document') || node; // node can be the document itself
+}
+
+function isSection (node) {
+  return node.type.key === '/type/section';
+}
+
+function isLastChild (parent, child) {
+  return parent.all('children').last() === child;
+}
+
+function removeChild (parent, child, temporary) {
+  var wasLastChild = isLastChild(parent, child);
+  parent.all('children').del(child._id);
+  if (!temporary) { graph.del(child._id); }
+  parent._dirty = true;
+  child.trigger('removed');
+  if (wasLastChild) { parent.trigger('last-child-changed'); }
+}
+
+function removeChildTemporary (parent, child) {
+  removeChild(parent, child, true);
+}
+
+function addChild (node, position) {
+  var parent = position.parent
+  ,   after  = position.after;
   
-  createAttributeEditor: function(key, type, unique, value, target) {
-    switch (type) {
-      case 'string':
-        if (unique) {
-          return this.createStringEditor(key, value, target);
+  var targetIndex;
+  if (after === null) {
+    // Insert at the beginning.
+    targetIndex = 0;
+  } else {
+    targetIndex = parent.all('children').index(after._id) + 1;
+  }
+  
+  parent.all('children').set(node._id, node, targetIndex);
+  parent._dirty = true;
+  
+  if (isSection(node)) {
+    var lastSection = node, lastChild;
+    while ((lastChild = lastSection.all('children').last()) && isSection(lastChild)) {
+      lastSection = lastChild;
+    }
+    
+    addFollowingSiblings(new Position(parent, node), lastSection);
+  }
+  
+  parent.trigger('added-child', node, targetIndex);
+  if (isLastChild(parent, node)) {
+    parent.trigger('last-child-changed');
+  }
+}
+
+function moveChild (oldParent, node, newPosition) {
+  removeChildTemporary(oldParent, node);
+  addChild(node, newPosition);
+}
+
+function createNode (type, position) {
+  var newNode = graph.set(null, {
+    type: type,
+    document: getDocument(position.parent)._id
+  });
+  
+  addChild(newNode, position);
+  
+  return newNode;
+}
+
+function getFollowingSiblings (position) {
+  function slice (hash, n) {
+    var sliced = new Data.Hash();
+    hash.each(function (val, key, index) {
+      if (index >= n) {
+        sliced.set(key, val);
+      }
+    });
+    return sliced;
+  }
+  
+  var parent = position.parent
+  ,   after  = position.after;
+  
+  var children = parent.all('children');
+  return after === null ? children.clone()
+                        : slice(children, children.index(after._id) + 1);
+}
+
+function addFollowingSiblings (position, section) {
+  var parent = position.parent;
+  var stop = false;
+  getFollowingSiblings(position).each(function (sibling, ii, i) {
+    if (stop || isSection(sibling)) {
+      stop = true;
+    } else {
+      var position = new Position(section, section.all('children').last() || null);
+      moveChild(parent, sibling, position);
+    }
+  });
+}
+
+function updateNode (node, attrs) {
+  node.set(attrs);
+  
+  // Update modification date on original document
+  getDocument(node).set({ updated_at: new Date() });
+}
+
+function possibleChildTypes (position, level) {
+  var defaultOrder = [ '/type/section'
+                     , '/type/text'
+                     , '/type/image'
+                     , '/type/resource'
+                     , '/type/quote'
+                     , '/type/code' ]
+  
+  function indexOf (element, array) {
+    var i = array.indexOf(element);
+    return i >= 0 ? i : Infinity;
+  }
+  
+  function compareByDefaultOrder (a, b) {
+    return indexOf(a, defaultOrder) < indexOf(b, defaultOrder) ? -1 : 1;
+  }
+  
+  // Haskell's 'on' function from Data.Function
+  function on (fn1, fn2) {
+    return function (a, b) {
+      return fn1(fn2(a), fn2(b));
+    };
+  }
+  
+  function getKey (val) { return val.key; }
+  
+  function recurse (position, val, level) {
+    var parent = position.parent
+    ,   after  = position.after;
+    
+    var expectedTypes = parent.properties().get('children').expectedTypes;
+    _.each(expectedTypes, function (type) {
+      if (!(type === '/type/section' && level > 3)) {
+        var curr = val.get(type);
+        if (curr) {
+          curr.push(position);
         } else {
-          return this.createMultiStringEditor(key, value, target);
+          val.set(type, [position]);
         }
-      break;
-      case 'number':
-      break;
-      case 'boolean':
-      break;
-    }
-  },
-  
-  createMultiStringEditor: function(key, value, target) {
-    var that = this;
-    var editor = new UI.MultiStringEditor({
-      el: target,
-      items: value
+      }
     });
-    return editor;
-  },
-  
-  createStringEditor: function(key, value, target) {
-    var that = this;
-    var editor = new UI.StringEditor({
-      el: target,
-      value: value
-    });
-    return editor;
-  }
-});
-
-// AddCriterion
-// ---------------
-
-var AddCriterion = function(app, options) {
-  this.app = app;
-  this.options = options;
-};
-
-// [c1, c2, !c1]  => [c2]
-AddCriterion.prototype.matchesInverse = function(other) {
-  return (
-    other instanceof RemoveCriterion && 
-    this.options.property === other.options.property && 
-    this.options.operator === 'CONTAINS' && other.options.operator === 'CONTAINS' &&
-    this.options.value === other.options.value
-  );
-};
-
-// [c1, c2, c1~]  => [c1~, c2]
-// eg. c1 = population > 2000000, c1~ = population > 10000000
-AddCriterion.prototype.matchesOverride = function() {
-  // TODO: implement
-};
-
-AddCriterion.prototype.execute = function() {
-  this.graph = app.browser.graph;
-  
-  var criterion = new Data.Criterion(this.options.operator, '/type/document', this.options.property, this.options.value);
-  app.browser.graph = app.browser.graph.filter(criterion);
-  
-  this.app.facets.addChoice(this.options.property, this.options.operator, this.options.value);
-};
-
-AddCriterion.prototype.unexecute = function() {
-  app.browser.graph = this.graph; // restore the old state
-  this.app.facets.removeChoice(this.options.property, this.options.operator, this.options.value);
-};
-
-
-// RemoveCriterion
-// ---------------
-
-var RemoveCriterion = function(app, options) {
-  this.app = app;
-  this.options = options;
-};
-
-RemoveCriterion.prototype.execute = function() {
-  // won't be executed
-};
-
-RemoveCriterion.prototype.unexecute = function() {
-  // won't be unexecuted
-};
-
-var DocumentBrowser = Backbone.View.extend({
-  events: {
-    'click a.add-criterion': 'addCriterion',
-    'click a.remove-criterion': 'removeCriterion'
-  },
-  
-  addCriterion: function(e) {
-    var property = $(e.currentTarget).attr('property'),
-        operator = $(e.currentTarget).attr('operator'),
-        value = $(e.currentTarget).attr('value');
-
-    this.applyCommand({command: 'add_criterion', options: {
-      property: property,
-      operator: operator,
-      value: value
-    }});
-    this.render();
-    return false;
-  },
-  
-  removeCriterion: function(e) {
-    var property = $(e.currentTarget).attr('property'),
-        operator = $(e.currentTarget).attr('operator'),
-        value = $(e.currentTarget).attr('value');
-
-    this.applyCommand({command: 'remove_criterion', options: {
-      property: property,
-      operator: operator,
-      value: value
-    }});
-    this.render();
-    return false;
-  },
-  
-  initialize: function(options) {
-    var that = this;
-    this.app = options.app;
-    this.browserTab = new BrowserTab({el: '#browser_tab', browser: this});
-    this.documents = [];
-    this.commands = [];
-    this.graph = new Data.Graph(seed);
-  },
-  
-  // Modfies query state (reflected in the BrowserTab)
-  load: function(query) {
-    var that = this;
-    this.query = query;
     
-    $('#browser_tab').show().html('&nbsp;&nbsp;&nbsp;Loading documents...');
-    $('#browser_wrapper').html('');
+    if (after && after.properties().get('children')) {
+      recurse(new Position(after, after.all('children').last()), val, level + 1);
+    }
+    
+    return val;
+  }
+  
+  return recurse(position, new Data.Hash(), level).sort(on(compareByDefaultOrder, getKey));
+}
+
+function getTypeName (type) {
+  return graph.get(type).name;
+}
+
+function moveTargetPositions (node, position, level) {
+  function has (arr, el) {
+    return arr.indexOf(el) >= 0;
+  }
+  
+  function depth (n) {
+    return isSection(n)
+         ? 1 + Math.max(_.max(_.map(n.all('children').values(), depth)), 0)
+         : 0;
+  }
+  
+  var maxLevel = 4 - depth(node);
+  
+  function recurse (position, arr, level) {
+    var parent = position.parent
+    ,   after  = position.after;
+    
+    if (level > maxLevel) { return arr; }
+    
+    if (has(parent.properties().get('children').expectedTypes, node.type.key)) {
+      arr.push(position);
+    }
+    
+    if (after && after.properties().get('children')) {
+      recurse(new Position(after, after.all('children').last() || null), arr, level + 1);
+    }
+    
+    return arr;
+  }
+  
+  return recurse(position, [], level);
+}
+
+
+// Comments
+// ========
+
+function loadComments (node, callback) {
+  graph.fetch({ type: '/type/comment', node: node._id }, function (err, nodes) {
+    if (err) { return callback(err, null); }
+    var ASC_BY_CREATED_AT = function (item1, item2) {
+      var v1 = item1.value.get('created_at')
+      ,   v2 = item2.value.get('created_at');
+      return v1 === v2 ? 0 : (v1 < v2 ? -1 : 1);
+    };
+    callback(null, nodes.sort(ASC_BY_CREATED_AT));
+  });
+}
+
+function createComment (node, content, callback) {
+  window.pendingSync = true;
+  
+  var comment = graph.set(null, {
+    type: '/type/comment',
+    creator: '/user/' + app.username,
+    created_at: new Date(),
+    content: content,
+    node: node._id,
+    document: node.get('document')._id
+    // TODO:
+    //version: this.version ? '/version/'+this.model._id.split('/')[3]+'/'+this.version : null
+  });
+  
+  // Trigger immediate sync
+  graph.sync(function (err) {
+    window.pendingSync = false;
+    if (err) callback(err, null);
+    else     callback(null, comment);
+  });
+}
+
+function removeComment (comment, callback) {
+  window.pendingSync = true;
+  graph.del(comment._id);
+  graph.sync(function (err) {
+    window.pendingSync = false;
+    callback(err);
+  });
+}
+
+function loadDocument (username, docname, version, callback) {
+  $.ajax({
+    type: "GET",
+    url: version ? "/documents/"+username+"/"+docname+"/"+version : "/documents/"+username+"/"+docname,
+    dataType: "json",
+    success: function (res) {
+      if (res.error) {
+        callback(res, null);
+      } else {
+        graph.merge(res.graph);
+        callback(null, {
+          version: res.version,
+          authorized: res.authorized,
+          published: res.published,
+          doc: graph.get(res.id)
+        });
+      }
+    },
+    error: function (err) {
+      callback(err, null);
+    }
+  });
+}
+
+
+function sortByUpdatedAt (documents) {
+  var DESC_BY_UPDATED_AT = function(item1, item2) {
+    var v1 = item1.value.get('updated_at'),
+        v2 = item2.value.get('updated_at');
+    return v1 === v2 ? 0 : (v1 > v2 ? -1 : 1);
+  };
+  return documents.sort(DESC_BY_UPDATED_AT);
+}
+
+
+function loadUserProfile (username, callback) {
+  $.ajax({
+    type: "GET",
+    url: "/documents/"+username,
+    dataType: "json",
+    success: function (res) {
+      var graph = new Data.Graph(seed);
+      graph.merge(res.graph);
+      
+      // Populate results
+      var documents = graph.find({"type|=": "/type/document"});
+      callback(null, {
+        documents: sortByUpdatedAt(documents),
+        user: graph.get('/user/'+username)
+      });
+    },
+    error: function(err) {
+      callback(err);
+    }
+  });
+}
+
+function loadDashboard (query, callback) {
+  this.query = query;
+  
+  $.ajax({
+    type: "GET",
+    url: "/dashboard.json",
+    dataType: "json",
+    success: function (res) {
+      
+      var graph = new Data.Graph(seed);
+      graph.merge(res.graph);
+      
+      // Populate results
+      var documents = graph.find({"type|=": "/type/document"});
+      
+      callback(null, {
+        documents: sortByUpdatedAt(documents),
+        user: graph.get('/user/'+session.username),
+        bins: res.bins
+      });
+    },
+    error: function(err) {
+      callback(err);
+    }
+  });
+}
+
+function loadExplore (callback) {
+  var graph = new Data.Graph(seed).connect('ajax');
+
+  $.ajax({
+    type: 'GET',
+    url: '/networks/recent',
+    dataType: 'json',
+    success: function (res) {
+      graph.merge(res.graph);
+      
+      // Populate results
+      var documents = graph.find({"type|=": "/type/document"});
+      var networks  = graph.find({"type":   "/type/network"});
+      callback(null, {
+        networks: sortByUpdatedAt(networks)
+      });
+    },
+    error: function (err) { callback(err); }
+  });
+}
+
+function loadNetwork (network, callback) {
+  $.ajax({
+    type: "GET",
+    url: "/network/"+network+".json",
+    dataType: "json",
+    success: function (res) {
+      var g = new Data.Graph(seed);
+      g.merge(res.graph);
+      var network = g.find({"type": "/type/network"}).first();
+      var sg = {};
+      sg[network._id] = network.toJSON();
+      graph.merge(sg, false);
+
+      callback(null, {
+        members: g.find({"type": "/type/user"}),
+        network: graph.get(network._id),
+        documents: sortByUpdatedAt(g.find({"type": "/type/document"})),
+        isMember: res.isMember,
+        transloadit_params: config.transloadit.network_cover
+      });
+    },
+    error: function(err) {
+      callback(err);
+    }
+  });
+}
+
+function loadCollaborationConfirmation (tan, callback) {
+  graph.fetch({"type": "/type/collaborator", "tan": tan, "document": {}}, function(err, nodes) {
+    if (err) return callback(err);
+    callback(null, {
+      tan: tan,
+      document: nodes.select(function(n) {
+        return n.types().get('/type/document');
+      }).first(),
+      collaborator: nodes.select(function(n) {
+        return n.types().get('/type/collaborator');
+      }).first()
+    });
+  });
+}
+
+function search (searchstr, callback) {
+  $.ajax({
+    type: 'GET',
+    url: '/fulltextsearch?q=' + encodeURI(searchstr),
+    dataType: 'json',
+    success: function (res) {
+      callback(null, res);
+    },
+    error: function (err) {
+      callback(err, null);
+    }
+  });
+}
+
+
+function documentURL(doc) {
+  return "" + doc.get('creator')._id.split("/")[2] + "/" + doc.get('name');
+}
+
+function userName(user) {
+  return user._id.split('/')[2];
+}
+
+function deleteDocument (doc, callback) {
+  graph.del(doc._id);
+  setTimeout(function () {
+    callback(null);
+  }, 300);
+  notifier.notify(Notifications.DOCUMENT_DELETED); // TODO
+}
+
+function byCreatedAt (item1, item2) {
+  var v1 = item1.value.get('created_at')
+  ,   v2 = item2.value.get('created_at');
+  return v1 === v2 ? 0 : (v1 > v2 ? -1 : 1);
+}
+
+function checkDocumentName (name, callback) {
+  if (new RegExp(graph.get('/type/document').get('properties', 'name').validator).test(name)) {
+    // TODO: find a more efficient way to check for existing docs.
     $.ajax({
       type: "GET",
-      url: "/documents/search/"+query.type+"/"+encodeURI(query.value),
+      url: "/documents/"+app.username+"/"+name,
       dataType: "json",
       success: function(res) {
-        that.graph = new Data.Graph(seed);
-        that.graph.merge(res.graph);
-        that.facets = new Facets({browser: that});
-        that.loaded = true;
-        that.trigger('loaded');
-        that.render();
+        callback(res.status === 'error');
       },
-      error: function(err) {}
-    });
-  },
-  
-  render: function() {
-    var that = this;
-    if (this.loaded) {
-      this.documents = this.graph.find({"type|=": "/type/document"});
-      var DESC_BY_UPDATED_AT = function(item1, item2) {
-        var v1 = item1.value.get('updated_at'),
-            v2 = item2.value.get('updated_at');
-        return v1 === v2 ? 0 : (v1 > v2 ? -1 : 1);
-      };
-      
-      this.documents = this.documents.sort(DESC_BY_UPDATED_AT);
-      $(this.el).html(_.tpl('document_browser', {
-        documents: this.documents,
-        user: that.query.type === 'user' ? that.graph.get('/user/'+that.query.value) : null,
-        query: that.query
-      }));
-      
-      if (this.loaded) this.facets.render();
-      this.browserTab.render();
-    }
-  },
-  
-  // Takes a command spec and applies the command
-  applyCommand: function(spec) {
-    var cmd;
-    
-    if (spec.command === 'add_criterion') {
-      cmd = new AddCriterion(this, spec.options);
-    } else if (spec.command === 'remove_criterion') {
-      cmd = new RemoveCriterion(this, spec.options);
-    }
-
-    // remove follow-up commands (redo-able commands)
-    if (this.currentCommand < this.commands.length-1) {
-      this.commands.splice(this.currentCommand+1);
-    }
-
-    // insertion position
-    var pos = undefined;
-    $.each(this.commands, function(index, c) {
-      if (c.matchesInverse(cmd)) {
-        pos = index;
+      error: function(err) {
+        callback(true); // Not found. Fine.
       }
     });
+  } else {
+    callback(false);
+  }
+}
 
-    if (pos >= 0) {
-      // restore state
-      this.commands[pos].unexecute();
-      // remove matched inverse command
-      this.commands.splice(pos, 1);
-      // execute all follow-up commands [pos..this.commands.length-1]
-      for (var i=pos; i < this.commands.length; i++) {
-        this.commands[i].execute();
-      }
+function updateDocumentName (doc, name, callback) {
+  checkDocumentName(name, function (valid) {
+    if (valid) {
+      doc.set({ name: name });
+      callback(null);
     } else {
-      this.commands.push(cmd);
-      cmd.execute();
+      callback(new Error("Sorry, this name is already taken."));
     }
+  });
+}
 
-    this.currentCommand = this.commands.length-1;
-    return cmd;
-  },
+function subscribeDocument (doc, callback) {
+  graph.set(null, {
+    type: '/type/subscription',
+    user: '/user/'+app.username,
+    document: doc._id
+  });
   
-  undo: function() {
-    if (this.currentCommand >= 0) {
-      this.commands[this.currentCommand].unexecute();
-      this.currentCommand -= 1;
-      this.render();    
-    }
-  },
+  doc.set({
+    subscribed: true,
+    subscribers: doc.get('subscribers') + 1
+  });
+  doc._dirty = false;
+  
+  setTimeout(function () {
+    callback(null);
+  }, 300);
+}
 
-  redo: function() {
-    if (this.currentCommand < this.commands.length-1) {
-      this.currentCommand += 1;
-      this.commands[this.currentCommand].execute();
-      this.render();    
+function unsubscribeDocument (doc, callback) {
+  graph.fetch({
+    type: '/type/subscription',
+    user: '/user/'+app.username,
+    document: doc._id
+  }, function (err, nodes) {
+    graph.del(nodes.first()._id);
+    doc.set({
+      subscribed: false,
+      subscribers: doc.get('subscribers') - 1
+    });
+    doc._dirty = false;
+    
+    callback(err);
+  });
+}
+
+function loadSubscribers (doc, callback) {
+  graph.fetch({"type": "/type/subscription", "document": doc._id}, function(err, subscriptions) {
+    if (err) return callback(err, null);
+    callback(err, {subscriptions: subscriptions});
+  });
+}
+
+
+function loadVersions (doc, callback) {
+  graph.fetch({ "type": "/type/version", "document": doc._id }, function (err, versions) {
+    if (err) return callback(err, null);
+    callback(null, {
+      versions: versions.sort(byCreatedAt)
+    });
+  });
+}
+
+
+function loadPublish (doc, callback) {
+  graph.fetch({ type: '/type/network' }, function (err, availableNetworks) {
+    if (err) return callback(err, null);
+
+    graph.fetch({type: '/type/publication', document: doc._id}, function(err, publications) {
+      if (err) return callback(err, null);
+      var networks = new Data.Hash();
+      publications.each(function(pub) {
+        var networkId = pub.get('network')._id;
+        networks.set(networkId, availableNetworks.get(networkId));
+      });
+
+      callback(null, {
+        availableNetworks: availableNetworks,
+        networks: networks,
+        document: doc
+      });
+    });
+  });
+}
+
+function publishDocument (doc, networks, remark, callback) {
+  $.ajax({
+    type: 'POST',
+    url: '/publish',
+    data: JSON.stringify({
+      document: doc._id,
+      networks: networks,
+      remark: remark
+    }),
+    contentType: 'application/json',
+    dataType: 'json',
+    success: function (res) {
+      if (res.error) {
+        callback(res.error, null);
+      } else {
+        graph.merge(res.graph);
+        callback(null, res);
+      }
+    },
+    error: function (err) {
+      callback(err, null);
+    }
+  });
+}
+
+function unpublishDocument (doc, callback) {
+  $.ajax({
+    type: 'POST',
+    url: '/unpublish',
+    data: JSON.stringify({
+      document: doc._id
+    }),
+    contentType: 'application/json',
+    dataType: 'json',
+    success: function (res) {
+      if (res.error) {
+        callback(res.error, null);
+      } else {
+        graph.merge(res.graph);
+        callback(null, res);
+      }
+    },
+    error: function (err) {
+      callback(err, null);
+    }
+  });
+}
+
+function removeVersion(document, version, callback) {
+    window.pendingSync = true;
+    graph.del(version);
+    
+    // Trigger immediate sync
+    graph.sync(function (err) {
+      window.pendingSync = false;
+      callback(null);
+    });
+}
+
+// Network
+// ========
+
+function networkSlug (network) {
+  return network._id.split('/')[2];
+}
+
+function joinNetwork (network, callback) {
+  $.ajax({
+    type: "POST",
+    url: "/network/"+network+"/join",
+    dataType: "json",
+    success: function (res) {
+      callback(null);
+    },
+    error: function (err) {
+      callback(err);
+    }
+  });
+}
+
+
+function leaveNetwork (network, callback) {
+  $.ajax({
+    type: "PUT",
+    url: "/network/"+network+"/leave",
+    dataType: "json",
+    success: function (res) {
+      callback(null);
+    },
+    error: function (err) {
+      callback(err);
+    }
+  });
+}
+
+// User
+// ====
+
+function login (username, password, callback) {
+  $.ajax({
+    type: "POST",
+    url: "/login",
+    data: {
+      username: username,
+      password: password
+    },
+    dataType: "json",
+    success: function (res) {
+      if (res.status === 'error') {
+        callback({ error: "authentication_failed" }, null);
+      } else {
+        graph.merge(res.seed);
+        app.username = res.username; // TODO
+        callback(null, res.username);
+      }
+    },
+    error: function (err) {
+      callback({ error: "authentication_failed" }, null);
+    }
+  });
+}
+
+function logout (callback) {
+  $.ajax({
+    type: "POST",
+    url: "/logout",
+    dataType: "json",
+    success: function (res) {
+      callback(null);
+    },
+    error: function (err) {
+      callback(err);
+    }
+  });
+}
+
+function createUser (username, name, email, password, callback) {
+  $.ajax({
+    type: "POST",
+    url: "/register",
+    data: {
+      username: username,
+      name: name,
+      email: email,
+      password: password
+    },
+    dataType: "json",
+    success: function (res) {
+      res.status === 'error' ? callback('error', res) : callback(null, res);
+    },
+    error: function (err) {
+      console.log("Unknown error. Couldn't create user.")
+      //callback(err);
+    }
+  });
+}
+
+function requestPasswordReset (username, callback) {
+  $.ajax({
+    type: 'POST',
+    url: '/recover_password',
+    data: {
+      username: username
+    },
+    dataType: 'json',
+    success: function (res) {
+      if (res.error) {
+        callback(res.error, null);
+      } else {
+        callback(null, res);
+      }
+    },
+    error: function (err) {
+      callback(err, null);
+    }
+  });
+}
+
+function resetPassword (username, tan, password, callback) {
+  $.ajax({
+    type: 'POST',
+    url: '/reset_password',
+    data: {
+      username: username,
+      tan: tan,
+      password: password
+    },
+    dataType: 'json',
+    success: function (res) {
+      if (res.status === 'error') {
+        callback(res.message, null);
+      } else {
+        callback(null, res);
+      }
+    },
+    error: function (err) {
+      callback(err, null);
+    }
+  });
+}
+
+function getPublishState(doc) {
+  if (!doc.get('published_version')) {
+    return "unpublished";
+  } else if (doc.get('published_on') === doc.get('updated_at')) {
+    return "published";
+  } else {
+    return "published-outdated";
+  }
+}
+
+function loggedIn () {
+  return !!(app || session).username;
+}
+
+function currentUser () {
+  return graph.get('/user/'+session.username);
+}
+
+function isCurrentUser (user) {
+  return (app || session).username === user._id.split('/')[2];
+}
+
+
+// Collaboration
+// -------------
+
+function invite (email, doc, mode, callback) {
+  $.ajax({
+    type: 'POST',
+    url: '/invite',
+    data: {
+      email: email,
+      document: doc._id,
+      mode: mode
+    },
+    dataType: 'json',
+    success: function (res) {
+      if (res.error) {
+        callback(res.error);
+      } else {
+        callback(null);
+      }
+    },
+    error: function (err) {
+      callback(err);
+    }
+  });
+}
+
+function getCollaborators (doc, callback) {
+  graph.fetch({
+    type: '/type/collaborator',
+    document: doc._id
+  }, function (err, nodes) {
+    callback(err, nodes);
+  });
+}
+
+function removeCollaborator (collaboratorId, callback) {
+  window.pendingSync = true;
+  graph.del(collaboratorId);
+  
+  // trigger immediate sync
+  graph.sync(function (err) {
+    window.pendingSync = false;
+    //that.collaborators.del(collaboratorId);
+    callback(err);
+  });
+}
+
+function changeCollaboratorMode (collaboratorId, mode, callback) {
+  window.pendingSync = true;
+  
+  graph.get(collaboratorId).set({
+    mode: mode
+  });
+  
+  // trigger immediate sync
+  graph.sync(function (err) {
+    window.pendingSync = false;
+    callback(err);
+  });
+}
+
+
+// Notifications
+// =============
+
+function getNotifications () {
+  var username = session.username;
+  var notifications = graph.find({"type|=": "/type/notification", "recipient": "/user/"+username});
+
+  var SORT_BY_DATE_DESC = function(v1, v2) {
+    var v1 = v1.value.get('created_at'),
+        v2 = v2.value.get('created_at');
+    return v1 === v2 ? 0 : (v1 > v2 ? -1 : 1);
+  }
+  
+  return notifications.sort(SORT_BY_DATE_DESC);
+}
+
+function loadNotifications (callback) {
+  $.ajax({
+    type: "GET",
+    url: "/notifications",
+    dataType: "json",
+    success: function (notifications) {
+      var newNodes = {};
+      _.each(notifications, function (n, key) {
+        // Only merge in if not already there
+        if (!graph.get(key)) {
+          newNodes[key] = n;
+        }
+      });
+      graph.merge(newNodes);
+      callback(null);
+    }
+  });
+}
+
+
+// Import
+// ======
+
+function importFromPandoc (doc, pandoc) {
+  // Pandoc's JSON representation is derived from it's Haskell data types at
+  // https://github.com/jgm/pandoc-types/blob/master/Text/Pandoc/Definition.hs
+  // I've summarized the rules here: http://substance.io/timbaumann/letterpress
+  
+  var stack    = [doc]
+  ,   textNode = null;
+  
+  function dispatch (obj, funs) {
+    if (typeof obj === 'string') {
+      return funs[obj]();
+    } else {
+      for (var key in obj) {
+        if (obj.hasOwnProperty(key)) { break; }
+      }
+      return funs[key](obj[key]);
     }
   }
-});
-
-var Facets = Backbone.View.extend({
-  initialize: function(options) {
-    this.browser = options.browser;
-    this.facetChoices = {};
-    this.el = '#facets';
-  },
   
-  select: function(property) {
-    $('.facet').removeClass('selected');
-    $('#facet_'+property).toggleClass('selected');
-  },
+  function appendNode (node) {
+    var parent = stack[stack.length-1]
+    ,   children = parent.all('children');
+    children.set(node._id, node, children.length);
+  }
   
-  addChoice: function(property, operator, value) {
-    // TODO: build flexible lookup for arbitrary operators (GT, LT etc.)
-    this.facetChoices[property+'::'+operator+'::'+value] = true;
-  },
+  function startTextNode () {
+    if (!textNode) {
+      textNode = graph.set(null, {
+        type: '/type/text',
+        content: ' ',
+        document: doc._id
+      });
+      appendNode(textNode);
+    }
+  }
   
-  removeChoice: function(property, operator, value) {
-    delete this.facetChoices[property+'::'+operator+'::'+value];
-  },
-  
-  buildView: function() {
-    var that = this;
-    var view = {facets: []};
-    
-    // Properties for all registered document_types
-    var properties = new Data.Hash();
-    app.browser.graph.get('/config/substance').get('document_types').each(function(type, key) {
-      properties = properties.union(app.browser.graph.get(type).properties());
+  function appendText (html) {
+    textNode.set({
+      content: textNode.get('content') + html
     });
-    
-    app.browser.graph.get('/type/document').all('properties').each(function(property, key) {
-      if (property.meta.facet) {
-        var facet_choices = [];
-        var selected_facet_choices = [];
-        property.all("values").each(function(value) {
-          if (that.facetChoices[key+'::CONTAINS::'+value._id] === true) {
-            selected_facet_choices.push({key: escape(value._id), value: value.toString(), item_count: value.referencedObjects.length});
-          } else {
-            facet_choices.push({key: escape(value._id), value: value.toString(), item_count: value.referencedObjects.length});
-          }
+  }
+  
+  function endTextNode () {
+    textNode = null;
+  }
+  
+  function wrapWith (tagName) {
+    return function (s) {
+      return '<' + tagName + '>' + inlinesToHtml(s) + '</' + tagName + '>';
+    };
+  }
+  
+  function ret (v) {
+    return function () { return v; };
+  }
+  
+  var inlineToHtml = {
+    Str: function (s) { return s; },
+    Emph: wrapWith('em'),
+    Strong: wrapWith('strong'),
+    Strikeout: inlinesToHtml,
+    Superscript: inlinesToHtml,
+    Subscript: inlinesToHtml,
+    SmallCaps: inlinesToHtml,
+    Quoted: function (a) { return inlinesToHtml(a[1]); },
+    Cite: function (a) { return inlinesToHtml(a[1]); },
+    Code: function (a) { return '<code>' + a[1] + '</code>'; },
+    Space: ret(" "),
+    EmDash: ret("—"),
+    EnDash: ret("–"),
+    Apostrophe: ret("’"),
+    Ellipses: ret("…"),
+    LineBreak: ret("<br />"),
+    Math: ret(" <em>Inline Math is not supported yet.</em> "),
+    RawInline: ret(""),
+    Link: function (a) { return '<a href="' + a[1][0] + '">' + inlinesToHtml(a[0]) + '</a>'; },
+    Image: ret(" <em>Inline Images are not supported yet.</em> "),
+    Note: ret(" <em>Footnotes are not supported yet.</em> ")
+  };
+  
+  function inlinesToHtml (inlines) {
+    var html = '';
+    for (var i = 0, l = inlines.length; i < l; i++) {
+      html += dispatch(inlines[i], inlineToHtml);
+    }
+    return html;
+  }
+  
+  function stripHtml (html) {
+    return html.replace(/<[^>]*>/g, '');
+  }
+  
+  function inlinesToText (inlines) {
+    return stripHtml(inlinesToHtml(inlines));
+  }
+  
+  var importBlock = {
+    Plain: function (inlines) {
+      this.Para(inlines);
+    },
+    Para: function (inlines) {
+      function isWhitespace (a) { return ['Space', 'LineBreak'].indexOf(a) >= 0; }
+      function trimLeft () { while (isWhitespace(inlines[0])) { inlines.shift(); } }
+      
+      trimLeft();
+      while (_.keys(inlines[0])[0] === 'Image') {
+        var a = inlines[0].Image
+        ,   url = a[1][0]
+        ,   caption = url[0];
+        
+        endTextNode();
+        var image = graph.set(null, {
+          type: '/type/image',
+          url: url,
+          caption: inlinesToText(caption),
+          document: doc._id
         });
         
-        if (facet_choices.length + selected_facet_choices.length > 0) {
-          view.facets.push({
-            property: key,
-            property_name: property.name,
-            facet_choices: facet_choices,
-            selected_facet_choices: selected_facet_choices
-          });
+        trimLeft();
+      }
+      
+      if (inlines.length) {
+        startTextNode();
+        appendText('<p>' + inlinesToHtml(inlines) + '</p>');
+      }
+    },
+    CodeBlock: function (a) {
+      endTextNode();
+      
+      var classes = a[0][1];
+      var languages = [ 'javascript', 'python', 'ruby', 'php', 'html', 'css'
+                      , 'haskell', 'coffeescript', 'java', 'c'
+                      ]
+      var language = 'null';
+      _.each(classes, function (klass) {
+        klass = klass.toLowerCase();
+        if (languages.indexOf(klass) >= 0) { language = klass; }
+      });
+      
+      var code = graph.set(null, {
+        type: '/type/code',
+        language: language,
+        content: s.util.escape(a[1]),
+        document: doc._id
+      });
+      appendNode(code);
+    },
+    RawBlock: function () {
+      endTextNode();
+      // do nothing
+    },
+    BlockQuote: function (a) {
+      endTextNode();
+      var quote = graph.set(null, {
+        type: '/type/quote',
+        content: blocksToText(a),
+        author: "",
+        document: doc._id
+      });
+      appendNode(quote);
+    },
+    OrderedList: function (a) {
+      startTextNode();
+      appendText(blockToHtml.OrderedList(a));
+    },
+    BulletList: function (a) {
+      startTextNode();
+      appendText(blockToHtml.BulletList(a));
+    },
+    DefinitionList: function (a) {
+      _.each(a, function (pair) {
+        startTextNode();
+        appendText('<p><strong>' + inlinesToHtml(pair[0]) + '</strong></p>');
+        _.each(pair[1], importBlocks);
+      });
+    },
+    Header: function (a) {
+      endTextNode();
+      
+      var level = a[0]
+      ,   name  = a[1];
+      
+      var section = graph.set(null, {
+        type: '/type/section',
+        document: doc._id,
+        name: inlinesToText(name)
+      });
+      
+      while (stack.length > level) { stack.pop(); }
+      appendNode(section);
+      stack.push(section);
+    },
+    HorizontalRule: function () {
+      endTextNode();
+      // do nothing
+    },
+    Table: function () {
+      endTextNode();
+      // TODO: implement when tables are supported
+    },
+    Null: function () {
+      endTextNode();
+    }
+  };
+  
+  var blockToHtml = {
+    Plain: function (inlines) {
+      return this.Para(inlines);
+    },
+    Para: function (inlines) {
+      return inlinesToHtml(inlines);
+    },
+    CodeBlock: ret(''),
+    RawBlock: ret(''),
+    BlockQuote: ret(''),
+    OrderedList: function (a) {
+      function li (b) { return '<li>' + blocksToHtml(b) + '</li>'; }
+      return '<ol>' + _.map(a[1], li).join('') + '</ol>';
+    },
+    BulletList: function (a) {
+      function li (b) { return '<li>' + blocksToHtml(b) + '</li>'; }
+      return '<ul>' + _.map(a, li).join('') + '</ul>';
+    },
+    DefinitionList: ret(''),
+    Header: function (a) {
+      return '<strong>' + inlinesToHtml(a[1]) + '</strong>';
+    },
+    HorizontalRule: ret(''),
+    Table: ret(''),
+    Null: ret('')
+  };
+  
+  function blocksToHtml (blocks) {
+    var html = '';
+    for (var i = 0, l = blocks.length; i < l; i++) {
+      html += dispatch(blocks[i], blockToHtml);
+    }
+    return html;
+  }
+  
+  function blocksToText (blocks) {
+    return stripHtml(blocksToHtml(blocks));
+  }
+  
+  function importBlocks (blocks) {
+    for (var i = 0, l = blocks.length; i < l; i++) {
+      dispatch(blocks[i], importBlock);
+    }
+  }
+  
+  importBlocks(pandoc[1]);
+}
+
+function importFromText (doc, format, text, callback) {
+  $.ajax({
+    type: 'POST',
+    url: '/parse',
+    contentType: 'application/json',
+    dataType: 'json',
+    data: JSON.stringify({
+      format: format,
+      text: text
+    }),
+    success: function (pandocJson) {
+      try {
+        importFromPandoc(doc, pandocJson);
+      } catch (exc) {
+        callback(exc);
+        return;
+      }
+      callback();
+    },
+    error: function (err) {
+      callback(err);
+    }
+  });
+}
+
+// The Router
+// ---------------
+
+s.Router = Backbone.Router.extend({
+  initialize: function() {
+
+    // Using this.route, because order matters
+    this.route(":username", "user", app.user);
+    
+    this.route(":username/:docname/:p1/:p2/:p3", "node", this.loadDocument);
+    this.route(":username/:docname/:p1/:p2", "node", this.loadDocument);
+    this.route(":username/:docname/:p1", "node", this.loadDocument);
+    this.route(":username/:docname", "node", this.loadDocument);
+    
+    this.route("reset/:username/:tan", "reset", app.resetPassword);
+    this.route("subscribed", "subscribed", app.subscribedDocs);
+    this.route("recent", "recent", app.recentDocs);
+    this.route("collaborate/:tan", "collaborate", app.collaborate);
+    this.route("search/:searchstr", "search", app.searchDocs);
+    this.route("register", "register", app.register);
+    this.route("recover", "recover", app.recoverPassword);
+    this.route("new", "new", app.newDocument);
+    this.route("import", "import", app["import"]);
+    
+    this.route("settings", "settings", app.userSettings);
+    this.route("dashboard", "dashboard", app.dashboard);
+    this.route("explore", "explore", app.explore);
+    this.route("network/:network", "network", app.network);
+    this.route("search", "search", app.search);
+    
+    this.route("", "home", this.landingPage);
+  },
+
+  landingPage: function() {
+    session && session.username ? app.dashboard() : app.home();
+  },
+
+  loadDocument: function(username, docname, p1, p2, p3) {
+    var version = !p1 || p1.indexOf("_") >= 0 ? null : p1;
+    var node = version ? p2 : p1;
+    var comment = version ? p3 : p2;
+    
+    app.loadDocument(username, docname, version, node, comment);
+  }
+});
+
+var StateMachine = {
+  transitionTo: function (state) {
+    if (this.state !== state && this.invokeForState('leave', state) !== false) {
+      this.state = state;
+      this.invokeForState('enter');
+    }
+  },
+
+  invokeForState: function (method) {
+    var args = Array.prototype.slice.call(arguments, 1);
+    
+    var parent = this;
+    while (parent) {
+      var constructor = parent.constructor;
+      if (constructor.states &&
+          constructor.states[this.state] &&
+          constructor.states[this.state][method]) {
+        return constructor.states[this.state][method].apply(this, args);
+      }
+      // Inheritance is set up by Backbone's extend method
+      parent = constructor.__super__;
+    }
+  }
+};
+
+s.views.UserStatus = Backbone.View.extend(_.extend({}, StateMachine, {
+
+  id: 'user_status',
+
+  events: {
+    'click .logout': 'logout',
+    'submit #login-form': 'login',
+    
+    'click .toggle.notifications': 'toggleNotifications',
+    'click #event_notifications a .notification': 'hideNotifications',
+    'click a.open-notification': 'openNotification'
+  },
+
+  openNotification: function(e) {
+    var url = $(e.currentTarget).attr('href');
+    var p = url.replace('#', '/').split('/');
+    var user = p[1];
+    var doc = p[2];
+
+    var version = !p[3] || p[3].indexOf("_") >= 0 ? null : p[3];
+    var node = version ? p[4] : p[3];
+    var comment = version ? p[5] : p[4];
+    
+    app.loadDocument(user, doc, version, node, comment);
+    router.navigate(url);
+    return false;
+  },
+
+  initialize: function () {
+    this.notificationsActive = false;
+    this.state = session.username ? 'logged_in' : 'logged_out';
+    
+    setInterval(function() {
+      loadNotifications(function () {});
+    }, 30000);
+  },
+
+  transitionTo: function () {
+    var r = StateMachine.transitionTo.apply(this, arguments);
+    this.render();
+    return r;
+  },
+
+  render: function () {
+    $(this.el).html(this.invokeForState('render'));
+    return this;
+  },
+
+  login: function (e) {
+    var username = this.$('#login-user').val()
+    ,   password = this.$('#login-password').val();
+    
+    login(username, password, function (err) {
+      if (err) return notifier.notify(Notifications.AUTHENTICATION_FAILED);
+      window.location.reload();
+    });
+    
+    return false;
+  },
+
+  logout: function (e) {
+    logout(_.bind(function (err) {
+      if (!err) {
+        window.location.reload();
+      }
+    }, this));
+    
+    return false;
+  },
+
+  // Triggered by toggleNotifications
+  // Triggers markAllRead
+  showNotifications: function() {
+    $(this.el).addClass('notifications-active');
+    this.notificationsActive = true;
+  },
+  
+  // Triggered by toggleNotifications and when clicking a notification
+  // Triggers count reset (to zero)
+  hideNotifications: function() {
+    // Mark all notifications as read
+    var notifications = graph.find({"type|=": "/type/notification", "recipient": "/user/"+app.username});
+    var unread = notifications.select(function(n) { return !n.get('read')});
+    unread.each(function(n) {
+      n.set({read: true});
+    });
+    
+    $(this.el).removeClass('notifications-active');
+    this.notificationsActive = false;
+  },
+  
+  toggleNotifications: function (e) {
+    if (this.notificationsActive) {
+      this.hideNotifications();
+    } else {
+      this.showNotifications();
+    }
+    return false;
+  }
+
+}), {
+
+  states: {
+    logged_in: {
+      render: function () {
+        var notifications = getNotifications();
+        
+        return s.util.tpl('user_navigation', {
+          notifications: notifications,
+          user: currentUser(),
+          count: notifications.select(function(n) { return !n.get('read')}).length,
+          notifications_active: true
+        });
+      }
+    },
+
+    logged_out: {
+      render: function () { return s.util.tpl('login_form'); }
+    }
+  }
+
+});
+
+s.views.Home = Backbone.View.extend({
+
+  events: {
+    'click .watch-intro': 'watchIntro'
+  },
+
+  watchIntro: function() {
+    $('#startpage .intro').height('400');
+    $('#startpage .intro .intro-text').fadeOut();
+    setTimeout(function() {
+      $('#startpage .intro .video').html('<video autoplay width="920" height="400" controls><source src="http://substance.io/videos/substance_intro.mp4" type=\'video/mp4; codecs="avc1.42E01E, mp4a.40.2"\'><source src="http://substance.io/videos/substance_intro.ogv" type="video/ogg" /> </video>')
+      setTimeout(function() {
+        $('#startpage .intro .video').fadeIn();
+      }, 400);
+    }, 1000);
+    
+    return false;
+  },
+
+  render: function () {
+    $(this.el).html(s.util.tpl('home', {}));
+    
+    // Load Flattr
+    (function () {
+      var s = document.createElement('script'), t = document.getElementsByTagName('script')[0];
+      s.type = 'text/javascript';
+      s.async = true;
+      s.src = 'http://api.flattr.com/js/0.6/load.js?mode=auto';
+      t.parentNode.insertBefore(s, t);
+    })();
+    
+    return this;
+  }
+
+});
+
+s.views.Results = Backbone.View.extend({
+
+  render: function() {
+    $(this.el).html(s.util.tpl('results', this.model));
+    return this;
+  }
+});
+
+s.views.UserList = Backbone.View.extend({
+  className: "user-list",
+
+  initialize: function(options) {
+  },
+
+  render: function() {
+    $(this.el).html(s.util.tpl('user_list', {
+      users: this.model.members
+    }));
+    return this;
+  }
+});
+s.views.Signup = Backbone.View.extend({
+
+  id: 'signup',
+  className: 'page-content',
+
+  events: {
+    'submit form': 'registerUser'
+  },
+
+  render: function () {
+    $(this.el).html(s.util.tpl('signup', {}));
+    return this;
+  },
+
+  registerUser: function (e) {
+    $('.page-content .input-message').empty();
+    $('#registration_error_message').empty();
+    $('.page-content input').removeClass('error');
+    
+    var user     = this.$('#signup_user').val()
+    ,   name     = this.$('#signup_name').val()
+    ,   email    = this.$('#signup_email').val()
+    ,   password = this.$('#signup_password').val();
+    
+    createUser(user, name, email, password, function (err, res) {
+      if (err) {
+        if (res.field === "username") {
+          $('#signup_user').addClass('error');
+          $('#signup_user_message').html(res.message);
+        } else {
+          $('#registration_error_message').html(res.message);
         }
+      } else {
+        notifier.notify(Notifications.AUTHENTICATED);
+        window.location.href = "/"+res.username;
       }
     });
-    return view;
+    return false;
+  }
+});
+
+s.views.Dashboard = Backbone.View.extend({
+
+  events: {
+    'click .toggle-bin': '__toggleBin'
+  },
+
+  __toggleBin: function(e) {
+    this.activeCategory = $(e.currentTarget).attr('data-category');
+    this.activeBin = $(e.currentTarget).attr('data-bin');
+    this.updateResults();
+    this.render();
+  },
+
+  updateResults: function() {
+    var docs = this.model.documents.select(_.bind(function(d) {
+      return _.include(this.model.bins[this.activeCategory][this.activeBin].documents, d._id);
+    }, this));
+
+    this.results = new s.views.Results({ model: {documents: docs }, id: "results" });
+  },
+
+  initialize: function(options) {
+    this.activeCategory = "user";
+    this.activeBin = "user";
+    this.updateResults();
+  },
+
+  render: function() {
+    $(this.el).html(s.util.tpl('dashboard', {
+      user: this.model.user,
+      bins: this.model.bins,
+      activeBin: this.activeBin
+    }));
+    
+    this.$(this.results.render().el).appendTo(this.el);
+    return this;
+  }
+});
+s.views.UserProfile = Backbone.View.extend({
+
+  events: {
+    
+  },
+
+  initialize: function(options) {
+    this.results = new s.views.Results({ model: this.model, id: "results" });
+  },
+
+  render: function() {
+    $(this.el).html(s.util.tpl('user_profile', {
+      user: this.model.user
+    }));
+    
+    this.$(this.results.render().el).appendTo(this.el);
+    return this;
+  }
+
+});
+
+s.views.Explore = Backbone.View.extend({
+
+  render: function() {
+    $(this.el).html(s.util.tpl('explore', this.model));
+    return this;
+  }
+
+});
+
+s.views.Import = Backbone.View.extend({
+
+  id: 'import',
+  className: 'page-content',
+
+  events: {
+    'submit form': 'importDocument'
+  },
+
+  render: function () {    
+    $(this.el).html(s.util.tpl('import', {}));
+    setTimeout(function () {
+      var cm = CodeMirror.fromTextArea(this.$('textarea').get(0), {
+        lineNumbers: true,
+        theme: 'elegant'
+      });
+      cm.focus();
+    }, 10);
+    return this;
+  },
+  
+  importDocument: function (e) {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    var type = '/type/article' // $('#create_document select[name=document_type]').val()
+    ,   title = this.$('#new_document_name').val()
+    ,   format = this.$('#format').val()
+    ,   text = this.$('#text').val()
+    ,   name = s.util.slug(title);
+    
+    checkDocumentName(name, _.bind(function (valid) {
+      if (valid) {
+        notifier.notify(Notifications.BLANK_DOCUMENT);
+        var doc = createDoc(type, name, title);
+        importFromText(doc, format, text, function (err) {
+          if (err) { console.error(err); }
+          graph.sync(function (err) {
+            router.navigate(documentURL(doc), true);
+          });
+        });
+      } else {
+        this.$('#new_document_name').addClass('error');
+        this.$('#new_document_name_message').html("This document name is already taken.");
+      }
+    }, this));
+  }
+});
+
+s.views.Network = Backbone.View.extend({
+
+  events: {
+    'click .join-network': '__joinNetwork',
+    'click .leave-network': '__leaveNetwork',
+    'click .toggle-documents': '__toggleDocuments',
+    'click .toggle-members': '__toggleMembers',
+    'change .image-file': '__upload'
+  },
+
+  __joinNetwork: function() {
+    joinNetwork(networkSlug(this.model.network), _.bind(function(err, data) {
+      this.reload();
+    }, this));
+    return false;
+  },
+
+  __leaveNetwork: function() {
+    leaveNetwork(networkSlug(this.model.network), _.bind(function(err, data) {
+      this.reload();
+    }, this));
+    return false;
+  },
+
+  __toggleDocuments: function() {
+    this.mode = 'documents';
+    this.reload();
+  },
+
+  __toggleMembers: function() {
+    this.mode = 'members';    
+    this.reload();
+  },
+
+  __upload: function() {
+    this.$('.upload-image-form').submit();
+  },
+
+  initializeUploadForm: function () {
+    _.bindAll(this, 'onStart', 'onProgress', 'onError');
+
+    this.$('.upload-image-form').transloadit({
+      modal: false,
+      wait: true,
+      autoSubmit: false,
+      onStart: this.onStart,
+      onProgress: this.onProgress,
+      onError: this.onError,
+      onSuccess: _.bind(function (assembly) {
+        if (assembly.results.web_version &&
+            assembly.results.web_version[1] &&
+            assembly.results.web_version[1].url) {
+          this.onSuccess(assembly);
+        } else {
+          this.onInvalid();
+        }
+      }, this)
+    });
+  },
+
+  makeEditable: function() {
+    var that = this;
+    
+    // Editor for network name
+    this.$name = $('#network_header .title').unbind();
+    
+    this.$name.click(function() {
+      editor.activate(that.$name, {
+        placeholder: 'Enter Title',
+        markup: false,
+        multiline: false
+      });
+
+      editor.bind('changed', function() {
+        that.model.network.set({
+          name: editor.content()
+        });
+      });
+    });
+
+    // Editor for network description
+    this.$descr = $('#network_header .descr').unbind();
+    
+    this.$descr.click(function() {
+      editor.activate(that.$descr, {
+        placeholder: 'Enter Sheet Description',
+        controlsTarget: $('#sheet_editor_controls')
+      });
+
+      editor.bind('changed', function() {
+        that.model.network.set({
+          descr: editor.content()
+        });
+      });
+    });
+    this.initializeUploadForm();
+  },
+
+  onStart: function () {
+    this.$('.image-progress').show();
+    this.$('.image-progress .label').html("Uploading &hellip;");
+    this.$('.progress-bar').css('width', '0%');
+  },
+
+  onProgress: function (bytesReceived, bytesExpected) {
+    var percentage = Math.max(0, parseInt(bytesReceived / bytesExpected * 100));
+    if (!percentage) percentage = 0;
+    this.$('.image-progress .label').html("Uploading &hellip; " + percentage + "%");
+    this.$('.progress-bar').css('width', percentage + '%');
+  },
+
+  onSuccess: function (assembly) {
+    this.model.network.set({
+      cover: assembly.results.web_version[1].url
+    });
+    
+    this.$('.image-progress').hide();
+    $('.upload-image-form img').attr('src', assembly.results.web_version[1].url);
+  },
+
+  onError: function (assembly) {
+    // TODO
+  },
+
+  onInvalid: function () {
+    this.$('.image-progress .label').html("Invalid image. Skipping &hellip;");
+    this.$('.image-progress').hide();
+    
+    setTimeout(_.bind(function () {
+      this.$('.info').show();
+    }, this), 3000);
+  },
+
+  initialize: function(options) {
+    this.documents = new s.views.Results({ model: this.model, id: "results" });
+    this.members = new s.views.UserList({model: this.model, id: "members"});
+    this.mode = "documents";
+    _.bindAll(this, 'makeEditable');
+  },
+
+  reload: function() {
+    loadNetwork(networkSlug(this.model.network), _.bind(function(err, data) {
+      this.model = data;
+      this.documents = new s.views.Results({ model: this.model, id: "results" });
+      this.members = new s.views.UserList({model: this.model, id: "members"});
+      this.render();
+    }, this));
+  },
+
+  render: function() {
+    $(this.el).html(s.util.tpl('network', _.extend(this.model, {mode: this.mode})));
+    this.$(this[this.mode].render().el).appendTo(this.el);
+    
+    if (isCurrentUser(this.model.network.get('creator'))) {
+      // TODO: do it properly
+      setTimeout(this.makeEditable, 500);
+    }
+    return this;
+  }
+});
+
+s.views.Search = Backbone.View.extend({
+  id: 'search',
+  
+  events: {
+    'submit form': 'performSearch'
   },
   
   render: function() {
-    var that = this;
-    $(this.el).html(_.renderTemplate('facets', this.buildView()));
-  }
-});
-
-var Collaborators = Backbone.View.extend({
-  
-  initialize: function() {
-    this.render();
+    $(this.el).html(s.util.tpl('search'));
+    return this;
   },
   
-  render: function() {    
-    $(this.el).html(Helpers.renderTemplate('collaborators', {
-      status: app.editor.status,
-      id: app.editor.model.id,
-      author: app.editor.model.author,
-      name: app.editor.model.name,
-      hostname: window.location.hostname + (window.location.port !== 80 ? ":" + window.location.port : "")
-    }));
+  performSearch: function (e) {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    var searchstr = this.$('#search_string').val();
+    
+    search(searchstr, _.bind(function (err, res) {
+      if (err) { console.log(err); return; }
+      
+      console.log(err, res);
+      
+      this.$('#results').html(s.util.tpl('search_results', {
+        users: res.users,
+        documents: res.documents
+      }));
+    }, this));
   }
 });
 
-var UserSettings = Backbone.View.extend({
+s.views.UserSettings = Backbone.View.extend({
   events: {
     'submit form': 'updateUser'
   },
@@ -3118,924 +3003,1405 @@ var UserSettings = Backbone.View.extend({
   },
   
   render: function() {
-    $(this.el).html(_.tpl('user_settings', {
+    $(this.el).html(s.util.tpl('user_settings', {
       user: graph.get('/user/'+app.username)
     }));
-  }
-});
-var NewDocument = Backbone.View.extend({
-  
-  initialize: function() {
-    
-  },
-  
-  render: function() {    
-    $(this.el).html(_.tpl('new_document', {}));
-  }
-});
-var BrowserTab = Backbone.View.extend({
-  events: {
-    'submit #search_form': 'loadDocuments',
-    'keydown #search': 'search',
-    'focus #search': 'focusSearch',
-    'blur #search': 'blurSearch'
-  },
-  
-  focusSearch: function(e) {
-    this.searchValue = $(e.currentTarget).val();
-    this.active = true;
-    $(e.currentTarget).val('');
-  },
-  
-  blurSearch: function(e) {
-    var that = this;
-    this.active = false;
-    setTimeout(function() {
-      that.render();
-    }, 200);
-  },
-  
-  // Performs a search on the document repository based on a search string
-  // Returns a list of matching user names and one entry for matching documents
-  search: function(e) {
-    if (e.keyCode === 27) return this.blurSearch();
-    var that = this;
-    if ($('#search').val() === '') return;
-    
-    if (!that.pendingSearch) {
-      that.pendingSearch = true;
-      setTimeout(function() {
-        that.pendingSearch = false;
-        
-        if (that.active && $('#search').val() !== '') {
-          
-          $.ajax({
-             type: "GET",
-             url: "/quicksearch/"+encodeURI($('#search').val()),
-             dataType: "json",
-             success: function(res) {               
-               // Render results
-               that.$('.results').html('');
-               that.$('.results').append($('<a href="/search/'+encodeURI($('#search').val())+'" class="result-item documents">'+res.document_count+' Documents / '+_.keys(res.users).length+' Users</a>'));
-               _.each(res.users, function(user, key) {
-                 that.$('.results').append($('<a href="/'+user.username+'" class="result-item user"><div class="username">'+user.username+'</div><div class="full-name">'+(user.name ? user.name : '')+'</div><div class="count">User</div></a>'));
-               });
-               $('#browser_tab .results').show();
-             },
-             error: function(err) {}
-           });
-        }
-        // Sanitize on every registered change
-      }, 500);
-    }
-  },
-  
-  // Finally perform a real search
-  loadDocuments: function() {
-    app.searchDocs($('#search').val());
-    this.active = false;
-    return false;
-  },
-  
-  loadUser: function() {
-    
-  },
-  
-  initialize: function(options) {
-    this.browser = options.browser;
-  },
-  
-  render: function() {
-    var queryDescr;
-    
-    if (this.browser.query) {
-      switch (this.browser.query.type){
-        case 'user': queryDescr = this.browser.query.value+"'s documents"; break;
-        case 'recent': queryDescr = 'Recent Documents'; break;
-        case 'subscribed': queryDescr = 'Subscribed Documents'; break;
-        default : queryDescr = 'Documents for &quot;'+this.browser.query.value+'&quot;';
-      }
-    } else {
-      queryDescr = 'Type to search ...';
-    }
-    
-    $(this.el).html(_.tpl('browser_tab', {
-      documents: this.browser.documents,
-      query_descr: queryDescr,
-      query: this.browser.query
-    }));
-  }
-});
-
-
-var Header = Backbone.View.extend({
-  events: {
-    'focus #login-user': 'focusUser',
-    'blur #login-user': 'blurUser',
-    'focus #login-password': 'focusPassword',
-    'blur #login-password': 'blurPassword'
-  },
-  
-  initialize: function(options) {
-    
-  },
-  
-  focusUser: function(e) {
-    var input = $(e.currentTarget)
-    if (input.hasClass('hint')) {
-      input.val('');
-      input.removeClass('hint');
-    }
-  },
-  
-  blurUser: function(e) {
-    var input = $(e.currentTarget)
-    if (input.val() === '') {
-      input.addClass('hint');
-      input.val('Username');
-    }
-  },
-  
-  focusPassword: function(e) {
-    var input = $(e.currentTarget)
-    if (input.hasClass('hint')) {
-      input.val('');
-      input.removeClass('hint');
-    }
-  },
-  
-  blurPassword: function(e) {
-    var input = $(e.currentTarget)
-    if (input.val() === '') {
-      input.addClass('hint');
-      input.val('Password');
-    }
-  },
-
-  render: function() {
-    var username = this.options.app.username;
-    var notifications = graph.find({"type|=": "/type/notification", "recipient": "/user/"+username});
-
-    var SORT_BY_DATE_DESC = function(v1, v2) {
-      var v1 = v1.value.get('created_at'),
-          v2 = v2.value.get('created_at');
-      return v1 === v2 ? 0 : (v1 > v2 ? -1 : 1);
-    }
-    
-    notifications = notifications.sort(SORT_BY_DATE_DESC);
-    
-    // Render login-state
-    $(this.el).html(_.tpl('header', {
-      user: graph.get('/user/'+username),
-      notifications: notifications,
-      count: notifications.select(function(n) { return !n.get('read')}).length,
-      notifications_active: this.notificationsActive
-    }));
-  }
-});
-// The Router
-// ---------------
-
-var Router = Backbone.Router.extend({
-  initialize: function() {
-    // Using this.route, because order matters
-    this.route(":username", "user", app.userDocs);
-    
-    this.route(":username/:docname/:p1/:p2/:p3", "node", this.loadDocument);
-    this.route(":username/:docname/:p1/:p2", "node", this.loadDocument);
-    this.route(":username/:docname/:p1", "node", this.loadDocument);
-    this.route(":username/:docname", "node", this.loadDocument);
-    
-    this.route("reset/:username/:tan", "reset", this.resetPassword);
-    this.route("subscribed", "subscribed", app.subscribedDocs);
-    this.route("recent", "recent", app.recentDocs);
-    this.route("collaborate/:tan", "collaborate", this.collaborate);
-    this.route("search/:searchstr", "search", app.searchDocs);
-    this.route("register", "register", app.toggleSignup);
-    this.route("recover", "recover", this.recoverPassword);
-    
-    this.route("", "startpage", app.toggleStartpage);
-  },
-  
-  // Confirm invitation
-  collaborate: function(tan) {
-    $('#content_wrapper').attr('url', "collaborate/"+tan);
-    var view = new ConfirmCollaboration(tan);
-    
-    app.toggleView('content');
-    $('#header').hide();
-    $('#tabs').hide();
-    $('#footer').hide();
-    
-    return false;
-  },
-    
-  recoverPassword: function() {
-    $('#content_wrapper').attr('url', "recover");
-    var view = new RecoverPassword();
-    
-    app.toggleView('content');
-    $('#header').hide();
-    $('#tabs').hide();
-    $('#footer').hide();
-    
-    return false;
-  },
-  
-  resetPassword: function(username, tan) {
-    $('#content_wrapper').attr('url', "reset/"+username+"/"+tan);
-    var view = new ResetPassword(username, tan);
-    
-    app.toggleView('content');
-    $('#header').hide();
-    $('#tabs').hide();
-    $('#footer').hide();
-    
-    return false;
-  },
-  
-  loadDocument: function(username, docname, p1, p2, p3) {
-    var version = !p1 || p1.indexOf("_") >= 0 ? null : p1;
-    var node = version ? p2 : p1;
-    var comment = version ? p3 : p2;
-    app.browser.load({"type": "user", "value": username});
-    app.document.loadDocument(username, docname, version, node, comment);
-    
-    $('#document_wrapper').attr('url', username+'/'+docname+(p1 ? "/"+p1 : "")+(p2 ? "/"+p2 : "")+(p3 ? "/"+p3 : ""));
-    $('#browser_wrapper').attr('url', username);
-    return false;
-  }
-});
-
-
-// The Application
-// ---------------
-
-// This is the top-level piece of UI.
-var Application = Backbone.View.extend({
-  events: {
-    'click .new-document': 'newDocument',
-    'click a.load-document': 'loadDocument',
-    'click a.signup': 'toggleSignup',
-    'click .tab': 'switchTab',
-    'click a.show-attributes': 'showAttributes',
-    'submit #create_document': 'createDocument',
-    'submit #login-form': 'login',
-    'click a.delete-document': 'deleteDocument',
-    'click a.toggle-signup': 'toggleSignup',
-    'click a.toggle-startpage': 'toggleStartpage',
-    'click a.toggle-edit-mode': 'toggleEditMode',
-    'click a.toggle-show-mode': 'toggleShowMode',
-    'click .toggle.logout': 'logout',
-    'click .toggle.user-settings': 'toggleUserSettings',
-    'click .toggle.user-profile': 'toggleUserProfile',
-    'submit #signup-form': 'registerUser',
-    'click .toggle.notifications': 'toggleNotifications',
-    'click .toggle-toc': 'toggleTOC',
-    'click #event_notifications a .notification': 'hideNotifications',
-    'click #toc_wrapper': 'toggleTOC',
-    'click a.open-notification': 'openNotification',
-    'change #document_name': 'updateDocumentName',
-    'click a.toggle-recent': 'toggleRecent',
-    'click a.toggle-subscribed': 'toggleSubscribed',
-    'click a.toggle-userdocs': 'toggleUserDocs',
-    'click a.watch-intro': 'watchIntro'
-  },
-  
-  // Event handlers
-  // ---------------
-  
-  watchIntro: function() {
-    $('#startpage .intro').height('400');
-    $('#startpage .intro .intro-text').fadeOut();
-    setTimeout(function() {
-      $('#startpage .intro .video').html('<video autoplay width="920" height="400" controls><source src="http://substance.io/videos/substance_intro.mp4" type=\'video/mp4; codecs="avc1.42E01E, mp4a.40.2"\'><source src="http://substance.io/videos/substance_intro.ogv" type="video/ogg" /> </video>')
-      setTimeout(function() {
-        $('#startpage .intro .video').fadeIn();
-      }, 400);
-    }, 1000);
-    
-    return false;
-  },
-  
-  toggleRecent: function() {
-    this.recentDocs();
-    return false;
-  },
-  
-  toggleSubscribed: function() {
-    this.subscribedDocs();
-    return false;
-  },
-  
-  toggleUserDocs: function() {
-    this.userDocs(app.username);
-    return false;
-  },
-  
-  userDocs: function(username) {
-    app.browser.load({"type": "user", "value": username});
-    $('#browser_wrapper').attr('url', username);
-    
-    app.browser.bind('loaded', function() {
-      app.toggleView('browser');
-      app.browser.unbind('loaded');
-    });
-    return false;
-  },
-  
-  updateDocumentName: function(e) {
-    var name = $(e.currentTarget).val();
-    this.checkDocumentName(name, function(valid) {
-      if (valid) {
-        app.document.updateName(name);
-        router.navigate(app.username+'/'+name);
-      } else {
-        $('#document_name').val(app.document.model.get('name'));
-        alert('Sorry, this name is already taken.');
-      }
-    });
-    return false;
-  },
-  
-  login: function(e) {
-    var that = this;
-    this.authenticate($('#login-user').val(), $('#login-password').val(), function(err) {
-      if (err) return notifier.notify(Notifications.AUTHENTICATION_FAILED);
-      that.trigger('authenticated');
-    });
-    return false;
-  },
-  
-  openNotification: function(e) {
-    var url = $(e.currentTarget).attr('href');
-    var p = url.replace('#', '/').split('/');
-    var user = p[1];
-    var doc = p[2];
-    
-    var version = !p[3] || p[3].indexOf("_") >= 0 ? null : p[3];
-    var node = version ? p[4] : p[3];
-    var comment = version ? p[5] : p[4];
-    
-    app.document.loadDocument(user, doc, version, node, comment);
-    $('#document_wrapper').attr('url', url);
-    return false;
-  },
-  
-  // Actions
-  // ---------------
-  
-  recentDocs: function() {
-    app.browser.load({"type": "recent", "value": 50});
-    $('#browser_wrapper').attr('url', "recent");
-    
-    app.browser.bind('loaded', function() {
-      app.toggleView('browser');
-      app.browser.unbind('loaded');
-    });
-    return false;
-  },
-  
-  subscribedDocs: function() {
-    app.browser.load({"type": "subscribed", "value": 50});
-    $('#browser_wrapper').attr('url', "subscribed");
-    
-    app.browser.bind('loaded', function() {
-      app.toggleView('browser');
-      app.browser.unbind('loaded');
-    });
-    return false;
-  },
-  
-  searchDocs: function(searchstr) {
-    app.browser.load({"type": "keyword", "value": encodeURI(searchstr)});
-    $('#browser_wrapper').attr('url', 'search/'+encodeURI(searchstr));
-    app.browser.bind('loaded', function() {
-      app.toggleView('browser');
-    });
-  },
-  
-  toggleStartpage: function() {
-    app.browser.browserTab.render();
-    $('#content_wrapper').html(_.tpl('startpage'));
-    
-    // Initialize Slider
-    $('#slider').nivoSlider({
-      manualAdvance: true
-    });
-    
-    // Initialize Flattr
-    var s = document.createElement('script'), t = document.getElementsByTagName('script')[0];
-    s.type = 'text/javascript';
-    s.async = true;
-    s.src = 'http://api.flattr.com/js/0.6/load.js?mode=auto';
-    t.parentNode.insertBefore(s, t);
-    
-    app.toggleView('content');
-    return false;
-  },
-    
-  // Triggered by toggleNotifications
-  // Triggers markAllRead
-  showNotifications: function() {
-    this.header.notificationsActive = true;
-    this.header.render();
-  },
-  
-  toggleTOC: function() {
-    if ($('#toc_wrapper').is(":hidden")) {
-      $('#document .board').addClass('active');
-      $('#toc_wrapper').slideDown();
-      $('#toc_wrapper').css('top', Math.max(_.scrollTop()-$('#document').offset().top, 0));
-    } else {
-      $('#document .board').removeClass('active');
-      $('#toc_wrapper').slideUp();
-    }
-
-    return false;
-  },
-  
-  // Triggered by toggleNotifications and when clicking a notification
-  // Triggers count reset (to zero)
-  hideNotifications: function() {
-    // Mark all notifications as read
-    var notifications = graph.find({"type|=": "/type/notification", "recipient": "/user/"+app.username});
-    var unread = notifications.select(function(n) { return !n.get('read')});
-    unread.each(function(n) {
-      n.set({read: true});
-    });
-    this.header.notificationsActive = false;
-    this.header.render();
-  },
-  
-  toggleNotifications: function() {
-    $('#event_notifications').hasClass('active') ? this.hideNotifications() : this.showNotifications();
-    return false;
-  },
-  
-  loadNotifications: function() {
-    var that = this;
-    $.ajax({
-      type: "GET",
-      url: "/notifications",
-      dataType: "json",
-      success: function(notifications) {
-        var newNodes = {};
-        _.each(notifications, function(n, key) {
-          // Only merge in if not already there
-          if (!graph.get(key)) {
-            newNodes[key] = n;
-          }
-        });
-        graph.merge(newNodes);
-        that.header.render();
-      }
-    });
-  },
-  
-  toggleUserProfile: function() {
-    var that = this;
-    app.browser.load({"type": "user", "value": this.username});
-    app.browser.bind('loaded', function() {
-      app.toggleView('browser');
-      $('#browser_wrapper').attr('url', that.username);
-      app.browser.unbind('loaded');
-    });
-  },
-  
-  newDocument: function() {
-    if (!head.browser.webkit && !head.browser.mozilla) {
-      alert("You need to use a Webkit based browser (Google Chrome, Safari) in order to write documents. In future, other browers will be supported too.");
-      return false;
-    }
-    this.content = new NewDocument({el: '#content_wrapper'});
-    this.content.render();
-    
-    this.toggleView('content');
-    return false;
-  },
-  
-  scrollTo: function(id) {
-    var offset = $('#'+id).offset();                             
-    offset ? $('html, body').animate({scrollTop: offset.top}, 'slow') : null;
-    return false;
-  },
-  
-  toggleUserSettings: function() {
-    this.content = new UserSettings({el: '#content_wrapper'});
-    this.content.render();
-    this.toggleView('content');    
-    return false;
-  },
-  
-  toggleSignup: function() {
-    $('#content_wrapper').attr('url', "register");
-    app.browser.browserTab.render();
-    $('#content_wrapper').html(_.tpl('signup'));
-    app.toggleView('content');
-    return false;
-  },
-  
-  switchTab: function(e) {
-    this.toggleView($(e.currentTarget).attr('view'));
-  },
-  
-  toggleView: function(view) {
-    $('.tab').removeClass('active');
-    $('#'+view+'_tab').addClass('active');
-    if (view === 'browser' && !this.browser.loaded) return;
-    $('.view').hide();
-    $('#'+view+'_wrapper').show();
-    
-    // Show stuff - inverting of this.collaborate();
-    $('#header').show();
-    $('#tabs').show();
-    $('#footer').show();
-
-    // Wait until url update got injected
-    setTimeout(function() {
-      router.navigate($('#'+view+'_wrapper').attr('url'));
-    }, 10);
-    return false;
-  },
-  
-  checkDocumentName: function(name, callback) {
-    if (new RegExp(graph.get('/type/document').get('properties', 'name').validator).test(name)) {      
-      // TODO: find a more efficient way to check for existing docs.
-      $.ajax({
-        type: "GET",
-        url: "/documents/"+app.username+"/"+name,
-        dataType: "json",
-        success: function(res) {
-          res.status === 'error' ? callback(true) : callback(false);
-        },
-        error: function(err) {
-          callback(true); // Not found. Fine.
-        }
-      });
-      return false;
-    } else {
-      callback(false);
-    }
-  },
-  
-  createDocument: function(e) {
-    var that = this;
-    var title = $('#create_document input[name=new_document_name]').val();
-    var name = _.slug(title);
-    var type = "/type/article"; // $('#create_document select[name=document_type]').val();
-    
-    this.checkDocumentName(name, function(valid) {
-      if (valid) {
-        that.document.newDocument(type, name, title);
-      } else {
-        $('#create_document input[name=new_document_name]').addClass('error');
-        $('#new_document_name_message').html('This document name is already taken.');
-      }
-    });
-    
-    return false;
-  },
-  
-  toggleEditMode: function(e) {
-    var user = app.document.model.get('creator')._id.split('/')[2];
-    var name = app.document.model.get('name');
-    
-    $('#document_wrapper').attr('url', user+"/"+name);
-    app.document.loadDocument(user, name, null, null, null, 'edit');
-    return false;
-  },
-  
-  toggleShowMode: function(e) {
-    var user = app.document.model.get('creator')._id.split('/')[2];
-    var name = app.document.model.get('name');
-    
-    $('#document_wrapper').attr('url', user+"/"+name);
-    app.document.loadDocument(user, name, null, null, null, 'show');
-    return false;
-  },
-  
-  loadDocument: function(e) {
-      var user = $(e.currentTarget).attr('user').toLowerCase();
-          name = $(e.currentTarget).attr('name');
-
-      app.document.loadDocument(user, name, null,  null, null);
-      if (router) {
-        router.navigate($(e.currentTarget).attr('href'));
-        $('#document_wrapper').attr('url', $(e.currentTarget).attr('href'));
-      }
-    return false;
-  },
-  
-  // Handle top level events
-  // -------------
-  
-  showAttributes: function() {
-    app.document.drawer.toggle('Attributes');
-    $('.show-attributes').toggleClass('selected');
-    return false;
-  },
-  
-  logout: function() {
-    var that = this;
-    
-    $.ajax({
-      type: "POST",
-      url: "/logout",
-      dataType: "json",
-      success: function(res) {
-        // that.username = null;
-        // that.authenticated = false;
-        // that.render();
-        // $('.new-document').hide();
-        window.location.reload();
-      }
-    });
-    return false;
-  },
-  
-  deleteDocument: function(e) {
-    if (confirm('Are you sure you want to delete this document?')) {
-      this.document.deleteDocument(app.document.model._id);
-      this.document.closeDocument();
-    }
-    return false;
-  },
-  
-  // Application Setup
-  // -------------
-  
-  updateSystemStatus: function(status) {
-    this.activeUsers = status.active_users;
-  },
-  
-  query: function() {
-    return this.authenticated ? { "type": "user", "value": this.username }
-                              : { "type": "user", "value": "demo" }
-  },
-  
-  initialize: function() {
-    var that = this;
-    
-    // Initialize browser
-    this.browser = new DocumentBrowser({
-      el: this.$('#browser_wrapper'),
-      app: this
-    });
-    
-    // Initialize document
-    this.document = new Document({el: '#document_wrapper', app: this});
-    this.header = new Header({el: '#header', app: this});
-    this.activeUsers = [];
-    
-    // Reset when clicking on the body
-    $('body').click(function(e) {
-      app.document.reset(true);
-      return true;
-    });
-    
-    // Cookie-based auto-authentication
-    if (session.username) {
-      graph.merge(session.seed);      
-      this.authenticated = true;
-      this.username = session.username;
-      this.trigger('authenticated');
-      $('#tabs').show();
-      $('.new-document').show();
-    } else {
-      this.authenticated = false;
-    }
-    
-    this.bind('authenticated', function() {
-      // that.authenticated = true;
-      // // Re-render browser
-      // $('#tabs').show();
-      // $('.new-document').show();
-      // that.render();
-      // that.browser.load(that.query());
-      
-      // Reload current page
-      window.location.reload();
-    });
-    
-    setInterval(function() {
-      that.loadNotifications();
-    }, 30000);
-    
-    that.render();
-  },
-  
-  getFullDocument: function(id) {    
-    var result = {};
-    function addNode(id) {
-      if (!result[id]) {
-        var n = graph.get(id);
-        result[id] = n.toJSON();
-
-        // Resolve associated Nodes
-        n.type.all('properties').each(function(p) {
-          if (p.isObjectType()) {
-            n.all(p.key).each(function(obj) {
-              if (obj.type) addNode(obj._id);
-            });
-          }
-        });
-      }
-    }
-    addNode(id);
-    return result;
-  },
-  
-  authenticate: function(username, password, callback) {
-    var that = this;
-    $.ajax({
-      type: "POST",
-      url: "/login",
-      data: {
-        username: username,
-        password: password
-      },
-      dataType: "json",
-      success: function(res) {
-        if (res.status === 'error') {
-          callback({error: "authentication_failed"});
-        } else {
-          graph.merge(res.seed);
-          that.username = res.username;
-          callback(null);
-        }
-      },
-      error: function(err) {
-        callback({error: "authentication_failed"});
-      }
-    });
-    return false;
-  },
-  
-  registerUser: function() {
-    var that = this;
-    
-    $('.page-content .input-message').empty();
-    $('#registration_error_message').empty();
-    $('.page-content input').removeClass('error');
-    
-    this.createUser($('#signup_user').val(), $('#signup_name').val(), $('#signup_email').val(), $('#signup_password').val(), function(err, res) {
-      if (err) {
-        if (res.field === "username") {
-          $('#signup_user').addClass('error');
-          $('#signup_user_message').html(res.message);
-        } else {
-          $('#registration_error_message').html(res.message);
-        }
-      } else {
-        graph.merge(res.seed);
-        notifier.notify(Notifications.AUTHENTICATED);
-        that.username = res.username;          
-        window.location.href = "/"+res.username;
-      }
-    });
-    return false;
-  },
-  
-  createUser: function(username, name, email, password, callback) {
-    var that = this;
-    $.ajax({
-      type: "POST",
-      url: "/register",
-      data: {
-        username: username,
-        name: name,
-        email: email,
-        password: password
-      },
-      dataType: "json",
-      success: function(res) {
-        res.status === 'error' ? callback('error', res) : callback(null, res);
-      },
-      error: function(err) {
-        alert("Unknown error. Couldn't create user.")
-      }
-    });
-    return false;
-  },
-  
-  // Should be rendered just once
-  render: function() {
-    var that = this;
-    this.document.render();
-    this.browser.render();
-    this.header.render();
     return this;
   }
 });
 
-var remote,                              // Remote handle for server-side methods
-    app,                                 // The Application
-    router,                              // The Router
-    editor,                              // A global instance of the Proper Richtext editor
-    graph = new Data.Graph(seed, {dirty: false, syncMode: 'push'}).connect('ajax'); // The database
+s.views.NewDocument = Backbone.View.extend({
+
+  id: 'new_document',
+  className: 'page-content',
+
+  events: {
+    'submit form': 'createDocument'
+  },
+
+  render: function () {    
+    $(this.el).html(s.util.tpl('new_document', {}));
+    return this;
+  },
+  
+  createDocument: function (e) {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    var type = '/type/article' // $('#create_document select[name=document_type]').val()
+    ,   title = this.$('#new_document_name').val()
+    ,   name = s.util.slug(title);
+    
+    checkDocumentName(name, _.bind(function (valid) {
+      if (valid) {
+        notifier.notify(Notifications.BLANK_DOCUMENT);
+        var doc = createDoc(type, name, title);
+        graph.sync(function (err) {
+          router.navigate(documentURL(doc), true);
+        });
+      } else {
+        this.$('#new_document_name').addClass('error');
+        this.$('#new_document_name_message').html("This document name is already taken.");
+      }
+    }, this));
+  }
+});
+
+s.views.Header = Backbone.View.extend({
+
+  id: 'header',
+
+  initialize: function (options) {
+    this.userStatus = new s.views.UserStatus({});
+  },
+
+  render: function() {
+    $(this.el).html(s.util.tpl('header', {
+      user: graph.get('/user/' + session.username)
+    }));
+    $(this.userStatus.render().el).appendTo(this.el);
+    
+    return this;
+  }
+
+});
+
+// This is the top-level piece of UI.
+s.views.Application = Backbone.View.extend({
+
+  // Events
+  // ------
+
+  events: {
+    'click .toggle-view': 'toggleView',
+    'click .toggle-startpage': 'home'
+  },
+
+  toggleView: function (e) {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    var link  = $(e.currentTarget),
+        route = link.attr('href').replace(/^\//, '');
+    
+    $('.toggle-view.active').removeClass('active');
+    link.addClass('active');
+    router.navigate(route, true);
+  },
 
 
-(function() {
-  $(function() {    
-    function browserSupported() {
-      if (head.browser.mozilla && head.browser.version > "1.9.2") {
-        return true;
-      }
-      if (head.browser.webkit && head.browser.version > "533.0") {
-        return true;
-      }
-      if (head.browser.opera && head.browser.version > "11.0") {
-        return true;
-      }
-      // if (head.browser.ie && head.browser.version > "9.0") {
-      //   return true;
-      // }
+  // Initialize
+  // ----------
+
+  initialize: function () {
+    _.bindAll(this);
+    
+    // Initialize document
+    this.header = new s.views.Header({});
+    
+    // Cookie-based auto-authentication
+    if (session.username) {
+      graph.merge(session.seed);
+      this.username = session.username;
+    }
+  },
+
+  // Should be rendered just once
+  render: function () {
+    $(this.header.render().el).prependTo(this.el);
+    return this;
+  },
+
+
+  // Helpers
+  // -------
+
+  scrollTo: function (id) {
+    var offset = $('#'+id).offset();
+    offset ? $('html, body').animate({scrollTop: offset.top-90}, 'slow') : null;
+    return false;
+  },
+
+  replaceMainView: function (name, view) {
+    $('body').removeClass().addClass('current-view '+name);
+    if (this.mainView) {
+      this.mainView.remove();
+    }
+    this.mainView = view;
+    $(view.el).appendTo(this.$('#main'));
+  },
+
+
+  // Main Views
+  // ----------
+
+  explore: function () {
+    loadExplore(_.bind(function (err, res) {
+      this.replaceMainView("explore", new s.views.Explore({ model: res, id: 'explore' }).render());
+    }, this));
+  },
+
+  network: function (network) {
+    loadNetwork(network, _.bind(function (err, res) {
+      this.replaceMainView("network", new s.views.Network({ model: res, id: 'network' }).render());
+    }, this));
+  },
+
+  search: function (queryString) {
+    search(queryString, _.bind(function (err, res) {
+      this.replaceMainView("search", new s.views.Search({ model: res, id: 'search'  }).render());
+    }, this));
+  },
+
+  home: function () {
+    router.navigate('');
+    this.replaceMainView("home", new s.views.Home({id: 'home' }).render());
+    return false;
+  },
+
+  user: function (username) {
+    loadUserProfile(username, _.bind(function (err, data) {
+      this.replaceMainView("user_profile", new s.views.UserProfile({ model: data, id: 'user_profile' }).render());
+    }, this));
+  },
+
+  dashboard: function () {
+    router.navigate('dashboard');
+    loadDashboard({ type: 'user', value: session.username }, _.bind(function (err, data) {
+      this.replaceMainView("dashboard", new s.views.Dashboard({ model: data, id: 'dashboard' }).render());
+    }, this));
+  },
+
+  // Confirm invitation
+  collaborate: function(tan) {
+    loadCollaborationConfirmation(tan, _.bind(function(err, data) {
+      this.replaceMainView("confirm_collaboration", new s.views.ConfirmCollaboration({ model: data, id: 'confirm_collaboration' }).render());
+    }, this));
+  },
+
+  recoverPassword: function () {
+    this.replaceMainView("recover_password", new s.views.RecoverPassword({id: 'recover_password'}).render());
+  },
+
+  resetPassword: function (username, tan) {
+    this.replaceMainView("reset_password", new s.views.ResetPassword({ username: username, tan: tan, id: 'reset_password' }).render());
+  },
+
+  newDocument: function () {
+    if (!head.browser.webkit && !head.browser.mozilla) {
+      alert("You need to use a Webkit based browser (Google Chrome, Safari) in order to write documents. In future, other browers will be supported too.");
       return false;
     }
-    
-    if (!browserSupported()) {
-      $('#container').html(_.tpl('browser_not_supported'));
-      $('#container').show();
-      return;
-    }
-    
-    $('#container').show();
-    
-    window.positionBoard = function() {
-      var wrapper = document.getElementById('document_wrapper');
-      if (wrapper.offsetTop - _.scrollTop() < 0) {
-        $('#document .board').addClass('docked');
-        $('#document .board').css('left', ($('#document').offset().left)+'px');
-        $('#document .board').css('width', ($('#document').width())+'px');
-        
-        var tocOffset = $('#toc_wrapper').offset();
-        if (tocOffset && _.scrollTop() < tocOffset.top) {
-          $('#toc_wrapper').css('top', _.scrollTop()-$('#document').offset().top+"px");
-        }
-      } else {
-        $('#document .board').css('left', '');
-        $('#toc_wrapper').css('top', 0);
-        $('#document .board').removeClass('docked');
-      }
-    }
-    
-    positionBoard();
-    
-    $(window).bind('scroll', positionBoard);
-    $(window).bind('resize', positionBoard);
-    
-    // Start the engines
-    app = new Application({el: $('#container'), session: session});
-    
-    // Set up a global instance of the Proper Richtext Editor
-    editor = new Proper();
-    
-    // Initialize router
-    router = new Router({app: this});
-    
-    // Start responding to routes
-    Backbone.history.start({pushState: true});
-    
+    this.replaceMainView("new_document", new s.views.NewDocument({id: 'new_document' }).render());
+  },
 
-    // Reset document when window gets out of focus
-    // document.body.onblur = function() {  if (app.document) app.document.reset(); }
+  register: function () {
+    this.replaceMainView("signup", new s.views.Signup({id: 'signup' }).render());
+  },
+
+  userSettings: function () {
+    this.replaceMainView("user_settings", new s.views.UserSettings({id: 'user_settings' }).render());
+  },
+
+  "import": function () {
+    this.replaceMainView("import", new s.views.Import({id: 'import' }).render());
+  },
+
+  loadDocument: function (username, docname, version, nodeid, commentid) {
+    var render = _.bind(function (options) {
+      this.replaceMainView("document", new s.views.Document(_.extend(options, {id: 'document_view' })).render());
+    }, this);
     
-    // TODO: Prevent leaving page by pressing backspace
-    // $('body').bind('keydown', function(e) {
-    //   if (!currently_editing && e.keyCode === 8 ) e.preventDefault();
-    // });
-    
-    // Prevent exit when there are unsaved changes
-    window.onbeforeunload = confirmExit;
-    function confirmExit() {
-      if (graph.dirtyNodes().length>0) return "You have unsynced changes, which will be lost.";
-    }
-     
-    function resetWorkspace() {
-      confirm('There are conflicted or rejected nodes since the last sync. The workspace will be reset for your own safety. Keep in mind we do not yet support simultaneous editing of one document.');
-      window.location.reload(true);
-    }
-    
-    window.pendingSync = false;
-    graph.bind('dirty', function() {
-      // Reload document browser      
-      if (!pendingSync) {
-        pendingSync = true;
-        setTimeout(function() {
-          $('#sync_state').fadeIn(100);
-          graph.sync(function(err) {
-            pendingSync = false;
-            if (!err) {
-              setTimeout(function() {
-                $('#sync_state').fadeOut(100);
-              }, 1500);
-            } else {
-              resetWorkspace();
-            }
-          });
-        }, 3000);
+    var id = '/document/'+username+'/'+docname;
+    loadDocument(username, docname, version, _.bind(function (err, res) {
+      if (err) return $('#main').html('<div class="notification error">'+err.message+'</div>');
+
+      render({
+        model: res.doc,
+        authorized: res.authorized,
+        version: res.version,
+        published: res.published
+      });
+
+      if (commentid) {
+        var node = app.mainView.node.nodes[nodeid.replace(/_/g, "/")];
+        node.selectThis();
+        node.comments.toggle();
+      } else if (nodeid) {
+        this.scrollTo(nodeid)
       }
+    }, this));
+  }
+
+});
+
+s.views.Comments = Backbone.View.extend({
+
+  className: 'comments-wrapper',
+
+  events: {
+    'click a.create-comment': 'createComment',
+    'click a.remove-comment': 'removeComment',
+    'click .comment-content': 'activateEditor'
+  },
+
+  initialize: function (options) {
+    this.expanded = false;
+    this.node = options.node;
+  },
+
+  toggle: function () {
+    if (this.expanded) {
+      this.contract();
+    } else {
+      this.expand();
+    }
+  },
+
+  expand: function () {
+    $(this.el).addClass('expanded');
+    this.expanded = true;
+    
+    if (!this.comments) {
+      this.load(_.bind(function () {
+        this.scrollTo();
+      }, this));
+    } else {
+      this.scrollTo();
+    }
+  },
+
+  contract: function () {
+    $(this.el).removeClass('expanded');
+    this.expanded = false;
+  },
+
+  scrollTo: function () {
+    var offset = $(this.el).offset();
+    $('html, body').animate({ scrollTop: offset.top - 100 }, 'slow');
+  },
+
+  load: function (callback) {
+    loadComments(this.model, _.bind(function (err, comments) {
+      if (err) { return; }
+      this.comments = comments;
+      this.render();
+      if (callback) { callback(); }
+    }, this));
+  },
+
+
+  // Event Handlers
+  // --------------
+
+  createComment: function (e) {
+    e.preventDefault();
+    
+    var node = this.model
+    ,   content = this.commentEditor.content();
+    
+    var self = this;
+    createComment(node, content, function () {
+      self.load(function () {
+        self.render();
+      });
     });
+  },
+
+  removeComment: function (e) {
+    e.preventDefault();
+    
+    var comment = graph.get($(e.currentTarget).attr('comment'));
+    
+    var self = this;
+    removeComment(comment, function () {
+      self.load(function () {
+        self.render();
+      });
+    });
+  },
+
+  activateEditor: function (e) {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    var contentEl = this.$('.comment-content');
+    this.commentEditor = new Proper();
+    this.commentEditor.activate(contentEl, {
+      multiline: true,
+      markup: true,
+      placeholder: "Enter Comment"
+    });
+  },
+
+  // Render
+  // ------
+
+  render: function () {
+    var wrapper = $(this.el)
+    ,   comments = this.comments;
+    
+    if (comments) {
+      wrapper.html(s.util.tpl('comments', {
+        doc: this.model.get('document'),
+        node: this.model,
+        comments: comments,
+        version: this.node ? this.node.root.document.version : ""
+      }));
+      
+      // Update comment count (TODO)
+      //var count = comments && comments.length > 0 ? comments.length : "";
+      //$('#'+node.html_id+' > .operations a.toggle-comments span').html(count);
+    }
+    
+    return this;
+  }
+
+});
+
+s.views.Controls = Backbone.View.extend(_.extend({}, StateMachine, {
+
+  className: 'controls',
+
+  events: {
+    'click .insert a': 'insert',
+    'click .move a': 'move'
+  },
+
+  initialize: function (options) {
+    this.state    = 'read';
+    this.root     = options.root;
+    this.level    = options.level;
+    this.position = options.position;
+  },
+
+  transitionTo: function (state) {
+    StateMachine.transitionTo.call(this, state);
+    this.render();
+  },
+
+  getPositionFromEl: function (el) {
+    var parentId = el.attr('data-parent')
+    ,   afterId = el.attr('data-after');
+    
+    return new Position(
+      graph.get(parentId),
+      afterId ? graph.get(afterId) : null
+    );
+  },
+
+  insert: function (e) {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    var target = $(e.target)
+    ,   position = this.getPositionFromEl(target)
+    ,   type = target.attr('data-type');
+    
+    createNode(type, position);
+  },
+
+  move: function (e) {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    var target = $(e.target)
+    ,   position = this.getPositionFromEl(target);
+    
+    moveChild(this.root.movedParent, this.root.movedNode, position);
+    this.root.transitionTo('write');
+  },
+
+  render: function () {
+    $(this.el).html(this.invokeForState('render'));
+    return this;
+  }
+
+}), {
+
+  states: {
+    read: {
+      render: function () {
+        return '';
+      }
+    },
+    write: {
+      render: function () {
+        var self = this;
+        
+        var childTypes = new Data.Hash();
+        possibleChildTypes(this.position, this.level).each(function (val, type) {
+          if (type !== '/type/section' || val.length == 1) {
+            childTypes.set(type, _.last(val));
+          } else {
+            var level = self.level;
+            childTypes.set(type, _.map(val, function (position) {
+              position.level = level;
+              level++;
+              return position;
+            }));
+          }
+        });
+        
+        return s.util.tpl('controls_insert', {
+          childTypes: childTypes
+        });
+      }
+    },
+    move: {
+      render: function () {
+        return s.util.tpl('controls_move', {});
+      }
+    },
+    moveTarget: {
+      render: function () {
+        var movedNode = this.root.movedNode
+        ,   level = this.level;
+        
+        var moveTargets = moveTargetPositions(movedNode, this.position, this.level);
+        if (!isSection(movedNode)) {
+          moveTargets = [_.last(moveTargets)];
+        } else {
+          moveTargets = _.map(moveTargets, function (position) {
+            position.level = level;
+            level++;
+            return position;
+          });
+        }
+        
+        return s.util.tpl('controls_movetarget', {
+          moveTargets: moveTargets
+        });
+      }
+    }
+  }
+
+});
+
+s.views.Node = Backbone.View.extend(_.extend({}, StateMachine, {
+
+  className: 'content-node',
+
+  attributes: {
+    draggable: 'false'
+  },
+
+  initialize: function (options) {
+    this.state  = 'read';
+    this.parent = options.parent;
+    this.level  = options.level;
+    this.root   = options.root;
+
+    if (!this.root) {
+      this.nodes = {};
+      this.root = this;
+      this.document = options.document;
+    } else {
+      this.root.nodes[this.model._id] = this;
+    }
+
+    this.comments = new s.views.Comments({ model: this.model, node: this });
+    this.afterControls = new s.views.Controls({
+      root: this.root,
+      level: this.level,
+      model: this.parent,
+      position: new Position(this.parent, this.model)
+    });
+    
+    $(this.el).attr({ id: this.model.html_id });
+    
+    _.bindAll(this, 'lastChildChanged');
+    this.model.bind('last-child-changed', this.lastChildChanged);
+  },
+
+  transitionTo: function (state) {
+    StateMachine.transitionTo.call(this, state);
+    if (this.state === state) {
+      this.afterControls.transitionTo(state);
+    }
+  },
+
+  lastChildChanged: function () {
+    this.afterControls.render();
+    
+    if (this.parent && isLastChild(this.parent, this.model)) {
+      this.parent.trigger('last-child-changed');
+    }
+  },
+
+
+
+  // Events
+  // ------
+
+  events: {
+    'click .toggle-comments':  'toggleComments',
+    'click .remove-node':      'removeNode',
+    'click .toggle-move-node': 'toggleMoveNode',
+    
+    'click': 'selectThis',
+    'mouseover': 'highlight',
+    'mouseout': 'unhighlight'
+  },
+
+  toggleComments: function (e) {
+    e.preventDefault();
+    e.stopPropagation();
+    this.selectThis();
+    this.comments.toggle();
+  },
+  
+  removeNode: function (e) {
+    e.preventDefault();
+    e.stopPropagation();
+    removeChild(this.parent, this.model);
+  },
+
+  toggleMoveNode: function (e) {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    if (this.state === 'move') {
+      this.root.transitionTo('write');
+    } else {
+      // There could be another node that is currently in move state.
+      // Transition to read state to make sure that no node is in move state.
+      this.root.transitionTo('read');
+      this.transitionTo('move');
+      
+      this.root.movedNode = this.model;
+      this.root.movedParent = this.parent;
+      this.root.transitionTo('moveTarget');
+    }
+  },
+
+  selectThis: function (e) {
+    // the parent view shouldn't deselect this view when the event bubbles up
+    if (e) { e.stopPropagation(); }
+    
+    if (this.root) {
+      this.root.selectNode(this);
+    } else {
+      this.selectNode(this);
+    }
+  },
+
+  highlight: function (e) {
+    e.preventDefault();
+    $(this.el).addClass('active');
+  },
+
+  unhighlight: function (e) {
+    e.preventDefault();
+    $(this.el).removeClass('active');
+  },
+
+  select: function (e) {
+    $(this.el).addClass('selected');
+  },
+
+  deselect: function () {
+    $(this.el).removeClass('selected');
+  },
+
+  focus: function () {},
+
+  makeEditable: function (el, attr, dflt, options, updateFn) {
+    dflt = dflt || '';
+    options = _.extend({
+      placeholder: dflt,
+      markup: false,
+      multiline: false,
+      codeFontFamily: 'Monaco, Consolas, "Lucida Console", monospace'
+    }, options || {});
+    updateFn = updateFn || function (node, attr, val) {
+      var update = {};
+      update[attr] = val;
+      updateNode(node, update);
+    };
+    
+    var self = this;
+    
+    var value = this.model.get(attr);
+    if (value) {
+      if (options.markup) {
+        $(el).html(value);
+      } else {
+        $(el).text(s.util.unescape(value));
+      }
+    } else {
+      $(el).html('&laquo; '+dflt+' &raquo;').addClass('empty');
+    }
+    
+    $(el)
+      .addClass('editable')
+      .click(function () {
+        if (self.state === 'write') {
+          window.editor.activate($(el), options);
+          window.editor.bind('changed', function () {
+            updateFn(self.model, attr, window.editor.content());
+          });
+        }
+      });
+    
+    return $(el);
+  },
+
+  render: function () {
+    this.operationsEl = $(s.util.tpl('operations', {
+      commentCount: this.model.get('comment_count') || ""
+    })).appendTo(this.el);
+    this.contentEl = $('<div class="content" />').appendTo(this.el);
+    if (this.comments) {
+      this.commentsEl = $(this.comments.render().el).appendTo(this.el);
+    }
+    return this;
+  }
+
+}), {
+
+
+  // States
+  // ------
+
+  states: {
+    read: {
+      enter: function () {},
+      leave: function () {}
+    },
+    
+    write: {
+      enter: function () {},
+      leave: function () {}
+    },
+
+    move: {
+      enter: function () {
+        $(this.el).addClass('being-moved'); // TODO
+      },
+      leave: function (nextState) {
+        if (nextState === 'moveTarget') { return false; }
+        $(this.el).removeClass('being-moved'); // TODO
+      }
+    },
+
+    moveTarget: {
+      enter: function () {},
+      leave: function () {}
+    }
+  },
+
+
+  // Inheritance & Instantiation
+  // ---------------------------
+
+  subclasses: {},
+
+  define: function (types, protoProps, classProps) {
+    classProps = classProps || {};
+    var subclass = this.extend(protoProps, classProps);
+    
+    function toArray (a) { return _.isArray(a) ? a : [a] }
+    _.each(toArray(types), function (type) {
+      this.subclasses[type] = subclass;
+    }, this);
+    
+    return subclass;
+  },
+
+  create: function (options) {
+    var model = options.model
+    ,   type = model.type._id
+    ,   Subclass = this.subclasses[type];
+    
+    if (!Subclass) { throw new Error("Node has no subclass for type '"+type+"'"); }
+    return new Subclass(options);
+  }
+
+});
+
+s.views.NodeList = Backbone.View.extend({
+
+  className: 'node-list',
+
+  initialize: function (options) {
+    this.level = options.level;
+    this.root  = options.root;
+    
+    _.bindAll(this, 'addChild');
+    this.model.bind('added-child', this.addChild);
+    
+    this.firstControls = new s.views.Controls({
+      root: this.root,
+      model: this.model,
+      position: new Position(this.model, null)
+    });
+    
+    var childViews = this.childViews = [];
+    this.model.get('children').each(_.bind(function (child) {
+      childViews.push(this.createChildView(child));
+    }, this));
+  },
+
+  remove: function () {
+    this.model.unbind('added-child', this.addChild);
+    this.eachChildView(function (childView) {
+      childView.remove();
+    });
+    $(this.el).remove();
+  },
+
+  eachChildView: function (fn) {
+    _.each(this.childViews, fn);
+  },
+
+  transitionTo: function (state) {
+    function transition (view) { view.transitionTo(state); }
+    transition(this.firstControls);
+    this.eachChildView(transition);
+  },
+
+  addChild: function (child, index) {
+    var childView = this.createChildView(child)
+    ,   rendered  = this.renderChildView(childView);
+    
+    this.childViews.splice(index, 0, childView);
+    rendered.insertAfter(index === 0 ? this.firstControls.el
+                                     : this.childViews[index-1].afterControls.el);
+    
+    childView.transitionTo('write');
+    childView.selectThis();
+    childView.focus();
+  },
+
+  createChildView: function (child) {
+    return s.views.Node.create({
+      parent: this.model,
+      model: child,
+      level: this.level + 1,
+      root: this.root
+    });
+  },
+
+  renderChildView: function (childView) {
+    var controls = childView.afterControls;
+    var rendered = $([childView.render().el, controls.render().el]);
+    
+    childView.model.bind('removed', _.bind(function () {
+      controls.remove();
+      childView.remove();
+      // Remove childView from the childViews array
+      this.childViews = _.select(this.childViews, function (cv) {
+        return cv !== childView;
+      });
+    }, this));
+    return rendered;
+  },
+
+  render: function () {
+    $(this.firstControls.render().el).appendTo(this.el);
+    
+    this.eachChildView(_.bind(function (childView) {
+      this.renderChildView(childView).appendTo(this.el);
+    }, this));
+    
+    return this;
+  }
+
+});
+
+s.views.Node.define('/type/answer', {
+
+  className: 'content-node answer',
+
+  focus: function () {
+    this.answerEl.click();
+  },
+
+  render: function () {
+    s.views.Node.prototype.render.apply(this, arguments);
+    this.answerEl = this.makeEditable($('<p class="answer" />'), 'content', "Enter Answer", {
+      markup: true,
+      multiline: true
+    }).appendTo(this.contentEl);
+    return this;
+  }
+
+});
+
+s.views.Node.define('/type/code', {
+
+  className: 'content-node code',
+
+  events: _.extend({
+    'change select': 'changeLanguageSelect'
+  }, s.views.Node.prototype.events),
+
+  languages: [ 'JavaScript', 'Python', 'Ruby', 'PHP', 'HTML', 'CSS', 'Haskell'
+             , 'CoffeeScript', 'Java', 'C', 'C++', 'C#', 'Other'
+             ],
+
+  modeForLanguage: function (language) {
+    return {
+      javascript: 'javascript',
+      python: { name: 'python', version: 3 },
+      ruby: 'ruby',
+      php: 'php',
+      html: 'htmlmixed',
+      css: 'css',
+      haskell: 'haskell',
+      coffeescript: 'coffeescript',
+      java: 'text/x-java',
+      c: 'text/x-csrc',
+      'c++': 'text/x-c++src',
+      'c#': 'text/x-csharp'
+    }[language] || 'null';
+  },
+
+  changeLanguageSelect: function () {
+    var newLanguage = this.languageSelect.val();
+    updateNode(this.model, { language: newLanguage });
+    this.codeMirror.setOption('mode', this.modeForLanguage(newLanguage));
+  },
+
+  focus: function () {
+    this.codeMirror.focus();
+  },
+
+  codeMirrorConfig: {
+    lineNumbers: true,
+    theme: 'elegant',
+    indentUnit: 2,
+    indentWithTabs: false,
+    tabMode: 'shift'
+  },
+
+  render: function () {
+    function createSelect (dflt, opts) {
+      var html = '<select>';
+      _.each(opts, function (lang) {
+        var value = lang.toLowerCase();
+        selected = dflt === value ? ' selected="selected"' : '';
+        html += '<option value="' + value + '"' + selected + '>' + lang + '</option>';
+      });
+      html += '</select>';
+      return html;
+    }
+    
+    var self = this;
+    
+    s.views.Node.prototype.render.apply(this, arguments);
+    this.languageSelect = $(createSelect(this.model.get('language'), this.languages)).appendTo(this.contentEl);
+    var codeMirrorConfig = _.extend({}, this.codeMirrorConfig, {
+      mode: this.modeForLanguage(this.model.get('language')),
+      value: s.util.unescape(this.model.get('content') || ''),
+      readOnly: true,
+      onFocus: function () {
+        // Without this, there is the possibility to focus the editor without
+        // activating the code node. Don't ask me why.
+        self.selectThis();
+      },
+      onBlur: function () {
+        // Try to prevent multiple selections in multiple CodeMirror instances
+        self.codeMirror.setSelection({ line:0, ch:0 }, { line:0, ch:0 });
+      },
+      onChange: _.throttle(function () {
+        updateNode(self.model, { content: s.util.escape(self.codeMirror.getValue()) });
+      }, 500)
+    });
+    this.codeMirror = CodeMirror(this.contentEl.get(0), codeMirrorConfig);
+    
+    setTimeout(function () {
+      // after dom insertion
+      self.codeMirror.refresh();
+    }, 10);
+    
+    return this;
+  }
+
+}, {
+
+  states: {
+    write: {
+      enter: function () {
+        s.views.Node.states.write.enter.apply(this);
+        this.codeMirror.setOption('readOnly', false);
+      },
+      leave: function () {
+        s.views.Node.states.write.leave.apply(this);
+        this.codeMirror.setOption('readOnly', true);
+      }
+    }
+  }
+
+});
+
+s.views.Node.define([ '/type/document', '/type/article', '/type/story'
+            , '/type/conversation', '/type/manual', '/type/qaa'
+            ], {
+
+  className: 'content-node document',
+
+  initialize: function (options) {
+    s.views.Node.prototype.initialize.apply(this, arguments);
+    delete this.comments;
+    delete this.afterControls;
+    this.nodeList = new s.views.NodeList({
+      model: this.model,
+      level: 0,
+      root: this
+    });
+  },
+
+  events: _.extend({
+    'mouseover .editable': 'mouseoverEditable'
+  }, s.views.Node.prototype.events),
+
+  mouseoverEditable: function (e) {
+    var title = this.state === 'write'
+              ? "Click to Edit"
+              : "";
+    $(e.target).attr({ title: title });
+  },
+
+  transitionTo: function (state) {
+    StateMachine.transitionTo.call(this, state);
+    if (this.state === state) {
+      this.nodeList.transitionTo(state);
+    }
+  },
+
+  lastChildChanged: function () {},
+
+  selectNode: function (view) {
+    this.deselectNode();
+    $(this.el).addClass('something-selected');
+    view.select();
+    this.selected = view;
+  },
+
+  deselectNode: function () {
+    if (this.selected) {
+      $(this.el).removeClass('something-selected');
+      this.selected.deselect();
+      delete this.selected;
+    }
+  },
+
+  render: function () {
+    s.views.Node.prototype.render.apply(this, arguments);
+    this.$('.content-node-outline').remove();
+    this.operationsEl.empty();
+    
+    var creator     = this.model.get('creator')
+    ,   publishedOn = this.model.get('published_on');
+    
+    this.titleEl     = this.makeEditable($('<div class="document-title" />'), 'title', "Enter Title").appendTo(this.contentEl);
+    var authorLink = $('<a class="toggle-view" />')
+      .attr({ href: '/'+creator.get('username') })
+      .text(creator.get('name') || creator.get('username'));
+    this.authorEl    = $('<p class="author" />').append(authorLink).appendTo(this.contentEl);
+    this.publishedEl = $('<p class="published" />').text(publishedOn ? s.util.date(publishedOn) : '').appendTo(this.contentEl);
+    this.leadEl      = this.makeEditable($('<p class="lead" id="document_lead" />'), 'lead', "Enter Lead").appendTo(this.contentEl);
+    $('<div class="document-separator" />').appendTo(this.contentEl);
+    this.nodeListEl  = $(this.nodeList.render().el).appendTo(this.contentEl);
+    return this;
+  }
+
+}, {
+
+  states: {
+    write: {
+      enter: function () {
+        s.views.Node.states.write.enter.apply(this);
+        $(this.el).addClass('edit');
+      },
+      leave: function () {
+        s.views.Node.states.write.leave.apply(this);
+        $(this.el).removeClass('edit');
+        window.editor.deactivate();
+      }
+    },
+    moveTarget: {
+      enter: function () {
+        $('#document').addClass('move-mode');
+      },
+      leave: function () {
+        delete this.movedNode;
+        delete this.movedParent;
+        $('#document').removeClass('move-mode');
+      }
+    }
+  }
+
+});
+
+s.views.Node.define('/type/image', {
+
+  className: 'content-node image',
+
+  events: _.extend({
+    'change .image-file': 'upload'
+  }, s.views.Node.prototype.events),
+
+  focus: function () {
+    this.caption.click();
+  },
+
+  initializeUploadForm: function () {
+    _.bindAll(this, 'onStart', 'onProgress', 'onError');
+    
+    this.$('.upload-image-form').transloadit({
+      modal: false,
+      wait: true,
+      autoSubmit: false,
+      onStart: this.onStart,
+      onProgress: this.onProgress,
+      onError: this.onError,
+      onSuccess: _.bind(function (assembly) {
+        if (assembly.results.web_version &&
+            assembly.results.web_version[1] &&
+            assembly.results.web_version[1].url) {
+          this.onSuccess(assembly);
+        } else {
+          this.onInvalid();
+        }
+      }, this)
+    });
+  },
+
+  onStart: function () {
+    this.$('.image-progress').show();
+    this.$('.info').hide();
+    this.$('.image-progress .label').html("Uploading &hellip;");
+    this.$('.progress-bar').css('width', '0%');
+  },
+
+  onProgress: function (bytesReceived, bytesExpected) {
+    var percentage = Math.max(0, parseInt(bytesReceived / bytesExpected * 100));
+    if (!percentage) percentage = 0;
+    this.$('.image-progress .label').html("Uploading &hellip; " + percentage + "%");
+    this.$('.progress-bar').css('width', percentage + '%');
+  },
+
+  onSuccess: function (assembly) {
+    // This triggers a node re-render
+    updateNode(this.model, {
+      url: assembly.results.web_version[1].url,
+      original_url: assembly.results.print_version[1].url,
+      dirty: true
+    });
+    
+    this.$('.progress-container').hide();
+    this.$('.info').show();
+  },
+
+  onError: function (assembly) {
+    // TODO
+    //alert(JSON.stringify(assembly));
+    //this.$('.image-progress .label').html("Invalid image. Skipping &hellip;");
+    //this.$('.progress-container').hide();
+    //
+    //setTimeout(_.bind(function () {
+    //  app.document.reset();
+    //  this.$('.info').show();
+    //}, this), 3000);
+  },
+
+  onInvalid: function () {
+    this.$('.image-progress .label').html("Invalid image. Skipping &hellip;");
+    this.$('.progress-container').hide();
+    
+    setTimeout(_.bind(function () {
+      this.$('.info').show();
+    }, this), 3000);
+  },
+
+  upload: function () {
+    this.$('.upload-image-form').submit();
+  },
+
+  render: function () {
+    s.views.Node.prototype.render.apply(this);
+    
+    this.imageContent = $('<div class="image-content" />').appendTo(this.contentEl);
+    if (!this.model.get('url')) { this.imageContent.addClass('placeholder'); }
+    
+    this.img = $('<img />')
+      .attr({ src: this.model.get('url') || '/images/image_placeholder.png' });
+    
+    $('<a target="_blank" />')
+      .attr({ href: this.model.get('original_url') })
+      .append(this.img)
+      .appendTo(this.imageContent);
+    
+    this.imageEditor = $(s.util.tpl('image_editor', {
+      transloadit_params: config.transloadit.image
+    })).appendTo(this.imageContent);
+    this.initializeUploadForm();
+    
+    this.caption = this.makeEditable($('<div class="caption" />'), 'caption', "Enter Caption")
+      .insertAfter(this.contentEl);
+    
+    return this;
+  }
+
+}, {
+
+  states: {
+    write: {
+      enter: function () {
+        s.views.Node.states.write.enter.apply(this);
+        
+        this.img.unwrap();
+      },
+      leave: function () {
+        s.views.Node.states.write.leave.apply(this);
+        
+        this.img.wrap($('<a target="_blank" />')
+          .attr({ href: this.model.get('original_url') }));
+      }
+    }
+  }
+
+});
+
+s.views.Node.define('/type/question', {
+
+  className: 'content-node question',
+
+  focus: function () {
+    this.questionEl.click();
+  },
+
+  render: function () {
+    s.views.Node.prototype.render.apply(this, arguments);
+    this.questionEl = this.makeEditable($('<p class="question" />'), 'content', "Enter Question").appendTo(this.contentEl);
+    return this;
+  }
+
+});
+
+s.views.Node.define('/type/quote', {
+
+  className: 'content-node quote',
+
+  focus: function () {
+    this.quoteContentEl.click();
+  },
+
+  render: function () {
+    s.views.Node.prototype.render.apply(this);
+    
+    var blockquoteEl = $('<blockquote />').appendTo(this.contentEl);
+    this.quoteContentEl = this.makeEditable($('<p class="quote-content" />'), 'content', "Enter Quote")
+      .appendTo($('<div />').appendTo(blockquoteEl));
+    this.quoteAuthorEl  = this.makeEditable($('<cite class="quote-author" />'), 'author', "Enter Author")
+      .appendTo($('<div />').appendTo(blockquoteEl));
+    $('<br clear="both" />').appendTo(this.contentEl);
+    
+    return this;
+  }
+
+});
+
+s.views.Node.define('/type/resource', {
+
+  className: 'content-node resource',
+
+  initialize: function () {
+    s.views.Node.prototype.initialize.apply(this, arguments);
+    this.updateUrl = _.throttle(this.updateUrl, 500);
+  },
+
+  focus: function () {
+    this.caption.click();
+  },
+
+  resourceExists: function (url, callback) {
+    var img = new Image();
+    img.onload  = function () { callback(true); }
+    img.onerror = function () { callback(false); }
+    img.src = url;
+  },
+
+  updateUrl: function (url) {
+    this.resourceExists(url, _.bind(function (doesIt) {
+      if (doesIt) {
+        console.log("Valid resource: " + url);
+        this.img.attr({ src: url });
+        this.status.addClass('image').text("Image");
+        updateNode(this.model, { url: url });
+      } else {
+        this.status.prop({ className: 'status' }).text("Invalid URL");
+      }
+    }, this));
+  },
+
+  render: function () {
+    s.views.Node.prototype.render.apply(this);
+    
+    this.resourceContent = $('<div class="resource-content" />').appendTo(this.contentEl);
+    if (!this.model.get('url')) { this.resourceContent.addClass('placeholder'); }
+    
+    this.img = $('<img />')
+      .attr({ src: this.model.get('url') || '/images/image_placeholder.png' })
+      .appendTo(this.resourceContent);
+    
+    var resourceEditor = $(s.util.tpl('resource_editor', {})).appendTo(this.contentEl);
+    
+    this.status = resourceEditor.find('.status');
+    
+    this.resourceUrl = resourceEditor.find('.resource-url')
+      .val(this.model.get('url'))
+      .keyup(_.bind(function () {
+        this.updateUrl($(this.resourceUrl).val());
+      }, this));
+    
+    this.caption = this.makeEditable($('<div class="caption" />'), 'caption', "Enter Caption")
+      .insertAfter(this.contentEl);
+    
+    return this;
+  }
+
+}, {
+
+  states: {
+    write: {
+      enter: function () {
+        s.views.Node.states.write.enter.apply(this);
+        this.$('.resource-url').removeAttr('readonly');
+      },
+      leave: function () {
+        s.views.Node.states.write.leave.apply(this);
+        this.$('.resource-url').attr({ readonly: 'readonly' });
+      }
+    }
+  }
+
+});
+
+s.views.Node.define('/type/section', {
+
+  className: 'content-node section',
+
+  initialize: function (options) {
+    s.views.Node.prototype.initialize.apply(this, arguments);
+    this.nodeList = new s.views.NodeList({
+      model: this.model,
+      level: options.level,
+      root: this.root
+    });
+  },
+
+  focus: function () {
+    this.headerEl.click();
+  },
+
+  remove: function () {
+    this.nodeList.remove();
+    $(this.el).remove();
+  },
+
+  transitionTo: function (state) {
+    s.views.Node.prototype.transitionTo.call(this, state);
+    if (this.state === state) {
+      this.nodeList.transitionTo(state);
+    }
+  },
+
+  render: function () {
+    s.views.Node.prototype.render.apply(this, arguments);
+    var level = Math.min(6, this.level);
+    this.headerEl = this.makeEditable($('<h'+level+' />'), 'name', "Enter Section Name").appendTo(this.contentEl);
+    this.nodeListEl = $(this.nodeList.render().el).appendTo(this.contentEl);
+    return this;
+  }
+
+});
+
+s.views.Node.define('/type/text', {
+
+  className: 'content-node text',
+
+  focus: function () {
+    $(this.textEl).click();
+  },
+
+  select: function () {
+    s.views.Node.prototype.select.apply(this);
+    this.$('.proper-commands').show();
+  },
+
+  deselect: function () {
+    s.views.Node.prototype.deselect.apply(this);
+    this.$('.proper-commands').hide();
+  },
+
+  render: function () {
+    s.views.Node.prototype.render.apply(this, arguments);
+    this.textEl = this.makeEditable(this.contentEl, 'content', "Enter Text", {
+      markup: true,
+      multiline: true,
+      controlsTarget: $(this.el)
+    });
+    return this;
+  }
+
+});
+
+// The global graph instance
+var graph = new Data.Graph(seed, {dirty: false, syncMode: 'push'}).connect('ajax'); // The database
+
+$(function () {
+  if (!s.util.browserSupported()) {
+    $('#container').html(s.util.tpl('browser_not_supported'));
+    $('#container').show();
+    return;
+  }
+  
+  // Start the engines
+  window.app = new s.views.Application({ el: '#container' }).render();
+  
+  // Set up a global instance of the Proper Richtext Editor
+  window.editor = new Proper();
+  
+  // Initialize router
+  window.router = new s.Router({});
+  
+  // Start responding to routes
+  Backbone.history.start({ pushState: true });
+  
+  // Prevent exit when there are unsaved changes
+  window.onbeforeunload = confirmExit;
+  function confirmExit() {
+    if (graph.dirtyNodes().length>0) return "You have unsynced changes, which will be lost.";
+  }
+   
+  function resetWorkspace() {
+    confirm('There are conflicted or rejected nodes since the last sync. The workspace will be reset for your own safety. Keep in mind we do not yet support simultaneous editing of one document.');
+    window.location.reload(true);
+  }
+  
+  window.pendingSync = false;
+  graph.bind('dirty', function() {
+    // Reload document browser
+    if (!pendingSync) {
+      pendingSync = true;
+      setTimeout(function() {
+        $('#sync_state').fadeIn(100);
+        graph.sync(function(err) {
+          pendingSync = false;
+          if (!err) {
+            setTimeout(function() {
+              $('#sync_state').fadeOut(100);
+            }, 1500);
+          } else {
+            resetWorkspace();
+          }
+        });
+      }, 3000);
+    }
   });
-})();
+});
+

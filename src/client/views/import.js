@@ -4,7 +4,7 @@ s.views.Import = Backbone.View.extend({
   className: 'page-content',
 
   events: {
-    'submit form': 'importDocument',
+    'submit form': 'importDocument'
   },
 
   render: function () {    

@@ -8,7 +8,7 @@ s.views.UserStatus = Backbone.View.extend(_.extend({}, StateMachine, {
     
     'click .toggle.notifications': 'toggleNotifications',
     'click #event_notifications a .notification': 'hideNotifications',
-    'click a.open-notification': 'openNotification',
+    'click a.open-notification': 'openNotification'
   },
 
   openNotification: function(e) {

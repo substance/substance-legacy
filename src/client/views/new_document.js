@@ -4,7 +4,7 @@ s.views.NewDocument = Backbone.View.extend({
   className: 'page-content',
 
   events: {
-    'submit form': 'createDocument',
+    'submit form': 'createDocument'
   },
 
   render: function () {    

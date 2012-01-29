@@ -15,7 +15,7 @@ s.views.Document = Backbone.View.extend({
     this.settings    = new s.views.DocumentSettings({ model: this.model, authorized: this.authorized });
     this.publish     = new s.views.Publish({ model: this.model, docView: this, authorized: this.authorized });
     this.invite      = new s.views.Invite({ model: this.model, authorized: this.authorized });
-    this.export      = new s.views.Export({ model: this.model, authorized: this.authorized });
+    this["export"]   = new s.views.Export({ model: this.model, authorized: this.authorized });
     this.subscribers = new s.views.Subscribers({ model: this.model, authorized: this.authorized });
     this.versions    = new s.views.Versions({ model: this.model, authorized: this.authorized });
     

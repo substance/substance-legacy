@@ -20,7 +20,7 @@ s.Router = Backbone.Router.extend({
     this.route("register", "register", app.register);
     this.route("recover", "recover", app.recoverPassword);
     this.route("new", "new", app.newDocument);
-    this.route("import", "import", app.import);
+    this.route("import", "import", app["import"]);
     
     this.route("settings", "settings", app.userSettings);
     this.route("dashboard", "dashboard", app.dashboard);

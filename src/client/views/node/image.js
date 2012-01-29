@@ -123,7 +123,7 @@ s.views.Node.define('/type/image', {
         this.img.wrap($('<a target="_blank" />')
           .attr({ href: this.model.get('original_url') }));
       }
-    },
+    }
   }
 
 });
