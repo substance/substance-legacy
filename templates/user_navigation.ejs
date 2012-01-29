@@ -10,7 +10,9 @@
           <img src="/avatar/<%= n.get('event').get('creator')._id.split('/')[2]%>/30" />
           <div class="message"><%= n.get('event').get('message') %></div>
           <div class="timestamp"><%= s.util.prettyDate(n.get('event').get('created_at')) %></div>
+          <br class="clear"/>
         </div></a>
+
       <% }); %>
       <% if (notifications.length === 0) { %>
         <div class="notification">
