@@ -43,7 +43,6 @@ describe("TOC (Table of Contents)", function () {
   describe("content", function () {
     it("should contain the names of all sections in a hierarchical manner", function () {
       var el = $(toc.el);
-      expect(el.text()).toMatch(/Table of Contents/i);
       expect(el.find('li').length).toBe(3);
       expect(el.find('li a').eq(0).text()).toBe("First");
       expect(el.find('li li').length).toBe(1);
