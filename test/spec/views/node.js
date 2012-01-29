@@ -22,7 +22,8 @@ describe("Node", function () {
     child.html_id = 'child01';
     
     root = _.extend({
-      selectNode: jasmine.createSpy()
+      selectNode: jasmine.createSpy(),
+      nodes: {}
     }, StateMachine);
     
     parentView = new Node({

@@ -33,14 +33,12 @@ describe("Comments", function () {
     code.html_id = 'asdfasdff';
     
     comments = new s.views.Comments({
+      node: { root: { document: { version: version2._id } } },
       model: code
     });
     
     window.app = {
-      username: 'michael',
-      document: {
-        version: '2'
-      }
+      username: 'michael'
     };
     
     graph.set('/user/michael', {
