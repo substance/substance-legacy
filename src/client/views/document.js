@@ -21,7 +21,6 @@ s.views.Document = Backbone.View.extend({
     
     // TODO: Instead listen for a document-changed event
     graph.bind('dirty', _.bind(function() {
-      this.closeShelf();
       this.updatePublishState();
     }, this));
 
@@ -77,13 +76,13 @@ s.views.Document = Backbone.View.extend({
   toggleSubscription: function (e) {
     if (!this.model.get('subscribed')) {
       subscribeDocument(this.model, _.bind(function (err) {
-        this.$('.action.toggle-subscription a').html('Unsubscribe');
-        this.$('.tab.subscribers').html(this.model.get('subscribers'));
+        this.$('.action.toggle-subscription a').html('Remove Bookmark');
+        this.$('.tab.subscribers a').html(this.model.get('subscribers'));
       }, this));
     } else {
       unsubscribeDocument(this.model, _.bind(function (err) {
-        this.$('.action.toggle-subscription a').html('Subscribe');
-        this.$('.tab.subscribers').html(this.model.get('subscribers'));
+        this.$('.action.toggle-subscription a').html('Bookmark');
+        this.$('.tab.subscribers a').html(this.model.get('subscribers'));
       }, this));
     }
     return false;

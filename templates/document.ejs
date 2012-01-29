@@ -11,12 +11,14 @@
     <% } %>
     <div class="document tab invite"><a href="#">Collaborators</a></div>
     <div class="document tab export"><a href="#">Export</a></div>
-    <div class="document tab versions"><a href="#">Versions</a></div>
+    <div class="document tab versions"><a href="#">History</a></div>
   </div>
 
   <div id="document_meta">
-    <div class="document action toggle-subscription"><a href="#"><%= doc.get('subscribed') ? "Unsubscribe" : "Subscribe" %></a></div>
-    <div class="document tab subscribers" title="Show Subscribers"><a href="#"><%= doc.get('subscribers') || 0 %></a></div>
+    <% if (loggedIn()) { %>
+      <div class="document action toggle-subscription"><a href="#"><%= doc.get('subscribed') ? "Remove Bookmark" : "Bookmark" %></a></div>
+    <% } %>
+    <div class="document tab subscribers" title="Bookmarkers"><a href="#"><%= doc.get('subscribers') || 0 %></a></div>
     <div class="document tab views" title="Total Views"><%= doc.get('views') %></div>
   </div>
 

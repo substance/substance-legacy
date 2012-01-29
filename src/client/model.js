@@ -458,7 +458,7 @@ function deleteDocument (doc, callback) {
 function byCreatedAt (item1, item2) {
   var v1 = item1.value.get('created_at')
   ,   v2 = item2.value.get('created_at');
-  return v1 === v2 ? 0 : (v1 < v2 ? -1 : 1);
+  return v1 === v2 ? 0 : (v1 > v2 ? -1 : 1);
 }
 
 function checkDocumentName (name, callback) {

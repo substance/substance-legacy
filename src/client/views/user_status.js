@@ -61,7 +61,7 @@ s.views.UserStatus = Backbone.View.extend(_.extend({}, StateMachine, {
   logout: function (e) {
     logout(_.bind(function (err) {
       if (!err) {
-        this.transitionTo('logged_out');
+        window.location.reload();
       }
     }, this));
     
