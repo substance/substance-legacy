@@ -1418,7 +1418,7 @@ function loadComments (node, callback) {
   });
 }
 
-function createComment (node, content, callback) {
+function createComment (node, content, version, callback) {
   window.pendingSync = true;
   
   var comment = graph.set(null, {
@@ -1427,9 +1427,8 @@ function createComment (node, content, callback) {
     created_at: new Date(),
     content: content,
     node: node._id,
-    document: node.get('document')._id
-    // TODO:
-    //version: this.version ? '/version/'+this.model._id.split('/')[3]+'/'+this.version : null
+    document: node.get('document')._id,
+    version: version ? '/version/'+node.get('document')._id.split('/')[3]+'/'+version : null
   });
   
   // Trigger immediate sync
@@ -3301,7 +3300,7 @@ s.views.Comments = Backbone.View.extend({
     ,   content = this.commentEditor.content();
     
     var self = this;
-    createComment(node, content, function () {
+    createComment(node, content, this.node.root.document.version, function () {
       self.load(function () {
         self.render();
       });
@@ -3346,7 +3345,7 @@ s.views.Comments = Backbone.View.extend({
         doc: this.model.get('document'),
         node: this.model,
         comments: comments,
-        version: this.node ? this.node.root.document.version : ""
+        version: this.node.root.document.version
       }));
       
       // Update comment count (TODO)

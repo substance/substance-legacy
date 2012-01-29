@@ -246,7 +246,7 @@ function loadComments (node, callback) {
   });
 }
 
-function createComment (node, content, callback) {
+function createComment (node, content, version, callback) {
   window.pendingSync = true;
   
   var comment = graph.set(null, {
@@ -255,9 +255,8 @@ function createComment (node, content, callback) {
     created_at: new Date(),
     content: content,
     node: node._id,
-    document: node.get('document')._id
-    // TODO:
-    //version: this.version ? '/version/'+this.model._id.split('/')[3]+'/'+this.version : null
+    document: node.get('document')._id,
+    version: version ? '/version/'+node.get('document')._id.split('/')[3]+'/'+version : null
   });
   
   // Trigger immediate sync

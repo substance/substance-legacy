@@ -31,9 +31,9 @@ describe("Comments", function () {
       document: doc._id
     });
     code.html_id = 'asdfasdff';
-    
+
     comments = new s.views.Comments({
-      node: { root: { document: { version: version2._id } } },
+      node: { root: { document: { version: version2._id.split("/")[3] } } },
       model: code
     });
     

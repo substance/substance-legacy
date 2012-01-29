@@ -64,7 +64,7 @@ s.views.Comments = Backbone.View.extend({
     ,   content = this.commentEditor.content();
     
     var self = this;
-    createComment(node, content, function () {
+    createComment(node, content, this.node.root.document.version, function () {
       self.load(function () {
         self.render();
       });
@@ -109,7 +109,7 @@ s.views.Comments = Backbone.View.extend({
         doc: this.model.get('document'),
         node: this.model,
         comments: comments,
-        version: this.node ? this.node.root.document.version : ""
+        version: this.node.root.document.version
       }));
       
       // Update comment count (TODO)
