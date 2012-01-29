@@ -14,12 +14,13 @@ s.views.Node = Backbone.View.extend(_.extend({}, StateMachine, {
 
     if (!this.root) {
       this.nodes = {};
+      this.root = this;
+      this.document = options.document;
     } else {
       this.root.nodes[this.model._id] = this;
     }
 
-
-    this.comments = new s.views.Comments({ model: this.model });
+    this.comments = new s.views.Comments({ model: this.model, node: this });
     this.afterControls = new s.views.Controls({
       root: this.root,
       level: this.level,

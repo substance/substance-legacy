@@ -10,7 +10,7 @@ s.views.Document = Backbone.View.extend({
     this.published   = options.published;
     this.version     = options.version;
      
-    this.node        = s.views.Node.create({ model: this.model });
+    this.node        = s.views.Node.create({ model: this.model, document: this });
     this.toc         = new s.views.TOC({ model: this.model, authorized: this.authorized });
     this.settings    = new s.views.DocumentSettings({ model: this.model, authorized: this.authorized });
     this.publish     = new s.views.Publish({ model: this.model, docView: this, authorized: this.authorized });

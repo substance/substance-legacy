@@ -8,8 +8,9 @@ s.views.Comments = Backbone.View.extend({
     'click .comment-content': 'activateEditor'
   },
 
-  initialize: function () {
+  initialize: function (options) {
     this.expanded = false;
+    this.node = options.node;
   },
 
   toggle: function () {
@@ -107,7 +108,8 @@ s.views.Comments = Backbone.View.extend({
       wrapper.html(s.util.tpl('comments', {
         doc: this.model.get('document'),
         node: this.model,
-        comments: comments
+        comments: comments,
+        version: this.node ? this.node.root.document.version : ""
       }));
       
       // Update comment count (TODO)

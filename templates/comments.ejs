@@ -11,11 +11,10 @@
             <a href="/" comment="<%= comment._id %>" class="remove-comment">Remove</a></div>
           <% } %>
         <div class="body">
-          <% var version = comment.get('version') ? comment.get('version')._id.split('/')[3] : null; %>
-          <% /* TODO: get rid of app.mainView dependency! */ %>
-          <% if (version !== app.mainView.version || !(!!version === !!app.mainView.version)) { %>
+          <% var commentVersion = comment.get('version') ? comment.get('version')._id.split('/')[3] : null; %>
+          <% if (commentVersion !== version || !(!!commentVersion === !!version)) { %>
             <div class="different-version" title="This comment belongs to a different document version.">
-              <a href="/<%= username %>/<%= doc.get('name') %><%= version ? "/"+version : "" %>/<%= node.html_id %>/<%= comment.html_id %>">different version</a>
+              <a href="/<%= username %>/<%= doc.get('name') %><%= commentVersion ? "/"+commentVersion : "" %>/<%= node.html_id %>/<%= comment.html_id %>">different version</a>
             </div>
           <% } %>
           <%= comment.get('content') %>
