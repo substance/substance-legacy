@@ -1473,13 +1473,13 @@ function loadDocument (username, docname, version, callback) {
 }
 
 
-function sortByUpdatedAt (documents) {
+function sortByUpdatedAt (items) {
   var DESC_BY_UPDATED_AT = function(item1, item2) {
     var v1 = item1.value.get('updated_at'),
         v2 = item2.value.get('updated_at');
     return v1 === v2 ? 0 : (v1 > v2 ? -1 : 1);
   };
-  return documents.sort(DESC_BY_UPDATED_AT);
+  return items.sort(DESC_BY_UPDATED_AT);
 }
 
 
@@ -1543,7 +1543,6 @@ function loadExplore (callback) {
       graph.merge(res.graph);
       
       // Populate results
-      var documents = graph.find({"type|=": "/type/document"});
       var networks  = graph.find({"type":   "/type/network"});
       callback(null, {
         networks: sortByUpdatedAt(networks)
@@ -3648,7 +3647,8 @@ s.views.Node = Backbone.View.extend(_.extend({}, StateMachine, {
 
   render: function () {
     this.operationsEl = $(s.util.tpl('operations', {
-      commentCount: this.model.get('comment_count') || ""
+      commentCount: this.model.get('comment_count') || "",
+      authorized: this.root.document.authorized
     })).appendTo(this.el);
     this.contentEl = $('<div class="content" />').appendTo(this.el);
     if (this.comments) {
