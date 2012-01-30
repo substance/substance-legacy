@@ -38,6 +38,7 @@ Network.get = function(network, currentUser, callback) {
   graph.fetch({type: "/type/network", _id: "/network/"+network}, function(err, nodes) {
     graph.fetch({type: "/type/publication", "network": "/network/"+network, "document": {}}, function(err, nodes) {
     	graph.fetch({"type": "/type/membership", "network": "/network/"+network, "user": {}}, function(err, nodes) {
+       if (err) callback(err);
         callback(null, {
           graph: graph.objects().toJSON(), 
           isMember: !!nodes.get('/user/'+currentUser)
@@ -50,7 +51,8 @@ Network.get = function(network, currentUser, callback) {
 
 Network.join = function(network, username, callback) {
   var graph = new Data.Graph(seed).connect('couch', {url: config.couchdb_url});
-
+  // TODO: check for existence of network / username
+  if (!network || !username) return callback({"error": "not_allowed"});
   graph.fetch({type: "/type/membership", network: "/network/"+network, user: "/user/"+username}, function(err, nodes) {
     if (nodes.length > 0) return callback(null);
     graph.set({

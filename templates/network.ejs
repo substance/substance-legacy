@@ -1,11 +1,13 @@
 <div id="network_header">
-  <div class="actions">
-  	<% if (isMember) { %>
-  		<a href="#leave" class="action leave-network">Leave Network</a>
-  	<% } else { %>
-  		<a href="#join" class="action join-network">Join Network</a>
-  	<% } %>
-  </div>
+  <% if (loggedIn()) { %>
+    <div class="actions">
+    	<% if (isMember) { %>
+    		<a href="#leave" class="action leave-network">Leave Network</a>
+    	<% } else { %>
+    		<a href="#join" class="action join-network">Join Network</a>
+    	<% } %>
+    </div>
+  <% } %>
 
     <div class="tabs">
       <a href="#" class="tab toggle-documents<%= mode === "documents" ? " selected" : "" %>"><div class="number"><%= documents.length %></div><div class="label">documents</div></a>
