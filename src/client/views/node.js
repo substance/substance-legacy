@@ -169,7 +169,8 @@ s.views.Node = Backbone.View.extend(_.extend({}, StateMachine, {
 
   render: function () {
     this.operationsEl = $(s.util.tpl('operations', {
-      commentCount: this.model.get('comment_count') || ""
+      commentCount: this.model.get('comment_count') || "",
+      authorized: this.root.document.authorized
     })).appendTo(this.el);
     this.contentEl = $('<div class="content" />').appendTo(this.el);
     if (this.comments) {
