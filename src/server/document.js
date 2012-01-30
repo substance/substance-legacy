@@ -139,7 +139,14 @@ Document.user = function(username, callback) {
     documents = documents.select(function(n) {
       return !!n.get('published_version');
     });
-    fetchDocuments(documents.keys(), username, callback);
+    fetchDocuments(documents.keys(), username, function(err, result, count) {
+      if (err) return callback(err);
+      graph.fetch({_id: "/user/"+username}, function(err, users) {
+        if (err) return callback(err);
+        result["/user/"+username] = users.first().toJSON();
+        callback(null, result, count);
+      });
+    });
   });
 }
 
