@@ -518,7 +518,8 @@
       }
     },
     "indexes": {
-      "key": ["creator", "name"]
+      "key": ["creator", "name"],
+      "by_creator": ["creator"]
     }
   },
   
