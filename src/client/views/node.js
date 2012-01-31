@@ -134,9 +134,10 @@ s.views.Node = Backbone.View.extend(_.extend({}, StateMachine, {
       multiline: false,
       codeFontFamily: 'Monaco, Consolas, "Lucida Console", monospace'
     }, options || {});
-    updateFn = updateFn || function (node, attr, val) {
+    updateFn = updateFn || function (node, attr, val, direction) {
       var update = {};
       update[attr] = val;
+      update["direction"] = direction;
       updateNode(node, update);
     };
     
@@ -159,7 +160,7 @@ s.views.Node = Backbone.View.extend(_.extend({}, StateMachine, {
         if (self.state === 'write') {
           window.editor.activate($(el), options);
           window.editor.bind('changed', function () {
-            updateFn(self.model, attr, window.editor.content());
+            updateFn(self.model, attr, window.editor.content(), window.editor.direction());
           });
         }
       });
@@ -172,10 +173,9 @@ s.views.Node = Backbone.View.extend(_.extend({}, StateMachine, {
       commentCount: this.model.get('comment_count') || "",
       authorized: this.root.document.authorized
     })).appendTo(this.el);
-    this.contentEl = $('<div class="content" />').appendTo(this.el);
-    if (this.comments) {
-      this.commentsEl = $(this.comments.render().el).appendTo(this.el);
-    }
+    this.contentEl = $('<div class="content"/>').appendTo(this.el);
+    if (this.model.get('direction') === "right") this.contentEl.css('direction', 'rtl');
+    if (this.comments) this.commentsEl = $(this.comments.render().el).appendTo(this.el);
     return this;
   }
 

@@ -695,6 +695,11 @@
         "type": "string",
         "default": ""
       },
+      "direction": {
+        "name": "Direction",
+        "unique": true,
+        "type": "string"
+      },
       "document": {
         "name": "Document Membership",
         "unique": true,
@@ -732,6 +737,11 @@
         "unique": true,
         "type": "string",
         "default": "<p></p>"
+      },
+      "direction": {
+        "name": "Direction",
+        "unique": true,
+        "type": "string"
       },
       "comments": {
         "name": "Comments",

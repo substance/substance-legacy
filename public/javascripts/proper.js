@@ -17,7 +17,77 @@
 // browser-specific workarounds are required.
 
 (function(){
-  
+
+  /* Adapted from http://github.com/hasenj/proper */
+  function getDirection(text, guesstimate) {
+    function getWordDir(word) {
+      // regexes to identify ltr and rtl characters
+      // stolen from google's i18n.bidi
+      var ltr_re_ =
+          'A-Za-z\u00C0-\u00D6\u00D8-\u00F6\u00F8-\u02B8\u0300-\u0590\u0800-\u1FFF' +
+          '\u2C00-\uFB1C\uFE00-\uFE6F\uFEFD-\uFFFF';
+
+      var rtl_re_ = '\u0591-\u07FF\uFB1D-\uFDFF\uFE70-\uFEFC';
+      // end of google steal
+      var ltr_re = RegExp('[' + ltr_re_ + ']+');
+      var rtl_re = RegExp('[' + rtl_re_ + ']+');
+      if(ltr_re.exec(word)) {
+          return 'L';
+      } else if (rtl_re.exec(word)) {
+          return 'R';
+      } else {
+          return 'N';
+      }
+    }
+
+    if (guesstimate == null) guesstimate = false;
+
+    // TODO: check first character is a unicode dir character!
+    var is_word = function(word) {
+        return word.length > 0; // && word.match(/\w+/) 
+        // wops! \w only matches ascii characters :(
+    }
+    var words = text.split(' ').filter(is_word);
+
+    var dirs = words.map(getWordDir);
+
+    var func_same_direction = function(dir) { 
+        return function(d) { return d == dir; }; 
+    }
+    var is_non_neutral_dir = function(d) { return d != 'N'; };
+    var other_direction = function(dir) { return {'L':'R', 'R':'L'}[dir]; };
+
+    // should be really the same as dirs because we already filtered out
+    // things that are not words!
+    var X = 100;
+    var hard_dirs = dirs.filter(is_non_neutral_dir).slice(0, X);
+
+    if (hard_dirs.length == 0) { return 'N'; }
+    var candidate = hard_dirs[0];
+
+    if(guesstimate === false) {
+        return candidate;
+    }
+
+    var DIR_COUNT_THRESHOLD = 10;
+    if (hard_dirs.length < DIR_COUNT_THRESHOLD) return candidate;
+
+    var cand_words = hard_dirs.filter(func_same_direction(candidate));
+    var other_words = hard_dirs.filter(func_same_direction(other_direction(candidate)));
+
+    if (other_words.length == 0) return candidate;
+    var other_dir = other_words[0];
+
+    var MIN_RATIO = 0.4; // P
+    var ratio = cand_words.length / other_words.length;
+    if (ratio >= MIN_RATIO) {
+        return candidate;
+    } else {
+        return other_dir;
+    }
+  }
+
+
   // _.Events (borrowed from Backbone.js)
   // ------------------------------------
   
@@ -124,6 +194,7 @@
   this.Proper = function(options) {
     var activeElement = null, // element that's being edited
         $controls,
+        direction = "left",
         events = _.extend({}, _.Events),
         pendingChange = false,
         options = {},
@@ -308,6 +379,12 @@
                  .replace(/</g, '&lt;')
                  .replace(/>/g, '&gt;')
                  .replace(/"/g, '&quot;');
+    }
+
+    function updateDirection() {
+      var dir = getDirection($(activeElement).text());
+      direction = dir === "R" ? "right" : "left";
+      $(activeElement).css('direction', dir === "R" ? "rtl" : "ltr");
     }
     
     // Recursively walks the dom and returns the semantified contents. Replaces
@@ -667,6 +744,9 @@
       $(el).bind('keyup', function(e) {        
         updateCommandState();
         addCodeClasses();
+        
+        updateDirection();
+
         // Trigger change events, but consolidate them to 200ms time slices
         setTimeout(function() {
           // Skip if there's already a change pending
@@ -785,7 +865,8 @@
       deactivate: deactivate,
       content: content,
       exec: exec,
-      commands: commands
+      commands: commands,
+      direction: function() { return direction; }
     };
   };
 })();
