@@ -2544,6 +2544,13 @@ s.views.Home = Backbone.View.extend({
     setTimeout(function() {
       $('#startpage .intro .video').html('<video autoplay width="920" height="400" controls><source src="http://substance.io/videos/substance_intro.mp4" type=\'video/mp4; codecs="avc1.42E01E, mp4a.40.2"\'><source src="http://substance.io/videos/substance_intro.ogv" type="video/ogg" /> </video>')
       setTimeout(function() {
+        $("video").unbind();
+        $("video").bind("ended", function() {
+          $('#startpage .video-credits').fadeIn(1000);
+        });
+        $("video").bind("seeking", function() {
+          $('#startpage .video-credits').fadeOut();
+        });
         $('#startpage .intro .video').fadeIn();
       }, 400);
     }, 1000);
@@ -3612,9 +3619,10 @@ s.views.Node = Backbone.View.extend(_.extend({}, StateMachine, {
       multiline: false,
       codeFontFamily: 'Monaco, Consolas, "Lucida Console", monospace'
     }, options || {});
-    updateFn = updateFn || function (node, attr, val) {
+    updateFn = updateFn || function (node, attr, val, direction) {
       var update = {};
       update[attr] = val;
+      update["direction"] = direction;
       updateNode(node, update);
     };
     
@@ -3637,7 +3645,7 @@ s.views.Node = Backbone.View.extend(_.extend({}, StateMachine, {
         if (self.state === 'write') {
           window.editor.activate($(el), options);
           window.editor.bind('changed', function () {
-            updateFn(self.model, attr, window.editor.content());
+            updateFn(self.model, attr, window.editor.content(), window.editor.direction());
           });
         }
       });
@@ -3650,10 +3658,9 @@ s.views.Node = Backbone.View.extend(_.extend({}, StateMachine, {
       commentCount: this.model.get('comment_count') || "",
       authorized: this.root.document.authorized
     })).appendTo(this.el);
-    this.contentEl = $('<div class="content" />').appendTo(this.el);
-    if (this.comments) {
-      this.commentsEl = $(this.comments.render().el).appendTo(this.el);
-    }
+    this.contentEl = $('<div class="content"/>').appendTo(this.el);
+    if (this.model.get('direction') === "right") this.contentEl.css('direction', 'rtl');
+    if (this.comments) this.commentsEl = $(this.comments.render().el).appendTo(this.el);
     return this;
   }
 
