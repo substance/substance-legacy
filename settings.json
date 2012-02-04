@@ -54,7 +54,7 @@
       "/client/ui/common.js",
       "/client/ui/string_editor.js",
       "/client/ui/multi_string_editor.js",
-      "/client/views/toc.js",
+      "/client/views/document_lens.js",
       "/client/views/document.js",
       "/client/views/document/export.js",
       "/client/views/document/invite.js",

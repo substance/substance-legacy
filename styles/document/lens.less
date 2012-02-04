@@ -1,0 +1,57 @@
+#document #document_lens {
+  position: fixed;
+  width: 250px;
+  left: 10px;
+  top: 100px;
+  height: 800px;
+  
+  .ui-font;
+  font-weight: bold;
+  font-size: 12px;
+
+
+  overflow: auto;
+
+  .items {
+    height: 270px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    margin-left: 30px;
+    .item {
+      height: 30px;
+      width: 300px;
+      line-height: 30px;
+
+      &.level-1 { font-weight: bold; font-size: 16px;}
+      &.level-2 { padding-left: 10px; }
+      &.level-3 { padding-left: 20px; }
+      
+      a { border: none; color: #939393;}
+
+      &.selected {
+        a { color: #2D2D2D;}
+      }
+    }
+  }
+
+  .outline {
+    float: left;
+    width: 5px;
+    height: 270px;
+
+    .outline-item {
+      width: 4px;
+      margin-left: 1px;
+      background: #8C8C8C;
+      margin-bottom: 1px;
+
+      &.selected {
+        background: #383838;
+      }
+      &.active {
+        padding: 0 3px;
+        margin-left: 0;
+      }
+    }
+  }
+}

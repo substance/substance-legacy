@@ -1,0 +1,11 @@
+<div class="outline">
+  <% _.each(items, function(item, i) { %>
+    <div class="outline-item<%= (i>= bounds[0] && i<=bounds[1] ? " active" : "")%><%= selectedItem === i ? " selected" : ""%>"></div>
+  <% }); %>
+</div>
+
+<div class="items">
+  <% _.each(items, function(item, i) { %>
+    <div class="item level-<%= item.level %><%= selectedItem === i ? " selected" : ""%>"><a href="#<%= item.html_id %>"><%= item.name %></a></div>
+  <% }); %>
+</div>

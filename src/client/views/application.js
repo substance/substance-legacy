@@ -142,6 +142,50 @@ s.views.Application = Backbone.View.extend({
   loadDocument: function (username, docname, version, nodeid, commentid) {
     var render = _.bind(function (options) {
       this.replaceMainView("document", new s.views.Document(_.extend(options, {id: 'document_view' })).render());
+
+      // TODO: move code to document view
+      var bounds;
+      var sections;
+
+      // Calculate boundaries
+      function calcBounds() {
+        bounds = [];
+        sections = [];
+        $('#document .content-node.section').each(function() {
+          bounds.push($(this).offset().top);
+          sections.push(graph.get(this.id.replace(/_/g, '/')));
+        });
+      }
+
+      function getActiveSection() {
+        var active = 0;
+        _.each(bounds, function(bound, index) {
+          if ($(window).scrollTop() >= bound-90) {
+            active = index;
+          }
+        });
+        return active;
+      }
+
+      var prevSection = null;
+
+      function updateToc(e) {
+        var activeSection = getActiveSection();
+        if (activeSection !== prevSection) {
+          prevSection = activeSection;
+          app.mainView.documentLens.selectedItem = activeSection;
+          // TODO: no re-render required here
+          app.mainView.documentLens.render();
+        }
+      }
+
+      window.calcBounds = calcBounds;
+      window.getActiveSection = getActiveSection;
+      window.updateToc = updateToc;
+
+      setTimeout(calcBounds, 400);
+      $(window).scroll(updateToc);
+
     }, this);
     
     var id = '/document/'+username+'/'+docname;

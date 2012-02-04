@@ -1,3 +1,6 @@
+
+
+
 // Document
 // -------------
 
@@ -6,18 +9,30 @@ s.views.Document = Backbone.View.extend({
   initialize: function (options) {
     _.bindAll(this);
     
-    this.authorized  = options.authorized;
-    this.published   = options.published;
-    this.version     = options.version;
-     
-    this.node        = s.views.Node.create({ model: this.model, document: this });
-    this.toc         = new s.views.TOC({ model: this.model, authorized: this.authorized });
-    this.settings    = new s.views.DocumentSettings({ model: this.model, authorized: this.authorized });
-    this.publish     = new s.views.Publish({ model: this.model, docView: this, authorized: this.authorized });
-    this.invite      = new s.views.Invite({ model: this.model, authorized: this.authorized });
-    this["export"]   = new s.views.Export({ model: this.model, authorized: this.authorized });
-    this.subscribers = new s.views.Subscribers({ model: this.model, authorized: this.authorized });
-    this.versions    = new s.views.Versions({ model: this.model, authorized: this.authorized });
+    this.authorized   = options.authorized;
+    this.published    = options.published;
+    this.version      = options.version;
+    
+    var sections = [];
+
+    function collectSections (node, level) {
+      node.get('children').each(function (child) {
+        if (child.type.key !== '/type/section') return;
+        sections.push({id: child._id, html_id: child.html_id, name: child.get('name'), level: level});
+        collectSections(child, level+1);
+      });
+    }
+
+    collectSections(this.model, 1);
+
+    this.node         = s.views.Node.create({ model: this.model, document: this });
+    this.documentLens = new s.views.DocumentLens({ model: {items: sections}, authorized: this.authorized });
+    this.settings     = new s.views.DocumentSettings({ model: this.model, authorized: this.authorized });
+    this.publish      = new s.views.Publish({ model: this.model, docView: this, authorized: this.authorized });
+    this.invite       = new s.views.Invite({ model: this.model, authorized: this.authorized });
+    this["export"]    = new s.views.Export({ model: this.model, authorized: this.authorized });
+    this.subscribers  = new s.views.Subscribers({ model: this.model, authorized: this.authorized });
+    this.versions     = new s.views.Versions({ model: this.model, authorized: this.authorized });
     
     // TODO: Instead listen for a document-changed event
     graph.bind('dirty', _.bind(function() {
@@ -36,10 +51,11 @@ s.views.Document = Backbone.View.extend({
       authorized: this.authorized
     }));
     
-    $(this.toc.render().el).appendTo(this.$('#document'));
+    $(this.documentLens.render().el).appendTo(this.$('#document'));
     $(this.node.render().el).appendTo(this.$('#document'));
     if (this.authorized && !this.version) { this.edit(); }
     this.$('#document_content').click(this.deselect);
+
     return this;
   },
 
@@ -61,9 +77,7 @@ s.views.Document = Backbone.View.extend({
     'click .invite':      'toggleInvite',
     'click .subscribers': 'toggleSubscribers',
     'click .versions':    'toggleVersions',
-    'click .export':      'toggleExport',
-    'click #toc':         'toggleTOC',
-    'click .toggle-toc':  'toggleTOC'
+    'click .export':      'toggleExport'
   },
 
   // Handlers
@@ -90,16 +104,6 @@ s.views.Document = Backbone.View.extend({
   toggleVersions:    function (e) { this.toggleView('versions');    return false; },
   toggleInvite:      function (e) { this.toggleView('invite');      return false; },
   toggleExport:      function (e) { this.toggleView('export');      return false; },
-
-  toggleTOC: function (e) {
-    if ($(this.toc.el).is(":hidden")) {
-      $(this.toc.render().el).show();
-    } else {
-      $(this.toc.el).hide();
-    }
-    
-    return false;
-  },
 
   onKeydown: function (e) {
     if (e.keyCode === 27) {
