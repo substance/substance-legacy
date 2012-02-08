@@ -9,11 +9,8 @@
   </div>
 </div>
 
-
 <div id="networks">
-	<h2>Choose a Network</h2>
 	<% networks.each(function(network) { %>
-    
     <a class="toggle-view" href="<%= network._id %>">
     	<div class="network" data-network="<%= network._id %>">
         <div class="image"><img src="<%= network.get('cover') || "/images/network-image-placeholder.png" %>"/></div>
