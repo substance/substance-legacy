@@ -5,7 +5,7 @@
   "homepage": "http://substance.io/",
   "repository": {
     "type": "git",
-    "url": "https://github.com/michael/substance"
+    "url": "https://github.com/substance/substance"
   },
   "dependencies": {
     "underscore": "1.2.3",
