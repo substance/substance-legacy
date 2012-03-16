@@ -7,7 +7,7 @@ Substance is a web-based document authoring and publishing engine developed in t
 
 * [Introduction](http://substance.io/substance/getting-started) — Learn more
 
-* [Internals](http://substance.io/substance/substance-internals) — Technical Documenation & Installation Instructions
+* [Internals](http://substance.io/substance/substance-internals) — Technical Documentation & Installation Instructions
 
 Substance is built on top of several independent components that are available as separate libraries:
 
