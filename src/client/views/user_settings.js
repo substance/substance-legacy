@@ -28,15 +28,8 @@ s.views.UserSettings = Backbone.View.extend({
             graph.merge(res.seed);
             app.username = res.username;
             app.render();
-            
-            app.document.closeDocument();
-            app.browser.load(app.query());
 
-            app.browser.bind('loaded', function() {
-              app.toggleView('browser');
-            });
-
-            router.navigate(app.username);
+            router.navigate(app.username, true);
           }
         },
         error: function(err) {
