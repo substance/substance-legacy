@@ -14,13 +14,20 @@ s.views.DocumentLens = Backbone.View.extend({
     
     this.selectedItem = 0;
     this.start = 0;
-    this.windowSize = 9;
-    this.height = 270;
+    this.windowSize = 12;
+    this.height = this.windowSize * 30;
   },
 
   scrollTo: function (e) {
     var node = $(e.currentTarget).attr('href').slice(1);
+    var index = $(e.currentTarget).attr('data-index');
     app.scrollTo(node);
+    setTimeout(_.bind(function() {
+      this.selectSection(index);
+      // TODO: view dependency alert
+      this.model.document.prevSection = index;
+    }, this), 40);
+    
     return false;
   },
 
@@ -33,6 +40,16 @@ s.views.DocumentLens = Backbone.View.extend({
     return [start, start+this.windowSize-1];
   },
 
+  selectSection: function(item) {
+    this.selectedItem = item;
+
+    this.$('.items .item.selected').removeClass('selected');
+    this.$($('.items .item')[item]).addClass('selected');
+    this.$('.outline .outline-item').removeClass('selected');
+    this.$($('.outline .outline-item')[item]).addClass('selected');
+    this.$('.items').scrollTop(this.getBounds()[0]*30);
+  },
+
   render: function () {
     var bounds = this.getBounds();
     var that = this;
@@ -41,11 +58,6 @@ s.views.DocumentLens = Backbone.View.extend({
       bounds: bounds,
       selectedItem: this.selectedItem
     }));
-
-    // Good?
-    this.$('.items').mouseleave(function() {
-      that.render();
-    });
 
     this.$('.items').scroll(function(e) {
       e.preventDefault();
@@ -61,8 +73,7 @@ s.views.DocumentLens = Backbone.View.extend({
     });
 
     this.$('.items').scrollTop(bounds[0]*30);
-
-    var delta = this.height/this.model.items.length;
+    var delta = Math.min(this.height/this.model.items.length, 30);
     this.$('.outline .outline-item').height(delta);
 
     return this;

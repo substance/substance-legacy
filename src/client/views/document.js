@@ -1,6 +1,4 @@
 
-
-
 // Document
 // -------------
 
@@ -12,21 +10,22 @@ s.views.Document = Backbone.View.extend({
     this.authorized   = options.authorized;
     this.published    = options.published;
     this.version      = options.version;
-    
-    var sections = [];
 
+    var sections;
     function collectSections (node, level) {
+      if (level === 1) sections = [];
       node.get('children').each(function (child) {
         if (child.type.key !== '/type/section') return;
         sections.push({id: child._id, html_id: child.html_id, name: child.get('name'), level: level});
         collectSections(child, level+1);
       });
+      return sections;
     }
 
     collectSections(this.model, 1);
 
     this.node         = s.views.Node.create({ model: this.model, document: this });
-    this.documentLens = new s.views.DocumentLens({ model: {items: sections}, authorized: this.authorized });
+    this.documentLens = new s.views.DocumentLens({ model: {items: sections, document: this}, authorized: this.authorized });
     this.settings     = new s.views.DocumentSettings({ model: this.model, authorized: this.authorized });
     this.publish      = new s.views.Publish({ model: this.model, docView: this, authorized: this.authorized });
     this.invite       = new s.views.Invite({ model: this.model, authorized: this.authorized });
@@ -35,14 +34,26 @@ s.views.Document = Backbone.View.extend({
     this.versions     = new s.views.Versions({ model: this.model, authorized: this.authorized });
     
     // TODO: Instead listen for a document-changed event
-    graph.bind('dirty', _.bind(function() {
+    graph.bind('dirty', _.bind(function(node) {
       this.updatePublishState();
+
+      // Update TOC
+      if (node.type._id === "/type/section") {
+        // Recalc bounds every time content is changed
+        this.calcBounds();
+        setTimeout(_.bind(function() {
+          this.documentLens.model.items = collectSections(this.model, 1);        
+          this.documentLens.render();
+        }, this), 2);
+      }
     }, this));
 
     this.currentView = null;
     
     _.bindAll(this, 'deselect', 'onKeydown');
     $(document.body).keydown(this.onKeydown);
+    if (!this.bounds) setTimeout(this.calcBounds, 400);
+    $(window).scroll(this.markActiveSection);
   },
 
   render: function () {
@@ -134,19 +145,53 @@ s.views.Document = Backbone.View.extend({
     }
   },
 
+  // Calculate section bounds
+  calcBounds: function() {
+    var that = this;
+    this.bounds = [];
+    this.sections = [];
+    $('#document .content-node.section').each(function() {
+      that.bounds.push($(this).offset().top);
+      that.sections.push(graph.get(this.id.replace(/_/g, '/')));
+    });
+  },
+
+  markActiveSection: function() {
+    var that = this;
+    function getActiveSection() {
+      var active = 0;
+      _.each(that.bounds, function(bound, index) {
+        if ($(window).scrollTop() >= bound-90) {
+          active = index;
+        }
+      });
+      return active;
+    }
+
+    function update(e) {
+      that.activeSection = getActiveSection();
+      if (that.activeSection !== that.prevSection) {
+        that.prevSection = that.activeSection;
+        that.documentLens.selectSection(that.activeSection);
+      }
+    }
+    update();
+  },
+
   resizeShelf: function () {
     var shelfHeight   = this.currentView ? $(this.currentView.el).outerHeight() : 0
     ,   contentMargin = shelfHeight + 100;
     this.$('#document_shelf').css({ height: shelfHeight + 'px' });
     this.$('#document_content').css({ 'margin-top': contentMargin + 'px' });
+    this.$('#document_lens').css({ 'top': (contentMargin+40) + 'px' });
   },
 
   closeShelf: function() {
     if (!this.currentView) return;
     this.currentView.unbind('resize', this.resizeShelf);
 
-    // It's important to use detach (not remove) to retain the view's event
-    // handlers
+    // It's important to use detach (not remove) to retain
+    // the view's event handlers
     $(this.currentView.el).detach();
 
     this.currentView = null;
