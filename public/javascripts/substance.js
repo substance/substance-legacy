@@ -414,46 +414,86 @@ UI.MultiStringEditor = Backbone.View.extend({
   }
 });
 
-function renderTOC (node, root) {
-  root = root || node;
-  var content = '';
-  
-  content += '<ol>';
-  node.all('children').each(function (child) {
-    if (child.type.key !== '/type/section') return;
-    
-    content += '<li>'
-             +    '<a href="#'+child.html_id+'">'
-             +      child.get('name')
-             +    '</a>'
-             +   renderTOC(child, root)
-             + '</li>';
-  });
-  content += '</ol>';
-  
-  return content;
-}
+// DocumentLens
+// -------------
 
+s.views.DocumentLens = Backbone.View.extend({
 
-s.views.TOC = Backbone.View.extend({
-
-  id: 'toc',
+  id: 'document_lens',
 
   events: {
     'click a': 'scrollTo'
   },
 
+  initialize: function (options) {
+    _.bindAll(this);
+    
+    this.selectedItem = 0;
+    this.start = 0;
+    this.windowSize = 12;
+    this.height = this.windowSize * 30;
+  },
+
   scrollTo: function (e) {
     var node = $(e.currentTarget).attr('href').slice(1);
+    var index = $(e.currentTarget).attr('data-index');
     app.scrollTo(node);
-    app.toggleTOC();
+    setTimeout(_.bind(function() {
+      this.selectSection(index);
+      // TODO: view dependency alert
+      this.model.document.prevSection = index;
+    }, this), 40);
+    
+    return false;
+  },
+
+  getBounds: function() {
+    function clamp(val, min, max) {
+      return Math.max(min, Math.min(max, val));
+    }
+
+    start = clamp(this.selectedItem-(this.windowSize-1)/2, 0, this.model.items.length-this.windowSize);
+    return [start, start+this.windowSize-1];
+  },
+
+  selectSection: function(item) {
+    this.selectedItem = item;
+
+    this.$('.items .item.selected').removeClass('selected');
+    this.$($('.items .item')[item]).addClass('selected');
+    this.$('.outline .outline-item').removeClass('selected');
+    this.$($('.outline .outline-item')[item]).addClass('selected');
+    this.$('.items').scrollTop(this.getBounds()[0]*30);
   },
 
   render: function () {
-    $(this.el).html(renderTOC(this.model));
+    var bounds = this.getBounds();
+    var that = this;
+    $(this.el).html(s.util.tpl('document_lens', {
+      items: this.model.items,
+      bounds: bounds,
+      selectedItem: this.selectedItem
+    }));
+
+    this.$('.items').scroll(function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+
+      start = Math.round($(this).scrollTop()/30);
+      $('.outline .outline-item').removeClass('active').each(function(i) {
+        if (i>=start && i<=start+that.windowSize-1) {
+          $(this).addClass('active');
+        }
+      });
+      return false;
+    });
+
+    this.$('.items').scrollTop(bounds[0]*30);
+    var delta = Math.min(this.height/this.model.items.length, 30);
+    this.$('.outline .outline-item').height(delta);
+
     return this;
   }
-
 });
 
 // Document
@@ -464,28 +504,53 @@ s.views.Document = Backbone.View.extend({
   initialize: function (options) {
     _.bindAll(this);
     
-    this.authorized  = options.authorized;
-    this.published   = options.published;
-    this.version     = options.version;
-     
-    this.node        = s.views.Node.create({ model: this.model, document: this });
-    this.toc         = new s.views.TOC({ model: this.model, authorized: this.authorized });
-    this.settings    = new s.views.DocumentSettings({ model: this.model, authorized: this.authorized });
-    this.publish     = new s.views.Publish({ model: this.model, docView: this, authorized: this.authorized });
-    this.invite      = new s.views.Invite({ model: this.model, authorized: this.authorized });
-    this["export"]   = new s.views.Export({ model: this.model, authorized: this.authorized });
-    this.subscribers = new s.views.Subscribers({ model: this.model, authorized: this.authorized });
-    this.versions    = new s.views.Versions({ model: this.model, authorized: this.authorized });
+    this.authorized   = options.authorized;
+    this.published    = options.published;
+    this.version      = options.version;
+
+    var sections;
+    function collectSections (node, level) {
+      if (level === 1) sections = [];
+      node.get('children').each(function (child) {
+        if (child.type.key !== '/type/section') return;
+        sections.push({id: child._id, html_id: child.html_id, name: child.get('name'), level: level});
+        collectSections(child, level+1);
+      });
+      return sections;
+    }
+
+    collectSections(this.model, 1);
+
+    this.node         = s.views.Node.create({ model: this.model, document: this });
+    this.documentLens = new s.views.DocumentLens({ model: {items: sections, document: this}, authorized: this.authorized });
+    this.settings     = new s.views.DocumentSettings({ model: this.model, authorized: this.authorized });
+    this.publish      = new s.views.Publish({ model: this.model, docView: this, authorized: this.authorized });
+    this.invite       = new s.views.Invite({ model: this.model, authorized: this.authorized });
+    this["export"]    = new s.views.Export({ model: this.model, authorized: this.authorized });
+    this.subscribers  = new s.views.Subscribers({ model: this.model, authorized: this.authorized });
+    this.versions     = new s.views.Versions({ model: this.model, authorized: this.authorized });
     
     // TODO: Instead listen for a document-changed event
-    graph.bind('dirty', _.bind(function() {
+    graph.bind('dirty', _.bind(function(node) {
       this.updatePublishState();
+
+      // Update TOC
+      if (node.type._id === "/type/section") {
+        // Recalc bounds every time content is changed
+        this.calcBounds();
+        setTimeout(_.bind(function() {
+          this.documentLens.model.items = collectSections(this.model, 1);        
+          this.documentLens.render();
+        }, this), 2);
+      }
     }, this));
 
     this.currentView = null;
     
     _.bindAll(this, 'deselect', 'onKeydown');
     $(document.body).keydown(this.onKeydown);
+    if (!this.bounds) setTimeout(this.calcBounds, 400);
+    $(window).scroll(this.markActiveSection);
   },
 
   render: function () {
@@ -494,10 +559,11 @@ s.views.Document = Backbone.View.extend({
       authorized: this.authorized
     }));
     
-    $(this.toc.render().el).appendTo(this.$('#document'));
+    $(this.documentLens.render().el).appendTo(this.$('#document'));
     $(this.node.render().el).appendTo(this.$('#document'));
     if (this.authorized && !this.version) { this.edit(); }
     this.$('#document_content').click(this.deselect);
+
     return this;
   },
 
@@ -519,9 +585,7 @@ s.views.Document = Backbone.View.extend({
     'click .invite':      'toggleInvite',
     'click .subscribers': 'toggleSubscribers',
     'click .versions':    'toggleVersions',
-    'click .export':      'toggleExport',
-    'click #toc':         'toggleTOC',
-    'click .toggle-toc':  'toggleTOC'
+    'click .export':      'toggleExport'
   },
 
   // Handlers
@@ -548,16 +612,6 @@ s.views.Document = Backbone.View.extend({
   toggleVersions:    function (e) { this.toggleView('versions');    return false; },
   toggleInvite:      function (e) { this.toggleView('invite');      return false; },
   toggleExport:      function (e) { this.toggleView('export');      return false; },
-
-  toggleTOC: function (e) {
-    if ($(this.toc.el).is(":hidden")) {
-      $(this.toc.render().el).show();
-    } else {
-      $(this.toc.el).hide();
-    }
-    
-    return false;
-  },
 
   onKeydown: function (e) {
     if (e.keyCode === 27) {
@@ -588,19 +642,53 @@ s.views.Document = Backbone.View.extend({
     }
   },
 
+  // Calculate section bounds
+  calcBounds: function() {
+    var that = this;
+    this.bounds = [];
+    this.sections = [];
+    $('#document .content-node.section').each(function() {
+      that.bounds.push($(this).offset().top);
+      that.sections.push(graph.get(this.id.replace(/_/g, '/')));
+    });
+  },
+
+  markActiveSection: function() {
+    var that = this;
+    function getActiveSection() {
+      var active = 0;
+      _.each(that.bounds, function(bound, index) {
+        if ($(window).scrollTop() >= bound-90) {
+          active = index;
+        }
+      });
+      return active;
+    }
+
+    function update(e) {
+      that.activeSection = getActiveSection();
+      if (that.activeSection !== that.prevSection) {
+        that.prevSection = that.activeSection;
+        that.documentLens.selectSection(that.activeSection);
+      }
+    }
+    update();
+  },
+
   resizeShelf: function () {
     var shelfHeight   = this.currentView ? $(this.currentView.el).outerHeight() : 0
     ,   contentMargin = shelfHeight + 100;
     this.$('#document_shelf').css({ height: shelfHeight + 'px' });
     this.$('#document_content').css({ 'margin-top': contentMargin + 'px' });
+    this.$('#document_lens').css({ 'top': (contentMargin+40) + 'px' });
   },
 
   closeShelf: function() {
     if (!this.currentView) return;
     this.currentView.unbind('resize', this.resizeShelf);
 
-    // It's important to use detach (not remove) to retain the view's event
-    // handlers
+    // It's important to use detach (not remove) to retain
+    // the view's event handlers
     $(this.currentView.el).detach();
 
     this.currentView = null;
@@ -2976,15 +3064,8 @@ s.views.UserSettings = Backbone.View.extend({
             graph.merge(res.seed);
             app.username = res.username;
             app.render();
-            
-            app.document.closeDocument();
-            app.browser.load(app.query());
 
-            app.browser.bind('loaded', function() {
-              app.toggleView('browser');
-            });
-
-            router.navigate(app.username);
+            router.navigate(app.username, true);
           }
         },
         error: function(err) {
@@ -3123,7 +3204,8 @@ s.views.Application = Backbone.View.extend({
 
   scrollTo: function (id) {
     var offset = $('#'+id).offset();
-    offset ? $('html, body').animate({scrollTop: offset.top-90}, 'slow') : null;
+    // offset ? $('html, body').animate({scrollTop: offset.top-90}, 'fast') : null;
+    offset ? $('html, body').scrollTop(offset.top-90) : null;
     return false;
   },
 
