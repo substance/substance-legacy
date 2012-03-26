@@ -47,15 +47,21 @@ s.views.Node.define('/type/image', {
   },
 
   onSuccess: function (assembly) {
-    // This triggers a node re-render
+    
     updateNode(this.model, {
       url: assembly.results.web_version[1].url,
       original_url: assembly.results.print_version[1].url,
       dirty: true
     });
-    
-    this.$('.progress-container').hide();
-    this.$('.info').show();
+
+    this.img.attr({src: this.model.get('url')});
+
+    this.img[0].onload = _.bind(function() {
+      // Re-render node once ready
+      this.root.document.deselect()
+      this.$('.progress-container').hide();
+      this.$('.info').show();
+    }, this);
   },
 
   onError: function (assembly) {
