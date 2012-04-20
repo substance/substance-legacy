@@ -748,9 +748,7 @@ function fetchGravatar(username, size, res, callback) {
     http.get({host: host, path: path}, function(cres) {
       if (cres.statusCode !== 200) return callback('error', '');
       cres.setEncoding('binary');
-      cres.on('data', function(d) {
-        res.write(d, 'binary');
-      });
+      cres.pipe(res);
       cres.on('end', function() {
         callback(null);
       });
