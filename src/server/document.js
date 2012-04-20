@@ -50,7 +50,10 @@ function isAuthorized(node, username, callback) {
 
 
 function fetchDocuments(documents, username, callback) {
-  var graph = new Data.Graph(seed).connect('couch', {url: config.couchdb_url});
+  var graph = new Data.Graph(seed).connect('couch', {
+    url: config.couchdb_url,
+    filters: [ Filters.ensureAuthorized() ]
+  });
   var result = {};
   
   function getHeadVersion(id, callback) {
@@ -112,7 +115,10 @@ Document.recent = function(limit, username, callback) {
 
 
 Document.subscribed = function(username, callback) {
-  var graph = new Data.Graph(seed).connect('couch', {url: config.couchdb_url});
+  var graph = new Data.Graph(seed).connect('couch', {
+    url: config.couchdb_url,
+    filters: [ Filters.ensureAuthorized() ]
+  });
   
   var qry = {
     "type": "/type/subscription",
@@ -128,7 +134,10 @@ Document.subscribed = function(username, callback) {
 };
 
 Document.user = function(username, callback) {
-  var graph = new Data.Graph(seed).connect('couch', {url: config.couchdb_url});
+  var graph = new Data.Graph(seed).connect('couch', {
+    url: config.couchdb_url,
+    filters: [ Filters.ensureAuthorized() ]
+  });
 
   var qry = {
     "type": "/type/document",
@@ -143,9 +152,7 @@ Document.user = function(username, callback) {
       if (err) return callback(err);
       graph.fetch({_id: "/user/"+username}, function(err, users) {
         if (err) return callback(err);
-        var user = users.first();
-        delete user.password; //Remove password for security reasons
-        result["/user/"+username] = user.toJSON();
+        result["/user/"+username] = users.first().toJSON();
         callback(null, result, count);
       });
     });
@@ -155,7 +162,10 @@ Document.user = function(username, callback) {
 
 Document.dashboard = function (username, callback) {
   var userId = '/user/' + username,
-      graph = new Data.Graph(seed).connect('couch', {url: config.couchdb_url}),
+      graph = new Data.Graph(seed).connect('couch', {
+        url: config.couchdb_url,
+        filters: [ Filters.ensureAuthorized() ]
+      }),
       bins = {
         user: {
           user: {
@@ -247,7 +257,10 @@ Document.getContent = function(documentId, callback) {
     }
   };
   
-  var graph = new Data.Graph(seed).connect('couch', {url: config.couchdb_url});
+  var graph = new Data.Graph(seed).connect('couch', {
+    url: config.couchdb_url,
+    filters: [ Filters.ensureAuthorized() ]
+  });
   graph.fetch(qry, function(err, nodes) {
     var result = nodes.toJSON(),
         doc = result[documentId];
@@ -260,7 +273,8 @@ Document.getContent = function(documentId, callback) {
 function loadDocument(id, version, reader, edit, callback) {
   
   var graph = new Data.Graph(seed).connect('couch', {
-    url: config.couchdb_url
+    url: config.couchdb_url,
+    filters: [ Filters.ensureAuthorized() ]
   });
   
   var result = {};
