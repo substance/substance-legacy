@@ -125,7 +125,7 @@ app.use(function(req, res) {
   var format = fragments[2] ? fragments[2].split('.')[1] : null;
   var version = fragments[3]; // version
   
-  if (username && docname && (req.headers["user-agent"].indexOf('bot.html')>=0 || req.query.static || format)) {
+  if (username && docname && (req.headers["user-agent"].indexOf('bot.html')>=0 || req.query.static || format)) {
 
     Document.get(username, docname, version, req.session ? req.session.username : null, function(err, nodes, id, authorized, version, published) {
       if (err) return res.send(err);
@@ -142,7 +142,7 @@ app.use(function(req, res) {
       }
     });
   } else {
-    // A modern web-client is talking - Serve the app
+    // A modern web-client is talking - Serve the app
     serveStartpage(req, res);
   }
 });
@@ -316,12 +316,12 @@ var templates = isProduction()
 // -----------
 
 // Convenience for allowing CORS on routes - GET only
-function allowCORS(req, res) {
+app.all('*', function (req, res, next) {
   res.header('Access-Control-Allow-Origin', '*'); 
-  res.header('Access-Control-Allow-Credentials', false); 
   res.header('Access-Control-Allow-Methods', 'GET, OPTIONS'); 
   res.header('Access-Control-Allow-Headers', 'Content-Type');
-}
+  next();
+});
 
 app.get('/styles.css', function(req, res) {
   res.writeHead(200, {'Content-Type': 'text/css'});
@@ -368,7 +368,6 @@ app.get('/documents/search/:type/:search_str', function (req, res) {
   }
 });
 
-app.options('/documents/:user', allowCORS);
 app.get('/documents/:user', function (req, res) {
   Document.user(req.params.user, function (err, graph, count) {
     res.json({graph: graph, count: count});
@@ -675,7 +674,7 @@ app.post('/invite', function(req, res) {
       email = req.body.email,
       mode = req.body.mode;
   
-  if (!VALIDATE_EMAIL.test(email)) {
+  if (!VALIDATE_EMAIL.test(email)) {
     return res.send({"status": "error", "error": "invalid_email"});
   }
   
@@ -756,7 +755,7 @@ function fetchGravatar(username, size, res, callback) {
 
     http.get({host: host, path: path}, function(cres) {
       if (cres.statusCode !== 200) return callback('error', '');
-      cres.setEncoding('binary');
+      //cres.setEncoding('binary');
       cres.pipe(res);
       cres.on('end', function() {
         callback(null);
@@ -894,7 +893,6 @@ app.get('/networks/recent', function (req, res) {
 
 
 // Returns a specific version of the requested doc
-app.options('/documents/:username/:name/:version', allowCORS);
 app.get('/documents/:username/:name/:version', function(req, res) {
   Document.get(req.params.username, req.params.name, req.params.version, req.session ? req.session.username : null, function(err, graph, id, authorized, version, published) {
     if (err) return res.json(err);
@@ -904,7 +902,6 @@ app.get('/documents/:username/:name/:version', function(req, res) {
 
 
 // Returns the latest version of the requested doc
-app.options('/documents/:username/:name', allowCORS);
 app.get('/documents/:username/:name', function(req, res) {
   Document.get(req.params.username, req.params.name, null, req.session ? req.session.username : null, function(err, graph, id, authorized, version, published) {
     if (err) return res.json(err);
