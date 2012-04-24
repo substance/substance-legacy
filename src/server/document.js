@@ -41,7 +41,7 @@ function isAuthorized(node, username, callback) {
     } else {
       // Already published?
       db.view('substance/versions', {endkey: [node._id], startkey: [node._id, {}], limit: 1, descending: true}, function(err, res) {
-        if (err || res.rows.length === 0) return callback({error: "unauthorized"});
+        if (err || res.rows.length === 0) return callback({error: "unauthorized"});
         return callback(null, false);
       });
     }
@@ -58,9 +58,9 @@ function fetchDocuments(documents, username, callback) {
   
   function getHeadVersion(id, callback) {
     db.get(id, function(err, doc) {
-      if (err || !doc) return callback('not found');
+      if (err || !doc) return callback('not found');
       db.get(doc.published_version, function(err, version) {
-        if (err || !version) return callback('not found');
+        if (err || !version) return callback('not found');
         var data = version.data;
         data[id].name = doc.name;
         data[id].cover = doc.cover;
@@ -152,8 +152,12 @@ Document.user = function(username, callback) {
       if (err) return callback(err);
       graph.fetch({_id: "/user/"+username}, function(err, users) {
         if (err) return callback(err);
-        result["/user/"+username] = users.first().toJSON();
-        callback(null, result, count);
+        try {
+          result["/user/"+username] = users.first().toJSON();
+          callback(null, result, count);
+        } catch (e) {
+          callback('not_found');
+        }
       });
     });
   });
@@ -336,7 +340,7 @@ function loadDocument(id, version, reader, edit, callback) {
       console.log('loading version: '+ version);
 
       graph.fetch({_id: "/version/"+id.split('/')[3]+"/"+version, document: {}}, function(err, nodes) {
-        if (err || nodes.length === 0) return callback('not_found');
+        if (err || nodes.length === 0) return callback('not_found');
 
         var doc = nodes.select(function(n) {
           return n.type._id === "/type/version"
@@ -346,7 +350,7 @@ function loadDocument(id, version, reader, edit, callback) {
         data[id].published_version = doc.get('document').get('published_version')._id;
 
         db.get(id, function(err, doc) {
-          if (err || !doc) return callback('not found');
+          if (err || !doc) return callback('not found');
           data[id].name = doc.name;
           data[id].cover = doc.cover;
           _.extend(result, data);
@@ -417,7 +421,7 @@ function loadDocument(id, version, reader, edit, callback) {
       // Check if already published
       // TODO: shift to authorized method, as its duplicate effort now
       db.view('substance/versions', {endkey: [id], startkey: [id, {}], limit: 1, descending: true}, function(err, res) {
-        callback(null, result, edit, version, !err && res.rows.length > 0);
+        callback(null, result, edit, version, !err && res.rows.length > 0);
       });
     });
   });
@@ -433,7 +437,7 @@ Document.get = function(username, docname, version, reader, callback) {
     
     var node = res.rows[0].value;
     
-    isAuthorized(node, reader, function(err, edit) {
+    isAuthorized(node, reader, function(err, edit) {
       if (err) return callback({"status": "error", "error": "not_authorized", "message": "Not authorized to request that document."});
       
       loadDocument(node._id, version, reader, edit, function(err, result, edit, version, published) {
