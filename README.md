@@ -1,3 +1,8 @@
+Important update!
+================================================================================
+
+We just decided to take a step back and focus on fixing the Substance Editing component by using a fundamentally different approach. Please keep an eye at the [Substance Composer](http://github.com/substance/composer) project. Once this is stable it will land at Substance.io. Stay tuned. Oh and if you wanna help out or have any questions, join us at `#_substance` on Freenode.
+
 Substance
 ================================================================================
 
