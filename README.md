@@ -52,7 +52,7 @@ Team
 
 - **Oliver Buchtala** (DE)
 
-  Oliver is my former room-mate, and extra-ordinare software developer and scientist. He got me excited about graphs, parsers and much more. 
+  Oliver is my former room-mate, and extraordinaire software developer and scientist. He got me excited about graphs, parsers and much more. 
 
 - **Tim Baumann** (DE)
 
