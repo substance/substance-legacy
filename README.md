@@ -56,7 +56,7 @@ Collaborators
 
 - **[Tim Baumann](https://github.com/timjb)** (DE)
 
-  He joined Substance last summer, when he basically [rewrote](https://github.com/substance/letterpress/pull/1) the Substance Letterpress Service in order to use PanDoc. 
+  He joined Substance last summer, when he basically [rewrote](https://github.com/substance/letterpress/pull/1) the Substance Letterpress Service in order to use PanDoc. He's also working on a [javascript library](http://ot.substance.io) that provides Operational Transformation.
 
 - **[Forbes Lindesay](https://github.com/ForbesLindesay)** (UK)
 
