@@ -39,7 +39,7 @@ Our new take will feature a generic [document format](http://github.com/substanc
 Many people got excited about the idea of Substance, luckily there are a lot of developers among them, passionate about helping with making it happen. It's exciting to see such a huge amount of support for a project you initiated 1.5 years ago.
 
 
-Team
+Collaborators
 ------------------------
 
 - **[Michael Aufreiter](http://github.com/michael)** (AT)
