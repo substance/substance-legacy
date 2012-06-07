@@ -42,30 +42,41 @@ Many people got excited about the idea of Substance, luckily there are a lot of 
 Team
 ------------------------
 
-- **Michael Aufreiter** (AT)
+- **[Michael Aufreiter](http://github.com/michael)** (AT)
 
   That's me, I started working on Substance in late 2010.
 
-- **Samo Korosec** (AT)
+- **[Samo Korosec](http://github.com/smoofles)** (AT)
 
   Samo helps me out in all visual regards. He came up with nice colors and UI designs for Substance initially and helps me out when UX decisions need to be made.
 
-- **Oliver Buchtala** (DE)
+- **[Oliver Buchtala](http://github.com/oliver----)** (DE)
 
   Oliver is my former room-mate, and extraordinaire software developer and scientist. He got me excited about graphs, parsers and much more. 
 
-- **Tim Baumann** (DE)
+- **[Tim Baumann](https://github.com/timjb)** (DE)
 
   He joined Substance last summer, when he basically [rewrote](https://github.com/substance/letterpress/pull/1) the Substance Letterpress Service in order to use PanDoc. 
 
-- **Forbes Lindsay** (UK)
+- **[Forbes Lindesay](https://github.com/ForbesLindesay)** (UK)
 
   He'll dedicate some time to Substance during the summer. Welcome! :)
 
-- **Pier Paolo Ramon** (IT)
+- **[Pier Paolo Ramon](https://github.com/yuchi)** (IT)
 
   Our newest collaborator. But [see for yourself](http://yuchi.herokuapp.com/developing-svbstantia) how he got excited about the project.
 
+- **[Victor Saiz](http://github.com/vectorsize)** (SWE)
+  
+  And an even newer one. Welcome Victor!
+
+
+Support us
+================================================================================
+
+Implementing Substance is a tough mission. We are a team of passionate developers working on fixing digital publishing. We don't do it for profit but we need any support we can get. If you are a developer and you feel like you could be of help, let us know. If you're not on the technical side, consider sponsering some work so we can move faster. Thanks everyone!
+
+Get in touch using our [mailing list](https://groups.google.com/forum/?fromgroups#!forum/substance_), join the conversation Freenode IRC in the #_substance channel, or send tweets to [@_substance](http://twitter.mcom/_substance).
 
 
 References
