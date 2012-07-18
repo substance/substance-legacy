@@ -125,6 +125,13 @@ app.use(function(req, res) {
   var format = fragments[2] ? fragments[2].split('.')[1] : null;
   var version = fragments[3]; // version
   
+  if (path === "/") {
+    res.writeHead(302, {
+      'Location': 'http://interior.substance.io'
+    });
+    return res.end();
+  }
+
   if (username && docname && (req.headers["user-agent"].indexOf('bot.html')>=0 || req.query.static || format)) {
 
     Document.get(username, docname, version, req.session ? req.session.username : null, function(err, nodes, id, authorized, version, published) {
