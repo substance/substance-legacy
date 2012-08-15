@@ -6,6 +6,6 @@
 
 <div class="items">
   <% _.each(items, function(item, i) { %>
-    <div class="item level-<%= item.level %><%= selectedItem === i ? " selected" : ""%>"><a title="<%= item.name %>" data-index="<%= i %>" href="#<%= item.html_id %>"><%= item.name.substr(0, 35) %></a></div>
+    <div class="item level-<%= item.level %><%= selectedItem === i ? " selected" : ""%>"><a title="<%= item.name %>" data-index="<%= i %>" href="#<%= item.html_id %>"><%= item.name ? item.name.substr(0, 35) : '« Enter Section Name »' %></a></div>
   <% }); %>
 </div>
