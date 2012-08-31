@@ -1,3 +1,9 @@
+// Global Talk instance
+// -----------------
+
+var talk = new Talk.Client("ws://localhost:3100/");
+
+
 // Substance.Session
 // -----------------
 // 
@@ -62,12 +68,19 @@ _.extend(Substance.Session.prototype, _.Events, {
   }
 });
 
+
+
+
 // Load Annotated Document
 // -----------------
 // 
 // Load an annotated document
 
 function loadDocument(file, cb) {
+  talk.send(["document:open", {id: "my-doc"}], function(err, document) {
+    console.log('yaay', document);
+  });
+
   if (!file) {
     var doc = JSON.parse(localStorage.getItem("document"));
     if (doc) return cb(null, doc);
@@ -91,5 +104,5 @@ function createSession(cb) {
     });
     cb(null, session);
   });
-	
 }
+

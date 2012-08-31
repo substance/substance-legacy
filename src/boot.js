@@ -1,4 +1,4 @@
-var talk = new Talk.Client("ws://localhost:3100/");
+
 
 $(function() {
 

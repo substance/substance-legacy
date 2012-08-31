@@ -13,7 +13,7 @@
 
     _newDocument: function() {
       localStorage.removeItem('document');
-      this.model = createDocument();
+      this.model = createSession();
       this.build();
       this.render();
       return false;
