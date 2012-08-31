@@ -1,0 +1,23 @@
+{
+  "id": "substance-composer",
+  "created_at": "2012-04-10T15:17:28.946Z",
+  "updated_at": "2012-04-10T15:17:28.946Z",
+  "head": "/cover/1",
+  "tail": "/section/2",
+  "rev": 3,
+  "nodes": {
+    "/cover/1": {
+      "type": ["/type/node", "/type/cover"],
+      "title": "The Substance Composer",
+      "abstract": "The Substance Composer is flexible editing component to be used by applications such as Substance.io for collaborative content composition.",
+      "next": "/section/2",
+      "prev": null
+    },
+    "/section/2": {
+      "type": ["/type/node", "/type/section"],
+      "name": "Plugins",
+      "prev": "/cover/1",
+      "next": null
+    }
+  }
+}

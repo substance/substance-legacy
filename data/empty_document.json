@@ -1,0 +1,57 @@
+{
+  "document": {
+    "refs": {
+      "master": "op-3",
+      "patch-1": "op-4"
+    },
+    "operations": {
+      "op-1": {
+        "op": ["insert", {"id": "section:hello", "type": "section", "properties": {"content": "Hello?"}}],
+        "user": "michael",
+        "parent": null
+      },
+
+      "op-2": {
+        "op": ["insert", {"id": "text:hello", "type": "text", "target": "section:hello", "properties": {"content": "Helo wrld"}}],
+        "user": "michael",
+        "parent": "op-1"
+      },
+
+      "op-3": {
+        "op": ["insert", {"id": "text:p1", "type": "text", "target": "text:hello", "properties": {"content": "Ein erster Paragraph."}}],
+        "user": "michael",
+        "parent": "op-2"
+      },
+
+      "op-4": {
+        "op": ["insert", {"id": "text:outro", "type": "text", "target": "text:hello", "properties": {"content": "This is the end."}}],
+        "user": "michael",
+        "parent": "op-3"
+      }
+    }
+  },
+  "annotations": {
+    "refs": {
+      "master": "third-op",
+      "op-3": "third-op"
+    },
+    "operations": {
+      "first-op": {
+        "op": ["insert", {"id": "annotation:1", "type": "em", "properties": {"nodes": ["text:hello"], "pos": [0,4]}}],
+        "user": "michael",
+        "parent": null
+      },
+      "second-op": {
+        "op": ["insert", {"id": "annotation:2", "node": "text:hello", "type": "comment", "properties": {"content": "Hello", "nodes": ["text:hello"], "pos": [5,9]} }],
+        "user": "michael",
+        "parent": "first-op"
+      },
+      "third-op": {
+        "op": ["insert", {"id": "annotation:3", "node": "text:hello", "type": "comment", "properties": {"content": "USS New Ironsides was a wooden-hulled broadside ironclad built for the United States Navy during the American Civil War.", "nodes": ["text:p1"], "pos": [0,4]} }],
+        "user": "john",
+        "parent": "second-op"
+      }
+    }
+  },
+  "ref": "master"
+}

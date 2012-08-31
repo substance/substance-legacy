@@ -1,0 +1,233 @@
+<!DOCTYPE html> 
+<html>
+  <head>
+    <title>Substance Composer</title>
+    <link href="composer.css" media="screen" rel="stylesheet" type="text/css" />
+    <link href="lib/codemirror/codemirror.css" media="screen" rel="stylesheet" type="text/css" />
+    
+    <!--<link href='http://fonts.googleapis.com/css?family=Open+Sans:400,300,700' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Merriweather:400,700,300,900' rel='stylesheet' type='text/css'>-->
+    
+    <!-- Templates -->
+    <script type="text/html" name="toolbar">
+      <div id="toolbar"></div>
+    </script>
+
+    <script type="text/html" name="tool">
+      <a class="tool" data-command="<%= type %>" href="#<%= type %>"><%= text %></a>
+    </script>
+    
+    <script type="text/x-ejs-template" name="composer">
+      <div id="header">
+        Substance - Enterprise Edition
+      </div>
+      <div id="composer">
+        <div id="tools">
+          
+        </div>
+        <div id="document">
+          THE DOCUMENT
+        </div>
+      </div>
+    </script>
+
+    <script type="text/x-ejs-template" name="controls_insert">
+      <div class="actions insert">
+        <div class="placeholder">Insert Content</div>
+        <ul>
+          <% childTypes.each(function (position, type) { %>
+            <% if (_.isArray(position)) { %>
+              <li class="container">
+                <span><%= getTypeName(type) %></span>
+                <ul>
+                  <% _.each(position, function (position) { %>
+                    <li>
+                      <a href="/"
+                         data-parent="<%= position.parent._id %>"
+                         data-after="<%= position.after ? position.after._id : ''%>"
+                         data-type="<%= type %>">
+                        Level <%= position.level %>
+                      </a>
+                    </li>
+                  <% }); %>
+                </ul>
+              </li>
+            <% } else { %>
+              <li>
+                <a href="/"
+                   data-parent="<%= position.parent._id %>"
+                   data-after="<%= position.after ? position.after._id : ''%>"
+                   data-type="<%= type %>">
+                  <%= getTypeName(type) %>
+                </a>
+              </li>
+            <% } %>
+          <% }); %>
+        </ul>
+        <br class="clear" />
+      </div>
+    </script>
+
+    <script type="text/x-ejs-template" name="document">
+      <div id="document_content">
+        <div class="marker"></div>
+        <div class="nodes"></div>
+      </div>
+    </script>
+
+    <script type="text/x-ejs-template" name="comments">
+      <div class="comments">
+        <% _.each(comments, function(c) { %>
+          <a href="#" data-id="<%= c.id %>" class="comment">
+            <div class="author">Michael</div>
+            <div class="content">
+              <%= c.content %>
+            </div>
+            <div class="handle"></div>
+          </a>
+        <% }); %>
+      </div>
+
+      <div class="new-comment">
+        <h2>New Comment</h2>
+        <div class="handle"></div>
+        <div class="comment-input-wrapper">
+          <textarea id="comment_content" name="comment"></textarea>
+        </div>
+        <a href="#" class="button insert-comment">Add Comment</a>
+      </div>
+    </script>
+
+    <script type="text/x-ejs-template" name="history">
+      <div class="operations">
+        <% _.each(_.clone(operations).reverse(), function(o, index) { %>
+          <a href="#" class="operation checkout-commit" data-commit="<%= o.sha %>"><%= _.opcode(o) %></a>
+        <% }); %>
+      </div>
+    </script>
+
+    <script type="text/x-ejs-template" name="outline">
+      <div class="outline">
+        Document outline. To be implemented.
+      </div>
+    </script>
+
+    <script type="text/x-ejs-template" name="patches">
+      <h2>Patches</h2>
+      <div class="patches">
+      </div>
+    </script>
+
+    <script type="text/x-ejs-template" name="tools">
+      <div class="tools">
+
+        <div class="document-menu<%= selection() && selection().length > 0 ? "" : " active"%>">
+          <div class="tool-name">Document</div>
+          <div class="navigation">
+            <a href="#" class="new-document">NEW</a>
+            <a class="toggle-tool outline<%= view === "outline" ? " active" : "" %>" href="#" data-view="outline">OUTLN</a>
+            <a class="toggle-tool patches<%= view === "patches" ? " active" : "" %>" href="#" data-view="patches">PTCHS</a>
+            <a class="toggle-tool comments<%= view === "comments" ? " active" : "" %>" href="#" data-view="comments">CMTS</a>
+            <a class="toggle-tool history<%= view === "history" ? " active" : "" %>" href="#" data-view="history">HIST</a>
+          </div>
+        </div>
+        <% if (selection() && selection().length > 0) { %>
+          <div class="node-menu active">
+            <div class="tool-name"><% if (selection().length === 1) { %>Text Element<% } else { %> Teh Selection <% } %></div>
+            <div class="navigation">
+              <!--<a class="toggle-tool comments" href="#" data-view="comments">CMTS</a>
+              <a class="toggle-tool edit" href="#" data-view="edit">EDIT</a>-->
+            </div>
+          </div>
+        <% } %>
+        <div class="tool">
+          Actual node tool goes here.
+        </div>
+      </div>
+    </script>
+
+    <script src="lib/underscore.js"></script>
+    <script src="lib/jquery.min.js"></script>
+    <script src="lib/keymaster.min.js"></script>
+    <script src="lib/talk.js"></script>
+    <script src="lib/data.js"></script>
+    <script src="lib/dance.js"></script>
+
+    <script src="lib/dmp.js"></script>
+    <script src="lib/operation.js"></script>
+    <script src="lib/rangy/core.js"></script>
+    <script src="lib/rangy/dom.js"></script>
+    <script src="lib/rangy/domrange.js"></script>
+    <script src="lib/rangy/wrappedrange.js"></script>
+    <script src="lib/rangy/wrappedselection.js"></script>
+    <script src="lib/rangy/cssclassapplier.js"></script>
+
+    <script src="lib/surface.js"></script>
+
+    <!-- Model -->
+    <script src="lib/document.js"></script>
+
+    <script src="lib/codemirror/codemirror.js"></script>
+
+    <script src="src/composer.js"></script>
+    <script src="src/util.js"></script>
+
+    <script src="src/model.js"></script>
+
+    <!-- Views -->
+    <script src="src/views/document.js"></script>
+    <script src="src/views/tools.js"></script>
+    <script src="src/views/outline.js"></script>
+    <script src="src/views/history.js"></script>
+    <script src="src/views/patches.js"></script>
+    <script src="src/views/comments.js"></script>
+    
+    <!-- Nodes -->
+    <script src="src/nodes/node.js"></script>
+    <script src="src/nodes/section/section.js"></script>
+    <script src="src/nodes/text/text.js"></script>
+
+    <!-- Boot -->
+    <script src="src/boot.js"></script>
+
+  </head>
+  <body>
+    <div id="container">
+
+    </div>
+
+    <!--<div id="help">
+      <h1>Substance Composer</h1>
+      <p>With Substance, writers, journalists, scientists and everyone else who's interested in publishing can use an open platform for writing and sharing articles. Document authoring used to take place in word processors on the Desktop like MS Word or Open Office. We believe that today this can all be be done in the browser, in a simpler, more collaborative way.</p>
+      <h2>Document Manipulate</h2>
+
+      Substance works very differently than classical word processors. It follows a contextual navigation pattern, that makes it easy to navigate and manipulate your document.
+
+      <h3>Document Context</h3>
+      <p>
+        On the document level you're viewing the document or accessing information assigned to the document. You can access comments, patches, and by default the document outline is shown for quickly navigating through the doc.
+      </p>
+
+      <h3>Structure Context</h3>
+      <p>
+        This is where node selections are made, nodes are moved around or deleted.
+      </p>
+
+      <ul>
+        <li><code>shilft+down</code> Extend selection (yes you can select multiple nodes at once)</li>
+        <li><code>shift+up</code> Narrow selection</li>
+        <li><code>up</code> Move selection up</li>
+        <li><code>down</code> Move selection down</li>
+      </ul>
+
+      <h3>Node Context</h3>
+      The tools-panel on the right will follow that paradigm, and visually encode the path being viewed at the moment. Like
+
+      <h2>Limitations</h2>
+      <ul>
+        <li>Webkit only</li>
+        <li>Inline annotations don't work yet</li>
+      </ul>
+    </div>-->
+  </body>
+</html>

@@ -1,21 +1,20 @@
 {
-  "name": "substance",
-  "description": "Substance is a web-based document authoring and publishing engine developed in the open and available to everyone.",
-  "version": "0.4.0",
+  "name": "composer",
+  "description": "A content composition engine",
+  "version": "0.1.0",
   "homepage": "http://substance.io/",
   "repository": {
     "type": "git",
-    "url": "https://github.com/substance/substance"
+    "url": "https://github.com/substance/composer"
   },
   "dependencies": {
-    "underscore": "1.2.3",
-    "async": "0.1.15",
+    "underscore": "1.3.1",
     "cookie-sessions": "0.0.2",
-    "nodemailer": "0.2.4",
-    "express": "2.5.2",
+    "express": "2.5.9",
     "less": "1.3.0",
-    "now": "0.7.6",
-    "request": "2.9.3"
+    "request": "2.9.3",
+    "riak-js": "latest",
+    "socket.io": "0.9.5"
   },
   "devDependencies": {
     "coffee-script": "1.2.0"
