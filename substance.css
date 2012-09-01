@@ -1,4 +1,11 @@
+#container {
+  background: #E9EAE5;
+}
+
 #header {
+  width: 1200px;
+  margin: 0 auto;
+
   font-family: 'Merriweather';
   font-size: 20px;
   height: 40px;
@@ -13,4 +20,34 @@
   left: 0px;
   right: 0px;
   top: 0px;
+  overflow: auto;
+}
+
+#header a {
+  border: none;
+  color: rgba(255,255,255, 0.5);
+}
+
+#header a:hover {
+  color: rgba(255,255,255, 0.9);
+}
+
+#header .actions {
+  font-family: "Open Sans";
+  padding-right: 20px;
+  float: right;
+  overflow: auto;
+}
+
+#header .actions a {
+  display: block;
+  height: 40px;
+  font-size: 14px;
+  font-weight: bold;
+  line-height: 40px;
+}
+
+#help {
+
+  padding-top: 50px;
 }
