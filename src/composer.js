@@ -7,17 +7,16 @@
     el: 'container',
 
     events: {
-      'click a.checkout-commit': '_checkoutCommit',
-      'click a.new-document': '_newDocument'
+      'click a.checkout-commit': '_checkoutCommit'
     },
 
-    _newDocument: function() {
-      localStorage.removeItem('document');
-      this.model = createSession();
-      this.build();
-      this.render();
-      return false;
-    },
+    // _newDocument: function() {
+    //   localStorage.removeItem('document');
+    //   this.model = createSession();
+    //   this.build();
+    //   this.render();
+    //   return false;
+    // },
 
     _checkoutCommit: function(e) {
       var sha = $(e.currentTarget).attr('data-commit');
@@ -122,11 +121,16 @@
       this.views.document = new Substance.Composer.views.Document({ model: this.model });
       this.views.tools = new Substance.Composer.views.Tools({model: this.model });
       
-      this.model.document.on('operation:applied', function() {
+      this.model.document.on('operation:applied', function(operation) {
         // Refresh the tools
         this.views.tools.update();
-        // Save snapshot of the document
-        localStorage.setItem('document', JSON.stringify(this.model.document.toJSON()));
+
+        // Send update to the server
+        updateDoc(operation);
+
+        // Not needed now since doc is stored on the server
+        // localStorage.setItem('document', JSON.stringify(this.model.document.toJSON()));
+        
       }, this);
 
       this.model.on('node:select', function() {

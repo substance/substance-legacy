@@ -2,13 +2,50 @@
 <html>
   <head>
     <title>Substance Composer</title>
+    <link href="substance.css" media="screen" rel="stylesheet" type="text/css" />
     <link href="composer.css" media="screen" rel="stylesheet" type="text/css" />
     <link href="lib/codemirror/codemirror.css" media="screen" rel="stylesheet" type="text/css" />
     
     <!--<link href='http://fonts.googleapis.com/css?family=Open+Sans:400,300,700' rel='stylesheet' type='text/css'>
     <link href='http://fonts.googleapis.com/css?family=Merriweather:400,700,300,900' rel='stylesheet' type='text/css'>-->
-    
+
     <!-- Templates -->
+    <script type="text/html" name="start">
+      <div id="help">
+        <h1>Substance Composer</h1>
+        <p>With Substance, writers, journalists, scientists and everyone else whos interested in publishing can use an open platform for writing and sharing articles. Document authoring used to take place in word processors on the Desktop like MS Word or Open Office. We believe that today this can all be be done in the browser, in a simpler, more collaborative way.</p>
+        <h2>Document Manipulate</h2>
+
+        Substance works very differently than classical word processors. It follows a contextual navigation pattern, that makes it easy to navigate and manipulate your document.
+
+        <h3>Document Context</h3>
+        <p>
+          On the document level youre viewing the document or accessing information assigned to the document. You can access comments, patches, and by default the document outline is shown for quickly navigating through the doc.
+        </p>
+
+        <h3>Structure Context</h3>
+        <p>
+          This is where node selections are made, nodes are moved around or deleted.
+        </p>
+
+        <ul>
+          <li><code>shilft+down</code> Extend selection (yes you can select multiple nodes at once)</li>
+          <li><code>shift+up</code> Narrow selection</li>
+          <li><code>up</code> Move selection up</li>
+          <li><code>down</code> Move selection down</li>
+        </ul>
+
+        <h3>Node Context</h3>
+        The tools-panel on the right will follow that paradigm, and visually encode the path being viewed at the moment. Like
+
+        <h2>Limitations</h2>
+        <ul>
+          <li>Webkit only</li>
+          <li>Inline annotations dont work yet</li>
+        </ul>
+      </div>
+    </script>
+
     <script type="text/html" name="toolbar">
       <div id="toolbar"></div>
     </script>
@@ -18,9 +55,6 @@
     </script>
     
     <script type="text/x-ejs-template" name="composer">
-      <div id="header">
-        Substance - Enterprise Edition
-      </div>
       <div id="composer">
         <div id="tools">
           
@@ -124,9 +158,8 @@
         <div class="document-menu<%= selection() && selection().length > 0 ? "" : " active"%>">
           <div class="tool-name">Document</div>
           <div class="navigation">
-            <a href="#" class="new-document">NEW</a>
             <a class="toggle-tool outline<%= view === "outline" ? " active" : "" %>" href="#" data-view="outline">OUTLN</a>
-            <a class="toggle-tool patches<%= view === "patches" ? " active" : "" %>" href="#" data-view="patches">PTCHS</a>
+            <!--<a class="toggle-tool patches<%= view === "patches" ? " active" : "" %>" href="#" data-view="patches">PTCHS</a>-->
             <a class="toggle-tool comments<%= view === "comments" ? " active" : "" %>" href="#" data-view="comments">CMTS</a>
             <a class="toggle-tool history<%= view === "history" ? " active" : "" %>" href="#" data-view="history">HIST</a>
           </div>
@@ -192,42 +225,12 @@
 
   </head>
   <body>
+    <div id="header">
+      Substance
+      <a href="#new" class="new-document">New Document</a>
+    </div>
     <div id="container">
 
     </div>
-
-    <!--<div id="help">
-      <h1>Substance Composer</h1>
-      <p>With Substance, writers, journalists, scientists and everyone else who's interested in publishing can use an open platform for writing and sharing articles. Document authoring used to take place in word processors on the Desktop like MS Word or Open Office. We believe that today this can all be be done in the browser, in a simpler, more collaborative way.</p>
-      <h2>Document Manipulate</h2>
-
-      Substance works very differently than classical word processors. It follows a contextual navigation pattern, that makes it easy to navigate and manipulate your document.
-
-      <h3>Document Context</h3>
-      <p>
-        On the document level you're viewing the document or accessing information assigned to the document. You can access comments, patches, and by default the document outline is shown for quickly navigating through the doc.
-      </p>
-
-      <h3>Structure Context</h3>
-      <p>
-        This is where node selections are made, nodes are moved around or deleted.
-      </p>
-
-      <ul>
-        <li><code>shilft+down</code> Extend selection (yes you can select multiple nodes at once)</li>
-        <li><code>shift+up</code> Narrow selection</li>
-        <li><code>up</code> Move selection up</li>
-        <li><code>down</code> Move selection down</li>
-      </ul>
-
-      <h3>Node Context</h3>
-      The tools-panel on the right will follow that paradigm, and visually encode the path being viewed at the moment. Like
-
-      <h2>Limitations</h2>
-      <ul>
-        <li>Webkit only</li>
-        <li>Inline annotations don't work yet</li>
-      </ul>
-    </div>-->
   </body>
 </html>

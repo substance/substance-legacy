@@ -57,7 +57,7 @@ sc.views.Node.define('text', {
     });
 
     this.surface.on('surface:active', function(sel) {
-      app.composer.model.select([that.model.id], {edit: true});
+      app.view.model.select([that.model.id], {edit: true});
     });
 
     this.surface.on('text:change', function(content, prevContent) {

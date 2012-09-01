@@ -128,23 +128,6 @@ h2 { font-size: 160%; padding-bottom: 15px; }
   padding-top: 35px;
 }
 
-#header {
-  font-family: 'Merriweather';
-  font-size: 20px;
-  height: 40px;
-  line-height: 40px;
-  
-  padding-left: 20px;
-/*  background: #E9EAE5;
-  color: #444;*/
-  background: #2F2B27;
-  color: rgba(255,255,255, 0.7);
-  position: absolute;
-  left: 0px;
-  right: 0px;
-  top: 0px;
-}
-
 #composer {
   position: absolute;
   top: 40px;

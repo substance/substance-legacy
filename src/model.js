@@ -25,7 +25,6 @@ Substance.Session = function(options) {
   this.user = "michael";
 };
 
-
 _.extend(Substance.Session.prototype, _.Events, {
   select: function(nodes, options) {
     if (!options) options = {};
@@ -43,7 +42,6 @@ _.extend(Substance.Session.prototype, _.Events, {
     _.each(nodes, function(node) {
       this.selections[node] = user;
     }, this);
-
     
     this.trigger('node:select');
   },
@@ -69,6 +67,14 @@ _.extend(Substance.Session.prototype, _.Events, {
 });
 
 
+// Send operation to the server
+// -----------------
+
+function updateDoc(operation, cb) {
+  talk.send(["document:update", [operation]], function(err) {
+    console.log('updated doc on the server', err);
+  });
+}
 
 
 // Load Annotated Document
@@ -76,18 +82,27 @@ _.extend(Substance.Session.prototype, _.Events, {
 // 
 // Load an annotated document
 
-function loadDocument(file, cb) {
-  talk.send(["document:open", {id: "my-doc"}], function(err, document) {
-    console.log('yaay', document);
-  });
+// function loadDocument(file, cb) {
+//   talk.send(["document:open", {id: "my-doc"}], function(err, document) {
+//     console.log('yaay', document);
+//   });
 
-  if (!file) {
-    var doc = JSON.parse(localStorage.getItem("document"));
-    if (doc) return cb(null, doc);
-  }
+//   if (!file) {
+//     var doc = JSON.parse(localStorage.getItem("document"));
+//     if (doc) return cb(null, doc);
+//   }
 
-  $.getJSON('data/'+ (file || "empty_document.json"), function(doc) {
-    cb(null, doc);
+//   $.getJSON('data/'+ (file || "empty_document.json"), function(doc) {
+//     cb(null, doc);
+//   });
+// }
+
+function loadDocument(id, cb) {
+  talk.send(["document:open", {id: id}], function(err, document) {
+    var session = new Substance.Session({
+      document: new Substance.AnnotatedDocument(document)
+    });
+    cb(err, session);
   });
 }
 
@@ -96,13 +111,13 @@ function loadDocument(file, cb) {
 // 
 // Returns the serialized 
 
-function createSession(cb) {
+// function createSession(cb) {
 
-  loadDocument(null, function(err, doc) {
-    var session = new Substance.Session({
-      document: new Substance.AnnotatedDocument(doc)
-    });
-    cb(null, session);
-  });
-}
+//   loadDocument(null, function(err, doc) {
+//     var session = new Substance.Session({
+//       document: new Substance.AnnotatedDocument(doc)
+//     });
+//     cb(null, session);
+//   });
+// }
 
