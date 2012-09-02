@@ -8,6 +8,7 @@
     "url": "https://github.com/substance/substance"
   },
   "dependencies": {
+    "ecstatic": "0.1.6",
     "library": "0.1.0"
   },
   "devDependencies": {
