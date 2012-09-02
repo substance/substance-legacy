@@ -1,18 +1,10 @@
-Claim:
+# Substance
 
-> Building a web-based content editor for everyone is impossible
-
-Solution:
-
-> Provide an easy way for communities to build their own editor
-
-# The Substance Composer
-
-The Substance Composer is a foundation for building your own content editor tailored for you particular needs. You can extend basic content types such as Text, Sections and Images with custom types such as Maps, Formulas, or pre-structured types such as an Event content type that allows you entering name, date, organizer etc. You can add whatever you can imagine. But here comes the bummer: You need to do it yourself. Our mission is to make it very easy for you, by creating an infrastructure for basic operations such as inserting, moving and deleting nodes, and a generic UI for dealing with patches and comments.
+Substance is a fully web-based document authoring and publishing platform.
 
 # Collaboration
 
-Since collaboration is more imporantant than ever before in order to create high quality content, the Substance Composer not only supports comments, but also the concept of patches to turn every reader into a potential collaborator.
+Since collaboration is more imporantant than ever before in order to create high quality content, Substance not only supports comments, but also the concept of patches to turn every reader into a potential collaborator.
 
 ## Add a comment
 
@@ -55,3 +47,11 @@ Commands for inserting, updating, moving and deleting content nodes. A `Substanc
 - etc.
 
 You can create your own as well. But you have to make sure they support the Node interface.
+
+## Install
+
+```
+git clone git@github.com:substance/substance.git
+npm install
+node server.js
+```
