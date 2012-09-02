@@ -68,7 +68,7 @@ blockquote, q {
 -------------------------------------------------------------------------------*/
 
 html, body {
-  height: 100%;
+  
 }
 
 body, input, textarea {
@@ -118,9 +118,8 @@ h2 { font-size: 160%; padding-bottom: 15px; }
 
 
 #container {
-  width: 1200px;
-  margin: 0 auto;
-  height: 100%;
+  /*margin-top: 40px;*/
+  /*height: 100%;*/
   position:relative;
 }
 
@@ -129,11 +128,12 @@ h2 { font-size: 160%; padding-bottom: 15px; }
 }
 
 #composer {
-  position: absolute;
+
+/*  position: absolute;
   top: 40px;
   left: 0px;
   right: 0px;
-  bottom: 0px;
+  bottom: 0px;*/
 }
 
 
@@ -141,28 +141,28 @@ h2 { font-size: 160%; padding-bottom: 15px; }
 -------------------------------------------------------------------------------*/
 
 #tools {
-  background: #E9EAE5;
   overflow: auto;
-  position: absolute;
+/*  position: absolute;
   right: 0px;
-  top: 0px;
-  width: 400px;
-  bottom: 0px;
+  top: 30px;*/
+  float: right;
+  width: 370px;
 }
 
 #tools .document-menu, #tools .node-menu {
+  border-radius: 3px;
   line-height: 40px;
   padding-left: 10px;
   color: #444;
   font-weight: bold;
   /*background: #2F2B27;*/
-  background: rgba(0,0,0, 0.1);
+  background: rgba(0,0,0, 0.05);
   /*opacity: 0.8;*/
   overflow: auto;
 }
 
 #tools .document-menu.active,  #tools .node-menu.active {
-  background: rgba(0,0,0, 0.2);
+  background: rgba(0,0,0, 0.15);
 }
 
 #tools .tool-name {
@@ -203,11 +203,14 @@ h2 { font-size: 160%; padding-bottom: 15px; }
 -------------------------------------------------------------------------------*/
 
 .tool .comments .comment {
+  margin-top: 10px;
   position: relative;
-  padding: 10px 20px;
+  padding: 10px 5px;
+  border-radius: 3px;
   margin-bottom: 1px;
   display: block;
   border: none;
+  border: 1px solid transparent;
 }
 
 .tool .comments .comment .author {
@@ -215,7 +218,8 @@ h2 { font-size: 160%; padding-bottom: 15px; }
 }
 
 .tool .comments .comment:hover {
-  background: rgba(0,0,0, 0.1);
+  background: rgba(0,0,0, 0.03);
+  border: 1px solid rgba(0,0,0, 0.1);
 }
 
 .tool .comments .comment.active {
@@ -224,7 +228,7 @@ h2 { font-size: 160%; padding-bottom: 15px; }
 }
 
 .new-comment {
-  padding: 10px 20px;
+  padding: 10px 0px;
   position: relative;
 }
 
@@ -235,8 +239,8 @@ h2 { font-size: 160%; padding-bottom: 15px; }
 
 .new-comment .button {
   display: block;
-  background: #444;
-  color: #fff;
+  background: rgba(0,0,0, 0.2);
+  border-radius: 3px;
   text-align: center;
   font-weight: bold;
   font-size: 12px;
@@ -288,15 +292,18 @@ h2 { font-size: 160%; padding-bottom: 15px; }
 #document {
   font-family: 'Merriweather';  
   width: 800px;
-  margin: 0;
-
-  padding: 0px 0 0px 0;
   -webkit-font-smoothing: subpixel-antialiased;
   font-size: 1.1em;
   line-height: 30px;
+  margin-bottom: 30px;
+
+  -webkit-box-shadow: 0px 1px 4px rgba(0, 0, 0, 0.35), inset 0px 0px 1px rgba(255, 255, 255, 0.15);
+  -moz-box-shadow: 0px 1px 4px rgba(0, 0, 0, 0.35), inset 0px 0px 1px rgba(255, 255, 255, 0.15);
+  box-shadow: 0px 1px 4px rgba(0, 0, 0, 0.35), inset 0px 0px 1px rgba(255, 255, 255, 0.15);
+
 }
 
-#document .marker {
+/*#document .marker {
   width: 20px;
   position: absolute;
   top: 0px;
@@ -304,15 +311,24 @@ h2 { font-size: 160%; padding-bottom: 15px; }
   left: 0px;
   background: #D7D8D2;
   z-index: 50;
-}
+}*/
 
 #document .nodes {
-  overflow: auto;
-  position: absolute;
+  overflow: visible;
+  /*overflow: auto;*/
+/*  position: absolute;
+  top: 10px;
+  left: 10px;*/
+  /*border: 1px solid #ccc;*/
+
+/*  -webkit-box-shadow: 0px 1px 4px rgba(0, 0, 0, 0.35), inset 0px 0px 1px rgba(255, 255, 255, 0.15);
+  -moz-box-shadow: 0px 1px 4px rgba(0, 0, 0, 0.35), inset 0px 0px 1px rgba(255, 255, 255, 0.15);
+  box-shadow: 0px 1px 4px rgba(0, 0, 0, 0.35), inset 0px 0px 1px rgba(255, 255, 255, 0.15);
+*/
+  /*position: absolute;*/
+
   width: 800px;
-  top: 0px;
-  bottom: 0px;
-  left: 0px;
+  /*float: left;*/
   background: #fff;
 }
 
@@ -321,7 +337,6 @@ h2 { font-size: 160%; padding-bottom: 15px; }
   width: 300px; height: 1px;
   margin: 50px auto;
 }
-
 
 /* Node
 -------------------------------------------------------------------------------*/
@@ -334,12 +349,14 @@ h2 { font-size: 160%; padding-bottom: 15px; }
 
 #container #document .content-node .handle {
   position: absolute;
-  left: 0px;
+  left: -20px;
   top: 0px;
   bottom: 0px;
   /*border-bottom: 1px solid #fff;*/
   width: 20px;
-  background: #D7D8D2;
+  /*background: #D7D8D2;*/
+  background: rgba(0, 0, 0, 0.1);
+
   z-index: 100;
 }
 

@@ -39,8 +39,9 @@ $(function() {
       var that = this;
       loadDocument(id, function(err, session) {
         // Init with a demo document
-        that.view = new Substance.Composer({el: '#container', model: session });
+        that.view = new sc.views.Editor({el: '#container', model: session });
         that.view.render();
+
         choreographer.navigate(id, false);
       });
     },

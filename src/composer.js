@@ -4,19 +4,10 @@
   if (!exports.Substance) exports.Substance = {};
 
   var Composer = Dance.Performer.extend({
-    el: 'container',
 
     events: {
       'click a.checkout-commit': '_checkoutCommit'
     },
-
-    // _newDocument: function() {
-    //   localStorage.removeItem('document');
-    //   this.model = createSession();
-    //   this.build();
-    //   this.render();
-    //   return false;
-    // },
 
     _checkoutCommit: function(e) {
       var sha = $(e.currentTarget).attr('data-commit');

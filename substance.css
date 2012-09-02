@@ -1,26 +1,31 @@
 #container {
-  background: #E9EAE5;
+  
 }
 
 #header {
-  width: 1200px;
-  margin: 0 auto;
+/*  width: 1200px;
+  margin: 0 auto;*/
 
   font-family: 'Merriweather';
   font-size: 20px;
   height: 40px;
   line-height: 40px;
   z-index: 5000;
-  padding-left: 20px;
+  /*padding-left: 20px;*/
 /*  background: #E9EAE5;
   color: #444;*/
   background: #2F2B27;
   color: rgba(255,255,255, 0.7);
-  position: absolute;
+  position: fixed;
   left: 0px;
   right: 0px;
   top: 0px;
   overflow: auto;
+}
+
+#header .header-container {
+  width: 1200px;
+  margin: 0 auto;
 }
 
 #header a {
@@ -34,7 +39,7 @@
 
 #header .actions {
   font-family: "Open Sans";
-  padding-right: 20px;
+  /*padding-right: 20px;*/
   float: right;
   overflow: auto;
 }
@@ -48,6 +53,69 @@
 }
 
 #help {
-
   padding-top: 50px;
+  text-align: center;
+}
+
+
+/* Editor
+-------------------------------------------------------------------------------*/
+
+#document_menu {
+  background: #DCDDD9;
+  position: fixed;
+  top: 40px;
+  left: 0px;
+  right: 0px;
+  z-index: 10000;
+
+  -webkit-box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.25);
+  -moz-box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.25);
+  box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.25);
+}
+
+
+
+#document_menu .navigation {
+  height: 40px;
+  width: 1200px;
+  margin: 0 auto;
+  overflow: auto;
+}
+
+#document_menu .navigation .toggle {
+  line-height: 40px;
+  font-weight: bold;
+  padding: 0 5px;
+  float: left;
+}
+
+#document_menu .navigation .toggle.active, #document_menu .navigation .toggle:hover {
+  background: rgba(0,0,0, 0.1);
+}
+
+#document_menu .navigation .toggle a {
+  border: none;
+}
+
+#document_shelf {
+  -webkit-transition-property: height;
+  -webkit-transition-duration: 0.6s;
+  background: #F0F1EB;
+  overflow: hidden;
+}
+
+#document_shelf .shelf-content {
+  width: 1200px;
+  margin: 0 auto;
+}
+
+#document_wrapper {
+  margin-left: 80px;
+  width: 1200px;
+  margin: 0 auto;
+  position: relative;
+  margin-top: 110px;
+  -webkit-transition-property: margin-top;
+  -webkit-transition-duration: 0.6s;
 }

@@ -47,6 +47,39 @@
       </div>
     </script>
 
+
+    <script type="text/html" name="editor">
+      <div id="document_menu">
+        <div class="navigation">
+          <div class="toggle collaborators"><a href="#">Collaborators</a></div>
+          <div class="toggle settings"><a href="#">Settings</a></div>
+          <div class="toggle export"><a href="#">Export</a></div>
+        </div>
+
+        <div id="document_shelf">
+          <div class="shelf-content">
+          </div>
+        </div>
+      </div>
+
+      <div id="document_wrapper">
+        Content goes here
+      </div>
+    </script>
+
+    <script type="text/html" name="document_settings">
+      <h1>Document Settings</h1>
+    </script>
+
+    <script type="text/html" name="document_collaborators">
+      <h1>Document Collaborators</h1>
+    </script>
+
+    <script type="text/html" name="document_export">
+      <h1>Document Export</h1>
+      <div>Not yet ready.</div>
+    </script>
+
     <script type="text/html" name="toolbar">
       <div id="toolbar"></div>
     </script>
@@ -155,16 +188,17 @@
 
     <script type="text/x-ejs-template" name="tools">
       <div class="tools">
-
-        <div class="document-menu<%= selection() && selection().length > 0 ? "" : " active"%>">
-          <div class="tool-name">Document</div>
-          <div class="navigation">
-            <a class="toggle-tool outline<%= view === "outline" ? " active" : "" %>" href="#" data-view="outline">OUTLN</a>
-            <!--<a class="toggle-tool patches<%= view === "patches" ? " active" : "" %>" href="#" data-view="patches">PTCHS</a>-->
-            <a class="toggle-tool comments<%= view === "comments" ? " active" : "" %>" href="#" data-view="comments">CMTS</a>
-            <a class="toggle-tool history<%= view === "history" ? " active" : "" %>" href="#" data-view="history">HIST</a>
+        <% if (selection().length === 0) { %>
+          <div class="document-menu<%= selection() && selection().length > 0 ? "" : " active"%>">
+            <div class="tool-name">Document</div>
+            <div class="navigation">
+              <a class="toggle-tool outline<%= view === "outline" ? " active" : "" %>" href="#" data-view="outline">OUTLN</a>
+              <!--<a class="toggle-tool patches<%= view === "patches" ? " active" : "" %>" href="#" data-view="patches">PTCHS</a>-->
+              <a class="toggle-tool comments<%= view === "comments" ? " active" : "" %>" href="#" data-view="comments">CMTS</a>
+              <a class="toggle-tool history<%= view === "history" ? " active" : "" %>" href="#" data-view="history">HIST</a>
+            </div>
           </div>
-        </div>
+        <% } %>
         <% if (selection() && selection().length > 0) { %>
           <div class="node-menu active">
             <div class="tool-name"><% if (selection().length === 1) { %>Text Element<% } else { %> Teh Selection <% } %></div>
@@ -209,6 +243,12 @@
     <script src="src/model.js"></script>
 
     <!-- Views -->
+    <script src="src/views/editor.js"></script>
+
+    <script src="src/views/document/settings.js"></script>
+    <script src="src/views/document/collaborators.js"></script>
+    <script src="src/views/document/export.js"></script>
+
     <script src="src/views/document.js"></script>
     <script src="src/views/tools.js"></script>
     <script src="src/views/outline.js"></script>
@@ -227,9 +267,11 @@
   </head>
   <body>
     <div id="header">
-      <a href="#">Substance</a>
-      <div class="actions">
-        <a href="#new" class="new-document">New Document</a>
+      <div class="header-container">
+        <a href="#">Substance</a>
+        <div class="actions">
+          <a href="#new" class="new-document">New Document</a>
+        </div>
       </div>
     </div>
     <div id="container">
