@@ -44,13 +44,15 @@
   overflow: auto;
 }
 
-#header .actions a {
+#header .user-status {
+  float: right;
   display: block;
   height: 40px;
   font-size: 14px;
   font-weight: bold;
   line-height: 40px;
 }
+
 
 #help {
   padding-top: 50px;

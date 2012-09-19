@@ -1,7 +1,41 @@
 // Global Talk instance
 // -----------------
 
-var talk = new Talk.Client("ws://localhost:3100/");
+// var talk = new Talk.Client("ws://localhost:3100/");
+
+
+// Document.Store
+// -----------------
+
+var DocumentStore = function() {
+
+};
+
+
+DocumentStore.prototype.get = function(id, cb) {
+  this.create(cb);
+};
+
+
+DocumentStore.prototype.create = function(cb) {
+  $.getJSON('data/'+ ('default_document.json'), function(doc) {
+    cb(null, doc);
+  });
+};
+
+
+DocumentStore.prototype.update = function(id, operations, cb) {
+  // Implement
+};
+
+
+DocumentStore.prototype.delete = function(id, cb) {
+
+};
+
+
+var store = new DocumentStore();
+
 
 
 // Substance.Session
@@ -71,9 +105,10 @@ _.extend(Substance.Session.prototype, _.Events, {
 // -----------------
 
 function updateDoc(operation, cb) {
-  talk.send(["document:update", [operation]], function(err) {
-    console.log('updated doc on the server', err);
-  });
+  console.log('broadcast operation so the server sees it.');
+  // talk.send(["document:update", [operation]], function(err) {
+  //   console.log('updated doc on the server', err);
+  // });
 }
 
 
@@ -98,26 +133,31 @@ function updateDoc(operation, cb) {
 // }
 
 function loadDocument(id, cb) {
-  talk.send(["document:open", {id: id}], function(err, document) {
+  console.log('jojo');
+
+  store.get(id, function(err, document) {
+    
     var session = new Substance.Session({
       document: new Substance.AnnotatedDocument(document)
     });
+
     cb(err, session);
   });
+
+  // talk.send(["document:open", {id: id}], function(err, document) {
+  //   var session = new Substance.Session({
+  //     document: new Substance.AnnotatedDocument(document)
+  //   });
+  //   cb(err, session);
+  // });
 }
 
-// Create Session
+// Authenticate with your Substance user
 // -----------------
-// 
-// Returns the serialized 
 
-// function createSession(cb) {
-
-//   loadDocument(null, function(err, doc) {
-//     var session = new Substance.Session({
-//       document: new Substance.AnnotatedDocument(doc)
-//     });
-//     cb(null, session);
-//   });
-// }
-
+function authenticate(options, cb) {
+  // talk.send(["session:authenticate", options], function(err) {
+  //   cb(err);
+  // });
+  cb(null);
+}

@@ -17,6 +17,7 @@ $(function() {
     }
   });
 
+
   // Welcome screen
   // ---------------
 
@@ -26,43 +27,80 @@ $(function() {
     }
   });
 
+
   // The Mothership
   // ---------------
 
   var Application = Dance.Performer.extend({
-    initialize: function (options) {
+    events: {
+      'submit #user_login_form': '_login',
+      'click .logout': '_logout'
+    },
 
+    _login: function() {
+      var that = this,
+          options = {
+            username: $('#login_username').val(),  
+            password: $('#login_password').val()
+          };
+
+      authenticate(options, function(err) {
+        that.username = options.username;
+        localStorage.setItem('username', that.username);
+        that.render();
+      });
+      return false;
+    },
+
+    _logout: function() {
+      this.username = null;
+      localStorage.removeItem('username');
+      this.render();
+      return false;
+    },
+
+    initialize: function (options) {
+      _.bindAll(this, 'start', 'document');
+      this.username = localStorage.getItem('username');
     },
 
     // Toggle document view
     document: function(id) {
       var that = this;
       loadDocument(id, function(err, session) {
+
         // Init with a demo document
         that.view = new sc.views.Editor({el: '#container', model: session });
         that.view.render();
-
         choreographer.navigate(id, false);
       });
     },
 
     // Toggle Start view
     start: function() {
-      console.log('start view');
       this.view = new Start({el: '#container'});
       this.view.render();
+    },
+
+    // Render application template
+    render: function() {
+      this.$el.html(_.tpl('substance', {username: this.username}));
+      if (this.view) {
+        this.$('#container').replaceWith(this.view.el);
+      }
     }
   });
 
   // TODO: Once we talk
-  talk.ready(function() {
-    console.log('Connected to the backend. Composer started');
+  // talk.ready(function() {
 
-    window.app = new Application();
+  window.app = new Application({el: 'body'});
 
-    // Start responding to routes
-    window.choreographer = new Choreographer({});
+  app.render();
 
-    Dance.performance.start();
-  });
+  // Start responding to routes
+  window.choreographer = new Choreographer({});
+
+  Dance.performance.start();
+  // });
 });

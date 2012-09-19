@@ -1,0 +1,237 @@
+{
+    "document": {
+        "refs": {
+            "master": "6325273d8014a54c77effc70676d9293",
+            "patch-1": "op-4"
+        },
+        "operations": {
+            "op-1": {
+                "op": [
+                    "insert",
+                    {
+                        "id": "section:hello",
+                        "type": "section",
+                        "properties": {
+                            "content": "Hello?"
+                        }
+                    }
+                ],
+                "user": "michael",
+                "parent": null,
+                "sha": "op-1"
+            },
+            "op-2": {
+                "op": [
+                    "insert",
+                    {
+                        "id": "text:hello",
+                        "type": "text",
+                        "target": "section:hello",
+                        "properties": {
+                            "content": "Helo wrld"
+                        }
+                    }
+                ],
+                "user": "michael",
+                "parent": "op-1",
+                "sha": "op-2"
+            },
+            "op-3": {
+                "op": [
+                    "insert",
+                    {
+                        "id": "text:p1",
+                        "type": "text",
+                        "target": "text:hello",
+                        "properties": {
+                            "content": "Ein erster Paragraph."
+                        }
+                    }
+                ],
+                "user": "michael",
+                "parent": "op-2",
+                "sha": "op-3"
+            },
+            "op-4": {
+                "op": [
+                    "insert",
+                    {
+                        "id": "text:outro",
+                        "type": "text",
+                        "target": "text:hello",
+                        "properties": {
+                            "content": "This is the end."
+                        }
+                    }
+                ],
+                "user": "michael",
+                "parent": "op-3"
+            },
+            "6626972208d746a96bb9ca76ed356320": {
+                "op": [
+                    "update",
+                    {
+                        "id": "text:p1",
+                        "delta": [
+                            [
+                                "ret",
+                                4
+                            ],
+                            [
+                                "del",
+                                17
+                            ]
+                        ]
+                    }
+                ],
+                "user": "michael",
+                "sha": "6626972208d746a96bb9ca76ed356320",
+                "head": "master",
+                "parent": "op-3"
+            },
+            "8e79d97cdaf9e92354e30feba4f5ecc9": {
+                "op": [
+                    "insert",
+                    {
+                        "id": "text:2b697191987fddeb08f7a9b212af88cb",
+                        "type": "text",
+                        "target": "text:p1",
+                        "properties": {
+                            "content": "erster Paragraph."
+                        }
+                    }
+                ],
+                "user": "michael",
+                "sha": "8e79d97cdaf9e92354e30feba4f5ecc9",
+                "head": "master",
+                "parent": "6626972208d746a96bb9ca76ed356320"
+            },
+            "4c6a02c4f20c91539e5abf8bc29f5901": {
+                "op": [
+                    "insert",
+                    {
+                        "id": "text:d74874502fb3822e58e404086cb7b7e2",
+                        "type": "section",
+                        "target": "text:p1",
+                        "properties": {
+                            "content": ""
+                        }
+                    }
+                ],
+                "user": "michael",
+                "sha": "4c6a02c4f20c91539e5abf8bc29f5901",
+                "head": "master",
+                "parent": "8e79d97cdaf9e92354e30feba4f5ecc9"
+            },
+            "63b90320a78a9927e144204fbe4fcf23": {
+                "op": [
+                    "update",
+                    {
+                        "id": "text:d74874502fb3822e58e404086cb7b7e2",
+                        "delta": [
+                            [
+                                "ins",
+                                "Meeeh"
+                            ]
+                        ]
+                    }
+                ],
+                "user": "michael",
+                "sha": "63b90320a78a9927e144204fbe4fcf23",
+                "head": "master",
+                "parent": "4c6a02c4f20c91539e5abf8bc29f5901"
+            },
+            "6325273d8014a54c77effc70676d9293": {
+                "op": [
+                    "move",
+                    {
+                        "nodes": [
+                            "text:p1",
+                            "text:d74874502fb3822e58e404086cb7b7e2"
+                        ],
+                        "target": "text:2b697191987fddeb08f7a9b212af88cb"
+                    }
+                ],
+                "user": "michael",
+                "sha": "6325273d8014a54c77effc70676d9293",
+                "head": "master",
+                "parent": "63b90320a78a9927e144204fbe4fcf23"
+            }
+        }
+    },
+    "annotations": {
+        "refs": {
+            "master": "third-op",
+            "op-3": "third-op"
+        },
+        "operations": {
+            "first-op": {
+                "op": [
+                    "insert",
+                    {
+                        "id": "annotation:1",
+                        "type": "em",
+                        "properties": {
+                            "nodes": [
+                                "text:hello"
+                            ],
+                            "pos": [
+                                0,
+                                4
+                            ]
+                        }
+                    }
+                ],
+                "user": "michael",
+                "parent": null,
+                "sha": "first-op"
+            },
+            "second-op": {
+                "op": [
+                    "insert",
+                    {
+                        "id": "annotation:2",
+                        "node": "text:hello",
+                        "type": "comment",
+                        "properties": {
+                            "content": "Hello",
+                            "nodes": [
+                                "text:hello"
+                            ],
+                            "pos": [
+                                5,
+                                9
+                            ]
+                        }
+                    }
+                ],
+                "user": "michael",
+                "parent": "first-op",
+                "sha": "second-op"
+            },
+            "third-op": {
+                "op": [
+                    "insert",
+                    {
+                        "id": "annotation:3",
+                        "node": "text:hello",
+                        "type": "comment",
+                        "properties": {
+                            "content": "USS New Ironsides was a wooden-hulled broadside ironclad built for the United States Navy during the American Civil War.",
+                            "nodes": [
+                                "text:p1"
+                            ],
+                            "pos": [
+                                0,
+                                4
+                            ]
+                        }
+                    }
+                ],
+                "user": "john",
+                "parent": "second-op",
+                "sha": "third-op"
+            }
+        }
+    }
+}
