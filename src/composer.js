@@ -40,12 +40,12 @@
 
     handleDown: function() {
       // If in selection/structure mode
-      if (this.model.level() === 2) { this.views.document.moveDown(); return false; }
+      if (this.model.level() <= 2) { this.views.document.selectNext(); return false; }
     },
 
     handleUp: function() {
       // If in selection/structure mode
-      if (this.model.level() === 2) { this.views.document.moveUp(); return false; }
+      if (this.model.level() <= 2) { this.views.document.selectPrev(); return false; }
     },
 
     handleShiftDown: function() {
@@ -55,6 +55,16 @@
 
     handleShiftUp: function() {
       if (this.model.level() === 2) this.views.document.narrowSelection();
+    },
+
+    handleCtrlShiftDown: function() {
+      // If in selection/structure mode
+      if (this.model.level() === 2) { this.views.document.moveDown(); return false; }
+    },
+
+    handleCtrlShiftUp: function() {
+      // If in selection/structure mode
+      if (this.model.level() === 2) { this.views.document.moveUp(); return false; }
     },
 
     handleEnter: function() {
@@ -85,13 +95,16 @@
     build: function() {
 
       // Selection shortcuts
+      key('down', _.bind(function() { return this.handleDown(); }, this));
+      key('up', _.bind(function() { return this.handleUp(); }, this));
+
       key('shift+down', _.bind(function() { return this.handleShiftDown(); }, this));
       key('shift+up', _.bind(function() { return this.handleShiftUp(); }, this));
       key('esc', _.bind(function() { return this.goBack(); }, this));
 
       // Move shortcuts
-      key('down', _.bind(function() { return this.handleDown(); }, this));
-      key('up', _.bind(function() { return this.handleUp(); }, this));
+      key('alt+down', _.bind(function() { return this.handleCtrlShiftDown(); }, this));
+      key('alt+up', _.bind(function() { return this.handleCtrlShiftUp(); }, this));
 
       // Handle enter (creates new paragraphs)
       key('enter', _.bind(function() { return this.handleEnter(); }, this));
@@ -118,9 +131,6 @@
 
         // Send update to the server
         updateDoc(operation);
-
-        // Not needed now since doc is stored on the server
-        // localStorage.setItem('document', JSON.stringify(this.model.document.toJSON()));
         
       }, this);
 

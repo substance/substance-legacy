@@ -140,6 +140,24 @@ sc.views.Document = Dance.Performer.extend({
   // Issue commands
   // --------
 
+  selectNext: function() {
+    var selection = this.model.users[this.model.user].selection;
+    var head = this.model.document.content.head;
+    var tail = this.model.document.content.tail;
+    if (selection.length === 0) return this.model.select([head]);
+    var next = this.getNode(_.last(selection)).next;
+    this.model.select(next ? [next] : [tail]);
+  },
+
+  selectPrev: function() {
+    var selection = this.model.users[this.model.user].selection;
+    var head = this.model.document.content.head;
+    var tail = this.model.document.content.tail;
+    if (selection.length === 0) return this.model.select([tail]);
+    var prev = this.getNode(_.first(selection)).prev;
+    this.model.select(prev ? [prev] : [head]);
+  },
+
   expandSelection: function() {
     var lastnode = _.last(this.model.users[this.model.user].selection);
     if (lastnode) {

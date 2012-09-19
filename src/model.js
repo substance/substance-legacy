@@ -133,8 +133,6 @@ function updateDoc(operation, cb) {
 // }
 
 function loadDocument(id, cb) {
-  console.log('jojo');
-
   store.get(id, function(err, document) {
     
     var session = new Substance.Session({
