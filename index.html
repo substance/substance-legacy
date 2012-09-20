@@ -80,7 +80,7 @@
     <script type="text/html" name="toolbar">
       <div id="toolbar"></div>
     </script>
-    
+
     <script type="text/html" name="tool">
       <a class="tool" data-command="<%= type %>" href="#<%= type %>"><%= text %></a>
     </script>
@@ -185,10 +185,10 @@
           <div class="document-menu<%= selection() && selection().length > 0 ? "" : " active"%>">
             <div class="tool-name">Document</div>
             <div class="navigation">
-              <a class="toggle-tool outline<%= view === "outline" ? " active" : "" %>" href="#" data-view="outline">OUTLN</a>
+              <!--<a class="toggle-tool outline<%= view === "outline" ? " active" : "" %>" href="#" data-view="outline">OUTLN</a>-->
               <!--<a class="toggle-tool patches<%= view === "patches" ? " active" : "" %>" href="#" data-view="patches">PTCHS</a>-->
-              <a class="toggle-tool comments<%= view === "comments" ? " active" : "" %>" href="#" data-view="comments">CMTS</a>
-              <a class="toggle-tool history<%= view === "history" ? " active" : "" %>" href="#" data-view="history">HIST</a>
+              <a class="toggle-tool comments<%= view === "comments" ? " active" : "" %>" href="#" data-view="comments">Comments</a>
+              <a class="toggle-tool history<%= view === "history" ? " active" : "" %>" href="#" data-view="history">History</a>
             </div>
           </div>
         <% } %>

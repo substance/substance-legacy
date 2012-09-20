@@ -5,7 +5,10 @@ sc.views.Document = Dance.Performer.extend({
   // ------
 
   events: {
-    'click .content-node': 'select'
+    'click .content-node': 'select',
+    'click .comments-toggle': function(e) {
+      e.preventDefault();
+    }
   },
 
   // Handlers
@@ -82,7 +85,7 @@ sc.views.Document = Dance.Performer.extend({
 
     this.model.document.apply({
       op: ["insert", {
-        "id": "text:"+Math.uuid(),
+        "id": type+":"+Math.uuid(),
         "type": type,
         "target": target,
         "properties": properties
