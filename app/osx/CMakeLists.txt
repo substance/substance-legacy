@@ -54,7 +54,7 @@ target_link_libraries(substance
 )
 
 # Set a custom plist file for the app bundle
-set_target_properties(substance PROPERTIES MACOSX_BUNDLE_INFO_PLIST ${CMAKE_CURRENT_SOURCE_DIR}/Info.plist)
+set_target_properties(substance PROPERTIES MACOSX_BUNDLE_INFO_PLIST ${CMAKE_CURRENT_SOURCE_DIR}/Info-CMake.plist)
 
 # Make sure the 'Resources' Directory is correctly created before we build
 add_custom_command (TARGET substance PRE_BUILD
