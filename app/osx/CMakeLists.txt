@@ -5,6 +5,7 @@ find_library(COREDATA CoreData)
 find_library(FOUNDATION Foundation)
 find_library(APPKIT AppKit)
 find_library(COCOA Cocoa)
+find_library(WEBKIT WebKit)
 
 # IBTOOL
 # ======
@@ -46,11 +47,13 @@ add_executable(substance MACOSX_BUNDLE
   main.m
   appDelegate.h
   appDelegate.m
+  MainMenu.xib
 )
 
 target_link_libraries(substance 
   ${COREDATA} ${FOUNDATION}
   ${APPKIT} ${COCOA}
+  ${WEBKIT}
 )
 
 # Set a custom plist file for the app bundle
