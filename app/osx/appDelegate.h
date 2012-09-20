@@ -1,6 +1,6 @@
 #import <Cocoa/Cocoa.h>
 
-@interface MyAppDelegate : NSObject <NSApplicationDelegate> {
+@interface SubstanceAppDelegate : NSObject <NSApplicationDelegate> {
     NSWindow *window;
 }
 

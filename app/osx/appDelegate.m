@@ -1,6 +1,6 @@
 #import "appDelegate.h"
 
-@implementation MyAppDelegate
+@implementation SubstanceAppDelegate
 
 @synthesize window;
 
