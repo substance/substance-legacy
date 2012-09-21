@@ -55,3 +55,19 @@ git clone git@github.com:substance/substance.git
 npm install
 node server.js
 ```
+
+
+# Build native OSX Application
+
+```
+mkdir build
+cd build
+cmake ..
+make
+```
+
+## Enable Webkit Inspektor
+
+```
+defaults write quasipartikel.substance.Substance WebKitDeveloperExtras -bool true
+```
