@@ -372,7 +372,7 @@ h2 { font-size: 160%; padding-bottom: 15px; }
   top: 10px;
   line-height: 30px;
   font-family: 'Open Sans',Arial,sans-serif;
-  background: url(/images/icons/comment.png) center no-repeat;
+  background: url(images/icons/comment.png) center no-repeat;
   padding-right: 50px;
   padding-left: 5px;
   font-size: 13px;
@@ -392,7 +392,7 @@ h2 { font-size: 160%; padding-bottom: 15px; }
   color: #fff;
   border-radius: 3px;
   opacity: 1.0;
-  background: url(/images/icons/comment-white.png) center no-repeat;
+  background: url(images/icons/comment-white.png) center no-repeat;
   background-color: #00B7E1;
 }
 
