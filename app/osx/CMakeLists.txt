@@ -71,3 +71,7 @@ foreach(xib ${SUBSTANCE_XIBS})
                              ${CMAKE_CURRENT_SOURCE_DIR}/${xib}.xib
                       COMMENT "Compiling ${CMAKE_CURRENT_SOURCE_DIR}/${xib}.xib")
 endforeach()
+
+add_custom_command (TARGET substance POST_BUILD
+  COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_BINARY_DIR}/substance.app ${PROJECT_SOURCE_DIR}/substance.app
+)

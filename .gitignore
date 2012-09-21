@@ -19,3 +19,4 @@ node_modules/*
 /.settings.xml
 /config.json.edge
 /edge.config.json
+build
