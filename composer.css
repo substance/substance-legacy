@@ -155,6 +155,7 @@ h2 { font-size: 160%; padding-bottom: 15px; }
   padding-left: 10px;
   color: #444;
   font-weight: bold;
+  
   /*background: #2F2B27;*/
   background: rgba(0,0,0, 0.05);
   /*opacity: 0.8;*/
@@ -166,7 +167,7 @@ h2 { font-size: 160%; padding-bottom: 15px; }
 }
 
 #tools .tool-name {
-  float: left ;
+  float: left;
 }
 
 #tools .navigation {
@@ -228,13 +229,17 @@ h2 { font-size: 160%; padding-bottom: 15px; }
 }
 
 .new-comment {
-  padding: 10px 0px;
+  margin-top: 10px;
+  border-radius: 3px;
+  background: rgba(0,0,0, 0.05);
+  padding: 10px 10px;
   position: relative;
 }
 
 .new-comment textarea {
   width: 100%;
   border: 1px solid #ccc;
+  height: 60px;
 }
 
 .new-comment .button {
@@ -363,12 +368,13 @@ h2 { font-size: 160%; padding-bottom: 15px; }
 #container #document .content-node .comments-toggle {
   position: absolute;
   display: none;
-  left: -60px;
+  left: -80px;
   top: 10px;
   line-height: 30px;
   font-family: 'Open Sans',Arial,sans-serif;
   background: url(/images/icons/comment.png) center no-repeat;
-  padding-right: 40px;
+  padding-right: 50px;
+  padding-left: 5px;
   font-size: 13px;
   font-weight: bold;
   color: #000;
@@ -378,11 +384,23 @@ h2 { font-size: 160%; padding-bottom: 15px; }
   width: 20px;
   height: 30px;
   z-index: 100;
+
+
 }
+
+#container #document .content-node .comments-toggle.highlighted {
+  color: #fff;
+  border-radius: 3px;
+  opacity: 1.0;
+  background: url(/images/icons/comment-white.png) center no-repeat;
+  background-color: #00B7E1;
+}
+
 
 #container #document .content-node.selected .comments-toggle {
   opacity: 0.7;
 }
+
 
 #container #document .content-node .comments-toggle.active {
   display: block;

@@ -27,10 +27,35 @@ sc.views.Document = Dance.Performer.extend({
       }
     });
 
+    this.model.document.annotations.on('operation:applied', function(operation) {
+      switch(operation.op[0]) {
+        case "move": that.annotations.move(operation.op[1]); break;
+        case "insert": that.annotations.insert(operation.op[1]); break;
+        case "update": that.annotations.update(operation.op[1]); break;
+        case "delete": that.annotations.delete(operation.op[1]); break;
+      }
+    });
+
     this.model.on('node:select', this.updateSelections, this);
     this.build();
 
     $(document.body).keydown(this.onKeydown);
+  },
+
+  // Handle annotation updates
+  annotations: {
+    move: function() {
+
+    },
+    update: function() {
+
+    },
+    insert: function(options) {
+      console.log("annotation inserted", options);
+    },
+    delete: function() {
+
+    }
   },
 
   // Get a particular node by id
@@ -56,6 +81,8 @@ sc.views.Document = Dance.Performer.extend({
     var node = this.nodes[options.id];
     node.render(); // Re-render that updated node
   },
+
+
 
   // Nodes have been deleted
   delete: function(options) {
