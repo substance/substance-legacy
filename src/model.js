@@ -48,7 +48,7 @@ Substance.Session = function(options) {
 
   this.users = {
     "michael": {
-      "color": "#82AA15",
+      "color": "#2F2B26",
       "selection": []
     }
   };

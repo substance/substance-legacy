@@ -13,10 +13,26 @@ sc.views.Comments = Dance.Performer.extend({
 
   _showComment: function(e) {
     var id = $(e.currentTarget).attr('data-id');
-    
-    $(e.currentTarget).parent().find('.comment').removeClass('active');
-    $(e.currentTarget).addClass('active');
     var comment = this.model.document.annotations.content.nodes[id];
+    
+    function highlight() {
+      unhighlight();
+      $(e.currentTarget).addClass('active');
+
+      // Highlight comment toggles in document
+      _.each(comment.nodes, function(n) {
+        $('#'+_.htmlId(n)+" .comments-toggle").addClass('highlighted');
+      });
+    }
+
+    function unhighlight() {
+      $(e.currentTarget).parent().find('.comment').removeClass('active');
+      $('.content-node .comments-toggle').removeClass('highlighted');
+    }
+
+    // Highlight or unhighlight?
+    $(e.currentTarget).hasClass('active') ? unhighlight() : highlight();
+
     return false;
   },
 
