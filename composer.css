@@ -318,6 +318,27 @@ h2 { font-size: 160%; padding-bottom: 15px; }
   z-index: 50;
 }*/
 
+
+#document .properties {
+  background: #fff;
+}
+
+#document .properties .document-title {
+  padding: 50px 80px;
+  text-align: center;
+  font-weight: bold;
+  font-size: 50px;
+}
+
+#document .properties .document-abstract {
+  padding: 40px 80px;
+  padding-bottom: 60px;
+  font-size: 20px;
+  font-family: 'Open Sans',Arial,sans-serif;
+  color: #777;
+  text-align: center;
+}
+
 #document .nodes {
   overflow: visible;
   /*overflow: auto;*/

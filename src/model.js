@@ -105,7 +105,8 @@ _.extend(Substance.Session.prototype, _.Events, {
 // -----------------
 
 function updateDoc(operation, cb) {
-  console.log('broadcast operation so the server sees it.');
+  // console.log('broadcast operation so the server sees it.');
+  
   // talk.send(["document:update", [operation]], function(err) {
   //   console.log('updated doc on the server', err);
   // });

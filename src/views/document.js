@@ -245,9 +245,54 @@ sc.views.Document = Dance.Performer.extend({
     this.model.select([id]);
   },
 
+
+  initSurface: function(property) {
+    var that = this;
+
+    this.surface = new Substance.Surface({
+      el: this.$('.document-'+property),
+      content: that.model.document.content.properties[property]
+    });
+
+
+    // Events
+    // ------
+
+    // Returns all annotations matching that selection
+    // this.surface.on('selection:change', function(sel) {
+    //   console.log('selection:change', sel, that.surface.selection());
+    // });
+
+    this.surface.on('surface:active', function(sel) {
+      console.log(property+' surface activated');
+      // app.view.model.select([that.model.id], {edit: true});
+    });
+
+    this.surface.on('text:change', function(content, prevContent) {
+      
+      var delta = _.extractOperation(prevContent, content);
+
+      console.log("Partial Text Update", delta);
+
+      var opts = {};
+      opts[property] = delta;
+
+      that.model.document.apply({
+        "op": ["set", opts],
+        "user": "michael"
+      });
+    });
+  },
+
+
   // Initial render of all nodes
   render: function () {
     this.$el.html(_.tpl('document', this.model));
+
+    // Init editor for document abstract and title
+    this.initSurface("abstract");
+    this.initSurface("title");
+
     this.model.document.list(function(node) {
       $(this.nodes[node.id].render().el).appendTo(this.$('.nodes'));
     }, this);

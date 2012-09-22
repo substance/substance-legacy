@@ -49,7 +49,7 @@ sc.views.Node.define('section', {
       console.log("Partial Text Update", delta);
 
       var op = {
-        op: ["update", {id: that.model.id, "delta": delta}],
+        op: ["update", {id: that.model.id, "data": delta}],
         user: "michael"
       };
       that.document.apply(op);
