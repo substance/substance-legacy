@@ -50,7 +50,7 @@ sc.views.Comments = Dance.Performer.extend({
     }
 
     var op = {
-      op: ["insert", {"id": "annotation:"+Math.uuid(), "type": "comment", "properties": properties}],
+      op: ["insert", {"id": "annotation:"+Math.uuid(), "type": "comment", "data": properties}],
       user: "michael",
     };
 

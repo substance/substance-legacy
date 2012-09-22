@@ -52,8 +52,8 @@ sc.views.Document = Dance.Performer.extend({
   },
 
   insertAnnotation: function(options) {
-    _.each(options.properties.nodes, function(node) {
-      this.nodes[node].render(true); // Re-render affected node
+    _.each(options.data.nodes, function(node) {
+      this.nodes[node].render(); // Re-render affected node
       this.updateSelections();
     }, this);
   },
