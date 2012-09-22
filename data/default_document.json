@@ -1,7 +1,7 @@
 {
     "document": {
         "refs": {
-            "master": "fa7892bd94748d2948b31fe494b3c827",
+            "master": "c32c936a1b1d647c1f6793e14c8bb962",
             "patch-1": "op-4"
         },
         "operations": {
@@ -11,7 +11,7 @@
                     {
                         "id": "section:hello",
                         "type": "section",
-                        "properties": {
+                        "data": {
                             "content": "Hello?"
                         }
                     }
@@ -27,7 +27,7 @@
                         "id": "text:hello",
                         "type": "text",
                         "target": "section:hello",
-                        "properties": {
+                        "data": {
                             "content": "Helo wrld"
                         }
                     }
@@ -43,7 +43,7 @@
                         "id": "text:p1",
                         "type": "text",
                         "target": "text:hello",
-                        "properties": {
+                        "data": {
                             "content": "Ein erster Paragraph."
                         }
                     }
@@ -59,7 +59,7 @@
                         "id": "text:outro",
                         "type": "text",
                         "target": "text:hello",
-                        "properties": {
+                        "data": {
                             "content": "This is the end."
                         }
                     }
@@ -72,7 +72,7 @@
                     "update",
                     {
                         "id": "section:hello",
-                        "delta": [
+                        "data": [
                             [
                                 "del",
                                 1
@@ -102,7 +102,7 @@
                     "update",
                     {
                         "id": "text:hello",
-                        "delta": [
+                        "data": [
                             [
                                 "del",
                                 1
@@ -186,7 +186,7 @@
                         "id": "section:4595f9aa78582d50508c8a7cc9e4d91b",
                         "type": "section",
                         "target": "text:hello",
-                        "properties": {
+                        "data": {
                             "content": ""
                         }
                     }
@@ -201,7 +201,7 @@
                     "update",
                     {
                         "id": "section:4595f9aa78582d50508c8a7cc9e4d91b",
-                        "delta": [
+                        "data": [
                             [
                                 "ins",
                                 "Why should I care?"
@@ -219,7 +219,7 @@
                     "update",
                     {
                         "id": "text:p1",
-                        "delta": [
+                        "data": [
                             [
                                 "del",
                                 1
@@ -367,7 +367,7 @@
                         "id": "section:f9b8dfcfede7c75043813edd6e013ae3",
                         "type": "section",
                         "target": "text:p1",
-                        "properties": {
+                        "data": {
                             "content": ""
                         }
                     }
@@ -382,7 +382,7 @@
                     "update",
                     {
                         "id": "section:f9b8dfcfede7c75043813edd6e013ae3",
-                        "delta": [
+                        "data": [
                             [
                                 "ins",
                                 "When will it be ready?"
@@ -402,7 +402,7 @@
                         "id": "text:c7e0e43f29b7427d624fa492a1779815",
                         "type": "text",
                         "target": "section:f9b8dfcfede7c75043813edd6e013ae3",
-                        "properties": {
+                        "data": {
                             "content": ""
                         }
                     }
@@ -419,7 +419,7 @@
                         "id": "text:8bacc9161c7987b73682ac091803e7a7",
                         "type": "text",
                         "target": "text:c7e0e43f29b7427d624fa492a1779815",
-                        "properties": {
+                        "data": {
                             "content": ""
                         }
                     }
@@ -434,7 +434,7 @@
                     "update",
                     {
                         "id": "text:c7e0e43f29b7427d624fa492a1779815",
-                        "delta": [
+                        "data": [
                             [
                                 "ins",
                                 "The current release is 0.4.1. Our next major release, 0.5.0 will feature a compeletely new architecture and will land at the end of the year. Until then, try the demo or integrate one of our stable modules for your project."
@@ -452,7 +452,7 @@
                     "update",
                     {
                         "id": "text:8bacc9161c7987b73682ac091803e7a7",
-                        "delta": [
+                        "data": [
                             [
                                 "ins",
                                 "The current release is 0.4.1. Our next major release, 0.5.0 will feature a compeletely new architecture and will land at the end of the year. Until then, try the demo or integrate one of our stable modules for your project."
@@ -470,7 +470,7 @@
                     "update",
                     {
                         "id": "text:8bacc9161c7987b73682ac091803e7a7",
-                        "delta": [
+                        "data": [
                             [
                                 "del",
                                 1
@@ -1094,7 +1094,7 @@
                         "id": "section:d202c850f7a79adc1f4e26fb0239234e",
                         "type": "section",
                         "target": "text:p1",
-                        "properties": {
+                        "data": {
                             "content": ""
                         }
                     }
@@ -1109,7 +1109,7 @@
                     "update",
                     {
                         "id": "section:d202c850f7a79adc1f4e26fb0239234e",
-                        "delta": [
+                        "data": [
                             [
                                 "ins",
                                 "asdfa"
@@ -1127,7 +1127,7 @@
                     "update",
                     {
                         "id": "section:d202c850f7a79adc1f4e26fb0239234e",
-                        "delta": [
+                        "data": [
                             [
                                 "ins",
                                 "Sem"
@@ -1171,7 +1171,7 @@
                         "id": "text:67b5de5d0eab741ee3db7dbd63aa27e9",
                         "type": "text",
                         "target": "section:d202c850f7a79adc1f4e26fb0239234e",
-                        "properties": {
+                        "data": {
                             "content": ""
                         }
                     }
@@ -1186,7 +1186,7 @@
                     "update",
                     {
                         "id": "text:67b5de5d0eab741ee3db7dbd63aa27e9",
-                        "delta": [
+                        "data": [
                             [
                                 "ins",
                                 "Unlike traditional word-processors, Substance focuses on content, by leaving the layout part to the system, not the user. Because of the absence of formatting utilities, it suggests structured, content-oriented writing."
@@ -1206,7 +1206,7 @@
                         "id": "section:3509a7d6041142bb85cdf3cf51f8f0d2",
                         "type": "section",
                         "target": "section:f9b8dfcfede7c75043813edd6e013ae3",
-                        "properties": {
+                        "data": {
                             "content": ""
                         }
                     }
@@ -1221,7 +1221,7 @@
                     "update",
                     {
                         "id": "section:3509a7d6041142bb85cdf3cf51f8f0d2",
-                        "delta": [
+                        "data": [
                             [
                                 "ins",
                                 "Content is data"
@@ -1256,7 +1256,7 @@
                         "id": "text:0d4d27c8c32c0f5363867cdb74acc982",
                         "type": "text",
                         "target": "section:3509a7d6041142bb85cdf3cf51f8f0d2",
-                        "properties": {
+                        "data": {
                             "content": ""
                         }
                     }
@@ -1271,7 +1271,7 @@
                     "update",
                     {
                         "id": "text:0d4d27c8c32c0f5363867cdb74acc982",
-                        "delta": [
+                        "data": [
                             [
                                 "ins",
                                 "Substance considers content as data, which allows digital documents to be queried like a database. Processing digital documents used to be a pain, with Substance it's a pleasure."
@@ -1291,7 +1291,7 @@
                         "id": "section:93ba8bda139d31b377729e7113d2e669",
                         "type": "section",
                         "target": "text:0d4d27c8c32c0f5363867cdb74acc982",
-                        "properties": {
+                        "data": {
                             "content": ""
                         }
                     }
@@ -1306,7 +1306,7 @@
                     "update",
                     {
                         "id": "section:93ba8bda139d31b377729e7113d2e669",
-                        "delta": [
+                        "data": [
                             [
                                 "ins",
                                 "Collaboration"
@@ -1326,7 +1326,7 @@
                         "id": "text:7aa8c5f7492c0ba56d370cacae30c52b",
                         "type": "text",
                         "target": "section:93ba8bda139d31b377729e7113d2e669",
-                        "properties": {
+                        "data": {
                             "content": ""
                         }
                     }
@@ -1341,7 +1341,7 @@
                     "update",
                     {
                         "id": "text:7aa8c5f7492c0ba56d370cacae30c52b",
-                        "delta": [
+                        "data": [
                             [
                                 "ins",
                                 "Substance allows opencollaboration in realtime. Every reader can be a potential contributor by submitting comments and patches to a document."
@@ -1361,7 +1361,7 @@
                         "id": "section:c9bbceb9d0a92c0defefe86532aa8a6f",
                         "type": "section",
                         "target": "text:7aa8c5f7492c0ba56d370cacae30c52b",
-                        "properties": {
+                        "data": {
                             "content": ""
                         }
                     }
@@ -1376,7 +1376,7 @@
                     "update",
                     {
                         "id": "section:c9bbceb9d0a92c0defefe86532aa8a6f",
-                        "delta": [
+                        "data": [
                             [
                                 "ins",
                                 "Modular"
@@ -1396,7 +1396,7 @@
                         "id": "text:6ae2af67bcac05761265e889609614ef",
                         "type": "text",
                         "target": "section:c9bbceb9d0a92c0defefe86532aa8a6f",
-                        "properties": {
+                        "data": {
                             "content": ""
                         }
                     }
@@ -1411,7 +1411,7 @@
                     "update",
                     {
                         "id": "text:6ae2af67bcac05761265e889609614ef",
-                        "delta": [
+                        "data": [
                             [
                                 "ins",
                                 "Substance conists of severalmodules that are developed independently and can be used on its own."
@@ -1431,7 +1431,7 @@
                         "id": "section:5141e40c5a47f4a78b68c02abce6b4ee",
                         "type": "section",
                         "target": "text:6ae2af67bcac05761265e889609614ef",
-                        "properties": {
+                        "data": {
                             "content": ""
                         }
                     }
@@ -1446,7 +1446,7 @@
                     "update",
                     {
                         "id": "section:5141e40c5a47f4a78b68c02abce6b4ee",
-                        "delta": [
+                        "data": [
                             [
                                 "ins",
                                 "Extensible"
@@ -1466,7 +1466,7 @@
                         "id": "text:f67c9f289d65dab55303aa1f2b122749",
                         "type": "text",
                         "target": "section:5141e40c5a47f4a78b68c02abce6b4ee",
-                        "properties": {
+                        "data": {
                             "content": ""
                         }
                     }
@@ -1481,7 +1481,7 @@
                     "update",
                     {
                         "id": "text:f67c9f289d65dab55303aa1f2b122749",
-                        "delta": [
+                        "data": [
                             [
                                 "ins",
                                 "Documents are exposed as data, ready to be analyzed, visualized, exported (PDF,ePub, etc.) or integrated with other applications. Additional content types (formulas, maps, etc.) can easily be added by the community."
@@ -1501,7 +1501,7 @@
                         "id": "section:2f5f34f6a65ea0e5a72e6c8e2691d06c",
                         "type": "section",
                         "target": "text:f67c9f289d65dab55303aa1f2b122749",
-                        "properties": {
+                        "data": {
                             "content": ""
                         }
                     }
@@ -1516,7 +1516,7 @@
                     "update",
                     {
                         "id": "text:f67c9f289d65dab55303aa1f2b122749",
-                        "delta": [
+                        "data": [
                             [
                                 "ret",
                                 79
@@ -1542,7 +1542,7 @@
                     "update",
                     {
                         "id": "section:2f5f34f6a65ea0e5a72e6c8e2691d06c",
-                        "delta": [
+                        "data": [
                             [
                                 "ins",
                                 "Runs everywhere"
@@ -1562,7 +1562,7 @@
                         "id": "text:a76dd064429c2cfa74018d84d7b3b019",
                         "type": "text",
                         "target": "section:2f5f34f6a65ea0e5a72e6c8e2691d06c",
-                        "properties": {
+                        "data": {
                             "content": ""
                         }
                     }
@@ -1577,7 +1577,7 @@
                     "update",
                     {
                         "id": "text:a76dd064429c2cfa74018d84d7b3b019",
-                        "delta": [
+                        "data": [
                             [
                                 "ins",
                                 "Substance can be deployed easily. We are working on adistributed architecture that allows you to run Substance on your own computer and let it talk to other Substance nodes in a peer to peer fashion."
@@ -1595,7 +1595,7 @@
                     "update",
                     {
                         "id": "text:a76dd064429c2cfa74018d84d7b3b019",
-                        "delta": [
+                        "data": [
                             [
                                 "ret",
                                 53
@@ -1615,6 +1615,55 @@
                 "sha": "fa7892bd94748d2948b31fe494b3c827",
                 "head": "master",
                 "parent": "16de703f2763021d2d465b08f67cf3de"
+            },
+            "447f89c3aa6b248dfce54b5d97c1fd7c": {
+                "op": [
+                    "set",
+                    {
+                        "title": [
+                            [
+                                "ins",
+                                "Substance"
+                            ]
+                        ]
+                    }
+                ],
+                "user": "michael",
+                "sha": "447f89c3aa6b248dfce54b5d97c1fd7c",
+                "head": "master",
+                "parent": "fa7892bd94748d2948b31fe494b3c827"
+            },
+            "5af4beb6050db5c31b3d0b772246fd43": {
+                "op": [
+                    "set",
+                    {
+                        "abstract": [
+                            [
+                                "ins",
+                                "Substance is an open platform for collaborative composition and sharing of digital documents."
+                            ]
+                        ]
+                    }
+                ],
+                "user": "michael",
+                "sha": "5af4beb6050db5c31b3d0b772246fd43",
+                "head": "master",
+                "parent": "447f89c3aa6b248dfce54b5d97c1fd7c"
+            },
+            "c32c936a1b1d647c1f6793e14c8bb962": {
+                "op": [
+                    "delete",
+                    {
+                        "nodes": [
+                            "section:hello",
+                            "text:hello"
+                        ]
+                    }
+                ],
+                "user": "michael",
+                "sha": "c32c936a1b1d647c1f6793e14c8bb962",
+                "head": "master",
+                "parent": "5af4beb6050db5c31b3d0b772246fd43"
             }
         }
     },
@@ -1630,7 +1679,7 @@
                     {
                         "id": "annotation:1",
                         "type": "em",
-                        "properties": {
+                        "data": {
                             "nodes": [
                                 "text:hello"
                             ],
@@ -1652,7 +1701,7 @@
                         "id": "annotation:2",
                         "node": "text:hello",
                         "type": "comment",
-                        "properties": {
+                        "data": {
                             "creator": "john",
                             "content": "Interesting.",
                             "nodes": [
@@ -1676,7 +1725,7 @@
                         "id": "annotation:3",
                         "node": "text:hello",
                         "type": "comment",
-                        "properties": {
+                        "data": {
                             "creator": "michael",
                             "content": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur tempor accumsan rhoncus. Sed in neque lectus, nec aliquam ligula.",
                             "nodes": [
