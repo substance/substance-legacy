@@ -29,10 +29,10 @@ sc.views.Document = Dance.Performer.extend({
 
     this.model.document.annotations.on('operation:applied', function(operation) {
       switch(operation.op[0]) {
-        case "move": that.annotations.move(operation.op[1]); break;
-        case "insert": that.annotations.insert(operation.op[1]); break;
-        case "update": that.annotations.update(operation.op[1]); break;
-        case "delete": that.annotations.delete(operation.op[1]); break;
+        case "move": that.moveAnnotation(operation.op[1]); break;
+        case "insert": that.insertAnnotation(operation.op[1]); break;
+        case "update": that.updateAnnotation(operation.op[1]); break;
+        case "delete": that.deleteAnnotation(operation.op[1]); break;
       }
     });
 
@@ -43,19 +43,23 @@ sc.views.Document = Dance.Performer.extend({
   },
 
   // Handle annotation updates
-  annotations: {
-    move: function() {
+  moveAnnotation: function() {
 
-    },
-    update: function() {
+  },
 
-    },
-    insert: function(options) {
-      console.log("annotation inserted", options);
-    },
-    delete: function() {
+  updateAnnotation: function() {
 
-    }
+  },
+
+  insertAnnotation: function(options) {
+    _.each(options.properties.nodes, function(node) {
+      this.nodes[node].render(true); // Re-render affected node
+      this.updateSelections();
+    }, this);
+  },
+
+  deleteAnnotation: function() {
+
   },
 
   // Get a particular node by id
