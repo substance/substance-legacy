@@ -47,6 +47,8 @@ add_executable(substance MACOSX_BUNDLE
   main.m
   appDelegate.h
   appDelegate.m
+  MainView.h
+  MainView.m
   MainMenu.xib
 )
 
