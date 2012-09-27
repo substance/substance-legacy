@@ -464,7 +464,7 @@ h2 { font-size: 160%; padding-bottom: 15px; }
   background: blue;
 }
 
-.content-node.text .comment { background-color: #B9CE3F; }
+.content-node .comment { background-color: #B9CE3F; }
 .content-node.text .em { font-style: italic; }
 .content-node.text .link { background-color: #00CFEA; }
 .content-node.text .str { font-weight: bold; }

@@ -30,11 +30,14 @@
       if (lvl === 3) {
         // Back to structure mode
         this.model.edit = false;
+
+        // TODO: Only deactivate currently active surface -> performance
         $(".content-node .content").blur();
       }
       if (lvl === 2) {
         this.model.select([]);
       }
+      
       this.views.document.updateMode();
     },
 
