@@ -119,7 +119,7 @@ sc.views.Document = Dance.Performer.extend({
         "id": type+":"+Math.uuid(),
         "type": type,
         "target": target,
-        "properties": properties
+        "data": properties
       }],
       user: this.model.user
     });
