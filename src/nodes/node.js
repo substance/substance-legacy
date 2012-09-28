@@ -24,6 +24,11 @@ sc.views.Node = Dance.Performer.extend(_.extend({}, s.StateMachine, {
     dispatch(this.serializeUpdate());
   },
 
+  // No-op
+  annotate: function(type) {
+    // To be overriden by concrete nodes
+  },
+
   // Events
   // ------
 

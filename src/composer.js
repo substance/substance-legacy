@@ -37,7 +37,7 @@
       if (lvl === 2) {
         this.model.select([]);
       }
-      
+
       this.views.document.updateMode();
     },
 
@@ -71,18 +71,18 @@
     },
 
     handleEnter: function() {
-      console.log("current LEVEL", this.model.level());
       if (this.model.level() === 3) {
         var node = this.views.document.nodes[_.first(this.model.selection())];
-
+        
         if (!_.include(["text", "section"], node.model.type)) return; // Skip for non-text nodes
-        var text = node.surface.getText();
+        var text = node.surface.getContent();
         var pos = node.surface.selection()[0]; // current cursor position
 
         var remainder = _.rest(text, pos).join("");
         var newContent = text.substr(0, pos);
 
-        node.surface.setText(newContent);
+        node.surface.deleteRange([pos, remainder.length]);
+
         this.views.document.insertNode("text", {content: remainder});
         return false;
       }
@@ -95,8 +95,15 @@
       }
     },
 
-    build: function() {
+    toggleAnnotation: function(type) {
+      if (this.model.level() === 3) {
+        var node = this.views.document.nodes[this.model.selection()[0]];
+        node.annotate(type);
+        return false;
+      }
+    },
 
+    build: function() {
       // Selection shortcuts
       key('down', _.bind(function() { return this.handleDown(); }, this));
       key('up', _.bind(function() { return this.handleUp(); }, this));
@@ -118,6 +125,13 @@
       // Node insertion shortcuts
       key('alt+t', _.bind(function() { this.views.document.insertNode("text", {}); return false }, this));
       key('alt+s', _.bind(function() { this.views.document.insertNode("section", {}); return false; }, this));
+
+      // Marker shortcuts  
+      key('⌘+i', _.bind(function() { return this.toggleAnnotation('em'); }, this));
+      key('⌘+b', _.bind(function() { return this.toggleAnnotation('str'); }, this));
+      key('ctrl+1', _.bind(function() { return this.toggleAnnotation('mark-1'); }, this));
+      key('ctrl+2', _.bind(function() { return this.toggleAnnotation('mark-2'); }, this));
+      key('ctrl+3', _.bind(function() { return this.toggleAnnotation('mark-3'); }, this));
 
       // Possible modes: edit, view, patch, apply-patch
       this.mode = "edit";

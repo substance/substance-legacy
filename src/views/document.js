@@ -86,8 +86,6 @@ sc.views.Document = Dance.Performer.extend({
     node.render(); // Re-render that updated node
   },
 
-
-
   // Nodes have been deleted
   delete: function(options) {
     _.each(options.nodes, function(node) {
@@ -268,8 +266,7 @@ sc.views.Document = Dance.Performer.extend({
       // app.view.model.select([that.model.id], {edit: true});
     });
 
-    this.surface.on('text:change', function(content, prevContent) {
-      
+    this.surface.on('content:changed', function(content, prevContent) {
       var delta = _.extractOperation(prevContent, content);
 
       console.log("Partial Text Update", delta);
@@ -283,7 +280,6 @@ sc.views.Document = Dance.Performer.extend({
       });
     });
   },
-
 
   // Initial render of all nodes
   render: function () {

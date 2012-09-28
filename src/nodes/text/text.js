@@ -19,6 +19,12 @@ sc.views.Node.define('text', {
     // this.editor.setValue(this.model.content);
   },
 
+  annotate: function(type) {
+    console.log('annotating text');
+    this.surface.insertAnnotation({ id: "annotation:"+Math.uuid(), type: type, pos: this.surface.selection() });
+    // To be overriden by concrete nodes
+  },
+
   initSurface: function() {
     var that = this;
 
@@ -32,20 +38,7 @@ sc.views.Node.define('text', {
       }]
     });
 
-    // Emphasis
-    // key('ctrl+alt+cmd+e', _.bind(function() {
-    //   that.surface.apply(["insert", {"type": "em"}]);
-    // }, this));
 
-    // // Strong
-    // key('ctrl+shift+s', _.bind(function() { 
-    //   that.surface.apply(["insert", {"type": "str"}]);
-    // }, this));
-
-    // // Add Comment / just for testing purposes
-    // key('ctrl+shift+c', _.bind(function() {
-    //   that.surface.apply(["insert", {"type": "comment", "attributes": {"content": "Hey I'm a comment"}}]);
-    // }, this));
 
     // Events
     // ------
