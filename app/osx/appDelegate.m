@@ -1,5 +1,6 @@
 #import "appDelegate.h"
 
+
 @implementation SubstanceAppDelegate
 
 @synthesize window;
@@ -11,6 +12,10 @@
 	[ [webView mainFrame] loadRequest: 
 		[NSURLRequest requestWithURL: [NSURL URLWithString:url] ]
 	];
+}
+
+- (BOOL)applicationShouldTerminateAfterLastWindowClosed:(NSApplication *)sender {
+    return YES;
 }
 
 @end
