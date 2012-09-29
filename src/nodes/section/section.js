@@ -27,7 +27,7 @@ sc.views.Node.define('section', {
     var that = this;
 
     this.surface = new Substance.Surface({
-      el: this.$('.content'),
+      el: this.$('.content')[0],
       content: this.model.content,
       annotations: [{
         "id": "a:1",

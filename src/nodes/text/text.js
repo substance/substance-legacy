@@ -28,14 +28,15 @@ sc.views.Node.define('text', {
   initSurface: function() {
     var that = this;
 
+    var annotations = {};
+    _.each(app.view.model.document.annotations.content.nodes, function(n) {
+      if (n.node === that.model.id && n.type !== "comment") annotations[n.id] = n;
+    });
+
     this.surface = new Substance.Surface({
-      el: this.$('.content'),
+      el: this.$('.content')[0],
       content: this.model.content,
-      annotations: [{
-        "id": "a:1",
-        "type": "comment",
-        "pos": [5,4]
-      }]
+      annotations: annotations
     });
 
 
@@ -57,17 +58,31 @@ sc.views.Node.define('text', {
       app.view.model.select([that.model.id], {edit: true});
     });
 
-    this.surface.on('content:changed', function(content, prevContent) {
+    this.surface.on('content:changed', function(content, prevContent, ops) {
       var delta = _.extractOperation(prevContent, content);
 
       console.log("Partial Text Update", delta);
 
-      var op = {
-        op: ["update", {id: that.model.id, "data": delta}],
-        user: "michael"
-      };
+      // Applying annotation ops...
+      _.each(ops, function(op) {
+          // add the node reference
+          op[1].data.node = that.model.id;
+          console.log('applying op', op);
+          that.document.annotations.apply({
+            op: op,
+            user: "michael"
+          });
+      });
 
-      that.document.apply(op);
+      if (content !== prevContent) {
+        var op = {
+          op: ["update", {id: that.model.id, "data": delta}],
+          user: "michael"
+        };
+
+        that.document.apply(op);
+      }
+      
     });
   },
 

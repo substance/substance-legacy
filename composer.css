@@ -464,9 +464,9 @@ h2 { font-size: 160%; padding-bottom: 15px; }
   background: blue;
 }
 
-.content-node .mark-1 { background-color: #B9CE3F; }
-.content-node .mark-2 { background-color: green; }
-.content-node .mark-3 { background-color: blue; }
+.content-node .mark-1 { background-color: #B9CE3F; color: #fff; }
+.content-node .mark-2 { background-color: green; color: #fff; }
+.content-node .mark-3 { background-color: blue; color: #fff; }
 .content-node.text .em { font-style: italic; }
 .content-node.text .link { background-color: #00CFEA; }
 .content-node.text .str { font-weight: bold; }

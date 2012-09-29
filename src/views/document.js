@@ -286,8 +286,8 @@ sc.views.Document = Dance.Performer.extend({
     this.$el.html(_.tpl('document', this.model));
 
     // Init editor for document abstract and title
-    this.initSurface("abstract");
-    this.initSurface("title");
+    // this.initSurface("abstract");
+    // this.initSurface("title");
 
     this.model.document.list(function(node) {
       $(this.nodes[node.id].render().el).appendTo(this.$('.nodes'));
