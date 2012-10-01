@@ -1669,9 +1669,9 @@
   },
   "annotations": {
     "refs": {
-      "master": "99f84a892e97767c118f54ead91618fe",
+      "master": "81e604c596f99f51f60a09976166ea69",
       "op-3": "third-op",
-      "c32c936a1b1d647c1f6793e14c8bb962": "99f84a892e97767c118f54ead91618fe"
+      "c32c936a1b1d647c1f6793e14c8bb962": "81e604c596f99f51f60a09976166ea69"
     },
     "operations": {
       "first-op": {
@@ -1743,12 +1743,12 @@
         "parent": "second-op",
         "sha": "third-op"
       },
-      "d46f6b2f19a3b7f97822d8f6571a4e53": {
+      "eb278557d9efbfa1035a716079589991": {
         "op": [
           "insert",
           {
-            "id": "annotation:8653f78356da44e5a5da693ae9d47374",
-            "type": "str",
+            "id": "annotation:9a7fad2896e4feadc5b20190fc0b0a80",
+            "type": "mark-1",
             "data": {
               "pos": [
                 21,
@@ -1759,16 +1759,16 @@
           }
         ],
         "user": "michael",
-        "sha": "d46f6b2f19a3b7f97822d8f6571a4e53",
+        "sha": "eb278557d9efbfa1035a716079589991",
         "head": "master",
         "parent": "third-op"
       },
-      "99f84a892e97767c118f54ead91618fe": {
+      "e7eca6e8d9462f6e00e5c5e734b93981": {
         "op": [
           "insert",
           {
-            "id": "annotation:e31f589fe8e929217ef4087c3f73753b",
-            "type": "em",
+            "id": "annotation:3dabad5abe229831bf895be9b7a37e4d",
+            "type": "mark-2",
             "data": {
               "pos": [
                 127,
@@ -1779,9 +1779,29 @@
           }
         ],
         "user": "michael",
-        "sha": "99f84a892e97767c118f54ead91618fe",
+        "sha": "e7eca6e8d9462f6e00e5c5e734b93981",
         "head": "master",
-        "parent": "d46f6b2f19a3b7f97822d8f6571a4e53"
+        "parent": "eb278557d9efbfa1035a716079589991"
+      },
+      "81e604c596f99f51f60a09976166ea69": {
+        "op": [
+          "insert",
+          {
+            "id": "annotation:df26fe2253f2ab5bcec041b916c91c1e",
+            "type": "mark-3",
+            "data": {
+              "pos": [
+                147,
+                8
+              ],
+              "node": "text:p1"
+            }
+          }
+        ],
+        "user": "michael",
+        "sha": "81e604c596f99f51f60a09976166ea69",
+        "head": "master",
+        "parent": "e7eca6e8d9462f6e00e5c5e734b93981"
       }
     }
   }

@@ -37,7 +37,6 @@ DocumentStore.prototype.delete = function(id, cb) {
 var store = new DocumentStore();
 
 
-
 // Substance.Session
 // -----------------
 // 
