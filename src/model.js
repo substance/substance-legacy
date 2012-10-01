@@ -84,6 +84,17 @@ _.extend(Substance.Session.prototype, _.Events, {
     return this.users[user].selection;
   },
 
+  // Returns the node id of current active node
+  // Only works if there's just one node selected
+  node: function() {
+    var lvl = this.level(),
+        sel = this.selection();
+
+    if (lvl >= 2 && sel.length === 1) {
+      return sel[0];
+    }
+  },
+
   // Returns current navigation level (1..3)
   level: function() {
     var selection = this.users[this.user].selection;

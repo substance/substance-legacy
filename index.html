@@ -141,26 +141,69 @@
     </script>
 
     <script type="text/x-ejs-template" name="comments">
-      <div class="comments">
-        <% _.each(comments, function(c) { %>
-          <a href="#" data-id="<%= c.id %>" class="comment">
-            <div class="author">Michael</div>
-            <div class="content">
-              <%= c.content %>
+      <% _.each(markers, function(marker) { %>
+        <div class="comment-category">
+          <div class="header">
+            <%= marker.name %>
+          </div>
+        </div>
+      <% }); %>
+
+      <div class="comment-category">
+        <div class="header">
+          Node Items
+        </div>
+        <div class="comments">
+          <div class="comment">
+            <div class="meta">
+              <div class="creator">michael</div>
+              <div class="time">3 days ago</div>
             </div>
-            <div class="handle"></div>
-          </a>
-        <% }); %>
+            
+            <div class="text">
+              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut cursus congue odio sed posuere. Fusce quis lorem at nunc venenatis lacinia. Donec viverra dui vel quam congue dictum.
+            </div>
+          </div>
+        </div>
       </div>
 
-      <div class="new-comment">
+      <div class="comment-category">
+        <div class="header">
+          flexible
+        </div>
+        <div class="comments">
+          <div class="comments">
+
+          <div class="comment">
+            <div class="meta">
+              <div class="creator">michael</div>
+              <div class="time">3 days ago</div>
+            </div>
+            <div class="text">
+              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut cursus congue odio sed posuere. Fusce quis lorem at nunc venenatis lacinia. Donec viverra dui vel quam congue dictum.
+            </div>
+          </div>
+          <div class="comment">
+            <div class="meta">
+              <div class="creator">michael</div>
+              <div class="time">3 days ago</div>
+            </div>
+            <div class="text">
+              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut cursus congue odio sed posuere. Fusce quis lorem at nunc venenatis lacinia. Donec viverra dui vel quam congue dictum.
+            </div>
+          </div>
+          </div>
+        </div>
+      </div>
+
+      <!--<div class="new-comment">
         <div class="author">Your comment:</div>
         <div class="handle"></div>
         <div class="comment-input-wrapper">
           <textarea id="comment_content" name="comment"></textarea>
         </div>
         <a href="#" class="button insert-comment">Add Comment</a>
-      </div>
+      </div>-->
     </script>
 
     <script type="text/x-ejs-template" name="history">
@@ -198,7 +241,7 @@
         <% } %>
         <% if (selection() && selection().length > 0) { %>
           <div class="node-menu active">
-            <div class="tool-name"><% if (selection().length === 1) { %>Text Element<% } else { %> Teh Selection <% } %></div>
+            <!--<div class="tool-name"><% if (selection().length === 1) { %>Text Element<% } else { %> Teh Selection <% } %></div>-->
             <div class="navigation">
               <!--<a class="toggle-tool comments" href="#" data-view="comments">CMTS</a>
               <a class="toggle-tool edit" href="#" data-view="edit">EDIT</a>-->

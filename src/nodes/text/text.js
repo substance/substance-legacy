@@ -54,13 +54,14 @@ sc.views.Node.define('text', {
       return false;
     });
 
+
     this.surface.on('surface:active', function(sel) {
       app.view.model.select([that.model.id], {edit: true});
     });
 
     this.surface.on('content:changed', function(content, prevContent, ops) {
       var delta = _.extractOperation(prevContent, content);
-
+      console.log('content changed');
       console.log("Partial Text Update", delta);
 
       // Applying annotation ops...

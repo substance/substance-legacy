@@ -63,19 +63,44 @@ sc.views.Comments = Dance.Performer.extend({
     this.documentView = options.documentView;
   },
 
-  comments: function() {
-    var that = this;
+  comments: function(marker) {
+    var comments = [];
 
-    return _.filter(this.model.document.annotations.nodes(), function(annotation) {
-      if (annotation.type !== "comment") return false;
-      if (that.model.selection().length === 0) return true;
-      return _.intersection(that.model.selection(), annotation.nodes).length > 0;
+    _.each(this.model.document.annotations.nodes(), function(annotation) {
+      if (annotation.type === "comment" && ((!marker && !annotation.marker) || (marker && annotation.marker === marker))) {
+        console.log(annotation);
+      }
     });
+    
+    return comments;
+  },
+
+  markers: function() {
+    var node = this.model.node();
+
+    var markers = [];
+    if (!node) {
+      markers.push({
+        name: "Document",
+        comments: this.comments()
+      });
+    }
+
+    _.each(this.model.document.annotations.nodes(), function(annotation) {
+      if (_.include(["mark-1", "mark-2", "mark-3"], annotation.type) && annotation.node === node) {
+        markers.push({
+          name: annotation.id,
+          comments: []
+        });
+      }
+
+    });
+    return markers;
   },
 
   render: function () {
     this.$el.html(_.tpl('comments', {
-      comments: this.comments()
+      markers: this.markers(),
     }));
     return this;
   }

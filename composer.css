@@ -203,7 +203,7 @@ h2 { font-size: 160%; padding-bottom: 15px; }
 /* Comments Tool
 -------------------------------------------------------------------------------*/
 
-.tool .comments .comment {
+/*.tool .comments .comment {
   margin-top: 10px;
   position: relative;
   padding: 10px 10px;
@@ -212,20 +212,61 @@ h2 { font-size: 160%; padding-bottom: 15px; }
   margin-bottom: 1px;
   display: block;
   border: none;
-
 }
 
-.tool .comments .comment:hover {
+*/
+.tool .comment-category {
+  background: #79A6BD;
+  margin-bottom: 10px;
+  border-radius: 3px;
+}
+
+.tool .comment-category .header {
+  color: rgba(255,255,255, 0.7);
+  font-family: 'Merriweather';
+  padding: 5px 10px;
+}
+
+/*.tool .comments .comment:hover {
   background: rgba(0,0,0, 0.07);
-}
+}*/
 
-.tool .comments .comment.active {
+/*.tool .comments .comment.active {
   background: #00B7E1;
   color: #fff;
+}*/
+
+
+.tool .comments {
+  color: #fff;
+  color: rgba(255,255,255, 0.9);
+  font-size: 13px;
+  /*display: none;*/
 }
 
-.tool .comments .comment .author {
+
+.tool .comments .comment {
+  padding: 10px;
+}
+
+.tool .comments .meta {
+  overflow: auto;
+}
+
+.tool .comments .comment .creator {
   font-weight: bold;
+  float: left;
+  /*color: rgba(255,255,255, 0.8);*/
+  font-size: 13px;
+  /*display: none;*/
+}
+
+.tool .comments .comment .time {
+  font-style: italic;
+  float: right;
+  /*color: rgba(255,255,255, 0.8);*/
+  font-size: 13px;
+  /*display: none;*/
 }
 
 .new-comment {
