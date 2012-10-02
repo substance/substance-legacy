@@ -146,55 +146,23 @@
           <div class="header">
             <%= marker.name %>
           </div>
+          <div class="comments">
+            <% _.each(marker.comments, function(c) { %>
+              <div class="comment">
+                <div class="meta">
+                  <div class="creator">michael</div>
+                  <div class="time">3 days ago</div>
+                </div>
+
+                <div class="text">
+                  <%= c.content %>
+                </div>
+              </div>
+            <% }); %>
+          </div>
         </div>
       <% }); %>
 
-      <div class="comment-category">
-        <div class="header">
-          Node Items
-        </div>
-        <div class="comments">
-          <div class="comment">
-            <div class="meta">
-              <div class="creator">michael</div>
-              <div class="time">3 days ago</div>
-            </div>
-            
-            <div class="text">
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut cursus congue odio sed posuere. Fusce quis lorem at nunc venenatis lacinia. Donec viverra dui vel quam congue dictum.
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="comment-category">
-        <div class="header">
-          flexible
-        </div>
-        <div class="comments">
-          <div class="comments">
-
-          <div class="comment">
-            <div class="meta">
-              <div class="creator">michael</div>
-              <div class="time">3 days ago</div>
-            </div>
-            <div class="text">
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut cursus congue odio sed posuere. Fusce quis lorem at nunc venenatis lacinia. Donec viverra dui vel quam congue dictum.
-            </div>
-          </div>
-          <div class="comment">
-            <div class="meta">
-              <div class="creator">michael</div>
-              <div class="time">3 days ago</div>
-            </div>
-            <div class="text">
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut cursus congue odio sed posuere. Fusce quis lorem at nunc venenatis lacinia. Donec viverra dui vel quam congue dictum.
-            </div>
-          </div>
-          </div>
-        </div>
-      </div>
 
       <!--<div class="new-comment">
         <div class="author">Your comment:</div>

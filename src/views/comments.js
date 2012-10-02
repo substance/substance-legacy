@@ -63,38 +63,25 @@ sc.views.Comments = Dance.Performer.extend({
     this.documentView = options.documentView;
   },
 
-  comments: function(marker) {
-    var comments = [];
-
-    _.each(this.model.document.annotations.nodes(), function(annotation) {
-      if (annotation.type === "comment" && ((!marker && !annotation.marker) || (marker && annotation.marker === marker))) {
-        console.log(annotation);
-      }
-    });
-    
-    return comments;
-  },
-
   markers: function() {
     var node = this.model.node();
-
     var markers = [];
+
     if (!node) {
       markers.push({
         name: "Document",
-        comments: this.comments()
+        comments: []
       });
     }
 
-    _.each(this.model.document.annotations.nodes(), function(annotation) {
-      if (_.include(["mark-1", "mark-2", "mark-3"], annotation.type) && annotation.node === node) {
-        markers.push({
-          name: annotation.id,
-          comments: []
-        });
-      }
+    var annotations = this.model.document.getAnnotations(node);
+    _.each(annotations, function(a) {
+      markers.push({
+        name: a.id,
+        comments: this.model.document.getCommentsForAnnotation(a.id)
+      });
+    }, this);
 
-    });
     return markers;
   },
 

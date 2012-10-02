@@ -27,14 +27,14 @@ sc.views.Document = Dance.Performer.extend({
       }
     });
 
-    this.model.document.annotations.on('operation:applied', function(operation) {
-      switch(operation.op[0]) {
-        case "move": that.moveAnnotation(operation.op[1]); break;
-        case "insert": that.insertAnnotation(operation.op[1]); break;
-        case "update": that.updateAnnotation(operation.op[1]); break;
-        case "delete": that.deleteAnnotation(operation.op[1]); break;
-      }
-    });
+    // this.model.document.annotations.on('operation:applied', function(operation) {
+    //   switch(operation.op[0]) {
+    //     case "move": that.moveAnnotation(operation.op[1]); break;
+    //     case "insert": that.insertAnnotation(operation.op[1]); break;
+    //     case "update": that.updateAnnotation(operation.op[1]); break;
+    //     case "delete": that.deleteAnnotation(operation.op[1]); break;
+    //   }
+    // });
 
     this.model.on('node:select', this.updateSelections, this);
     this.build();
@@ -248,7 +248,7 @@ sc.views.Document = Dance.Performer.extend({
     var that = this;
 
     this.surface = new Substance.Surface({
-      el: this.$('.document-'+property),
+      el: this.$('.document-'+property)[0],
       content: that.model.document.content.properties[property]
     });
 
@@ -286,8 +286,8 @@ sc.views.Document = Dance.Performer.extend({
     this.$el.html(_.tpl('document', this.model));
 
     // Init editor for document abstract and title
-    // this.initSurface("abstract");
-    // this.initSurface("title");
+    this.initSurface("abstract");
+    this.initSurface("title");
 
     this.model.document.list(function(node) {
       $(this.nodes[node.id].render().el).appendTo(this.$('.nodes'));

@@ -1668,141 +1668,15 @@
     }
   },
   "annotations": {
-    "refs": {
-      "master": "81e604c596f99f51f60a09976166ea69",
-      "op-3": "third-op",
-      "c32c936a1b1d647c1f6793e14c8bb962": "81e604c596f99f51f60a09976166ea69"
-    },
-    "operations": {
-      "first-op": {
-        "op": [
-          "insert",
-          {
-            "id": "annotation:1",
-            "type": "em",
-            "data": {
-              "nodes": [
-                "text:hello"
-              ],
-              "pos": [
-                0,
-                4
-              ]
-            }
-          }
-        ],
-        "user": "michael",
-        "parent": null,
-        "sha": "first-op"
-      },
-      "second-op": {
-        "op": [
-          "insert",
-          {
-            "id": "annotation:2",
-            "node": "text:hello",
-            "type": "comment",
-            "data": {
-              "creator": "john",
-              "content": "Interesting.",
-              "nodes": [
-                "text:hello"
-              ],
-              "pos": [
-                5,
-                9
-              ]
-            }
-          }
-        ],
-        "user": "michael",
-        "parent": "first-op",
-        "sha": "second-op"
-      },
-      "third-op": {
-        "op": [
-          "insert",
-          {
-            "id": "annotation:3",
-            "node": "text:hello",
-            "type": "comment",
-            "data": {
-              "creator": "michael",
-              "content": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur tempor accumsan rhoncus. Sed in neque lectus, nec aliquam ligula.",
-              "nodes": [
-                "text:p1"
-              ],
-              "pos": [
-                0,
-                4
-              ]
-            }
-          }
-        ],
-        "user": "john",
-        "parent": "second-op",
-        "sha": "third-op"
-      },
-      "eb278557d9efbfa1035a716079589991": {
-        "op": [
-          "insert",
-          {
-            "id": "annotation:9a7fad2896e4feadc5b20190fc0b0a80",
-            "type": "mark-1",
-            "data": {
-              "pos": [
-                21,
-                8
-              ],
-              "node": "text:p1"
-            }
-          }
-        ],
-        "user": "michael",
-        "sha": "eb278557d9efbfa1035a716079589991",
-        "head": "master",
-        "parent": "third-op"
-      },
-      "e7eca6e8d9462f6e00e5c5e734b93981": {
-        "op": [
-          "insert",
-          {
-            "id": "annotation:3dabad5abe229831bf895be9b7a37e4d",
-            "type": "mark-2",
-            "data": {
-              "pos": [
-                127,
-                10
-              ],
-              "node": "text:p1"
-            }
-          }
-        ],
-        "user": "michael",
-        "sha": "e7eca6e8d9462f6e00e5c5e734b93981",
-        "head": "master",
-        "parent": "eb278557d9efbfa1035a716079589991"
-      },
-      "81e604c596f99f51f60a09976166ea69": {
-        "op": [
-          "insert",
-          {
-            "id": "annotation:df26fe2253f2ab5bcec041b916c91c1e",
-            "type": "mark-3",
-            "data": {
-              "pos": [
-                147,
-                8
-              ],
-              "node": "text:p1"
-            }
-          }
-        ],
-        "user": "michael",
-        "sha": "81e604c596f99f51f60a09976166ea69",
-        "head": "master",
-        "parent": "e7eca6e8d9462f6e00e5c5e734b93981"
-      }
+    "c32c936a1b1d647c1f6793e14c8bb962": {
+      "annotations": [
+        ["insert", {"id": "annotation:a", "type": "mark-2", "node": "text:p1", "pos": [8, 10]}]
+      ],
+      "comments": [
+        ["insert", {"id": "comment:a", "content": "Hello wrrld"}],
+        ["insert", {"id": "comment:b", "content": "Typo spottid.", "annotation": "annotation:a"}],
+        ["insert", {"id": "comment:c", "content": "Fo real.", "annotation": "annotation:a"}]
+      ]
     }
   }
 }
