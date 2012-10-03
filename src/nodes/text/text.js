@@ -68,15 +68,16 @@ sc.views.Node.define('text', {
           op: ["update", {id: that.model.id, "data": delta}],
           user: "michael"
         };
-
         that.document.apply(op);
       }
 
       // Applying annotation ops...
       _.each(ops, function(op) {
-          that.document.apply(op, {scope: "annotation", user: "michael"});
+        op[1].node = that.model.id;
+        that.document.apply(op, {scope: "annotation", user: "michael"});
       });
 
+      console.log('new state', that.document.model);
     });
   },
 
