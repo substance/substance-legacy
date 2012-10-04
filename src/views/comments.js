@@ -5,7 +5,8 @@ sc.views.Comments = Dance.Performer.extend({
 
   events: {
     'click .insert-comment': '_insertComment',
-    'click .comment': '_showComment'
+    'click .comment': '_showComment',
+    'click .comment-category .header': '_toggleCategory'
   },
 
   // Handlers
@@ -36,59 +37,79 @@ sc.views.Comments = Dance.Performer.extend({
     return false;
   },
 
-  _insertComment: function() {
-    var selection = this.model.selection(),
-        properties = {
-          "content": $('#comment_content').val(),
-          "nodes": selection
-        };
+  _insertComment: function(e) {
+    var node = $(e.currentTarget).parent().parent().parent().attr('data-node');
+    var annotation = $(e.currentTarget).parent().parent().parent().attr('data-category');
+    var content = $(e.currentTarget).parent().find('.comment-content').val();
 
-    // TODO get pos from surface if there is one
-    if (selection.length === 1) { // && isTextNode?
-      // selectedNode = this.model.document.content.nodes[selection[0]];
-      properties.pos = [0,4];
-    }
+    // console.log($(e.currentTarget));
+    // console.log('node', node);
+    // console.log('annotation', annotation);
 
-    var op = {
-      op: ["insert", {"id": "annotation:"+Math.uuid(), "type": "comment", "data": properties}],
-      user: "michael",
-    };
+    console.log('content to be inserted:', content);
 
-    this.model.document.annotations.apply(op);
+    this.model.document.apply(["insert", {
+      id: "comment:"+Math.uuid(),
+      content: content,
+      node: node,
+      annotation: annotation
+    }], {scope: "comment"});
+
     this.render();
+
     return false;
+  },
+
+  _toggleCategory: function(e) {
+    var category = $(e.currentTarget).parent().attr('data-category');
+    this.activateCategory(category);
+  },
+
+  activateCategory: function(category) {
+    if (!category) return; // Skip, since already active
+    // console.log('activating category view...', category);
+    this.category = category;
+    // console.log(this.category);
+    this.$('.comment-category').removeClass('active');
+    this.$('#'+_.htmlId(category)).addClass('active');
   },
 
   initialize: function(options) {
     this.documentView = options.documentView;
   },
 
-  markers: function() {
+  categories: function() {
     var node = this.model.node();
-    var markers = [];
+    var categories = [];
 
     if (!node) {
-      markers.push({
+      categories.push({
         name: "Document",
-        comments: []
+        type: "document",
+        category: "document_comments",
+        comments: this.model.document.getDocumentComments()
       });
     }
 
     var annotations = this.model.document.getAnnotations(node);
     _.each(annotations, function(a) {
-      markers.push({
+      categories.push({
         name: a.id,
+        type: a.type,
+        category: a.id,
         comments: this.model.document.getCommentsForAnnotation(a.id)
       });
     }, this);
 
-    return markers;
+    return categories;
   },
 
   render: function () {
     this.$el.html(_.tpl('comments', {
-      markers: this.markers(),
+      node: this.model.node(),
+      categories: this.categories()
     }));
+    this.activateCategory(this.category);
     return this;
   }
 });

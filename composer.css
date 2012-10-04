@@ -216,15 +216,34 @@ h2 { font-size: 160%; padding-bottom: 15px; }
 
 */
 .tool .comment-category {
-  background: #79A6BD;
+  background: #555;
   margin-bottom: 10px;
   border-radius: 3px;
+  opacity: 0.7;
+}
+
+.comment-category.mark-1 { background-color: #B9CE3F; }
+.comment-category.mark-2 { background-color: #B16C53; }
+.comment-category.mark-3 { background-color: #79A6BD; }
+
+
+.tool .comment-category.active {
+  opacity: 1;
 }
 
 .tool .comment-category .header {
   color: rgba(255,255,255, 0.7);
   font-family: 'Merriweather';
   padding: 5px 10px;
+}
+
+.tool .comment-category .comments {
+  display: none;
+  
+}
+
+.tool .comment-category.active .comments {
+  display: block;
 }
 
 /*.tool .comments .comment:hover {
@@ -506,8 +525,8 @@ h2 { font-size: 160%; padding-bottom: 15px; }
 }
 
 .content-node .mark-1 { background-color: #B9CE3F; color: #fff; }
-.content-node .mark-2 { background-color: green; color: #fff; }
-.content-node .mark-3 { background-color: blue; color: #fff; }
+.content-node .mark-2 { background-color: #B16C53; color: #fff; }
+.content-node .mark-3 { background-color: #79A6BD; color: #fff; }
 .content-node.text .em { font-style: italic; }
 .content-node.text .link { background-color: #00CFEA; }
 .content-node.text .str { font-weight: bold; }
@@ -527,4 +546,3 @@ h2 { font-size: 160%; padding-bottom: 15px; }
 
 /* Code Node
 -------------------------------------------------------------------------------*/
-

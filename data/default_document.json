@@ -1670,12 +1670,13 @@
   "annotations": {
     "c32c936a1b1d647c1f6793e14c8bb962": {
       "annotations": [
-        ["insert", {"id": "annotation:a", "type": "mark-2", "node": "text:p1", "pos": [8, 10]}]
+        ["insert", {"id": "annotation:a", "type": "mark-2", "node": "text:p1", "pos": [8, 10]}],
+        ["insert", {"id": "annotation:b", "type": "mark-1", "node": "text:p1", "pos": [45, 15]}]
       ],
       "comments": [
         ["insert", {"id": "comment:a", "content": "Hello wrrld"}],
-        ["insert", {"id": "comment:b", "content": "Typo spottid.", "annotation": "annotation:a"}],
-        ["insert", {"id": "comment:c", "content": "Fo real.", "annotation": "annotation:a"}]
+        ["insert", {"id": "comment:b", "node": "text:p1", "content": "Typo spottid.", "annotation": "annotation:a"}],
+        ["insert", {"id": "comment:c", "node": "text:p1", "content": "Fo real.", "annotation": "annotation:a"}]
       ]
     }
   }

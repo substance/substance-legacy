@@ -37,9 +37,16 @@ sc.views.Node.define('text', {
     this.surface = new Substance.Surface({
       el: this.$('.content')[0],
       content: this.model.content,
-      annotations: annotations
+      annotations: annotations,
+      types: {
+        "em": {
+          "inclusive": false
+        },
+        "comment": {
+          "inclusive": false
+        }
+      }
     });
-
 
     // Events
     // ------
@@ -56,6 +63,18 @@ sc.views.Node.define('text', {
 
     this.surface.on('surface:active', function(sel) {
       app.view.model.select([that.model.id], {edit: true});
+    });
+
+    // Update comments panel according to marker context
+    this.surface.on('selection:changed', function(sel) {
+      var marker = that.surface.getAnnotations(sel, ["mark-1", "mark-2", "mark-3"])[0];
+
+      if (marker) {
+        // TODO: don't use globals !
+        var commentsView = app.view.composer.views.tools.views.tool;
+        commentsView.activateCategory(marker.id);
+      }
+
     });
 
     this.surface.on('content:changed', function(content, prevContent, ops) {

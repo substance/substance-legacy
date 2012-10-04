@@ -141,13 +141,13 @@
     </script>
 
     <script type="text/x-ejs-template" name="comments">
-      <% _.each(markers, function(marker) { %>
-        <div class="comment-category">
+      <% _.each(categories, function(category, i) { %>
+        <div class="comment-category<%= i === 0 ? ' active' : ''%><%= category.type ? ' '+category.type : '' %>" id="<%= _.htmlId(category.category) %>" data-node="<%= node %>" data-category="<%= category.category %>">
           <div class="header">
-            <%= marker.name %>
+            <%= category.name %>
           </div>
           <div class="comments">
-            <% _.each(marker.comments, function(c) { %>
+            <% _.each(category.comments, function(c) { %>
               <div class="comment">
                 <div class="meta">
                   <div class="creator">michael</div>
@@ -159,19 +159,19 @@
                 </div>
               </div>
             <% }); %>
+            <div class="new-comment">
+              <div class="author">Your comment:</div>
+              <div class="handle"></div>
+              <div class="comment-input-wrapper">
+                <textarea class="comment-content" name="comment"></textarea>
+              </div>
+              <a href="#" class="button insert-comment">Add Comment</a>
+            </div>
           </div>
+
         </div>
       <% }); %>
 
-
-      <!--<div class="new-comment">
-        <div class="author">Your comment:</div>
-        <div class="handle"></div>
-        <div class="comment-input-wrapper">
-          <textarea id="comment_content" name="comment"></textarea>
-        </div>
-        <a href="#" class="button insert-comment">Add Comment</a>
-      </div>-->
     </script>
 
     <script type="text/x-ejs-template" name="history">
