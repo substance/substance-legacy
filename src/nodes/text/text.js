@@ -20,7 +20,6 @@ sc.views.Node.define('text', {
   },
 
   annotate: function(type) {
-    console.log('annotating text');
     this.surface.insertAnnotation({ id: "annotation:"+Math.uuid(), type: type, pos: this.surface.selection() });
     // To be overriden by concrete nodes
   },
@@ -29,6 +28,12 @@ sc.views.Node.define('text', {
     var that = this;
 
     var annotations = app.view.model.document.getAnnotations(this.model.id);
+
+    // TODO: don't use globals!
+    // Use global event delegation
+    var commentsView = function() {
+      return app.view.composer.views.tools.views.tool;
+    }
 
     if (Object.keys(annotations).length > 0) {
       console.log('annotations...', annotations);
@@ -68,19 +73,17 @@ sc.views.Node.define('text', {
     // Update comments panel according to marker context
     this.surface.on('selection:changed', function(sel) {
       var marker = that.surface.getAnnotations(sel, ["mark-1", "mark-2", "mark-3"])[0];
-
       if (marker) {
-        // TODO: don't use globals !
-        var commentsView = app.view.composer.views.tools.views.tool;
-        commentsView.activateCategory(marker.id);
+        commentsView().activateCategory(marker.id);
+      } else {
+        commentsView().activateCategory('node');
       }
-
     });
 
     this.surface.on('content:changed', function(content, prevContent, ops) {
       var delta = _.extractOperation(prevContent, content);
       
-      console.log("Partial Text Update", delta);
+      // console.log("Partial Text Update", delta);
 
       if (content !== prevContent) {
         var op = {
@@ -95,6 +98,8 @@ sc.views.Node.define('text', {
         op[1].node = that.model.id;
         that.document.apply(op, {scope: "annotation", user: "michael"});
       });
+
+      commentsView().render();
 
       console.log('new state', that.document.model);
     });

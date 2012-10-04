@@ -33,20 +33,18 @@ sc.views.Comments = Dance.Performer.extend({
 
     // Highlight or unhighlight?
     $(e.currentTarget).hasClass('active') ? unhighlight() : highlight();
-
     return false;
   },
 
   _insertComment: function(e) {
     var node = $(e.currentTarget).parent().parent().parent().attr('data-node');
-    var annotation = $(e.currentTarget).parent().parent().parent().attr('data-category');
+    var annotation = $(e.currentTarget).parent().parent().parent().attr('data-annotation');
     var content = $(e.currentTarget).parent().find('.comment-content').val();
 
     // console.log($(e.currentTarget));
     // console.log('node', node);
     // console.log('annotation', annotation);
-
-    console.log('content to be inserted:', content);
+    // console.log('content to be inserted:', content);
 
     this.model.document.apply(["insert", {
       id: "comment:"+Math.uuid(),
@@ -81,6 +79,7 @@ sc.views.Comments = Dance.Performer.extend({
   categories: function() {
     var node = this.model.node();
     var categories = [];
+    var that = this;
 
     if (!node) {
       categories.push({
@@ -89,18 +88,32 @@ sc.views.Comments = Dance.Performer.extend({
         category: "document_comments",
         comments: this.model.document.getDocumentComments()
       });
+    } else {
+      categories.push({
+        name: "Le Node",
+        type: "node",
+        category: "node_comments",
+        comments: this.model.document.getNodeComments(node)
+      });
+    }
+
+    // Extract annotation text from the model
+    function annotationText(a) {
+      var content = that.model.document.content.nodes[a.node].content;
+      if (!a.pos) return "No pos";
+      return content.substr(a.pos[0], a.pos[1]);
     }
 
     var annotations = this.model.document.getAnnotations(node);
     _.each(annotations, function(a) {
       categories.push({
-        name: a.id,
+        name: annotationText(a),
         type: a.type,
+        annotation: a.id,
         category: a.id,
         comments: this.model.document.getCommentsForAnnotation(a.id)
       });
     }, this);
-
     return categories;
   },
 

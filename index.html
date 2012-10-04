@@ -142,9 +142,9 @@
 
     <script type="text/x-ejs-template" name="comments">
       <% _.each(categories, function(category, i) { %>
-        <div class="comment-category<%= i === 0 ? ' active' : ''%><%= category.type ? ' '+category.type : '' %>" id="<%= _.htmlId(category.category) %>" data-node="<%= node %>" data-category="<%= category.category %>">
+        <div class="comment-category<%= i === 0 ? ' active' : ''%><%= category.type ? ' '+category.type : '' %>" id="<%= _.htmlId(category.category) %>" data-node="<%= node %>" data-annotation="<%= category.annotation %>">
           <div class="header">
-            <%= category.name %>
+            &quot;<%= category.name %>&quot;
           </div>
           <div class="comments">
             <% _.each(category.comments, function(c) { %>
