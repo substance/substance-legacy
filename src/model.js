@@ -143,13 +143,68 @@ function updateDoc(operation, cb) {
 //   });
 // }
 
+
+// For a given node, extract comments, to populate comments view
+function getComments(document, node) {
+  var categories = [];
+  var that = this;
+
+  if (node) {
+    var content = document.content.nodes[node].content;
+    var annotations = document.getAnnotations(node);
+    categories = categories.concat(commentsForNode(document, node, content, annotations));
+  } else {
+    categories.push({
+      name: "Document",
+      type: "document",
+      category: "document_comments",
+      comments: document.getDocumentComments()
+    });
+  }
+  return {
+    node: node,
+    categories: categories,
+    document: document
+  };
+}
+
+// For a given piece of plaintext + annotations fetch comments
+// -----------------
+
+function commentsForNode(document, node, content, annotations) {
+  var categories = [];
+
+  // Extract annotation text from the model
+  function annotationText(a) {
+    if (!a.pos) return "No pos";
+    return content.substr(a.pos[0], a.pos[1]);
+  }
+
+  categories.push({
+    name: "Le Node",
+    type: "node",
+    category: "node_comments",
+    comments: document.getNodeComments(node)
+  });
+
+  _.each(annotations, function(a) {
+    categories.push({
+      name: annotationText(a),
+      type: a.type,
+      annotation: a.id,
+      category: a.id,
+      comments: document.getCommentsForAnnotation(a.id)
+    });
+  }, this);
+  return categories;
+}
+
+
 function loadDocument(id, cb) {
   store.get(id, function(err, document) {
-    
     var session = new Substance.Session({
       document: new Substance.AnnotatedDocument(document)
     });
-
     cb(err, session);
   });
 

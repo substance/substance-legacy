@@ -1675,8 +1675,9 @@
       ],
       "comments": [
         ["insert", {"id": "comment:a", "content": "Hello wrrld"}],
-        ["insert", {"id": "comment:b", "node": "text:p1", "content": "Typo spottid.", "annotation": "annotation:a"}],
-        ["insert", {"id": "comment:c", "node": "text:p1", "content": "Fo real.", "annotation": "annotation:a"}]
+        ["insert", {"id": "comment:b", "node": "section:d202c850f7a79adc1f4e26fb0239234e", "content": "Hello wrrld"}],
+        ["insert", {"id": "comment:c", "node": "text:p1", "content": "Typo spottid.", "annotation": "annotation:a"}],
+        ["insert", {"id": "comment:d", "node": "text:p1", "content": "Fo real.", "annotation": "annotation:a"}]
       ]
     }
   }

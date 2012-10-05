@@ -239,6 +239,7 @@ h2 { font-size: 160%; padding-bottom: 15px; }
 
 .tool .comment-category .comments {
   display: none;
+  /*background: #CFD0C8;*/
   
 }
 
@@ -258,9 +259,11 @@ h2 { font-size: 160%; padding-bottom: 15px; }
 
 .tool .comments {
   color: #fff;
+
   color: rgba(255,255,255, 0.9);
   font-size: 13px;
   /*display: none;*/
+
 }
 
 
@@ -289,9 +292,10 @@ h2 { font-size: 160%; padding-bottom: 15px; }
 }
 
 .new-comment {
-  margin-top: 10px;
+  
   border-radius: 3px;
   background: rgba(0,0,0, 0.05);
+  padding-top: 20px;
   padding: 10px 10px;
   position: relative;
 }

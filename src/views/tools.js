@@ -82,7 +82,9 @@ sc.views.Tools = Dance.Performer.extend({
 
   // Toggle comments
   comments: function() {
-    this.views.tool = new sc.views.Comments({model: this.model});
+    this.views.tool = new sc.views.Comments({
+      model: getComments(this.model.document, this.model.node())
+    });
   },
 
   // Update tool state (e.g. if the selection has changed)

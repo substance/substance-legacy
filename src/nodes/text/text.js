@@ -74,10 +74,22 @@ sc.views.Node.define('text', {
     this.surface.on('selection:changed', function(sel) {
       var marker = that.surface.getAnnotations(sel, ["mark-1", "mark-2", "mark-3"])[0];
       if (marker) {
-        commentsView().activateCategory(marker.id);
+        // commentsView().activateCategory(marker.id);
+        // Reach out to choreographer
+        choreographer.trigger('comment-category:selected', marker.id);
       } else {
-        commentsView().activateCategory('node');
+        // commentsView().activateCategory('node_comments');
+        // Reach out to choreographer
+        choreographer.trigger('comment-category:selected', 'node_comments');
       }
+    });
+
+    // This gets fired a lot (keystroke, add annotation etc)
+    this.surface.on('changed', function() {
+      // Feed comments view with new data
+      var comments = commentsView();
+      comments.model.categories = commentsForNode(that.document, that.model.id, that.surface.getContent(), that.surface.annotations);
+      comments.render();
     });
 
     this.surface.on('content:changed', function(content, prevContent, ops) {
@@ -98,8 +110,6 @@ sc.views.Node.define('text', {
         op[1].node = that.model.id;
         that.document.apply(op, {scope: "annotation", user: "michael"});
       });
-
-      commentsView().render();
 
       console.log('new state', that.document.model);
     });

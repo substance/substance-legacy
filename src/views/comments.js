@@ -53,14 +53,17 @@ sc.views.Comments = Dance.Performer.extend({
       annotation: annotation
     }], {scope: "comment"});
 
+    // Not too smart™
+    this.model = getComments(this.model.document, this.model.node);
+
     this.render();
 
     return false;
   },
 
   _toggleCategory: function(e) {
-    var category = $(e.currentTarget).parent().attr('data-category');
-    this.activateCategory(category);
+    var category = $(e.currentTarget).parent().attr('data-annotation');
+    this.activateCategory(category || "node_comments");
   },
 
   activateCategory: function(category) {
@@ -74,55 +77,31 @@ sc.views.Comments = Dance.Performer.extend({
 
   initialize: function(options) {
     this.documentView = options.documentView;
+
+    // Every time there's a node update (such as text or annotation change)
+
+    choreographer.unbind('node:update');
+
+    choreographer.bind('node:update', function(node) {
+      console.log('node updated man!', node);
+    });
+
+    // Triggered by Text Node
+    choreographer.unbind('comment-category:selected');
+    choreographer.bind('comment-category:selected', this.activateCategory, this);
   },
 
-  categories: function() {
-    var node = this.model.node();
-    var categories = [];
-    var that = this;
-
-    if (!node) {
-      categories.push({
-        name: "Document",
-        type: "document",
-        category: "document_comments",
-        comments: this.model.document.getDocumentComments()
-      });
-    } else {
-      categories.push({
-        name: "Le Node",
-        type: "node",
-        category: "node_comments",
-        comments: this.model.document.getNodeComments(node)
-      });
-    }
-
-    // Extract annotation text from the model
-    function annotationText(a) {
-      var content = that.model.document.content.nodes[a.node].content;
-      if (!a.pos) return "No pos";
-      return content.substr(a.pos[0], a.pos[1]);
-    }
-
-    var annotations = this.model.document.getAnnotations(node);
-    _.each(annotations, function(a) {
-      categories.push({
-        name: annotationText(a),
-        type: a.type,
-        annotation: a.id,
-        category: a.id,
-        comments: this.model.document.getCommentsForAnnotation(a.id)
-      });
-    }, this);
-    return categories;
-  },
+  // Receive new data and update UI incrementally
+  // Not called yet
+  // update: function(data) {
+  //   this.model = data;
+  //   this.render();
+  // },
 
   render: function () {
-    this.$el.html(_.tpl('comments', {
-      node: this.model.node(),
-      categories: this.categories()
-    }));
+    this.$el.html(_.tpl('comments', this.model));
     this.activateCategory(this.category);
+    
     return this;
   }
 });
