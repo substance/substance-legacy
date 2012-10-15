@@ -149,7 +149,7 @@ _.extend(Substance.Session.prototype, _.Events, {
     var user = options.user || this.user; // Use current user by default
 
     // Do nothing if selection hasn't changed
-    if (!this.hasChanged(user, nodes)) return;
+    if (!this.hasChanged(user, nodes, !!options.edit)) return;
 
     this.edit = !!options.edit;
 
@@ -171,8 +171,8 @@ _.extend(Substance.Session.prototype, _.Events, {
   },
 
   // Checks if selection has actually changed for a user
-  hasChanged: function(user, nodes) {
-    return !_.isEqual(nodes, this.selection(user));
+  hasChanged: function(user, nodes, edit) {
+    return !_.isEqual(nodes, this.selection(user)) || edit !== this.edit;
   },
 
   selection: function(user) {

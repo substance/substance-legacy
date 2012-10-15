@@ -63,7 +63,7 @@ sc.views.Node.define('text', {
     });
 
     this.surface.on('surface:active', function(sel) {
-      app.view.model.select([that.model.id], {edit: true});
+      that.session.select([that.model.id], {edit: true});
     });
 
     // Update comments panel according to marker context
