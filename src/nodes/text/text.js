@@ -53,6 +53,7 @@ sc.views.Node.define('text', {
       }
     });
 
+
     // Events
     // ------
   
@@ -70,9 +71,11 @@ sc.views.Node.define('text', {
       var marker = that.surface.getAnnotations(sel, ["mark-1", "mark-2", "mark-3"])[0];
 
       if (marker) {
-        choreographer.trigger('comment-scope:selected', marker.id);
+        choreographer.trigger('comment-scope:selected', marker.id, that.model.id, marker.id);
+        that.surface.highlight(marker.id);
       } else {
-        choreographer.trigger('comment-scope:selected', 'node_comments');
+        choreographer.trigger('comment-scope:selected', 'node_comments', that.model.id, null);
+        that.surface.highlight(null);
       }
     });
 

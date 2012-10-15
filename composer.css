@@ -529,13 +529,16 @@ h2 { font-size: 160%; padding-bottom: 15px; }
   background: blue;
 }
 
-.content-node .mark-1 { background-color: #B9CE3F; color: #fff; }
-.content-node .mark-2 { background-color: #B16C53; color: #fff; }
-.content-node .mark-3 { background-color: #79A6BD; color: #fff; }
+.content-node .mark-1 { background-color: #B9CE3F; color: #fff; opacity: 0.6; }
+.content-node .mark-2 { background-color: #B16C53; color: #fff; opacity: 0.6; }
+.content-node .mark-3 { background-color: #79A6BD; color: #fff; opacity: 0.6; }
 .content-node.text .em { font-style: italic; }
 .content-node.text .link { background-color: #00CFEA; }
 .content-node.text .str { font-weight: bold; }
 
+.content-node .highlight {
+  opacity: 1.0;
+}
 
 /* Section Node
 -------------------------------------------------------------------------------*/

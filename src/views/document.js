@@ -14,8 +14,7 @@ sc.views.Document = Dance.Performer.extend({
   // Handlers
   // --------
 
-  initialize: function (options) {
-
+  initialize: function(options) {
     var that = this;
 
     this.model.document.on('operation:applied', function(operation) {
@@ -26,6 +25,12 @@ sc.views.Document = Dance.Performer.extend({
         case "delete": that.delete(operation.op[1]); break;
       }
     });
+
+    choreographer.unbind('comment-scope:selected');
+    choreographer.bind('comment-scope:selected', function(scope, node, annotation) {
+      var node = this.nodes[node];
+      if (node.surface) node.surface.highlight(annotation);
+    }, this);
 
     // this.model.document.annotations.on('operation:applied', function(operation) {
     //   switch(operation.op[0]) {
