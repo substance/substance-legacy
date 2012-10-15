@@ -5,36 +5,37 @@ sc.views.Comments = Dance.Performer.extend({
 
   events: {
     'click .insert-comment': '_insertComment',
-    'click .comment': '_showComment',
+    // 'click .comment': '_showComment',
     'click .comment-scope .header': '_toggleScope'
   },
 
   // Handlers
   // --------
 
-  _showComment: function(e) {
-    var id = $(e.currentTarget).attr('data-id');
-    var comment = this.model.document.annotations.content.nodes[id];
+  // _showComment: function(e) {
+  //   var id = $(e.currentTarget).attr('data-id');
+
+  //   // var comment = this.model.document.annotations.content.nodes[id];
     
-    function highlight() {
-      unhighlight();
-      $(e.currentTarget).addClass('active');
+  //   // function highlight() {
+  //   //   unhighlight();
+  //   //   $(e.currentTarget).addClass('active');
 
-      // Highlight comment toggles in document
-      _.each(comment.nodes, function(n) {
-        $('#'+_.htmlId(n)+" .comments-toggle").addClass('highlighted');
-      });
-    }
+  //   //   // Highlight comment toggles in document
+  //   //   _.each(comment.nodes, function(n) {
+  //   //     $('#'+_.htmlId(n)+" .comments-toggle").addClass('highlighted');
+  //   //   });
+  //   // }
 
-    function unhighlight() {
-      $(e.currentTarget).parent().find('.comment').removeClass('active');
-      $('.content-node .comments-toggle').removeClass('highlighted');
-    }
+  //   // function unhighlight() {
+  //   //   $(e.currentTarget).parent().find('.comment').removeClass('active');
+  //   //   $('.content-node .comments-toggle').removeClass('highlighted');
+  //   // }
 
-    // Highlight or unhighlight?
-    $(e.currentTarget).hasClass('active') ? unhighlight() : highlight();
-    return false;
-  },
+  //   // Highlight or unhighlight?
+  //   // $(e.currentTarget).hasClass('active') ? unhighlight() : highlight();
+  //   return false;
+  // },
 
   _insertComment: function(e) {
     var node = $(e.currentTarget).parent().parent().parent().attr('data-node');
@@ -54,10 +55,9 @@ sc.views.Comments = Dance.Performer.extend({
     }], {scope: "comment"});
 
     // Not too smart™
-    // this.model = getComments(this.model.document, this.model.node);
+    this.model.comments.compute();
 
-    // this.render();
-
+    this.render();
     return false;
   },
 
@@ -71,6 +71,8 @@ sc.views.Comments = Dance.Performer.extend({
     this.scope = scope;
     this.$('.comment-scope').removeClass('active');
     this.$('#'+_.htmlId(scope)).addClass('active');
+
+    // TODO: highlight annotation
   },
 
   initialize: function(options) {
@@ -101,11 +103,8 @@ sc.views.Comments = Dance.Performer.extend({
   // },
 
   render: function () {
-    // console.log('rendering comments.');
-
     this.$el.html(_.tpl('comments', this.model));
     this.activateScope(this.scope);
-    
     return this;
   }
 });

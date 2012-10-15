@@ -46,8 +46,6 @@ function updateDoc(operation, cb) {
 }
 
 
-
-
 // Comments
 // -----------------
 // Called by Substance.Text
