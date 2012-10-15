@@ -55,11 +55,6 @@ sc.views.Node.define('text', {
 
     // Events
     // ------
-
-    // Returns all annotations matching that selection
-    // this.surface.on('selection:change', function(sel) {
-    //   console.log('selection:change', sel, that.surface.selection());
-    // });
   
     // Hackish way to prevent node selection to be triggered two times
     this.$('.content').click(function() {
@@ -73,37 +68,37 @@ sc.views.Node.define('text', {
     // Update comments panel according to marker context
     this.surface.on('selection:changed', function(sel) {
       var marker = that.surface.getAnnotations(sel, ["mark-1", "mark-2", "mark-3"])[0];
+
       if (marker) {
-        // commentsView().activateCategory(marker.id);
-        // Reach out to choreographer
-        choreographer.trigger('comment-category:selected', marker.id);
+        choreographer.trigger('comment-scope:selected', marker.id);
       } else {
-        // commentsView().activateCategory('node_comments');
-        // Reach out to choreographer
-        choreographer.trigger('comment-category:selected', 'node_comments');
+        choreographer.trigger('comment-scope:selected', 'node_comments');
       }
     });
 
     // This gets fired a lot (keystroke, add annotation etc)
     this.surface.on('changed', function() {
-      // Feed comments view with new data
-      var comments = commentsView();
-      comments.model.categories = commentsForNode(that.document, that.model.id, that.surface.getContent(), that.surface.annotations);
-      comments.render();
+      that.session.comments.updateAnnotations(that.surface.getContent(), that.surface.annotations);
     });
 
+    // Changes are confirmed.
     this.surface.on('content:changed', function(content, prevContent, ops) {
       var delta = _.extractOperation(prevContent, content);
-      
-      // console.log("Partial Text Update", delta);
+
+      // console.log('Partial text update', delta);
 
       if (content !== prevContent) {
         var op = {
           op: ["update", {id: that.model.id, "data": delta}],
           user: "michael"
         };
+
+        // Triggers a re-render of the node?
         that.document.apply(op);
       }
+
+      // new stuffies
+      // console.log('annotation ops', ops);
 
       // Applying annotation ops...
       _.each(ops, function(op) {
@@ -111,11 +106,22 @@ sc.views.Node.define('text', {
         that.document.apply(op, {scope: "annotation", user: "michael"});
       });
 
-      console.log('new state', that.document.model);
+      // function prettyprintAnnotations(annotations) {
+      //   console.log('Annotations:');
+      //   _.each(annotations, function(a) {
+      //     console.log(a.type + ': ' + a.pos);
+      //   });
+      // }
+
+      // prettyprintAnnotations(that.document.annotations);
+
+      // Really?
+      that.session.comments.compute();
     });
   },
 
   render: function() {
+    // console.log('rendering', this.model.id);
     sc.views.Node.prototype.render.apply(this, arguments);
     this.initSurface();
     return this;

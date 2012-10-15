@@ -9,6 +9,7 @@ sc.views.Node = Dance.Performer.extend(_.extend({}, s.StateMachine, {
   initialize: function (options) {
     this.state  = 'read';
     this.document = options.document;
+    this.session = options.session;
     $(this.el).attr({ id: _.htmlId(this.model) });
   },
 

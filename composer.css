@@ -215,35 +215,36 @@ h2 { font-size: 160%; padding-bottom: 15px; }
 }
 
 */
-.tool .comment-category {
+.tool .comment-scope {
   background: #555;
   margin-bottom: 10px;
   border-radius: 3px;
   opacity: 0.7;
 }
 
-.comment-category.mark-1 { background-color: #B9CE3F; }
-.comment-category.mark-2 { background-color: #B16C53; }
-.comment-category.mark-3 { background-color: #79A6BD; }
+.comment-scope.mark-1 { background-color: #B9CE3F; }
+.comment-scope.mark-2 { background-color: #B16C53; }
+.comment-scope.mark-3 { background-color: #79A6BD; }
 
 
-.tool .comment-category.active {
+.tool .comment-scope.active {
   opacity: 1;
 }
 
-.tool .comment-category .header {
+.tool .comment-scope .header {
   color: rgba(255,255,255, 0.7);
   font-family: 'Merriweather';
   padding: 5px 10px;
+  cursor: pointer;
 }
 
-.tool .comment-category .comments {
+.tool .comment-scope .comments {
   display: none;
   /*background: #CFD0C8;*/
-  
+
 }
 
-.tool .comment-category.active .comments {
+.tool .comment-scope.active .comments {
   display: block;
 }
 

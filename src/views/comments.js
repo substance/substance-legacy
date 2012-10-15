@@ -6,7 +6,7 @@ sc.views.Comments = Dance.Performer.extend({
   events: {
     'click .insert-comment': '_insertComment',
     'click .comment': '_showComment',
-    'click .comment-category .header': '_toggleCategory'
+    'click .comment-scope .header': '_toggleScope'
   },
 
   // Handlers
@@ -54,53 +54,57 @@ sc.views.Comments = Dance.Performer.extend({
     }], {scope: "comment"});
 
     // Not too smart™
-    this.model = getComments(this.model.document, this.model.node);
+    // this.model = getComments(this.model.document, this.model.node);
 
-    this.render();
+    // this.render();
 
     return false;
   },
 
-  _toggleCategory: function(e) {
-    var category = $(e.currentTarget).parent().attr('data-annotation');
-    this.activateCategory(category || "node_comments");
+  _toggleScope: function(e) {
+    var scope = $(e.currentTarget).parent().attr('id');
+    this.activateScope(scope);
   },
 
-  activateCategory: function(category) {
-    if (!category) return; // Skip, since already active
-    // console.log('activating category view...', category);
-    this.category = category;
-    // console.log(this.category);
-    this.$('.comment-category').removeClass('active');
-    this.$('#'+_.htmlId(category)).addClass('active');
+  activateScope: function(scope) {
+    if (!scope) return; // Skip, since already active
+    this.scope = scope;
+    this.$('.comment-scope').removeClass('active');
+    this.$('#'+_.htmlId(scope)).addClass('active');
   },
 
   initialize: function(options) {
     this.documentView = options.documentView;
 
+    // Initial commentsn computation
+    this.model.comments.compute();
+
     // Every time there's a node update (such as text or annotation change)
+    // choreographer.unbind('node:update');
 
-    choreographer.unbind('node:update');
-
-    choreographer.bind('node:update', function(node) {
-      console.log('node updated man!', node);
-    });
+    // choreographer.bind('node:update', function(node) {
+    //   console.log('node updated man!', node);
+    // });
 
     // Triggered by Text Node
-    choreographer.unbind('comment-category:selected');
-    choreographer.bind('comment-category:selected', this.activateCategory, this);
+    choreographer.unbind('comment-scope:selected');
+    choreographer.bind('comment-scope:selected', this.activateScope, this);
+
+    // Listing to comments:updated event on session
+    this.model.unbind('comments:updated');
+    this.model.bind('comments:updated', this.render, this);
   },
 
-  // Receive new data and update UI incrementally
-  // Not called yet
-  // update: function(data) {
-  //   this.model = data;
+  // Receive new comments data from surface
+  // update: function(content, annotations) {
   //   this.render();
   // },
 
   render: function () {
+    // console.log('rendering comments.');
+
     this.$el.html(_.tpl('comments', this.model));
-    this.activateCategory(this.category);
+    this.activateScope(this.scope);
     
     return this;
   }

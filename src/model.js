@@ -3,14 +3,12 @@
 
 // var talk = new Talk.Client("ws://localhost:3100/");
 
-
 // Document.Store
 // -----------------
 
 var DocumentStore = function() {
 
 };
-
 
 DocumentStore.prototype.get = function(id, cb) {
   this.create(cb);
@@ -30,11 +28,92 @@ DocumentStore.prototype.update = function(id, operations, cb) {
 
 
 DocumentStore.prototype.delete = function(id, cb) {
-
+  // Implement
 };
 
 
 var store = new DocumentStore();
+
+// Send operation to the server
+// -----------------
+
+function updateDoc(operation, cb) {
+  // console.log('broadcast operation so the server sees it.');
+  // 
+  // talk.send(["document:update", [operation]], function(err) {
+  //   console.log('updated doc on the server', err);
+  // });
+}
+
+
+
+
+// Comments
+// -----------------
+// Called by Substance.Text
+
+var Comments = function(session) {
+  this.session = session;
+  this.scopes = [];
+};
+
+
+_.extend(Comments.prototype, _.Events, {
+  compute: function() {
+    var node = this.session.node();
+    this.scopes = [];
+
+    if (node) {
+      var content = this.session.document.content.nodes[node].content;
+      var annotations = this.session.document.getAnnotations(node);
+    }
+    this.commentsForNode(this.session.document, node, content, annotations);
+
+  },
+
+  // Based on a new set of annotations (during editing)
+  updateAnnotations: function(content, annotations) {
+    var node = this.session.node();
+    this.commentsForNode(this.session.document, node, content, annotations);
+  },
+
+  commentsForNode: function(document, node, content, annotations) {
+    this.scopes = [];
+
+    // Extract annotation text from the model
+    function annotationText(a) {
+      if (!a.pos) return "No pos";
+      return content.substr(a.pos[0], a.pos[1]);
+    }
+
+    if (node) {
+      this.scopes.push({
+        name: "Node",
+        type: "node",
+        id: "node_comments",
+        comments: document.getNodeComments(node)
+      });
+
+      _.each(annotations, function(a) {
+        this.scopes.push({
+          name: annotationText(a),
+          type: a.type,
+          annotation: a.id,
+          id: a.id,
+          comments: document.getCommentsForAnnotation(a.id)
+        });
+      }, this);
+    } else {
+      this.scopes.push({
+        id: "document_comments",
+        name: "Document",
+        type: "document",
+        comments: document.getDocumentComments()
+      });
+    }
+    this.session.trigger('comments:updated');
+  }
+});
 
 
 // Substance.Session
@@ -54,6 +133,9 @@ Substance.Session = function(options) {
 
   this.selections = {};
 
+  // Comments view
+  this.comments = new Comments(this);
+
   // That's the current editor
   this.user = "michael";
 };
@@ -62,6 +144,9 @@ _.extend(Substance.Session.prototype, _.Events, {
   select: function(nodes, options) {
     if (!options) options = {};
     var user = options.user || this.user; // Use current user by default
+
+    // Do nothing if selection hasn't changed
+    if (!this.hasChanged(user, nodes)) return;
 
     this.edit = !!options.edit;
 
@@ -76,7 +161,15 @@ _.extend(Substance.Session.prototype, _.Events, {
       this.selections[node] = user;
     }, this);
     
-    this.trigger('node:select');
+    // New selection leads to new comment context
+    this.comments.compute();
+
+    this.trigger('node:selected');
+  },
+
+  // Checks if selection has actually changed for a user
+  hasChanged: function(user, nodes) {
+    return !_.isEqual(nodes, this.selection(user));
   },
 
   selection: function(user) {
@@ -111,94 +204,8 @@ _.extend(Substance.Session.prototype, _.Events, {
 });
 
 
-// Send operation to the server
+// Fetch a document
 // -----------------
-
-function updateDoc(operation, cb) {
-  // console.log('broadcast operation so the server sees it.');
-  
-  // talk.send(["document:update", [operation]], function(err) {
-  //   console.log('updated doc on the server', err);
-  // });
-}
-
-
-// Load Annotated Document
-// -----------------
-// 
-// Load an annotated document
-
-// function loadDocument(file, cb) {
-//   talk.send(["document:open", {id: "my-doc"}], function(err, document) {
-//     console.log('yaay', document);
-//   });
-
-//   if (!file) {
-//     var doc = JSON.parse(localStorage.getItem("document"));
-//     if (doc) return cb(null, doc);
-//   }
-
-//   $.getJSON('data/'+ (file || "empty_document.json"), function(doc) {
-//     cb(null, doc);
-//   });
-// }
-
-
-// For a given node, extract comments, to populate comments view
-function getComments(document, node) {
-  var categories = [];
-  var that = this;
-
-  if (node) {
-    var content = document.content.nodes[node].content;
-    var annotations = document.getAnnotations(node);
-    categories = categories.concat(commentsForNode(document, node, content, annotations));
-  } else {
-    categories.push({
-      name: "Document",
-      type: "document",
-      category: "document_comments",
-      comments: document.getDocumentComments()
-    });
-  }
-  return {
-    node: node,
-    categories: categories,
-    document: document
-  };
-}
-
-// For a given piece of plaintext + annotations fetch comments
-// -----------------
-
-function commentsForNode(document, node, content, annotations) {
-  var categories = [];
-
-  // Extract annotation text from the model
-  function annotationText(a) {
-    if (!a.pos) return "No pos";
-    return content.substr(a.pos[0], a.pos[1]);
-  }
-
-  categories.push({
-    name: "Le Node",
-    type: "node",
-    category: "node_comments",
-    comments: document.getNodeComments(node)
-  });
-
-  _.each(annotations, function(a) {
-    categories.push({
-      name: annotationText(a),
-      type: a.type,
-      annotation: a.id,
-      category: a.id,
-      comments: document.getCommentsForAnnotation(a.id)
-    });
-  }, this);
-  return categories;
-}
-
 
 function loadDocument(id, cb) {
   store.get(id, function(err, document) {
@@ -207,14 +214,8 @@ function loadDocument(id, cb) {
     });
     cb(err, session);
   });
-
-  // talk.send(["document:open", {id: id}], function(err, document) {
-  //   var session = new Substance.Session({
-  //     document: new Substance.AnnotatedDocument(document)
-  //   });
-  //   cb(err, session);
-  // });
 }
+
 
 // Authenticate with your Substance user
 // -----------------

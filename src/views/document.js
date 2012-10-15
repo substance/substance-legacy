@@ -36,7 +36,7 @@ sc.views.Document = Dance.Performer.extend({
     //   }
     // });
 
-    this.model.on('node:select', this.updateSelections, this);
+    this.model.on('node:selected', this.updateSelections, this);
     this.build();
 
     $(document.body).keydown(this.onKeydown);
@@ -52,10 +52,11 @@ sc.views.Document = Dance.Performer.extend({
   },
 
   insertAnnotation: function(options) {
-    _.each(options.data.nodes, function(node) {
-      this.nodes[node].render(); // Re-render affected node
-      this.updateSelections();
-    }, this);
+    console.log('annotation inserted.');
+    // _.each(options.data.nodes, function(node) {
+    //   this.nodes[node].render(); // Re-render affected node
+    //   // this.updateSelections();
+    // }, this);
   },
 
   deleteAnnotation: function() {
@@ -83,7 +84,11 @@ sc.views.Document = Dance.Performer.extend({
   // Node content has been updated
   update: function(options) {
     var node = this.nodes[options.id];
-    node.render(); // Re-render that updated node
+
+    // Only rerender if not update comes from outside
+    if (this.model.node() !== options.id) {
+      node.render();
+    }
   },
 
   // Nodes have been deleted
@@ -167,6 +172,7 @@ sc.views.Document = Dance.Performer.extend({
       $('#'+_.htmlId(node)).addClass('selected')
         .find('.handle').css('background', this.model.users[user].color);
     }, this);
+
   },
 
   // Issue commands

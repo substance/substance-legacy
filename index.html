@@ -141,13 +141,13 @@
     </script>
 
     <script type="text/x-ejs-template" name="comments">
-      <% _.each(categories, function(category, i) { %>
-        <div class="comment-category<%= i === 0 ? ' active' : ''%><%= category.type ? ' '+category.type : '' %>" id="<%= _.htmlId(category.category) %>" data-node="<%= node %>" data-annotation="<%= category.annotation %>">
+      <% _.each(comments.scopes, function(scope, i) { %>
+        <div class="comment-scope<%= i === 0 ? ' active' : ''%><%= scope.type ? ' '+scope.type : '' %>" id="<%= _.htmlId(scope.id) %>" data-node="<%= node() %>" data-annotation="<%= scope.annotation %>">
           <div class="header">
-            &quot;<%= category.name %>&quot;
+            <%= scope.name %>
           </div>
           <div class="comments">
-            <% _.each(category.comments, function(c) { %>
+            <% _.each(scope.comments, function(c) { %>
               <div class="comment">
                 <div class="meta">
                   <div class="creator">michael</div>
@@ -159,6 +159,7 @@
                 </div>
               </div>
             <% }); %>
+
             <div class="new-comment">
               <div class="author">Your comment:</div>
               <div class="handle"></div>
@@ -171,7 +172,6 @@
 
         </div>
       <% }); %>
-
     </script>
 
     <script type="text/x-ejs-template" name="history">
@@ -197,7 +197,6 @@
     <script type="text/x-ejs-template" name="tools">
       <div class="tools">
         <% if (selection().length === 0) { %>
-          
           <!--<div class="document-menu<%= selection() && selection().length > 0 ? "" : " active"%>">
             <div class="tool-name">Document</div>
             <div class="navigation">

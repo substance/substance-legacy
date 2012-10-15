@@ -149,11 +149,6 @@
         // Send update to the server
         updateDoc(operation);
       }, this);
-
-      this.model.on('node:select', function() {
-        // Refresh the tools
-        this.views.tools.update();
-      }, this);
     },
 
     render: function() {
