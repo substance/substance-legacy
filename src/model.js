@@ -68,12 +68,17 @@ _.extend(Comments.prototype, _.Events, {
       var annotations = this.session.document.getAnnotations(node);
     }
     this.commentsForNode(this.session.document, node, content, annotations);
-
   },
 
   // Based on a new set of annotations (during editing)
   updateAnnotations: function(content, annotations) {
     var node = this.session.node();
+
+    // Only consider markers as comment scopes
+    var annotations = _.filter(annotations, function(a) {
+      return _.include(["mark-1", "mark-2", "mark-3"], a.type);
+    });
+
     this.commentsForNode(this.session.document, node, content, annotations);
   },
 

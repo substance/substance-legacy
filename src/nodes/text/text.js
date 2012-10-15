@@ -35,9 +35,9 @@ sc.views.Node.define('text', {
       return app.view.composer.views.tools.views.tool;
     }
 
-    if (Object.keys(annotations).length > 0) {
-      console.log('annotations...', annotations);
-    }
+    // if (Object.keys(annotations).length > 0) {
+    //   console.log('annotations...', annotations);
+    // }
 
     this.surface = new Substance.Surface({
       el: this.$('.content')[0],
@@ -112,7 +112,6 @@ sc.views.Node.define('text', {
       //     console.log(a.type + ': ' + a.pos);
       //   });
       // }
-
       // prettyprintAnnotations(that.document.annotations);
 
       // Really?
