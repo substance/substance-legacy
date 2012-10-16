@@ -29,7 +29,7 @@ sc.views.Document = Dance.Performer.extend({
     choreographer.unbind('comment-scope:selected');
     choreographer.bind('comment-scope:selected', function(scope, node, annotation) {
       var node = this.nodes[node];
-      if (node.surface) node.surface.highlight(annotation);
+      if (node && node.surface) node.surface.highlight(annotation);
     }, this);
 
     // this.model.document.annotations.on('operation:applied', function(operation) {

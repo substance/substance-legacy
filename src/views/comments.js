@@ -5,16 +5,18 @@ sc.views.Comments = Dance.Performer.extend({
 
   events: {
     'click .insert-comment': '_insertComment',
-    'click .comment-scope .header': '_toggleScope'
+    'click .comment-scope': '_toggleScope'
   },
 
   // Handlers
   // --------
 
   _insertComment: function(e) {
-    var node = $(e.currentTarget).parent().parent().parent().attr('data-node');
-    var annotation = $(e.currentTarget).parent().parent().parent().attr('data-annotation');
+
+    var node = this.$('.comment-scope.active').attr('data-node');
+    var annotation = this.$('.comment-scope.active').attr('data-annotation');
     var content = $(e.currentTarget).parent().find('.comment-content').val();
+
 
     this.model.document.apply(["insert", {
       id: "comment:"+Math.uuid(),
@@ -23,17 +25,17 @@ sc.views.Comments = Dance.Performer.extend({
       annotation: annotation
     }], {scope: "comment"});
 
-    // Not too smart™
+    // // Not too smart™
     this.model.comments.compute();
-
     this.render();
     return false;
   },
 
   _toggleScope: function(e) {
-    var node = $(e.currentTarget).parent().attr('data-node');
-    var annotation = $(e.currentTarget).parent().attr('data-annotation');
-    var scope = $(e.currentTarget).parent().attr('id');
+    var node = $(e.currentTarget).attr('data-node');
+    var annotation = $(e.currentTarget).attr('data-annotation');
+    var scope = $(e.currentTarget).attr('id');
+
     choreographer.trigger('comment-scope:selected', scope, node, annotation);
   },
 
@@ -43,6 +45,10 @@ sc.views.Comments = Dance.Performer.extend({
     this.scope = scope;
     this.$('.comment-scope').removeClass('active');
     this.$('#'+_.htmlId(scope)).addClass('active');
+
+    this.$('.comments').removeClass('active');
+    // Show corresponding comments
+    this.$('#comments_'+_.htmlId(scope)).addClass('active');
 
     // TODO: highlight annotation
   },

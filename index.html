@@ -141,6 +141,49 @@
     </script>
 
     <script type="text/x-ejs-template" name="comments">
+      <div class="comment-scopes">
+        <% _.each(comments.scopes, function(scope, i) { %>
+          <div id="<%= _.htmlId(scope.id) %>" class="comment-scope<%= i === 0 ? ' active' : ''%><%= scope.type ? ' '+scope.type : '' %>" data-node="<%= node() %>" data-annotation="<%= scope.annotation %>">
+            <%= scope.comments.length %>
+          </div>
+        <% }); %>
+      </div>
+
+      <% _.each(comments.scopes, function(scope, i) { %>
+        <div id="comments_<%= _.htmlId(scope.id) %>" class="comments<%= i === 0 ? ' active' : ''%>">
+          <% _.each(scope.comments, function(c) { %>
+            <div class="comment">
+              <div class="meta">
+                <div class="creator">michael</div>
+                <div class="time">3 days ago</div>
+              </div>
+
+              <div class="text">
+                <%= c.content %>
+              </div>
+            </div>
+          <% }); %>
+
+          <div class="new-comment">
+            <div class="author">Your comment:</div>
+            <div class="handle"></div>
+            <div class="comment-input-wrapper">
+              <textarea class="comment-content" name="comment"></textarea>
+            </div>
+            <a href="#" class="button insert-comment">Add Comment</a>
+          </div>
+
+        </div>
+      <% }); %>
+
+      <div class="comment-scopes">
+
+      </div>
+
+    </script>
+
+
+    <script type="text/x-ejs-template" name="foobar">
       <% _.each(comments.scopes, function(scope, i) { %>
         <div class="comment-scope<%= i === 0 ? ' active' : ''%><%= scope.type ? ' '+scope.type : '' %>" id="<%= _.htmlId(scope.id) %>" data-node="<%= node() %>" data-annotation="<%= scope.annotation %>">
           <div class="header">
