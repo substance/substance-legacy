@@ -36,7 +36,7 @@ sc.views.Node = Dance.Performer.extend(_.extend({}, s.StateMachine, {
   focus: function () {},
 
   render: function () {
-    var cnt = this.document.getComments(this.model.id).length;
+    var cnt = this.document.comments(this.model.id).length;
     $(this.el).html('<div class="content" contenteditable="true"></div><div class="handle"></div><a href="#" class="comments-toggle'+(cnt > 0 ? ' active' : '')+'">'+cnt+'</a>');
     return this;
   }

@@ -18,11 +18,12 @@ sc.views.Document = Dance.Performer.extend({
     var that = this;
 
     this.model.document.on('operation:applied', function(operation) {
-      switch(operation.op[0]) {
-        case "move": that.move(operation.op[1]); break;
-        case "insert": that.insert(operation.op[1]); break;
-        case "update": that.update(operation.op[1]); break;
-        case "delete": that.delete(operation.op[1]); break;
+      console.log(operation);
+      switch(operation[0]) {
+        case "move": that.move(operation[1]); break;
+        case "insert": that.insert(operation[1]); break;
+        case "update": that.update(operation[1]); break;
+        case "delete": that.delete(operation[1]); break;
       }
     });
 
@@ -122,20 +123,20 @@ sc.views.Document = Dance.Performer.extend({
 
     properties["content"] = options.content || "";
 
-    this.model.document.apply({
-      op: ["insert", {
-        "id": type+":"+Math.uuid(),
-        "type": type,
-        "target": target,
-        "data": properties
-      }],
-      user: this.model.user
+    this.model.document.apply(["insert", {
+      "id": type+":"+Math.uuid(),
+      "type": type,
+      "target": target,
+      "data": properties
+    }], {
+      user: this.model.user  
     });
   },
 
   deleteNodes: function() {
-    this.model.document.apply({
-      op: ["delete", {"nodes": this.model.selection() }],
+    this.model.document.apply(["delete", {
+      "nodes": this.model.selection()
+    }], {
       user: this.model.user
     });
   },
@@ -221,8 +222,9 @@ sc.views.Document = Dance.Performer.extend({
     var last = this.getNode(_.last(selection));
 
     if (last.next) {
-      this.model.document.apply({
-        op: ["move", {"nodes": selection, "target": last.next}],
+      this.model.document.apply(["move", {
+        "nodes": selection, "target": last.next
+      }], {
         user: this.model.user
       });
     }
@@ -234,8 +236,9 @@ sc.views.Document = Dance.Performer.extend({
 
     if (first.prev) { 
       var target = this.model.document.content.head === first.prev ? 'front' : this.getNode(first.prev).prev;
-      this.model.document.apply({
-        op: ["move", {"nodes": selection, "target": target}],
+      this.model.document.apply(["move", {
+        "nodes": selection, "target": target
+      }], {
         user: this.model.user
       });
     }

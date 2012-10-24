@@ -28,12 +28,7 @@ sc.views.Node.define('section', {
 
     this.surface = new Substance.Surface({
       el: this.$('.content')[0],
-      content: this.model.content,
-      annotations: [{
-        "id": "a:1",
-        "type": "comment",
-        "pos": [5,4]
-      }]
+      content: this.model.content
     });
 
     // Events
@@ -53,11 +48,8 @@ sc.views.Node.define('section', {
 
       console.log("Partial Text Update", delta);
 
-      var op = {
-        op: ["update", {id: that.model.id, "data": delta}],
-        user: "michael"
-      };
-      that.document.apply(op);
+      var op = ["update", {id: that.model.id, "data": delta}];
+      that.document.apply(op, {user: "michael"});
     });
   },
 

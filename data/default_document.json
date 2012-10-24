@@ -1,1673 +1,1671 @@
 {
-  "document": {
-    "refs": {
-      "master": "c32c936a1b1d647c1f6793e14c8bb962",
-      "patch-1": "op-4"
+  "refs": {
+    "master": "c32c936a1b1d647c1f6793e14c8bb962",
+    "patch-1": "op-4"
+  },
+  "operations": {
+    "op-1": {
+      "op": [
+        "insert",
+        {
+          "id": "section:hello",
+          "type": "section",
+          "data": {
+            "content": "Hello?"
+          }
+        }
+      ],
+      "user": "michael",
+      "parent": null,
+      "sha": "op-1"
     },
-    "operations": {
-      "op-1": {
-        "op": [
-          "insert",
-          {
-            "id": "section:hello",
-            "type": "section",
-            "data": {
-              "content": "Hello?"
-            }
+    "op-2": {
+      "op": [
+        "insert",
+        {
+          "id": "text:hello",
+          "type": "text",
+          "target": "section:hello",
+          "data": {
+            "content": "Helo wrld"
           }
-        ],
-        "user": "michael",
-        "parent": null,
-        "sha": "op-1"
-      },
-      "op-2": {
-        "op": [
-          "insert",
-          {
-            "id": "text:hello",
-            "type": "text",
-            "target": "section:hello",
-            "data": {
-              "content": "Helo wrld"
-            }
+        }
+      ],
+      "user": "michael",
+      "parent": "op-1",
+      "sha": "op-2"
+    },
+    "op-3": {
+      "op": [
+        "insert",
+        {
+          "id": "text:p1",
+          "type": "text",
+          "target": "text:hello",
+          "data": {
+            "content": "Ein erster Paragraph."
           }
-        ],
-        "user": "michael",
-        "parent": "op-1",
-        "sha": "op-2"
-      },
-      "op-3": {
-        "op": [
-          "insert",
-          {
-            "id": "text:p1",
-            "type": "text",
-            "target": "text:hello",
-            "data": {
-              "content": "Ein erster Paragraph."
-            }
+        }
+      ],
+      "user": "michael",
+      "parent": "op-2",
+      "sha": "op-3"
+    },
+    "op-4": {
+      "op": [
+        "insert",
+        {
+          "id": "text:outro",
+          "type": "text",
+          "target": "text:hello",
+          "data": {
+            "content": "This is the end."
           }
-        ],
-        "user": "michael",
-        "parent": "op-2",
-        "sha": "op-3"
-      },
-      "op-4": {
-        "op": [
-          "insert",
-          {
-            "id": "text:outro",
-            "type": "text",
-            "target": "text:hello",
-            "data": {
-              "content": "This is the end."
-            }
-          }
-        ],
-        "user": "michael",
-        "parent": "op-3"
-      },
-      "5fe292eb8335652926fa114cd1eadc4c": {
-        "op": [
-          "update",
-          {
-            "id": "section:hello",
-            "data": [
-              [
-                "del",
-                1
-              ],
-              [
-                "ins",
-                "Substanc"
-              ],
-              [
-                "ret",
-                1
-              ],
-              [
-                "del",
-                4
-              ]
-            ]
-          }
-        ],
-        "user": "michael",
-        "sha": "5fe292eb8335652926fa114cd1eadc4c",
-        "head": "master",
-        "parent": "op-3"
-      },
-      "625ef7708b03df0b76ba0d72832d10d9": {
-        "op": [
-          "update",
-          {
-            "id": "text:hello",
-            "data": [
-              [
-                "del",
-                1
-              ],
-              [
-                "ins",
-                "Substanc"
-              ],
-              [
-                "ret",
-                1
-              ],
-              [
-                "ins",
-                " is an open p"
-              ],
-              [
-                "ret",
-                1
-              ],
-              [
-                "ins",
-                "atf"
-              ],
-              [
-                "ret",
-                1
-              ],
-              [
-                "ins",
-                "rm"
-              ],
-              [
-                "ret",
-                1
-              ],
-              [
-                "del",
-                1
-              ],
-              [
-                "ins",
-                "for collaborative composition andsha"
-              ],
-              [
-                "ret",
-                1
-              ],
-              [
-                "ins",
-                "ing of digita"
-              ],
-              [
-                "ret",
-                1
-              ],
-              [
-                "ins",
-                " "
-              ],
-              [
-                "ret",
-                1
-              ],
-              [
-                "ins",
-                "ocuments."
-              ]
-            ]
-          }
-        ],
-        "user": "michael",
-        "sha": "625ef7708b03df0b76ba0d72832d10d9",
-        "head": "master",
-        "parent": "5fe292eb8335652926fa114cd1eadc4c"
-      },
-      "4fd46d7279aae1a7ba32c1009c0a8183": {
-        "op": [
-          "insert",
-          {
-            "id": "section:4595f9aa78582d50508c8a7cc9e4d91b",
-            "type": "section",
-            "target": "text:hello",
-            "data": {
-              "content": ""
-            }
-          }
-        ],
-        "user": "michael",
-        "sha": "4fd46d7279aae1a7ba32c1009c0a8183",
-        "head": "master",
-        "parent": "625ef7708b03df0b76ba0d72832d10d9"
-      },
-      "fab0393f39d0a896a5fa2cb6fd102828": {
-        "op": [
-          "update",
-          {
-            "id": "section:4595f9aa78582d50508c8a7cc9e4d91b",
-            "data": [
-              [
-                "ins",
-                "Why should I care?"
-              ]
-            ]
-          }
-        ],
-        "user": "michael",
-        "sha": "fab0393f39d0a896a5fa2cb6fd102828",
-        "head": "master",
-        "parent": "4fd46d7279aae1a7ba32c1009c0a8183"
-      },
-      "a9481262609cbb9e53ef81bf64cdc2f4": {
-        "op": [
-          "update",
-          {
-            "id": "text:p1",
-            "data": [
-              [
-                "del",
-                1
-              ],
-              [
-                "ins",
-                "Substance provides a flexible architecture, involv"
-              ],
-              [
-                "ret",
-                2
-              ],
-              [
-                "ins",
-                "g"
-              ],
-              [
-                "ret",
-                1
-              ],
-              [
-                "ins",
-                "an "
-              ],
-              [
-                "ret",
-                1
-              ],
-              [
-                "ins",
-                "xtensible document fo"
-              ],
-              [
-                "ret",
-                1
-              ],
-              [
-                "del",
-                1
-              ],
-              [
-                "ins",
-                "mat and protocol, real"
-              ],
-              [
-                "ret",
-                1
-              ],
-              [
-                "ins",
-                "im"
-              ],
-              [
-                "ret",
-                1
-              ],
-              [
-                "ins",
-                " synch"
-              ],
-              [
-                "ret",
-                1
-              ],
-              [
-                "ins",
-                "onization,"
-              ],
-              [
-                "ret",
-                1
-              ],
-              [
-                "del",
-                1
-              ],
-              [
-                "ret",
-                1
-              ],
-              [
-                "ins",
-                "n extensible document compose"
-              ],
-              [
-                "ret",
-                1
-              ],
-              [
-                "ins",
-                " "
-              ],
-              [
-                "ret",
-                1
-              ],
-              [
-                "del",
-                1
-              ],
-              [
-                "ins",
-                "s well as a "
-              ],
-              [
-                "ret",
-                1
-              ],
-              [
-                "del",
-                1
-              ],
-              [
-                "ins",
-                "eference im"
-              ],
-              [
-                "ret",
-                1
-              ],
-              [
-                "del",
-                1
-              ],
-              [
-                "ins",
-                "lementation"
-              ],
-              [
-                "ret",
-                1
-              ]
-            ]
-          }
-        ],
-        "user": "michael",
-        "sha": "a9481262609cbb9e53ef81bf64cdc2f4",
-        "head": "master",
-        "parent": "fab0393f39d0a896a5fa2cb6fd102828"
-      },
-      "6deb396739f93666575cf530d9933a86": {
-        "op": [
-          "insert",
-          {
-            "id": "section:f9b8dfcfede7c75043813edd6e013ae3",
-            "type": "section",
-            "target": "text:p1",
-            "data": {
-              "content": ""
-            }
-          }
-        ],
-        "user": "michael",
-        "sha": "6deb396739f93666575cf530d9933a86",
-        "head": "master",
-        "parent": "a9481262609cbb9e53ef81bf64cdc2f4"
-      },
-      "01c317b96f2b4fa1a3c5e2a762bcc264": {
-        "op": [
-          "update",
-          {
-            "id": "section:f9b8dfcfede7c75043813edd6e013ae3",
-            "data": [
-              [
-                "ins",
-                "When will it be ready?"
-              ]
-            ]
-          }
-        ],
-        "user": "michael",
-        "sha": "01c317b96f2b4fa1a3c5e2a762bcc264",
-        "head": "master",
-        "parent": "6deb396739f93666575cf530d9933a86"
-      },
-      "966c4a6f0e81518090a463c74ad8fc12": {
-        "op": [
-          "insert",
-          {
-            "id": "text:c7e0e43f29b7427d624fa492a1779815",
-            "type": "text",
-            "target": "section:f9b8dfcfede7c75043813edd6e013ae3",
-            "data": {
-              "content": ""
-            }
-          }
-        ],
-        "user": "michael",
-        "sha": "966c4a6f0e81518090a463c74ad8fc12",
-        "head": "master",
-        "parent": "01c317b96f2b4fa1a3c5e2a762bcc264"
-      },
-      "d0fb04a5f66c77df0dcf92fd4e191910": {
-        "op": [
-          "insert",
-          {
-            "id": "text:8bacc9161c7987b73682ac091803e7a7",
-            "type": "text",
-            "target": "text:c7e0e43f29b7427d624fa492a1779815",
-            "data": {
-              "content": ""
-            }
-          }
-        ],
-        "user": "michael",
-        "sha": "d0fb04a5f66c77df0dcf92fd4e191910",
-        "head": "master",
-        "parent": "966c4a6f0e81518090a463c74ad8fc12"
-      },
-      "72a156f7193543eedfbf92ebbed6efa2": {
-        "op": [
-          "update",
-          {
-            "id": "text:c7e0e43f29b7427d624fa492a1779815",
-            "data": [
-              [
-                "ins",
-                "The current release is 0.4.1. Our next major release, 0.5.0 will feature a compeletely new architecture and will land at the end of the year. Until then, try the demo or integrate one of our stable modules for your project."
-              ]
-            ]
-          }
-        ],
-        "user": "michael",
-        "sha": "72a156f7193543eedfbf92ebbed6efa2",
-        "head": "master",
-        "parent": "d0fb04a5f66c77df0dcf92fd4e191910"
-      },
-      "9d814a148a4d2e8f7e2100388889f014": {
-        "op": [
-          "update",
-          {
-            "id": "text:8bacc9161c7987b73682ac091803e7a7",
-            "data": [
-              [
-                "ins",
-                "The current release is 0.4.1. Our next major release, 0.5.0 will feature a compeletely new architecture and will land at the end of the year. Until then, try the demo or integrate one of our stable modules for your project."
-              ]
-            ]
-          }
-        ],
-        "user": "michael",
-        "sha": "9d814a148a4d2e8f7e2100388889f014",
-        "head": "master",
-        "parent": "72a156f7193543eedfbf92ebbed6efa2"
-      },
-      "ce686d87a6c866013f0550a7148c4a4b": {
-        "op": [
-          "update",
-          {
-            "id": "text:8bacc9161c7987b73682ac091803e7a7",
-            "data": [
-              [
-                "del",
-                1
-              ],
-              [
-                "ins",
-                "In t"
-              ],
-              [
-                "ret",
-                3
-              ],
-              [
-                "del",
-                4
-              ],
-              [
-                "ins",
-                "m"
-              ],
-              [
-                "ret",
-                1
-              ],
-              [
-                "ins",
-                "a"
-              ],
-              [
-                "ret",
-                1
-              ],
-              [
-                "del",
-                4
-              ],
-              [
-                "ins",
-                "whi"
-              ],
-              [
-                "ret",
-                2
-              ],
-              [
-                "del",
-                3
-              ],
-              [
-                "ins",
-                ","
-              ],
-              [
-                "ret",
-                2
-              ],
-              [
-                "del",
-                8
-              ],
-              [
-                "ins",
-                "f"
-              ],
-              [
-                "ret",
-                1
-              ],
-              [
-                "del",
-                1
-              ],
-              [
-                "ins",
-                "yo"
-              ],
-              [
-                "ret",
-                1
-              ],
-              [
-                "ins",
-                "'"
-              ],
-              [
-                "ret",
-                1
-              ],
-              [
-                "ins",
-                "e"
-              ],
-              [
-                "ret",
-                1
-              ],
-              [
-                "ins",
-                "looki"
-              ],
-              [
-                "ret",
-                1
-              ],
-              [
-                "del",
-                3
-              ],
-              [
-                "ins",
-                "g"
-              ],
-              [
-                "ret",
-                1
-              ],
-              [
-                "del",
-                3
-              ],
-              [
-                "ins",
-                "f"
-              ],
-              [
-                "ret",
-                2
-              ],
-              [
-                "ins",
-                " a"
-              ],
-              [
-                "ret",
-                4
-              ],
-              [
-                "del",
-                1
-              ],
-              [
-                "ins",
-                "i"
-              ],
-              [
-                "ret",
-                1
-              ],
-              [
-                "del",
-                1
-              ],
-              [
-                "ins",
-                "bl"
-              ],
-              [
-                "ret",
-                1
-              ],
-              [
-                "del",
-                1
-              ],
-              [
-                "ret",
-                1
-              ],
-              [
-                "del",
-                5
-              ],
-              [
-                "ins",
-                "minimal"
-              ],
-              [
-                "ret",
-                2
-              ],
-              [
-                "ins",
-                "r"
-              ],
-              [
-                "ret",
-                1
-              ],
-              [
-                "del",
-                2
-              ],
-              [
-                "ins",
-                "ting"
-              ],
-              [
-                "ret",
-                1
-              ],
-              [
-                "del",
-                1
-              ],
-              [
-                "ret",
-                1
-              ],
-              [
-                "del",
-                3
-              ],
-              [
-                "ins",
-                "nvi"
-              ],
-              [
-                "ret",
-                1
-              ],
-              [
-                "del",
-                5
-              ],
-              [
-                "ret",
-                1
-              ],
-              [
-                "ins",
-                "n"
-              ],
-              [
-                "ret",
-                1
-              ],
-              [
-                "del",
-                1
-              ],
-              [
-                "ret",
-                1
-              ],
-              [
-                "del",
-                2
-              ],
-              [
-                "ins",
-                "n"
-              ],
-              [
-                "ret",
-                1
-              ],
-              [
-                "del",
-                3
-              ],
-              [
-                "ins",
-                ","
-              ],
-              [
-                "ret",
-                1
-              ],
-              [
-                "del",
-                1
-              ],
-              [
-                "ins",
-                "w"
-              ],
-              [
-                "ret",
-                1
-              ],
-              [
-                "del",
-                1
-              ],
-              [
-                "ret",
-                1
-              ],
-              [
-                "del",
-                1
-              ],
-              [
-                "ret",
-                1
-              ],
-              [
-                "del",
-                4
-              ],
-              [
-                "ret",
-                2
-              ],
-              [
-                "del",
-                3
-              ],
-              [
-                "ins",
-                "omm"
-              ],
-              [
-                "ret",
-                1
-              ],
-              [
-                "del",
-                2
-              ],
-              [
-                "ret",
-                3
-              ],
-              [
-                "del",
-                1
-              ],
-              [
-                "ins",
-                "us"
-              ],
-              [
-                "ret",
-                1
-              ],
-              [
-                "del",
-                5
-              ],
-              [
-                "ret",
-                1
-              ],
-              [
-                "del",
-                13
-              ],
-              [
-                "ins",
-                "g Pr"
-              ],
-              [
-                "ret",
-                1
-              ],
-              [
-                "del",
-                4
-              ],
-              [
-                "ins",
-                "s"
-              ],
-              [
-                "ret",
-                1
-              ],
-              [
-                "ins",
-                ","
-              ],
-              [
-                "ret",
-                1
-              ],
-              [
-                "del",
-                2
-              ],
-              [
-                "ret",
-                1
-              ],
-              [
-                "del",
-                2
-              ],
-              [
-                "ret",
-                1
-              ],
-              [
-                "del",
-                1
-              ],
-              [
-                "ins",
-                "co"
-              ],
-              [
-                "ret",
-                2
-              ],
-              [
-                "del",
-                5
-              ],
-              [
-                "ret",
-                2
-              ],
-              [
-                "del",
-                2
-              ],
-              [
-                "ret",
-                1
-              ],
-              [
-                "del",
-                2
-              ],
-              [
-                "ret",
-                1
-              ],
-              [
-                "del",
-                2
-              ],
-              [
-                "ret",
-                1
-              ],
-              [
-                "del",
-                1
-              ],
-              [
-                "ret",
-                1
-              ],
-              [
-                "del",
-                2
-              ],
-              [
-                "ins",
-                "it"
-              ],
-              [
-                "ret",
-                1
-              ],
-              [
-                "ins",
-                "r"
-              ],
-              [
-                "ret",
-                1
-              ],
-              [
-                "ins",
-                "f"
-              ],
-              [
-                "ret",
-                3
-              ],
-              [
-                "ins",
-                "G"
-              ],
-              [
-                "ret",
-                1
-              ],
-              [
-                "del",
-                1
-              ],
-              [
-                "ins",
-                "tHub "
-              ],
-              [
-                "ret",
-                1
-              ],
-              [
-                "del",
-                3
-              ],
-              [
-                "ins",
-                "h"
-              ],
-              [
-                "ret",
-                2
-              ],
-              [
-                "del",
-                1
-              ],
-              [
-                "ret",
-                1
-              ],
-              [
-                "del",
-                3
-              ],
-              [
-                "ins",
-                "is"
-              ],
-              [
-                "ret",
-                2
-              ],
-              [
-                "del",
-                7
-              ],
-              [
-                "ins",
-                "p"
-              ],
-              [
-                "ret",
-                1
-              ],
-              [
-                "del",
-                3
-              ],
-              [
-                "ins",
-                "imiz"
-              ],
-              [
-                "ret",
-                1
-              ],
-              [
-                "del",
-                3
-              ],
-              [
-                "ret",
-                1
-              ],
-              [
-                "del",
-                4
-              ],
-              [
-                "ret",
-                5
-              ],
-              [
-                "del",
-                4
-              ],
-              [
-                "ins",
-                "editing"
-              ],
-              [
-                "ret",
-                1
-              ],
-              [
-                "del",
-                1
-              ],
-              [
-                "ins",
-                "Ma"
-              ],
-              [
-                "ret",
-                1
-              ],
-              [
-                "ins",
-                "kd"
-              ],
-              [
-                "ret",
-                1
-              ],
-              [
-                "del",
-                4
-              ],
-              [
-                "ins",
-                "wn"
-              ],
-              [
-                "ret",
-                1
-              ]
-            ]
-          }
-        ],
-        "user": "michael",
-        "sha": "ce686d87a6c866013f0550a7148c4a4b",
-        "head": "master",
-        "parent": "9d814a148a4d2e8f7e2100388889f014"
-      },
-      "039bbc9e551e05e3a5c0e811ddb222b1": {
-        "op": [
-          "insert",
-          {
-            "id": "section:d202c850f7a79adc1f4e26fb0239234e",
-            "type": "section",
-            "target": "text:p1",
-            "data": {
-              "content": ""
-            }
-          }
-        ],
-        "user": "michael",
-        "sha": "039bbc9e551e05e3a5c0e811ddb222b1",
-        "head": "master",
-        "parent": "ce686d87a6c866013f0550a7148c4a4b"
-      },
-      "9caf8218f6cb9c5bd4ce0bb4309d41a0": {
-        "op": [
-          "update",
-          {
-            "id": "section:d202c850f7a79adc1f4e26fb0239234e",
-            "data": [
-              [
-                "ins",
-                "asdfa"
-              ]
-            ]
-          }
-        ],
-        "user": "michael",
-        "sha": "9caf8218f6cb9c5bd4ce0bb4309d41a0",
-        "head": "master",
-        "parent": "039bbc9e551e05e3a5c0e811ddb222b1"
-      },
-      "c8681cda89d82dd1ded90d1a054b4675": {
-        "op": [
-          "update",
-          {
-            "id": "section:d202c850f7a79adc1f4e26fb0239234e",
-            "data": [
-              [
-                "ins",
-                "Sem"
-              ],
-              [
-                "ret",
-                1
-              ],
-              [
-                "del",
-                1
-              ],
-              [
-                "ins",
-                "ntic E"
-              ],
-              [
-                "ret",
-                1
-              ],
-              [
-                "del",
-                2
-              ],
-              [
-                "ins",
-                "iting"
-              ]
-            ]
-          }
-        ],
-        "user": "michael",
-        "sha": "c8681cda89d82dd1ded90d1a054b4675",
-        "head": "master",
-        "parent": "9caf8218f6cb9c5bd4ce0bb4309d41a0"
-      },
-      "b8285b458248244cb6f567b0a0e4d055": {
-        "op": [
-          "insert",
-          {
-            "id": "text:67b5de5d0eab741ee3db7dbd63aa27e9",
-            "type": "text",
-            "target": "section:d202c850f7a79adc1f4e26fb0239234e",
-            "data": {
-              "content": ""
-            }
-          }
-        ],
-        "user": "michael",
-        "sha": "b8285b458248244cb6f567b0a0e4d055",
-        "head": "master",
-        "parent": "c8681cda89d82dd1ded90d1a054b4675"
-      },
-      "d91d80c4fcbf9db16a51eff301a7b295": {
-        "op": [
-          "update",
-          {
-            "id": "text:67b5de5d0eab741ee3db7dbd63aa27e9",
-            "data": [
-              [
-                "ins",
-                "Unlike traditional word-processors, Substance focuses on content, by leaving the layout part to the system, not the user. Because of the absence of formatting utilities, it suggests structured, content-oriented writing."
-              ]
-            ]
-          }
-        ],
-        "user": "michael",
-        "sha": "d91d80c4fcbf9db16a51eff301a7b295",
-        "head": "master",
-        "parent": "b8285b458248244cb6f567b0a0e4d055"
-      },
-      "46260811597b041e3b9d500bafb6223b": {
-        "op": [
-          "insert",
-          {
-            "id": "section:3509a7d6041142bb85cdf3cf51f8f0d2",
-            "type": "section",
-            "target": "section:f9b8dfcfede7c75043813edd6e013ae3",
-            "data": {
-              "content": ""
-            }
-          }
-        ],
-        "user": "michael",
-        "sha": "46260811597b041e3b9d500bafb6223b",
-        "head": "master",
-        "parent": "d91d80c4fcbf9db16a51eff301a7b295"
-      },
-      "cd80bf3ba02ff2004cec4efff1ea6f56": {
-        "op": [
-          "update",
-          {
-            "id": "section:3509a7d6041142bb85cdf3cf51f8f0d2",
-            "data": [
-              [
-                "ins",
-                "Content is data"
-              ]
-            ]
-          }
-        ],
-        "user": "michael",
-        "sha": "cd80bf3ba02ff2004cec4efff1ea6f56",
-        "head": "master",
-        "parent": "46260811597b041e3b9d500bafb6223b"
-      },
-      "0c045d0733077230f0fcef8ff695c1e6": {
-        "op": [
-          "move",
-          {
-            "nodes": [
-              "section:3509a7d6041142bb85cdf3cf51f8f0d2"
+        }
+      ],
+      "user": "michael",
+      "parent": "op-3"
+    },
+    "5fe292eb8335652926fa114cd1eadc4c": {
+      "op": [
+        "update",
+        {
+          "id": "section:hello",
+          "data": [
+            [
+              "del",
+              1
             ],
-            "target": "text:67b5de5d0eab741ee3db7dbd63aa27e9"
-          }
-        ],
-        "user": "michael",
-        "sha": "0c045d0733077230f0fcef8ff695c1e6",
-        "head": "master",
-        "parent": "cd80bf3ba02ff2004cec4efff1ea6f56"
-      },
-      "ed1665a85410d34c034a562758ae90ee": {
-        "op": [
-          "insert",
-          {
-            "id": "text:0d4d27c8c32c0f5363867cdb74acc982",
-            "type": "text",
-            "target": "section:3509a7d6041142bb85cdf3cf51f8f0d2",
-            "data": {
-              "content": ""
-            }
-          }
-        ],
-        "user": "michael",
-        "sha": "ed1665a85410d34c034a562758ae90ee",
-        "head": "master",
-        "parent": "0c045d0733077230f0fcef8ff695c1e6"
-      },
-      "e4081857ad1abf62e527dd8e8727e23b": {
-        "op": [
-          "update",
-          {
-            "id": "text:0d4d27c8c32c0f5363867cdb74acc982",
-            "data": [
-              [
-                "ins",
-                "Substance considers content as data, which allows digital documents to be queried like a database. Processing digital documents used to be a pain, with Substance it's a pleasure."
-              ]
+            [
+              "ins",
+              "Substanc"
+            ],
+            [
+              "ret",
+              1
+            ],
+            [
+              "del",
+              4
             ]
-          }
-        ],
-        "user": "michael",
-        "sha": "e4081857ad1abf62e527dd8e8727e23b",
-        "head": "master",
-        "parent": "ed1665a85410d34c034a562758ae90ee"
-      },
-      "ad284134db749f6aa93d39ef3f5c6909": {
-        "op": [
-          "insert",
-          {
-            "id": "section:93ba8bda139d31b377729e7113d2e669",
-            "type": "section",
-            "target": "text:0d4d27c8c32c0f5363867cdb74acc982",
-            "data": {
-              "content": ""
-            }
-          }
-        ],
-        "user": "michael",
-        "sha": "ad284134db749f6aa93d39ef3f5c6909",
-        "head": "master",
-        "parent": "e4081857ad1abf62e527dd8e8727e23b"
-      },
-      "29ffba40eff6608323ac5d85069ab042": {
-        "op": [
-          "update",
-          {
-            "id": "section:93ba8bda139d31b377729e7113d2e669",
-            "data": [
-              [
-                "ins",
-                "Collaboration"
-              ]
+          ]
+        }
+      ],
+      "user": "michael",
+      "sha": "5fe292eb8335652926fa114cd1eadc4c",
+      "head": "master",
+      "parent": "op-3"
+    },
+    "625ef7708b03df0b76ba0d72832d10d9": {
+      "op": [
+        "update",
+        {
+          "id": "text:hello",
+          "data": [
+            [
+              "del",
+              1
+            ],
+            [
+              "ins",
+              "Substanc"
+            ],
+            [
+              "ret",
+              1
+            ],
+            [
+              "ins",
+              " is an open p"
+            ],
+            [
+              "ret",
+              1
+            ],
+            [
+              "ins",
+              "atf"
+            ],
+            [
+              "ret",
+              1
+            ],
+            [
+              "ins",
+              "rm"
+            ],
+            [
+              "ret",
+              1
+            ],
+            [
+              "del",
+              1
+            ],
+            [
+              "ins",
+              "for collaborative composition andsha"
+            ],
+            [
+              "ret",
+              1
+            ],
+            [
+              "ins",
+              "ing of digita"
+            ],
+            [
+              "ret",
+              1
+            ],
+            [
+              "ins",
+              " "
+            ],
+            [
+              "ret",
+              1
+            ],
+            [
+              "ins",
+              "ocuments."
             ]
+          ]
+        }
+      ],
+      "user": "michael",
+      "sha": "625ef7708b03df0b76ba0d72832d10d9",
+      "head": "master",
+      "parent": "5fe292eb8335652926fa114cd1eadc4c"
+    },
+    "4fd46d7279aae1a7ba32c1009c0a8183": {
+      "op": [
+        "insert",
+        {
+          "id": "section:4595f9aa78582d50508c8a7cc9e4d91b",
+          "type": "section",
+          "target": "text:hello",
+          "data": {
+            "content": ""
           }
-        ],
-        "user": "michael",
-        "sha": "29ffba40eff6608323ac5d85069ab042",
-        "head": "master",
-        "parent": "ad284134db749f6aa93d39ef3f5c6909"
-      },
-      "0e0cb71bd7517f439064853b543edd84": {
-        "op": [
-          "insert",
-          {
-            "id": "text:7aa8c5f7492c0ba56d370cacae30c52b",
-            "type": "text",
-            "target": "section:93ba8bda139d31b377729e7113d2e669",
-            "data": {
-              "content": ""
-            }
-          }
-        ],
-        "user": "michael",
-        "sha": "0e0cb71bd7517f439064853b543edd84",
-        "head": "master",
-        "parent": "29ffba40eff6608323ac5d85069ab042"
-      },
-      "59b43a70c9717e02d6afbcc2e2230453": {
-        "op": [
-          "update",
-          {
-            "id": "text:7aa8c5f7492c0ba56d370cacae30c52b",
-            "data": [
-              [
-                "ins",
-                "Substance allows opencollaboration in realtime. Every reader can be a potential contributor by submitting comments and patches to a document."
-              ]
+        }
+      ],
+      "user": "michael",
+      "sha": "4fd46d7279aae1a7ba32c1009c0a8183",
+      "head": "master",
+      "parent": "625ef7708b03df0b76ba0d72832d10d9"
+    },
+    "fab0393f39d0a896a5fa2cb6fd102828": {
+      "op": [
+        "update",
+        {
+          "id": "section:4595f9aa78582d50508c8a7cc9e4d91b",
+          "data": [
+            [
+              "ins",
+              "Why should I care?"
             ]
-          }
-        ],
-        "user": "michael",
-        "sha": "59b43a70c9717e02d6afbcc2e2230453",
-        "head": "master",
-        "parent": "0e0cb71bd7517f439064853b543edd84"
-      },
-      "547d85a8393bb3f48680aa24a56ddbfc": {
-        "op": [
-          "insert",
-          {
-            "id": "section:c9bbceb9d0a92c0defefe86532aa8a6f",
-            "type": "section",
-            "target": "text:7aa8c5f7492c0ba56d370cacae30c52b",
-            "data": {
-              "content": ""
-            }
-          }
-        ],
-        "user": "michael",
-        "sha": "547d85a8393bb3f48680aa24a56ddbfc",
-        "head": "master",
-        "parent": "59b43a70c9717e02d6afbcc2e2230453"
-      },
-      "8c1bb35ade580f03c1c7c79f58d63664": {
-        "op": [
-          "update",
-          {
-            "id": "section:c9bbceb9d0a92c0defefe86532aa8a6f",
-            "data": [
-              [
-                "ins",
-                "Modular"
-              ]
+          ]
+        }
+      ],
+      "user": "michael",
+      "sha": "fab0393f39d0a896a5fa2cb6fd102828",
+      "head": "master",
+      "parent": "4fd46d7279aae1a7ba32c1009c0a8183"
+    },
+    "a9481262609cbb9e53ef81bf64cdc2f4": {
+      "op": [
+        "update",
+        {
+          "id": "text:p1",
+          "data": [
+            [
+              "del",
+              1
+            ],
+            [
+              "ins",
+              "Substance provides a flexible architecture, involv"
+            ],
+            [
+              "ret",
+              2
+            ],
+            [
+              "ins",
+              "g"
+            ],
+            [
+              "ret",
+              1
+            ],
+            [
+              "ins",
+              "an "
+            ],
+            [
+              "ret",
+              1
+            ],
+            [
+              "ins",
+              "xtensible document fo"
+            ],
+            [
+              "ret",
+              1
+            ],
+            [
+              "del",
+              1
+            ],
+            [
+              "ins",
+              "mat and protocol, real"
+            ],
+            [
+              "ret",
+              1
+            ],
+            [
+              "ins",
+              "im"
+            ],
+            [
+              "ret",
+              1
+            ],
+            [
+              "ins",
+              " synch"
+            ],
+            [
+              "ret",
+              1
+            ],
+            [
+              "ins",
+              "onization,"
+            ],
+            [
+              "ret",
+              1
+            ],
+            [
+              "del",
+              1
+            ],
+            [
+              "ret",
+              1
+            ],
+            [
+              "ins",
+              "n extensible document compose"
+            ],
+            [
+              "ret",
+              1
+            ],
+            [
+              "ins",
+              " "
+            ],
+            [
+              "ret",
+              1
+            ],
+            [
+              "del",
+              1
+            ],
+            [
+              "ins",
+              "s well as a "
+            ],
+            [
+              "ret",
+              1
+            ],
+            [
+              "del",
+              1
+            ],
+            [
+              "ins",
+              "eference im"
+            ],
+            [
+              "ret",
+              1
+            ],
+            [
+              "del",
+              1
+            ],
+            [
+              "ins",
+              "lementation"
+            ],
+            [
+              "ret",
+              1
             ]
+          ]
+        }
+      ],
+      "user": "michael",
+      "sha": "a9481262609cbb9e53ef81bf64cdc2f4",
+      "head": "master",
+      "parent": "fab0393f39d0a896a5fa2cb6fd102828"
+    },
+    "6deb396739f93666575cf530d9933a86": {
+      "op": [
+        "insert",
+        {
+          "id": "section:f9b8dfcfede7c75043813edd6e013ae3",
+          "type": "section",
+          "target": "text:p1",
+          "data": {
+            "content": ""
           }
-        ],
-        "user": "michael",
-        "sha": "8c1bb35ade580f03c1c7c79f58d63664",
-        "head": "master",
-        "parent": "547d85a8393bb3f48680aa24a56ddbfc"
-      },
-      "0ab9d898f28c85e93b81310b195ad2c8": {
-        "op": [
-          "insert",
-          {
-            "id": "text:6ae2af67bcac05761265e889609614ef",
-            "type": "text",
-            "target": "section:c9bbceb9d0a92c0defefe86532aa8a6f",
-            "data": {
-              "content": ""
-            }
-          }
-        ],
-        "user": "michael",
-        "sha": "0ab9d898f28c85e93b81310b195ad2c8",
-        "head": "master",
-        "parent": "8c1bb35ade580f03c1c7c79f58d63664"
-      },
-      "8d33a973572350a8186207fdc97fe5e5": {
-        "op": [
-          "update",
-          {
-            "id": "text:6ae2af67bcac05761265e889609614ef",
-            "data": [
-              [
-                "ins",
-                "Substance conists of severalmodules that are developed independently and can be used on its own."
-              ]
+        }
+      ],
+      "user": "michael",
+      "sha": "6deb396739f93666575cf530d9933a86",
+      "head": "master",
+      "parent": "a9481262609cbb9e53ef81bf64cdc2f4"
+    },
+    "01c317b96f2b4fa1a3c5e2a762bcc264": {
+      "op": [
+        "update",
+        {
+          "id": "section:f9b8dfcfede7c75043813edd6e013ae3",
+          "data": [
+            [
+              "ins",
+              "When will it be ready?"
             ]
+          ]
+        }
+      ],
+      "user": "michael",
+      "sha": "01c317b96f2b4fa1a3c5e2a762bcc264",
+      "head": "master",
+      "parent": "6deb396739f93666575cf530d9933a86"
+    },
+    "966c4a6f0e81518090a463c74ad8fc12": {
+      "op": [
+        "insert",
+        {
+          "id": "text:c7e0e43f29b7427d624fa492a1779815",
+          "type": "text",
+          "target": "section:f9b8dfcfede7c75043813edd6e013ae3",
+          "data": {
+            "content": ""
           }
-        ],
-        "user": "michael",
-        "sha": "8d33a973572350a8186207fdc97fe5e5",
-        "head": "master",
-        "parent": "0ab9d898f28c85e93b81310b195ad2c8"
-      },
-      "63f9a3c643bbfa1b819e2ff7dafe0a0e": {
-        "op": [
-          "insert",
-          {
-            "id": "section:5141e40c5a47f4a78b68c02abce6b4ee",
-            "type": "section",
-            "target": "text:6ae2af67bcac05761265e889609614ef",
-            "data": {
-              "content": ""
-            }
+        }
+      ],
+      "user": "michael",
+      "sha": "966c4a6f0e81518090a463c74ad8fc12",
+      "head": "master",
+      "parent": "01c317b96f2b4fa1a3c5e2a762bcc264"
+    },
+    "d0fb04a5f66c77df0dcf92fd4e191910": {
+      "op": [
+        "insert",
+        {
+          "id": "text:8bacc9161c7987b73682ac091803e7a7",
+          "type": "text",
+          "target": "text:c7e0e43f29b7427d624fa492a1779815",
+          "data": {
+            "content": ""
           }
-        ],
-        "user": "michael",
-        "sha": "63f9a3c643bbfa1b819e2ff7dafe0a0e",
-        "head": "master",
-        "parent": "8d33a973572350a8186207fdc97fe5e5"
-      },
-      "a42653713bf9984de657444670266980": {
-        "op": [
-          "update",
-          {
-            "id": "section:5141e40c5a47f4a78b68c02abce6b4ee",
-            "data": [
-              [
-                "ins",
-                "Extensible"
-              ]
+        }
+      ],
+      "user": "michael",
+      "sha": "d0fb04a5f66c77df0dcf92fd4e191910",
+      "head": "master",
+      "parent": "966c4a6f0e81518090a463c74ad8fc12"
+    },
+    "72a156f7193543eedfbf92ebbed6efa2": {
+      "op": [
+        "update",
+        {
+          "id": "text:c7e0e43f29b7427d624fa492a1779815",
+          "data": [
+            [
+              "ins",
+              "The current release is 0.4.1. Our next major release, 0.5.0 will feature a compeletely new architecture and will land at the end of the year. Until then, try the demo or integrate one of our stable modules for your project."
             ]
-          }
-        ],
-        "user": "michael",
-        "sha": "a42653713bf9984de657444670266980",
-        "head": "master",
-        "parent": "63f9a3c643bbfa1b819e2ff7dafe0a0e"
-      },
-      "b5c77afb40c0f105cb65dd134c039099": {
-        "op": [
-          "insert",
-          {
-            "id": "text:f67c9f289d65dab55303aa1f2b122749",
-            "type": "text",
-            "target": "section:5141e40c5a47f4a78b68c02abce6b4ee",
-            "data": {
-              "content": ""
-            }
-          }
-        ],
-        "user": "michael",
-        "sha": "b5c77afb40c0f105cb65dd134c039099",
-        "head": "master",
-        "parent": "a42653713bf9984de657444670266980"
-      },
-      "a4d1dd3549267060f0a11c1c0c963f5d": {
-        "op": [
-          "update",
-          {
-            "id": "text:f67c9f289d65dab55303aa1f2b122749",
-            "data": [
-              [
-                "ins",
-                "Documents are exposed as data, ready to be analyzed, visualized, exported (PDF,ePub, etc.) or integrated with other applications. Additional content types (formulas, maps, etc.) can easily be added by the community."
-              ]
+          ]
+        }
+      ],
+      "user": "michael",
+      "sha": "72a156f7193543eedfbf92ebbed6efa2",
+      "head": "master",
+      "parent": "d0fb04a5f66c77df0dcf92fd4e191910"
+    },
+    "9d814a148a4d2e8f7e2100388889f014": {
+      "op": [
+        "update",
+        {
+          "id": "text:8bacc9161c7987b73682ac091803e7a7",
+          "data": [
+            [
+              "ins",
+              "The current release is 0.4.1. Our next major release, 0.5.0 will feature a compeletely new architecture and will land at the end of the year. Until then, try the demo or integrate one of our stable modules for your project."
             ]
-          }
-        ],
-        "user": "michael",
-        "sha": "a4d1dd3549267060f0a11c1c0c963f5d",
-        "head": "master",
-        "parent": "b5c77afb40c0f105cb65dd134c039099"
-      },
-      "35cbf4fafd6623ddb65385bf9c3ce690": {
-        "op": [
-          "insert",
-          {
-            "id": "section:2f5f34f6a65ea0e5a72e6c8e2691d06c",
-            "type": "section",
-            "target": "text:f67c9f289d65dab55303aa1f2b122749",
-            "data": {
-              "content": ""
-            }
-          }
-        ],
-        "user": "michael",
-        "sha": "35cbf4fafd6623ddb65385bf9c3ce690",
-        "head": "master",
-        "parent": "a4d1dd3549267060f0a11c1c0c963f5d"
-      },
-      "85786559522424fe928e5d25c17d0a3b": {
-        "op": [
-          "update",
-          {
-            "id": "text:f67c9f289d65dab55303aa1f2b122749",
-            "data": [
-              [
-                "ret",
-                79
-              ],
-              [
-                "ins",
-                " "
-              ],
-              [
-                "ret",
-                136
-              ]
+          ]
+        }
+      ],
+      "user": "michael",
+      "sha": "9d814a148a4d2e8f7e2100388889f014",
+      "head": "master",
+      "parent": "72a156f7193543eedfbf92ebbed6efa2"
+    },
+    "ce686d87a6c866013f0550a7148c4a4b": {
+      "op": [
+        "update",
+        {
+          "id": "text:8bacc9161c7987b73682ac091803e7a7",
+          "data": [
+            [
+              "del",
+              1
+            ],
+            [
+              "ins",
+              "In t"
+            ],
+            [
+              "ret",
+              3
+            ],
+            [
+              "del",
+              4
+            ],
+            [
+              "ins",
+              "m"
+            ],
+            [
+              "ret",
+              1
+            ],
+            [
+              "ins",
+              "a"
+            ],
+            [
+              "ret",
+              1
+            ],
+            [
+              "del",
+              4
+            ],
+            [
+              "ins",
+              "whi"
+            ],
+            [
+              "ret",
+              2
+            ],
+            [
+              "del",
+              3
+            ],
+            [
+              "ins",
+              ","
+            ],
+            [
+              "ret",
+              2
+            ],
+            [
+              "del",
+              8
+            ],
+            [
+              "ins",
+              "f"
+            ],
+            [
+              "ret",
+              1
+            ],
+            [
+              "del",
+              1
+            ],
+            [
+              "ins",
+              "yo"
+            ],
+            [
+              "ret",
+              1
+            ],
+            [
+              "ins",
+              "'"
+            ],
+            [
+              "ret",
+              1
+            ],
+            [
+              "ins",
+              "e"
+            ],
+            [
+              "ret",
+              1
+            ],
+            [
+              "ins",
+              "looki"
+            ],
+            [
+              "ret",
+              1
+            ],
+            [
+              "del",
+              3
+            ],
+            [
+              "ins",
+              "g"
+            ],
+            [
+              "ret",
+              1
+            ],
+            [
+              "del",
+              3
+            ],
+            [
+              "ins",
+              "f"
+            ],
+            [
+              "ret",
+              2
+            ],
+            [
+              "ins",
+              " a"
+            ],
+            [
+              "ret",
+              4
+            ],
+            [
+              "del",
+              1
+            ],
+            [
+              "ins",
+              "i"
+            ],
+            [
+              "ret",
+              1
+            ],
+            [
+              "del",
+              1
+            ],
+            [
+              "ins",
+              "bl"
+            ],
+            [
+              "ret",
+              1
+            ],
+            [
+              "del",
+              1
+            ],
+            [
+              "ret",
+              1
+            ],
+            [
+              "del",
+              5
+            ],
+            [
+              "ins",
+              "minimal"
+            ],
+            [
+              "ret",
+              2
+            ],
+            [
+              "ins",
+              "r"
+            ],
+            [
+              "ret",
+              1
+            ],
+            [
+              "del",
+              2
+            ],
+            [
+              "ins",
+              "ting"
+            ],
+            [
+              "ret",
+              1
+            ],
+            [
+              "del",
+              1
+            ],
+            [
+              "ret",
+              1
+            ],
+            [
+              "del",
+              3
+            ],
+            [
+              "ins",
+              "nvi"
+            ],
+            [
+              "ret",
+              1
+            ],
+            [
+              "del",
+              5
+            ],
+            [
+              "ret",
+              1
+            ],
+            [
+              "ins",
+              "n"
+            ],
+            [
+              "ret",
+              1
+            ],
+            [
+              "del",
+              1
+            ],
+            [
+              "ret",
+              1
+            ],
+            [
+              "del",
+              2
+            ],
+            [
+              "ins",
+              "n"
+            ],
+            [
+              "ret",
+              1
+            ],
+            [
+              "del",
+              3
+            ],
+            [
+              "ins",
+              ","
+            ],
+            [
+              "ret",
+              1
+            ],
+            [
+              "del",
+              1
+            ],
+            [
+              "ins",
+              "w"
+            ],
+            [
+              "ret",
+              1
+            ],
+            [
+              "del",
+              1
+            ],
+            [
+              "ret",
+              1
+            ],
+            [
+              "del",
+              1
+            ],
+            [
+              "ret",
+              1
+            ],
+            [
+              "del",
+              4
+            ],
+            [
+              "ret",
+              2
+            ],
+            [
+              "del",
+              3
+            ],
+            [
+              "ins",
+              "omm"
+            ],
+            [
+              "ret",
+              1
+            ],
+            [
+              "del",
+              2
+            ],
+            [
+              "ret",
+              3
+            ],
+            [
+              "del",
+              1
+            ],
+            [
+              "ins",
+              "us"
+            ],
+            [
+              "ret",
+              1
+            ],
+            [
+              "del",
+              5
+            ],
+            [
+              "ret",
+              1
+            ],
+            [
+              "del",
+              13
+            ],
+            [
+              "ins",
+              "g Pr"
+            ],
+            [
+              "ret",
+              1
+            ],
+            [
+              "del",
+              4
+            ],
+            [
+              "ins",
+              "s"
+            ],
+            [
+              "ret",
+              1
+            ],
+            [
+              "ins",
+              ","
+            ],
+            [
+              "ret",
+              1
+            ],
+            [
+              "del",
+              2
+            ],
+            [
+              "ret",
+              1
+            ],
+            [
+              "del",
+              2
+            ],
+            [
+              "ret",
+              1
+            ],
+            [
+              "del",
+              1
+            ],
+            [
+              "ins",
+              "co"
+            ],
+            [
+              "ret",
+              2
+            ],
+            [
+              "del",
+              5
+            ],
+            [
+              "ret",
+              2
+            ],
+            [
+              "del",
+              2
+            ],
+            [
+              "ret",
+              1
+            ],
+            [
+              "del",
+              2
+            ],
+            [
+              "ret",
+              1
+            ],
+            [
+              "del",
+              2
+            ],
+            [
+              "ret",
+              1
+            ],
+            [
+              "del",
+              1
+            ],
+            [
+              "ret",
+              1
+            ],
+            [
+              "del",
+              2
+            ],
+            [
+              "ins",
+              "it"
+            ],
+            [
+              "ret",
+              1
+            ],
+            [
+              "ins",
+              "r"
+            ],
+            [
+              "ret",
+              1
+            ],
+            [
+              "ins",
+              "f"
+            ],
+            [
+              "ret",
+              3
+            ],
+            [
+              "ins",
+              "G"
+            ],
+            [
+              "ret",
+              1
+            ],
+            [
+              "del",
+              1
+            ],
+            [
+              "ins",
+              "tHub "
+            ],
+            [
+              "ret",
+              1
+            ],
+            [
+              "del",
+              3
+            ],
+            [
+              "ins",
+              "h"
+            ],
+            [
+              "ret",
+              2
+            ],
+            [
+              "del",
+              1
+            ],
+            [
+              "ret",
+              1
+            ],
+            [
+              "del",
+              3
+            ],
+            [
+              "ins",
+              "is"
+            ],
+            [
+              "ret",
+              2
+            ],
+            [
+              "del",
+              7
+            ],
+            [
+              "ins",
+              "p"
+            ],
+            [
+              "ret",
+              1
+            ],
+            [
+              "del",
+              3
+            ],
+            [
+              "ins",
+              "imiz"
+            ],
+            [
+              "ret",
+              1
+            ],
+            [
+              "del",
+              3
+            ],
+            [
+              "ret",
+              1
+            ],
+            [
+              "del",
+              4
+            ],
+            [
+              "ret",
+              5
+            ],
+            [
+              "del",
+              4
+            ],
+            [
+              "ins",
+              "editing"
+            ],
+            [
+              "ret",
+              1
+            ],
+            [
+              "del",
+              1
+            ],
+            [
+              "ins",
+              "Ma"
+            ],
+            [
+              "ret",
+              1
+            ],
+            [
+              "ins",
+              "kd"
+            ],
+            [
+              "ret",
+              1
+            ],
+            [
+              "del",
+              4
+            ],
+            [
+              "ins",
+              "wn"
+            ],
+            [
+              "ret",
+              1
             ]
+          ]
+        }
+      ],
+      "user": "michael",
+      "sha": "ce686d87a6c866013f0550a7148c4a4b",
+      "head": "master",
+      "parent": "9d814a148a4d2e8f7e2100388889f014"
+    },
+    "039bbc9e551e05e3a5c0e811ddb222b1": {
+      "op": [
+        "insert",
+        {
+          "id": "section:d202c850f7a79adc1f4e26fb0239234e",
+          "type": "section",
+          "target": "text:p1",
+          "data": {
+            "content": ""
           }
-        ],
-        "user": "michael",
-        "sha": "85786559522424fe928e5d25c17d0a3b",
-        "head": "master",
-        "parent": "35cbf4fafd6623ddb65385bf9c3ce690"
-      },
-      "8b4905fd42b89b8bf1802dab274b33be": {
-        "op": [
-          "update",
-          {
-            "id": "section:2f5f34f6a65ea0e5a72e6c8e2691d06c",
-            "data": [
-              [
-                "ins",
-                "Runs everywhere"
-              ]
+        }
+      ],
+      "user": "michael",
+      "sha": "039bbc9e551e05e3a5c0e811ddb222b1",
+      "head": "master",
+      "parent": "ce686d87a6c866013f0550a7148c4a4b"
+    },
+    "9caf8218f6cb9c5bd4ce0bb4309d41a0": {
+      "op": [
+        "update",
+        {
+          "id": "section:d202c850f7a79adc1f4e26fb0239234e",
+          "data": [
+            [
+              "ins",
+              "asdfa"
             ]
-          }
-        ],
-        "user": "michael",
-        "sha": "8b4905fd42b89b8bf1802dab274b33be",
-        "head": "master",
-        "parent": "85786559522424fe928e5d25c17d0a3b"
-      },
-      "0e764f0d9d089f1af63b27015bebc2fc": {
-        "op": [
-          "insert",
-          {
-            "id": "text:a76dd064429c2cfa74018d84d7b3b019",
-            "type": "text",
-            "target": "section:2f5f34f6a65ea0e5a72e6c8e2691d06c",
-            "data": {
-              "content": ""
-            }
-          }
-        ],
-        "user": "michael",
-        "sha": "0e764f0d9d089f1af63b27015bebc2fc",
-        "head": "master",
-        "parent": "8b4905fd42b89b8bf1802dab274b33be"
-      },
-      "16de703f2763021d2d465b08f67cf3de": {
-        "op": [
-          "update",
-          {
-            "id": "text:a76dd064429c2cfa74018d84d7b3b019",
-            "data": [
-              [
-                "ins",
-                "Substance can be deployed easily. We are working on adistributed architecture that allows you to run Substance on your own computer and let it talk to other Substance nodes in a peer to peer fashion."
-              ]
+          ]
+        }
+      ],
+      "user": "michael",
+      "sha": "9caf8218f6cb9c5bd4ce0bb4309d41a0",
+      "head": "master",
+      "parent": "039bbc9e551e05e3a5c0e811ddb222b1"
+    },
+    "c8681cda89d82dd1ded90d1a054b4675": {
+      "op": [
+        "update",
+        {
+          "id": "section:d202c850f7a79adc1f4e26fb0239234e",
+          "data": [
+            [
+              "ins",
+              "Sem"
+            ],
+            [
+              "ret",
+              1
+            ],
+            [
+              "del",
+              1
+            ],
+            [
+              "ins",
+              "ntic E"
+            ],
+            [
+              "ret",
+              1
+            ],
+            [
+              "del",
+              2
+            ],
+            [
+              "ins",
+              "iting"
             ]
+          ]
+        }
+      ],
+      "user": "michael",
+      "sha": "c8681cda89d82dd1ded90d1a054b4675",
+      "head": "master",
+      "parent": "9caf8218f6cb9c5bd4ce0bb4309d41a0"
+    },
+    "b8285b458248244cb6f567b0a0e4d055": {
+      "op": [
+        "insert",
+        {
+          "id": "text:67b5de5d0eab741ee3db7dbd63aa27e9",
+          "type": "text",
+          "target": "section:d202c850f7a79adc1f4e26fb0239234e",
+          "data": {
+            "content": ""
           }
-        ],
-        "user": "michael",
-        "sha": "16de703f2763021d2d465b08f67cf3de",
-        "head": "master",
-        "parent": "0e764f0d9d089f1af63b27015bebc2fc"
-      },
-      "fa7892bd94748d2948b31fe494b3c827": {
-        "op": [
-          "update",
-          {
-            "id": "text:a76dd064429c2cfa74018d84d7b3b019",
-            "data": [
-              [
-                "ret",
-                53
-              ],
-              [
-                "ins",
-                " "
-              ],
-              [
-                "ret",
-                146
-              ]
+        }
+      ],
+      "user": "michael",
+      "sha": "b8285b458248244cb6f567b0a0e4d055",
+      "head": "master",
+      "parent": "c8681cda89d82dd1ded90d1a054b4675"
+    },
+    "d91d80c4fcbf9db16a51eff301a7b295": {
+      "op": [
+        "update",
+        {
+          "id": "text:67b5de5d0eab741ee3db7dbd63aa27e9",
+          "data": [
+            [
+              "ins",
+              "Unlike traditional word-processors, Substance focuses on content, by leaving the layout part to the system, not the user. Because of the absence of formatting utilities, it suggests structured, content-oriented writing."
             ]
+          ]
+        }
+      ],
+      "user": "michael",
+      "sha": "d91d80c4fcbf9db16a51eff301a7b295",
+      "head": "master",
+      "parent": "b8285b458248244cb6f567b0a0e4d055"
+    },
+    "46260811597b041e3b9d500bafb6223b": {
+      "op": [
+        "insert",
+        {
+          "id": "section:3509a7d6041142bb85cdf3cf51f8f0d2",
+          "type": "section",
+          "target": "section:f9b8dfcfede7c75043813edd6e013ae3",
+          "data": {
+            "content": ""
           }
-        ],
-        "user": "michael",
-        "sha": "fa7892bd94748d2948b31fe494b3c827",
-        "head": "master",
-        "parent": "16de703f2763021d2d465b08f67cf3de"
-      },
-      "447f89c3aa6b248dfce54b5d97c1fd7c": {
-        "op": [
-          "set",
-          {
-            "title": [
-              [
-                "ins",
-                "Substance"
-              ]
+        }
+      ],
+      "user": "michael",
+      "sha": "46260811597b041e3b9d500bafb6223b",
+      "head": "master",
+      "parent": "d91d80c4fcbf9db16a51eff301a7b295"
+    },
+    "cd80bf3ba02ff2004cec4efff1ea6f56": {
+      "op": [
+        "update",
+        {
+          "id": "section:3509a7d6041142bb85cdf3cf51f8f0d2",
+          "data": [
+            [
+              "ins",
+              "Content is data"
             ]
+          ]
+        }
+      ],
+      "user": "michael",
+      "sha": "cd80bf3ba02ff2004cec4efff1ea6f56",
+      "head": "master",
+      "parent": "46260811597b041e3b9d500bafb6223b"
+    },
+    "0c045d0733077230f0fcef8ff695c1e6": {
+      "op": [
+        "move",
+        {
+          "nodes": [
+            "section:3509a7d6041142bb85cdf3cf51f8f0d2"
+          ],
+          "target": "text:67b5de5d0eab741ee3db7dbd63aa27e9"
+        }
+      ],
+      "user": "michael",
+      "sha": "0c045d0733077230f0fcef8ff695c1e6",
+      "head": "master",
+      "parent": "cd80bf3ba02ff2004cec4efff1ea6f56"
+    },
+    "ed1665a85410d34c034a562758ae90ee": {
+      "op": [
+        "insert",
+        {
+          "id": "text:0d4d27c8c32c0f5363867cdb74acc982",
+          "type": "text",
+          "target": "section:3509a7d6041142bb85cdf3cf51f8f0d2",
+          "data": {
+            "content": ""
           }
-        ],
-        "user": "michael",
-        "sha": "447f89c3aa6b248dfce54b5d97c1fd7c",
-        "head": "master",
-        "parent": "fa7892bd94748d2948b31fe494b3c827"
-      },
-      "5af4beb6050db5c31b3d0b772246fd43": {
-        "op": [
-          "set",
-          {
-            "abstract": [
-              [
-                "ins",
-                "Substance is an open platform for collaborative composition and sharing of digital documents."
-              ]
+        }
+      ],
+      "user": "michael",
+      "sha": "ed1665a85410d34c034a562758ae90ee",
+      "head": "master",
+      "parent": "0c045d0733077230f0fcef8ff695c1e6"
+    },
+    "e4081857ad1abf62e527dd8e8727e23b": {
+      "op": [
+        "update",
+        {
+          "id": "text:0d4d27c8c32c0f5363867cdb74acc982",
+          "data": [
+            [
+              "ins",
+              "Substance considers content as data, which allows digital documents to be queried like a database. Processing digital documents used to be a pain, with Substance it's a pleasure."
             ]
+          ]
+        }
+      ],
+      "user": "michael",
+      "sha": "e4081857ad1abf62e527dd8e8727e23b",
+      "head": "master",
+      "parent": "ed1665a85410d34c034a562758ae90ee"
+    },
+    "ad284134db749f6aa93d39ef3f5c6909": {
+      "op": [
+        "insert",
+        {
+          "id": "section:93ba8bda139d31b377729e7113d2e669",
+          "type": "section",
+          "target": "text:0d4d27c8c32c0f5363867cdb74acc982",
+          "data": {
+            "content": ""
           }
-        ],
-        "user": "michael",
-        "sha": "5af4beb6050db5c31b3d0b772246fd43",
-        "head": "master",
-        "parent": "447f89c3aa6b248dfce54b5d97c1fd7c"
-      },
-      "c32c936a1b1d647c1f6793e14c8bb962": {
-        "op": [
-          "delete",
-          {
-            "nodes": [
-              "section:hello",
-              "text:hello"
+        }
+      ],
+      "user": "michael",
+      "sha": "ad284134db749f6aa93d39ef3f5c6909",
+      "head": "master",
+      "parent": "e4081857ad1abf62e527dd8e8727e23b"
+    },
+    "29ffba40eff6608323ac5d85069ab042": {
+      "op": [
+        "update",
+        {
+          "id": "section:93ba8bda139d31b377729e7113d2e669",
+          "data": [
+            [
+              "ins",
+              "Collaboration"
             ]
+          ]
+        }
+      ],
+      "user": "michael",
+      "sha": "29ffba40eff6608323ac5d85069ab042",
+      "head": "master",
+      "parent": "ad284134db749f6aa93d39ef3f5c6909"
+    },
+    "0e0cb71bd7517f439064853b543edd84": {
+      "op": [
+        "insert",
+        {
+          "id": "text:7aa8c5f7492c0ba56d370cacae30c52b",
+          "type": "text",
+          "target": "section:93ba8bda139d31b377729e7113d2e669",
+          "data": {
+            "content": ""
           }
-        ],
-        "user": "michael",
-        "sha": "c32c936a1b1d647c1f6793e14c8bb962",
-        "head": "master",
-        "parent": "5af4beb6050db5c31b3d0b772246fd43"
-      }
+        }
+      ],
+      "user": "michael",
+      "sha": "0e0cb71bd7517f439064853b543edd84",
+      "head": "master",
+      "parent": "29ffba40eff6608323ac5d85069ab042"
+    },
+    "59b43a70c9717e02d6afbcc2e2230453": {
+      "op": [
+        "update",
+        {
+          "id": "text:7aa8c5f7492c0ba56d370cacae30c52b",
+          "data": [
+            [
+              "ins",
+              "Substance allows opencollaboration in realtime. Every reader can be a potential contributor by submitting comments and patches to a document."
+            ]
+          ]
+        }
+      ],
+      "user": "michael",
+      "sha": "59b43a70c9717e02d6afbcc2e2230453",
+      "head": "master",
+      "parent": "0e0cb71bd7517f439064853b543edd84"
+    },
+    "547d85a8393bb3f48680aa24a56ddbfc": {
+      "op": [
+        "insert",
+        {
+          "id": "section:c9bbceb9d0a92c0defefe86532aa8a6f",
+          "type": "section",
+          "target": "text:7aa8c5f7492c0ba56d370cacae30c52b",
+          "data": {
+            "content": ""
+          }
+        }
+      ],
+      "user": "michael",
+      "sha": "547d85a8393bb3f48680aa24a56ddbfc",
+      "head": "master",
+      "parent": "59b43a70c9717e02d6afbcc2e2230453"
+    },
+    "8c1bb35ade580f03c1c7c79f58d63664": {
+      "op": [
+        "update",
+        {
+          "id": "section:c9bbceb9d0a92c0defefe86532aa8a6f",
+          "data": [
+            [
+              "ins",
+              "Modular"
+            ]
+          ]
+        }
+      ],
+      "user": "michael",
+      "sha": "8c1bb35ade580f03c1c7c79f58d63664",
+      "head": "master",
+      "parent": "547d85a8393bb3f48680aa24a56ddbfc"
+    },
+    "0ab9d898f28c85e93b81310b195ad2c8": {
+      "op": [
+        "insert",
+        {
+          "id": "text:6ae2af67bcac05761265e889609614ef",
+          "type": "text",
+          "target": "section:c9bbceb9d0a92c0defefe86532aa8a6f",
+          "data": {
+            "content": ""
+          }
+        }
+      ],
+      "user": "michael",
+      "sha": "0ab9d898f28c85e93b81310b195ad2c8",
+      "head": "master",
+      "parent": "8c1bb35ade580f03c1c7c79f58d63664"
+    },
+    "8d33a973572350a8186207fdc97fe5e5": {
+      "op": [
+        "update",
+        {
+          "id": "text:6ae2af67bcac05761265e889609614ef",
+          "data": [
+            [
+              "ins",
+              "Substance conists of severalmodules that are developed independently and can be used on its own."
+            ]
+          ]
+        }
+      ],
+      "user": "michael",
+      "sha": "8d33a973572350a8186207fdc97fe5e5",
+      "head": "master",
+      "parent": "0ab9d898f28c85e93b81310b195ad2c8"
+    },
+    "63f9a3c643bbfa1b819e2ff7dafe0a0e": {
+      "op": [
+        "insert",
+        {
+          "id": "section:5141e40c5a47f4a78b68c02abce6b4ee",
+          "type": "section",
+          "target": "text:6ae2af67bcac05761265e889609614ef",
+          "data": {
+            "content": ""
+          }
+        }
+      ],
+      "user": "michael",
+      "sha": "63f9a3c643bbfa1b819e2ff7dafe0a0e",
+      "head": "master",
+      "parent": "8d33a973572350a8186207fdc97fe5e5"
+    },
+    "a42653713bf9984de657444670266980": {
+      "op": [
+        "update",
+        {
+          "id": "section:5141e40c5a47f4a78b68c02abce6b4ee",
+          "data": [
+            [
+              "ins",
+              "Extensible"
+            ]
+          ]
+        }
+      ],
+      "user": "michael",
+      "sha": "a42653713bf9984de657444670266980",
+      "head": "master",
+      "parent": "63f9a3c643bbfa1b819e2ff7dafe0a0e"
+    },
+    "b5c77afb40c0f105cb65dd134c039099": {
+      "op": [
+        "insert",
+        {
+          "id": "text:f67c9f289d65dab55303aa1f2b122749",
+          "type": "text",
+          "target": "section:5141e40c5a47f4a78b68c02abce6b4ee",
+          "data": {
+            "content": ""
+          }
+        }
+      ],
+      "user": "michael",
+      "sha": "b5c77afb40c0f105cb65dd134c039099",
+      "head": "master",
+      "parent": "a42653713bf9984de657444670266980"
+    },
+    "a4d1dd3549267060f0a11c1c0c963f5d": {
+      "op": [
+        "update",
+        {
+          "id": "text:f67c9f289d65dab55303aa1f2b122749",
+          "data": [
+            [
+              "ins",
+              "Documents are exposed as data, ready to be analyzed, visualized, exported (PDF,ePub, etc.) or integrated with other applications. Additional content types (formulas, maps, etc.) can easily be added by the community."
+            ]
+          ]
+        }
+      ],
+      "user": "michael",
+      "sha": "a4d1dd3549267060f0a11c1c0c963f5d",
+      "head": "master",
+      "parent": "b5c77afb40c0f105cb65dd134c039099"
+    },
+    "35cbf4fafd6623ddb65385bf9c3ce690": {
+      "op": [
+        "insert",
+        {
+          "id": "section:2f5f34f6a65ea0e5a72e6c8e2691d06c",
+          "type": "section",
+          "target": "text:f67c9f289d65dab55303aa1f2b122749",
+          "data": {
+            "content": ""
+          }
+        }
+      ],
+      "user": "michael",
+      "sha": "35cbf4fafd6623ddb65385bf9c3ce690",
+      "head": "master",
+      "parent": "a4d1dd3549267060f0a11c1c0c963f5d"
+    },
+    "85786559522424fe928e5d25c17d0a3b": {
+      "op": [
+        "update",
+        {
+          "id": "text:f67c9f289d65dab55303aa1f2b122749",
+          "data": [
+            [
+              "ret",
+              79
+            ],
+            [
+              "ins",
+              " "
+            ],
+            [
+              "ret",
+              136
+            ]
+          ]
+        }
+      ],
+      "user": "michael",
+      "sha": "85786559522424fe928e5d25c17d0a3b",
+      "head": "master",
+      "parent": "35cbf4fafd6623ddb65385bf9c3ce690"
+    },
+    "8b4905fd42b89b8bf1802dab274b33be": {
+      "op": [
+        "update",
+        {
+          "id": "section:2f5f34f6a65ea0e5a72e6c8e2691d06c",
+          "data": [
+            [
+              "ins",
+              "Runs everywhere"
+            ]
+          ]
+        }
+      ],
+      "user": "michael",
+      "sha": "8b4905fd42b89b8bf1802dab274b33be",
+      "head": "master",
+      "parent": "85786559522424fe928e5d25c17d0a3b"
+    },
+    "0e764f0d9d089f1af63b27015bebc2fc": {
+      "op": [
+        "insert",
+        {
+          "id": "text:a76dd064429c2cfa74018d84d7b3b019",
+          "type": "text",
+          "target": "section:2f5f34f6a65ea0e5a72e6c8e2691d06c",
+          "data": {
+            "content": ""
+          }
+        }
+      ],
+      "user": "michael",
+      "sha": "0e764f0d9d089f1af63b27015bebc2fc",
+      "head": "master",
+      "parent": "8b4905fd42b89b8bf1802dab274b33be"
+    },
+    "16de703f2763021d2d465b08f67cf3de": {
+      "op": [
+        "update",
+        {
+          "id": "text:a76dd064429c2cfa74018d84d7b3b019",
+          "data": [
+            [
+              "ins",
+              "Substance can be deployed easily. We are working on adistributed architecture that allows you to run Substance on your own computer and let it talk to other Substance nodes in a peer to peer fashion."
+            ]
+          ]
+        }
+      ],
+      "user": "michael",
+      "sha": "16de703f2763021d2d465b08f67cf3de",
+      "head": "master",
+      "parent": "0e764f0d9d089f1af63b27015bebc2fc"
+    },
+    "fa7892bd94748d2948b31fe494b3c827": {
+      "op": [
+        "update",
+        {
+          "id": "text:a76dd064429c2cfa74018d84d7b3b019",
+          "data": [
+            [
+              "ret",
+              53
+            ],
+            [
+              "ins",
+              " "
+            ],
+            [
+              "ret",
+              146
+            ]
+          ]
+        }
+      ],
+      "user": "michael",
+      "sha": "fa7892bd94748d2948b31fe494b3c827",
+      "head": "master",
+      "parent": "16de703f2763021d2d465b08f67cf3de"
+    },
+    "447f89c3aa6b248dfce54b5d97c1fd7c": {
+      "op": [
+        "set",
+        {
+          "title": [
+            [
+              "ins",
+              "Substance"
+            ]
+          ]
+        }
+      ],
+      "user": "michael",
+      "sha": "447f89c3aa6b248dfce54b5d97c1fd7c",
+      "head": "master",
+      "parent": "fa7892bd94748d2948b31fe494b3c827"
+    },
+    "5af4beb6050db5c31b3d0b772246fd43": {
+      "op": [
+        "set",
+        {
+          "abstract": [
+            [
+              "ins",
+              "Substance is an open platform for collaborative composition and sharing of digital documents."
+            ]
+          ]
+        }
+      ],
+      "user": "michael",
+      "sha": "5af4beb6050db5c31b3d0b772246fd43",
+      "head": "master",
+      "parent": "447f89c3aa6b248dfce54b5d97c1fd7c"
+    },
+    "c32c936a1b1d647c1f6793e14c8bb962": {
+      "op": [
+        "delete",
+        {
+          "nodes": [
+            "section:hello",
+            "text:hello"
+          ]
+        }
+      ],
+      "user": "michael",
+      "sha": "c32c936a1b1d647c1f6793e14c8bb962",
+      "head": "master",
+      "parent": "5af4beb6050db5c31b3d0b772246fd43"
     }
   },
-  "annotations": {
+  "additions": {
     "c32c936a1b1d647c1f6793e14c8bb962": {
       "annotations": [
         ["insert", {"id": "annotation:a", "type": "mark-2", "node": "text:p1", "pos": [8, 10]}],

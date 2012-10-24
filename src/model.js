@@ -63,7 +63,7 @@ _.extend(Comments.prototype, _.Events, {
 
     if (node) {
       var content = this.session.document.content.nodes[node].content;
-      var annotations = this.session.document.getAnnotations(node);
+      var annotations = this.session.document.annotations(node);
     }
     this.commentsForNode(this.session.document, node, content, annotations);
   },
@@ -94,7 +94,7 @@ _.extend(Comments.prototype, _.Events, {
         name: "Node",
         type: "node",
         id: "node_comments",
-        comments: document.getNodeComments(node)
+        comments: document.comments(node)
       });
 
       _.each(annotations, function(a) {
@@ -103,7 +103,7 @@ _.extend(Comments.prototype, _.Events, {
           type: a.type,
           annotation: a.id,
           id: a.id,
-          comments: document.getCommentsForAnnotation(a.id)
+          comments: document.commentsForAnnotation(a.id)
         });
       }, this);
     } else {
@@ -111,7 +111,7 @@ _.extend(Comments.prototype, _.Events, {
         id: "document_comments",
         name: "Document",
         type: "document",
-        comments: document.getDocumentComments()
+        comments: document.documentComments()
       });
     }
     this.session.trigger('comments:updated');
@@ -213,7 +213,7 @@ _.extend(Substance.Session.prototype, _.Events, {
 function loadDocument(id, cb) {
   store.get(id, function(err, document) {
     var session = new Substance.Session({
-      document: new Substance.AnnotatedDocument(document)
+      document: new Substance.Document(document)
     });
     cb(err, session);
   });

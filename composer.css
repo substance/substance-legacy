@@ -219,7 +219,7 @@ h2 { font-size: 160%; padding-bottom: 15px; }
   padding-left: 40px;
   font-weight: bold;
   font-size: 12px;
-  -webkit-transition: background 200ms linear;
+  /*-webkit-transition: background 200ms linear;*/
   /*opacity: 0.7;*/
 }
 
@@ -547,9 +547,9 @@ h2 { font-size: 160%; padding-bottom: 15px; }
   background: blue;
 }
 
-.content-node .mark-1 { -webkit-transition: background-color 200ms linear; background-color: rgba(171, 201, 36, 0.3); }
-.content-node .mark-2 { -webkit-transition: background-color 200ms linear; background-color: rgba(16, 167, 222, 0.3); }
-.content-node .mark-3 { -webkit-transition: background-color 200ms linear; background-color: rgba(237, 96, 48, 0.3); }
+.content-node .mark-1 { background-color: rgba(171, 201, 36, 0.3); }
+.content-node .mark-2 { background-color: rgba(16, 167, 222, 0.3); }
+.content-node .mark-3 { background-color: rgba(237, 96, 48, 0.3); }
 
 .content-node .mark-1.highlight { background-color: rgba(171, 201, 36, 0.6); }
 .content-node .mark-2.highlight { background-color: rgba(16, 167, 222, 0.6);}

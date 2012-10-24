@@ -27,7 +27,7 @@ sc.views.Node.define('text', {
   initSurface: function() {
     var that = this;
 
-    var annotations = app.view.model.document.getAnnotations(this.model.id);
+    var annotations = app.view.model.document.annotations(this.model.id);
 
     // TODO: don't use globals!
     // Use global event delegation
@@ -88,15 +88,13 @@ sc.views.Node.define('text', {
     this.surface.on('content:changed', function(content, prevContent, ops) {
       var delta = _.extractOperation(prevContent, content);
 
-      // console.log('Partial text update', delta);
+      console.log('Partial text update', delta);
 
       if (content !== prevContent) {
-        var op = {
-          op: ["update", {id: that.model.id, "data": delta}],
-          user: "michael"
-        };
+        var op = ["update", {id: that.model.id, "data": delta}];
 
-        // Triggers a re-render of the node?
+        // Does not trigger a re-render of the node
+        // This only happens for operations coming from outside
         that.document.apply(op);
       }
 
