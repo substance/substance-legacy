@@ -4,3 +4,6 @@
 [submodule "src/visualizations/linechart"]
 	path = src/visualizations/linechart
 	url = git://github.com/michael/linechart.git
+[submodule "lib/hiredis"]
+	path = lib/hiredis
+	url = https://github.com/redis/hiredis.git
