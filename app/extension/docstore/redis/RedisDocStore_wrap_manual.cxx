@@ -1507,7 +1507,7 @@ SWIG_PropagateClientData(void) {
 extern "C" {
 #endif
 
-  bool docstore_initialize(JSGlobalContextRef context) {
+  bool redis_docstore_initialize(JSGlobalContextRef context) {
     SWIG_InitializeModule(0);
 
     JSObjectRef global_object = JSContextGetGlobalObject(context);
