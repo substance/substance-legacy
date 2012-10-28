@@ -20,11 +20,12 @@ add_executable(substance
 )
 
 # TODO: extract these using pkg-config and wx-condfig
-set_target_properties(substance 
+set_target_properties(substance
   PROPERTIES
     COMPILE_FLAGS "-DWXUSINGDLL -D__WXGTK__"
 )
 
+add_dependencies(substance wxWidgets)
 
 # TODO: extract these using pkg-config and wx-condfig
 target_link_libraries(substance

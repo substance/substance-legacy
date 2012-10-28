@@ -16,6 +16,9 @@ ADD_LIBRARY(
   ${REDIS_DOCSTORE_SOURCES}
 )
 
-include_directories(${JSC_INCLUDE_DIR})
+include_directories(
+  ${JSC_INCLUDE_DIR}
+  ${BOOST_INCLUDE_DIRS}
+)
 
 target_link_libraries(redisdocstore jsobjects)

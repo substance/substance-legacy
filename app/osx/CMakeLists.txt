@@ -14,7 +14,7 @@ find_library(WEBKIT WebKit)
 # skip generation of this project
 find_program(IBTOOL ibtool HINTS "/usr/bin" "${OSX_DEVELOPER_ROOT}/usr/bin")
 if (${IBTOOL} STREQUAL "IBTOOL-NOTFOUND")
-  message(SEND_ERROR "ibtool can not be found and is needed to compile the .xib files. It should have been installed with 
+  message(SEND_ERROR "ibtool can not be found and is needed to compile the .xib files. It should have been installed with
                     the Apple developer tools. The default system paths were searched in addition to ${OSX_DEVELOPER_ROOT}/usr/bin")
 endif()
 
@@ -43,6 +43,10 @@ set (SUBSTANCE_XIBS
 # The Substance executable
 # ========================
 
+include_directories(
+  ${BOOST_DIR}
+)
+
 add_executable(substance MACOSX_BUNDLE
   main.m
   appDelegate.h
@@ -52,7 +56,7 @@ add_executable(substance MACOSX_BUNDLE
   MainMenu.xib
 )
 
-target_link_libraries(substance 
+target_link_libraries(substance
   ${COREDATA} ${FOUNDATION}
   ${APPKIT} ${COCOA}
   ${WEBKIT}
@@ -67,9 +71,9 @@ add_custom_command (TARGET substance PRE_BUILD
 
 # Compile the .xib files using the 'ibtool' program with the destination being the app package
 foreach(xib ${SUBSTANCE_XIBS})
-  add_custom_command (TARGET substance POST_BUILD 
-                      COMMAND ${IBTOOL} --errors --warnings --notices --output-format human-readable-text 
-                              --compile ${CMAKE_CURRENT_BINARY_DIR}/\${CONFIGURATION}/substance.app/Contents/Resources/${xib}.nib 
+  add_custom_command (TARGET substance POST_BUILD
+                      COMMAND ${IBTOOL} --errors --warnings --notices --output-format human-readable-text
+                              --compile ${CMAKE_CURRENT_BINARY_DIR}/\${CONFIGURATION}/substance.app/Contents/Resources/${xib}.nib
                              ${CMAKE_CURRENT_SOURCE_DIR}/${xib}.xib
                       COMMENT "Compiling ${CMAKE_CURRENT_SOURCE_DIR}/${xib}.xib")
 endforeach()
