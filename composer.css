@@ -456,18 +456,7 @@ h2 { font-size: 160%; padding-bottom: 15px; }
   position: relative;
 }
 
-#container #document .content-node .handle {
-  position: absolute;
-  left: -20px;
-  top: 0px;
-  bottom: 0px;
-  /*border-bottom: 1px solid #fff;*/
-  width: 20px;
-  /*background: #D7D8D2;*/
-  background: rgba(0, 0, 0, 0.1);
 
-  z-index: 100;
-}
 
 #container #document .content-node .comments-toggle {
   position: absolute;
@@ -488,9 +477,9 @@ h2 { font-size: 160%; padding-bottom: 15px; }
   width: 20px;
   height: 30px;
   z-index: 100;
-
-
 }
+
+
 
 #container #document .content-node .comments-toggle.highlighted {
   color: #fff;
@@ -510,29 +499,72 @@ h2 { font-size: 160%; padding-bottom: 15px; }
   display: block;
 }
 
-#container #document .content-node:hover .handle {
-  background: #747260;
-  opacity: 0.3;
-}
-
 #container #document .content-node.selected {
   opacity: 1.0;
 }
 
-#container #document .content-node.selected .handle {
-  opacity: 0.7;
+/* Selection Handle */
+
+#container #document .content-node .handle {
+  position: absolute;
+  left: -20px;
+  top: 0px;
+  bottom: 0px;
+  /*border-bottom: 1px solid #fff;*/
+  width: 20px;
+  background: #2F2B27;
+  opacity: 0.1;
+
+  z-index: 100;
 }
+
+#container #document .content-node .handle-2 {
+  position: absolute;
+  right: -4px;
+  top: 0px;
+  bottom: 0px;
+  /*border-bottom: 1px solid #fff;*/
+  width: 4px;
+  background: #2F2B27;
+  opacity: 0.9;
+  display: none;
+
+  z-index: 100;
+}
+
+/*#container #document .content-node.selected .handle {
+  opacity: 0.5;
+}*/
+
+#container #document.structure-mode .content-node.selected .handle {
+  opacity: 0.9;
+}
+
+#container #document.edit-mode .content-node.selected .handle {
+  opacity: 0.9;
+}
+
+
+#container #document .content-node:hover .handle {
+  opacity: 0.3;
+}
+
 
 #container #document .content-node.selected .content {
   opacity: 1.0;
 }
 
 #container #document.structure-mode .content-node.selected {
-  background: rgba(0,0,0, 0.05);
+  background: rgba(47,43,39, 0.05);
 }
+
 
 #document.structure-mode .content-node .content, #document.edit-mode .content-node .content {
   opacity: 0.5;
+}
+
+#container #document.edit-mode .content-node.selected .handle-2 {
+  display: block;
 }
 
 

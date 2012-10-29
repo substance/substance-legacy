@@ -1,0 +1,99 @@
+{
+  "refs": {
+    "master": "f7bd8120adb16d179c454ce57b57b50d"
+  },
+  "operations": {
+    "1b6544d5f9724c33aa8dbb5becc51c0d": {
+      "op": [
+        "insert",
+        {
+          "id": "section:1",
+          "type": "section",
+          "target": "back",
+          "data": {
+            "content": "Hello"
+          }
+        }
+      ],
+      "user": "michael",
+      "sha": "1b6544d5f9724c33aa8dbb5becc51c0d",
+      "head": "master"
+    },
+    "b0595f2d3863db5ecd82d43e7ec05da0": {
+      "op": [
+        "insert",
+        {
+          "id": "text:2",
+          "type": "text",
+          "target": "back",
+          "data": {
+            "content": "Hey there."
+          }
+        }
+      ],
+      "user": "michael",
+      "sha": "b0595f2d3863db5ecd82d43e7ec05da0",
+      "head": "master",
+      "parent": "1b6544d5f9724c33aa8dbb5becc51c0d"
+    },
+    "f7bd8120adb16d179c454ce57b57b50d": {
+      "op": [
+        "update",
+        {
+          "id": "section:1",
+          "data": [
+            [
+              "ret",
+              5
+            ],
+            [
+              "ins",
+              " world!"
+            ]
+          ]
+        }
+      ],
+      "user": "michael",
+      "sha": "f7bd8120adb16d179c454ce57b57b50d",
+      "head": "master",
+      "parent": "b0595f2d3863db5ecd82d43e7ec05da0"
+    }
+  },
+  "additions": {
+    "f7bd8120adb16d179c454ce57b57b50d": {
+      "annotations": [
+        [
+          "insert",
+          {
+            "id": "suggestion:1",
+            "type": "suggestion",
+            "node": "text:2",
+            "pos": [
+              0,
+              3
+            ]
+          }
+        ]
+      ],
+      "comments": [
+        [
+          "insert",
+          {
+            "id": "comment:a",
+            "node": "text:2",
+            "content": "A way of saying helo.",
+            "annotation": "suggestion:1"
+          }
+        ],
+        [
+          "update",
+          {
+            "id": "comment:a",
+            "content": "A way of saying hello."
+          }
+        ]
+      ]
+    }
+  },
+  "id": "doc:hello"
+}

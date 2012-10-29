@@ -79,9 +79,13 @@ sc.views.Document = Dance.Performer.extend({
     var view = this.createNodeView(node);
 
     this.nodes[node.id] = view;
-
+    
     var newEl = $(view.render().el);
-    newEl.insertAfter($('#'+_.htmlId(options.target)));
+    if (options.target) {
+      newEl.insertAfter($('#'+_.htmlId(options.target)));  
+    } else {
+      this.$('.nodes').append(newEl)
+    }
 
     newEl.click();
     newEl.contents().focus();
@@ -169,14 +173,14 @@ sc.views.Document = Dance.Performer.extend({
 
   // Updates the current selection
   updateSelections: function(selections) {
-    $('.content-node.selected .handle').css('background', '');
+    // $('.content-node.selected .handle').css('background', '');
     $('.content-node.selected').removeClass('selected');
 
     this.updateMode();
     
     _.each(this.model.selections, function(user, node) {
       $('#'+_.htmlId(node)).addClass('selected')
-        .find('.handle').css('background', this.model.users[user].color);
+        // .find('.handle').css('background', this.model.users[user].color);
     }, this);
 
   },
