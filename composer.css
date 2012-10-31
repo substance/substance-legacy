@@ -219,19 +219,20 @@ h2 { font-size: 160%; padding-bottom: 15px; }
   padding-left: 40px;
   font-weight: bold;
   font-size: 12px;
+  cursor: pointer;
   /*-webkit-transition: background 200ms linear;*/
   /*opacity: 0.7;*/
 }
 
-.comment-scope.mark-1 { 
-  background: rgba(171, 201, 36, 0.2) url(images/icons/caution.png) 7px center no-repeat;
+.comment-scope.idea {
+  background: rgba(171, 201, 36, 0.2) url(images/icons/idea.png) 7px center no-repeat;
 }
 
-.comment-scope.mark-2 {
-  background: rgba(16, 167, 222, 0.2) url(images/icons/idea.png) 7px center no-repeat;
+.comment-scope.blur {
+  background: rgba(16, 167, 222, 0.2) url(images/icons/question.png) 7px center no-repeat;
 }
 
-.comment-scope.mark-3 {
+.comment-scope.doubt {
   background: rgba(237, 96, 48, 0.2) url(images/icons/caution.png) 7px center no-repeat;
 }
 
@@ -240,15 +241,15 @@ h2 { font-size: 160%; padding-bottom: 15px; }
 }
 
 
-.comment-scope.mark-1.active { 
-  background: rgba(171, 201, 36, 1) url(images/icons/caution.png) 7px center no-repeat;
+.comment-scope.idea.active {
+  background: rgba(171, 201, 36, 1) url(images/icons/idea.png) 7px center no-repeat;
 }
 
-.comment-scope.mark-2.active {
-  background: rgba(16, 167, 222, 1) url(images/icons/idea.png) 7px center no-repeat;
+.comment-scope.blur.active {
+  background: rgba(16, 167, 222, 1) url(images/icons/question.png) 7px center no-repeat;
 }
 
-.comment-scope.mark-3.active {
+.comment-scope.doubt.active {
   background: rgba(237, 96, 48, 1) url(images/icons/caution.png) 7px center no-repeat;
 }
 
@@ -579,13 +580,13 @@ h2 { font-size: 160%; padding-bottom: 15px; }
   background: blue;
 }
 
-.content-node .mark-1 { background-color: rgba(171, 201, 36, 0.3); }
-.content-node .mark-2 { background-color: rgba(16, 167, 222, 0.3); }
-.content-node .mark-3 { background-color: rgba(237, 96, 48, 0.3); }
+.content-node .idea { background-color: rgba(171, 201, 36, 0.3); }
+.content-node .blur { background-color: rgba(16, 167, 222, 0.3); }
+.content-node .doubt { background-color: rgba(237, 96, 48, 0.3); }
 
-.content-node .mark-1.highlight { background-color: rgba(171, 201, 36, 0.6); }
-.content-node .mark-2.highlight { background-color: rgba(16, 167, 222, 0.6);}
-.content-node .mark-3.highlight { background-color: rgba(237, 96, 48, 0.6); }
+.content-node .idea.highlight { background-color: rgba(171, 201, 36, 0.6); }
+.content-node .blur.highlight { background-color: rgba(16, 167, 222, 0.6);}
+.content-node .doubt.highlight { background-color: rgba(237, 96, 48, 0.6); }
 
 .content-node.text .em { font-style: italic; }
 .content-node.text .link { background-color: #00CFEA; }

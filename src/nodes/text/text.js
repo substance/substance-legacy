@@ -68,7 +68,7 @@ sc.views.Node.define('text', {
 
     // Update comments panel according to marker context
     this.surface.on('selection:changed', function(sel) {
-      var marker = that.surface.getAnnotations(sel, ["mark-1", "mark-2", "mark-3"])[0];
+      var marker = that.surface.getAnnotations(sel, ["idea", "blur", "doubt"])[0];
 
       if (marker) {
         choreographer.trigger('comment-scope:selected', marker.id, that.model.id, marker.id);
