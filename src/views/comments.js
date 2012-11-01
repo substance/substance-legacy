@@ -5,6 +5,7 @@ sc.views.Comments = Dance.Performer.extend({
 
   events: {
     'click .insert-comment': '_insertComment',
+    'click .close-issue': '_closeIssue',
     'click .comment-scope': '_toggleScope'
   },
 
@@ -12,22 +13,40 @@ sc.views.Comments = Dance.Performer.extend({
   // --------
 
   _insertComment: function(e) {
-
     var node = this.$('.comment-scope.active').attr('data-node');
     var annotation = this.$('.comment-scope.active').attr('data-annotation');
     var content = $(e.currentTarget).parent().find('.comment-content').val();
-
 
     this.model.document.apply(["insert", {
       id: "comment:"+Math.uuid(),
       content: content,
       node: node,
-      annotation: annotation
+      annotation: annotation,
+      created_at: new Date().toJSON(),
+      user: app.user
     }], {scope: "comment"});
 
-    // // Not too smart™
+    // Not too smart™
     this.model.comments.compute();
     this.render();
+    return false;
+  },
+
+  _closeIssue: function() {
+    var node = this.$('.comment-scope.active').attr('data-node');
+    var annotation = this.$('.comment-scope.active').attr('data-annotation');
+
+    this.model.document.apply(["delete", {
+      id: annotation
+    }], {scope: "annotation"});
+
+    this.model.comments.compute();
+    this.render();
+    this.activateScope('node_comments');
+    
+    // Notify Surface
+    choreographer.trigger('annotation:deleted', node, annotation);
+    // choreographer.trigger('comment-scope:selected', scope, node, annotation);
     return false;
   },
 
@@ -36,11 +55,12 @@ sc.views.Comments = Dance.Performer.extend({
     var annotation = $(e.currentTarget).attr('data-annotation');
     var scope = $(e.currentTarget).attr('id');
 
+    // Notify Surface
     choreographer.trigger('comment-scope:selected', scope, node, annotation);
   },
 
   activateScope: function(scope) {
-    console.log('activating scope should not happen twice');
+    console.log('activating scope should not happen twice', scope);
     if (!scope) return; // Skip, since already active
     this.scope = scope;
     this.$('.comment-scope').removeClass('active');
@@ -49,14 +69,12 @@ sc.views.Comments = Dance.Performer.extend({
     this.$('.comments').removeClass('active');
     // Show corresponding comments
     this.$('#comments_'+_.htmlId(scope)).addClass('active');
-
-    // TODO: highlight annotation
   },
 
   initialize: function(options) {
     this.documentView = options.documentView;
 
-    // Initial commentsn computation
+    // Initial comments computation
     this.model.comments.compute();
 
     // Triggered by Text Node

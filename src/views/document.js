@@ -33,6 +33,14 @@ sc.views.Document = Dance.Performer.extend({
       if (node && node.surface) node.surface.highlight(annotation);
     }, this);
 
+
+    // object.off([event], [callback], [context])
+    choreographer.unbind('annotation:deleted');
+    choreographer.bind('annotation:deleted', function(node, annotation) {
+      var node = this.nodes[node];
+      if (node && node.surface) node.surface.deleteAnnotation(annotation);
+    }, this);
+
     // this.model.document.annotations.on('operation:applied', function(operation) {
     //   switch(operation.op[0]) {
     //     case "move": that.moveAnnotation(operation.op[1]); break;

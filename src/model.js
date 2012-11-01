@@ -74,7 +74,7 @@ _.extend(Comments.prototype, _.Events, {
 
     // Only consider markers as comment scopes
     var annotations = _.filter(annotations, function(a) {
-      return _.include(["mark-1", "mark-2", "mark-3"], a.type);
+      return _.include(["idea", "blur", "doubt"], a.type);
     });
 
     this.commentsForNode(this.session.document, node, content, annotations);
@@ -122,7 +122,9 @@ _.extend(Comments.prototype, _.Events, {
 // Substance.Session
 // -----------------
 // 
-// The Composer works with a session object, which maintains all the state of a document session
+// The Composer works with a session object, which maintains 
+// all the state of a document session
+// TODO: No multiuser support yet, use app.user
 
 Substance.Session = function(options) {
   this.document = options.document;
@@ -175,6 +177,7 @@ _.extend(Substance.Session.prototype, _.Events, {
     return !_.isEqual(nodes, this.selection(user)) || edit !== this.edit;
   },
 
+  // Retrieve current node selection
   selection: function(user) {
     if (!user) user = this.user;
     return this.users[user].selection;

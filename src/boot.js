@@ -45,23 +45,23 @@ $(function() {
           };
 
       authenticate(options, function(err) {
-        that.username = options.username;
-        localStorage.setItem('username', that.username);
+        that.user = options.username;
+        localStorage.setItem('user', that.user);
         that.render();
       });
       return false;
     },
 
     _logout: function() {
-      this.username = null;
-      localStorage.removeItem('username');
+      this.user = null;
+      localStorage.removeItem('user');
       this.render();
       return false;
     },
 
     initialize: function (options) {
       _.bindAll(this, 'start', 'document');
-      this.username = localStorage.getItem('username');
+      this.user = localStorage.getItem('user');
     },
 
     // Toggle document view
@@ -84,23 +84,16 @@ $(function() {
 
     // Render application template
     render: function() {
-      this.$el.html(_.tpl('substance', {username: this.username}));
+      this.$el.html(_.tpl('substance', {user: this.user}));
       if (this.view) {
         this.$('#container').replaceWith(this.view.el);
       }
     }
   });
-
-  // TODO: Once we talk
-  // talk.ready(function() {
-
+  
+  // Start the engines
   window.app = new Application({el: 'body'});
-
   app.render();
-
-  // Start responding to routes
   window.choreographer = new Choreographer({});
-
   Dance.performance.start();
-  // });
 });

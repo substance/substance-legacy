@@ -1668,14 +1668,14 @@
   "additions": {
     "c32c936a1b1d647c1f6793e14c8bb962": {
       "annotations": [
-        ["insert", {"id": "annotation:a", "type": "blur", "node": "text:p1", "pos": [8, 10]}],
-        ["insert", {"id": "annotation:b", "type": "idea", "node": "text:p1", "pos": [45, 15]}]
+        ["insert", {"id": "annotation:a", "type": "blur", "node": "text:p1", "pos": [8, 10], "user": "michael"}],
+        ["insert", {"id": "annotation:b", "type": "idea", "node": "text:p1", "pos": [45, 15], "user": "john"}]
       ],
       "comments": [
-        ["insert", {"id": "comment:a", "content": "Hello wrrld"}],
-        ["insert", {"id": "comment:b", "node": "section:d202c850f7a79adc1f4e26fb0239234e", "content": "Hello wrrld"}],
-        ["insert", {"id": "comment:c", "node": "text:p1", "content": "Typo spottid.", "annotation": "annotation:a"}],
-        ["insert", {"id": "comment:d", "node": "text:p1", "content": "Fo real.", "annotation": "annotation:a"}]
+        ["insert", {"id": "comment:a", "content": "Hello wrrld", "created_at": "2012-11-01T08:49:16.882Z", "user": "michael"}],
+        ["insert", {"id": "comment:b", "node": "section:d202c850f7a79adc1f4e26fb0239234e", "content": "Hello wrrld", "created_at": "2012-10-19T08:49:16.882Z", "user": "alice"}],
+        ["insert", {"id": "comment:c", "node": "text:p1", "content": "Typo spotted.", "annotation": "annotation:a", "created_at": "2012-10-20T08:49:16.882Z", "user": "frank"}],
+        ["insert", {"id": "comment:d", "node": "text:p1", "content": "True.", "annotation": "annotation:a", "created_at": "2012-10-01T08:49:16.882Z", "user": "michael"}]
       ]
     }
   }

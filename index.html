@@ -17,7 +17,8 @@
           <a href="#">Substance</a>
 
           <div class="user-status">
-          <% if (username) { %>
+          <% if (user) { %>
+            <%= user %>
             <a href="#new" class="new-document">New Document</a>
             <a href="#logout" class="logout">Logout</a>
           <% } else { %>
@@ -155,8 +156,8 @@
           <% _.each(scope.comments, function(c) { %>
             <div class="comment">
               <div class="meta">
-                <div class="creator">michael</div>
-                <div class="time">3 days ago</div>
+                <div class="creator"><%= c.user %></div>
+                <div class="time"><%= $.timeago(c.created_at) %></div>
               </div>
 
               <div class="text">
@@ -166,14 +167,15 @@
           <% }); %>
 
           <div class="new-comment">
-            <div class="author">Your comment:</div>
-            <div class="handle"></div>
+            <div class="author">Your comment: </div>
             <div class="comment-input-wrapper">
               <textarea class="comment-content" name="comment"></textarea>
             </div>
             <a href="#" class="button insert-comment">Add Comment</a>
+            <% if (!_.include(['document', 'node'], scope.type)) { %>
+              <a href="#" class="button close-issue">Close Issue</a>
+            <% } %>
           </div>
-
         </div>
       <% }); %>
 
@@ -273,15 +275,10 @@
 
     <script src="lib/dmp.js"></script>
     <script src="lib/operation.js"></script>
-    <script src="lib/rangy/core.js"></script>
-    <script src="lib/rangy/dom.js"></script>
-    <script src="lib/rangy/domrange.js"></script>
-    <script src="lib/rangy/wrappedrange.js"></script>
-    <script src="lib/rangy/wrappedselection.js"></script>
-    <script src="lib/rangy/cssclassapplier.js"></script>
+    <script src="lib/jquery.timeago.js"></script>
 
     <script src="lib/surface.js"></script>
-
+    
     <!-- Model -->
     <script src="lib/document.js"></script>
     <script src="lib/codemirror/codemirror.js"></script>
