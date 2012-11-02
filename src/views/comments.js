@@ -59,7 +59,7 @@ sc.views.Comments = Dance.Performer.extend({
   },
 
   activateScope: function(scope) {
-    console.log('activating scope should not happen twice', scope);
+    // console.log('activating scope should not happen twice', scope);
     if (!scope) return; // Skip, since already active
     this.scope = scope;
     this.$('.comment-scope').removeClass('active');

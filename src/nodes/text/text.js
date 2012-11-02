@@ -81,13 +81,18 @@ sc.views.Node.define('text', {
     this.surface.off('selection:changed', selectionChanged);
     this.surface.on('selection:changed', selectionChanged);
 
-    // This gets fired a lot (keystroke, add annotation etc)
+    // This gets fired a lot on every keystroke but no longer for adding annotations
     this.surface.on('changed', function() {
+      // that.session.comments.updateAnnotations(that.surface.getContent(), that.surface.annotations);
+    });
+
+    this.surface.on('annotations:changed', function() {
       that.session.comments.updateAnnotations(that.surface.getContent(), that.surface.annotations);
     });
 
     // Changes are confirmed.
     this.surface.on('content:changed', function(content, prevContent, ops) {
+
       var delta = _.extractOperation(prevContent, content);
 
       console.log('Partial text update', delta);
@@ -117,7 +122,7 @@ sc.views.Node.define('text', {
       // }
       // prettyprintAnnotations(that.document.annotations);
 
-      // Really?
+      // Really? Yes.
       // that.session.comments.compute();
     });
   },

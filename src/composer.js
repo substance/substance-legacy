@@ -151,7 +151,7 @@
       this.model.document.on('operation:applied', function(operation) {
         
         // Refresh the tools
-        this.views.tools.update();
+        // this.views.tools.update();
 
         // Send update to the server
         updateDoc(operation);

@@ -18,7 +18,6 @@ sc.views.Document = Dance.Performer.extend({
     var that = this;
 
     this.model.document.on('operation:applied', function(operation) {
-      console.log(operation);
       switch(operation[0]) {
         case "move": that.move(operation[1]); break;
         case "insert": that.insert(operation[1]); break;
@@ -32,7 +31,6 @@ sc.views.Document = Dance.Performer.extend({
     function highlightAnnotation(scope, node, annotation) {
       var node = this.nodes[node];
       if (node && node.surface) {
-        console.log('highlight it', annotation);
         node.surface.highlight(annotation);
       }
     }

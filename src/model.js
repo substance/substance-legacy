@@ -114,6 +114,7 @@ _.extend(Comments.prototype, _.Events, {
         comments: document.documentComments()
       });
     }
+
     this.session.trigger('comments:updated');
   }
 });
