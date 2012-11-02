@@ -6,7 +6,8 @@
   var Composer = Dance.Performer.extend({
 
     events: {
-      'click a.checkout-commit': '_checkoutCommit'
+      'click a.checkout-commit': '_checkoutCommit',
+      'click .properties': 'clear'
     },
 
     _checkoutCommit: function(e) {
@@ -30,20 +31,20 @@
     // Handling keys
     // ---------------
 
+    clear: function() {
+      this.model.select([]);
+      this.views.document.updateMode();
+    },
+
     // Go up one level
     goBack: function() {
       var lvl = this.model.level();
-      if (lvl === 3) {
-        // Back to structure mode
-        this.model.edit = false;
+      if (lvl === 2) return this.clear();
 
-        // TODO: Only deactivate currently active surface -> performance
-        $(".content-node .content").blur();
-      }
-      if (lvl === 2) {
-        this.model.select([]);
-      }
+      this.model.edit = false;
 
+      // TODO: Only deactivate currently active surface -> performance
+      $(".content-node .content").blur();
       this.views.document.updateMode();
       return false;
     },
@@ -150,10 +151,6 @@
       this.views.tools = new Substance.Composer.views.Tools({model: this.model });
       
       this.model.document.on('operation:applied', function(operation) {
-
-        // Refresh the tools
-        // this.views.tools.update();
-
         // Send update to the server
         updateDoc(operation);
       }, this);

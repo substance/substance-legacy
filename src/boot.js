@@ -34,7 +34,12 @@ $(function() {
   var Application = Dance.Performer.extend({
     events: {
       'submit #user_login_form': '_login',
-      'click .logout': '_logout'
+      'click .logout': '_logout',
+      'click #container': '_clear'
+    },
+
+    _clear: function(e) {
+      if (_.include(['container', 'tools', 'composer'], e.target.id) && this.view.composer) this.view.composer.clear();
     },
 
     _login: function() {
