@@ -45,6 +45,7 @@
       }
 
       this.views.document.updateMode();
+      return false;
     },
 
     handleDown: function() {
