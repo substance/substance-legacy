@@ -56,6 +56,7 @@ var Comments = function(session) {
 
 _.extend(Comments.prototype, _.Events, {
   compute: function(scope) {
+
     var node = this.session.node();
     this.scopes = [];
 
@@ -63,6 +64,7 @@ _.extend(Comments.prototype, _.Events, {
       var content = this.session.document.content.nodes[node].content;
       var annotations = this.session.document.annotations(node);
     }
+
     this.commentsForNode(this.session.document, node, content, annotations, scope);
   },
 

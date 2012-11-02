@@ -17,6 +17,9 @@ sc.views.Comments = Dance.Performer.extend({
     var annotation = this.$('.comment-scope.active').attr('data-annotation');
     var content = $(e.currentTarget).parent().find('.comment-content').val();
 
+    if (!node) node = undefined;
+    if (!annotation) annotation = undefined;
+
     this.model.document.apply(["insert", {
       id: "comment:"+Math.uuid(),
       content: content,
