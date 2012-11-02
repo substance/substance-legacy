@@ -20,8 +20,9 @@ sc.views.Node.define('text', {
   },
 
   annotate: function(type) {
-    this.surface.insertAnnotation({ id: "annotation:"+Math.uuid(), type: type, pos: this.surface.selection() });
-    // To be overriden by concrete nodes
+    var id = "annotation:"+Math.uuid();
+    this.surface.insertAnnotation({ id: id, type: type, pos: this.surface.selection() });
+    choreographer.trigger('comment-scope:selected', id, this.model.id, id);
   },
 
   initSurface: function() {
@@ -29,25 +30,18 @@ sc.views.Node.define('text', {
 
     var annotations = app.view.model.document.annotations(this.model.id);
 
-    // TODO: don't use globals!
-    // Use global event delegation
-    var commentsView = function() {
-      return app.view.composer.views.tools.views.tool;
-    }
-
-    // if (Object.keys(annotations).length > 0) {
-    //   console.log('annotations...', annotations);
-    // }
-
     this.surface = new Substance.Surface({
       el: this.$('.content')[0],
       content: this.model.content,
       annotations: annotations,
       types: {
-        "em": {
+        "idea": {
           "inclusive": false
         },
-        "comment": {
+        "blur": {
+          "inclusive": false
+        },
+        "doubt": {
           "inclusive": false
         }
       }

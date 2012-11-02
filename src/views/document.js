@@ -47,42 +47,12 @@ sc.views.Document = Dance.Performer.extend({
 
     choreographer.off('annotation:deleted', deleteAnnotation);
     choreographer.on('annotation:deleted', deleteAnnotation, this);
-
-    // this.model.document.annotations.on('operation:applied', function(operation) {
-    //   switch(operation.op[0]) {
-    //     case "move": that.moveAnnotation(operation.op[1]); break;
-    //     case "insert": that.insertAnnotation(operation.op[1]); break;
-    //     case "update": that.updateAnnotation(operation.op[1]); break;
-    //     case "delete": that.deleteAnnotation(operation.op[1]); break;
-    //   }
-    // });
     
     this.model.off('node:selected', this.updateSelections);
     this.model.on('node:selected', this.updateSelections, this);
     this.build();
 
     $(document.body).keydown(this.onKeydown);
-  },
-
-  // Handle annotation updates
-  moveAnnotation: function() {
-
-  },
-
-  updateAnnotation: function() {
-
-  },
-
-  insertAnnotation: function(options) {
-    console.log('annotation inserted.');
-    // _.each(options.data.nodes, function(node) {
-    //   this.nodes[node].render(); // Re-render affected node
-    //   // this.updateSelections();
-    // }, this);
-  },
-
-  deleteAnnotation: function() {
-
   },
 
   // Get a particular node by id
@@ -277,7 +247,6 @@ sc.views.Document = Dance.Performer.extend({
     this.model.select([id]);
   },
 
-
   initSurface: function(property) {
     var that = this;
 
@@ -286,19 +255,8 @@ sc.views.Document = Dance.Performer.extend({
       content: that.model.document.content.properties[property]
     });
 
-
     // Events
     // ------
-
-    // Returns all annotations matching that selection
-    // this.surface.on('selection:change', function(sel) {
-    //   console.log('selection:change', sel, that.surface.selection());
-    // });
-
-    this.surface.on('surface:active', function(sel) {
-      console.log(property+' surface activated');
-      // app.view.model.select([that.model.id], {edit: true});
-    });
 
     this.surface.on('content:changed', function(content, prevContent) {
       var delta = _.extractOperation(prevContent, content);
