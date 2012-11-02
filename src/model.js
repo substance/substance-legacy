@@ -31,7 +31,6 @@ DocumentStore.prototype.delete = function(id, cb) {
   // Implement
 };
 
-
 var store = new DocumentStore();
 
 // Send operation to the server
@@ -44,7 +43,6 @@ function updateDoc(operation, cb) {
   //   console.log('updated doc on the server', err);
   // });
 }
-
 
 // Comments
 // -----------------

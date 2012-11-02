@@ -41,7 +41,6 @@ sc.views.Document = Dance.Performer.extend({
     }
 
     // Bind handlers (but only once)
-
     choreographer.off('comment-scope:selected', highlightAnnotation);
     choreographer.on('comment-scope:selected', highlightAnnotation, this);
 

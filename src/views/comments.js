@@ -60,7 +60,7 @@ sc.views.Comments = Dance.Performer.extend({
 
   activateScope: function(scope) {
     // console.log('activating scope should not happen twice', scope);
-    if (!scope) return; // Skip, since already active
+    if (!scope) return; // TODO: Skip, if already active
     this.scope = scope;
     this.$('.comment-scope').removeClass('active');
     this.$('#'+_.htmlId(scope)).addClass('active');
@@ -86,6 +86,8 @@ sc.views.Comments = Dance.Performer.extend({
   },
 
   render: function () {
+    // Reset selected scope on every re-render
+    this.scope = null;
     this.$el.html(_.tpl('comments', this.model));
     this.activateScope(this.scope);
     return this;
