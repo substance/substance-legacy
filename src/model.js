@@ -55,7 +55,7 @@ var Comments = function(session) {
 
 
 _.extend(Comments.prototype, _.Events, {
-  compute: function() {
+  compute: function(scope) {
     var node = this.session.node();
     this.scopes = [];
 
@@ -63,7 +63,7 @@ _.extend(Comments.prototype, _.Events, {
       var content = this.session.document.content.nodes[node].content;
       var annotations = this.session.document.annotations(node);
     }
-    this.commentsForNode(this.session.document, node, content, annotations);
+    this.commentsForNode(this.session.document, node, content, annotations, scope);
   },
 
   // Based on a new set of annotations (during editing)
@@ -78,7 +78,7 @@ _.extend(Comments.prototype, _.Events, {
     this.commentsForNode(this.session.document, node, content, annotations);
   },
 
-  commentsForNode: function(document, node, content, annotations) {
+  commentsForNode: function(document, node, content, annotations, scope) {
     this.scopes = [];
 
     // Extract annotation text from the model
@@ -113,7 +113,7 @@ _.extend(Comments.prototype, _.Events, {
       });
     }
 
-    this.session.trigger('comments:updated');
+    this.session.trigger('comments:updated', scope);
   }
 });
 

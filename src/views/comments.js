@@ -27,8 +27,8 @@ sc.views.Comments = Dance.Performer.extend({
     }], {scope: "comment"});
 
     // Not too smart™
-    this.model.comments.compute();
-    this.render();
+    this.model.comments.compute(this.scope);
+    // this.render(); // compute triggers an event that causes re-render
     return false;
   },
 
@@ -85,9 +85,9 @@ sc.views.Comments = Dance.Performer.extend({
     this.model.on('comments:updated', this.render, this);
   },
 
-  render: function () {
+  render: function (scope) {
     // Reset selected scope on every re-render
-    this.scope = null;
+    this.scope = scope;
     this.$el.html(_.tpl('comments', this.model));
     this.activateScope(this.scope);
     return this;
