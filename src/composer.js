@@ -97,7 +97,7 @@
     handleBackspace: function() {
       if (this.model.level() === 2) {
         this.views.document.deleteNodes();
-        return false;        
+        return false;
       }
     },
 
@@ -149,7 +149,7 @@
       this.views.tools = new Substance.Composer.views.Tools({model: this.model });
       
       this.model.document.on('operation:applied', function(operation) {
-        
+
         // Refresh the tools
         // this.views.tools.update();
 
