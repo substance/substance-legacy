@@ -38,7 +38,7 @@ $(function() {
       'click #container': '_clear'
     },
 
-    _clear: function(e) {
+    _clear: function(e) {
       if (_.include(['container', 'tools', 'composer'], e.target.id) && this.view.composer) this.view.composer.clear();
     },
 
