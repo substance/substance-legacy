@@ -61,7 +61,7 @@ $(function() {
 
     initialize: function (options) {
       _.bindAll(this, 'start', 'document');
-      this.user = localStorage.getItem('user');
+      this.user = localStorage.getItem('user');    
     },
 
     // Toggle document view
@@ -88,6 +88,7 @@ $(function() {
       if (this.view) {
         this.$('#container').replaceWith(this.view.el);
       }
+
     }
   });
   
@@ -96,4 +97,6 @@ $(function() {
   app.render();
   window.choreographer = new Choreographer({});
   Dance.performance.start();
+
+
 });

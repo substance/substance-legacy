@@ -153,35 +153,44 @@
 
       <% _.each(comments.scopes, function(scope, i) { %>
         <div id="comments_<%= _.htmlId(scope.id) %>" class="comments<%= i === 0 ? ' active' : ''%>">
-          <% _.each(scope.comments, function(c) { %>
-            <div class="comment">
-              <div class="meta">
-                <div class="creator"><%= c.user %></div>
-                <div class="time"><%= $.timeago(c.created_at) %></div>
-              </div>
-
-              <div class="text">
-                <%= c.content %>
-              </div>
-            </div>
-          <% }); %>
-
-          <div class="new-comment">
-            <div class="author">Your comment: </div>
-            <div class="comment-input-wrapper">
-              <textarea class="comment-content" name="comment"></textarea>
-            </div>
-            <a href="#" class="button insert-comment">Add Comment</a>
+          <div class="scope-header<%= scope.type ? ' '+scope.type : '' %>">
             <% if (!_.include(['document', 'node'], scope.type)) { %>
+              <div class="title"><%= scope.type[0].toUpperCase()+scope.type.substr(1) %></div>
+              <div class="subtitle">4 days ago, by michael</div>
               <a href="#" class="button close-issue">Close Issue</a>
-            <% } %>
+            <% } else { %>
+              <div class="title">Discussion</div>
+              <div class="subtitle">General Discussion</div>
+            <% } %>
           </div>
+          <div class="comments-wrapper">
+
+            <% _.each(scope.comments, function(c) { %>
+              <div class="comment">
+                <div class="meta">
+                  <div class="creator"><%= c.user %></div>
+                  <div class="time"><%= $.timeago(c.created_at) %></div>
+                </div>
+
+                <div class="text">
+                  <%= c.content %>
+                </div>
+              </div>
+            <% }); %>
+
+            <div class="new-comment">
+              <div class="comment-input-wrapper">
+                <textarea class="comment-content" name="comment"></textarea>
+              </div>
+              <a href="#" class="button insert-comment">Add Comment</a>
+
+            </div>
+
+          </div>
+
         </div>
       <% }); %>
 
-      <div class="comment-scopes">
-
-      </div>
 
     </script>
 

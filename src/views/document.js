@@ -27,19 +27,28 @@ sc.views.Document = Dance.Performer.extend({
       }
     });
 
-    choreographer.unbind('comment-scope:selected');
-    choreographer.bind('comment-scope:selected', function(scope, node, annotation) {
+    // Handlers
+
+    function highlightAnnotation(scope, node, annotation) {
       var node = this.nodes[node];
-      if (node && node.surface) node.surface.highlight(annotation);
-    }, this);
+      if (node && node.surface) {
+        console.log('highlight it', annotation);
+        node.surface.highlight(annotation);
+      }
+    }
 
-
-    // object.off([event], [callback], [context])
-    choreographer.unbind('annotation:deleted');
-    choreographer.bind('annotation:deleted', function(node, annotation) {
+    function deleteAnnotation(node, annotation) {
       var node = this.nodes[node];
       if (node && node.surface) node.surface.deleteAnnotation(annotation);
-    }, this);
+    }
+
+    // Bind handlers (but only once)
+
+    choreographer.off('comment-scope:selected', highlightAnnotation);
+    choreographer.on('comment-scope:selected', highlightAnnotation, this);
+
+    choreographer.off('annotation:deleted', deleteAnnotation);
+    choreographer.on('annotation:deleted', deleteAnnotation, this);
 
     // this.model.document.annotations.on('operation:applied', function(operation) {
     //   switch(operation.op[0]) {
@@ -49,7 +58,8 @@ sc.views.Document = Dance.Performer.extend({
     //     case "delete": that.deleteAnnotation(operation.op[1]); break;
     //   }
     // });
-
+    
+    this.model.off('node:selected', this.updateSelections);
     this.model.on('node:selected', this.updateSelections, this);
     this.build();
 

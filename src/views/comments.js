@@ -46,7 +46,6 @@ sc.views.Comments = Dance.Performer.extend({
     
     // Notify Surface
     choreographer.trigger('annotation:deleted', node, annotation);
-    // choreographer.trigger('comment-scope:selected', scope, node, annotation);
     return false;
   },
 
@@ -78,12 +77,12 @@ sc.views.Comments = Dance.Performer.extend({
     this.model.comments.compute();
 
     // Triggered by Text Node
-    // choreographer.unbind('comment-scope:selected');
-    choreographer.bind('comment-scope:selected', this.activateScope, this);
+    choreographer.off('comment-scope:selected', this.activateScope);
+    choreographer.on('comment-scope:selected', this.activateScope, this);
 
     // Listing to comments:updated event on session
-    // this.model.unbind('comments:updated');
-    this.model.bind('comments:updated', this.render, this);
+    this.model.off('comments:updated', this.render);
+    this.model.on('comments:updated', this.render, this);
   },
 
   render: function () {

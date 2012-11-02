@@ -66,10 +66,8 @@ sc.views.Node.define('text', {
       that.session.select([that.model.id], {edit: true});
     });
 
-    // Update comments panel according to marker context
-    this.surface.on('selection:changed', function(sel) {
+    function selectionChanged(sel) {
       var marker = that.surface.getAnnotations(sel, ["idea", "blur", "doubt"])[0];
-
       if (marker) {
         choreographer.trigger('comment-scope:selected', marker.id, that.model.id, marker.id);
         that.surface.highlight(marker.id);
@@ -77,7 +75,11 @@ sc.views.Node.define('text', {
         choreographer.trigger('comment-scope:selected', 'node_comments', that.model.id, null);
         that.surface.highlight(null);
       }
-    });
+    }
+
+    // Update comments panel according to marker context
+    this.surface.off('selection:changed', selectionChanged);
+    this.surface.on('selection:changed', selectionChanged);
 
     // This gets fired a lot (keystroke, add annotation etc)
     this.surface.on('changed', function() {
@@ -99,7 +101,7 @@ sc.views.Node.define('text', {
       }
 
       // new stuffies
-      // console.log('annotation ops', ops);
+      console.log('annotation ops', ops);
 
       // Applying annotation ops...
       _.each(ops, function(op) {
@@ -116,7 +118,7 @@ sc.views.Node.define('text', {
       // prettyprintAnnotations(that.document.annotations);
 
       // Really?
-      that.session.comments.compute();
+      // that.session.comments.compute();
     });
   },
 

@@ -68,6 +68,9 @@
 #document_menu {
   background: #DCDDD9;
   position: fixed;
+  min-width: 1400px;
+  /*display: none;*/
+
   top: 40px;
   left: 0px;
   right: 0px;
@@ -77,8 +80,6 @@
   -moz-box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.25);
   box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.25);
 }
-
-
 
 #document_menu .navigation {
   height: 40px;
@@ -111,7 +112,7 @@
 
 #document_shelf .shelf-content {
   width: 1200px;
-  margin: 0 auto;
+  /*margin: 0 auto;*/
 }
 
 #document_wrapper {

@@ -17,8 +17,14 @@
       return false;
     },
 
+    positionTools: function() {
+      var leftMargin = Math.max(100, ($(window).width()-1200) / 2);
+      $('#tools').css('left', leftMargin+800+30+'px');
+    },
+
     initialize: function(options) {
       this.build();
+      $(window).resize(this.positionTools);
     },
 
     // Handling keys
@@ -129,9 +135,9 @@
       // Marker shortcuts  
       key('⌘+i', _.bind(function() { return this.toggleAnnotation('em'); }, this));
       key('⌘+b', _.bind(function() { return this.toggleAnnotation('str'); }, this));
-      key('ctrl+1', _.bind(function() { return this.toggleAnnotation('mark-1'); }, this));
-      key('ctrl+2', _.bind(function() { return this.toggleAnnotation('mark-2'); }, this));
-      key('ctrl+3', _.bind(function() { return this.toggleAnnotation('mark-3'); }, this));
+      key('ctrl+1', _.bind(function() { return this.toggleAnnotation('idea'); }, this));
+      key('ctrl+2', _.bind(function() { return this.toggleAnnotation('blur'); }, this));
+      key('ctrl+3', _.bind(function() { return this.toggleAnnotation('doubt'); }, this));
 
       // Possible modes: edit, view, patch, apply-patch
       this.mode = "edit";
@@ -143,6 +149,7 @@
       this.views.tools = new Substance.Composer.views.Tools({model: this.model });
       
       this.model.document.on('operation:applied', function(operation) {
+        
         // Refresh the tools
         this.views.tools.update();
 
@@ -154,6 +161,7 @@
     render: function() {
       this.$el.html(_.tpl('composer'));
       this.renderDoc();
+      this.positionTools();
     },
 
     renderDoc: function() {
