@@ -7,22 +7,17 @@ set(SUBSTANCE_APP_SOURCES
 )
 
 include_directories(
-  ${JSC_INCLUDE_DIRS}
-  ${WXWIDGETS_INCLUDE_DIRS}
+  ${webkit_INCLUDE_DIRS}
+  ${wxWidgets_INCLUDE_DIRS}
 )
 
 link_directories(
- ${WXWIDGETS_LIB_DIRS}
+  ${wxWidgets_LIBRARY_DIRS}
+  ${HIREDIS_LIB_DIRS}
 )
 
 add_executable(substance
   ${SUBSTANCE_APP_SOURCES}
-)
-
-# TODO: extract these using pkg-config and wx-condfig
-set_target_properties(substance
-  PROPERTIES
-    COMPILE_FLAGS "-DWXUSINGDLL -D__WXGTK__"
 )
 
 add_dependencies(substance wxWidgets)
@@ -30,6 +25,7 @@ add_dependencies(substance wxWidgets)
 # TODO: extract these using pkg-config and wx-condfig
 target_link_libraries(substance
   jsobjects redisdocstore
-  ${JSC_LIBS}
-  ${WXWIDGETS_LIBS}
+  ${webkit_LIBRARIES}
+  ${wxWidgets_LIBRARIES}
+  ${HIREDIS_LIBS}
 )

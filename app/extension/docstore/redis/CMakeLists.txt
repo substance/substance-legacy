@@ -1,7 +1,3 @@
-INCLUDE_DIRECTORIES(
-  ${PROJECT_SOURCE_DIR}/app/extension/swig-contribution/jsobjects
-)
-
 SET(REDIS_DOCSTORE_SOURCES
   operation.h
   operation_impl.h
@@ -17,8 +13,12 @@ ADD_LIBRARY(
 )
 
 include_directories(
-  ${JSC_INCLUDE_DIR}
+  ${webkit_INCLUDE_DIRS}
   ${BOOST_INCLUDE_DIRS}
+  ${jsobjects_INCLUDE_DIRS}
+  ${HIREDIS_INCLUDE_DIRS}
 )
 
-target_link_libraries(redisdocstore jsobjects)
+target_link_libraries(
+  redisdocstore jsobjects
+)
