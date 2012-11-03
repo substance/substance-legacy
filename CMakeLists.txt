@@ -5,18 +5,24 @@ SET(SUBSTANCE_VERSION "0.5.0")
 
 # Configure external projects
 # ===========================
+if (EXTERNALS)
 
-include(ExternalProject)
+  include(ExternalProject)
+  include(config/Externals.cmake)
 
-include(config/Externals.cmake)
-IF(APPLE)
-  include(config/OSXExternals.cmake)
-ELSEIF(UNIX)
-  include(config/UnixExternals.cmake)
-ENDIF()
+  if(APPLE)
+    include(config/OSXExternals.cmake)
 
+  elseif(UNIX)
+    include(config/UnixExternals.cmake)
+
+  endif()
 
 # Process subdirectories
 # ======================
+else (EXTERNALS)
 
-ADD_SUBDIRECTORY(app)
+  add_subdirectory(app)
+
+
+endif () # EXTERNALS
