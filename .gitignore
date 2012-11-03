@@ -15,9 +15,10 @@ _Yardoc
 .yardoc
 tmp/*
 node_modules/*
-
 /.settings.xml
 /config.json.edge
 /edge.config.json
 build
+build-externals
+ext
 *.kdev4
