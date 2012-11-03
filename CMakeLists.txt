@@ -27,5 +27,11 @@ else (EXTERNALS)
 
   add_subdirectory(app)
 
+  # Configure Testing
+  # =================
+  if (TESTING)
+    add_subdirectory(test)
+
+  endif()
 
 endif () # EXTERNALS
