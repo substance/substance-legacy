@@ -22,3 +22,5 @@ include_directories(
 target_link_libraries(
   redisdocstore jsobjects
 )
+
+export_target(redisdocstore)

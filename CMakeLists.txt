@@ -23,7 +23,7 @@ if (EXTERNALS)
 else (EXTERNALS)
 
   include(config/ConfigureVariables.cmake)
-
+  include(config/ExportTarget.cmake)
 
   add_subdirectory(app)
 

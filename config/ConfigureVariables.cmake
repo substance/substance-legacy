@@ -1,3 +1,5 @@
+set(SUBSTANCE_EXTENSION_SOURCE_DIR ${PROJECT_SOURCE_DIR}/app/extension)
+
 set(BOOST_INCLUDE_DIRS ${PROJECT_SOURCE_DIR}/ext/boost)
 
 set(GTEST_INCLUDE_DIRS ${PROJECT_SOURCE_DIR}/ext/gtest/gtest/include)
@@ -6,7 +8,7 @@ set(GTEST_LIBS gtest gtest_main)
 
 set(HIREDIS_INCLUDE_DIRS ${PROJECT_SOURCE_DIR}/ext/hiredis/hiredis)
 set(HIREDIS_LIB_DIRS "${PROJECT_SOURCE_DIR}/ext/hiredis/hiredis")
-set(HIREDIS_LIBS -lhiredis)
+set(HIREDIS_LIBS libhiredis.a)
 
 IF (NOT APPLE AND UNIX)
 
