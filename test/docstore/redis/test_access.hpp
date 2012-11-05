@@ -7,7 +7,9 @@
 #include <hiredis.h>
 
 class RedisDocStoreTestAccess {
+
 public:
+
   RedisDocStoreTestAccess(RedisDocStore& instance): instance(instance) {
     redis = instance.redis;
   }
@@ -18,7 +20,10 @@ public:
 
   redisContext* GetRedis() { return redis; }
   
+  void DeleteData(const char *prefix);
+  
   RedisDocStore& instance;
+  
   redisContext* redis;
 };
 

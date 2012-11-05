@@ -30,6 +30,7 @@ else (EXTERNALS)
   # Configure Testing
   # =================
   if (TESTING)
+    enable_testing()
     add_subdirectory(test)
 
   endif()
