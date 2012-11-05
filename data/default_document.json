@@ -1,6 +1,6 @@
 {
   "refs": {
-    "master": "a38700f5a9a98400c7e5d2d46648f67b"
+    "master": "47e52bb1da3ce84f3f830028d70d56b0"
   },
   "commits": {
     "b0a4df43adba704eaef6809ada25bc4a": {
@@ -273,6 +273,37 @@
       ],
       "sha": "a38700f5a9a98400c7e5d2d46648f67b",
       "parent": "44e06a6edb102bd5ab297b6cab643e1e"
+    },
+    "9ef845f834b0d604c5c198e747e108f2": {
+      "op": [
+        "insert_annotation",
+        {
+          "id": "annotation:d689afc800c602d8bc34a55dc53af4d2",
+          "type": "blur",
+          "pos": [
+            0,
+            8
+          ],
+          "node": "heading:9ff6e9be052283423f68296893009795"
+        }
+      ],
+      "sha": "9ef845f834b0d604c5c198e747e108f2",
+      "parent": "a38700f5a9a98400c7e5d2d46648f67b"
+    },
+    "47e52bb1da3ce84f3f830028d70d56b0": {
+      "op": [
+        "insert_comment",
+        {
+          "id": "comment:86f9061b48b311a9a7d9669fbcecde9f",
+          "content": "What does semantic mean in that context?",
+          "node": "heading:9ff6e9be052283423f68296893009795",
+          "annotation": "annotation:d689afc800c602d8bc34a55dc53af4d2",
+          "created_at": "2012-11-05T18:17:13.146Z",
+          "user": "wilma"
+        }
+      ],
+      "sha": "47e52bb1da3ce84f3f830028d70d56b0",
+      "parent": "9ef845f834b0d604c5c198e747e108f2"
     }
   },
   "id": "document:substance"
