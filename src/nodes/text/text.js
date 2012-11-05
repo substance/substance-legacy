@@ -35,18 +35,28 @@ sc.views.Node.define('text', {
       content: this.model.content,
       annotations: annotations,
       types: {
+        "em": {
+          "inclusive": true,
+          "visibility" : 'both'
+        },
+        "str": {
+          "inclusive": true,
+          "visibility" : 'both'
+        },
         "idea": {
-          "inclusive": false
+          "inclusive": false,
+          "visibility" : 'both'
         },
         "blur": {
-          "inclusive": false
+          "inclusive": false,
+          "visibility" : 'both'
         },
         "doubt": {
-          "inclusive": false
+          "inclusive": false,
+          "visibility" : 'both'
         }
       }
     });
-
 
     // Events
     // ------
@@ -91,21 +101,21 @@ sc.views.Node.define('text', {
 
       console.log('Partial text update', delta);
 
+      // Update content incrementally
       if (content !== prevContent) {
         var op = ["update", {id: that.model.id, "data": delta}];
-
         // Does not trigger a re-render of the node
         // This only happens for operations coming from outside
         that.document.apply(op);
       }
 
-      // new stuffies
-      console.log('annotation ops', ops);
+      // console.log('annotation ops', ops);
 
       // Applying annotation ops...
       _.each(ops, function(op) {
+        op[0] += "_annotation"; // should be done on the surface level?
         op[1].node = that.model.id;
-        that.document.apply(op, {scope: "annotation", user: "michael"});
+        that.document.apply(op, {user: "michael"});
       });
 
       // function prettyprintAnnotations(annotations) {
@@ -116,7 +126,7 @@ sc.views.Node.define('text', {
       // }
       // prettyprintAnnotations(that.document.annotations);
 
-      // Really? Yes.
+      // Really? No.
       // that.session.comments.compute();
     });
   },

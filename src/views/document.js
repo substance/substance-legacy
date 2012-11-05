@@ -265,10 +265,7 @@ sc.views.Document = Dance.Performer.extend({
       var opts = {};
       opts[property] = delta;
 
-      that.model.document.apply({
-        "op": ["set", opts],
-        "user": "michael"
-      });
+      that.model.document.apply(["set", opts]);
     });
   },
 

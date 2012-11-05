@@ -20,14 +20,14 @@ sc.views.Comments = Dance.Performer.extend({
     if (!node) node = undefined;
     if (!annotation) annotation = undefined;
 
-    this.model.document.apply(["insert", {
+    this.model.document.apply(["insert_comment", {
       id: "comment:"+Math.uuid(),
       content: content,
       node: node,
       annotation: annotation,
       created_at: new Date().toJSON(),
       user: app.user
-    }], {scope: "comment"});
+    }]);
 
     // Not too smart™
     this.model.comments.compute(this.scope);
@@ -39,9 +39,7 @@ sc.views.Comments = Dance.Performer.extend({
     var node = this.$('.comment-scope.active').attr('data-node');
     var annotation = this.$('.comment-scope.active').attr('data-annotation');
 
-    this.model.document.apply(["delete", {
-      id: annotation
-    }], {scope: "annotation"});
+    this.model.document.apply(["delete_annotation", { id: annotation }]);
 
     this.model.comments.compute();
     this.render();
