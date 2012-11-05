@@ -5,6 +5,7 @@ sc.views.Comments = Dance.Performer.extend({
 
   events: {
     'click .insert-comment': '_insertComment',
+    'click .delete-comment': '_deleteComment',
     'click .close-issue': '_closeIssue',
     'click .comment-scope': '_toggleScope'
   },
@@ -38,6 +39,14 @@ sc.views.Comments = Dance.Performer.extend({
     return false;
   },
 
+  _deleteComment: function(e) {
+    var comment = $(e.currentTarget).attr('data-id');
+
+    this.model.document.apply(["delete_comment", { id: comment }]);
+    this.model.comments.compute(this.scope);
+    return false;
+  },
+
   _closeIssue: function() {
     var node = this.$('.comment-scope.active').attr('data-node');
     var annotation = this.$('.comment-scope.active').attr('data-annotation');
@@ -45,7 +54,7 @@ sc.views.Comments = Dance.Performer.extend({
     this.model.document.apply(["delete_annotation", { id: annotation }]);
 
     this.model.comments.compute();
-    this.render();
+    // this.render();
     this.activateScope('node_comments');
 
     // Delete all associated comments
