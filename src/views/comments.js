@@ -32,6 +32,9 @@ sc.views.Comments = Dance.Performer.extend({
     // Not too smart™
     this.model.comments.compute(this.scope);
     // this.render(); // compute triggers an event that causes re-render
+
+    // Notify Composer -> triggers a re-render
+    choreographer.trigger('node:dirty', node);
     return false;
   },
 
@@ -44,9 +47,17 @@ sc.views.Comments = Dance.Performer.extend({
     this.model.comments.compute();
     this.render();
     this.activateScope('node_comments');
+
+    // Delete all associated comments
+    var comments = this.model.document.commentsForAnnotation(annotation);
+
+    this.model.document.apply(["delete_comment", { nodes: _.pluck(comments, 'id')}]);
     
     // Notify Surface
     choreographer.trigger('annotation:deleted', node, annotation);
+
+    // Notify Composer -> triggers a re-render
+    choreographer.trigger('node:dirty', node);
     return false;
   },
 

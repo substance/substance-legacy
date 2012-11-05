@@ -40,12 +40,21 @@ sc.views.Document = Dance.Performer.extend({
       if (node && node.surface) node.surface.deleteAnnotation(annotation);
     }
 
+    function updateNode(node) {
+      // Update node since its dirty
+      var node = this.nodes[node];
+      node.render();
+    }
+
     // Bind handlers (but only once)
     choreographer.off('comment-scope:selected', highlightAnnotation);
     choreographer.on('comment-scope:selected', highlightAnnotation, this);
 
     choreographer.off('annotation:deleted', deleteAnnotation);
     choreographer.on('annotation:deleted', deleteAnnotation, this);
+
+    choreographer.off('node:dirty', updateNode);
+    choreographer.on('node:dirty', updateNode, this);
     
     this.model.off('node:selected', this.updateSelections);
     this.model.on('node:selected', this.updateSelections, this);
