@@ -1,6 +1,6 @@
 {
   "refs": {
-    "master": "44e06a6edb102bd5ab297b6cab643e1e"
+    "master": "a38700f5a9a98400c7e5d2d46648f67b"
   },
   "commits": {
     "b0a4df43adba704eaef6809ada25bc4a": {
@@ -258,6 +258,21 @@
       ],
       "sha": "44e06a6edb102bd5ab297b6cab643e1e",
       "parent": "723db1920c24608f41be8d29f6dd3b29"
+    },
+    "a38700f5a9a98400c7e5d2d46648f67b": {
+      "op": [
+        "insert_comment",
+        {
+          "id": "comment:0bf13ff5c1f5a4f099d6c321166cefd2",
+          "content": "There's a typo here. It must read \"content-oriented\".",
+          "node": "text:b1995db9ead60c0cc8f259c31a0a545b",
+          "annotation": "annotation:31f465d92dd798a267252962d84a607d",
+          "created_at": "2012-11-05T16:50:20.984Z",
+          "user": "michael"
+        }
+      ],
+      "sha": "a38700f5a9a98400c7e5d2d46648f67b",
+      "parent": "44e06a6edb102bd5ab297b6cab643e1e"
     }
   },
   "id": "document:substance"
