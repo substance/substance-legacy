@@ -599,9 +599,9 @@ h2 { font-size: 160%; padding-bottom: 15px; }
   background: blue;
 }
 
-.content-node .idea { background-color: rgba(171, 201, 36, 0.3); }
-.content-node .blur { background-color: rgba(16, 167, 222, 0.3); }
-.content-node .doubt { background-color: rgba(237, 96, 48, 0.3); }
+.content-node.selected .idea { background-color: rgba(171, 201, 36, 0.3); }
+.content-node.selected .blur { background-color: rgba(16, 167, 222, 0.3); }
+.content-node.selected .doubt { background-color: rgba(237, 96, 48, 0.3); }
 
 .content-node .idea.highlight { background-color: rgba(171, 201, 36, 0.6); }
 .content-node .blur.highlight { background-color: rgba(16, 167, 222, 0.6);}
