@@ -612,12 +612,12 @@ h2 { font-size: 160%; padding-bottom: 15px; }
 .content-node.text .str { font-weight: bold; }
 
 
-/* Section Node
+/* Heading Node
 -------------------------------------------------------------------------------*/
 
-.content-node.section { }
+.content-node.heading { }
 
-.content-node.section .content {
+.content-node.heading .content {
   font-weight: bold;
   font-size: 25px;
   line-height: 30px;

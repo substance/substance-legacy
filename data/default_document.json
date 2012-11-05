@@ -7,8 +7,8 @@
       "op": [
         "insert",
         {
-          "id": "section:42c72d87e40f529dba27a9970c0a6ef3",
-          "type": "section",
+          "id": "heading:42c72d87e40f529dba27a9970c0a6ef3",
+          "type": "heading",
           "data": {
             "content": "Why should I care?"
           }
@@ -34,8 +34,8 @@
       "op": [
         "insert",
         {
-          "id": "section:9ff6e9be052283423f68296893009795",
-          "type": "section",
+          "id": "heading:9ff6e9be052283423f68296893009795",
+          "type": "heading",
           "data": {
             "content": "Semantic Editing"
           }
@@ -62,8 +62,8 @@
       "op": [
         "insert",
         {
-          "id": "section:d68039f628a4455eb6e76da97b6af53d",
-          "type": "section",
+          "id": "heading:d68039f628a4455eb6e76da97b6af53d",
+          "type": "heading",
           "data": {
             "content": "Content is data"
           }
@@ -90,8 +90,8 @@
       "op": [
         "insert",
         {
-          "id": "section:d0e612e01ea837a358f866ae3cfe6802",
-          "type": "section",
+          "id": "heading:d0e612e01ea837a358f866ae3cfe6802",
+          "type": "heading",
           "data": {
             "content": "Collaboration"
           }
@@ -118,8 +118,8 @@
       "op": [
         "insert",
         {
-          "id": "section:9e8fd5047f87cf5ee8f321c325c24ea4",
-          "type": "section",
+          "id": "heading:9e8fd5047f87cf5ee8f321c325c24ea4",
+          "type": "heading",
           "data": {
             "content": "Extensible"
           }

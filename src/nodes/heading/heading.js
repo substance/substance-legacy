@@ -1,6 +1,6 @@
-sc.views.Node.define('section', {
+sc.views.Node.define('heading', {
 
-  className: 'content-node section',
+  className: 'content-node heading',
 
   initialize: function (options) {
     sc.views.Node.prototype.initialize.apply(this, arguments);

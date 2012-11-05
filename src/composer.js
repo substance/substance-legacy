@@ -82,7 +82,7 @@
       if (this.model.level() === 3) {
         var node = this.views.document.nodes[_.first(this.model.selection())];
         
-        if (!_.include(["text", "section"], node.model.type)) return; // Skip for non-text nodes
+        if (!_.include(["text", "heading"], node.model.type)) return; // Skip for non-text nodes
         var text = node.surface.getContent();
         var pos = node.surface.selection()[0]; // current cursor position
 
@@ -132,7 +132,7 @@
 
       // Node insertion shortcuts
       key('alt+t', _.bind(function() { this.views.document.insertNode("text", {}); return false }, this));
-      key('alt+s', _.bind(function() { this.views.document.insertNode("section", {}); return false; }, this));
+      key('alt+h', _.bind(function() { this.views.document.insertNode("heading", {}); return false; }, this));
 
       // Marker shortcuts  
       key('⌘+i', _.bind(function() { return this.toggleAnnotation('em'); }, this));
