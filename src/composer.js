@@ -112,16 +112,14 @@
     },
 
     undo: function() {
-
       this.model.document.undo();
-      this.render();
-
+      this.init();
       return false;
     },
 
     redo: function() {
       this.model.document.redo();
-      this.render();
+      this.init();
       return false;
     },
 
@@ -161,16 +159,24 @@
       // Possible modes: edit, view, patch, apply-patch
       this.mode = "edit";
 
+      this.init();
+    },
+
+    init: function() {
+
       // Views
       this.views = {};
 
       this.views.document = new Substance.Composer.views.Document({ model: this.model });
       this.views.tools = new Substance.Composer.views.Tools({model: this.model });
       
+      this.model.document.off('operation:applied');
       this.model.document.on('operation:applied', function(operation) {
         // Send update to the server
         updateDoc(operation);
       }, this);
+
+      this.render();
     },
 
     render: function() {
