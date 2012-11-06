@@ -4,9 +4,6 @@
 
 #header {
   min-width: 1400px;
-/*  width: 1200px;
-  margin: 0 auto;*/
-
   font-family: 'Merriweather';
   font-size: 20px;
   height: 40px;
@@ -35,14 +32,8 @@
   margin-right: 40px;
 }
 
-/*#header .logo:hover {
-  background: #000;
-}*/
-
 #header .menu {
   float: left;
-  /* background: blue; */
-  /*height: 40px;*/
   overflow: auto;
 }
 
@@ -51,7 +42,6 @@
   display: block;
   float: left;
   height: 40px;
-  /*line-height: 40px;*/
   font-size: 14px;
   font-family: 'Open Sans';
   font-weight: bold;
@@ -73,7 +63,6 @@
 
 #header .actions {
   font-family: "Open Sans";
-  /*padding-right: 20px;*/
   float: right;
   overflow: auto;
 }
@@ -86,6 +75,44 @@
   font-weight: bold;
   line-height: 40px;
   font-family: "Open Sans";
+  overflow: auto;
+}
+
+#header .user-status .username {
+  float: left;
+  height: 40px;
+}
+
+#header .user-status a {
+  height: 40px;
+  float: left;
+  display: block;
+  background: blue;
+}
+
+#header .user-status a.logout {
+  width: 30px;
+  opacity: 0.7;
+  background: url(images/icons/menu-logout.png) 10px center no-repeat;
+}
+
+#header .user-status a.logout:hover {
+  opacity: 1;
+}
+
+#header .user-status a.new-document {
+  border-radius: 3px;
+  margin: 5px 0;
+  margin-right: 20px;
+  padding: 0 5px;
+  height: 30px;
+  line-height: 30px;
+  background: #7F8577;
+  color: #fff;
+}
+
+#header .user-status a.new-document:hover {
+  background: #B0B8A6;  
 }
 
 
@@ -102,7 +129,6 @@
   background: #DCDDD9;
   position: fixed;
   min-width: 1400px;
-  /*display: none;*/
 
   top: 40px;
   left: 0px;

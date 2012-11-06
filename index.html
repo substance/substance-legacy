@@ -22,9 +22,9 @@
           
           <div class="user-status">
           <% if (user) { %>
-            <%= user %>
             <a href="#new" class="new-document">New Document</a>
-            <a href="#logout" class="logout">Logout</a>
+            <div class="username"><%= user %></div>
+            <a href="#logout" class="logout"></a>
           <% } else { %>
             <form id="user_login_form">
               <input type="text" name="username" placeholder="Username" id="login_username"/>

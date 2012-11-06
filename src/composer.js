@@ -114,12 +114,14 @@
     undo: function() {
       this.model.document.undo();
       this.init();
+      this.render();
       return false;
     },
 
     redo: function() {
       this.model.document.redo();
       this.init();
+      this.render();
       return false;
     },
 
@@ -175,8 +177,6 @@
         // Send update to the server
         updateDoc(operation);
       }, this);
-
-      this.render();
     },
 
     render: function() {
