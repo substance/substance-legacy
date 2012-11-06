@@ -29,6 +29,39 @@
   margin: 0 auto;
 }
 
+#header .logo {
+  float: left;
+  height: 40px;
+  margin-right: 40px;
+}
+
+/*#header .logo:hover {
+  background: #000;
+}*/
+
+#header .menu {
+  float: left;
+  /* background: blue; */
+  /*height: 40px;*/
+  overflow: auto;
+}
+
+#header .menu a {
+  padding: 0 10px;
+  display: block;
+  float: left;
+  height: 40px;
+  /*line-height: 40px;*/
+  font-size: 14px;
+  font-family: 'Open Sans';
+  font-weight: bold;
+}
+
+#header .menu a:hover, #header .menu a.active {
+  background: #000;
+  color: #fff;
+}
+
 #header a {
   border: none;
   color: rgba(255,255,255, 0.5);

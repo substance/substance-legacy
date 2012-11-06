@@ -14,8 +14,12 @@
     <script type="text/html" name="substance">
       <div id="header">
         <div class="header-container">
-          <a href="#">Substance</a>
-
+          <a href="#" class="logo">Substance</a>
+          <div class="menu">
+            <a href="#" class="dashboard active">My Documents</a>
+            <a href="#" class="document">Hello world</a>
+          </div>
+          
           <div class="user-status">
           <% if (user) { %>
             <%= user %>
@@ -36,6 +40,13 @@
       </div>
     </script>
     
+    <!-- Dashboard -->
+    <script type="text/html" name="dashboard">
+      <div id="help">
+
+      </div>
+    </script>
+
     <!-- Startpage -->
     <script type="text/html" name="start">
       <div id="help">
@@ -183,15 +194,12 @@
                 <textarea class="comment-content" name="comment"></textarea>
               </div>
               <a href="#" class="button insert-comment">Add Comment</a>
-
             </div>
 
           </div>
 
         </div>
       <% }); %>
-
-
     </script>
 
 
