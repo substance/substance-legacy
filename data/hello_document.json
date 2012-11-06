@@ -1,99 +1,49 @@
 {
   "refs": {
-    "master": "f7bd8120adb16d179c454ce57b57b50d"
+    "master": "658ab4f39359c98a2289c5ba0187d9d4"
   },
-  "operations": {
-    "1b6544d5f9724c33aa8dbb5becc51c0d": {
+  "commits": {
+    "b0a4df43adba704eaef6809ada25bc4a": {
       "op": [
         "insert",
         {
-          "id": "section:1",
-          "type": "section",
-          "target": "back",
+          "id": "heading:42c72d87e40f529dba27a9970c0a6ef3",
+          "type": "heading",
           "data": {
-            "content": "Hello"
+            "content": "Why should I care?"
           }
         }
       ],
-      "user": "michael",
-      "sha": "1b6544d5f9724c33aa8dbb5becc51c0d",
-      "head": "master"
+      "sha": "b0a4df43adba704eaef6809ada25bc4a"
     },
-    "b0595f2d3863db5ecd82d43e7ec05da0": {
+    "46d783ce5341c6318199e1390a3c51ba": {
       "op": [
         "insert",
         {
-          "id": "text:2",
+          "id": "text:cbf6ef358c308047e44081d8274a0ddb",
           "type": "text",
-          "target": "back",
           "data": {
-            "content": "Hey there."
+            "content": "Substance provides a flexible architecture, involving an extensible document format and protocol, collaborative features, an extensible editor as well as a digital hub for sharing documents."
           }
         }
       ],
-      "user": "michael",
-      "sha": "b0595f2d3863db5ecd82d43e7ec05da0",
-      "head": "master",
-      "parent": "1b6544d5f9724c33aa8dbb5becc51c0d"
+      "sha": "46d783ce5341c6318199e1390a3c51ba",
+      "parent": "b0a4df43adba704eaef6809ada25bc4a"
     },
-    "f7bd8120adb16d179c454ce57b57b50d": {
+    "658ab4f39359c98a2289c5ba0187d9d4": {
       "op": [
-        "update",
+        "insert",
         {
-          "id": "section:1",
-          "data": [
-            [
-              "ret",
-              5
-            ],
-            [
-              "ins",
-              " world!"
-            ]
-          ]
+          "id": "heading:9ff6e9be052283423f68296893009795",
+          "type": "heading",
+          "data": {
+            "content": "Semantic Editing"
+          }
         }
       ],
-      "user": "michael",
-      "sha": "f7bd8120adb16d179c454ce57b57b50d",
-      "head": "master",
-      "parent": "b0595f2d3863db5ecd82d43e7ec05da0"
+      "sha": "658ab4f39359c98a2289c5ba0187d9d4",
+      "parent": "46d783ce5341c6318199e1390a3c51ba"
     }
   },
-  "additions": {
-    "f7bd8120adb16d179c454ce57b57b50d": {
-      "annotations": [
-        [
-          "insert",
-          {
-            "id": "suggestion:1",
-            "type": "suggestion",
-            "node": "text:2",
-            "pos": [
-              0,
-              3
-            ]
-          }
-        ]
-      ],
-      "comments": [
-        [
-          "insert",
-          {
-            "id": "comment:a",
-            "node": "text:2",
-            "content": "A way of saying helo.",
-            "annotation": "suggestion:1"
-          }
-        ],
-        [
-          "update",
-          {
-            "id": "comment:a",
-            "content": "A way of saying hello."
-          }
-        ]
-      ]
-    }
-  },
-  "id": "doc:hello"
+  "id": "document:substance"
 }

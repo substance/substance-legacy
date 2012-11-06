@@ -111,6 +111,20 @@
       }
     },
 
+    undo: function() {
+
+      this.model.document.undo();
+      this.render();
+
+      return false;
+    },
+
+    redo: function() {
+      this.model.document.redo();
+      this.render();
+      return false;
+    },
+
     build: function() {
       // Selection shortcuts
       key('down', _.bind(function() { return this.handleDown(); }, this));
@@ -140,6 +154,9 @@
       key('ctrl+1', _.bind(function() { return this.toggleAnnotation('idea'); }, this));
       key('ctrl+2', _.bind(function() { return this.toggleAnnotation('blur'); }, this));
       key('ctrl+3', _.bind(function() { return this.toggleAnnotation('doubt'); }, this));
+
+      key('⌘+z', _.bind(function() { return this.undo(); }, this));
+      key('shift+⌘+z', _.bind(function() { return this.redo(); }, this));
 
       // Possible modes: edit, view, patch, apply-patch
       this.mode = "edit";

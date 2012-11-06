@@ -68,6 +68,7 @@ sc.views.Document = Dance.Performer.extend({
     return this.model.document.content.nodes[id];
   },
 
+
   insert: function(options) {
     var node = this.getNode(options.id);
     var view = this.createNodeView(node);

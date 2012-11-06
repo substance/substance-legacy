@@ -35,7 +35,7 @@ sc.views.Comments = Dance.Performer.extend({
     // this.render(); // compute triggers an event that causes re-render
 
     // Notify Composer -> triggers a re-render
-    choreographer.trigger('node:dirty', node);
+    if (node) choreographer.trigger('node:dirty', node);
     return false;
   },
 
