@@ -12,6 +12,7 @@
   /*padding-left: 20px;*/
 /*  background: #E9EAE5;
   color: #444;*/
+
   background: #2F2B27;
   color: rgba(255,255,255, 0.7);
   position: fixed;
@@ -19,6 +20,7 @@
   right: 0px;
   top: 0px;
   overflow: auto;
+
 }
 
 #header .header-container {
@@ -27,6 +29,7 @@
 }
 
 #header .logo {
+  -webkit-transition: color 200ms linear;
   float: left;
   height: 40px;
   margin-right: 40px;
@@ -38,6 +41,7 @@
 }
 
 #header .menu a {
+  -webkit-transition: color 200ms linear;
   padding: 0 10px;
   display: block;
   float: left;
@@ -48,7 +52,7 @@
 }
 
 #header .menu a:hover, #header .menu a.active {
-  background: #000;
+  /*background: #000;*/
   color: #fff;
 }
 
@@ -78,6 +82,39 @@
   overflow: auto;
 }
 
+#header .user-status #user_login_form {
+  overflow: auto;
+  height: 40px;
+}
+
+#header .user-status #user_login_form input {
+  border-radius: 3px;
+  color: #444;
+  padding: 0 5px;
+  width: 150px;
+  margin: 5px 0;
+  margin-right: 5px;
+  height: 30px;
+  font-family: "Open Sans";
+  font-size: 14px;
+  font-weight: bold;
+  float: left;
+  background: rgba(255,255,255, 0.9);
+  border: none;
+  
+  -webkit-font-smoothing: antialiased;
+}
+
+#header .user-status #user_login_form input.submit {
+  width: 80px;
+  background: #828181;
+  color: white;
+}
+
+#header .user-status #user_login_form input.submit:hover {
+  background: #999;
+}
+
 #header .user-status .username {
   float: left;
   height: 40px;
@@ -93,6 +130,7 @@
 #header .user-status a.logout {
   width: 30px;
   opacity: 0.7;
+  -webkit-transition: opacity 200ms linear;
   background: url(images/icons/menu-logout.png) 10px center no-repeat;
 }
 
@@ -101,18 +139,19 @@
 }
 
 #header .user-status a.new-document {
+  -webkit-transition: background 200ms linear;
   border-radius: 3px;
   margin: 5px 0;
   margin-right: 20px;
-  padding: 0 5px;
+  padding: 0 10px;
   height: 30px;
   line-height: 30px;
-  background: #7F8577;
+  background: #828181;
   color: #fff;
 }
 
 #header .user-status a.new-document:hover {
-  background: #B0B8A6;  
+  background: #999;
 }
 
 
