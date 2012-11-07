@@ -195,6 +195,7 @@ h2 { font-size: 160%; padding-bottom: 15px; }
 -------------------------------------------------------------------------------*/
 
 .tool .comment-scopes {
+  display: none;
   overflow: auto;
 }
 
@@ -354,7 +355,6 @@ h2 { font-size: 160%; padding-bottom: 15px; }
   width: 100%;
   background: #fff;
   border-radius: 3px;
-  /*border: 1px solid #ccc;*/
   padding: 10px;
   border: none;
   height: 60px;
@@ -429,7 +429,6 @@ h2 { font-size: 160%; padding-bottom: 15px; }
   -webkit-box-shadow: 0px 1px 4px rgba(0, 0, 0, 0.35), inset 0px 0px 1px rgba(255, 255, 255, 0.15);
   -moz-box-shadow: 0px 1px 4px rgba(0, 0, 0, 0.35), inset 0px 0px 1px rgba(255, 255, 255, 0.15);
   box-shadow: 0px 1px 4px rgba(0, 0, 0, 0.35), inset 0px 0px 1px rgba(255, 255, 255, 0.15);
-
 }
 
 
@@ -474,7 +473,34 @@ h2 { font-size: 160%; padding-bottom: 15px; }
   position: relative;
 }
 
+/* Currently not used */
+#container #document .content-node .annotations {
+  position: absolute;
+  top: 10px;
+  right: -20px;
+  width: 10px;
+}
 
+#container #document .content-node .annotations a {
+  display: block;
+  border: none;
+  margin-bottom: 1px;
+  width: 10px;
+  height: 10px;
+  background: blue;
+}
+
+#container #document .content-node .annotations a.idea {
+  background-color: rgba(171, 201, 36, 1);
+}
+
+#container #document .content-node .annotations a.blur {
+  background-color: rgba(16, 167, 222, 1); 
+}
+
+#container #document .content-node .annotations a.doubt {
+  background-color: rgba(237, 96, 48, 1);
+}
 
 #container #document .content-node .comments-toggle {
   position: absolute;
@@ -599,13 +625,13 @@ h2 { font-size: 160%; padding-bottom: 15px; }
   background: blue;
 }
 
-.content-node.selected .idea { background-color: rgba(171, 201, 36, 0.3); }
-.content-node.selected .blur { background-color: rgba(16, 167, 222, 0.3); }
-.content-node.selected .doubt { background-color: rgba(237, 96, 48, 0.3); }
+.content-node .idea { background-color: rgba(171, 201, 36, 0.3); }
+.content-node .blur { background-color: rgba(16, 167, 222, 0.3); }
+.content-node .doubt { background-color: rgba(237, 96, 48, 0.3); }
 
-.content-node.selected .idea.highlight { background-color: rgba(171, 201, 36, 0.6); }
-.content-node.selected .blur.highlight { background-color: rgba(16, 167, 222, 0.6);}
-.content-node.selected .doubt.highlight { background-color: rgba(237, 96, 48, 0.6); }
+.content-node .idea.highlight { background-color: rgba(171, 201, 36, 0.6); }
+.content-node .blur.highlight { background-color: rgba(16, 167, 222, 0.6);}
+.content-node .doubt.highlight { background-color: rgba(237, 96, 48, 0.6); }
 
 .content-node.text .em { font-style: italic; }
 .content-node.text .link { background-color: #00CFEA; }

@@ -42,8 +42,8 @@
     
     <!-- Dashboard -->
     <script type="text/html" name="dashboard">
-      <div id="help">
-
+      <div id="dasboard">
+        
       </div>
     </script>
 
@@ -161,7 +161,7 @@
           </div>
         <% }); %>
       </div>
-
+      
       <% _.each(comments.scopes, function(scope, i) { %>
         <div id="comments_<%= _.htmlId(scope.id) %>" class="comments<%= i === 0 ? ' active' : ''%>">
           <div class="scope-header<%= scope.type ? ' '+scope.type : '' %>">

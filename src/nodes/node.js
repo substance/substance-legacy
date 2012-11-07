@@ -37,7 +37,13 @@ sc.views.Node = Dance.Performer.extend(_.extend({}, s.StateMachine, {
 
   render: function () {
     var cnt = this.document.commentCount(this.model.id);
-    $(this.el).html('<div class="content" contenteditable="true"></div><div class="handle"></div><div class="handle-2"></div><a href="#" class="comments-toggle'+(cnt > 0 ? ' active' : '')+'">'+cnt+'</a>');
+    var annotations = [];
+
+    // _.each(this.document.annotations(this.model.id), function(a) {
+    //   annotations.push('<a href="#" class="'+a.type+'"></a>');
+    // });
+
+    $(this.el).html('<div class="content" contenteditable="true"></div><div class="handle"></div><div class="handle-2"></div><a href="#" class="comments-toggle'+(cnt > 0 ? ' active' : '')+'">'+cnt+'</a><div class="annotations">'+annotations.join('')+'</a></div>');
     return this;
   }
 }), {
