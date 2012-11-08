@@ -4,7 +4,6 @@
   if (!exports.Substance) exports.Substance = {};
 
   var Composer = Dance.Performer.extend({
-
     events: {
       'click a.checkout-commit': '_checkoutCommit',
       'click .properties': 'clear'
@@ -19,8 +18,9 @@
     },
 
     positionTools: function() {
+
       var leftMargin = Math.max(100, ($(window).width()-1200) / 2);
-      $('#tools').css('left', leftMargin+800+30+'px');
+      this.$('#tools').css('left', leftMargin+800+30+'px');
     },
 
     initialize: function(options) {
@@ -184,6 +184,7 @@
       this.$el.html(_.tpl('composer'));
       this.renderDoc();
       this.positionTools();
+      return this;
     },
 
     renderDoc: function() {

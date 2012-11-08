@@ -24,8 +24,10 @@ $(function() {
   // ---------------
 
   var Start = Dance.Performer.extend({
+    id: 'container',
     render: function() {
       this.$el.html(_.tpl('start'));
+      return this;
     }
   });
 
@@ -34,6 +36,7 @@ $(function() {
   // ---------------
 
   var Dashboard = Dance.Performer.extend({
+    id: 'container',
     render: function() {
       this.$el.html(_.tpl('dashboard', {
         documents: [
@@ -41,6 +44,7 @@ $(function() {
           { title: "Hello World", author: "michael", file: "hello_document" }
         ]
       }));
+      return this;
     }
   });
 
@@ -51,7 +55,6 @@ $(function() {
     events: {
       'submit #user_login_form': '_login',
       'click .logout': '_logout',
-      'click .dashboard': 'dashboard',
       'click #container': '_clear'
     },
 
@@ -90,49 +93,62 @@ $(function() {
     document: function(id) {
       var that = this;
       loadDocument(id, function(err, session) {
-        that.view = new sc.views.Editor({el: '#container', model: session });
-        that.view.render();
+        that.view = new sc.views.Editor({model: session });
+        that.render();
+        that.listenForDocumentChanges();
         // choreographer.navigate(id, false);
+      });
+    },
+
+    // TODO: find a better way
+    listenForDocumentChanges: function() {
+      var that = this;
+      this.view.model.document.on('operation:applied', function(op) {
+        if (op[0] === "set") {
+          var title = that.view.model.document.content.properties.title;
+          that.$('.menu .document').html(title);
+        }
       });
     },
 
     newDocument: function() {
       var that = this;
       createDocument(function(err, session) {
-        console.log(' a new doccc', session);
-        that.view = new sc.views.Editor({el: '#container', model: session });
-        that.view.render();
+        that.view = new sc.views.Editor({model: session });
+        that.render();
+        that.listenForDocumentChanges();
       });
-      
       return;
     },
 
-    // Toggle Start view
-    // start: function() {
-    //   this.view = new Start({el: '#container'});
-    //   this.view.render();
-    // },
-
     dashboard: function() {
-      console.log('rendering dashboard.')
-      this.view = new Dashboard({el: '#container'});
-      this.view.render();
+      this.view = new Dashboard();
+      this.render();
+      // this.updateMenu();
       return;
     },
 
     // Render application template
     render: function() {
-      this.$el.html(_.tpl('substance', {user: this.user}));
+      var document = null;
+      if (this.view instanceof sc.views.Editor) {
+        var document = this.view.model.document.content.properties;
+      }
+
+      this.$el.html(_.tpl('substance', {
+        user: this.user,
+        document: document
+      }));
+
       if (this.view) {
-        this.$('#container').replaceWith(this.view.el);
+        this.$('#container').replaceWith(this.view.render().el);
       }
     }
   });
   
   // Start the engines
   window.app = new Application({el: 'body'});
-  app.render();
+  // app.render();
   window.choreographer = new Choreographer({});
   Dance.performance.start();
-
 });
