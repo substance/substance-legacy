@@ -122,6 +122,8 @@ sc.views.Document = Dance.Performer.extend({
 
     properties["content"] = options.content || "";
 
+    // console.log('insörting');
+
     this.model.document.apply(["insert", {
       "id": type+":"+Math.uuid(),
       "type": type,

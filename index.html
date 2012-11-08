@@ -16,7 +16,7 @@
         <div class="header-container">
           <a href="#" class="logo">Substance</a>
           <div class="menu">
-            <a href="#" class="dashboard active">My Documents</a>
+            <a href="#dashboard" class="dashboard active">My Documents</a>
             <a href="#" class="document">Hello world</a>
           </div>
           
@@ -42,9 +42,34 @@
     
     <!-- Dashboard -->
     <script type="text/html" name="dashboard">
-      <div id="dasboard">
-        
+      <div id="dashboard">
+      <% if (documents.length > 0) { %>
+          <div id="documents">
+            <% _.each(documents, function(doc) { %> 
+              <div class="document">
+                <a class="load-document" href="#demo/<%= doc.file %>" document="<%= doc._id %>">
+                  <div class="image">
+                    <img src="http://behance.vo.llnwd.net/profiles/58036/projects/5413899/096b7d0c26ca4e849a000a9b6e135b01.png" width="200">
+                  </div>
+
+                  <div class="title">
+                    <%= doc.title %>
+                  </div>
+                </a>
+
+                <div class="author"><a href="#">michael</a></div>
+                <div class="updated-at"><span>updated </span>5 days ago</div>
+              </div>
+            <% }); %>
+          </div>
+        </div>
+      <% } else { %>
+        <div id="documents">
+          <h2>No Documents yet ...</h2>
+        </div>
+      <% } %>
       </div>
+
     </script>
 
     <!-- Startpage -->

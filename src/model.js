@@ -1,8 +1,3 @@
-// Global Talk instance
-// -----------------
-
-// var talk = new Talk.Client("ws://localhost:3100/");
-
 // Document.Store
 // -----------------
 
@@ -11,14 +6,14 @@ var DocumentStore = function() {
 };
 
 DocumentStore.prototype.get = function(id, cb) {
-  this.create(cb);
+  $.getJSON('data/'+ (id+'.json'), function(doc) {
+    cb(null, doc);
+  });
 };
 
 
 DocumentStore.prototype.create = function(cb) {
-  $.getJSON('data/'+ ('default_document.json'), function(doc) {
-    cb(null, doc);
-  });
+  cb(null, {id: Math.uuid()});
 };
 
 
@@ -215,14 +210,25 @@ _.extend(Substance.Session.prototype, _.Events, {
 // -----------------
 
 function loadDocument(id, cb) {
-  store.get(id, function(err, document) {
+  store.get(id, function(err, doc) {
     var session = new Substance.Session({
-      document: new Substance.Document(document)
+      document: new Substance.Document(doc)
     });
     cb(err, session);
   });
 }
 
+// Create a new document
+// -----------------
+
+function createDocument(cb) {
+  store.create(function(err, doc) {
+    var session = new Substance.Session({
+      document: new Substance.Document(doc)
+    });
+    cb(err, session);
+  });
+}
 
 // Authenticate with your Substance user
 // -----------------

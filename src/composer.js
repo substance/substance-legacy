@@ -165,14 +165,15 @@
     },
 
     init: function() {
-
       // Views
       this.views = {};
+
+      // Rebind event handlers
+      this.model.document.off('operation:applied');
 
       this.views.document = new Substance.Composer.views.Document({ model: this.model });
       this.views.tools = new Substance.Composer.views.Tools({model: this.model });
       
-      this.model.document.off('operation:applied');
       this.model.document.on('operation:applied', function(operation) {
         // Send update to the server
         updateDoc(operation);

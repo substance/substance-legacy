@@ -4,12 +4,14 @@ $(function() {
     initialize: function() {
       // Using this.route, because order matters
       this.route(':document', 'loadDocument', this.loadDocument);
+      this.route('demo/:document', 'loadDocument', this.loadDocument);
       this.route('new', 'newDocument', this.newDocument);
-      this.route('', 'start', app.start);
+      this.route('dashboard', 'dashboard', app.dashboard);
+      this.route('', 'start', app.dashboard);
     },
 
     newDocument: function() {
-      app.document(Math.uuid());
+      app.newDocument();
     },
 
     loadDocument: function(id) {
@@ -28,6 +30,20 @@ $(function() {
   });
 
 
+  // Welcome screen
+  // ---------------
+
+  var Dashboard = Dance.Performer.extend({
+    render: function() {
+      this.$el.html(_.tpl('dashboard', {
+        documents: [
+          { title: "Substance", author: "michael", file: "default_document" },
+          { title: "Hello World", author: "michael", file: "hello_document" }
+        ]
+      }));
+    }
+  });
+
   // The Mothership
   // ---------------
 
@@ -35,6 +51,7 @@ $(function() {
     events: {
       'submit #user_login_form': '_login',
       'click .logout': '_logout',
+      'click .dashboard': 'dashboard',
       'click #container': '_clear'
     },
 
@@ -65,7 +82,7 @@ $(function() {
     },
 
     initialize: function (options) {
-      _.bindAll(this, 'start', 'document');
+      _.bindAll(this, 'document', 'dashboard');
       this.user = localStorage.getItem('user');    
     },
 
@@ -73,18 +90,34 @@ $(function() {
     document: function(id) {
       var that = this;
       loadDocument(id, function(err, session) {
-
-        // Init with a demo document
         that.view = new sc.views.Editor({el: '#container', model: session });
         that.view.render();
-        choreographer.navigate(id, false);
+        // choreographer.navigate(id, false);
       });
     },
 
+    newDocument: function() {
+      var that = this;
+      createDocument(function(err, session) {
+        console.log(' a new doccc', session);
+        that.view = new sc.views.Editor({el: '#container', model: session });
+        that.view.render();
+      });
+      
+      return;
+    },
+
     // Toggle Start view
-    start: function() {
-      this.view = new Start({el: '#container'});
+    // start: function() {
+    //   this.view = new Start({el: '#container'});
+    //   this.view.render();
+    // },
+
+    dashboard: function() {
+      console.log('rendering dashboard.')
+      this.view = new Dashboard({el: '#container'});
       this.view.render();
+      return;
     },
 
     // Render application template
@@ -93,7 +126,6 @@ $(function() {
       if (this.view) {
         this.$('#container').replaceWith(this.view.el);
       }
-
     }
   });
   
@@ -102,6 +134,5 @@ $(function() {
   app.render();
   window.choreographer = new Choreographer({});
   Dance.performance.start();
-
 
 });
