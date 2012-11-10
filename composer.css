@@ -326,23 +326,50 @@ h2 { font-size: 160%; padding-bottom: 15px; }
   border-radius: 3px;
   background: #E1E3DD;
   padding: 10px;
-  margin-bottom: 10px;
+  padding-right: 30px;
+  margin-bottom: 40px;
+  position: relative;
+}
+
+.tool .comments .delete-comment {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: rgba(0,0,0, 0.15);
+  display: block;
+  width: 15px;
+  height: 15px;
+  line-height: 15px;
+  font-size: 12px;
+  font-weight: bold;
+  border-radius: 3px;
+  text-align: center;
+  border: none;
+  color: #444;
+}
+
+.tool .comments .delete-comment:hover {
+  color: #444;
+  background: rgba(0,0,0, 0.2);
+}
+
+.tool .comments .arrow-down {
+  width: 0; 
+  height: 0; 
+  border-left: 7px solid transparent;
+  border-right: 7px solid transparent;
+  
+  border-top: 7px solid #E1E3DD;
+  position: absolute;
+  bottom: -7px;
+  left: 20px;
 }
 
 .tool .comments .meta {
-  overflow: auto;
-}
-
-.tool .comments .comment .creator {
-  font-weight: bold;
-  float: left;
-  font-size: 13px;
-}
-
-.tool .comments .comment .time {
-  font-style: italic;
-  float: right;
-  font-size: 13px;
+  position: absolute;
+  bottom: -30px;
+  left: 0px;
+  font-size: 12px;
 }
 
 

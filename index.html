@@ -203,14 +203,11 @@
 
             <% _.each(scope.comments, function(c) { %>
               <div class="comment">
-                <div class="meta">
-                  <div class="creator"><%= c.user %> <a class="delete-comment" data-id="<%= c.id %>" href="#">x</a></div>
-                  <div class="time"><%= $.timeago(c.created_at) %></div>
-                </div>
+                <%= c.content %>
+                <a class="delete-comment" title="Delete comment" data-id="<%= c.id %>" href="#">x</a>
+                <div class="arrow-down"></div>
+                <div class="meta"><b><%= c.user %></b>, <%= $.timeago(c.created_at) %></div>
 
-                <div class="text">
-                  <%= c.content %>
-                </div>
               </div>
             <% }); %>
 
