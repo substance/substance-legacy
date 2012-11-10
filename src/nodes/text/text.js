@@ -70,7 +70,8 @@ sc.views.Node.define('text', {
       that.session.select([that.model.id], {edit: true});
     });
 
-    function selectionChanged(sel) {
+    function selectionChanged() {
+      var sel = that.surface.selection();
       var marker = that.surface.getAnnotations(sel, ["idea", "blur", "doubt"])[0];
       if (marker) {
         choreographer.trigger('comment-scope:selected', marker.id, that.model.id, marker.id);
