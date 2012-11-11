@@ -10,45 +10,7 @@ sc.views.Node.define('text', {
   toggleAnnotation: function(e) {
     var type = $(e.currentTarget).attr('data-type');
 
-    // Check for existing annotation
-    var sel = this.surface.selection();
-    var a = this.surface.getAnnotations(sel, [type])[0];
-
-    // Overlap
-    if (a) {
-      var start = sel[0];
-      var end = start + sel[1];
-      var aStart = a.pos[0];
-      var aEnd = aStart + a.pos[1];
-
-      if (start <= aStart && end >= aEnd) {
-        // Full overlap
-        this.surface.deleteAnnotation(a.id);
-      } else {
-        if (start < aStart) {
-          // Partial overlap left-hand side
-          this.surface.updateAnnotation({
-            id: a.id,
-            pos: [end, a.pos[1] - (end - a.pos[0])]
-          });
-
-        } else if (start < aEnd && end > aEnd) {
-          // Partial overlap right-hand side
-          this.surface.updateAnnotation({
-            id: a.id,
-            pos: [a.pos[0], start - aStart]
-          });
-        } else {
-          this.surface.deleteAnnotation(a.id);
-        }
-      }
-    } else {
-      // Insert new annotation
-      this.annotate(type);
-    }
-
-    // this.removeToggles();
-    this.renderToggles(sel);
+    this.annotate(type);
     return false;
   },
 
@@ -71,6 +33,47 @@ sc.views.Node.define('text', {
 
   // Make this a toggling bitch
   annotate: function(type) {
+    // Check for existing annotation
+    var sel = this.surface.selection();
+    var a = this.surface.getAnnotations(sel, [type])[0];
+
+    // Overlap
+    if (a) {
+      var start = sel[0];
+      var end = start + sel[1];
+      var aStart = a.pos[0];
+      var aEnd = aStart + a.pos[1];
+
+      if (start <= aStart && end >= aEnd) {
+        // Full overlap
+        this.surface.deleteAnnotation(a.id);
+      } else {
+        if (start <= aStart) {
+          // Partial overlap left-hand side
+          this.surface.updateAnnotation({
+            id: a.id,
+            pos: [end, a.pos[1] - (end - a.pos[0])]
+          });
+        } else if (start < aEnd && end >= aEnd) {
+          // Partial overlap right-hand side
+          this.surface.updateAnnotation({
+            id: a.id,
+            pos: [a.pos[0], start - aStart]
+          });
+        } else {
+          this.surface.deleteAnnotation(a.id);
+        }
+      }
+    } else {
+      // Insert new annotation
+      this.insertAnnotation(type);
+    }
+
+    // this.removeToggles();
+    this.renderToggles(sel);
+  },
+
+  insertAnnotation: function(type) {
     var id = "annotation:"+Math.uuid();
     this.surface.insertAnnotation({ id: id, type: type, pos: this.surface.selection() });
     choreographer.trigger('comment-scope:selected', id, this.model.id, id);
@@ -211,7 +214,7 @@ sc.views.Node.define('text', {
     var pos = this.$(lastChar).position();
     pos.left += 10;
     this.$('.annotation-tools').css(pos);
-  }, 
+  },
 
   render: function() {
     sc.views.Node.prototype.render.apply(this, arguments);

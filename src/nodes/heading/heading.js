@@ -2,6 +2,18 @@ sc.views.Node.define('heading', {
 
   className: 'content-node heading',
 
+  // This should be moved into a separate module
+  events: {
+    'click .annotation-tools .toggle': 'toggleAnnotation'
+  },
+
+  toggleAnnotation: function(e) {
+    var type = $(e.currentTarget).attr('data-type');
+
+    this.annotate(type);
+    return false;
+  },
+
   initialize: function (options) {
     sc.views.Node.prototype.initialize.apply(this, arguments);
   },
@@ -16,7 +28,50 @@ sc.views.Node.define('heading', {
     $(this.el).remove();
   },
 
+  // Make this a toggling bitch
   annotate: function(type) {
+    // Check for existing annotation
+    var sel = this.surface.selection();
+    var a = this.surface.getAnnotations(sel, [type])[0];
+
+    // Overlap
+    if (a) {
+      var start = sel[0];
+      var end = start + sel[1];
+      var aStart = a.pos[0];
+      var aEnd = aStart + a.pos[1];
+
+      if (start <= aStart && end >= aEnd) {
+        // Full overlap
+        this.surface.deleteAnnotation(a.id);
+      } else {
+        if (start <= aStart) {
+          // Partial overlap left-hand side
+          this.surface.updateAnnotation({
+            id: a.id,
+            pos: [end, a.pos[1] - (end - a.pos[0])]
+          });
+
+        } else if (start < aEnd && end >= aEnd) {
+          // Partial overlap right-hand side
+          this.surface.updateAnnotation({
+            id: a.id,
+            pos: [a.pos[0], start - aStart]
+          });
+        } else {
+          this.surface.deleteAnnotation(a.id);
+        }
+      }
+    } else {
+      // Insert new annotation
+      this.insertAnnotation(type);
+    }
+
+    // this.removeToggles();
+    this.renderToggles(sel);
+  },
+
+  insertAnnotation: function(type) {
     var id = "annotation:"+Math.uuid();
     this.surface.insertAnnotation({ id: id, type: type, pos: this.surface.selection() });
     choreographer.trigger('comment-scope:selected', id, this.model.id, id);
@@ -75,6 +130,8 @@ sc.views.Node.define('heading', {
         choreographer.trigger('comment-scope:selected', 'node_comments', that.model.id, null);
         that.surface.highlight(null);
       }
+      
+      sel[1] > 0 ? that.renderToggles(sel) : that.removeToggles();
     }
 
     // Update comments panel according to marker context
@@ -82,7 +139,7 @@ sc.views.Node.define('heading', {
     this.surface.on('selection:changed', selectionChanged);
 
     this.surface.on('annotations:changed', function() {
-      that.session.comments.updateAnnotations(that.surface.getContent(), that.surface.annotations);
+      that.session.comments.updateAnnotations(that.surface.content, that.surface.annotations);
     });
 
 
@@ -100,6 +157,41 @@ sc.views.Node.define('heading', {
         that.document.apply(op, {user: "michael"});
       });
     });
+  },
+
+  removeToggles: function() {
+    this.$('.annotation-tools').empty();
+  },
+
+  renderToggles: function(sel) {
+    var that = this;
+
+    // Find last char
+    var lastChar = this.$('.content').children()[sel[0]+sel[1]-1];
+
+    // Calculate active states
+    // Full overlap = active
+    // Partial overlap = active
+    var annotations = [
+      {"type": "idea", "active": false },
+      {"type": "blur", "active": false },
+      {"type": "doubt", "active": false }
+    ];
+
+    _.each(annotations, function(a) {
+      var anns = that.surface.getAnnotations(sel, [a.type]);
+      if (anns.length > 0) a.active = true;
+    });
+
+    // Render tools
+    this.$('.annotation-tools').html(_.tpl('annotation_toggles', {
+      "annotations": annotations
+    }));
+
+    // Position dem
+    var pos = this.$(lastChar).position();
+    pos.left += 10;
+    this.$('.annotation-tools').css(pos);
   },
 
   render: function () {

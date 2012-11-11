@@ -36,7 +36,7 @@ sc.views.Node = Dance.Performer.extend(_.extend({}, s.StateMachine, {
   focus: function () {},
 
   render: function () {
-    var cnt = this.document.commentCount(this.model.id);
+    var cnt = this.document.comments(this.model.id).length;
     var annotations = [];
 
     // _.each(this.document.annotations(this.model.id), function(a) {
