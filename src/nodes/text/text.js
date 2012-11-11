@@ -16,12 +16,31 @@ sc.views.Node.define('text', {
 
     // Overlap
     if (a) {
-      if (_.isEqual(sel, a.pos)) {
+      var start = sel[0];
+      var end = start + sel[1];
+      var aStart = a.pos[0];
+      var aEnd = aStart + a.pos[1];
+
+      if (start <= aStart && end >= aEnd) {
         // Full overlap
         this.surface.deleteAnnotation(a.id);
       } else {
-        // Partial overlap, update annotation
-        // For now do nothing
+        if (start < aStart) {
+          // Partial overlap left-hand side
+          this.surface.updateAnnotation({
+            id: a.id,
+            pos: [end, a.pos[1] - (end - a.pos[0])]
+          });
+
+        } else if (start < aEnd && end > aEnd) {
+          // Partial overlap right-hand side
+          this.surface.updateAnnotation({
+            id: a.id,
+            pos: [a.pos[0], start - aStart]
+          });
+        } else {
+          this.surface.deleteAnnotation(a.id);
+        }
       }
     } else {
       // Insert new annotation
@@ -121,7 +140,7 @@ sc.views.Node.define('text', {
 
     // This gets fired a lot on every keystroke but no longer for adding annotations
     this.surface.on('changed', function() {
-      // that.session.comments.updateAnnotations(that.surface.getContent(), that.surface.annotations);
+      // that.session.comments.updateAnnotations(that.surface.content, that.surface.annotations);
     });
 
     this.$('.content').bind('blur', function() {
@@ -130,7 +149,7 @@ sc.views.Node.define('text', {
     });
 
     this.surface.on('annotations:changed', function() {
-      that.session.comments.updateAnnotations(that.surface.getContent(), that.surface.annotations);
+      that.session.comments.updateAnnotations(that.surface.content, that.surface.annotations);
     });
 
     // Changes are confirmed.
