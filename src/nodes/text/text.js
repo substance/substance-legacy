@@ -2,6 +2,37 @@ sc.views.Node.define('text', {
 
   className: 'content-node text',
 
+  // This should be moved into a separate module
+  events: {
+    'click .annotation-tools .toggle': 'toggleAnnotation'
+  },
+
+  toggleAnnotation: function(e) {
+    var type = $(e.currentTarget).attr('data-type');
+
+    // Check for existing annotation
+    var sel = this.surface.selection();
+    var a = this.surface.getAnnotations(sel, [type])[0];
+
+    // Overlap
+    if (a) {
+      if (_.isEqual(sel, a.pos)) {
+        // Full overlap
+        this.surface.deleteAnnotation(a.id);
+      } else {
+        // Partial overlap, update annotation
+        // For now do nothing
+      }
+    } else {
+      // Insert new annotation
+      this.annotate(type);
+    }
+
+    // this.removeToggles();
+    this.renderToggles(sel);
+    return false;
+  },
+
   focus: function () {
     $(this.textEl).click();
   },
@@ -19,6 +50,7 @@ sc.views.Node.define('text', {
     // this.editor.setValue(this.model.content);
   },
 
+  // Make this a toggling bitch
   annotate: function(type) {
     var id = "annotation:"+Math.uuid();
     this.surface.insertAnnotation({ id: id, type: type, pos: this.surface.selection() });
@@ -95,7 +127,7 @@ sc.views.Node.define('text', {
 
     this.$('.content').bind('blur', function() {
       console.log('surface deactivated');
-      that.removeToggles();
+      // that.removeToggles();
     });
 
     this.surface.on('annotations:changed', function() {
@@ -131,18 +163,30 @@ sc.views.Node.define('text', {
   },
 
   renderToggles: function(sel) {
+    var that = this;
+
     // Find last char
     var lastChar = this.$('.content').children()[sel[0]+sel[1]-1];
 
+    // Calculate active states
+    // Full overlap = active
+    // Partial overlap = active
+    var annotations = [
+      {"type": "em", "active": false },
+      {"type": "str", "active": false },
+      {"type": "idea", "active": false },
+      {"type": "blur", "active": false },
+      {"type": "doubt", "active": false }
+    ];
+
+    _.each(annotations, function(a) {
+      var anns = that.surface.getAnnotations(sel, [a.type]);
+      if (anns.length > 0) a.active = true;
+    });
+
     // Render tools
     this.$('.annotation-tools').html(_.tpl('annotation_toggles', {
-      "annotations": [
-        {"type": "em", "active": false },
-        {"type": "str", "active": true },
-        {"type": "idea", "active": false },
-        {"type": "blur", "active": false },
-        {"type": "doubt", "active": false }
-      ]
+      "annotations": annotations
     }));
 
     // Position dem
