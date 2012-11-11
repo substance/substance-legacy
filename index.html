@@ -40,6 +40,16 @@
       </div>
     </script>
     
+    <!-- Startpage -->
+    <script type="text/html" name="annotation_toggles">
+      <div id="annotation_toggles">
+        <% _.each(annotations, function(a) { %>
+          <a href="#" class="toggle <%= a.type %><%= a.active ? " active" : "" %> "><%= a.type %></a>
+        <% }) %>
+      </div>
+    </script>
+
+
     <!-- Dashboard -->
     <script type="text/html" name="dashboard">
       <div id="dashboard">

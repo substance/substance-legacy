@@ -43,7 +43,7 @@ sc.views.Node = Dance.Performer.extend(_.extend({}, s.StateMachine, {
     //   annotations.push('<a href="#" class="'+a.type+'"></a>');
     // });
 
-    $(this.el).html('<div class="content" contenteditable="true"></div><div class="handle"></div><div class="handle-2"></div><a href="#" class="comments-toggle'+(cnt > 0 ? ' active' : '')+'">'+cnt+'</a><div class="annotations">'+annotations.join('')+'</a></div>');
+    $(this.el).html('<div class="content" contenteditable="true"></div><div class="handle"></div><div class="handle-2"></div><a href="#" class="comments-toggle'+(cnt > 0 ? ' active' : '')+'">'+cnt+'</a><div class="annotation-tools"></div><div class="annotations">'+annotations.join('')+'</a></div>');
     return this;
   }
 }), {

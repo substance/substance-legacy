@@ -639,6 +639,49 @@ h2 { font-size: 160%; padding-bottom: 15px; }
   display: block;
 }
 
+/* Annotation tools
+-------------------------------------------------------------------------------*/
+
+.content-node .annotation-tools {
+  position: absolute;
+  right: 100px;
+  bottom: 100px;
+}
+
+
+
+
+.content-node .annotation-tools #annotation_toggles {
+  background: #ccc;
+  width: 240px;
+  overflow: auto;
+}
+
+#annotation_toggles a {
+  background: #aaa;
+  text-align: center;
+  margin-right: 2px;
+  border-radius: 2px;
+  width: 45px;
+  height: 30px;
+  line-height: 30px;
+
+  border: none;
+  display: block;
+  float: left;
+}
+
+#annotation_toggles a.active {
+  background: #444;
+  color: white;
+}
+
+/*#annotation_toggles a.toggle {
+  background: #aaa;
+  color: red;
+  display: block;
+  float: left;
+}*/
 
 /* Text Node
 -------------------------------------------------------------------------------*/

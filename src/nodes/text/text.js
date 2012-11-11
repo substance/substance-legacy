@@ -80,6 +80,8 @@ sc.views.Node.define('text', {
         choreographer.trigger('comment-scope:selected', 'node_comments', that.model.id, null);
         that.surface.highlight(null);
       }
+
+      sel[1] > 0 ? that.renderToggles(sel) : that.removeToggles();
     }
 
     // Update comments panel according to marker context
@@ -91,6 +93,11 @@ sc.views.Node.define('text', {
       // that.session.comments.updateAnnotations(that.surface.getContent(), that.surface.annotations);
     });
 
+    this.$('.content').bind('blur', function() {
+      console.log('surface deactivated');
+      that.removeToggles();
+    });
+
     this.surface.on('annotations:changed', function() {
       that.session.comments.updateAnnotations(that.surface.getContent(), that.surface.annotations);
     });
@@ -100,13 +107,11 @@ sc.views.Node.define('text', {
 
       var delta = _.extractOperation(prevContent, content);
 
-      console.log('Partial text update', delta);
+      // console.log('Partial text update', delta);
 
       // Update content incrementally
       if (content !== prevContent) {
         var op = ["update", {id: that.model.id, "data": delta}];
-        // Does not trigger a re-render of the node
-        // This only happens for operations coming from outside
         that.document.apply(op);
       }
 
@@ -118,22 +123,35 @@ sc.views.Node.define('text', {
         op[1].node = that.model.id;
         that.document.apply(op, {user: "michael"});
       });
-
-      // function prettyprintAnnotations(annotations) {
-      //   console.log('Annotations:');
-      //   _.each(annotations, function(a) {
-      //     console.log(a.type + ': ' + a.pos);
-      //   });
-      // }
-      // prettyprintAnnotations(that.document.annotations);
-
-      // Really? No.
-      // that.session.comments.compute();
     });
   },
 
+  removeToggles: function() {
+    this.$('.annotation-tools').empty();
+  },
+
+  renderToggles: function(sel) {
+    // Find last char
+    var lastChar = this.$('.content').children()[sel[0]+sel[1]-1];
+
+    // Render tools
+    this.$('.annotation-tools').html(_.tpl('annotation_toggles', {
+      "annotations": [
+        {"type": "em", "active": false },
+        {"type": "str", "active": true },
+        {"type": "idea", "active": false },
+        {"type": "blur", "active": false },
+        {"type": "doubt", "active": false }
+      ]
+    }));
+
+    // Position dem
+    var pos = this.$(lastChar).position();
+    pos.left += 10;
+    this.$('.annotation-tools').css(pos);
+  }, 
+
   render: function() {
-    // console.log('rendering', this.model.id);
     sc.views.Node.prototype.render.apply(this, arguments);
     this.initSurface();
     return this;
