@@ -173,6 +173,9 @@ sc.views.Document = Dance.Performer.extend({
     // $('.content-node.selected .handle').css('background', '');
     $('.content-node.selected').removeClass('selected');
 
+    // Cleanup annotation tools
+    $('.annotation-tools').empty();
+
     this.updateMode();
     
     _.each(this.model.selections, function(user, node) {

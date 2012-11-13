@@ -651,17 +651,16 @@ h2 { font-size: 160%; padding-bottom: 15px; }
 }
 
 
-.content-node .annotation-tools #annotation_toggles {
+.content-node .annotation-tools .annotation-toggles {
   background: #2F2B27;
   width: 245px;
   border-radius: 2px;
   overflow: auto;
   height: 40px;
   padding: 5px;
-  
 }
 
-#annotation_toggles a {
+.annotation-toggles a {
   background: #2F2B27;
   text-align: center;
   margin-right: 2px;
@@ -677,31 +676,31 @@ h2 { font-size: 160%; padding-bottom: 15px; }
   background: #ccc;
 }
 
-#annotation_toggles a:hover {
+.annotation-toggles a:hover {
   opacity: 0.6;
 }
 
-#annotation_toggles a.em {
+.annotation-toggles a.em {
   background: #ccc url(images/icons/em.png) 7px center no-repeat;
 }
 
-#annotation_toggles a.str {
+.annotation-toggles a.str {
   background: #ccc url(images/icons/str.png) 7px center no-repeat;
 }
 
-#annotation_toggles a.idea {
+.annotation-toggles a.idea {
   background: rgba(171, 201, 36, 1.0) url(images/icons/idea.png) 7px center no-repeat;
 }
 
-#annotation_toggles a.blur {
+.annotation-toggles a.blur {
   background: rgba(16, 167, 222, 1) url(images/icons/question.png) 7px center no-repeat;
 }
 
-#annotation_toggles a.doubt {
+.annotation-toggles a.doubt {
   background: rgba(237, 96, 48, 1) url(images/icons/caution.png) 7px center no-repeat;
 }
 
-#annotation_toggles a.active {
+.annotation-toggles a.active {
   opacity: 1.0;
 }
 
