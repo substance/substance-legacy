@@ -86,7 +86,14 @@ Textish = {
   annotate: function(type) {
     // Check for existing annotation
     var sel = this.surface.selection();
-    var a = this.surface.getAnnotations(sel, [type])[0];
+
+    if (_.include(["em", "str"], type)) {
+      var types = ["em", "str"];
+    } else {
+      var types = ["idea", "blur", "doubt"];
+    }
+
+    var a = this.surface.getAnnotations(sel, types)[0];
 
     // Overlap
     if (a) {
@@ -97,13 +104,24 @@ Textish = {
 
       if (start <= aStart && end >= aEnd) {
         // Full overlap
-        this.surface.deleteAnnotation(a.id);
+        if (a.type === type) {
+          console.log('deleteing');
+          this.surface.deleteAnnotation(a.id);  
+        } else {
+          console.log('turning ', a.type, 'into ', type);
+          this.surface.updateAnnotation({
+            id: a.id,
+            type: type
+          });
+          choreographer.trigger('comment-scope:selected', a.id, this.model.id, a.id);
+        }
       } else {
         if (start <= aStart) {
+
           // Partial overlap left-hand side
           this.surface.updateAnnotation({
             id: a.id,
-            pos: [end, a.pos[1] - (end - a.pos[0])]
+            pos: [end, a.pos[1] - (end - a.pos[0])],
           });
         } else if (start < aEnd && end >= aEnd) {
           // Partial overlap right-hand side
@@ -112,7 +130,14 @@ Textish = {
             pos: [a.pos[0], start - aStart]
           });
         } else {
+          // In the middle -> delete it
           this.surface.deleteAnnotation(a.id);
+        }
+
+        // If types differ create the new annotation
+        if (a.type !== type) {
+          console.log('inserting new stuff..');
+          this.insertAnnotation(type);
         }
       }
     } else {
