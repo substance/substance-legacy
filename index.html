@@ -44,7 +44,7 @@
     <script type="text/html" name="annotation_toggles">
       <div id="annotation_toggles">
         <% _.each(annotations, function(a) { %>
-          <a href="#" class="toggle <%= a.type %><%= a.active ? " active" : "" %> " data-type="<%= a.type %>"></a>
+          <a href="#" class="toggle <%= a.type %><%= a.active ? " active" : "" %> " data-type="<%= a.type %>" title="<%= a.description %>"></a>
         <% }) %>
       </div>
     </script>

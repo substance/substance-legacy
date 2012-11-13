@@ -300,7 +300,7 @@ h2 { font-size: 160%; padding-bottom: 15px; }
 
 .tool .comment-scope .header {
   color: rgba(255,255,255, 0.7);
-  font-family: 'Merriweather';
+  font-family: 'Palatino Linotype', 'Merriweather';
   padding: 5px 10px;
   cursor: pointer;
 }
@@ -445,11 +445,12 @@ h2 { font-size: 160%; padding-bottom: 15px; }
 -------------------------------------------------------------------------------*/
 
 #document {
-  font-family: 'Merriweather';  
+  font-family: 'Palatino Linotype', 'Merriweather';
+  
   width: 800px;
   -webkit-font-smoothing: subpixel-antialiased;
-  font-size: 1.1em;
-  line-height: 30px;
+  font-size: 1.3em;
+  line-height: 1.5em;
   margin-bottom: 30px;
 
   -webkit-box-shadow: 0px 1px 4px rgba(0, 0, 0, 0.35), inset 0px 0px 1px rgba(255, 255, 255, 0.15);
@@ -646,21 +647,21 @@ h2 { font-size: 160%; padding-bottom: 15px; }
   position: absolute;
   right: 100px;
   bottom: 100px;
+  z-index: 5000;
 }
 
 
 .content-node .annotation-tools #annotation_toggles {
   background: #2F2B27;
-  width: 246px;
+  width: 245px;
   border-radius: 2px;
   overflow: auto;
   height: 40px;
   padding: 5px;
-  z-index: 5000;
+  
 }
 
 #annotation_toggles a {
-
   background: #2F2B27;
   text-align: center;
   margin-right: 2px;
@@ -669,7 +670,6 @@ h2 { font-size: 160%; padding-bottom: 15px; }
   height: 30px;
   line-height: 30px;
 
-  /*border: 1px solid #fff;*/
   border: none;
   display: block;
   float: left;
@@ -679,6 +679,14 @@ h2 { font-size: 160%; padding-bottom: 15px; }
 
 #annotation_toggles a:hover {
   opacity: 0.6;
+}
+
+#annotation_toggles a.em {
+  background: #ccc url(images/icons/em.png) 7px center no-repeat;
+}
+
+#annotation_toggles a.str {
+  background: #ccc url(images/icons/str.png) 7px center no-repeat;
 }
 
 #annotation_toggles a.idea {

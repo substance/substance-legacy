@@ -193,11 +193,11 @@ sc.views.Node.define('text', {
     // Full overlap = active
     // Partial overlap = active
     var annotations = [
-      {"type": "em", "active": false },
-      {"type": "str", "active": false },
-      {"type": "idea", "active": false },
-      {"type": "blur", "active": false },
-      {"type": "doubt", "active": false }
+      {"type": "em", "active": false, description: "Emphasize" },
+      {"type": "str", "active": false, description: "Strong" },
+      {"type": "idea", "active": false, description: "Idea" },
+      {"type": "blur", "active": false, description: "Question" },
+      {"type": "doubt", "active": false, description: "Doubt" }
     ];
 
     _.each(annotations, function(a) {
