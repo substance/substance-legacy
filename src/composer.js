@@ -6,7 +6,8 @@
   var Composer = Dance.Performer.extend({
     events: {
       'click a.checkout-commit': '_checkoutCommit',
-      'click .properties': 'clear'
+      'click .properties': 'clear',
+      'click a.insert': '_insert'
     },
 
     _checkoutCommit: function(e) {
@@ -17,10 +18,27 @@
       return false;
     },
 
-    positionTools: function() {
+    _insert: function(e) {
+      var type = $(e.currentTarget).attr('data-type');
+      this.views.document.insertNode(type, {});
+      return false;
+    },
 
+    positionTools: function() {
       var leftMargin = Math.max(100, ($(window).width()-1200) / 2);
       this.$('#tools').css('left', leftMargin+800+30+'px');
+    },
+
+    updateMode: function() {
+      this.views.document.updateMode();
+
+      this.$('#context_bar').html(_.tpl('context_bar', {
+        level: this.model.level(),
+        node_types: [
+          {name: "Heading", type: "heading"},
+          {name: "Text", type: "text"}
+        ]
+      }));
     },
 
     initialize: function(options) {
@@ -33,7 +51,7 @@
 
     clear: function() {
       this.model.select([]);
-      this.views.document.updateMode();
+      this.updateMode();
     },
 
     // Go up one level
@@ -45,7 +63,7 @@
 
       // TODO: Only deactivate currently active surface -> performance
       $(".content-node .content").blur();
-      this.views.document.updateMode();
+      this.updateMode();
       return false;
     },
 
@@ -184,6 +202,7 @@
       this.$el.html(_.tpl('composer'));
       this.renderDoc();
       this.positionTools();
+      this.updateMode();
       return this;
     },
 
