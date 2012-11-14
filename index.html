@@ -42,10 +42,11 @@
     
     <!-- Startpage -->
     <script type="text/html" name="annotation_toggles">
-      <div id="annotation_toggles">
+      <div class="annotation-toggles">
         <% _.each(annotations, function(a) { %>
-          <a href="#" class="toggle <%= a.type %><%= a.active ? " active" : "" %> " data-type="<%= a.type %>"><%= a.type %></a>
+          <a href="#" class="toggle <%= a.type %><%= a.active ? " active" : "" %> " data-type="<%= a.type %>" title="<%= a.description %>"></a>
         <% }) %>
+        <div class="arrow-down"></div>
       </div>
     </script>
 
@@ -352,8 +353,10 @@
     
     <!-- Nodes -->
     <script src="src/nodes/node.js"></script>
-    <script src="src/nodes/heading/heading.js"></script>
+    <script src="src/nodes/textish.js"></script>
     <script src="src/nodes/text/text.js"></script>
+    <script src="src/nodes/heading/heading.js"></script>
+    
 
     <!-- Boot -->
     <script src="src/boot.js"></script>

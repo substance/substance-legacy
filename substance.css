@@ -4,7 +4,7 @@
 
 #header {
   min-width: 1400px;
-  font-family: 'Merriweather';
+  font-family: 'Palatino Linotype', 'Merriweather';
   font-size: 20px;
   height: 40px;
   line-height: 40px;
@@ -190,7 +190,7 @@
 
 #dashboard #documents .document .title {
   padding: 10px;
-  font-family: 'Merriweather';
+  font-family: 'Palatino Linotype', 'Merriweather';
   font-size: 16px;
 }
 

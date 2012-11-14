@@ -83,7 +83,7 @@
         var node = this.views.document.nodes[_.first(this.model.selection())];
         
         if (!_.include(["text", "heading"], node.model.type)) return; // Skip for non-text nodes
-        var text = node.surface.getContent();
+        var text = node.surface.content;
         var pos = node.surface.selection()[0]; // current cursor position
 
         var remainder = _.rest(text, pos).join("");

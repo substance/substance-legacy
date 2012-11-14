@@ -300,7 +300,7 @@ h2 { font-size: 160%; padding-bottom: 15px; }
 
 .tool .comment-scope .header {
   color: rgba(255,255,255, 0.7);
-  font-family: 'Merriweather';
+  font-family: 'Palatino Linotype', 'Merriweather';
   padding: 5px 10px;
   cursor: pointer;
 }
@@ -445,11 +445,12 @@ h2 { font-size: 160%; padding-bottom: 15px; }
 -------------------------------------------------------------------------------*/
 
 #document {
-  font-family: 'Merriweather';  
+  font-family: 'Palatino Linotype', 'Merriweather';
+  
   width: 800px;
   -webkit-font-smoothing: subpixel-antialiased;
   font-size: 1.1em;
-  line-height: 30px;
+  line-height: 1.6em;
   margin-bottom: 30px;
 
   -webkit-box-shadow: 0px 1px 4px rgba(0, 0, 0, 0.35), inset 0px 0px 1px rgba(255, 255, 255, 0.15);
@@ -646,19 +647,42 @@ h2 { font-size: 160%; padding-bottom: 15px; }
   position: absolute;
   right: 100px;
   bottom: 100px;
+  z-index: 5000;
+/*  opacity: 0.95;*/
 }
 
 
-
-
-.content-node .annotation-tools #annotation_toggles {
-  background: #ccc;
-  width: 240px;
-  overflow: auto;
+.content-node .annotation-tools .annotation-toggles {
+  background: #2F2B27;
+  width: 245px;
+  border-radius: 2px;
+  position: relative;
+  height: 40px;
+  padding: 5px;
 }
 
-#annotation_toggles a {
-  background: #aaa;
+.content-node.heading .annotation-tools .annotation-toggles {
+  width: 170px;
+}
+
+
+.content-node .annotation-toggles .arrow-down {
+  width: 0; 
+  height: 0; 
+  border-left: 7px solid transparent;
+  border-right: 7px solid transparent;
+  
+  border-top: 7px solid #2F2B27;
+  position: absolute;
+
+  bottom: -7px;
+
+  left: 110px;
+}
+
+
+.annotation-toggles a {
+  background: #2F2B27;
   text-align: center;
   margin-right: 2px;
   border-radius: 2px;
@@ -669,19 +693,38 @@ h2 { font-size: 160%; padding-bottom: 15px; }
   border: none;
   display: block;
   float: left;
+  opacity: 0.4;
+  background: #ccc;
 }
 
-#annotation_toggles a.active {
-  background: #444;
-  color: white;
+.annotation-toggles a:hover {
+  opacity: 0.6;
 }
 
-/*#annotation_toggles a.toggle {
-  background: #aaa;
-  color: red;
-  display: block;
-  float: left;
-}*/
+.annotation-toggles a.em {
+  background: #ccc url(images/icons/em.png) 7px center no-repeat;
+}
+
+.annotation-toggles a.str {
+  background: #ccc url(images/icons/str.png) 7px center no-repeat;
+}
+
+.annotation-toggles a.idea {
+  background: rgba(171, 201, 36, 1.0) url(images/icons/idea.png) 7px center no-repeat;
+}
+
+.annotation-toggles a.blur {
+  background: rgba(16, 167, 222, 1) url(images/icons/question.png) 7px center no-repeat;
+}
+
+.annotation-toggles a.doubt {
+  background: rgba(237, 96, 48, 1) url(images/icons/caution.png) 7px center no-repeat;
+}
+
+.annotation-toggles a.active {
+  opacity: 1.0;
+}
+
 
 /* Text Node
 -------------------------------------------------------------------------------*/
