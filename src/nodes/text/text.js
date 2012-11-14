@@ -19,28 +19,21 @@ sc.views.Node.define('text', _.extend(Textish, {
       "visibility" : 'both'
     },
     "blur": {
-      "description": 'Blur',
+      "description": 'Question',
       "inclusive": false,
       "visibility" : 'both'
     },
     "doubt": {
-      "description": 'Blur',
+      "description": 'Doubt',
       "inclusive": false,
       "visibility" : 'both'
     }
   },
 
-  // annotationTypes: [
-  //   {"type": "em", "active": false, description: "Emphasize" },
-  //   {"type": "str", "active": false, description: "Strong" },
-  //   {"type": "idea", "active": false, description: "Idea" },
-  //   {"type": "blur", "active": false, description: "Question" },
-  //   {"type": "doubt", "active": false, description: "Doubt" }
-  // ],
-
   // This should be moved into a separate module
   events: {
-    'click .annotation-tools .toggle': 'toggleAnnotation',
+    'mousedown .annotation-tools .toggle': 'toggleAnnotation',
+    'click .annotation-tools .toggle': function() { return false; }
   },
 
   initialize: function (options) {

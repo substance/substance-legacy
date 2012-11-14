@@ -449,8 +449,8 @@ h2 { font-size: 160%; padding-bottom: 15px; }
   
   width: 800px;
   -webkit-font-smoothing: subpixel-antialiased;
-  font-size: 1.3em;
-  line-height: 1.5em;
+  font-size: 1.1em;
+  line-height: 1.6em;
   margin-bottom: 30px;
 
   -webkit-box-shadow: 0px 1px 4px rgba(0, 0, 0, 0.35), inset 0px 0px 1px rgba(255, 255, 255, 0.15);
@@ -648,6 +648,7 @@ h2 { font-size: 160%; padding-bottom: 15px; }
   right: 100px;
   bottom: 100px;
   z-index: 5000;
+/*  opacity: 0.95;*/
 }
 
 
@@ -655,10 +656,30 @@ h2 { font-size: 160%; padding-bottom: 15px; }
   background: #2F2B27;
   width: 245px;
   border-radius: 2px;
-  overflow: auto;
+  position: relative;
   height: 40px;
   padding: 5px;
 }
+
+.content-node.heading .annotation-tools .annotation-toggles {
+  width: 170px;
+}
+
+
+.content-node .annotation-toggles .arrow-down {
+  width: 0; 
+  height: 0; 
+  border-left: 7px solid transparent;
+  border-right: 7px solid transparent;
+  
+  border-top: 7px solid #2F2B27;
+  position: absolute;
+
+  bottom: -7px;
+
+  left: 110px;
+}
+
 
 .annotation-toggles a {
   background: #2F2B27;

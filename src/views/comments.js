@@ -109,6 +109,7 @@ sc.views.Comments = Dance.Performer.extend({
   render: function (scope) {
     // Reset selected scope on every re-render
     this.scope = scope;
+
     this.$el.html(_.tpl('comments', this.model));
     this.activateScope(this.scope);
     return this;

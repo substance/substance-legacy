@@ -25,12 +25,19 @@ Textish = {
       return false;
     });
 
+    // TODO: problematic since this is triggered when a toggle is being clicked.
+    this.$('.content').bind('blur', function(e) {
+      that.removeToggles();
+    });
+
+
     this.surface.on('surface:active', function(sel) {
       that.session.select([that.model.id], {edit: true});
     });
 
     function selectionChanged(sel) {
       var marker = that.surface.getAnnotations(sel, ["idea", "blur", "doubt"])[0];
+
       if (marker) {
         choreographer.trigger('comment-scope:selected', marker.id, that.model.id, marker.id);
         that.surface.highlight(marker.id);
@@ -44,13 +51,6 @@ Textish = {
     // Update comments panel according to marker context
     this.surface.off('selection:changed', selectionChanged);
     this.surface.on('selection:changed', selectionChanged);
-
-    // TODO: problematic since this is triggered when a toggle is being clicked.
-    this.$('.content').bind('blur', function() {
-      // _.delay(function() {
-      //   that.removeToggles();
-      // }, 200);
-    });
 
     this.surface.on('annotations:changed', function() {
       that.session.comments.updateAnnotations(that.surface.content, that.surface.annotations);
@@ -66,6 +66,8 @@ Textish = {
         that.document.apply(["update", {id: that.model.id, "data": delta}]);
       }
 
+      console.log('annotation ops', ops);
+
       // Applying annotation ops...
       _.each(ops, function(op) {
         op[0] += "_annotation"; // should be done on the surface level?
@@ -77,6 +79,7 @@ Textish = {
 
   // This should be moved into a separate module
   toggleAnnotation: function(e) {
+    // console.log('toggleannotation');
     var type = $(e.currentTarget).attr('data-type');
     this.annotate(type);
     return false;
@@ -86,6 +89,8 @@ Textish = {
   annotate: function(type) {
     // Check for existing annotation
     var sel = this.surface.selection();
+
+    if (!sel) return;
 
     if (_.include(["em", "str"], type)) {
       var types = ["em", "str"];
@@ -105,7 +110,6 @@ Textish = {
       if (start <= aStart && end >= aEnd) {
         // Full overlap
         if (a.type === type) {
-          console.log('deleteing');
           this.surface.deleteAnnotation(a.id);  
         } else {
           console.log('turning ', a.type, 'into ', type);
@@ -137,12 +141,12 @@ Textish = {
         // If types differ create the new annotation
         if (a.type !== type) {
           console.log('inserting new stuff..');
-          this.insertAnnotation(type);
+          this.insertAnnotation(type, sel);
         }
       }
     } else {
       // Insert new annotation
-      this.insertAnnotation(type);
+      this.insertAnnotation(type, sel);
     }
 
     // this.removeToggles();
@@ -150,14 +154,14 @@ Textish = {
   },
 
   // Create a new annotation with the given annotation type
-  insertAnnotation: function(type) {
+  insertAnnotation: function(type, sel) {
     var id = "annotation:"+Math.uuid();
-    this.surface.insertAnnotation({ id: id, type: type, pos: this.surface.selection() });
+    this.surface.insertAnnotation({ id: id, type: type, pos: sel });
     choreographer.trigger('comment-scope:selected', id, this.model.id, id);
   },
 
   removeToggles: function() {
-    $('.annotation-tools').empty();
+    $('.annotation-tools').hide();
   },
 
   renderToggles: function(sel) {
@@ -179,12 +183,13 @@ Textish = {
     // Render tools
     this.$('.annotation-tools').html(_.tpl('annotation_toggles', {
       "annotations": annotations
-    }));
+    })).show();
 
     // Position dem
     var pos = this.$(lastChar).position();
     if (pos) {
-      pos.left += 10;
+      pos.left -= 110;
+      pos.top -= 54;
       this.$('.annotation-tools').css(pos);      
     }
   }

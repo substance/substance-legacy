@@ -46,6 +46,7 @@
         <% _.each(annotations, function(a) { %>
           <a href="#" class="toggle <%= a.type %><%= a.active ? " active" : "" %> " data-type="<%= a.type %>" title="<%= a.description %>"></a>
         <% }) %>
+        <div class="arrow-down"></div>
       </div>
     </script>
 
