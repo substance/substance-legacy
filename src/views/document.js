@@ -115,13 +115,11 @@ sc.views.Document = Dance.Performer.extend({
 
   insertNode: function(type, options) {
     var selection = this.model.users[this.model.user].selection;
-    var target = _.last(selection);
+    var target = options.target || _.last(selection);
 
     var properties = {};
 
     properties["content"] = options.content || "";
-
-    // console.log('insörting');
 
     this.model.document.apply(["insert", {
       "id": type+":"+Math.uuid(),

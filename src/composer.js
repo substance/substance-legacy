@@ -103,6 +103,7 @@
     },
 
     handleEnter: function() {
+      var that = this;
       if (this.model.level() === 3) {
         var node = this.views.document.nodes[_.first(this.model.selection())];
         
@@ -114,8 +115,9 @@
         var newContent = text.substr(0, pos);
 
         node.surface.deleteRange([pos, remainder.length]);
-
-        this.views.document.insertNode("text", {content: remainder});
+        node.surface.commit();
+        that.views.document.insertNode("text", {content: remainder, target: node.model.id});
+        
         return false;
       }
     },
