@@ -159,7 +159,7 @@ Textish = {
     this.surface.insertAnnotation({ id: id, type: type, pos: sel });
     choreographer.trigger('comment-scope:selected', id, this.model.id, id);
   },
-
+  
   removeToggles: function() {
     $('.annotation-tools').hide();
   },

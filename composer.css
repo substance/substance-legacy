@@ -118,7 +118,12 @@ h2 { font-size: 160%; padding-bottom: 15px; }
 
 
 #container {
-  position:relative;
+  position: fixed;
+  top: 0px;
+  bottom: 0px;
+  right: 0px;
+  left: 0px;
+
 }
 
 #main {
@@ -134,26 +139,31 @@ h2 { font-size: 160%; padding-bottom: 15px; }
 -------------------------------------------------------------------------------*/
 
 #context_bar {
+  display: none;
   position: fixed;
-  height: 100px;
+  height: 60px;
   bottom: 0px;
-  left: 0px;
-  right: 0px;
-  background: #DCDDD9;
+  /*left: 0px;*/
+
+  padding: 10px 80px;
+
+  width: 800px;
+
+  /*background: #DCDDD9;*/
+  background: #fff;
   z-index: 5000;
 
-  -webkit-box-shadow: 0px -1px 2px rgba(0, 0, 0, 0.25);
-  -moz-box-shadow: 0px -1px 2px rgba(0, 0, 0, 0.25);
-  box-shadow: 0px -1px 2px rgba(0, 0, 0, 0.25);
 }
 
 #context_bar .context-bar {
-  width: 1200px;
-  margin: 0 auto;
+
+  border-top: 2px solid #ccc;
+  border-bottom: 2px solid #ccc;
 }
 
 #context_bar .context-bar .insert-commands {
   margin-top: 10px;
+  margin-bottom: 10px;
   overflow: auto;
 }
 
@@ -167,10 +177,10 @@ h2 { font-size: 160%; padding-bottom: 15px; }
   border: 0;
   float: left;
   text-align: center;
-  line-height: 70px;
+  /*line-height: 70px;*/
   margin-right: 10px;
   width: 70px;
-  height: 70px;
+  /*height: 70px;*/
 }
 
 
@@ -179,11 +189,12 @@ h2 { font-size: 160%; padding-bottom: 15px; }
 -------------------------------------------------------------------------------*/
 
 #tools {
+  background: #E1E3DA;
   position: fixed;
-  top: 110px;
+  top: 80px;
   bottom: 0px;
   overflow: auto;
-  width: 370px;
+  width: 330px;
 }
 
 #tools .document-menu, #tools .node-menu {
@@ -238,14 +249,20 @@ h2 { font-size: 160%; padding-bottom: 15px; }
 -------------------------------------------------------------------------------*/
 
 .tool .comment-scopes {
-  display: none;
+  position: absolute;
+  right: 0px;
+  top: 0px;
+  bottom: 0px;
+  width: 50px;
+  /*display: none;*/
+  background: #ccc;
   overflow: auto;
 }
 
 .tool .comment-scope {
   background: rgba(0,0,0, 0.2) url(images/icons/discussion.png) 10px center no-repeat;
-  margin-bottom: 10px;
-  border-radius: 3px;
+  /*margin-bottom: 10px;*/
+  /*border-radius: 3px;*/
   float: left;
   margin-right: 5px;
   padding: 10px 10px;
@@ -253,6 +270,7 @@ h2 { font-size: 160%; padding-bottom: 15px; }
   font-weight: bold;
   font-size: 12px;
   cursor: pointer;
+  height: 50px;
   /*-webkit-transition: background 200ms linear;*/
   /*opacity: 0.7;*/
 }
@@ -262,7 +280,7 @@ h2 { font-size: 160%; padding-bottom: 15px; }
   height: 50px;
   color: #333;
   position: relative;
-  border-radius: 3px;
+  /*border-radius: 3px;*/
   margin-bottom: 10px;
 }
 
@@ -348,15 +366,16 @@ h2 { font-size: 160%; padding-bottom: 15px; }
   cursor: pointer;
 }
 
-.tool .comment-scope .comments {
+/*.tool .comment-scope .comments {
   display: none;
 }
 
-.tool .comment-scope.active .comments {
+.tool .comments {
   display: block;
-}
+}*/
 
 .tool .comments {
+  margin-right: 50px;
   display: none;
   font-size: 14px;
 }
@@ -416,8 +435,11 @@ h2 { font-size: 160%; padding-bottom: 15px; }
 }
 
 .new-comment {
-  border-radius: 3px;
-  position: relative;
+
+  position: absolute;
+  bottom: 0px;
+  left: 0px;
+  right: 50px;
 }
 
 .new-comment textarea {
@@ -426,7 +448,7 @@ h2 { font-size: 160%; padding-bottom: 15px; }
   border-radius: 3px;
   padding: 10px;
   border: none;
-  height: 60px;
+  height: 50px;
 }
 
 .new-comment .button {
@@ -487,18 +509,44 @@ h2 { font-size: 160%; padding-bottom: 15px; }
 /* Document
 -------------------------------------------------------------------------------*/
 
+#document_content {
+  background: #fff;
+
+  width: 750px;
+  border-right: 1px solid #dedede;
+}
+
+#document .left-rail {
+  position: fixed;
+  /*left: 0px;*/
+  z-index: 1;
+  top: 0px;
+  bottom: 0px;
+  width: 20px;
+  background: #B9BAB3;
+}
+
+
 #document {
   font-family: 'Palatino Linotype', 'Merriweather';
-  
+  position: fixed;
+  top: 80px;
+  bottom: 0px;
+  overflow: auto;
+
+  background: #f5f5f5;
   width: 800px;
   -webkit-font-smoothing: subpixel-antialiased;
   font-size: 1.1em;
   line-height: 1.6em;
-  margin-bottom: 150px;
+  /*margin-bottom: 150px;*/
 
-  -webkit-box-shadow: 0px 1px 4px rgba(0, 0, 0, 0.35), inset 0px 0px 1px rgba(255, 255, 255, 0.15);
+  /*padding-bottom: 60px;*/
+
+/*  -webkit-box-shadow: 0px 1px 4px rgba(0, 0, 0, 0.35), inset 0px 0px 1px rgba(255, 255, 255, 0.15);
   -moz-box-shadow: 0px 1px 4px rgba(0, 0, 0, 0.35), inset 0px 0px 1px rgba(255, 255, 255, 0.15);
   box-shadow: 0px 1px 4px rgba(0, 0, 0, 0.35), inset 0px 0px 1px rgba(255, 255, 255, 0.15);
+*/
 }
 
 
@@ -522,9 +570,12 @@ h2 { font-size: 160%; padding-bottom: 15px; }
   text-align: center;
 }
 
+
+
 #document .nodes {
   overflow: visible;
-  width: 800px;
+
+
   background: #fff;
 }
 
@@ -574,14 +625,12 @@ h2 { font-size: 160%; padding-bottom: 15px; }
 
 #container #document .content-node .comments-toggle {
   position: absolute;
-  display: none;
-  left: -80px;
-  top: 10px;
+  /*display: none;*/
+  right: -35px;
+  top: 0px;
   line-height: 30px;
   font-family: 'Open Sans',Arial,sans-serif;
-  background: url(images/icons/comment.png) center no-repeat;
-  padding-right: 50px;
-  padding-left: 5px;
+  background: url(images/icons/discussion-small.png) center no-repeat;
   font-size: 13px;
   font-weight: bold;
   color: #000;
@@ -593,6 +642,22 @@ h2 { font-size: 160%; padding-bottom: 15px; }
   z-index: 100;
 }
 
+#container #document .content-node .delete {
+  width: 20px;
+  height: 20px;
+  position: absolute;
+  background: url(images/icons/delete.png);
+  right: 10px;
+  top: 5px;
+  border: none;
+  /*background: green;*/
+  opacity: 0.5;
+  display: none;
+}
+
+#container #document .content-node .delete:hover {
+  opacity: 0.7;
+}
 
 
 #container #document .content-node .comments-toggle.highlighted {
@@ -610,7 +675,7 @@ h2 { font-size: 160%; padding-bottom: 15px; }
 
 
 #container #document .content-node .comments-toggle.active {
-  display: block;
+  /*display: block;*/
 }
 
 #container #document .content-node.selected {
@@ -621,13 +686,34 @@ h2 { font-size: 160%; padding-bottom: 15px; }
 
 #container #document .content-node .handle {
   position: absolute;
-  left: -20px;
+  left: 0px;
   top: 0px;
   bottom: 0px;
   width: 20px;
-  background: #2F2B27;
-  opacity: 0.1;
+  
+  /*opacity: 0.1;*/
   z-index: 100;
+}
+
+
+#container #document .content-node.selected .handle .up {
+  background: url(images/icons/arrow-up.png) center no-repeat;
+  display: none;
+  width: 20px;
+  height: 20px;
+  border: none;
+  position: absolute;
+  top: 0px;
+}
+
+#container #document .content-node.selected .handle .down {
+  background: url(images/icons/arrow-down.png) center no-repeat;
+  display: none;
+  width: 20px;
+  height: 20px;
+  border: none;
+  position: absolute;
+  bottom: 0px;
 }
 
 @-webkit-keyframes pulsate {
@@ -637,15 +723,16 @@ h2 { font-size: 160%; padding-bottom: 15px; }
 }
 
 #container #document .content-node .handle-2 {
+
   position: absolute;
-  right: -4px;
+  right: -2px;
   top: 0px;
   bottom: 0px;
-  width: 4px;
+  width: 3px;
   background: #2F2B27;
-  -webkit-animation: pulsate 2s ease-in-out;
+/*  -webkit-animation: pulsate 2s ease-in-out;
   -webkit-animation-iteration-count: infinite; 
-  opacity: 0.0;
+  opacity: 0.0;*/
 
   display: none;
   z-index: 100;
@@ -653,16 +740,19 @@ h2 { font-size: 160%; padding-bottom: 15px; }
 
 
 #container #document.structure-mode .content-node.selected .handle {
+  background: #2F2B27;
   opacity: 0.9;
 }
 
 #container #document.edit-mode .content-node.selected .handle {
+  background: #2F2B27;
   opacity: 0.9;
 }
 
 
 #container #document .content-node:hover .handle {
-  opacity: 0.3;
+  background: #2F2B27;
+  opacity: 0.1;
 }
 
 

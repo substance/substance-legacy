@@ -7,7 +7,10 @@
     events: {
       'click a.checkout-commit': '_checkoutCommit',
       'click .properties': 'clear',
-      'click a.insert': '_insert'
+      'click a.insert': '_insert',
+      'click a.move.up': 'handleAltUp',
+      'click a.move.down': 'handleAltDown',
+      'click .content-node a.delete': 'handleBackspace'
     },
 
     _checkoutCommit: function(e) {
@@ -26,19 +29,11 @@
 
     positionTools: function() {
       var leftMargin = Math.max(100, ($(window).width()-1200) / 2);
-      this.$('#tools').css('left', leftMargin+800+30+'px');
+      this.$('#tools').css('left', leftMargin+800+'px');
     },
 
     updateMode: function() {
       this.views.document.updateMode();
-
-      this.$('#context_bar').html(_.tpl('context_bar', {
-        level: this.model.level(),
-        node_types: [
-          {name: "Heading", type: "heading"},
-          {name: "Text", type: "text"}
-        ]
-      }));
     },
 
     initialize: function(options) {
@@ -86,14 +81,16 @@
       if (this.model.level() === 2) this.views.document.narrowSelection();
     },
 
-    handleCtrlShiftDown: function() {
+    handleAltDown: function() {
       // If in selection/structure mode
       if (this.model.level() === 2) { this.views.document.moveDown(); return false; }
+      return false;
     },
 
-    handleCtrlShiftUp: function() {
+    handleAltUp: function() {
       // If in selection/structure mode
       if (this.model.level() === 2) { this.views.document.moveUp(); return false; }
+      return false;
     },
 
     handleEnter: function() {
@@ -153,8 +150,8 @@
       key('esc', _.bind(function() { return this.goBack(); }, this));
 
       // Move shortcuts
-      key('alt+down', _.bind(function() { return this.handleCtrlShiftDown(); }, this));
-      key('alt+up', _.bind(function() { return this.handleCtrlShiftUp(); }, this));
+      key('alt+down', _.bind(function() { return this.handleAltDown(); }, this));
+      key('alt+up', _.bind(function() { return this.handleAltUp(); }, this));
 
       // Handle enter (creates new paragraphs)
       key('enter', _.bind(function() { return this.handleEnter(); }, this));

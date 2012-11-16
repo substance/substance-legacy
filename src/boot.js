@@ -85,8 +85,9 @@ $(function() {
     },
 
     initialize: function (options) {
+      var that = this;
       _.bindAll(this, 'document', 'dashboard');
-      this.user = localStorage.getItem('user');    
+      this.user = localStorage.getItem('user');
     },
 
     // Toggle document view
