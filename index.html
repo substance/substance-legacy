@@ -40,7 +40,7 @@
       </div>
     </script>
     
-    <!-- Startpage -->
+    <!-- Annotation Toggles -->
     <script type="text/html" name="annotation_toggles">
       <div class="annotation-toggles">
         <% _.each(annotations, function(a) { %>
@@ -50,6 +50,16 @@
       </div>
     </script>
 
+    <!-- Context Bar -->
+    <script type="text/html" name="context_bar">
+      <div class="context-bar">
+        <div class="insert-commands">
+          <% _.each(node_types, function(node) { %>
+            <a href="#" class="insert <%= node.type %>" data-type="<%= node.type %>"><%= node.name %></a>
+          <% }); %>
+        </div>
+      </div>
+    </script>
 
     <!-- Dashboard -->
     <script type="text/html" name="dashboard">
@@ -138,6 +148,7 @@
       <div id="composer">
         <div id="tools"></div>
         <div id="document"></div>
+        <div id="context_bar"></div>
       </div>
     </script>
 
