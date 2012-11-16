@@ -346,12 +346,12 @@ h2 { font-size: 160%; padding-bottom: 15px; }
   border: none;
   border-radius: 3px;
   padding: 2px 7px;
-  background: rgba(0,0,0, 0.10);
+  background: rgba(0,0,0, 0.10) url(images/icons/check.png) 4px center no-repeat;
   color: #444;
   line-height: 25px;
   font-size: 12px;
   font-weight: bold;
-  text-transform: uppercase;
+  padding-left: 28px;
 }
 
 .tool .scope-header .close-issue:hover {
