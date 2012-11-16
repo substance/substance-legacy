@@ -69,7 +69,6 @@ sc.views.Document = Dance.Performer.extend({
     return this.model.document.content.nodes[id];
   },
 
-
   insert: function(options) {
     var node = this.getNode(options.id);
     var view = this.createNodeView(node);
@@ -82,9 +81,8 @@ sc.views.Document = Dance.Performer.extend({
     } else {
       this.$('.nodes').append(newEl)
     }
-
     newEl.click();
-    newEl.contents().focus();
+    newEl.find('.content').focus();
   },
 
   // Node content has been updated

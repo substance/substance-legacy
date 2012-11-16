@@ -53,6 +53,7 @@
     <!-- Context Bar -->
     <script type="text/html" name="context_bar">
       <div class="context-bar">
+        <div class="title">Insert Element</div>
         <div class="insert-commands">
           <% _.each(node_types, function(node) { %>
             <a href="#" class="insert <%= node.type %>" data-type="<%= node.type %>"><%= node.name %></a>

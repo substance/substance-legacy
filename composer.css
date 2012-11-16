@@ -139,15 +139,18 @@ h2 { font-size: 160%; padding-bottom: 15px; }
 -------------------------------------------------------------------------------*/
 
 #context_bar {
-  display: none;
+  /*display: none;*/
   position: fixed;
-  height: 60px;
+  /*margin: 0 80px;*/
+  margin-left: 20px;
+  ;
+  /*height: 60px;*/
   bottom: 0px;
   /*left: 0px;*/
+  font-family: 'Open Sans';
+  padding: 8px 60px;
 
-  padding: 10px 80px;
-
-  width: 800px;
+  width: 729px;
 
   /*background: #DCDDD9;*/
   background: #fff;
@@ -155,10 +158,20 @@ h2 { font-size: 160%; padding-bottom: 15px; }
 
 }
 
-#context_bar .context-bar {
+#context_bar .title {
+  position: absolute;
+  left: 320px;
+  top: -3px;
+  font-size: 12px;
+  color: #aaa;
+  background: white;
+  padding: 0 5px;
+}
 
-  border-top: 2px solid #ccc;
-  border-bottom: 2px solid #ccc;
+#context_bar .context-bar {
+  margin: 0px 0;
+  border-top: 1px solid #ccc;
+  /*border-bottom: 2px solid #ccc;*/
 }
 
 #context_bar .context-bar .insert-commands {
@@ -172,15 +185,20 @@ h2 { font-size: 160%; padding-bottom: 15px; }
   text-transform: uppercase;
   font-weight: bold;
   display: block;
-  background: rgba(0,0,0, 0.24);
+  color: #888;
+  /*background: rgba(0,0,0, 0.24);*/
   border-radius: 2px;
   border: 0;
   float: left;
+
   text-align: center;
   /*line-height: 70px;*/
-  margin-right: 10px;
-  width: 70px;
+  margin-right: 20px;
   /*height: 70px;*/
+}
+
+#context_bar .context-bar .insert-commands a:hover {
+  color: #444;
 }
 
 
@@ -437,9 +455,9 @@ h2 { font-size: 160%; padding-bottom: 15px; }
 .new-comment {
 
   position: absolute;
-  bottom: 0px;
-  left: 0px;
-  right: 50px;
+  bottom: 5px;
+  left: 5px;
+  right: 55px;
 }
 
 .new-comment textarea {
@@ -514,6 +532,7 @@ h2 { font-size: 160%; padding-bottom: 15px; }
 
   width: 750px;
   border-right: 1px solid #dedede;
+  padding-bottom: 200px;
 }
 
 #document .left-rail {
@@ -534,7 +553,7 @@ h2 { font-size: 160%; padding-bottom: 15px; }
   bottom: 0px;
   overflow: auto;
 
-  background: #f5f5f5;
+  background: url(images/document_bg.png);
   width: 800px;
   -webkit-font-smoothing: subpixel-antialiased;
   font-size: 1.1em;

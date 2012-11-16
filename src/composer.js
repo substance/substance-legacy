@@ -8,8 +8,8 @@
       'click a.checkout-commit': '_checkoutCommit',
       'click .properties': 'clear',
       'click a.insert': '_insert',
-      'click a.move.up': 'handleAltUp',
-      'click a.move.down': 'handleAltDown',
+      'click a.move.up': 'moveUp',
+      'click a.move.down': 'moveDown',
       'click .content-node a.delete': 'handleBackspace'
     },
 
@@ -81,16 +81,24 @@
       if (this.model.level() === 2) this.views.document.narrowSelection();
     },
 
+    moveDown: function() {
+      this.views.document.moveDown();
+      return false;
+    },
+
+    moveUp: function() {
+      this.views.document.moveUp();
+      return false;
+    },
+
     handleAltDown: function() {
       // If in selection/structure mode
-      if (this.model.level() === 2) { this.views.document.moveDown(); return false; }
-      return false;
+      if (this.model.level() === 2) return this.moveDown();
     },
 
     handleAltUp: function() {
       // If in selection/structure mode
-      if (this.model.level() === 2) { this.views.document.moveUp(); return false; }
-      return false;
+      if (this.model.level() === 2) return this.moveUp();
     },
 
     handleEnter: function() {
