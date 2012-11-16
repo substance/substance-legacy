@@ -219,32 +219,35 @@
           <div class="scope-header<%= scope.type ? ' '+scope.type : '' %>">
             <% if (!_.include(['document', 'node'], scope.type)) { %>
               <div class="title"><%= scope.type[0].toUpperCase()+scope.type.substr(1) %></div>
-              <div class="subtitle">4 days ago, by michael</div>
-              <a href="#" class="button close-issue">Close Issue</a>
+              <!--<div class="subtitle">4 days ago, by michael</div>-->
+              <a href="#" class="button close-issue" title="Close Issue">Resolve</a>
             <% } else { %>
               <div class="title">Discussion</div>
-              <div class="subtitle">General Discussion</div>
             <% } %>
           </div>
           <div class="comments-wrapper">
-
+            <% if (scope.comments.length=== 0) { %>
+              <div class="comments-placeholder">Start the discussion by adding a <b>comment</b>.</div>
+            <% } %>
             <% _.each(scope.comments, function(c) { %>
               <div class="comment">
-                <%= c.content %>
-                <a class="delete-comment" title="Delete comment" data-id="<%= c.id %>" href="#">x</a>
-                <div class="arrow-down"></div>
-                <div class="meta"><b><%= c.user %></b>, <%= $.timeago(c.created_at) %></div>
-
+                <div class="meta">
+                  <div class="author"><%= c.user %></div>
+                  <div class="date"><%= $.timeago(c.created_at) %></div>
+                </div>
+                <div class="message">
+                  <%= c.content %>
+                </div>
+                <a class="delete-comment" title="Delete comment" data-id="<%= c.id %>" href="#"></a>
               </div>
             <% }); %>
 
-            <div class="new-comment">
-              <div class="comment-input-wrapper">
-                <textarea class="comment-content" name="comment"></textarea>
-              </div>
-              <a href="#" class="button insert-comment">Add Comment</a>
+          </div>
+          <div class="new-comment">
+            <div class="comment-input-wrapper">
+              <textarea class="comment-content" name="comment" placeholder="Add a comment"></textarea>
             </div>
-
+            <a href="#" class="button insert-comment">Add Comment</a>
           </div>
 
         </div>

@@ -212,6 +212,7 @@
 -------------------------------------------------------------------------------*/
 
 #document_menu {
+  display: none;
   background: #DCDDD9;
   position: fixed;
   min-width: 1400px;

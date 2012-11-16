@@ -207,9 +207,9 @@ h2 { font-size: 160%; padding-bottom: 15px; }
 -------------------------------------------------------------------------------*/
 
 #tools {
-  background: #E1E3DA;
+  background: #F0F1EB;
   position: fixed;
-  top: 80px;
+  top: 40px;
   bottom: 0px;
   overflow: auto;
   width: 330px;
@@ -270,39 +270,51 @@ h2 { font-size: 160%; padding-bottom: 15px; }
   position: absolute;
   right: 0px;
   top: 0px;
+
   bottom: 0px;
-  width: 50px;
+  width: 40px;
   /*display: none;*/
-  background: #ccc;
+  background: #D4D6CD;
   overflow: auto;
 }
 
 .tool .comment-scope {
-  background: rgba(0,0,0, 0.2) url(images/icons/discussion.png) 10px center no-repeat;
-  /*margin-bottom: 10px;*/
-  /*border-radius: 3px;*/
+  background: rgba(0,0,0, 0.1) url(images/icons/discussion.png) center no-repeat;
   float: left;
-  margin-right: 5px;
+  margin-bottom: 1px;
+  /*margin-right: 5px;*/
+
+  opacity: 0.7;
   padding: 10px 10px;
-  padding-left: 40px;
+  /*padding-left: 40px;*/
   font-weight: bold;
   font-size: 12px;
   cursor: pointer;
-  height: 50px;
+  height: 40px;
+  width: 40px;
   /*-webkit-transition: background 200ms linear;*/
   /*opacity: 0.7;*/
 }
 
+.tool .comment-scope:hover, .tool .comment-scope.active {
+  opacity: 0.9;
+}
+
 .tool .scope-header {
-  background: rgba(0,0,0, 0.4);
-  height: 50px;
-  color: #333;
-  position: relative;
-  /*border-radius: 3px;*/
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  right: 40px;
+
+  /*background: rgba(0,0,0, 0.2);*/
+  height: 40px;
+  line-height: 40px;
+
+  /*color: rgba(255,255,255, 0.7);*/
   margin-bottom: 10px;
 }
 
-.tool .scope-header.idea {
+/*.tool .scope-header.idea {
   background: rgba(171, 201, 36, 1);
 }
 
@@ -312,13 +324,13 @@ h2 { font-size: 160%; padding-bottom: 15px; }
 
 .tool .scope-header.doubt {
   background: rgba(237, 96, 48, 1);
-}
+}*/
 
 .tool .scope-header .title {
   font-weight: bold;
-  font-size: 15px;
+  font-size: 18px;
+  line-height: 40px;
   margin-left: 10px;
-  padding-top: 5px;
 }
 
 .tool .scope-header .subtitle {
@@ -328,54 +340,53 @@ h2 { font-size: 160%; padding-bottom: 15px; }
 
 .tool .scope-header .close-issue {
   position: absolute;
+  opacity: 0.6;
   right: 10px;
-  top: 10px;
+  top: 5px;
   border: none;
   border-radius: 3px;
-  padding: 5px 7px;
-  background: rgba(0,0,0, 0.23);
+  padding: 2px 7px;
+  background: rgba(0,0,0, 0.10);
+  color: #444;
+  line-height: 25px;
   font-size: 12px;
   font-weight: bold;
   text-transform: uppercase;
 }
 
 .tool .scope-header .close-issue:hover {
-  background: rgba(0,0,0, 0.3);
+  opacity: 0.9;
 }
 
 
 .comment-scope.idea {
-  background: rgba(171, 201, 36, 0.2) url(images/icons/idea.png) 7px center no-repeat;
+  background: rgba(0, 0, 0, 0.1) url(images/icons/idea.png) center no-repeat;
 }
 
 .comment-scope.blur {
-  background: rgba(16, 167, 222, 0.2) url(images/icons/question.png) 7px center no-repeat;
+  background: rgba(0, 0, 0, 0.1) url(images/icons/question.png) center no-repeat;
 }
 
 .comment-scope.doubt {
-  background: rgba(237, 96, 48, 0.2) url(images/icons/caution.png) 7px center no-repeat;
+  background: rgba(0, 0, 0, 0.1) url(images/icons/caution.png) center no-repeat;
 }
 
 .tool .comment-scope.active {
-  background: rgba(0,0,0, 0.4) url(images/icons/discussion.png) 10px center no-repeat;
+  background: rgba(0,0,0, 0.4) url(images/icons/discussion.png) center no-repeat;
 }
 
 .comment-scope.idea.active {
-  background: rgba(171, 201, 36, 1) url(images/icons/idea.png) 7px center no-repeat;
+  background: rgba(171, 201, 36, 1) url(images/icons/idea.png) center no-repeat;
 }
 
 .comment-scope.blur.active {
-  background: rgba(16, 167, 222, 1) url(images/icons/question.png) 7px center no-repeat;
+  background: rgba(16, 167, 222, 1) url(images/icons/question.png) center no-repeat;
 }
 
 .comment-scope.doubt.active {
-  background: rgba(237, 96, 48, 1) url(images/icons/caution.png) 7px center no-repeat;
+  background: rgba(237, 96, 48, 1) url(images/icons/caution.png) center no-repeat;
 }
 
-
-/*.tool .comment-scope.active {
-  background: rgba(237, 96, 48, 1);
-}*/
 
 .tool .comment-scope .header {
   color: rgba(255,255,255, 0.7);
@@ -384,80 +395,91 @@ h2 { font-size: 160%; padding-bottom: 15px; }
   cursor: pointer;
 }
 
-/*.tool .comment-scope .comments {
+
+.tool .comments {
+  margin-right: 40px;
   display: none;
+  font-size: 13px;
+  color: #555;
 }
 
-.tool .comments {
-  display: block;
-}*/
-
-.tool .comments {
-  margin-right: 50px;
-  display: none;
-  font-size: 14px;
+.tool .comments-wrapper {
+  position: absolute;
+  top: 40px;
+  bottom: 100px;
+  right: 40px;
+  left: 0px;
+  overflow: auto;
 }
 
 .tool .comments.active {
   display: block;
 }
 
-.tool .comments .comment {
-  border-radius: 3px;
-  background: #E1E3DD;
+.tool .comments .comments-placeholder {
+  background: url(images/icons/debate.png) 10px center no-repeat;
+  opacity: 0.5;
+  margin-top: 20px;
+  font-size: 16px;
   padding: 10px;
-  padding-right: 30px;
-  margin-bottom: 40px;
+  color: #000;
+  padding-left: 95px;
+}
+
+.tool .comments .comment {
+  padding: 10px;
   position: relative;
 }
 
+.tool .comments .comment .meta {
+  overflow: auto;
+}
+
+.tool .comments .comment .author {
+  font-weight: bold;
+  float: left;
+}
+
+.tool .comments .comment .date {
+  float: right;
+  color: #aaa;
+}
+
+.tool .comments .comment:hover .date {
+  display: none;
+}
+
+.tool .comments .comment:nth-child(odd) {
+  background: rgba(0,0,0, 0.02);
+}
+
+
 .tool .comments .delete-comment {
+  display: none;
   position: absolute;
   top: 10px;
   right: 10px;
-  background: rgba(0,0,0, 0.15);
-  display: block;
-  width: 15px;
-  height: 15px;
-  line-height: 15px;
-  font-size: 12px;
-  font-weight: bold;
-  border-radius: 3px;
+  background: url(images/icons/delete.png) center no-repeat;
+  width: 20px;
+  height: 20px;
   text-align: center;
   border: none;
-  color: #444;
+  opacity: 0.3;
+}
+
+.tool .comments .comment:hover .delete-comment {
+  display: block;
 }
 
 .tool .comments .delete-comment:hover {
-  color: #444;
-  background: rgba(0,0,0, 0.2);
-}
-
-.tool .comments .arrow-down {
-  width: 0; 
-  height: 0; 
-  border-left: 7px solid transparent;
-  border-right: 7px solid transparent;
-  
-  border-top: 7px solid #E1E3DD;
-  position: absolute;
-  bottom: -7px;
-  left: 20px;
-}
-
-.tool .comments .meta {
-  position: absolute;
-  bottom: -30px;
-  left: 0px;
-  font-size: 12px;
+  opacity: 0.5;
 }
 
 .new-comment {
-
   position: absolute;
   bottom: 5px;
-  left: 5px;
-  right: 55px;
+  left: 10px;
+  right: 50px;
 }
 
 .new-comment textarea {
@@ -537,7 +559,6 @@ h2 { font-size: 160%; padding-bottom: 15px; }
 
 #document .left-rail {
   position: fixed;
-  /*left: 0px;*/
   z-index: 1;
   top: 0px;
   bottom: 0px;
@@ -549,7 +570,7 @@ h2 { font-size: 160%; padding-bottom: 15px; }
 #document {
   font-family: 'Palatino Linotype', 'Merriweather';
   position: fixed;
-  top: 80px;
+  top: 40px;
   bottom: 0px;
   overflow: auto;
 
@@ -558,14 +579,6 @@ h2 { font-size: 160%; padding-bottom: 15px; }
   -webkit-font-smoothing: subpixel-antialiased;
   font-size: 1.1em;
   line-height: 1.6em;
-  /*margin-bottom: 150px;*/
-
-  /*padding-bottom: 60px;*/
-
-/*  -webkit-box-shadow: 0px 1px 4px rgba(0, 0, 0, 0.35), inset 0px 0px 1px rgba(255, 255, 255, 0.15);
-  -moz-box-shadow: 0px 1px 4px rgba(0, 0, 0, 0.35), inset 0px 0px 1px rgba(255, 255, 255, 0.15);
-  box-shadow: 0px 1px 4px rgba(0, 0, 0, 0.35), inset 0px 0px 1px rgba(255, 255, 255, 0.15);
-*/
 }
 
 
@@ -577,6 +590,7 @@ h2 { font-size: 160%; padding-bottom: 15px; }
   padding: 50px 80px;
   text-align: center;
   font-weight: bold;
+  line-height: 60px;
   font-size: 50px;
 }
 
@@ -593,8 +607,6 @@ h2 { font-size: 160%; padding-bottom: 15px; }
 
 #document .nodes {
   overflow: visible;
-
-
   background: #fff;
 }
 
@@ -608,7 +620,6 @@ h2 { font-size: 160%; padding-bottom: 15px; }
 -------------------------------------------------------------------------------*/
 
 /* Generic node styles */
-
 #container #document .content-node {
   position: relative;
 }
@@ -644,7 +655,6 @@ h2 { font-size: 160%; padding-bottom: 15px; }
 
 #container #document .content-node .comments-toggle {
   position: absolute;
-  /*display: none;*/
   right: -35px;
   top: 0px;
   line-height: 30px;
@@ -669,7 +679,6 @@ h2 { font-size: 160%; padding-bottom: 15px; }
   right: 10px;
   top: 5px;
   border: none;
-  /*background: green;*/
   opacity: 0.5;
   display: none;
 }
@@ -702,15 +711,12 @@ h2 { font-size: 160%; padding-bottom: 15px; }
 }
 
 /* Selection Handle */
-
 #container #document .content-node .handle {
   position: absolute;
   left: 0px;
   top: 0px;
   bottom: 0px;
   width: 20px;
-  
-  /*opacity: 0.1;*/
   z-index: 100;
 }
 
@@ -752,7 +758,6 @@ h2 { font-size: 160%; padding-bottom: 15px; }
 /*  -webkit-animation: pulsate 2s ease-in-out;
   -webkit-animation-iteration-count: infinite; 
   opacity: 0.0;*/
-
   display: none;
   z-index: 100;
 }
@@ -800,9 +805,7 @@ h2 { font-size: 160%; padding-bottom: 15px; }
   right: 100px;
   bottom: 100px;
   z-index: 5000;
-/*  opacity: 0.95;*/
 }
-
 
 .content-node .annotation-tools .annotation-toggles {
   background: #2F2B27;
@@ -817,21 +820,16 @@ h2 { font-size: 160%; padding-bottom: 15px; }
   width: 170px;
 }
 
-
 .content-node .annotation-toggles .arrow-down {
   width: 0; 
   height: 0; 
   border-left: 7px solid transparent;
   border-right: 7px solid transparent;
-  
   border-top: 7px solid #2F2B27;
   position: absolute;
-
   bottom: -7px;
-
   left: 110px;
 }
-
 
 .annotation-toggles a {
   background: #2F2B27;
@@ -841,7 +839,6 @@ h2 { font-size: 160%; padding-bottom: 15px; }
   width: 45px;
   height: 30px;
   line-height: 30px;
-
   border: none;
   display: block;
   float: left;
