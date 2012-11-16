@@ -1,9 +1,11 @@
+body {
+}
+
 #container {
-  min-width: 1400px;
+  width: 1210px;
 }
 
 #header {
-  min-width: 1400px;
   font-family: 'Palatino Linotype', 'Merriweather';
   font-size: 20px;
   height: 40px;
@@ -17,12 +19,13 @@
   right: 0px;
   top: 0px;
   overflow: auto;
-
 }
 
 #header .header-container {
-  width: 1200px;
-  margin: 0 auto;
+  width: 1130px;
+  margin-left: 80px;
+  overflow: auto;
+  /*margin: 0 auto;*/
 }
 
 #header .logo {
@@ -215,7 +218,6 @@
   display: none;
   background: #DCDDD9;
   position: fixed;
-  min-width: 1400px;
 
   top: 40px;
   left: 0px;
@@ -229,8 +231,7 @@
 
 #document_menu .navigation {
   height: 40px;
-  width: 1200px;
-  margin: 0 auto;
+  width: 1130px;
   overflow: auto;
 }
 
@@ -263,8 +264,7 @@
 
 #document_wrapper {
   margin-left: 80px;
-  width: 1200px;
-  margin: 0 auto;
+  width: 1130px;
   position: relative;
   margin-top: 110px;
   -webkit-transition-property: margin-top;

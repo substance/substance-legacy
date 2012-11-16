@@ -30,7 +30,6 @@ Textish = {
       that.removeToggles();
     });
 
-
     this.surface.on('surface:active', function(sel) {
       that.session.select([that.model.id], {edit: true});
     });
@@ -66,7 +65,7 @@ Textish = {
         that.document.apply(["update", {id: that.model.id, "data": delta}]);
       }
 
-      console.log('annotation ops', ops);
+      // console.log('annotation ops', ops);
 
       // Applying annotation ops...
       _.each(ops, function(op) {

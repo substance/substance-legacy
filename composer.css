@@ -211,6 +211,7 @@ h2 { font-size: 160%; padding-bottom: 15px; }
   position: fixed;
   top: 40px;
   bottom: 0px;
+  left: 880px;
   overflow: auto;
   width: 330px;
 }
@@ -603,18 +604,11 @@ h2 { font-size: 160%; padding-bottom: 15px; }
   text-align: center;
 }
 
-
-
 #document .nodes {
   overflow: visible;
   background: #fff;
 }
 
-#document .document-separator {
-  background: #000;
-  width: 300px; height: 1px;
-  margin: 50px auto;
-}
 
 /* Node
 -------------------------------------------------------------------------------*/
