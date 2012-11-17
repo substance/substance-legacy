@@ -578,8 +578,8 @@ h2 { font-size: 160%; padding-bottom: 15px; }
   background: url(images/document_bg.png);
   width: 800px;
   -webkit-font-smoothing: subpixel-antialiased;
-  font-size: 1.1em;
-  line-height: 1.6em;
+  font-size: 17px;
+  line-height: 28px;
 }
 
 
