@@ -58,15 +58,37 @@ set_target_properties(${TARGET_NAME} PROPERTIES
 add_custom_command (TARGET ${TARGET_NAME}
   PRE_BUILD
   COMMAND mkdir -p ${BUNDLE_LOCATION}/Contents/Resources
+  COMMAND mkdir -p ${BUNDLE_LOCATION}/Contents/Assets
 )
 
+# compile MainMenu.xib after build is finished
 compile_xib (${TARGET_NAME} ${BUNDLE_LOCATION} ${CMAKE_CURRENT_SOURCE_DIR}/MainMenu.xib)
+
+add_custom_command(TARGET ${TARGET_NAME}
+  POST_BUILD
+  COMMAND rsync -r ${CMAKE_CURRENT_SOURCE_DIR}/Resources/${MACOSX_BUNDLE_ICON_FILE} ${BUNDLE_LOCATION}/Contents/Resources
+  COMMAND ln -s ${PROJECT_SOURCE_DIR} ${BUNDLE_LOCATION}/Contents/Assets
+)
+
 
 # Install
 # =======
+set (DIST_DIR ${PROJECT_SOURCE_DIR}/dist)
+set (BUNDLE_DIST ${DIST_DIR}/${TARGET_NAME}.app)
+set (ASSETS_DIST_DIR ${BUNDLE_DIST}/Contents/Assets)
 
-# package bundle and put into dist folder
-
-add_custom_command (TARGET ${TARGET_NAME} POST_BUILD
-  COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_BINARY_DIR}/${TARGET_NAME}.app ${PROJECT_SOURCE_DIR}/${TARGET_NAME}.app
+add_custom_command(OUTPUT ${BUNDLE_DIST}
+  COMMAND rsync -r --exclude=Assets ${BUNDLE_LOCATION} ${DIST_DIR}
+  COMMAND rsync -r ${PROJECT_SOURCE_DIR}/data ${ASSETS_DIST_DIR}
+  COMMAND rsync -r ${PROJECT_SOURCE_DIR}/images ${ASSETS_DIST_DIR}
+  COMMAND rsync -r ${PROJECT_SOURCE_DIR}/lib ${ASSETS_DIST_DIR}
+  COMMAND rsync -r ${PROJECT_SOURCE_DIR}/src ${ASSETS_DIST_DIR}
+  COMMAND rsync ${PROJECT_SOURCE_DIR}/index.html ${ASSETS_DIST_DIR}
+  COMMAND rsync ${PROJECT_SOURCE_DIR}/composer.css ${ASSETS_DIST_DIR}
+  COMMAND rsync ${PROJECT_SOURCE_DIR}/substance.css ${ASSETS_DIST_DIR}
+  COMMAND rsync ${PROJECT_SOURCE_DIR}/package.json ${ASSETS_DIST_DIR}
+  COMMAND rsync ${PROJECT_SOURCE_DIR}/README.md ${ASSETS_DIST_DIR}
+  COMMAND rsync ${PROJECT_SOURCE_DIR}/LICENSE ${ASSETS_DIST_DIR}
 )
+
+add_custom_target(dist DEPENDS ${TARGET_NAME} ${PROJECT_SOURCE_DIR}/dist/${TARGET_NAME}.app)
