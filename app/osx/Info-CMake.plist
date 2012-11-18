@@ -19,6 +19,6 @@
 	<key>NSPrincipalClass</key>
 	<string>${MACOSX_BUNDLE_NSPRINCIPAL_CLASS}</string>
 	<key>CFBundleIconFile</key>
-	<string>${MACOSX_BUNDLE_BUNDLE_NAME}.icns</string>
+	<string>${MACOSX_BUNDLE_ICON_FILE}</string>
 </dict>
 </plist>

@@ -7,17 +7,7 @@ find_library(APPKIT AppKit)
 find_library(COCOA Cocoa)
 find_library(WEBKIT WebKit)
 
-# IBTOOL
-# ======
-
-# Make sure we can find the 'ibtool' program. If we can NOT find it we
-# skip generation of this project
-find_program(IBTOOL ibtool HINTS "/usr/bin" "${OSX_DEVELOPER_ROOT}/usr/bin")
-if (${IBTOOL} STREQUAL "IBTOOL-NOTFOUND")
-  message(SEND_ERROR "ibtool can not be found and is needed to compile the .xib files. It should have been installed with 
-                    the Apple developer tools. The default system paths were searched in addition to ${OSX_DEVELOPER_ROOT}/usr/bin")
-endif()
-
+include(MacOSXib)
 
 # Setup MacOSX bundle information
 # ===============================
@@ -34,16 +24,13 @@ set(MACOSX_BUNDLE_COPYRIGHT "Copyright 2012. No Rights Deserved.")
 # These variables are specific to our plist and are NOT standard CMake variables
 set(MACOSX_BUNDLE_NSMAIN_NIB_FILE "MainMenu")
 set(MACOSX_BUNDLE_NSPRINCIPAL_CLASS "NSApplication")
-
-# these are the OS X Interface Builder Files
-set (SUBSTANCE_XIBS
-  MainMenu
-)
+set(MACOSX_BUNDLE_ICON_FILE "${PROJECT_NAME}.icns")
 
 # The Substance executable
 # ========================
 
 SET (TARGET_NAME "Substance")
+SET(BUNDLE_LOCATION ${CMAKE_CURRENT_BINARY_DIR}/${CONFIGURATION}/${TARGET_NAME}.app)
 
 add_executable(${TARGET_NAME} MACOSX_BUNDLE
   main.m
@@ -60,21 +47,25 @@ target_link_libraries(${TARGET_NAME}
   ${WEBKIT}
 )
 
-# Set a custom plist file for the app bundle
-set_target_properties(${TARGET_NAME} PROPERTIES MACOSX_BUNDLE_INFO_PLIST ${CMAKE_CURRENT_SOURCE_DIR}/Info-CMake.plist)
+# Set a custom Info.plist file template.
+# This file is a CMake template file which is processed by CMake and stored into
+# the Application's Content folder.
+set_target_properties(${TARGET_NAME} PROPERTIES 
+  MACOSX_BUNDLE_INFO_PLIST ${CMAKE_CURRENT_SOURCE_DIR}/Info-CMake.plist
+)
 
 # Make sure the 'Resources' Directory is correctly created before we build
-add_custom_command (TARGET ${TARGET_NAME} PRE_BUILD
-                      COMMAND mkdir -p ${CMAKE_CURRENT_BINARY_DIR}/\${CONFIGURATION}/${TARGET_NAME}.app/Contents/Resources)
+add_custom_command (TARGET ${TARGET_NAME}
+  PRE_BUILD
+  COMMAND mkdir -p ${BUNDLE_LOCATION}/Contents/Resources
+)
 
-# Compile the .xib files using the 'ibtool' program with the destination being the app package
-foreach(xib ${SUBSTANCE_XIBS})
-  add_custom_command (TARGET ${TARGET_NAME} POST_BUILD 
-                      COMMAND ${IBTOOL} --errors --warnings --notices --output-format human-readable-text 
-                              --compile ${CMAKE_CURRENT_BINARY_DIR}/\${CONFIGURATION}/${TARGET_NAME}.app/Contents/Resources/${xib}.nib 
-                             ${CMAKE_CURRENT_SOURCE_DIR}/${xib}.xib
-                      COMMENT "Compiling ${CMAKE_CURRENT_SOURCE_DIR}/${xib}.xib")
-endforeach()
+compile_xib (${TARGET_NAME} ${BUNDLE_LOCATION} ${CMAKE_CURRENT_SOURCE_DIR}/MainMenu.xib)
+
+# Install
+# =======
+
+# package bundle and put into dist folder
 
 add_custom_command (TARGET ${TARGET_NAME} POST_BUILD
   COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_BINARY_DIR}/${TARGET_NAME}.app ${PROJECT_SOURCE_DIR}/${TARGET_NAME}.app
