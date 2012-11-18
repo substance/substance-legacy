@@ -273,7 +273,7 @@ body {
 
 /* HACK NEEDED FOR BR
 makes br selectable by the browser in order to put our cursor after it*/
-#content br
+.content br
 {   
   content: "\n" !important;
   display: block !important;
