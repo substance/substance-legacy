@@ -270,3 +270,11 @@ body {
   -webkit-transition-property: margin-top;
   -webkit-transition-duration: 0.6s;
 }
+
+/* HACK NEEDED FOR BR
+makes br selectable by the browser in order to put our cursor after it*/
+.content br
+{   
+  content: "\n" !important;
+  display: block !important;
+}
