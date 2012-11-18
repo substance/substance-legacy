@@ -1,17 +1,16 @@
+body {
+}
+
 #container {
-  min-width: 1400px;
+  width: 1210px;
 }
 
 #header {
-  min-width: 1400px;
   font-family: 'Palatino Linotype', 'Merriweather';
   font-size: 20px;
   height: 40px;
   line-height: 40px;
   z-index: 5000;
-  /*padding-left: 20px;*/
-/*  background: #E9EAE5;
-  color: #444;*/
 
   background: #2F2B27;
   color: rgba(255,255,255, 0.7);
@@ -20,12 +19,13 @@
   right: 0px;
   top: 0px;
   overflow: auto;
-
 }
 
 #header .header-container {
-  width: 1200px;
-  margin: 0 auto;
+  width: 1130px;
+  margin-left: 80px;
+  overflow: auto;
+  /*margin: 0 auto;*/
 }
 
 #header .logo {
@@ -168,7 +168,7 @@
   padding-top: 60px;
 
   width: 1200px;
-  margin: 0 auto;
+  margin-left: 80px;
 }
 
 #dashboard #documents {
@@ -211,29 +211,27 @@
   color: #777;
 }
 
-
 /* Editor
 -------------------------------------------------------------------------------*/
 
 #document_menu {
+  display: none;
   background: #DCDDD9;
   position: fixed;
-  min-width: 1400px;
 
   top: 40px;
   left: 0px;
   right: 0px;
   z-index: 10000;
 
-  -webkit-box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.25);
+/*  -webkit-box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.25);
   -moz-box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.25);
-  box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.25);
+  box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.25);*/
 }
 
 #document_menu .navigation {
   height: 40px;
-  width: 1200px;
-  margin: 0 auto;
+  width: 1130px;
   overflow: auto;
 }
 
@@ -266,8 +264,7 @@
 
 #document_wrapper {
   margin-left: 80px;
-  width: 1200px;
-  margin: 0 auto;
+  width: 1130px;
   position: relative;
   margin-top: 110px;
   -webkit-transition-property: margin-top;

@@ -44,6 +44,7 @@ sc.views.Document = Dance.Performer.extend({
       // Update node since its dirty
       var node = this.nodes[node];
       node.render();
+      this.updateSelections();
     }
 
     // Bind handlers (but only once)
@@ -68,7 +69,6 @@ sc.views.Document = Dance.Performer.extend({
     return this.model.document.content.nodes[id];
   },
 
-
   insert: function(options) {
     var node = this.getNode(options.id);
     var view = this.createNodeView(node);
@@ -81,9 +81,8 @@ sc.views.Document = Dance.Performer.extend({
     } else {
       this.$('.nodes').append(newEl)
     }
-
     newEl.click();
-    newEl.contents().focus();
+    newEl.find('.content').focus();
   },
 
   // Node content has been updated
@@ -116,13 +115,11 @@ sc.views.Document = Dance.Performer.extend({
 
   insertNode: function(type, options) {
     var selection = this.model.users[this.model.user].selection;
-    var target = _.last(selection);
+    var target = options.target || _.last(selection);
 
     var properties = {};
 
     properties["content"] = options.content || "";
-
-    // console.log('insörting');
 
     this.model.document.apply(["insert", {
       "id": type+":"+Math.uuid(),
@@ -166,12 +163,25 @@ sc.views.Document = Dance.Performer.extend({
     } else {
       $('#document').addClass('document-mode');
     }
+
+    // Render context bar
+    this.$('#context_bar').html(_.tpl('context_bar', {
+      level: this.model.level(),
+      node_types: [
+        {name: "Heading", type: "heading"},
+        {name: "Text", type: "text"}
+      ]
+    }));
   },
 
   // Updates the current selection
   updateSelections: function(selections) {
     // $('.content-node.selected .handle').css('background', '');
+    $('.content-node .down').hide();
+    $('.content-node .up').hide();
+    $('.content-node .delete').hide();
     $('.content-node.selected').removeClass('selected');
+
 
     this.updateMode();
     
@@ -180,6 +190,9 @@ sc.views.Document = Dance.Performer.extend({
         // .find('.handle').css('background', this.model.users[user].color);
     }, this);
 
+    $('.content-node.selected').first().find('.up').show();
+    $('.content-node.selected').first().find('.delete').show();
+    $('.content-node.selected').last().find('.down').show();
   },
 
   // Issue commands
@@ -254,6 +267,9 @@ sc.views.Document = Dance.Performer.extend({
   },
 
   select: function (e) {
+    // Skip when move handle has been clicked
+    if ($(e.target).hasClass('move')) return;
+
     var id = $(e.currentTarget)[0].id.replace(/_/g, ":");
     this.model.select([id]);
   },

@@ -4,14 +4,14 @@
 
 @interface SubstanceAppDelegate : NSObject <NSApplicationDelegate> {
     NSWindow *window;
-    MainView *mainView;
+//    MainView *mainView;
 	WebView *webView;
 }
 
 
 
 @property (assign) IBOutlet NSWindow *window;
-@property (assign) IBOutlet MainView *mainView;
+//@property (assign) IBOutlet MainView *mainView;
 @property (nonatomic, retain) IBOutlet WebView *webView;
 
 @end

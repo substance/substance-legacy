@@ -146,12 +146,7 @@
       "op": [
         "set",
         {
-          "abstract": [
-            [
-              "ins",
-              "Substance is an open platform for collaborative composition and sharing of digital documents."
-            ]
-          ]
+          "abstract": ["Substance is an open platform for collaborative composition and sharing of digital documents."]
         }
       ],
       "sha": "7d7541344232f6483308ab8bb20e43ea",
@@ -161,12 +156,7 @@
       "op": [
         "set",
         {
-          "title": [
-            [
-              "ins",
-              "Substance"
-            ]
-          ]
+          "title": ["Substance"]
         }
       ],
       "sha": "aee681a18d8f6ac42aff499569c81082",
@@ -224,20 +214,7 @@
         "update",
         {
           "id": "text:b1995db9ead60c0cc8f259c31a0a545b",
-          "data": [
-            [
-              "ret",
-              204
-            ],
-            [
-              "del",
-              1
-            ],
-            [
-              "ret",
-              14
-            ]
-          ]
+          "data": [204, -1, 14]
         }
       ],
       "sha": "723db1920c24608f41be8d29f6dd3b29",

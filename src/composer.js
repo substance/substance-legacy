@@ -7,7 +7,10 @@
     events: {
       'click a.checkout-commit': '_checkoutCommit',
       'click .properties': 'clear',
-      'click a.insert': '_insert'
+      'click a.insert': '_insert',
+      'click a.move.up': 'moveUp',
+      'click a.move.down': 'moveDown',
+      'click .content-node a.delete': 'handleBackspace'
     },
 
     _checkoutCommit: function(e) {
@@ -24,21 +27,14 @@
       return false;
     },
 
+    // Now obsolete for our fixed layout
     positionTools: function() {
-      var leftMargin = Math.max(100, ($(window).width()-1200) / 2);
-      this.$('#tools').css('left', leftMargin+800+30+'px');
+      // var leftMargin = Math.max(100, ($(window).width()-1200) / 2);
+      // this.$('#tools').css('left', leftMargin+800+'px');
     },
 
     updateMode: function() {
       this.views.document.updateMode();
-
-      this.$('#context_bar').html(_.tpl('context_bar', {
-        level: this.model.level(),
-        node_types: [
-          {name: "Heading", type: "heading"},
-          {name: "Text", type: "text"}
-        ]
-      }));
     },
 
     initialize: function(options) {
@@ -86,17 +82,28 @@
       if (this.model.level() === 2) this.views.document.narrowSelection();
     },
 
-    handleCtrlShiftDown: function() {
-      // If in selection/structure mode
-      if (this.model.level() === 2) { this.views.document.moveDown(); return false; }
+    moveDown: function() {
+      this.views.document.moveDown();
+      return false;
     },
 
-    handleCtrlShiftUp: function() {
+    moveUp: function() {
+      this.views.document.moveUp();
+      return false;
+    },
+
+    handleAltDown: function() {
       // If in selection/structure mode
-      if (this.model.level() === 2) { this.views.document.moveUp(); return false; }
+      if (this.model.level() === 2) return this.moveDown();
+    },
+
+    handleAltUp: function() {
+      // If in selection/structure mode
+      if (this.model.level() === 2) return this.moveUp();
     },
 
     handleEnter: function() {
+      var that = this;
       if (this.model.level() === 3) {
         var node = this.views.document.nodes[_.first(this.model.selection())];
         
@@ -108,8 +115,9 @@
         var newContent = text.substr(0, pos);
 
         node.surface.deleteRange([pos, remainder.length]);
-
-        this.views.document.insertNode("text", {content: remainder});
+        node.surface.commit();
+        that.views.document.insertNode("text", {content: remainder, target: node.model.id});
+        
         return false;
       }
     },
@@ -153,8 +161,8 @@
       key('esc', _.bind(function() { return this.goBack(); }, this));
 
       // Move shortcuts
-      key('alt+down', _.bind(function() { return this.handleCtrlShiftDown(); }, this));
-      key('alt+up', _.bind(function() { return this.handleCtrlShiftUp(); }, this));
+      key('alt+down', _.bind(function() { return this.handleAltDown(); }, this));
+      key('alt+up', _.bind(function() { return this.handleAltUp(); }, this));
 
       // Handle enter (creates new paragraphs)
       key('enter', _.bind(function() { return this.handleEnter(); }, this));

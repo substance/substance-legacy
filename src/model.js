@@ -226,6 +226,9 @@ function createDocument(cb) {
     var session = new Substance.Session({
       document: new Substance.Document(doc)
     });
+
+    // Add title
+    session.document.apply(["set", {title: "Untitled", abstract: "Enter abstract"}]);
     cb(err, session);
   });
 }

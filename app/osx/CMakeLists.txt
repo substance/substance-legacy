@@ -24,7 +24,7 @@ endif()
 # Set the OS X Bundle specific CMake variables which will be used to populate the plist for
 # the application bundle
 set(MACOSX_BUNDLE_INFO_STRING "${PROJECT_NAME}")
-set(MACOSX_BUNDLE_GUI_IDENTIFIER "quasipartikel.substance.Substance")
+set(MACOSX_BUNDLE_GUI_IDENTIFIER "quasipartikel.Substance")
 set(MACOSX_BUNDLE_LONG_VERSION_STRING "${PROJECT_NAME} Version ${SUBSTANCE_VERSION}")
 set(MACOSX_BUNDLE_BUNDLE_NAME ${PROJECT_NAME})
 set(MACOSX_BUNDLE_SHORT_VERSION_STRING ${SUBSTANCE_VERSION})
@@ -43,7 +43,9 @@ set (SUBSTANCE_XIBS
 # The Substance executable
 # ========================
 
-add_executable(substance MACOSX_BUNDLE
+SET (TARGET_NAME "Substance")
+
+add_executable(${TARGET_NAME} MACOSX_BUNDLE
   main.m
   appDelegate.h
   appDelegate.m
@@ -52,28 +54,28 @@ add_executable(substance MACOSX_BUNDLE
   MainMenu.xib
 )
 
-target_link_libraries(substance 
+target_link_libraries(${TARGET_NAME} 
   ${COREDATA} ${FOUNDATION}
   ${APPKIT} ${COCOA}
   ${WEBKIT}
 )
 
 # Set a custom plist file for the app bundle
-set_target_properties(substance PROPERTIES MACOSX_BUNDLE_INFO_PLIST ${CMAKE_CURRENT_SOURCE_DIR}/Info-CMake.plist)
+set_target_properties(${TARGET_NAME} PROPERTIES MACOSX_BUNDLE_INFO_PLIST ${CMAKE_CURRENT_SOURCE_DIR}/Info-CMake.plist)
 
 # Make sure the 'Resources' Directory is correctly created before we build
-add_custom_command (TARGET substance PRE_BUILD
-                      COMMAND mkdir -p ${CMAKE_CURRENT_BINARY_DIR}/\${CONFIGURATION}/substance.app/Contents/Resources)
+add_custom_command (TARGET ${TARGET_NAME} PRE_BUILD
+                      COMMAND mkdir -p ${CMAKE_CURRENT_BINARY_DIR}/\${CONFIGURATION}/${TARGET_NAME}.app/Contents/Resources)
 
 # Compile the .xib files using the 'ibtool' program with the destination being the app package
 foreach(xib ${SUBSTANCE_XIBS})
-  add_custom_command (TARGET substance POST_BUILD 
+  add_custom_command (TARGET ${TARGET_NAME} POST_BUILD 
                       COMMAND ${IBTOOL} --errors --warnings --notices --output-format human-readable-text 
-                              --compile ${CMAKE_CURRENT_BINARY_DIR}/\${CONFIGURATION}/substance.app/Contents/Resources/${xib}.nib 
+                              --compile ${CMAKE_CURRENT_BINARY_DIR}/\${CONFIGURATION}/${TARGET_NAME}.app/Contents/Resources/${xib}.nib 
                              ${CMAKE_CURRENT_SOURCE_DIR}/${xib}.xib
                       COMMENT "Compiling ${CMAKE_CURRENT_SOURCE_DIR}/${xib}.xib")
 endforeach()
 
-add_custom_command (TARGET substance POST_BUILD
-  COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_BINARY_DIR}/substance.app ${PROJECT_SOURCE_DIR}/substance.app
+add_custom_command (TARGET ${TARGET_NAME} POST_BUILD
+  COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_BINARY_DIR}/${TARGET_NAME}.app ${PROJECT_SOURCE_DIR}/${TARGET_NAME}.app
 )
