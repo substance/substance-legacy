@@ -32,13 +32,13 @@ bool SubstanceApp::OnInit()
     frame->GetWebView()->RegisterHandler(vfs);
 
     // create a extension instance for the SWIG generated module
-    wxSharedPtr<wxWebkitJSCExtension> redisDocStore(new wxWebkitJSCExtension(redis_docstore_initialize));
+    //wxSharedPtr<wxWebkitJSCExtension> redisDocStore(new wxWebkitJSCExtension(redis_docstore_initialize));
 
     // create the white list of URLs for that the extension will be applied
-    redisDocStore->RegisterURL(baseUrl);
+    //redisDocStore->RegisterURL(baseUrl);
 
     // register the extension in the browser widget
-    frame->GetWebView()->RegisterJSCExtension(redisDocStore);
+    //frame->GetWebView()->RegisterJSCExtension(redisDocStore);
 
     frame->GetWebView()->LoadURL(url);
     frame->Show();

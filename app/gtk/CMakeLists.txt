@@ -24,7 +24,7 @@ add_dependencies(substance wxWidgets)
 
 # TODO: extract these using pkg-config and wx-condfig
 target_link_libraries(substance
-  jsobjects redisdocstore
+  redisdocstore
   ${webkit_LIBRARIES}
   ${wxWidgets_LIBRARIES}
   ${HIREDIS_LIBS}
