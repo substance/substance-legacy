@@ -14,11 +14,11 @@ add_definitions(-DENABLE_TEST_EXTENSIONS)
 
 add_executable(docstore.redis.unit
   redis_unit.cxx
-  test_access.cpp
 )
 
 target_link_libraries(docstore.redis.unit
-  redisdocstore
+  jsobjects_cpp
+  #redisdocstore
   ${GTEST_LIBS}
   ${HIREDIS_LIBS}
 )

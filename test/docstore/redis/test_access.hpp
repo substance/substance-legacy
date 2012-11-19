@@ -13,17 +13,27 @@ public:
   RedisDocStoreTestAccess(RedisDocStore& instance): instance(instance) {
     redis = instance.redis;
   }
-  
-  bool isConnected() { 
+
+  bool isConnected() {
      return (redis->flags & REDIS_CONNECTED);
   }
 
   redisContext* GetRedis() { return redis; }
-  
-  void DeleteData(const char *prefix);
-  
+
+  void deleteAll(const char *prefix) {
+    instance.deleteAll(prefix);
+  }
+
+  void write(JSObjectPtr jsobject, const std::string &id) {
+    instance.write(jsobject, id);
+  }
+
+  RedisDocStore::ReplyPtr runCommand(const std::string& cmd) {
+    return instance.runCommand(cmd);
+  }
+
   RedisDocStore& instance;
-  
+
   redisContext* redis;
 };
 
