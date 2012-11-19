@@ -2,15 +2,14 @@ project(Substance)
 cmake_minimum_required(VERSION 2.8.4)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR}/config)
-
 set(SUBSTANCE_VERSION "0.5.0")
 
-set(EXTERNALS_DIR ${PROJECT_SOURCE_DIR}/ext)
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR}/config)
+set(EXTERNALS_DIR ${PROJECT_SOURCE_DIR}/ext CACHE STRING "Directory where external projects should be downloaded to" )
+set(EXTERNALS_ONLY OFF CACHE BOOL "Set this if you want to build externals only. (ON|OFF)")
 
 # Configure external projects
 # ===========================
-if (EXTERNALS)
+if (EXTERNALS_ONLY)
 
   set (DOWNLOAD_EXTERNALS ON)
   include(Externals)
@@ -20,7 +19,7 @@ endif()
 
 # Process subdirectories
 # ======================
-if (NOT EXTERNALS)
+if (NOT EXTERNALS_ONLY)
 
   include(ExportTarget)
   include(ConfigureVariables)
@@ -38,4 +37,4 @@ if (NOT EXTERNALS)
 
   endif()
 
-endif () # EXTERNALS
+endif () # EXTERNALS_ONLY
