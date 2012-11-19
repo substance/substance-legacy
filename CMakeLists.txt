@@ -3,27 +3,28 @@ CMAKE_MINIMUM_REQUIRED(VERSION 2.8.4)
 
 SET(SUBSTANCE_VERSION "0.5.0")
 
+set(EXTERNALS_DIR ${PROJECT_SOURCE_DIR}/ext)
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR}/config)
+
 # Configure external projects
 # ===========================
 if (EXTERNALS)
 
-  include(ExternalProject)
-  include(config/Externals.cmake)
+  set (DOWNLOAD_EXTERNALS ON)
+  include(Externals)
 
-  if(APPLE)
-    include(config/OSXExternals.cmake)
+endif()
 
-  elseif(UNIX)
-    include(config/UnixExternals.cmake)
-
-  endif()
 
 # Process subdirectories
 # ======================
-else (EXTERNALS)
+if (NOT EXTERNALS)
 
-  include(config/ConfigureVariables.cmake)
-  include(config/ExportTarget.cmake)
+  include(ExportTarget)
+  include(ConfigureVariables)
+
+  # include Externals to get variables set
+  include(Externals)
 
   add_subdirectory(app)
 
