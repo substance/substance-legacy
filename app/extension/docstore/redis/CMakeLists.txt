@@ -1,15 +1,11 @@
-SET(REDIS_DOCSTORE_SOURCES
-  operation.h
-  operation_impl.h
-  operation_impl.cxx
-  RedisDocStore.h
-  RedisDocStore.cxx
-  RedisDocStore_wrap_manual.cxx
-)
+set(TARGET redisdocstore)
 
-ADD_LIBRARY(
-  redisdocstore STATIC
-  ${REDIS_DOCSTORE_SOURCES}
+SET(REDIS_DOCSTORE_SOURCES
+  redis_error.hpp
+  redis_access.hpp
+  redis_error.cpp
+  hiredis_access_impl.cxx
+  redis_acces_wrap.cxx
 )
 
 include_directories(
@@ -19,8 +15,23 @@ include_directories(
   ${HIREDIS_INCLUDE_DIRS}
 )
 
-target_link_libraries(
-  redisdocstore jsobjects
+link_directories(
+  ${HIREDIS_LIB_DIRS}
+  ${webkit_LIBRARY_DIRS}
 )
 
-export_target(redisdocstore)
+ADD_LIBRARY(
+  ${TARGET} SHARED
+  ${REDIS_DOCSTORE_SOURCES}
+)
+
+target_link_libraries(${TARGET}
+  ${HIREDIS_LIBS}
+  ${webkit_LIBRARIES}
+)
+
+set_target_properties(${TARGET} PROPERTIES
+  OUTPUT_NAME redis
+)
+
+#export_target(redisdocstore)
