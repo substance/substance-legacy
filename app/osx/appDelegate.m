@@ -7,8 +7,8 @@
 @synthesize webView;
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification {
-	NSString *cwd = [[NSFileManager defaultManager] currentDirectoryPath];	
-	NSString *url =  [NSString stringWithFormat: @"file://%@/index.html", cwd];
+	NSString *path = [[NSBundle mainBundle] bundlePath];
+	NSString *url =  [NSString stringWithFormat: @"file://%@/Contents/Assets/index.html", path];
 	[ [webView mainFrame] loadRequest: 
 		[NSURLRequest requestWithURL: [NSURL URLWithString:url] ]
 	];

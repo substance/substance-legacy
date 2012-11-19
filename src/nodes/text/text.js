@@ -1,89 +1,48 @@
-sc.views.Node.define('text', {
+sc.views.Node.define('text', _.extend(Textish, {
 
   className: 'content-node text',
 
-  focus: function () {
-    $(this.textEl).click();
+  types: {
+    "em": {
+      "description": 'Emphasize',
+      "inclusive": true,
+      "visibility" : 'both'
+    },
+    "str": {
+      "description": 'Strong',
+      "inclusive": true,
+      "visibility" : 'both'
+    },
+    "idea": {
+      "description": 'Idea',
+      "inclusive": false,
+      "visibility" : 'both'
+    },
+    "blur": {
+      "description": 'Question',
+      "inclusive": false,
+      "visibility" : 'both'
+    },
+    "doubt": {
+      "description": 'Doubt',
+      "inclusive": false,
+      "visibility" : 'both'
+    }
   },
 
-  select: function () {
-    sc.views.Node.prototype.select.apply(this);
+  // This should be moved into a separate module
+  events: {
+    'mousedown .annotation-tools .toggle': 'toggleAnnotation',
+    'click .annotation-tools .toggle': function() { return false; }
   },
 
-  deselect: function () {
-    sc.views.Node.prototype.deselect.apply(this);
+  initialize: function (options) {
+    sc.views.Node.prototype.initialize.apply(this, arguments);
   },
 
   // Deal with incoming update
   update: function() {
-    // this.editor.setValue(this.model.content);
-  },
-
-  annotate: function(type) {
-    console.log('annotating text');
-    this.surface.insertAnnotation({ id: "annotation:"+Math.uuid(), type: type, pos: this.surface.selection() });
-    // To be overriden by concrete nodes
-  },
-
-  initSurface: function() {
-    var that = this;
-
-    var annotations = {};
-    _.each(app.view.model.document.annotations.content.nodes, function(n) {
-      if (n.node === that.model.id && n.type !== "comment") annotations[n.id] = n;
-    });
-
-    this.surface = new Substance.Surface({
-      el: this.$('.content')[0],
-      content: this.model.content,
-      annotations: annotations
-    });
-
-
-
-    // Events
-    // ------
-
-    // Returns all annotations matching that selection
-    // this.surface.on('selection:change', function(sel) {
-    //   console.log('selection:change', sel, that.surface.selection());
-    // });
-  
-    // Hackish way to prevent node selection to be triggered two times
-    this.$('.content').click(function() {
-      return false;
-    });
-
-    this.surface.on('surface:active', function(sel) {
-      app.view.model.select([that.model.id], {edit: true});
-    });
-
-    this.surface.on('content:changed', function(content, prevContent, ops) {
-      var delta = _.extractOperation(prevContent, content);
-
-      console.log("Partial Text Update", delta);
-
-      // Applying annotation ops...
-      _.each(ops, function(op) {
-          // add the node reference
-          op[1].data.node = that.model.id;
-          console.log('applying op', op);
-          that.document.annotations.apply({
-            op: op,
-            user: "michael"
-          });
-      });
-
-      if (content !== prevContent) {
-        var op = {
-          op: ["update", {id: that.model.id, "data": delta}],
-          user: "michael"
-        };
-
-        that.document.apply(op);
-      }
-      
-    });
+    // TODO: implement
   },
 
   render: function() {
@@ -91,4 +50,4 @@ sc.views.Node.define('text', {
     this.initSurface();
     return this;
   }
-});
+}));

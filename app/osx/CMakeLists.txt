@@ -7,24 +7,14 @@ find_library(APPKIT AppKit)
 find_library(COCOA Cocoa)
 find_library(WEBKIT WebKit)
 
-# IBTOOL
-# ======
-
-# Make sure we can find the 'ibtool' program. If we can NOT find it we
-# skip generation of this project
-find_program(IBTOOL ibtool HINTS "/usr/bin" "${OSX_DEVELOPER_ROOT}/usr/bin")
-if (${IBTOOL} STREQUAL "IBTOOL-NOTFOUND")
-  message(SEND_ERROR "ibtool can not be found and is needed to compile the .xib files. It should have been installed with
-                    the Apple developer tools. The default system paths were searched in addition to ${OSX_DEVELOPER_ROOT}/usr/bin")
-endif()
-
+include(MacOSXib)
 
 # Setup MacOSX bundle information
 # ===============================
 # Set the OS X Bundle specific CMake variables which will be used to populate the plist for
 # the application bundle
 set(MACOSX_BUNDLE_INFO_STRING "${PROJECT_NAME}")
-set(MACOSX_BUNDLE_GUI_IDENTIFIER "quasipartikel.substance.Substance")
+set(MACOSX_BUNDLE_GUI_IDENTIFIER "quasipartikel.Substance")
 set(MACOSX_BUNDLE_LONG_VERSION_STRING "${PROJECT_NAME} Version ${SUBSTANCE_VERSION}")
 set(MACOSX_BUNDLE_BUNDLE_NAME ${PROJECT_NAME})
 set(MACOSX_BUNDLE_SHORT_VERSION_STRING ${SUBSTANCE_VERSION})
@@ -34,20 +24,15 @@ set(MACOSX_BUNDLE_COPYRIGHT "Copyright 2012. No Rights Deserved.")
 # These variables are specific to our plist and are NOT standard CMake variables
 set(MACOSX_BUNDLE_NSMAIN_NIB_FILE "MainMenu")
 set(MACOSX_BUNDLE_NSPRINCIPAL_CLASS "NSApplication")
-
-# these are the OS X Interface Builder Files
-set (SUBSTANCE_XIBS
-  MainMenu
-)
+set(MACOSX_BUNDLE_ICON_FILE "${PROJECT_NAME}.icns")
 
 # The Substance executable
 # ========================
 
-include_directories(
-  ${BOOST_DIR}
-)
+SET (TARGET_NAME "Substance")
+SET(BUNDLE_LOCATION ${CMAKE_CURRENT_BINARY_DIR}/${CONFIGURATION}/${TARGET_NAME}.app)
 
-add_executable(substance MACOSX_BUNDLE
+add_executable(${TARGET_NAME} MACOSX_BUNDLE
   main.m
   appDelegate.h
   appDelegate.m
@@ -56,28 +41,54 @@ add_executable(substance MACOSX_BUNDLE
   MainMenu.xib
 )
 
-target_link_libraries(substance
+target_link_libraries(${TARGET_NAME} 
   ${COREDATA} ${FOUNDATION}
   ${APPKIT} ${COCOA}
   ${WEBKIT}
 )
 
-# Set a custom plist file for the app bundle
-set_target_properties(substance PROPERTIES MACOSX_BUNDLE_INFO_PLIST ${CMAKE_CURRENT_SOURCE_DIR}/Info-CMake.plist)
+# Set a custom Info.plist file template.
+# This file is a CMake template file which is processed by CMake and stored into
+# the Application's Content folder.
+set_target_properties(${TARGET_NAME} PROPERTIES 
+  MACOSX_BUNDLE_INFO_PLIST ${CMAKE_CURRENT_SOURCE_DIR}/Info-CMake.plist
+)
 
 # Make sure the 'Resources' Directory is correctly created before we build
-add_custom_command (TARGET substance PRE_BUILD
-                      COMMAND mkdir -p ${CMAKE_CURRENT_BINARY_DIR}/\${CONFIGURATION}/substance.app/Contents/Resources)
-
-# Compile the .xib files using the 'ibtool' program with the destination being the app package
-foreach(xib ${SUBSTANCE_XIBS})
-  add_custom_command (TARGET substance POST_BUILD
-                      COMMAND ${IBTOOL} --errors --warnings --notices --output-format human-readable-text
-                              --compile ${CMAKE_CURRENT_BINARY_DIR}/\${CONFIGURATION}/substance.app/Contents/Resources/${xib}.nib
-                             ${CMAKE_CURRENT_SOURCE_DIR}/${xib}.xib
-                      COMMENT "Compiling ${CMAKE_CURRENT_SOURCE_DIR}/${xib}.xib")
-endforeach()
-
-add_custom_command (TARGET substance POST_BUILD
-  COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_BINARY_DIR}/substance.app ${PROJECT_SOURCE_DIR}/substance.app
+add_custom_command (TARGET ${TARGET_NAME}
+  PRE_BUILD
+  COMMAND mkdir -p ${BUNDLE_LOCATION}/Contents/Resources
+  COMMAND mkdir -p ${BUNDLE_LOCATION}/Contents/Assets
 )
+
+# compile MainMenu.xib after build is finished
+compile_xib (${TARGET_NAME} ${BUNDLE_LOCATION} ${CMAKE_CURRENT_SOURCE_DIR}/MainMenu.xib)
+
+add_custom_command(TARGET ${TARGET_NAME}
+  POST_BUILD
+  COMMAND rsync -r ${CMAKE_CURRENT_SOURCE_DIR}/Resources/${MACOSX_BUNDLE_ICON_FILE} ${BUNDLE_LOCATION}/Contents/Resources
+  COMMAND ln -s ${PROJECT_SOURCE_DIR} ${BUNDLE_LOCATION}/Contents/Assets
+)
+
+
+# Install
+# =======
+set (DIST_DIR ${PROJECT_SOURCE_DIR}/dist)
+set (BUNDLE_DIST ${DIST_DIR}/${TARGET_NAME}.app)
+set (ASSETS_DIST_DIR ${BUNDLE_DIST}/Contents/Assets)
+
+add_custom_command(OUTPUT ${BUNDLE_DIST}
+  COMMAND rsync -r --exclude=Assets ${BUNDLE_LOCATION} ${DIST_DIR}
+  COMMAND rsync -r ${PROJECT_SOURCE_DIR}/data ${ASSETS_DIST_DIR}
+  COMMAND rsync -r ${PROJECT_SOURCE_DIR}/images ${ASSETS_DIST_DIR}
+  COMMAND rsync -r ${PROJECT_SOURCE_DIR}/lib ${ASSETS_DIST_DIR}
+  COMMAND rsync -r ${PROJECT_SOURCE_DIR}/src ${ASSETS_DIST_DIR}
+  COMMAND rsync ${PROJECT_SOURCE_DIR}/index.html ${ASSETS_DIST_DIR}
+  COMMAND rsync ${PROJECT_SOURCE_DIR}/composer.css ${ASSETS_DIST_DIR}
+  COMMAND rsync ${PROJECT_SOURCE_DIR}/substance.css ${ASSETS_DIST_DIR}
+  COMMAND rsync ${PROJECT_SOURCE_DIR}/package.json ${ASSETS_DIST_DIR}
+  COMMAND rsync ${PROJECT_SOURCE_DIR}/README.md ${ASSETS_DIST_DIR}
+  COMMAND rsync ${PROJECT_SOURCE_DIR}/LICENSE ${ASSETS_DIST_DIR}
+)
+
+add_custom_target(dist DEPENDS ${TARGET_NAME} ${PROJECT_SOURCE_DIR}/dist/${TARGET_NAME}.app)

@@ -18,5 +18,7 @@
 	<string>${MACOSX_BUNDLE_NSMAIN_NIB_FILE}</string>
 	<key>NSPrincipalClass</key>
 	<string>${MACOSX_BUNDLE_NSPRINCIPAL_CLASS}</string>
+	<key>CFBundleIconFile</key>
+	<string>${MACOSX_BUNDLE_ICON_FILE}</string>
 </dict>
 </plist>

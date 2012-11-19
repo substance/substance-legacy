@@ -68,7 +68,7 @@ _.extractOperation = function(baseText, newText) {
     var m = change[0],
         d = change[1];
 
-    return m === 1 ? ["ins", d] : (m === -1 ? ["del", d.length] : ["ret", d.length])
+    return m === 1 ? d : (m === -1 ? -1*d.length : d.length)
   }
   
   return _.map(changes, mapOp);

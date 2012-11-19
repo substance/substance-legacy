@@ -22,3 +22,5 @@ build
 build-externals
 ext
 *.kdev4
+/dist/
+/_site/

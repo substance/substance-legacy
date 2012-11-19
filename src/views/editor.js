@@ -1,5 +1,6 @@
 sc.views.Editor = Dance.Performer.extend({
 
+  id: 'container',
   // Events
   // ------
 
@@ -63,8 +64,9 @@ sc.views.Editor = Dance.Performer.extend({
   render: function () {
     this.$el.html(_.tpl('editor', {}));
 
-    this.composer = new Substance.Composer({el: '#document_wrapper', model: this.model });
-    this.composer.render();
+    this.composer = new Substance.Composer({id: 'document_wrapper', model: this.model });
+    this.$('#document_wrapper').replaceWith(this.composer.render().el);
+    // this.composer.render();
     return this;
   }
 });

@@ -9,6 +9,7 @@ sc.views.Node = Dance.Performer.extend(_.extend({}, s.StateMachine, {
   initialize: function (options) {
     this.state  = 'read';
     this.document = options.document;
+    this.session = options.session;
     $(this.el).attr({ id: _.htmlId(this.model) });
   },
 
@@ -35,12 +36,17 @@ sc.views.Node = Dance.Performer.extend(_.extend({}, s.StateMachine, {
   focus: function () {},
 
   render: function () {
-    var cnt = this.document.comments(this.model.id);
-    $(this.el).html('<div class="content" contenteditable="true"></div><div class="handle"></div><a href="#" class="comments-toggle'+(cnt > 0 ? ' active' : '')+'">'+cnt+'</a>');
+    var cnt = this.document.comments(this.model.id).length;
+    var annotations = [];
+
+    // _.each(this.document.annotations(this.model.id), function(a) {
+    //   annotations.push('<a href="#" class="'+a.type+'"></a>');
+    // });
+
+    $(this.el).html('<div class="content" contenteditable="true"></div><div class="handle"><a href="#" class="up move" title="Move Selection Up (ALT + ▲)"></a><a href="#" class="move down" title="Move Selection Down (ALT + ▼)"></a></div><div class="handle-2"></div><a href="#" class="delete" title="Delete Selection (←)"></a> <a href="#" class="comments-toggle'+(cnt > 0 ? ' active' : '')+'">'+''+'</a><div class="annotation-tools"></div><div class="annotations">'+annotations.join('')+'</a></div>');
     return this;
   }
 }), {
-
 
   // States
   // ------

@@ -5,78 +5,113 @@ sc.views.Comments = Dance.Performer.extend({
 
   events: {
     'click .insert-comment': '_insertComment',
-    'click .comment': '_showComment'
+    'click .delete-comment': '_deleteComment',
+    'click .close-issue': '_closeIssue',
+    'click .comment-scope': '_toggleScope'
   },
 
   // Handlers
   // --------
 
-  _showComment: function(e) {
-    var id = $(e.currentTarget).attr('data-id');
-    var comment = this.model.document.annotations.content.nodes[id];
-    
-    function highlight() {
-      unhighlight();
-      $(e.currentTarget).addClass('active');
+  _insertComment: function(e) {
+    var node = this.$('.comment-scope.active').attr('data-node');
+    var annotation = this.$('.comment-scope.active').attr('data-annotation');
+    var content = $(e.currentTarget).parent().find('.comment-content').val();
 
-      // Highlight comment toggles in document
-      _.each(comment.nodes, function(n) {
-        $('#'+_.htmlId(n)+" .comments-toggle").addClass('highlighted');
-      });
-    }
+    if (!node) node = undefined;
+    if (!annotation) annotation = undefined;
 
-    function unhighlight() {
-      $(e.currentTarget).parent().find('.comment').removeClass('active');
-      $('.content-node .comments-toggle').removeClass('highlighted');
-    }
+    this.model.document.apply(["insert_comment", {
+      id: "comment:"+Math.uuid(),
+      content: content,
+      node: node,
+      annotation: annotation,
+      created_at: new Date().toJSON(),
+      user: app.user
+    }]);
 
-    // Highlight or unhighlight?
-    $(e.currentTarget).hasClass('active') ? unhighlight() : highlight();
+    // Not too smart™
+    this.model.comments.compute(this.scope);
+    // this.render(); // compute triggers an event that causes re-render
 
+    // Notify Composer -> triggers a re-render
+    if (node) choreographer.trigger('node:dirty', node);
     return false;
   },
 
-  _insertComment: function() {
-    var selection = this.model.selection(),
-        properties = {
-          "content": $('#comment_content').val(),
-          "nodes": selection
-        };
+  _deleteComment: function(e) {
+    var comment = $(e.currentTarget).attr('data-id');
 
-    // TODO get pos from surface if there is one
-    if (selection.length === 1) { // && isTextNode?
-      // selectedNode = this.model.document.content.nodes[selection[0]];
-      properties.pos = [0,4];
-    }
-
-    var op = {
-      op: ["insert", {"id": "annotation:"+Math.uuid(), "type": "comment", "data": properties}],
-      user: "michael",
-    };
-
-    this.model.document.annotations.apply(op);
-    this.render();
+    this.model.document.apply(["delete_comment", { id: comment }]);
+    this.model.comments.compute(this.scope);
     return false;
+  },
+
+  _closeIssue: function() {
+    var node = this.$('.comment-scope.active').attr('data-node');
+    var annotation = this.$('.comment-scope.active').attr('data-annotation');
+
+    this.model.document.apply(["delete_annotation", { id: annotation }]);
+
+    this.model.comments.compute();
+    // this.render();
+    this.activateScope('node_comments');
+
+    // Delete all associated comments
+    var comments = this.model.document.commentsForAnnotation(annotation);
+
+    this.model.document.apply(["delete_comment", { nodes: _.pluck(comments, 'id')}]);
+    
+    // Notify Surface
+    choreographer.trigger('annotation:deleted', node, annotation);
+
+    // Notify Composer -> triggers a re-render
+    choreographer.trigger('node:dirty', node);
+    return false;
+  },
+
+  _toggleScope: function(e) {
+    var node = $(e.currentTarget).attr('data-node');
+    var annotation = $(e.currentTarget).attr('data-annotation');
+    var scope = $(e.currentTarget).attr('id');
+
+    // Notify Surface
+    choreographer.trigger('comment-scope:selected', scope, node, annotation);
+  },
+
+  activateScope: function(scope) {
+    // console.log('activating scope should not happen twice', scope);
+    if (!scope) return; // TODO: Skip, if already active
+    this.scope = scope;
+    this.$('.comment-scope').removeClass('active');
+    this.$('#'+_.htmlId(scope)).addClass('active');
+
+    this.$('.comments').removeClass('active');
+    // Show corresponding comments
+    this.$('#comments_'+_.htmlId(scope)).addClass('active');
   },
 
   initialize: function(options) {
     this.documentView = options.documentView;
+
+    // Initial comments computation
+    this.model.comments.compute();
+
+    // Triggered by Text Node
+    choreographer.off('comment-scope:selected', this.activateScope);
+    choreographer.on('comment-scope:selected', this.activateScope, this);
+
+    // Listing to comments:updated event on session
+    this.model.off('comments:updated', this.render);
+    this.model.on('comments:updated', this.render, this);
   },
 
-  comments: function() {
-    var that = this;
+  render: function (scope) {
+    // Reset selected scope on every re-render
+    this.scope = scope;
 
-    return _.filter(this.model.document.annotations.nodes(), function(annotation) {
-      if (annotation.type !== "comment") return false;
-      if (that.model.selection().length === 0) return true;
-      return _.intersection(that.model.selection(), annotation.nodes).length > 0;
-    });
-  },
-
-  render: function () {
-    this.$el.html(_.tpl('comments', {
-      comments: this.comments()
-    }));
+    this.$el.html(_.tpl('comments', this.model));
+    this.activateScope(this.scope);
     return this;
   }
 });

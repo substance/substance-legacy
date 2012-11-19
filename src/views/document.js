@@ -14,52 +14,54 @@ sc.views.Document = Dance.Performer.extend({
   // Handlers
   // --------
 
-  initialize: function (options) {
-
+  initialize: function(options) {
     var that = this;
 
     this.model.document.on('operation:applied', function(operation) {
-      switch(operation.op[0]) {
-        case "move": that.move(operation.op[1]); break;
-        case "insert": that.insert(operation.op[1]); break;
-        case "update": that.update(operation.op[1]); break;
-        case "delete": that.delete(operation.op[1]); break;
+      switch(operation[0]) {
+        case "move": that.move(operation[1]); break;
+        case "insert": that.insert(operation[1]); break;
+        case "update": that.update(operation[1]); break;
+        case "delete": that.delete(operation[1]); break;
       }
     });
 
-    this.model.document.annotations.on('operation:applied', function(operation) {
-      switch(operation.op[0]) {
-        case "move": that.moveAnnotation(operation.op[1]); break;
-        case "insert": that.insertAnnotation(operation.op[1]); break;
-        case "update": that.updateAnnotation(operation.op[1]); break;
-        case "delete": that.deleteAnnotation(operation.op[1]); break;
-      }
-    });
+    // Handlers
 
-    this.model.on('node:select', this.updateSelections, this);
+    function highlightAnnotation(scope, node, annotation) {
+      var node = this.nodes[node];
+      if (node && node.surface) {
+        node.surface.highlight(annotation);
+      }
+    }
+
+    function deleteAnnotation(node, annotation) {
+      var node = this.nodes[node];
+      if (node && node.surface) node.surface.deleteAnnotation(annotation);
+    }
+
+    function updateNode(node) {
+      // Update node since its dirty
+      var node = this.nodes[node];
+      node.render();
+      this.updateSelections();
+    }
+
+    // Bind handlers (but only once)
+    choreographer.off('comment-scope:selected', highlightAnnotation);
+    choreographer.on('comment-scope:selected', highlightAnnotation, this);
+
+    choreographer.off('annotation:deleted', deleteAnnotation);
+    choreographer.on('annotation:deleted', deleteAnnotation, this);
+
+    choreographer.off('node:dirty', updateNode);
+    choreographer.on('node:dirty', updateNode, this);
+    
+    this.model.off('node:selected', this.updateSelections);
+    this.model.on('node:selected', this.updateSelections, this);
     this.build();
 
     $(document.body).keydown(this.onKeydown);
-  },
-
-  // Handle annotation updates
-  moveAnnotation: function() {
-
-  },
-
-  updateAnnotation: function() {
-
-  },
-
-  insertAnnotation: function(options) {
-    _.each(options.data.nodes, function(node) {
-      this.nodes[node].render(); // Re-render affected node
-      this.updateSelections();
-    }, this);
-  },
-
-  deleteAnnotation: function() {
-
   },
 
   // Get a particular node by id
@@ -72,18 +74,25 @@ sc.views.Document = Dance.Performer.extend({
     var view = this.createNodeView(node);
 
     this.nodes[node.id] = view;
-
+    
     var newEl = $(view.render().el);
-    newEl.insertAfter($('#'+_.htmlId(options.target)));
-
+    if (options.target) {
+      newEl.insertAfter($('#'+_.htmlId(options.target)));  
+    } else {
+      this.$('.nodes').append(newEl)
+    }
     newEl.click();
-    newEl.contents().focus();
+    newEl.find('.content').focus();
   },
 
   // Node content has been updated
   update: function(options) {
     var node = this.nodes[options.id];
-    node.render(); // Re-render that updated node
+
+    // Only rerender if not update comes from outside
+    if (this.model.node() !== options.id) {
+      node.render();
+    }
   },
 
   // Nodes have been deleted
@@ -106,26 +115,26 @@ sc.views.Document = Dance.Performer.extend({
 
   insertNode: function(type, options) {
     var selection = this.model.users[this.model.user].selection;
-    var target = _.last(selection);
+    var target = options.target || _.last(selection);
 
     var properties = {};
 
     properties["content"] = options.content || "";
 
-    this.model.document.apply({
-      op: ["insert", {
-        "id": type+":"+Math.uuid(),
-        "type": type,
-        "target": target,
-        "data": properties
-      }],
-      user: this.model.user
+    this.model.document.apply(["insert", {
+      "id": type+":"+Math.uuid(),
+      "type": type,
+      "target": target,
+      "data": properties
+    }], {
+      user: this.model.user  
     });
   },
 
   deleteNodes: function() {
-    this.model.document.apply({
-      op: ["delete", {"nodes": this.model.selection() }],
+    this.model.document.apply(["delete", {
+      "nodes": this.model.selection()
+    }], {
       user: this.model.user
     });
   },
@@ -154,19 +163,36 @@ sc.views.Document = Dance.Performer.extend({
     } else {
       $('#document').addClass('document-mode');
     }
+
+    // Render context bar
+    this.$('#context_bar').html(_.tpl('context_bar', {
+      level: this.model.level(),
+      node_types: [
+        {name: "Heading", type: "heading"},
+        {name: "Text", type: "text"}
+      ]
+    }));
   },
 
   // Updates the current selection
   updateSelections: function(selections) {
-    $('.content-node.selected .handle').css('background', '');
+    // $('.content-node.selected .handle').css('background', '');
+    $('.content-node .down').hide();
+    $('.content-node .up').hide();
+    $('.content-node .delete').hide();
     $('.content-node.selected').removeClass('selected');
+
 
     this.updateMode();
     
     _.each(this.model.selections, function(user, node) {
       $('#'+_.htmlId(node)).addClass('selected')
-        .find('.handle').css('background', this.model.users[user].color);
+        // .find('.handle').css('background', this.model.users[user].color);
     }, this);
+
+    $('.content-node.selected').first().find('.up').show();
+    $('.content-node.selected').first().find('.delete').show();
+    $('.content-node.selected').last().find('.down').show();
   },
 
   // Issue commands
@@ -210,8 +236,9 @@ sc.views.Document = Dance.Performer.extend({
     var last = this.getNode(_.last(selection));
 
     if (last.next) {
-      this.model.document.apply({
-        op: ["move", {"nodes": selection, "target": last.next}],
+      this.model.document.apply(["move", {
+        "nodes": selection, "target": last.next
+      }], {
         user: this.model.user
       });
     }
@@ -223,8 +250,9 @@ sc.views.Document = Dance.Performer.extend({
 
     if (first.prev) { 
       var target = this.model.document.content.head === first.prev ? 'front' : this.getNode(first.prev).prev;
-      this.model.document.apply({
-        op: ["move", {"nodes": selection, "target": target}],
+      this.model.document.apply(["move", {
+        "nodes": selection, "target": target
+      }], {
         user: this.model.user
       });
     }
@@ -239,32 +267,23 @@ sc.views.Document = Dance.Performer.extend({
   },
 
   select: function (e) {
+    // Skip when move handle has been clicked
+    if ($(e.target).hasClass('move')) return;
+
     var id = $(e.currentTarget)[0].id.replace(/_/g, ":");
     this.model.select([id]);
   },
-
 
   initSurface: function(property) {
     var that = this;
 
     this.surface = new Substance.Surface({
-      el: this.$('.document-'+property),
+      el: this.$('.document-'+property)[0],
       content: that.model.document.content.properties[property]
     });
 
-
     // Events
     // ------
-
-    // Returns all annotations matching that selection
-    // this.surface.on('selection:change', function(sel) {
-    //   console.log('selection:change', sel, that.surface.selection());
-    // });
-
-    this.surface.on('surface:active', function(sel) {
-      console.log(property+' surface activated');
-      // app.view.model.select([that.model.id], {edit: true});
-    });
 
     this.surface.on('content:changed', function(content, prevContent) {
       var delta = _.extractOperation(prevContent, content);
@@ -274,10 +293,7 @@ sc.views.Document = Dance.Performer.extend({
       var opts = {};
       opts[property] = delta;
 
-      that.model.document.apply({
-        "op": ["set", opts],
-        "user": "michael"
-      });
+      that.model.document.apply(["set", opts]);
     });
   },
 
@@ -286,8 +302,8 @@ sc.views.Document = Dance.Performer.extend({
     this.$el.html(_.tpl('document', this.model));
 
     // Init editor for document abstract and title
-    // this.initSurface("abstract");
-    // this.initSurface("title");
+    this.initSurface("abstract");
+    this.initSurface("title");
 
     this.model.document.list(function(node) {
       $(this.nodes[node.id].render().el).appendTo(this.$('.nodes'));

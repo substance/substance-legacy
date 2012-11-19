@@ -5,25 +5,31 @@
     <link href="substance.css" media="screen" rel="stylesheet" type="text/css" />
     <link href="composer.css" media="screen" rel="stylesheet" type="text/css" />
     <link href="lib/codemirror/codemirror.css" media="screen" rel="stylesheet" type="text/css" />
-    
-    <!--<link href='http://fonts.googleapis.com/css?family=Open+Sans:400,300,700' rel='stylesheet' type='text/css'>
-    <link href='http://fonts.googleapis.com/css?family=Merriweather:400,700,300,900' rel='stylesheet' type='text/css'>-->
+      
+  <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,700,300' rel='stylesheet' type='text/css'>
+  <!--<link href='http://fonts.googleapis.com/css?family=Source+Code+Pro' rel='stylesheet' type='text/css'/>-->
+  <link href='http://fonts.googleapis.com/css?family=Merriweather:400,700,300,900' rel='stylesheet' type='text/css'>
 
     <!-- Templates -->
     <script type="text/html" name="substance">
       <div id="header">
         <div class="header-container">
-          <a href="#">Substance</a>
-
+          <a href="#" class="logo">Substance</a>
+          <div class="menu">
+            <a href="#" class="dashboard<%= !document ? ' active' : ''%>">My Documents</a>
+            <% if (document) { %> <a href="#" class="document active"><%= document.title || 'Untitled' %></a><% } %>
+          </div>
+          
           <div class="user-status">
-          <% if (username) { %>
+          <% if (user) { %>
             <a href="#new" class="new-document">New Document</a>
-            <a href="#logout" class="logout">Logout</a>
+            <div class="username"><%= user %></div>
+            <a href="#logout" class="logout"></a>
           <% } else { %>
             <form id="user_login_form">
               <input type="text" name="username" placeholder="Username" id="login_username"/>
               <input type="password" name="password" placeholder="Password" id="login_password"/>
-              <input type="submit" value="Login"/>
+              <input class="submit" type="submit" value="Login"/>
             </form>
           <% } %>
           </div>
@@ -34,6 +40,60 @@
       </div>
     </script>
     
+    <!-- Annotation Toggles -->
+    <script type="text/html" name="annotation_toggles">
+      <div class="annotation-toggles">
+        <% _.each(annotations, function(a) { %>
+          <a href="#" class="toggle <%= a.type %><%= a.active ? " active" : "" %> " data-type="<%= a.type %>" title="<%= a.description %>"></a>
+        <% }) %>
+        <div class="arrow-down"></div>
+      </div>
+    </script>
+
+    <!-- Context Bar -->
+    <script type="text/html" name="context_bar">
+      <div class="context-bar">
+        <div class="title">Insert Element</div>
+        <div class="insert-commands">
+          <% _.each(node_types, function(node) { %>
+            <a href="#" class="insert <%= node.type %>" data-type="<%= node.type %>"><%= node.name %></a>
+          <% }); %>
+        </div>
+      </div>
+    </script>
+
+    <!-- Dashboard -->
+    <script type="text/html" name="dashboard">
+      <div id="dashboard">
+      <% if (documents.length > 0) { %>
+          <div id="documents">
+            <% _.each(documents, function(doc) { %> 
+              <div class="document">
+                <a class="load-document" href="#demo/<%= doc.file %>" document="<%= doc._id %>">
+                  <div class="image">
+                    <img src="http://behance.vo.llnwd.net/profiles/58036/projects/5413899/096b7d0c26ca4e849a000a9b6e135b01.png" width="200">
+                  </div>
+
+                  <div class="title">
+                    <%= doc.title %>
+                  </div>
+                </a>
+
+                <div class="author"><a href="#">michael</a></div>
+                <div class="updated-at"><span>updated </span>5 days ago</div>
+              </div>
+            <% }); %>
+          </div>
+        </div>
+      <% } else { %>
+        <div id="documents">
+          <h2>No Documents yet ...</h2>
+        </div>
+      <% } %>
+      </div>
+
+    </script>
+
     <!-- Startpage -->
     <script type="text/html" name="start">
       <div id="help">
@@ -135,32 +195,97 @@
           <div class="document-title" contenteditable="true">Hello World</div>
           <div class="document-abstract" contenteditable="true"></div>
         </div>
+        
+        <div class="left-rail"></div>
+        <div class="right-rail"></div>
+
         <div class="marker"></div>
         <div class="nodes"></div>
+        <div id="context_bar"></div>
       </div>
     </script>
 
     <script type="text/x-ejs-template" name="comments">
-      <div class="comments">
-        <% _.each(comments, function(c) { %>
-          <a href="#" data-id="<%= c.id %>" class="comment">
-            <div class="author">Michael</div>
-            <div class="content">
-              <%= c.content %>
-            </div>
-            <div class="handle"></div>
-          </a>
+      <div class="comment-scopes">
+        <% _.each(comments.scopes, function(scope, i) { %>
+          <div id="<%= _.htmlId(scope.id) %>" class="comment-scope<%= i === 0 ? ' active' : ''%><%= scope.type ? ' '+scope.type : '' %>" data-node="<%= node() %>" data-annotation="<%= scope.annotation %>">
+            <!--<%= scope.comments.length %>-->
+          </div>
         <% }); %>
       </div>
+      
+      <% _.each(comments.scopes, function(scope, i) { %>
+        <div id="comments_<%= _.htmlId(scope.id) %>" class="comments<%= i === 0 ? ' active' : ''%>">
+          <div class="scope-header<%= scope.type ? ' '+scope.type : '' %>">
+            <% if (!_.include(['document', 'node'], scope.type)) { %>
+              <div class="title"><%= scope.type[0].toUpperCase()+scope.type.substr(1) %></div>
+              <!--<div class="subtitle">4 days ago, by michael</div>-->
+              <a href="#" class="button close-issue" title="Close Issue">Resolve</a>
+            <% } else { %>
+              <div class="title">Discussion</div>
+            <% } %>
+          </div>
+          <div class="comments-wrapper">
+            <% if (scope.comments.length=== 0) { %>
+              <div class="comments-placeholder">Start the discussion by adding a <b>comment</b>.</div>
+            <% } %>
+            <% _.each(scope.comments, function(c) { %>
+              <div class="comment">
+                <div class="meta">
+                  <div class="author"><%= c.user %></div>
+                  <div class="date"><%= $.timeago(c.created_at) %></div>
+                </div>
+                <div class="message">
+                  <%= c.content %>
+                </div>
+                <a class="delete-comment" title="Delete comment" data-id="<%= c.id %>" href="#"></a>
+              </div>
+            <% }); %>
 
-      <div class="new-comment">
-        <div class="author">Your comment:</div>
-        <div class="handle"></div>
-        <div class="comment-input-wrapper">
-          <textarea id="comment_content" name="comment"></textarea>
+          </div>
+          <div class="new-comment">
+            <div class="comment-input-wrapper">
+              <textarea class="comment-content" name="comment" placeholder="Add a comment"></textarea>
+            </div>
+            <a href="#" class="button insert-comment">Add Comment</a>
+          </div>
+
         </div>
-        <a href="#" class="button insert-comment">Add Comment</a>
-      </div>
+      <% }); %>
+    </script>
+
+
+    <script type="text/x-ejs-template" name="foobar">
+      <% _.each(comments.scopes, function(scope, i) { %>
+        <div class="comment-scope<%= i === 0 ? ' active' : ''%><%= scope.type ? ' '+scope.type : '' %>" id="<%= _.htmlId(scope.id) %>" data-node="<%= node() %>" data-annotation="<%= scope.annotation %>">
+          <div class="header">
+            <%= scope.name %>
+          </div>
+          <div class="comments">
+            <% _.each(scope.comments, function(c) { %>
+              <div class="comment">
+                <div class="meta">
+                  <div class="creator">michael</div>
+                  <div class="time">3 days ago</div>
+                </div>
+
+                <div class="text">
+                  <%= c.content %>
+                </div>
+              </div>
+            <% }); %>
+
+            <div class="new-comment">
+              <div class="author">Your comment:</div>
+              <div class="comment-input-wrapper">
+                <textarea class="comment-content" name="comment"></textarea>
+              </div>
+              <a href="#" class="button insert-comment">Add Comment</a>
+            </div>
+          </div>
+
+        </div>
+      <% }); %>
     </script>
 
     <script type="text/x-ejs-template" name="history">
@@ -186,19 +311,17 @@
     <script type="text/x-ejs-template" name="tools">
       <div class="tools">
         <% if (selection().length === 0) { %>
-          <div class="document-menu<%= selection() && selection().length > 0 ? "" : " active"%>">
+          <!--<div class="document-menu<%= selection() && selection().length > 0 ? "" : " active"%>">
             <div class="tool-name">Document</div>
             <div class="navigation">
-              <!--<a class="toggle-tool outline<%= view === "outline" ? " active" : "" %>" href="#" data-view="outline">OUTLN</a>-->
-              <!--<a class="toggle-tool patches<%= view === "patches" ? " active" : "" %>" href="#" data-view="patches">PTCHS</a>-->
               <a class="toggle-tool comments<%= view === "comments" ? " active" : "" %>" href="#" data-view="comments">Comments</a>
               <a class="toggle-tool history<%= view === "history" ? " active" : "" %>" href="#" data-view="history">History</a>
             </div>
-          </div>
+          </div>-->
         <% } %>
         <% if (selection() && selection().length > 0) { %>
           <div class="node-menu active">
-            <div class="tool-name"><% if (selection().length === 1) { %>Text Element<% } else { %> Teh Selection <% } %></div>
+            <!--<div class="tool-name"><% if (selection().length === 1) { %>Text Element<% } else { %> Teh Selection <% } %></div>-->
             <div class="navigation">
               <!--<a class="toggle-tool comments" href="#" data-view="comments">CMTS</a>
               <a class="toggle-tool edit" href="#" data-view="edit">EDIT</a>-->
@@ -220,20 +343,13 @@
 
     <script src="lib/dmp.js"></script>
     <script src="lib/operation.js"></script>
-    <script src="lib/rangy/core.js"></script>
-    <script src="lib/rangy/dom.js"></script>
-    <script src="lib/rangy/domrange.js"></script>
-    <script src="lib/rangy/wrappedrange.js"></script>
-    <script src="lib/rangy/wrappedselection.js"></script>
-    <script src="lib/rangy/cssclassapplier.js"></script>
+    <script src="lib/jquery.timeago.js"></script>
 
     <script src="lib/surface.js"></script>
-
+    
     <!-- Model -->
     <script src="lib/document.js"></script>
-
     <script src="lib/codemirror/codemirror.js"></script>
-
     <script src="src/composer.js"></script>
     <script src="src/util.js"></script>
 
@@ -255,8 +371,10 @@
     
     <!-- Nodes -->
     <script src="src/nodes/node.js"></script>
-    <script src="src/nodes/section/section.js"></script>
+    <script src="src/nodes/textish.js"></script>
     <script src="src/nodes/text/text.js"></script>
+    <script src="src/nodes/heading/heading.js"></script>
+    
 
     <!-- Boot -->
     <script src="src/boot.js"></script>

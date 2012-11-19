@@ -4,9 +4,13 @@
   if (!exports.Substance) exports.Substance = {};
 
   var Composer = Dance.Performer.extend({
-
     events: {
-      'click a.checkout-commit': '_checkoutCommit'
+      'click a.checkout-commit': '_checkoutCommit',
+      'click .properties': 'clear',
+      'click a.insert': '_insert',
+      'click a.move.up': 'moveUp',
+      'click a.move.down': 'moveDown',
+      'click .content-node a.delete': 'handleBackspace'
     },
 
     _checkoutCommit: function(e) {
@@ -17,28 +21,46 @@
       return false;
     },
 
+    _insert: function(e) {
+      var type = $(e.currentTarget).attr('data-type');
+      this.views.document.insertNode(type, {});
+      return false;
+    },
+
+    // Now obsolete for our fixed layout
+    positionTools: function() {
+      // var leftMargin = Math.max(100, ($(window).width()-1200) / 2);
+      // this.$('#tools').css('left', leftMargin+800+'px');
+    },
+
+    updateMode: function() {
+      this.views.document.updateMode();
+    },
+
     initialize: function(options) {
       this.build();
+      $(window).resize(this.positionTools);
     },
 
     // Handling keys
     // ---------------
 
+    clear: function() {
+      this.model.select([]);
+      this.updateMode();
+    },
+
     // Go up one level
     goBack: function() {
       var lvl = this.model.level();
-      if (lvl === 3) {
-        // Back to structure mode
-        this.model.edit = false;
+      if (lvl === 2) return this.clear();
 
-        // TODO: Only deactivate currently active surface -> performance
-        $(".content-node .content").blur();
-      }
-      if (lvl === 2) {
-        this.model.select([]);
-      }
+      this.model.edit = false;
 
-      this.views.document.updateMode();
+      // TODO: Only deactivate currently active surface -> performance
+      $(".content-node .content").blur();
+      this.updateMode();
+      return false;
     },
 
     handleDown: function() {
@@ -60,30 +82,42 @@
       if (this.model.level() === 2) this.views.document.narrowSelection();
     },
 
-    handleCtrlShiftDown: function() {
-      // If in selection/structure mode
-      if (this.model.level() === 2) { this.views.document.moveDown(); return false; }
+    moveDown: function() {
+      this.views.document.moveDown();
+      return false;
     },
 
-    handleCtrlShiftUp: function() {
+    moveUp: function() {
+      this.views.document.moveUp();
+      return false;
+    },
+
+    handleAltDown: function() {
       // If in selection/structure mode
-      if (this.model.level() === 2) { this.views.document.moveUp(); return false; }
+      if (this.model.level() === 2) return this.moveDown();
+    },
+
+    handleAltUp: function() {
+      // If in selection/structure mode
+      if (this.model.level() === 2) return this.moveUp();
     },
 
     handleEnter: function() {
+      var that = this;
       if (this.model.level() === 3) {
         var node = this.views.document.nodes[_.first(this.model.selection())];
         
-        if (!_.include(["text", "section"], node.model.type)) return; // Skip for non-text nodes
-        var text = node.surface.getContent();
+        if (!_.include(["text", "heading"], node.model.type)) return; // Skip for non-text nodes
+        var text = node.surface.content;
         var pos = node.surface.selection()[0]; // current cursor position
 
         var remainder = _.rest(text, pos).join("");
         var newContent = text.substr(0, pos);
 
         node.surface.deleteRange([pos, remainder.length]);
-
-        this.views.document.insertNode("text", {content: remainder});
+        node.surface.commit();
+        that.views.document.insertNode("text", {content: remainder, target: node.model.id});
+        
         return false;
       }
     },
@@ -91,7 +125,7 @@
     handleBackspace: function() {
       if (this.model.level() === 2) {
         this.views.document.deleteNodes();
-        return false;        
+        return false;
       }
     },
 
@@ -101,6 +135,20 @@
         node.annotate(type);
         return false;
       }
+    },
+
+    undo: function() {
+      this.model.document.undo();
+      this.init();
+      this.render();
+      return false;
+    },
+
+    redo: function() {
+      this.model.document.redo();
+      this.init();
+      this.render();
+      return false;
     },
 
     build: function() {
@@ -113,8 +161,8 @@
       key('esc', _.bind(function() { return this.goBack(); }, this));
 
       // Move shortcuts
-      key('alt+down', _.bind(function() { return this.handleCtrlShiftDown(); }, this));
-      key('alt+up', _.bind(function() { return this.handleCtrlShiftUp(); }, this));
+      key('alt+down', _.bind(function() { return this.handleAltDown(); }, this));
+      key('alt+up', _.bind(function() { return this.handleAltUp(); }, this));
 
       // Handle enter (creates new paragraphs)
       key('enter', _.bind(function() { return this.handleEnter(); }, this));
@@ -124,41 +172,46 @@
 
       // Node insertion shortcuts
       key('alt+t', _.bind(function() { this.views.document.insertNode("text", {}); return false }, this));
-      key('alt+s', _.bind(function() { this.views.document.insertNode("section", {}); return false; }, this));
+      key('alt+h', _.bind(function() { this.views.document.insertNode("heading", {}); return false; }, this));
 
       // Marker shortcuts  
       key('⌘+i', _.bind(function() { return this.toggleAnnotation('em'); }, this));
       key('⌘+b', _.bind(function() { return this.toggleAnnotation('str'); }, this));
-      key('ctrl+1', _.bind(function() { return this.toggleAnnotation('mark-1'); }, this));
-      key('ctrl+2', _.bind(function() { return this.toggleAnnotation('mark-2'); }, this));
-      key('ctrl+3', _.bind(function() { return this.toggleAnnotation('mark-3'); }, this));
+      key('ctrl+1', _.bind(function() { return this.toggleAnnotation('idea'); }, this));
+      key('ctrl+2', _.bind(function() { return this.toggleAnnotation('blur'); }, this));
+      key('ctrl+3', _.bind(function() { return this.toggleAnnotation('doubt'); }, this));
+
+      key('⌘+z', _.bind(function() { return this.undo(); }, this));
+      key('shift+⌘+z', _.bind(function() { return this.redo(); }, this));
 
       // Possible modes: edit, view, patch, apply-patch
       this.mode = "edit";
 
+      this.init();
+    },
+
+    init: function() {
       // Views
       this.views = {};
+
+      // Rebind event handlers
+      this.model.document.off('operation:applied');
 
       this.views.document = new Substance.Composer.views.Document({ model: this.model });
       this.views.tools = new Substance.Composer.views.Tools({model: this.model });
       
       this.model.document.on('operation:applied', function(operation) {
-        // Refresh the tools
-        this.views.tools.update();
-
         // Send update to the server
         updateDoc(operation);
-      }, this);
-
-      this.model.on('node:select', function() {
-        // Refresh the tools
-        this.views.tools.update();
       }, this);
     },
 
     render: function() {
       this.$el.html(_.tpl('composer'));
       this.renderDoc();
+      this.positionTools();
+      this.updateMode();
+      return this;
     },
 
     renderDoc: function() {
