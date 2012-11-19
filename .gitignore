@@ -19,7 +19,7 @@ node_modules/*
 /config.json.edge
 /edge.config.json
 build
-build-externals
+build-external*
 ext
 *.kdev4
 /dist/
