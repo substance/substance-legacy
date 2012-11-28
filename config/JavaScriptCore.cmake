@@ -1,6 +1,6 @@
 
 if(APPLE)
-# nothing to be done
+    find_library(JSC JavaScriptCore)
 
 elseif(UNIX)
   FIND_PATH(JSC_INCLUDE_DIR "JavaScriptCore/JavaScriptCore.h" "/usr/include/webkitgtk-1.0")

@@ -9,7 +9,7 @@ SET(REDIS_DOCSTORE_SOURCES
 )
 
 include_directories(
-  ${webkit_INCLUDE_DIRS}
+  ${JS_INCLUDE_DIRS}
   ${BOOST_INCLUDE_DIRS}
   ${jsobjects_INCLUDE_DIRS}
   ${HIREDIS_INCLUDE_DIRS}
@@ -17,7 +17,7 @@ include_directories(
 
 link_directories(
   ${HIREDIS_LIB_DIRS}
-  ${webkit_LIBRARY_DIRS}
+  ${JS_LIBRARY_DIRS}
 )
 
 ADD_LIBRARY(
@@ -27,7 +27,7 @@ ADD_LIBRARY(
 
 target_link_libraries(${TARGET}
   ${HIREDIS_LIBS}
-  ${webkit_LIBRARIES}
+  ${JS_LIBRARIES}
 )
 
 set_target_properties(${TARGET} PROPERTIES
