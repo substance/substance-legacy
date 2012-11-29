@@ -3,7 +3,8 @@
 %header %{
 #define SWIG 1
 
-#include "redis_access.hpp"
+#include <jsobjects_jsc.hpp>
+#include <redis_access.hpp>
 %}
 
 %include "redis_access.hpp"
