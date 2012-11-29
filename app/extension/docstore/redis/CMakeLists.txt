@@ -1,6 +1,6 @@
 set(TARGET redisdocstore)
 
-SET(REDIS_DOCSTORE_SOURCES
+set(REDIS_DOCSTORE_SOURCES
   redis_error.hpp
   redis_access.hpp
   redis_error.cpp
@@ -20,7 +20,7 @@ link_directories(
   ${JS_LIBRARY_DIRS}
 )
 
-ADD_LIBRARY(
+add_library(
   ${TARGET} SHARED
   ${REDIS_DOCSTORE_SOURCES}
 )
@@ -33,5 +33,3 @@ target_link_libraries(${TARGET}
 set_target_properties(${TARGET} PROPERTIES
   OUTPUT_NAME redis
 )
-
-#export_target(redisdocstore)
