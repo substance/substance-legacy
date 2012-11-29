@@ -15,10 +15,13 @@
 #include <string.h>
 
 #include <iostream>
+#include <string>
 #include <boost/shared_ptr.hpp>
 
 #include "redis_access.hpp"
 #include "redis_error.hpp"
+//HACK: need to include this to get rid of linker error
+//      Though, the missing function is implemented in a static library... stangely not found.
 
 #define REDIS_TRUE 1
 #define REDIS_FALSE 0
@@ -34,17 +37,18 @@ class HiRedisList: public RedisList {
     LENGTH,
     PUSH,
     GET,
+    GET_ALL,
     COMMANDS_MAX
   };
 
 public:
-  HiRedisAccess(HiRedisAccess &redis, const std::string& key): redis(redis), key(key) { }
+  HiRedisList(HiRedisAccess &redis, const std::string& key): redis(redis), key(key) { }
 
   virtual unsigned int size();
 
-  virtual void add(std::string val);
+  virtual void add(const std::string &val);
 
-  virtual std::string getLast();
+  virtual std::string get(unsigned int index);
 
   virtual JSArrayPtr asArray();
 
@@ -53,9 +57,9 @@ protected:
   void createCommands();
 
   HiRedisAccess &redis;
-
   std::string key;
 
+  const char* commands[COMMANDS_MAX];
 };
 
 class HiRedisAccess: public RedisAccess {
@@ -180,16 +184,6 @@ public:
     return wrapReply(reply);
   }
 
-protected:
-
-  ReplyPtr wrapReply(void *ptr) {
-    return ReplyPtr((redisReply*) ptr, freeReplyObject);
-  }
-
-  ReplyPtr wrapReply(redisReply *ptr) {
-    return ReplyPtr(ptr, freeReplyObject);
-  }
-
   JSArrayPtr createArray(redisReply* reply) {
     JSArrayPtr result = jscontext->newArray(reply->elements);
     for(size_t idx = 0; idx < reply->elements; ++idx) {
@@ -200,11 +194,21 @@ protected:
         case REDIS_REPLY_ARRAY:
           result->setAt(idx, createArray(reply->element[idx]));
           break;
-        case REDIS_REPLY_INT:
+        case REDIS_REPLY_INTEGER:
           result->setAt(idx, jscontext->newNumber(reply->integer));
           break;
       }
     }
+
+    return result;
+  }
+
+  ReplyPtr wrapReply(void *ptr) {
+    return ReplyPtr((redisReply*) ptr, freeReplyObject);
+  }
+
+  ReplyPtr wrapReply(redisReply *ptr) {
+    return ReplyPtr(ptr, freeReplyObject);
   }
 
   void createCommands() {
@@ -238,25 +242,27 @@ private:
   const char* commands[COMMANDS_MAX];
 };
 
-/*static*/ RedisAccessPtr RedisAccess::Create() {
-  return RedisAccessPtr(new HiRedisAccess());
+/*static*/ RedisAccessPtr RedisAccess::Create(JSContextPtr jscontext) {
+  return RedisAccessPtr(new HiRedisAccess(jscontext));
 }
-‚
+
 unsigned int HiRedisList::size() {
-  ReplyPtr reply = redis.runCommand(commands[LENGTH])
+  ReplyPtr reply = redis.runCommand(commands[LENGTH]);
   return reply->integer;
 }
 
 void HiRedisList::add(const std::string &val) {
-  redis.runCommand(commands[PUSH], val);
+  redis.runCommand(commands[PUSH], val.c_str());
 }
 
-std::string HiRedisList::get(unsigned int index = 0) {
-  redis.runCommand(commands[GET], index);
+std::string HiRedisList::get(unsigned int index) {
+  ReplyPtr reply = redis.runCommand(commands[GET], index);
+  return reply->str;
 }
 
 JSArrayPtr HiRedisList::asArray() {
-
+  ReplyPtr reply = redis.runCommand(commands[GET_ALL]);
+  return redis.createArray(reply.get());
 }
 
 void HiRedisList::createCommands() {
@@ -265,13 +271,16 @@ void HiRedisList::createCommands() {
   for(size_t idx = 0; idx < COMMANDS_MAX; ++idx) {
     switch (idx) {
       case LENGTH:
-        len = snprintf(buf, BUFFER_LEN, "LLEN %s", key);
+        len = snprintf(buf, BUFFER_LEN, "LLEN %s", key.c_str());
         break;
       case PUSH:
-        len = snprintf(buf, BUFFER_LEN, "LPUSH %s %%s", key);
+        len = snprintf(buf, BUFFER_LEN, "LPUSH %s %%s", key.c_str());
         break;
       case GET:
-        len = snprintf(buf, BUFFER_LEN, "LGET %s %%d", key);
+        len = snprintf(buf, BUFFER_LEN, "LGET %s %%d", key.c_str());
+        break;
+      case GET_ALL:
+        len = snprintf(buf, BUFFER_LEN, "LRANGE 0 -1");
         break;
     }
     char *str = new char[len+1];

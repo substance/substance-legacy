@@ -20,7 +20,7 @@ typedef boost::shared_ptr<RedisList> RedisListPtr;
 class RedisAccess {
 
 public:
-  static RedisAccessPtr Create();
+  static RedisAccessPtr Create(JSContextPtr jscontext);
 
   virtual void setHost(const char* host) = 0;
 
