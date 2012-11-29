@@ -7,6 +7,8 @@ set(SUBSTANCE_VERSION "0.5.0")
 set(EXTERNALS_DIR ${PROJECT_SOURCE_DIR}/ext CACHE STRING "Directory where external projects should be downloaded to" )
 set(EXTERNALS_ONLY OFF CACHE BOOL "Set this if you want to build externals only. (ON|OFF)")
 
+set(ENABLE_JSC ON)
+
 # Configure external projects
 # ===========================
 if (EXTERNALS_ONLY)

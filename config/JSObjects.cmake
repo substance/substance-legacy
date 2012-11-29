@@ -11,12 +11,16 @@ if (DOWNLOAD_EXTERNALS)
     BINARY_DIR ${DOWNLOAD_DIR}/bin
     UPDATE_COMMAND "" # skip update
     CONFIGURE_COMMAND ${CMAKE_COMMAND} -DIMPORT=ON
-        -DENABLE_SWIG=ON -DENABLE_JSC=ON -DENABLE_TESTS=OFF
-        -DEXTERNALS_DIR=${EXTERNALS_DIR} ${DOWNLOAD_DIR}/jsobjects
-    #BUILD_COMMAND make
+        -DENABLE_JSC=ON -DENABLE_TESTS=OFF
+        -DEXTERNALS_DIR=${EXTERNALS_DIR}
+        -DLIBRARY_TYPE=STATIC
+        ${DOWNLOAD_DIR}/jsobjects
+    BUILD_COMMAND make
     INSTALL_COMMAND "" # skip install
   )
 
 endif ()
 
 set(jsobjects_INCLUDE_DIRS ${DOWNLOAD_DIR}/jsobjects/include)
+set(jsobjects_LIBRARY_DIRS ${DOWNLOAD_DIR}/bin/src/jsc)
+set(jsobjects_LIBRARIES jsobjects_jsc)

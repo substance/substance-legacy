@@ -41,7 +41,7 @@ add_executable(${TARGET_NAME} MACOSX_BUNDLE
   MainMenu.xib
 )
 
-target_link_libraries(${TARGET_NAME} 
+target_link_libraries(${TARGET_NAME}
   ${COREDATA} ${FOUNDATION}
   ${APPKIT} ${COCOA}
   ${WEBKIT}
@@ -50,7 +50,7 @@ target_link_libraries(${TARGET_NAME}
 # Set a custom Info.plist file template.
 # This file is a CMake template file which is processed by CMake and stored into
 # the Application's Content folder.
-set_target_properties(${TARGET_NAME} PROPERTIES 
+set_target_properties(${TARGET_NAME} PROPERTIES
   MACOSX_BUNDLE_INFO_PLIST ${CMAKE_CURRENT_SOURCE_DIR}/Info-CMake.plist
 )
 
@@ -64,10 +64,14 @@ add_custom_command (TARGET ${TARGET_NAME}
 # compile MainMenu.xib after build is finished
 compile_xib (${TARGET_NAME} ${BUNDLE_LOCATION} ${CMAKE_CURRENT_SOURCE_DIR}/MainMenu.xib)
 
+execute_process(
+  COMMAND rsync -r ${CMAKE_CURRENT_SOURCE_DIR}/Resources/${MACOSX_BUNDLE_ICON_FILE} ${BUNDLE_LOCATION}/Contents/Resources
+  COMMAND ln -s ${PROJECT_SOURCE_DIR} ${BUNDLE_LOCATION}/Contents/Assets
+)
+
 add_custom_command(TARGET ${TARGET_NAME}
   POST_BUILD
   COMMAND rsync -r ${CMAKE_CURRENT_SOURCE_DIR}/Resources/${MACOSX_BUNDLE_ICON_FILE} ${BUNDLE_LOCATION}/Contents/Resources
-  COMMAND ln -s ${PROJECT_SOURCE_DIR} ${BUNDLE_LOCATION}/Contents/Assets
 )
 
 
