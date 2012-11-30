@@ -66,8 +66,14 @@ compile_xib (${TARGET_NAME} ${BUNDLE_LOCATION} ${CMAKE_CURRENT_SOURCE_DIR}/MainM
 
 execute_process(
   COMMAND rsync -r ${CMAKE_CURRENT_SOURCE_DIR}/Resources/${MACOSX_BUNDLE_ICON_FILE} ${BUNDLE_LOCATION}/Contents/Resources
-  COMMAND ln -s ${PROJECT_SOURCE_DIR} ${BUNDLE_LOCATION}/Contents/Assets
 )
+
+if (NOT EXISTS ${BUNDLE_LOCATION}/Contents/Assets)
+  execute_process(
+    COMMAND ln -s ${PROJECT_SOURCE_DIR} ${BUNDLE_LOCATION}/Contents/Assets
+  )
+endif ()
+
 
 add_custom_command(TARGET ${TARGET_NAME}
   POST_BUILD
