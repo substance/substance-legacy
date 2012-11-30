@@ -12,7 +12,7 @@ if (DOWNLOAD_EXTERNALS)
     TMP_DIR ${EXTERNALS_DIR}/hiredis/tmp
     UPDATE_COMMAND "" # don't update, i.e., always use the same version
     CONFIGURE_COMMAND "" # skip configure
-    BUILD_COMMAND make
+    BUILD_COMMAND make static
     INSTALL_COMMAND "" # skip install
   )
 
