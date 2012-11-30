@@ -8,6 +8,7 @@ set(EXTERNALS_DIR ${PROJECT_SOURCE_DIR}/ext CACHE STRING "Directory where extern
 set(EXTERNALS_ONLY OFF CACHE BOOL "Set this if you want to build externals only. (ON|OFF)")
 
 set(ENABLE_JSC ON)
+set(ENABLE_TESTING ON CACHE BOOL "Enable test suite. (ON|OFF)")
 
 # Configure external projects
 # ===========================
@@ -33,7 +34,7 @@ if (NOT EXTERNALS_ONLY)
 
   # Configure Testing
   # =================
-  if (TESTING)
+  if (ENABLE_TESTING)
     enable_testing()
     add_subdirectory(test)
 
