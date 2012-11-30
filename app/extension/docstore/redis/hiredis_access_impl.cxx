@@ -60,10 +60,10 @@ protected:
 class HiRedisAccess: public RedisAccess {
 
 enum COMMANDS {
-  SCOPE = 0,
-  EXISTS,
+  EXISTS = 0,
   GET_STRING_VALUE,
   SET_STRING_VALUE,
+  DISCONNECT,
   COMMANDS_MAX
 };
 
@@ -105,7 +105,7 @@ public:
   }
 
   virtual void disconnect() {
-    //TODO: implement
+    runCommand("QUIT");
   }
 
   virtual bool exists(const std::string &id) {
@@ -219,6 +219,9 @@ public:
           break;
         case SET_STRING_VALUE:
           len = snprintf(buf, BUFFER_LEN, "SET %s:%%s %%s", scope);
+          break;
+        case DISCONNECT:
+          len = snprintf(buf, BUFFER_LEN, "QUIT");
           break;
       }
       char *str = new char[len+1];
