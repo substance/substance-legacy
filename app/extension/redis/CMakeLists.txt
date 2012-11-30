@@ -44,3 +44,5 @@ target_link_libraries(${TARGET}
 set_target_properties(${TARGET} PROPERTIES
   OUTPUT_NAME redis
 )
+
+set (redisdocstore_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR} ${jsobjects_INCLUDE_DIRS} ${BOOST_INCLUDE_DIRS} CACHE INTERNAL "" FORCE)

@@ -1,6 +1,6 @@
 SET(JS_INCLUDE_DIRS)
 SET(JS_LIBRARY_DIRS ${jsobjects_LIBRARY_DIRS})
-SET(JS_LIBRARIES ${JSC} ${jsobjects_LIBRARIES})
+SET(JS_LIBRARIES ${JSC} jsobjects_jsc)
 
 IF(APPLE)
   ADD_SUBDIRECTORY(osx)
@@ -11,4 +11,4 @@ ELSE()
 ENDIF()
 
 # the redis based document store
-ADD_SUBDIRECTORY(extension/docstore/redis)
+ADD_SUBDIRECTORY(extension/redis)
