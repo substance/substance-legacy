@@ -1,12 +1,9 @@
 /*
  * TODOS (26.11.2012):
- *  - implement remaining methods
  *  - re-activate the test suite
- *  - swig first run
- *  - add mappings for jsobjects
+ *  - add typemaps for jsobjects
  *  - add javascript tests (CLI)
  *  - integrate into browser version
- *  - meet mike
  */
 
 #include <hiredis.h>
@@ -20,8 +17,6 @@
 
 #include "redis_access.hpp"
 #include "redis_error.hpp"
-//HACK: need to include this to get rid of linker error
-//      Though, the missing function is implemented in a static library... stangely not found.
 
 #define REDIS_TRUE 1
 #define REDIS_FALSE 0
