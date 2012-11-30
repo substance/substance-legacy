@@ -80,6 +80,7 @@ add_custom_command(TARGET ${TARGET_NAME}
 set (DIST_DIR ${PROJECT_SOURCE_DIR}/dist)
 set (BUNDLE_DIST ${DIST_DIR}/${TARGET_NAME}.app)
 set (ASSETS_DIST_DIR ${BUNDLE_DIST}/Contents/Assets)
+set (REDISDB_DIST_DIR ${BUNDLE_DIST}/Contents/Redis)
 
 add_custom_command(OUTPUT ${BUNDLE_DIST}
   COMMAND rsync -r --exclude=Assets ${BUNDLE_LOCATION} ${DIST_DIR}
@@ -93,6 +94,8 @@ add_custom_command(OUTPUT ${BUNDLE_DIST}
   COMMAND rsync ${PROJECT_SOURCE_DIR}/package.json ${ASSETS_DIST_DIR}
   COMMAND rsync ${PROJECT_SOURCE_DIR}/README.md ${ASSETS_DIST_DIR}
   COMMAND rsync ${PROJECT_SOURCE_DIR}/LICENSE ${ASSETS_DIST_DIR}
+  COMMAND rsync ${PROJECT_SOURCE_DIR}/ext/redisdb/bin/redis-server ${REDISDB_DIST_DIR}/
+  COMMAND rsync ${PROJECT_SOURCE_DIR}/redis.conf ${REDISDB_DIST_DIR}/
 )
 
-add_custom_target(dist DEPENDS ${TARGET_NAME} ${PROJECT_SOURCE_DIR}/dist/${TARGET_NAME}.app)
+add_custom_target(dist DEPENDS ${TARGET_NAME} ${BUNDLE_DIST})
