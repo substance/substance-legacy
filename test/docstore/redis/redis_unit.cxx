@@ -1,30 +1,30 @@
-#include "test_access.hpp"
-
 #include <gtest/gtest.h>
 #include <iostream>
-#include <jsobjects_cpp.hpp>
 
-class RedisDocStoreFixture: public testing::Test { 
+#include <jsobjects_cpp.hpp>
+#include <redis_error.hpp>
+#include "test_access.hpp"
+
+class HiRedisAccessFixture: public testing::Test {
 
 public: 
 
-  RedisDocStoreFixture(): 
-    cleanDB(false), scope("test_substance")
-  {
-    jscallback = CreateMemberVoidFunction<RedisDocStoreFixture, DocStoreError>(*this, &RedisDocStoreFixture::callback);
-  } 
+  HiRedisAccessFixture()
+    : scope("test_substance"), cleanDB(false) { }
 
-  ~RedisDocStoreFixture( )  { 
+  ~HiRedisAccessFixture( )  {
     // cleanup any pending stuff, but no exceptions allowed
     if(privAccess) delete privAccess;
     if(redis) delete redis;
+    if(jscontext) delete jscontext;
   }
 
-  void SetUp() { 
+  void SetUp() {
+    jscontext = new JSContextCpp();
     // code here will execute just before the test ensues
     // initialization code here
-    redis = new RedisDocStore();
-    privAccess = new RedisDocStoreTestAccess(*redis);
+    redis = new HiRedisAccess(jscontext);
+    privAccess = new HiRedisTestAccess(*redis);
     // set a default scope to avoid data collision with real app content
     redis->setScope(scope.c_str());
   }
@@ -47,90 +47,41 @@ public:
     }
   }
   
-  void callback(DocStoreError err) {
-    this->err = err;
-  }
-
   // put in any custom data members that you need 
-  RedisDocStore *redis;
-  RedisDocStoreTestAccess *privAccess;
+  JSContextCpp* jscontext;
+  HiRedisAccess *redis;
+  HiRedisTestAccess *privAccess;
 
-  JSVoidFunction<DocStoreError>::Ptr jscallback;
   std::string scope;
 
   // states
   bool cleanDB;
-  DocStoreError err;
 
 };
 
-TEST_F(RedisDocStoreFixture, ShouldConnectOnCreation)
+TEST_F(HiRedisAccessFixture, ShouldConnectOnCreation)
 {
   ASSERT_TRUE(privAccess->isConnected());
 }
 
-TEST_F(RedisDocStoreFixture, ShouldDisconnectOnDistruction)
+TEST_F(HiRedisAccessFixture, ShouldDisconnectOnDistruction)
 {
   delete redis; redis = 0;
   ASSERT_FALSE(privAccess->isConnected());
 }
 
-TEST_F(RedisDocStoreFixture, ShouldThrowOnInvalidServerSetting)
+TEST_F(HiRedisAccessFixture, ShouldThrowOnInvalidServerSetting)
 {
-  EXPECT_THROW(new RedisDocStore("bla", 1111), RedisDocstoreException);
+  redis->setHost("bla");
+  redis->setPort(1111);
+  EXPECT_THROW(redis->connect(), RedisError);
 }
 
-TEST_F(RedisDocStoreFixture, DocumentShouldExistAfterCreation)
+TEST_F(HiRedisAccessFixture, ValueShouldExistAfterSet)
 {
-  BeginScope("test:check_create");
-  redis->create("test_id", jscallback);
+  redis->connect();
+  BeginScope("test:check_set");
+  redis->set("test_id", "bla");
   bool val = redis->exists("test_id");
   ASSERT_TRUE(val);
-}
-
-TEST_F(RedisDocStoreFixture, ShouldSetErrorOnDuplicateCreation)
-{
-  BeginScope("test:throw_on_duplicate_creation");
-  if(!redis->exists("test_id")) redis->create("test_id", jscallback);  
-  redis->create("test_id", jscallback);
-  ASSERT_EQ(DocStoreError::Error, err.code);
-}
-
-TEST_F(RedisDocStoreFixture, WriteSimpleJSObject)
-{
-  BeginScope("test:write_simple_obj");
-
-  JSObjectPtr obj(new JSObjectCpp());
-  obj->set("a", "bla");
-  obj->set("b", false);
-  obj->set("c", 2.1);
-  
-  privAccess->write(obj, "myobj");
-  RedisDocStore::ReplyPtr reply = privAccess->runCommand("HGET test:write_simple_obj:substance:myobj a");
-  EXPECT_STREQ("bla", reply->str);
-  reply = privAccess->runCommand("HGET test:write_simple_obj:substance:myobj b");
-  EXPECT_EQ(0, atoi(reply->str));
-  reply = privAccess->runCommand("HGET test:write_simple_obj:substance:myobj c");
-  EXPECT_EQ(2.1, atof(reply->str));
-}
-
-TEST_F(RedisDocStoreFixture, DISABLED_WriteSimpleJSArray)
-{
-  // simple array with mixed types
-  GTEST_FATAL_FAILURE_("NOT IMPLEMENTED");
-  
-}
-
-TEST_F(RedisDocStoreFixture, DISABLED_WriteNestedJSObject)
-{
-  // add a jsobject as member
-  // note: the implementation should put some reference info into the object
-  //       and create a new object with new key
-  GTEST_FATAL_FAILURE_("NOT IMPLEMENTED");
-}
-
-TEST_F(RedisDocStoreFixture, DISABLED_WriteJSObjectWithArray)
-{
-  // same as WriteNestedJSObject but with array type
-  GTEST_FATAL_FAILURE_("NOT IMPLEMENTED");
 }

@@ -8,17 +8,19 @@ include_directories(
 link_directories(
   ${GTEST_LIB_DIRS}
   ${HIREDIS_LIB_DIRS}
+  ${jsobjects_LIBRARY_DIRS}
 )
 
 add_definitions(-DENABLE_TEST_EXTENSIONS)
 
 add_executable(docstore.redis.unit
+  test_access.hpp
   redis_unit.cxx
 )
 
 target_link_libraries(docstore.redis.unit
   jsobjects_cpp
-  #redisdocstore
+  redisdocstore
   ${GTEST_LIBS}
   ${HIREDIS_LIBS}
 )

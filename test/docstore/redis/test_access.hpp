@@ -1,16 +1,16 @@
 #ifndef REDIS_DOC_STORE_TEST_ACCES_HPP
 #define REDIS_DOC_STORE_TEST_ACCES_HPP
 
-#define TESTING
-#include <docstore/redis/RedisDocStore.h>
+#define TESTING 1
+#include <hiredis_access.hpp>
 #undef TESTING
 #include <hiredis.h>
 
-class RedisDocStoreTestAccess {
+class HiRedisTestAccess {
 
 public:
 
-  RedisDocStoreTestAccess(RedisDocStore& instance): instance(instance) {
+  HiRedisTestAccess(HiRedisAccess& instance): instance(instance) {
     redis = instance.redis;
   }
 
@@ -20,19 +20,15 @@ public:
 
   redisContext* GetRedis() { return redis; }
 
-  void deleteAll(const char *prefix) {
-    instance.deleteAll(prefix);
+  void deleteAll(const std::string& prefix) {
+    instance.remove(prefix);
   }
 
-  void write(JSObjectPtr jsobject, const std::string &id) {
-    instance.write(jsobject, id);
-  }
-
-  RedisDocStore::ReplyPtr runCommand(const std::string& cmd) {
+  ReplyPtr runCommand(const std::string& cmd) {
     return instance.runCommand(cmd);
   }
 
-  RedisDocStore& instance;
+  HiRedisAccess& instance;
 
   redisContext* redis;
 };
