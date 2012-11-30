@@ -11,7 +11,7 @@ if (DOWNLOAD_EXTERNALS)
     BINARY_DIR ${DOWNLOAD_DIR}/bin
     UPDATE_COMMAND "" # skip update
     CONFIGURE_COMMAND ${CMAKE_COMMAND} -DIMPORT=ON
-        -DENABLE_JSC=ON -DENABLE_TESTS=OFF
+        -DENABLE_JSC=ON -DENABLE_CPP=ON -DENABLE_TESTS=OFF
         -DEXTERNALS_DIR=${EXTERNALS_DIR}
         -DLIBRARY_TYPE=STATIC
         ${DOWNLOAD_DIR}/jsobjects
@@ -22,5 +22,4 @@ if (DOWNLOAD_EXTERNALS)
 endif ()
 
 set(jsobjects_INCLUDE_DIRS ${DOWNLOAD_DIR}/jsobjects/include)
-set(jsobjects_LIBRARY_DIRS ${DOWNLOAD_DIR}/bin/src/jsc)
-set(jsobjects_LIBRARIES jsobjects_jsc)
+set(jsobjects_LIBRARY_DIRS ${DOWNLOAD_DIR}/bin/src/jsc ${DOWNLOAD_DIR}/bin/src/cpp)
