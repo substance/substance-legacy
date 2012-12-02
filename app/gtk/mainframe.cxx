@@ -5,7 +5,7 @@
 MainFrame::MainFrame(const wxString& url): wxFrame(NULL, wxID_ANY, "Substance")
 {
     wxImage::AddHandler(new wxPNGHandler());
-    SetIcon(wxIcon("images/Substance.png", wxBITMAP_TYPE_PNG));
+    SetIcon(wxIcon("images/substance_logo_blue.png", wxBITMAP_TYPE_PNG));
     SetTitle("Substance");
 
     wxBoxSizer* sizer1 = new wxBoxSizer(wxVERTICAL);
