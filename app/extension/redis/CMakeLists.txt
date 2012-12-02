@@ -4,6 +4,7 @@ add_custom_command(
   OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/redis_access_wrap.cxx
   DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/redis_access.i
   COMMAND ${SWIG_COMMAND} -c++ -javascript -jsc
+          -I${jsobjects_SWIG_INCLUDE_DIRS}
           -o ${CMAKE_CURRENT_BINARY_DIR}/redis_access_wrap.cxx
           ${CMAKE_CURRENT_SOURCE_DIR}/redis_access.i
 )

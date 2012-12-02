@@ -7,6 +7,8 @@ IF (NOT APPLE AND UNIX)
   pkg_check_modules (webkit webkit-1.0 REQUIRED)
 
   # use wxWidgets configuration as described here: http://wiki.wxwidgets.org/CMake
+  # if you use a local wxWidgets directory call cmake with:
+  # cmake -DCMAKE_PREFIX_PATH="/path/to/your/wxWidgets/build" ..
   include(FindwxWidgets)
   FIND_PACKAGE(wxWidgets COMPONENTS core base webview REQUIRED)
   include("${wxWidgets_USE_FILE}")

@@ -23,3 +23,4 @@ endif ()
 
 set(jsobjects_INCLUDE_DIRS ${DOWNLOAD_DIR}/jsobjects/include)
 set(jsobjects_LIBRARY_DIRS ${DOWNLOAD_DIR}/bin/src/jsc ${DOWNLOAD_DIR}/bin/src/cpp)
+set(jsobjects_SWIG_INCLUDE_DIRS ${DOWNLOAD_DIR}/jsobjects/swig)
