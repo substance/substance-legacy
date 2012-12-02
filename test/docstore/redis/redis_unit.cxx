@@ -7,24 +7,21 @@
 
 class HiRedisAccessFixture: public testing::Test {
 
-public: 
+public:
 
   HiRedisAccessFixture()
     : scope("test_substance"), cleanDB(false) { }
 
   ~HiRedisAccessFixture( )  {
-    // cleanup any pending stuff, but no exceptions allowed
-    if(privAccess) delete privAccess;
-    if(redis) delete redis;
-    if(jscontext) delete jscontext;
   }
 
   void SetUp() {
-    jscontext = new JSContextCpp();
+    jscontext = JSContextPtr(new JSContextCpp());
     // code here will execute just before the test ensues
     // initialization code here
-    redis = new HiRedisAccess(jscontext);
-    privAccess = new HiRedisTestAccess(*redis);
+    redis = boost::shared_ptr<HiRedisAccess>(new HiRedisAccess(jscontext));
+    privAccess = boost::shared_ptr<HiRedisTestAccess>(new HiRedisTestAccess(*redis));
+
     // set a default scope to avoid data collision with real app content
     redis->setScope(scope.c_str());
   }
@@ -39,18 +36,18 @@ public:
     this->redis->setScope(s);
   }
 
-  void TearDown( ) { 
+  void TearDown( ) {
     // code here will be called just after the test completes
     // ok to through exceptions from here if need be
     if (cleanDB) {
       privAccess->deleteAll(this->scope.c_str());
     }
   }
-  
-  // put in any custom data members that you need 
-  JSContextCpp* jscontext;
-  HiRedisAccess *redis;
-  HiRedisTestAccess *privAccess;
+
+  // put in any custom data members that you need
+  JSContextPtr jscontext;
+  boost::shared_ptr<HiRedisAccess> redis;
+  boost::shared_ptr<HiRedisTestAccess> privAccess;
 
   std::string scope;
 
@@ -66,7 +63,7 @@ TEST_F(HiRedisAccessFixture, ShouldConnectOnCreation)
 
 TEST_F(HiRedisAccessFixture, ShouldDisconnectOnDistruction)
 {
-  delete redis; redis = 0;
+  redis.reset();
   ASSERT_FALSE(privAccess->isConnected());
 }
 
