@@ -14,18 +14,18 @@ include_directories(
 link_directories(
   ${wxWidgets_LIBRARY_DIRS}
   ${HIREDIS_LIB_DIRS}
+  #HACK: don't know why I need to add the jsobjects_LIBRARY_DIRS here
+  #      they are not used directly... but cmake adds them to link list
+  ${jsobjects_LIBRARY_DIRS}
 )
 
 add_executable(substance
   ${SUBSTANCE_APP_SOURCES}
 )
 
-add_dependencies(substance wxWidgets)
-
-# TODO: extract these using pkg-config and wx-condfig
 target_link_libraries(substance
-  redisdocstore
+  ${HIREDIS_LIBS}
   ${webkit_LIBRARIES}
   ${wxWidgets_LIBRARIES}
-  ${HIREDIS_LIBS}
-)
+  redisdocstore
+ )

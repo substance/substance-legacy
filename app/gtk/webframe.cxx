@@ -1,49 +1,58 @@
 #include "webframe.h"
 #include <wx/sizer.h>
 
-#if defined(__WXOSX__)
-#include <wx/osx/webview_webkit.h>
-#endif
-
 #if !defined(__WXMSW__) && !defined(__WXPM__)
     #include "substance.xpm"
 #endif
 
-WebFrame::WebFrame(const wxString& url): wxFrame(NULL, wxID_ANY, "webframe")
+MainFrame::MainFrame(const wxString& url): wxFrame(NULL, wxID_ANY, "Substance")
 {
-
-#if defined(__WXOSX__)
-    // TODO: is it really necessary to enable the webinspector in advance?
-    wxWebViewWebKit::EnableWebInspector();
-#endif
-
+    // TODO: use new icon
     SetIcon(wxICON(substance));
     SetTitle("Substance");
 
-    wxBoxSizer* top_sizer = new wxBoxSizer(wxVERTICAL);
+    wxBoxSizer* sizer1 = new wxBoxSizer(wxVERTICAL);
 
-    m_browser = new wxWebViewWebKit(this, wxID_ANY, url);
-    top_sizer->Add(m_browser, wxSizerFlags().Expand().Proportion(1));
-    SetSizer(top_sizer);
-    SetSize(wxSize(800, 600));
+    splitter = new wxSplitterWindow(this, wxID_ANY, wxDefaultPosition, wxSize(1400,1000));
+    splitter->SetSashGravity(0.75);
+    splitter->SetMinimumPaneSize(20);
 
-    Connect(GetId(), wxEVT_CLOSE_WINDOW, wxCloseEventHandler(WebFrame::OnClose), NULL, this);
+    browserPanel = new wxPanel(splitter, wxID_ANY);
+    wxBoxSizer *sizer2 = new wxBoxSizer(wxVERTICAL);
+    browser = new wxWebViewWebKit(browserPanel, wxID_ANY, url);
+    sizer2->Add(browser, wxSizerFlags().Expand().Proportion(1));
+    browserPanel->SetSizer(sizer2);
 
-#ifdef WXGTK_CREATE_WEBINSPECTOR
-    m_inspector = new WebInspector(m_browser);
-#endif
+    inspector = new WebInspector(splitter, browser);
+
+    // HACK: did not manage to find an appropriate way to let the splitter window
+    //       layout initially. (Tried: splitter->Layout(), splitter->SetSashPosition() + splitter->UpdateSize()...)
+    //       It helps to split and unsplit
+    splitter->SplitHorizontally(browserPanel, inspector);
+    splitter->Unsplit();
+
+    sizer1->Add(splitter, 1, wxEXPAND, 0);
+    SetSizer(sizer1);
+    sizer1->SetSizeHints(this);
+
+    Connect(inspector->GetId(), wxEVT_SHOW,
+      wxShowEventHandler(MainFrame::OnShowWebInspector));
+
+    Connect(inspector->GetId(), wxEVT_CLOSE_WINDOW,
+      wxCloseEventHandler(MainFrame::OnCloseWebInspector));
 
 }
 
-WebFrame::~WebFrame()
+MainFrame::~MainFrame()
 {
 }
 
-void WebFrame::OnClose(wxCloseEvent& evt)
+void MainFrame::OnShowWebInspector(wxShowEvent& event)
 {
-#ifdef WXGTK_CREATE_WEBINSPECTOR
-    if(m_inspector)
-        m_inspector->Destroy();
-#endif
-    evt.Skip();
+  splitter->SplitHorizontally(browserPanel, inspector);
+}
+
+void MainFrame::OnCloseWebInspector(wxCloseEvent& event)
+{
+  splitter->Unsplit();
 }

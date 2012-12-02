@@ -1,17 +1,14 @@
 #ifndef _WEBINSPECTOR_H
 #define _WEBINSPECTOR_H
 
-#if defined(__WXGTK__)
-
 #include "wx/setup.h"
-
-#include <wx/frame.h>
+#include <wx/panel.h>
 #include <wx/gtk/webview_webkit.h>
 
-class WebInspector: public wxFrame
+class WebInspector: public wxPanel
 {
 public:
-    WebInspector(wxWebViewWebKit *web_view);
+    WebInspector(wxWindow* parent, wxWebViewWebKit *web_view);
 
     ~WebInspector();
 
@@ -20,7 +17,5 @@ public:
 private:
     wxWebViewWebKit* m_inspector_view;
 };
-
-#endif // #if defined(__WXGTK__)
 
 #endif // _WEBINSPECTOR_H

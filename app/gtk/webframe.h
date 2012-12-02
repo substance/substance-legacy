@@ -2,46 +2,31 @@
 #define WEBVIEW_WEBFRAME_H_
 
 #include <wx/setup.h>
-
-#if !wxUSE_WEBVIEW_WEBKIT
-#error "A wxWebViewWebKit backend is required by this sample"
-#endif
-
 #include <wx/webview.h>
 #include <wx/sharedptr.h>
 #include <wx/frame.h>
-
-#if defined(__WXGTK__)
-#define WXGTK_CREATE_WEBINSPECTOR 1
+#include <wx/splitter.h>
 #include <wx/gtk/webview_webkit.h>
-#endif
-
-#if defined(__WXOSX__)
-#include <wx/osx/webview_webkit.h>
-#endif
-
-#ifdef WXGTK_CREATE_WEBINSPECTOR
 #include "webinspector.h"
-#endif
 
-class WebFrame : public wxFrame {
+class MainFrame : public wxFrame {
 
 public:
-    WebFrame(const wxString& url);
-    ~WebFrame();
+    MainFrame(const wxString& url);
 
-    void OnClose(wxCloseEvent& evt);
+    ~MainFrame();
 
-    wxWebViewWebKit* GetWebView() { return m_browser; }
+    wxWebViewWebKit* GetWebView() { return browser; }
+
+    void OnShowWebInspector(wxShowEvent& event);
+    void OnCloseWebInspector(wxCloseEvent& event);
 
 private:
 
-    wxWebViewWebKit* m_browser;
-
-#ifdef WXGTK_CREATE_WEBINSPECTOR
-    WebInspector* m_inspector;
-#endif
-
+    wxSplitterWindow* splitter;
+    wxPanel* browserPanel;
+    wxWebViewWebKit* browser;
+    WebInspector* inspector;
 };
 
 #endif // #ifndef WEBVIEW_WEBFRAME_H_
