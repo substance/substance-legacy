@@ -24,6 +24,4 @@ WebInspector::~WebInspector()
 
 void WebInspector::HideOnClose(wxCloseEvent&)
 {
-    // TODO: splitter window needs to be unsplitted
-    //Hide();
 }

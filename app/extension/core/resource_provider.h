@@ -1,22 +1,27 @@
 #ifndef RESOURCE_PROVIDER_H
 #define RESOURCE_PROVIDER_H
 
+#include <jsobjects.hpp>
+using namespace jsobjects;
+
 class ResourceProvider {
 
 protected:
 
-  ResourceProvider(JSContextPtr context) : context(context) {}
-  
+  ResourceProvider() {}
+
   virtual ~ResourceProvider() {}
 
-public:  
+public:
 
-  virtual std::string get(const std::string localUrl) =0; // { return ""; } // = 0;
+  void setContext(JSContextPtr _context) { context = _context; }
 
-  virtual JSObjectPtr getJSON(const std::string localUrl) =0; //{ return JSObjectPtr(NULL);} // = 0;
+  virtual std::string get(const std::string &localUrl) = 0;
+
+  virtual JSValuePtr getJSON(const std::string &localUrl) = 0;
 
 protected:
-  
+
   JSContextPtr context;
 };
 

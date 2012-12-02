@@ -10,7 +10,7 @@ add_custom_command(
 
 include_directories(
   ${JS_INCLUDE_DIRS}
-#  ${BOOST_INCLUDE_DIRS}
+  ${BOOST_INCLUDE_DIRS}
   ${jsobjects_INCLUDE_DIRS}
 #  ${HIREDIS_INCLUDE_DIRS}
   ${CMAKE_CURRENT_SOURCE_DIR}
@@ -19,4 +19,8 @@ include_directories(
 
 add_library(core_extensions STATIC
   core_utils_wrap.cxx
+  core_utils_initializer.h
+  core_utils_initializer.cxx
 )
+
+set(core_utils_DIR ${CMAKE_CURRENT_SOURCE_DIR} CACHE INTERNAL "" FORCE)

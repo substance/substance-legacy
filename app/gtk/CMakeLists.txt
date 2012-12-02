@@ -1,14 +1,19 @@
 set(SUBSTANCE_APP_SOURCES
   main.cxx
-  webframe.h
-  webframe.cxx
+  mainframe.h
+  mainframe.cxx
   webinspector.h
   webinspector.cxx
+  wxresourceprovider.h
+  wxresourceprovider.cxx
 )
 
 include_directories(
   ${webkit_INCLUDE_DIRS}
   ${wxWidgets_INCLUDE_DIRS}
+  ${core_utils_DIR}
+  ${jsobjects_INCLUDE_DIRS}
+  ${BOOST_INCLUDE_DIRS}
 )
 
 link_directories(
@@ -28,4 +33,5 @@ target_link_libraries(substance
   ${webkit_LIBRARIES}
   ${wxWidgets_LIBRARIES}
   redisdocstore
+  core_extensions
  )

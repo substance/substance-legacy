@@ -6,9 +6,19 @@ var DocumentStore = function() {
 };
 
 DocumentStore.prototype.get = function(id, cb) {
-  $.getJSON('data/'+ (id+'.json'), function(doc) {
-    cb(null, doc);
-  });
+  // HACK: under webkitgtk XMLHttpRequests do not work for local resources :(
+  //       workaround is to add a native extension that loads local data
+  //       usage: substance.resources.getJSON(url)  - returns JS object
+  //          or  substance.resources.get(url)      - returns content as String
+  if (typeof substance !== "undefined" &&
+    typeof substance.resources !== "undefined") {
+     doc = substance.resources.getJSON('data/'+ (id+'.json'));
+     cb(null, doc);
+  } else {
+    $.getJSON('data/'+ (id+'.json'), function(doc) {
+      cb(null, doc);
+    });
+  }
 };
 
 

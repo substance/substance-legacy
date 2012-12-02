@@ -1,14 +1,11 @@
-#include "webframe.h"
 #include <wx/sizer.h>
 
-#if !defined(__WXMSW__) && !defined(__WXPM__)
-    #include "substance.xpm"
-#endif
+#include "mainframe.h"
 
 MainFrame::MainFrame(const wxString& url): wxFrame(NULL, wxID_ANY, "Substance")
 {
-    // TODO: use new icon
-    SetIcon(wxICON(substance));
+    wxImage::AddHandler(new wxPNGHandler());
+    SetIcon(wxIcon("images/Substance.png", wxBITMAP_TYPE_PNG));
     SetTitle("Substance");
 
     wxBoxSizer* sizer1 = new wxBoxSizer(wxVERTICAL);
