@@ -3,6 +3,8 @@
 
 #include <jsobjects.hpp>
 
+using namespace jsobjects;
+
 class RedisAccess;
 class RedisList;
 
