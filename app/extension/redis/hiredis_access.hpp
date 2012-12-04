@@ -28,7 +28,7 @@ public:
 
   virtual std::string get(unsigned int index);
 
-  virtual JSArrayPtr asArray();
+  virtual jsobjects::JSArrayPtr asArray();
 
 protected:
 
@@ -56,7 +56,7 @@ enum COMMANDS {
 
 public:
 
-  HiRedisAccess(JSContextPtr jscontext);
+  HiRedisAccess(jsobjects::JSContextPtr context);
 
   virtual ~HiRedisAccess();
 
@@ -74,6 +74,8 @@ public:
 
   virtual std::string get(const std::string &id);
 
+  virtual jsobjects::JSValuePtr getJSON(const std::string &id);
+
   virtual void set(const std::string &id, const std::string &val);
 
   virtual void remove(const std::string &prefix);
@@ -82,19 +84,17 @@ public:
 
   virtual void cancelTransaction();
 
-  virtual JSArrayPtr executeTransaction();
+  virtual jsobjects::JSArrayPtr executeTransaction();
 
   virtual RedisListPtr asList(const std::string& id);
 
   ReplyPtr runCommand(const std::string& cmd);
 
-  ReplyPtr runCommand(const char* format, ...);
-
-  void appendCommand(const char* format, ...);
+  void appendCommand(const std::string& cmd);
 
   ReplyPtr getReply();
 
-  JSArrayPtr createArray(redisReply* reply);
+  jsobjects::JSArrayPtr createArray(redisReply* reply);
 
   ReplyPtr wrapReply(void *ptr);
 
@@ -103,10 +103,10 @@ public:
   void createCommands();
 
 private:
-  JSContextPtr jscontext;
+  jsobjects::JSContextPtr jscontext;
   redisContext *redis;
 
-  const char* hostUrl;
+  std::string hostUrl;
   int port;
   const char* scope;
   const char* commands[COMMANDS_MAX];
@@ -114,6 +114,7 @@ private:
 #ifdef TESTING
   friend class HiRedisTestAccess;
 #endif
+  friend class HiRedisList;
 
 };
 
