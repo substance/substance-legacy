@@ -26,6 +26,8 @@ if (DOWNLOAD_EXTERNALS)
       ${DOWNLOAD_DIR}/boost/concept
       ${DOWNLOAD_DIR}/boost/function
       ${DOWNLOAD_DIR}/boost/bind
+      ${DOWNLOAD_DIR}/boost/format
+      ${DOWNLOAD_DIR}/boost/optional
       ${DOWNLOAD_DIR}
     CONFIGURE_COMMAND "" # skip configure
     BUILD_COMMAND "" # skip build
