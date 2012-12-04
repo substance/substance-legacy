@@ -9,7 +9,7 @@
 
 #include "mainframe.h"
 
-extern "C" bool redis_docstore_initialize(JSGlobalContextRef context);
+extern "C" bool redis_initialize_jsobjects(JSGlobalContextRef context);
 
 class SubstanceApp: public wxApp
 {
@@ -32,15 +32,6 @@ bool SubstanceApp::OnInit()
 
     frame = new MainFrame("");
 
-    // TODO: 02.12.2012:
-    // - Problem mit XMLHttpRequests unter gtk
-    //   - Implementiere ResourceProvider unter Verwendung von wxFileSystem
-    //     -> white lists von resources (prefix basiert)
-    //   - registriere in Modul (muss bei jedem "reload" wieder angewendet werden)
-    //   Idee:
-    //	  - substance.resources -> boost::shared_ptr<MyResourceProvider>
-    //    - registriere als "substance.resources"
-    //    - splitte anhand "." und erzeuge (falls noch nicht vorhanden namespaces)
 
     // create a extension instance for the SWIG generated module
     ResourceProviderPtr substanceResources(new wxResourceProvider(baseUrl));
@@ -50,12 +41,12 @@ bool SubstanceApp::OnInit()
     coreUtils->RegisterURL(baseUrl);
     frame->GetWebView()->RegisterJSCExtension(coreUtils);
 
-    //wxSharedPtr<wxWebkitJSCExtension> redisDocStore(new wxWebkitJSCExtension(redis_docstore_initialize));
+    wxSharedPtr<wxWebkitJSCExtension> redisDocStore(new wxWebkitJSCExtension(redis_initialize_jsobjects));
     // create the white list of URLs for that the extension will be applied
-    //redisDocStore->RegisterURL(baseUrl);
+    redisDocStore->RegisterURL(baseUrl);
 
     // register the extension in the browser widget
-    //frame->GetWebView()->RegisterJSCExtension(redisDocStore);
+    frame->GetWebView()->RegisterJSCExtension(redisDocStore);
 
     frame->GetWebView()->LoadURL(url);
     frame->Show();

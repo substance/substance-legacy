@@ -5,12 +5,12 @@
 MainFrame::MainFrame(const wxString& url): wxFrame(NULL, wxID_ANY, "Substance")
 {
     wxImage::AddHandler(new wxPNGHandler());
-    SetIcon(wxIcon("images/substance_logo_blue.png", wxBITMAP_TYPE_PNG));
+    SetIcon(wxIcon("images/substance_logo_gray.png", wxBITMAP_TYPE_PNG));
     SetTitle("Substance");
 
     wxBoxSizer* sizer1 = new wxBoxSizer(wxVERTICAL);
 
-    splitter = new wxSplitterWindow(this, wxID_ANY, wxDefaultPosition, wxSize(1400,1000));
+    splitter = new wxSplitterWindow(this, wxID_ANY, wxDefaultPosition, wxSize(1400,800));
     splitter->SetSashGravity(0.75);
     splitter->SetMinimumPaneSize(20);
 
