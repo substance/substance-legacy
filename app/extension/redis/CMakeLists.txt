@@ -2,11 +2,12 @@ set(TARGET redisdocstore)
 
 add_custom_command(
   OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/redis_access_wrap.cxx
-  DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/redis_access.i
+  DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/redis_access.i ${CMAKE_CURRENT_SOURCE_DIR}/redis_access.hpp
   COMMAND ${SWIG_COMMAND} -c++ -javascript -jsc
           -I${jsobjects_SWIG_INCLUDE_DIRS}
           -o ${CMAKE_CURRENT_BINARY_DIR}/redis_access_wrap.cxx
           ${CMAKE_CURRENT_SOURCE_DIR}/redis_access.i
+  COMMENT "Creating native wrapper for redis_access.hpp"
 )
 
 set_property(SOURCE ${CMAKE_CURRENT_BINARY_DIR}/redis_access_wrap.cxx PROPERTY GENERATED ON)
