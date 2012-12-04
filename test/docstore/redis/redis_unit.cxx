@@ -5,6 +5,8 @@
 #include <redis_error.hpp>
 #include "test_access.hpp"
 
+using namespace jsobjects;
+
 class HiRedisAccessFixture: public testing::Test {
 
 public:
