@@ -73,21 +73,21 @@ bool HiRedisAccess::exists(const std::string &id) {
 
 std::string HiRedisAccess::get(const std::string &id) {
   ReplyPtr reply((redisReply*) redisCommand(redis, commands[GET_STRING_VALUE], id.c_str()));
-  
+
   if(reply->str == 0) {
     return "undefined";
   }
-  
+
   return reply->str;
 }
 
 jsobjects::JSValuePtr HiRedisAccess::getJSON(const std::string &id) {
   ReplyPtr reply((redisReply*) redisCommand(redis, commands[GET_STRING_VALUE], id.c_str()));
-  
+
   if(reply->str == 0) {
     return jscontext->undefined();
   }
-  
+
   return jscontext->fromJson(reply->str);
 }
 
@@ -99,9 +99,20 @@ void HiRedisAccess::set(const std::string &id, const std::string &val) {
   }
 }
 
+void HiRedisAccess::set(const std::string &id, jsobjects::JSObjectPtr jsobj) {
+  const std::string& json = jscontext->toJson(jsobj);
+
+  ReplyPtr reply((redisReply*) redisCommand(redis, commands[SET_STRING_VALUE], id.c_str(), json.c_str()));
+
+  if(reply->str == 0) {
+    // TODO: throw exception
+  }
+}
+
+
 void HiRedisAccess::remove(const std::string &prefix) {
   ReplyPtr reply((redisReply*) redisCommand(redis, "KEYS %s*", prefix.c_str()));
-  
+
   runCommand("MULTI");
   for(size_t idx = 0; idx < reply->elements; ++idx) {
     redisAppendCommand(redis, "DEL %s", reply->element[idx]->str);

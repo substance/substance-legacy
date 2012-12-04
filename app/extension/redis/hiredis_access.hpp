@@ -78,6 +78,8 @@ public:
 
   virtual void set(const std::string &id, const std::string &val);
 
+  virtual void set(const std::string &id, jsobjects::JSObjectPtr obj);
+
   virtual void remove(const std::string &prefix);
 
   virtual void beginTransaction();
