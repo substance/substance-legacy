@@ -24,7 +24,7 @@ using boost::str;
 #define BUFFER_LEN 1024
 
 HiRedisAccess::HiRedisAccess(jsobjects::JSContextPtr jscontext)
-  : jscontext(jscontext), scope(0), hostUrl("127.0.0.1"), port(6379)
+  : jscontext(jscontext), hostUrl("127.0.0.1"), port(6379), scope(0)
 {
   createCommands();
 }
