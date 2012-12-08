@@ -1,5 +1,6 @@
 #import "appDelegate.h"
 
+extern bool redis_initialize_jsobjects(JSGlobalContextRef context);
 
 @implementation SubstanceAppDelegate
 
@@ -20,6 +21,11 @@
 	[ [webView mainFrame] loadRequest: 
 		[NSURLRequest requestWithURL: [NSURL URLWithString:url] ]
 	];
+  
+  WebFrame *webframe = [webView mainFrame];
+  JSGlobalContextRef context = [webframe globalContext];
+  redis_initialize_jsobjects(context);
+  
 }
 
 - (BOOL)applicationShouldTerminateAfterLastWindowClosed:(NSApplication *)sender {

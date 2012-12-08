@@ -32,6 +32,11 @@ set(MACOSX_BUNDLE_ICON_FILE "${PROJECT_NAME}.icns")
 SET (TARGET_NAME "Substance")
 SET(BUNDLE_LOCATION ${CMAKE_CURRENT_BINARY_DIR}/${CONFIGURATION}/${TARGET_NAME}.app)
 
+link_directories(
+  ${HIREDIS_LIB_DIRS}
+  ${jsobjects_LIBRARY_DIRS}
+)
+
 add_executable(${TARGET_NAME} MACOSX_BUNDLE
   main.m
   appDelegate.h
@@ -45,6 +50,7 @@ target_link_libraries(${TARGET_NAME}
   ${COREDATA} ${FOUNDATION}
   ${APPKIT} ${COCOA}
   ${WEBKIT}
+  redisdocstore
 )
 
 # Set a custom Info.plist file template.
@@ -63,6 +69,10 @@ add_custom_command (TARGET ${TARGET_NAME}
 
 # compile MainMenu.xib after build is finished
 compile_xib (${TARGET_NAME} ${BUNDLE_LOCATION} ${CMAKE_CURRENT_SOURCE_DIR}/MainMenu.xib)
+
+if(NOT EXISTS ${BUNDLE_LOCATION}/Contents/Resources)
+  file(MAKE_DIRECTORY ${BUNDLE_LOCATION}/Contents/Resources)
+endif()
 
 execute_process(
   COMMAND rsync -r ${CMAKE_CURRENT_SOURCE_DIR}/Resources/${MACOSX_BUNDLE_ICON_FILE} ${BUNDLE_LOCATION}/Contents/Resources
