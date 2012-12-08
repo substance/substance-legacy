@@ -144,7 +144,7 @@ redis.RedisDocStore = function (settings) {
     var doc_id = documentId(id);
 
     if(!self.exists(id) && typeof cb !== "undefined") {
-      cb({err: -1, msg: "Document does not exist.", doc: undefined});
+      cb(/*err=*/ {err: -1, msg: "Document does not exist."}, undefined);
       return undefined;
     }
 
@@ -160,6 +160,9 @@ redis.RedisDocStore = function (settings) {
 
     if(!self.exists(id, cb) && typeof cb !== "undefined")
       cb({err: 0, doc: doc});
+    if(typeof cb !== "undefined") {
+      cb(/*err=*/ 0, doc);
+    }
 
     return doc;
   };
