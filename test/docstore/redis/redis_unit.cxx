@@ -46,7 +46,6 @@ public:
     }
   }
 
-  // put in any custom data members that you need
   JSContextPtr jscontext;
   boost::shared_ptr<HiRedisAccess> redis;
   boost::shared_ptr<HiRedisTestAccess> privAccess;
@@ -80,7 +79,7 @@ TEST_F(HiRedisAccessFixture, ValueShouldExistAfterSet)
 {
   redis->connect();
   BeginScope("test:check_set");
-  redis->set("test_id", "bla");
+  redis->set("test_id", jscontext->newString("bla"));
   bool val = redis->exists("test_id");
   ASSERT_TRUE(val);
 }

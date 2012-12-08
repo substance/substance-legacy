@@ -1,5 +1,5 @@
 // check if the redis native extension is available
-if (typeof redis !== "undefined" || typeof redis.RedisAccess !== "undefined") {
+//if (typeof redis !== "undefined" || typeof redis.RedisAccess !== "undefined") {
 
 redis.RedisDocStore = function (settings) {
 
@@ -41,10 +41,10 @@ redis.RedisDocStore = function (settings) {
    */
   this.exists = function (id, cb) {
     var result = self.redis.exists(id);
-    
+
     if(typeof cb !== "undefined")
       cb({err: 0, result: result});
-    
+
     return result;
   };
 
@@ -61,12 +61,11 @@ redis.RedisDocStore = function (settings) {
     // TODO: more initial fields?
     // initial id field
     self.redis.set(id, {"id": id});
-    
     // TODO create initial list for commits
 
     if (typeof cb !== "undefined")
       cb({err: 0});
-    
+
     return true;
   };
 
@@ -76,7 +75,7 @@ redis.RedisDocStore = function (settings) {
    */
   this.delete = function (id, cb) {
     self.redis.remove(id);
-    
+
     if (arguments.length == 2)
       cb({err: 0});
 
@@ -85,26 +84,30 @@ redis.RedisDocStore = function (settings) {
 
   /**
    *  Stores a sequence of commits for a given document id.
-   * 
+   *
    *  @param newCommits an array of commit objects
    *  @param cb callback
    */
   this.update = function(id, newCommits, cb) {
     var commits = self.redis.asList(id + ":commits");
-    
-    // TODO: if commits is undefined create a list type
 
-    var lastSha = commits.getLast();
+    var lastSha = undefined;
+    if(commits.size() > 0)
+      lastSha = commits.get();
+
     self.redis.beginTransaction();
     for(var idx=0; idx<newCommits.length; idx++) {
 
       // commit must be in proper order
-      if (newCommits[idx].parent != lastSha) {
+      if (typeof lastSha !== undefined && newCommits[idx].parent != lastSha) {
         self.redis.cancelTransaction();
-        
+	var err = {err: -1, msg: "Invalid commit chain."};
         // TODO: maybe give more details about the problem
-        cb({err: -1, msg: "Invalid commit chain."});
-        return;
+	if (typeof cb !== "undefined")
+	  cb(err);
+	else
+	  console.log(err.msg);
+        return false;
       }
 
       // note: these commands will be executed when executeTransaction is called
@@ -112,33 +115,42 @@ redis.RedisDocStore = function (settings) {
       commits.add(newCommits[idx].sha);
 
       // store the commit's data into an own field
-      self.redis.set(id + ":commits:" + newCommits[idx].sha, newCommits[idx].toString());
-      print("Setting data: id = " + newCommits[idx].sha + ", data = " + JSON.stringify(newCommits[idx]));
+      self.redis.set(id + ":commits:" + newCommits[idx].sha, newCommits[idx]);
 
       lastSha = newCommits[idx].sha;
     }
 
     self.redis.executeTransaction();
-    cb({err: 0});
+
+    if (typeof cb !== "undefined")
+      cb({err: 0});
+    else
+      return true;
   };
 
   /**
    * Retrieves a document
-   * 
+   *
    * @param id the document's id
    * @param cb callback
    */
   this.get = function(id, cb) {
 
-    if(!self.exists(id, cb) && typeof cb !== "undefined") {
+    if(!self.exists(id) && typeof cb !== "undefined") {
       cb({err: -1, msg: "Document does not exist.", doc: undefined});
       return undefined;
     }
 
     var doc = self.redis.getJSON(id);
-    //TODO:
-    // var commits = self.redis.asList(id + ":commits");
-    // doc.commits = commits.asArray();
+    doc.commits = {};
+
+    var commits = self.redis.asList(id + ":commits");
+    var shas = commits.asArray();
+    for (var idx=0; idx<shas.length; ++idx) {
+      var commit = self.redis.getJSON( id + ":commits:" + shas[idx]);
+      doc.commits[shas[idx]] = commit;
+    }
+
     if(!self.exists(id, cb) && typeof cb !== "undefined")
       cb({err: 0, doc: doc});
 
@@ -146,5 +158,4 @@ redis.RedisDocStore = function (settings) {
   };
 };
 
-}
-
+//}

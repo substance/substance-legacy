@@ -31,9 +31,7 @@ public:
 
   virtual jsobjects::JSValuePtr getJSON(const std::string &id) = 0;
 
-  virtual void set(const std::string &id, jsobjects::JSObjectPtr obj) = 0;
-
-  virtual void set(const std::string &id, const std::string &val) = 0;
+  virtual void set(const std::string &id, jsobjects::JSValuePtr val) = 0;
 
   // delete is C++ keyword so this needs to be renamed for JS
   virtual void remove(const std::string &prefix) = 0;

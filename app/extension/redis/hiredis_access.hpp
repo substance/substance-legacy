@@ -20,7 +20,7 @@ class HiRedisList: public RedisList {
   };
 
 public:
-  HiRedisList(HiRedisAccess &redis, const std::string& key): redis(redis), key(key) { }
+  HiRedisList(HiRedisAccess &redis, const std::string& key);
 
   virtual unsigned int size();
 
@@ -48,6 +48,8 @@ class HiRedisAccess: public RedisAccess {
 
 enum COMMANDS {
   EXISTS = 0,
+  DELETE,
+  KEYS,
   GET_STRING_VALUE,
   SET_STRING_VALUE,
   DISCONNECT,
@@ -76,9 +78,7 @@ public:
 
   virtual jsobjects::JSValuePtr getJSON(const std::string &id);
 
-  virtual void set(const std::string &id, const std::string &val);
-
-  virtual void set(const std::string &id, jsobjects::JSObjectPtr obj);
+  virtual void set(const std::string &id, jsobjects::JSValuePtr obj);
 
   virtual void remove(const std::string &prefix);
 
@@ -110,7 +110,7 @@ private:
 
   std::string hostUrl;
   int port;
-  const char* scope;
+  std::string scope;
   const char* commands[COMMANDS_MAX];
 
 #ifdef TESTING

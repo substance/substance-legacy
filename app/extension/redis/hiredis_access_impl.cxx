@@ -24,7 +24,7 @@ using boost::str;
 #define BUFFER_LEN 1024
 
 HiRedisAccess::HiRedisAccess(jsobjects::JSContextPtr jscontext)
-  : jscontext(jscontext), scope(0), hostUrl("127.0.0.1"), port(6379)
+  : jscontext(jscontext),scope(""), hostUrl("127.0.0.1"), port(6379)
 {
   createCommands();
 }
@@ -51,7 +51,7 @@ void HiRedisAccess::setPort(int port) {
 }
 
 void HiRedisAccess::setScope(const char* scope) {
-  this->scope = scope;
+  this->scope = std::string(scope);
   createCommands();
 }
 
@@ -91,16 +91,8 @@ jsobjects::JSValuePtr HiRedisAccess::getJSON(const std::string &id) {
   return jscontext->fromJson(reply->str);
 }
 
-void HiRedisAccess::set(const std::string &id, const std::string &val) {
-  ReplyPtr reply((redisReply*) redisCommand(redis, commands[SET_STRING_VALUE], id.c_str(), val.c_str()));
-
-  if(reply->str == 0) {
-    // TODO: throw exception
-  }
-}
-
-void HiRedisAccess::set(const std::string &id, jsobjects::JSObjectPtr jsobj) {
-  const std::string& json = jscontext->toJson(jsobj);
+void HiRedisAccess::set(const std::string &id, jsobjects::JSValuePtr val) {
+  const std::string& json = jscontext->toJson(val);
 
   ReplyPtr reply((redisReply*) redisCommand(redis, commands[SET_STRING_VALUE], id.c_str(), json.c_str()));
 
@@ -111,15 +103,13 @@ void HiRedisAccess::set(const std::string &id, jsobjects::JSObjectPtr jsobj) {
 
 
 void HiRedisAccess::remove(const std::string &prefix) {
-  ReplyPtr reply((redisReply*) redisCommand(redis, "KEYS %s*", prefix.c_str()));
+  ReplyPtr reply((redisReply*) redisCommand(redis, commands[KEYS], (prefix+"*").c_str()));
 
   runCommand("MULTI");
   for(size_t idx = 0; idx < reply->elements; ++idx) {
     redisAppendCommand(redis, "DEL %s", reply->element[idx]->str);
   }
-  appendCommand("EXEC");
-  reply = getReply();
-  // TODO check if ok
+  runCommand("EXEC");
 }
 
 void HiRedisAccess::beginTransaction() {
@@ -137,7 +127,7 @@ jsobjects::JSArrayPtr HiRedisAccess::executeTransaction() {
 }
 
 RedisListPtr HiRedisAccess::asList(const std::string& id) {
-  return RedisListPtr();
+  return RedisListPtr(new HiRedisList(*this, id));
 }
 
 ReplyPtr HiRedisAccess::runCommand(const std::string& cmd) {
@@ -161,13 +151,13 @@ jsobjects::JSArrayPtr HiRedisAccess::createArray(redisReply* reply) {
   for(size_t idx = 0; idx < reply->elements; ++idx) {
     switch(reply->element[idx]->type) {
       case REDIS_REPLY_STRING:
-        result->setAt(idx, jscontext->newString(reply->str));
+        result->setAt(idx, jscontext->newString(reply->element[idx]->str));
         break;
       case REDIS_REPLY_ARRAY:
         result->setAt(idx, createArray(reply->element[idx]));
         break;
       case REDIS_REPLY_INTEGER:
-        result->setAt(idx, jscontext->newNumber(reply->integer));
+        result->setAt(idx, jscontext->newNumber(reply->element[idx]->integer));
         break;
     }
   }
@@ -189,22 +179,34 @@ void HiRedisAccess::createCommands() {
   for(size_t idx = 0; idx < COMMANDS_MAX; ++idx) {
     switch (idx) {
       case EXISTS:
-	if (scope == 0)
-	  len = snprintf(buf, BUFFER_LEN, "EXISTS %%s");
-	else
-	  len = snprintf(buf, BUFFER_LEN, "EXISTS %s:%%s", scope);
+        if (scope.empty())
+          len = snprintf(buf, BUFFER_LEN, "EXISTS %%s");
+        else
+          len = snprintf(buf, BUFFER_LEN, "EXISTS %s:%%s", scope.c_str());
+        break;
+      case DELETE:
+        if (scope.empty())
+          len = snprintf(buf, BUFFER_LEN, "DEL %%s");
+        else
+          len = snprintf(buf, BUFFER_LEN, "DEL %s:%%s", scope.c_str());
+        break;
+      case KEYS:
+        if (scope.empty())
+          len = snprintf(buf, BUFFER_LEN, "KEYS %%s");
+        else
+          len = snprintf(buf, BUFFER_LEN, "KEYS %s:%%s", scope.c_str());
         break;
       case GET_STRING_VALUE:
-	if (scope == 0)
-	  len = snprintf(buf, BUFFER_LEN, "GET %%s");
-	else
-	  len = snprintf(buf, BUFFER_LEN, "GET %s:%%s", scope);
+        if (scope.empty())
+          len = snprintf(buf, BUFFER_LEN, "GET %%s");
+        else
+          len = snprintf(buf, BUFFER_LEN, "GET %s:%%s", scope.c_str());
         break;
       case SET_STRING_VALUE:
-	if (scope == 0)
-	  len = snprintf(buf, BUFFER_LEN, "SET %%s %%s");
-	else
-	  len = snprintf(buf, BUFFER_LEN, "SET %s:%%s %%s", scope);
+        if (scope.empty())
+          len = snprintf(buf, BUFFER_LEN, "SET %%s %%s");
+        else
+          len = snprintf(buf, BUFFER_LEN, "SET %s:%%s %%s", scope.c_str());
         break;
       case DISCONNECT:
         len = snprintf(buf, BUFFER_LEN, "QUIT");
@@ -220,6 +222,13 @@ void HiRedisAccess::createCommands() {
   return RedisAccessPtr(new HiRedisAccess(jscontext));
 }
 
+HiRedisList::HiRedisList(HiRedisAccess &redis, const std::string& key): redis(redis), key(key) {
+  if (!redis.scope.empty()) {
+    this->key = (boost::format("%s:%s") % redis.scope % key).str();
+  }
+  createCommands();
+}
+
 unsigned int HiRedisList::size() {
   ReplyPtr reply = redis.runCommand(commands[LENGTH]);
   return reply->integer;
@@ -230,6 +239,11 @@ void HiRedisList::add(const std::string &val) {
 }
 
 std::string HiRedisList::get(unsigned int index) {
+  if(index >= size()) {
+    // TODO: throw error
+    return "undefined";
+  }
+
   ReplyPtr reply((redisReply*) redisCommand(redis.redis, commands[GET], index));
   return reply->str;
 }
@@ -245,16 +259,16 @@ void HiRedisList::createCommands() {
   for(size_t idx = 0; idx < COMMANDS_MAX; ++idx) {
     switch (idx) {
       case LENGTH:
-        len = snprintf(buf, BUFFER_LEN, "LLEN %s", key.c_str());
+	len = snprintf(buf, BUFFER_LEN, "LLEN %s", key.c_str());
         break;
       case PUSH:
         len = snprintf(buf, BUFFER_LEN, "LPUSH %s %%s", key.c_str());
         break;
       case GET:
-        len = snprintf(buf, BUFFER_LEN, "LGET %s %%d", key.c_str());
+        len = snprintf(buf, BUFFER_LEN, "LINDEX %s %%d", key.c_str());
         break;
       case GET_ALL:
-        len = snprintf(buf, BUFFER_LEN, "LRANGE 0 -1");
+        len = snprintf(buf, BUFFER_LEN, "LRANGE %s 0 -1", key.c_str());
         break;
     }
     char *str = new char[len+1];
