@@ -40,8 +40,8 @@ $(function() {
     render: function() {
       this.$el.html(_.tpl('dashboard', {
         documents: [
-          { title: "Substance", author: "michael", file: "default_document" },
-          { title: "Hello World", author: "michael", file: "hello_document" }
+          { title: "Substance", author: "michael", file: "substance" },
+          { title: "Hello World", author: "michael", file: "hello" }
         ]
       }));
       return this;
