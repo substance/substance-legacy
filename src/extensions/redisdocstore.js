@@ -158,8 +158,12 @@ redis.RedisDocStore = function (settings) {
       doc.commits[shas[idx]] = commit;
     }
 
-    if(!self.exists(id, cb) && typeof cb !== "undefined")
-      cb({err: 0, doc: doc});
+    // TODO: more about that refs
+    var lastSha = commits.get();
+    doc.refs = {
+      master: lastSha
+    }
+
     if(typeof cb !== "undefined") {
       cb(/*err=*/ 0, doc);
     }
