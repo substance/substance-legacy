@@ -34,13 +34,17 @@ redis.RedisDocStore = function (settings) {
   // e.g. tests would use its own, or one could separate user spaces
   this.redis.setScope(scope);
 
+  var documentId = function(id) {
+    return "document:"+id;
+  }
+
   /**
    *  Checks if a document exists
    *  @param id the document's id
    *  @param cb callback
    */
   this.exists = function (id, cb) {
-    var result = self.redis.exists(id);
+    var result = self.redis.exists(documentId(id));
 
     if(typeof cb !== "undefined")
       cb({err: 0, result: result});
@@ -54,7 +58,7 @@ redis.RedisDocStore = function (settings) {
    */
   this.create = function (id, cb) {
 
-    if(self.exists(id, cb) && typeof cb !== "undefined") {
+    if(self.exists(documentId(id), cb) && typeof cb !== "undefined") {
       cb({err: -1, msg: "Document already exists."});
     }
 
@@ -74,7 +78,7 @@ redis.RedisDocStore = function (settings) {
    *  @param cb callback
    */
   this.delete = function (id, cb) {
-    self.redis.remove(id);
+    self.redis.remove(documentId(id));
 
     if (arguments.length == 2)
       cb({err: 0});
@@ -89,7 +93,8 @@ redis.RedisDocStore = function (settings) {
    *  @param cb callback
    */
   this.update = function(id, newCommits, cb) {
-    var commits = self.redis.asList(id + ":commits");
+    var commitsKey = documentId(id) + ":commits";
+    var commits = self.redis.asList(commitsKey);
 
     var lastSha = undefined;
     if(commits.size() > 0)
@@ -101,12 +106,12 @@ redis.RedisDocStore = function (settings) {
       // commit must be in proper order
       if (typeof lastSha !== undefined && newCommits[idx].parent != lastSha) {
         self.redis.cancelTransaction();
-	var err = {err: -1, msg: "Invalid commit chain."};
+        var err = {err: -1, msg: "Invalid commit chain."};
         // TODO: maybe give more details about the problem
-	if (typeof cb !== "undefined")
-	  cb(err);
-	else
-	  console.log(err.msg);
+        if (typeof cb !== "undefined")
+          cb(err);
+        else
+          console.log(err.msg);
         return false;
       }
 
@@ -115,7 +120,7 @@ redis.RedisDocStore = function (settings) {
       commits.add(newCommits[idx].sha);
 
       // store the commit's data into an own field
-      self.redis.set(id + ":commits:" + newCommits[idx].sha, newCommits[idx]);
+      self.redis.set(commitsKey + ":" + newCommits[idx].sha, newCommits[idx]);
 
       lastSha = newCommits[idx].sha;
     }
@@ -136,18 +141,20 @@ redis.RedisDocStore = function (settings) {
    */
   this.get = function(id, cb) {
 
+    var doc_id = documentId(id);
+
     if(!self.exists(id) && typeof cb !== "undefined") {
       cb({err: -1, msg: "Document does not exist.", doc: undefined});
       return undefined;
     }
 
-    var doc = self.redis.getJSON(id);
+    var doc = self.redis.getJSON(doc_id);
     doc.commits = {};
 
-    var commits = self.redis.asList(id + ":commits");
+    var commits = self.redis.asList(doc_id + ":commits");
     var shas = commits.asArray();
     for (var idx=0; idx<shas.length; ++idx) {
-      var commit = self.redis.getJSON( id + ":commits:" + shas[idx]);
+      var commit = self.redis.getJSON( doc_id + ":commits:" + shas[idx]);
       doc.commits[shas[idx]] = commit;
     }
 
