@@ -15,9 +15,9 @@
 {
     self = [super initWithFrame:frame];
     if (self) {
-        // Initialization code here.
+
     }
-    
+
     return self;
 }
 
@@ -39,5 +39,10 @@
     //       if some application wide key handling is necessary, handle the keyEvent
     //[self interpretKeyEvents: [NSArray arrayWithObject:theEvent]];
 }
+
+@end
+
+@implementation SubstanceWebView
+
 
 @end

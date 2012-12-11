@@ -3,8 +3,7 @@
 #import "MainView.h"
 
 @interface SubstanceAppDelegate : NSObject <NSApplicationDelegate> {
-    NSWindow *window;
-//    MainView *mainView;
+  NSWindow *window;
 	WebView *webView;
 }
 
