@@ -64,7 +64,7 @@ set_target_properties(${TARGET_NAME} PROPERTIES
 add_custom_command (TARGET ${TARGET_NAME}
   PRE_BUILD
   COMMAND mkdir -p ${BUNDLE_LOCATION}/Contents/Resources
-  COMMAND mkdir -p ${BUNDLE_LOCATION}/Contents/Assets
+  #COMMAND mkdir -p ${BUNDLE_LOCATION}/Contents/Assets
 )
 
 # compile MainMenu.xib after build is finished
@@ -81,6 +81,7 @@ execute_process(
 if (NOT EXISTS ${BUNDLE_LOCATION}/Contents/Assets)
   execute_process(
     COMMAND ln -s ${PROJECT_SOURCE_DIR} ${BUNDLE_LOCATION}/Contents/Assets
+    COMMAND ln -s ${PROJECT_SOURCE_DIR}/ext/redisdb/bin ${BUNDLE_LOCATION}/Contents/Redis
   )
 endif ()
 
