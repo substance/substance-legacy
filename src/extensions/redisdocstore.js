@@ -64,7 +64,7 @@ redis.RedisDocStore = function (settings) {
 
     // TODO: more initial fields?
     // initial id field
-    self.redis.set(id, {"id": id});
+    self.redis.set(documentId(id), {"id": id});
     // TODO create initial list for commits
 
     if (typeof cb !== "undefined")
