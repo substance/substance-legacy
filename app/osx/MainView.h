@@ -40,8 +40,6 @@ typedef bool (*JSCExtension)(JSGlobalContextRef context);
 
 - init: (WebViewExtension *) webExtension;
 
-//- (void) webView:(WebView *)sender didClearWindowObjectForFrame:(WebFrame*) frame;
-
 - (void) webView:(WebView *)sender didCommitLoadForFrame:(WebFrame*) frame;
 
 @end
