@@ -37,6 +37,10 @@ link_directories(
   ${jsobjects_LIBRARY_DIRS}
 )
 
+if(ENABLE_DEVELOPER_EXTRAS)
+  add_definitions(-DDEVELOPER_EXTRAS)
+endif()
+
 add_executable(${TARGET_NAME} MACOSX_BUNDLE
   main.m
   appDelegate.h

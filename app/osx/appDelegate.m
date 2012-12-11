@@ -9,10 +9,16 @@ extern bool redis_initialize_jsobjects(JSGlobalContextRef context);
 @synthesize mainView;
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification {
+
+#ifdef DEVELOPER_EXTRAS
+  [[NSUserDefaults standardUserDefaults] setBool:TRUE forKey:@"WebKitDeveloperExtras"];
+  [[NSUserDefaults standardUserDefaults] synchronize];
+#endif // DEVELOPER_EXTRAS
+
   [mainView setWebView: webView];
 
     // Start a webview with the bundled index.html file
-	NSString *path = [[NSBundle mainBundle] bundlePath];
+  NSString *path = [[NSBundle mainBundle] bundlePath];
 
     // launch the redis db
   m_redisProcess = [NSTask new];
