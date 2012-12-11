@@ -1,16 +1,26 @@
 set(DOWNLOAD_DIR ${EXTERNALS_DIR}/swig)
 
+if(APPLE)
+  # HACK: switch for OSX version
+  set(SWIGJS_GIT_TAG js_mountain_lion)
+  set(SWIGJS_AUTOGEN)
+elseif()
+  set(SWIGJS_GIT_TAG devel)
+  set(SWIGJS_AUTOGEN ${DOWNLOAD_DIR}/swig/autogen.sh)
+endif()
+
+
 if (DOWNLOAD_EXTERNALS)
 
   ExternalProject_Add(swig_js
     GIT_REPOSITORY https://github.com/oliver----/swig-v8.git
-    GIT_TAG devel
+    GIT_TAG ${SWIGJS_GIT_TAG}
     PREFIX ${DOWNLOAD_DIR}
     DOWNLOAD_DIR ${DOWNLOAD_DIR}
     STAMP_DIR ${DOWNLOAD_DIR}/stamp
     SOURCE_DIR ${DOWNLOAD_DIR}/swig
     BINARY_DIR ${DOWNLOAD_DIR}/swig
-    UPDATE_COMMAND ${DOWNLOAD_DIR}/swig/autogen.sh
+    UPDATE_COMMAND ${SWIGJS_AUTOGEN}
     CONFIGURE_COMMAND /bin/sh ${DOWNLOAD_DIR}/swig/configure
     BUILD_COMMAND make
     INSTALL_COMMAND "" # skip install
