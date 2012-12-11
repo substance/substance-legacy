@@ -40,4 +40,15 @@ extern bool redis_initialize_jsobjects(JSGlobalContextRef context);
   [m_redisProcess terminate];
 }
 
+- (void) keyDown:(NSEvent *)theEvent {
+  // Note: this consumes all key events that have not been handled
+  //       by within the child views (e.g. WebView)
+  //       if some application wide key handling is necessary, handle the keyEvent
+  if([theEvent modifierFlags] & NSCommandKeyMask) {
+    if([[theEvent characters] characterAtIndex:0] == 'r') {
+
+    }
+  }
+}
+
 @end
