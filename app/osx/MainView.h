@@ -8,11 +8,41 @@
 
 #import <Cocoa/Cocoa.h>
 #import <Webkit/WebView.h>
+#import <Webkit/WebFrameLoadDelegate.h>
+#import <JavaScriptCore/JavaScriptCore.h>
 
 @interface MainView : NSView
 
 @end
 
-@interface SubstanceWebView : WebView
+typedef bool (*JSCExtension)(JSGlobalContextRef context);
+
+@interface WebViewExtension: NSObject
+{
+  WebView *m_webView;
+  JSCExtension m_extensions[5];
+}
+
+- (id) init : (WebView *)webView;
+
+- (WebView *) getWebView;
+
+- (void) updateJSEngine;
+
+- (void) addExtension: (JSCExtension) extension;
 
 @end
+
+@interface WebViewLoadDelegate : NSObject
+{
+  WebViewExtension *m_webExtension;
+}
+
+- init: (WebViewExtension *) webExtension;
+
+//- (void) webView:(WebView *)sender didClearWindowObjectForFrame:(WebFrame*) frame;
+
+- (void) webView:(WebView *)sender didCommitLoadForFrame:(WebFrame*) frame;
+
+@end
+
