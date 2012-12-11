@@ -5,6 +5,7 @@
 @interface SubstanceAppDelegate : NSObject <NSApplicationDelegate> {
   NSWindow *window;
 	WebView *webView;
+  NSTask *redisProcess;
 }
 
 

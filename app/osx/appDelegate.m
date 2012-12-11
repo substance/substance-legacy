@@ -12,12 +12,12 @@ extern bool redis_initialize_jsobjects(JSGlobalContextRef context);
 	NSString *path = [[NSBundle mainBundle] bundlePath];
 
     // launch the redis db
-    NSTask *task = [NSTask new];
-    [task setLaunchPath:[NSString stringWithFormat: @"%@/Contents/Redis/redis-server", path]];
-    [task setCurrentDirectoryPath:[NSString stringWithFormat: @"%@/Contents/Redis", path]];
-    [task launch];
+  redisProcess = [NSTask new];
+  [redisProcess setLaunchPath:[NSString stringWithFormat: @"%@/Contents/Redis/redis-server", path]];
+  [redisProcess setCurrentDirectoryPath:[NSString stringWithFormat: @"%@/Contents/Redis", path]];
+  [redisProcess launch];
 
-    NSString *url =  [NSString stringWithFormat: @"file://%@/Contents/Assets/index.html", path];
+  NSString *url =  [NSString stringWithFormat: @"file://%@/Contents/Assets/index.html", path];
 	[ [webView mainFrame] loadRequest: 
 		[NSURLRequest requestWithURL: [NSURL URLWithString:url] ]
 	];
@@ -30,6 +30,10 @@ extern bool redis_initialize_jsobjects(JSGlobalContextRef context);
 
 - (BOOL)applicationShouldTerminateAfterLastWindowClosed:(NSApplication *)sender {
     return YES;
+}
+
+- (void)applicationWillTerminate:(NSNotification *)aNotification {
+  [redisProcess terminate];
 }
 
 @end
