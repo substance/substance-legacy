@@ -6,8 +6,11 @@ extern bool redis_initialize_jsobjects(JSGlobalContextRef context);
 
 @synthesize window;
 @synthesize webView;
+@synthesize mainView;
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification {
+  [mainView setWebView: webView];
+
     // Start a webview with the bundled index.html file
 	NSString *path = [[NSBundle mainBundle] bundlePath];
 

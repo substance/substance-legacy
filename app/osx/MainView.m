@@ -11,23 +11,9 @@
 
 @implementation MainView
 
-
-- (id)initWithFrame:(NSRect)frame
+-(void) setWebView: (WebView*) webView
 {
-    self = [super initWithFrame:frame];
-    if (self) {
-
-    }
-
-    return self;
-}
-
-
-
-- (void)drawRect:(NSRect)dirtyRect
-{
-    // Drawing code here.
-    [super drawRect:dirtyRect];
+  m_webView = webView;
 }
 
 - (BOOL)acceptsFirstResponder {
@@ -35,10 +21,17 @@
 }
 
 - (void) keyDown:(NSEvent *)theEvent {
-    // Note: this consumes all key events that have not been handled
-    //       by within the child views (e.g. WebView)
-    //       if some application wide key handling is necessary, handle the keyEvent
-    //[self interpretKeyEvents: [NSArray arrayWithObject:theEvent]];
+  // Note: this consumes all key events that have not been handled
+  //       by within the child views (e.g. WebView)
+  //       if some application wide key handling is necessary, handle the keyEvent
+  if([theEvent modifierFlags] & NSCommandKeyMask) {
+
+    // Reload on Command + r
+    if([[theEvent characters] characterAtIndex:0] == 'r') {
+      [m_webView reload: self];
+    }
+  }
+
 }
 
 @end

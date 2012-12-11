@@ -12,6 +12,11 @@
 #import <JavaScriptCore/JavaScriptCore.h>
 
 @interface MainView : NSView
+{
+  WebView *m_webView;
+}
+
+-(void) setWebView: (WebView*) webView;
 
 @end
 
