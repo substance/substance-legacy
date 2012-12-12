@@ -5,6 +5,17 @@
 
 class RedisAccess;
 class RedisList;
+class RedisError;
+
+#ifdef SWIG
+#define _THROW(a) throw(a)
+#else
+#define _THROW(a)
+#endif
+
+//#ifndef _THROW
+//#define _THROW(a)
+//#endif
 
 typedef RedisAccess* RedisAccessPtr;
 typedef RedisList* RedisListPtr;
@@ -21,13 +32,13 @@ public:
 
   virtual void setScope(const char* scope) = 0;
 
-  virtual void connect() = 0;
+  virtual void connect() _THROW(RedisError) = 0;
 
   virtual void disconnect() = 0;
 
   virtual bool exists(const std::string &id) = 0;
 
-  virtual std::string get(const std::string &id) = 0;
+  virtual std::string get(const std::string &id) _THROW(RedisError) = 0;
 
   virtual jsobjects::JSValuePtr getJSON(const std::string &id) = 0;
 
@@ -54,7 +65,7 @@ public:
 
   virtual void add(const std::string &val) = 0;
 
-  virtual std::string get(unsigned int index = 0) = 0;
+  virtual std::string get(unsigned int index = 0) _THROW(RedisError) = 0;
 
   virtual jsobjects::JSArrayPtr asArray() = 0;
 };

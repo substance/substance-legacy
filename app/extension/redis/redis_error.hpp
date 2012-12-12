@@ -7,13 +7,17 @@ public:
 
   RedisError();
 
+  RedisError(const std::string& msg);
+
 #ifndef SWIG
 
-  RedisError(const std::string& msg);
-  
   RedisError(const char* format, ...);
 
 #endif // SWIG
+
+  std::string toString();
+
+private:
 
   const std::string msg;
 };

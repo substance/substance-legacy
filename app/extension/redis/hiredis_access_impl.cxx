@@ -75,7 +75,7 @@ std::string HiRedisAccess::get(const std::string &id) {
   ReplyPtr reply((redisReply*) redisCommand(redis, commands[GET_STRING_VALUE], id.c_str()));
 
   if(reply->str == 0) {
-    return "undefined";
+    throw RedisError("Unknown value \"%s\".", id.c_str());
   }
 
   return reply->str;
@@ -93,12 +93,7 @@ jsobjects::JSValuePtr HiRedisAccess::getJSON(const std::string &id) {
 
 void HiRedisAccess::set(const std::string &id, jsobjects::JSValuePtr val) {
   const std::string& json = jscontext->toJson(val);
-
   ReplyPtr reply((redisReply*) redisCommand(redis, commands[SET_STRING_VALUE], id.c_str(), json.c_str()));
-
-  if(reply->str == 0) {
-    // TODO: throw exception
-  }
 }
 
 

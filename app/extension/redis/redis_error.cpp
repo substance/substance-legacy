@@ -30,3 +30,7 @@ RedisError::RedisError(const char *format, ...)
   std::string* pmsg = const_cast<std::string*>(&msg);
   pmsg->append(msg);
 }
+
+std::string RedisError::toString() {
+  return msg;
+}
