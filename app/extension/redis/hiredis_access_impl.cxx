@@ -102,7 +102,7 @@ void HiRedisAccess::remove(const std::string &prefix) {
 
   runCommand("MULTI");
   for(size_t idx = 0; idx < reply->elements; ++idx) {
-    redisAppendCommand(redis, "DEL %s", reply->element[idx]->str);
+    ReplyPtr((redisReply*) redisCommand(redis, "DEL %s", reply->element[idx]->str));
   }
   runCommand("EXEC");
 }
