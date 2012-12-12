@@ -34,17 +34,13 @@ redis.RedisDocStore = function (settings) {
   // e.g. tests would use its own, or one could separate user spaces
   this.redis.setScope(scope);
 
-  var documentId = function(id) {
-    return "document:"+id;
-  }
-
   /**
    *  Checks if a document exists
    *  @param id the document's id
    *  @param cb callback
    */
   this.exists = function (id, cb) {
-    var result = self.redis.exists(documentId(id));
+    var result = self.redis.exists(id);
 
     if(typeof cb !== "undefined")
       cb({err: 0, result: result});
@@ -58,13 +54,13 @@ redis.RedisDocStore = function (settings) {
    */
   this.create = function (id, cb) {
 
-    if(self.exists(documentId(id), cb) && typeof cb !== "undefined") {
+    if(self.exists(id, cb) && typeof cb !== "undefined") {
       cb({err: -1, msg: "Document already exists."});
     }
 
     // TODO: more initial fields?
     // initial id field
-    self.redis.set(documentId(id), {"id": id});
+    self.redis.set(id, {"id": id});
     // TODO create initial list for commits
 
     if (typeof cb !== "undefined")
@@ -78,7 +74,7 @@ redis.RedisDocStore = function (settings) {
    *  @param cb callback
    */
   this.delete = function (id, cb) {
-    self.redis.remove(documentId(id));
+    self.redis.remove(id);
 
     if (arguments.length == 2)
       cb({err: 0});
@@ -93,7 +89,7 @@ redis.RedisDocStore = function (settings) {
    *  @param cb callback
    */
   this.update = function(id, newCommits, cb) {
-    var commitsKey = documentId(id) + ":commits";
+    var commitsKey = id + ":commits";
     var commits = self.redis.asList(commitsKey);
 
     var lastSha = undefined;
@@ -127,7 +123,7 @@ redis.RedisDocStore = function (settings) {
 
     self.redis.executeTransaction();
 
-    if (typeof cb !== "undefined")
+    if(arguments.length == 3)
       cb({err: 0});
     else
       return true;
@@ -141,32 +137,37 @@ redis.RedisDocStore = function (settings) {
    */
   this.get = function(id, cb) {
 
-    var doc_id = documentId(id);
-
     if(!self.exists(id) && typeof cb !== "undefined") {
-      cb(/*err=*/ {err: -1, msg: "Document does not exist."}, undefined);
-      return undefined;
+      if(arguments.length == 2) {
+        cb({err: -1, msg: "Document does not exist."}, undefined);
+      } else {
+        throw new RedisError("Document does not exist.")
+      }
     }
 
-    var doc = self.redis.getJSON(doc_id);
+    var doc = self.redis.getJSON(id);
     doc.commits = {};
 
-    var commits = self.redis.asList(doc_id + ":commits");
+    var commits = self.redis.asList(id + ":commits");
     var shas = commits.asArray();
     for (var idx=0; idx<shas.length; ++idx) {
-      var commit = self.redis.getJSON( doc_id + ":commits:" + shas[idx]);
+      var commit = self.redis.getJSON( id + ":commits:" + shas[idx]);
       doc.commits[shas[idx]] = commit;
     }
 
     // TODO: more about that refs
-    var lastSha = commits.get();
+    var lastSha;
+    if(shas.length > 0) {
+      lastSha = commits.get();
+    } else {
+      lastSha = undefined;
+    }
     doc.refs = {
       master: lastSha
     }
 
-    if(typeof cb !== "undefined") {
-      cb(/*err=*/ 0, doc);
-    }
+    if(arguments.length == 2)
+      cb(0, doc);
 
     return doc;
   };
