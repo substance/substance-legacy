@@ -1,11 +1,11 @@
-<!DOCTYPE html> 
+<!DOCTYPE html>
 <html>
   <head>
     <title>Substance</title>
     <link href="substance.css" media="screen" rel="stylesheet" type="text/css" />
     <link href="composer.css" media="screen" rel="stylesheet" type="text/css" />
     <link href="lib/codemirror/codemirror.css" media="screen" rel="stylesheet" type="text/css" />
-      
+
   <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,700,300' rel='stylesheet' type='text/css'>
   <!--<link href='http://fonts.googleapis.com/css?family=Source+Code+Pro' rel='stylesheet' type='text/css'/>-->
   <link href='http://fonts.googleapis.com/css?family=Merriweather:400,700,300,900' rel='stylesheet' type='text/css'>
@@ -19,7 +19,7 @@
             <a href="#" class="dashboard<%= !document ? ' active' : ''%>">My Documents</a>
             <% if (document) { %> <a href="#" class="document active"><%= document.title || 'Untitled' %></a><% } %>
           </div>
-          
+
           <div class="user-status">
           <% if (user) { %>
             <a href="#new" class="new-document">New Document</a>
@@ -39,7 +39,7 @@
 
       </div>
     </script>
-    
+
     <!-- Annotation Toggles -->
     <script type="text/html" name="annotation_toggles">
       <div class="annotation-toggles">
@@ -67,7 +67,7 @@
       <div id="dashboard">
       <% if (documents.length > 0) { %>
           <div id="documents">
-            <% _.each(documents, function(doc) { %> 
+            <% _.each(documents, function(doc) { %>
               <div class="document">
                 <a class="load-document" href="#demo/<%= doc.file %>" document="<%= doc._id %>">
                   <div class="image">
@@ -144,7 +144,7 @@
     <script type="text/html" name="tool">
       <a class="tool" data-command="<%= type %>" href="#<%= type %>"><%= text %></a>
     </script>
-    
+
     <script type="text/x-ejs-template" name="composer">
       <div id="composer">
         <div id="tools"></div>
@@ -195,7 +195,7 @@
           <div class="document-title" contenteditable="true">Hello World</div>
           <div class="document-abstract" contenteditable="true"></div>
         </div>
-        
+
         <div class="left-rail"></div>
         <div class="right-rail"></div>
 
@@ -213,7 +213,7 @@
           </div>
         <% }); %>
       </div>
-      
+
       <% _.each(comments.scopes, function(scope, i) { %>
         <div id="comments_<%= _.htmlId(scope.id) %>" class="comments<%= i === 0 ? ' active' : ''%>">
           <div class="scope-header<%= scope.type ? ' '+scope.type : '' %>">
@@ -346,7 +346,7 @@
     <script src="lib/jquery.timeago.js"></script>
 
     <script src="lib/surface.js"></script>
-    
+
     <!-- Model -->
     <script src="lib/document.js"></script>
     <script src="lib/codemirror/codemirror.js"></script>
@@ -368,7 +368,7 @@
     <script src="src/views/history.js"></script>
     <script src="src/views/patches.js"></script>
     <script src="src/views/comments.js"></script>
-    
+
     <!-- Nodes -->
     <script src="src/nodes/node.js"></script>
     <script src="src/nodes/textish.js"></script>
@@ -377,13 +377,14 @@
 
     <!-- Extensions -->
     <script src="src/extensions/redisdocstore.js"></script>
+    <script src="src/extensions/seed.js"></script>
 
     <!-- Boot -->
     <script src="src/boot.js"></script>
-    
+
   </head>
-  <body> 
-    
+  <body>
+
 
   </body>
 </html>

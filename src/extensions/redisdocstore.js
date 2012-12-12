@@ -172,4 +172,6 @@ redis.RedisDocStore = function (settings) {
   };
 };
 
+var redisstore = new redis.RedisDocStore();
+
 //}
