@@ -36,6 +36,10 @@ redis.RedisDocStore = function (settings) {
 
   self.documents = self.redis.asHash("documents");
 
+  this.snapshotKey = function(id) {
+    return id + ":snapshots"
+  }
+
   /**
    *  Checks if a document exists
    *  @param id the document's id
@@ -61,7 +65,7 @@ redis.RedisDocStore = function (settings) {
     // TODO: more initial fields?
     // initial id field
     // TODO: what to do if this fails?
-    self.documents.set(id, JSON.stringify(doc));
+    self.documents.set(id, doc);
 
     // TODO create initial list for commits
     if (cb) cb(null, doc);
@@ -70,7 +74,13 @@ redis.RedisDocStore = function (settings) {
   };
 
   this.list = function (cb) {
-    var docs = self.documents.getValues();
+    var docIds = self.documents.getKeys();
+    var docs = [];
+    for (var idx = 0; idx < docs.length; ++idx) {
+      var id = self.snapshotKey(docs[idx]);
+      var snapshots = self.redis.asHash(id);
+      docs.push(snapshots.get("master"));
+    }
     if(cb) cb(null, docs);
     return docs;
   }
@@ -100,8 +110,6 @@ redis.RedisDocStore = function (settings) {
     if(commits.size() > 0)
       lastSha = commits.get();
 
-    var docUpdate = {};
-
     self.redis.beginTransaction();
     for(var idx=0; idx<newCommits.length; idx++) {
 
@@ -119,12 +127,6 @@ redis.RedisDocStore = function (settings) {
         return false;
       }
 
-      if (commit.op[0] === "set") {
-        for(var key in commit.op[1]) {
-          docUpdate[key] = commit.op[1];
-        }
-      }
-
       lastSha = newCommits[idx].sha;
     }
 
@@ -139,19 +141,19 @@ redis.RedisDocStore = function (settings) {
       self.redis.set(commitsKey + ":" + newCommits[idx].sha, newCommits[idx]);
     }
 
-    if(Object.keys(docUpdate).length > 0) {
-      var doc = JSON.parse(self.documents.get(id));
-      for(var key in docUpdate) {
-        doc[key] = docUpdate[key];
-      }
-      self.documents.set(id, JSON.stringify(doc));
-    }
-
     if(arguments.length == 3)
       cb({err: 0});
     else
       return true;
   };
+
+  this.setSnapshot = function (id, data, title, cb) {
+
+    var snapshots = self.redis.asHash(snapshotKey(id));
+    snapshots.set(title, data);
+
+    if(cb) { cb(null); }
+  }
 
   /**
    * Retrieves a document
@@ -169,8 +171,7 @@ redis.RedisDocStore = function (settings) {
       }
     }
 
-    var docData = self.documents.get(id);
-    var doc = JSON.parse(docData);
+    var doc = self.documents.getJSON(id);
     doc.commits = {};
 
     var commits = self.redis.asList(id + ":commits");
