@@ -48,6 +48,7 @@ class HiRedisHash: public RedisHash {
   enum COMMANDS {
     CONTAINS,
     KEYS,
+    VALUES,
     GET,
     SET,
     REMOVE,
@@ -60,6 +61,8 @@ public:
   virtual bool contains(const std::string& key);
 
   virtual jsobjects::JSArrayPtr getKeys();
+
+  virtual jsobjects::JSArrayPtr getValues();
 
   virtual std::string get(const std::string& key);
 

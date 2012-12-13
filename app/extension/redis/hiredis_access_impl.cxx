@@ -296,6 +296,12 @@ jsobjects::JSArrayPtr HiRedisHash::getKeys()
   return redis.createArray(reply.get());
 }
 
+jsobjects::JSArrayPtr HiRedisHash::getValues()
+{
+  ReplyPtr reply((redisReply*) redisCommand(redis.redis, commands[VALUES], key.c_str()));
+  return redis.createArray(reply.get());
+}
+
 std::string HiRedisHash::get(const std::string& key)
 {
   ReplyPtr reply((redisReply*) redisCommand(redis.redis, commands[GET], key.c_str()));
@@ -322,6 +328,9 @@ void HiRedisHash::createCommands() {
         break;
       case KEYS:
         len = snprintf(buf, BUFFER_LEN, "HKEYS %s", key.c_str());
+        break;
+      case VALUES:
+        len = snprintf(buf, BUFFER_LEN, "HVALS %s", key.c_str());
         break;
       case GET:
         len = snprintf(buf, BUFFER_LEN, "HGET %s %%s", key.c_str());

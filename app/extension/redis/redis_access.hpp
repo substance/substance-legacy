@@ -82,6 +82,8 @@ public:
 
   virtual jsobjects::JSArrayPtr getKeys() = 0;
 
+  virtual jsobjects::JSArrayPtr getValues() = 0;
+
   virtual std::string get(const std::string& key) _THROW(RedisError) = 0;
 
   virtual void set(const std::string& key, const std::string& val) = 0;
