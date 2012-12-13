@@ -308,9 +308,26 @@ std::string HiRedisHash::get(const std::string& key)
   return reply->str;
 }
 
+jsobjects::JSValuePtr HiRedisHash::getJSON(const std::string& key)
+{
+  ReplyPtr reply((redisReply*) redisCommand(redis.redis, commands[GET], key.c_str()));
+  if(reply->str == 0) {
+    return redis.jscontext->undefined();
+  }
+
+  return redis.jscontext->fromJson(reply->str);
+}
+
+/*
 void HiRedisHash::set(const std::string& key, const std::string& val)
 {
   ReplyPtr reply((redisReply*) redisCommand( redis.redis, commands[SET], key.c_str(), val.c_str()));
+}
+*/
+
+void HiRedisHash::set(const std::string& key, jsobjects::JSValuePtr val) {
+  const std::string& json = redis.jscontext->toJson(val);
+  ReplyPtr reply((redisReply*) redisCommand( redis.redis, commands[SET], key.c_str(), json.c_str()));
 }
 
 void HiRedisHash::remove(const std::string& key)

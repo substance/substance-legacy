@@ -66,7 +66,11 @@ public:
 
   virtual std::string get(const std::string& key);
 
-  virtual void set(const std::string& key, const std::string& val);
+  virtual jsobjects::JSValuePtr getJSON(const std::string& key);
+
+  //virtual void set(const std::string& key, const std::string& val);
+
+  virtual void set(const std::string& key, jsobjects::JSValuePtr val);
 
   virtual void remove(const std::string& key);
 

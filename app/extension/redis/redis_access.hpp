@@ -86,7 +86,11 @@ public:
 
   virtual std::string get(const std::string& key) _THROW(RedisError) = 0;
 
-  virtual void set(const std::string& key, const std::string& val) = 0;
+  virtual jsobjects::JSValuePtr getJSON(const std::string& key) = 0;
+
+  //virtual void set(const std::string& key, const std::string& val) = 0;
+
+  virtual void set(const std::string& key, jsobjects::JSValuePtr val) = 0;
 
   virtual void remove(const std::string& key) = 0;
 
