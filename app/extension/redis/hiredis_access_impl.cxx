@@ -125,6 +125,10 @@ RedisListPtr HiRedisAccess::asList(const std::string& id) {
   return RedisListPtr(new HiRedisList(*this, id));
 }
 
+RedisHashPtr HiRedisAccess::asHash(const std::string &id) {
+  return RedisHashPtr(new HiRedisHash(*this, id));
+}
+
 ReplyPtr HiRedisAccess::runCommand(const std::string& cmd) {
   redisReply *_reply = (redisReply*) redisCommand(redis, cmd.c_str());
   ReplyPtr reply = wrapReply((void*) _reply);
@@ -264,6 +268,69 @@ void HiRedisList::createCommands() {
         break;
       case GET_ALL:
         len = snprintf(buf, BUFFER_LEN, "LRANGE %s 0 -1", key.c_str());
+        break;
+    }
+    char *str = new char[len+1];
+    strncpy(str, buf, len+1);
+    commands[idx] = str;
+  }
+}
+
+HiRedisHash::HiRedisHash(HiRedisAccess &redis, const std::string& key): redis(redis), key(key) {
+  if (!redis.scope.empty()) {
+    this->key = (boost::format("%s:%s") % redis.scope % key).str();
+  }
+  createCommands();
+}
+
+bool HiRedisHash::contains(const std::string& key)
+{
+  ReplyPtr reply((redisReply*) redisCommand(redis.redis, commands[CONTAINS], key.c_str()));
+
+  return (reply->integer != 0);
+}
+
+jsobjects::JSArrayPtr HiRedisHash::getKeys()
+{
+  ReplyPtr reply((redisReply*) redisCommand(redis.redis, commands[KEYS], key.c_str()));
+  return redis.createArray(reply.get());
+}
+
+std::string HiRedisHash::get(const std::string& key)
+{
+  ReplyPtr reply((redisReply*) redisCommand(redis.redis, commands[GET], key.c_str()));
+  return reply->str;
+}
+
+void HiRedisHash::set(const std::string& key, const std::string& val)
+{
+  ReplyPtr reply((redisReply*) redisCommand( redis.redis, commands[SET], key.c_str(), val.c_str()));
+}
+
+void HiRedisHash::remove(const std::string& key)
+{
+  ReplyPtr reply((redisReply*) redisCommand(redis.redis, commands[REMOVE], key.c_str()));
+}
+
+void HiRedisHash::createCommands() {
+  char buf[BUFFER_LEN];
+  int len;
+  for(size_t idx = 0; idx < COMMANDS_MAX; ++idx) {
+    switch (idx) {
+      case CONTAINS:
+        len = snprintf(buf, BUFFER_LEN, "HEXISTS %s %%s", key.c_str());
+        break;
+      case KEYS:
+        len = snprintf(buf, BUFFER_LEN, "HKEYS %s", key.c_str());
+        break;
+      case GET:
+        len = snprintf(buf, BUFFER_LEN, "HGET %s %%s", key.c_str());
+        break;
+      case SET:
+        len = snprintf(buf, BUFFER_LEN, "HSET %s %%s %%s", key.c_str());
+        break;
+      case REMOVE:
+        len = snprintf(buf, BUFFER_LEN, "HDEL %s %%s", key.c_str());
         break;
     }
     char *str = new char[len+1];

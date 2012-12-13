@@ -44,6 +44,40 @@ protected:
 #endif
 };
 
+class HiRedisHash: public RedisHash {
+  enum COMMANDS {
+    CONTAINS,
+    KEYS,
+    GET,
+    SET,
+    REMOVE,
+    COMMANDS_MAX
+  };
+
+public:
+  HiRedisHash(HiRedisAccess &redis, const std::string& key);
+
+  virtual bool contains(const std::string& key);
+
+  virtual jsobjects::JSArrayPtr getKeys();
+
+  virtual std::string get(const std::string& key);
+
+  virtual void set(const std::string& key, const std::string& val);
+
+  virtual void remove(const std::string& key);
+
+protected:
+
+  void createCommands();
+
+  HiRedisAccess &redis;
+  std::string key;
+
+  const char* commands[COMMANDS_MAX];
+
+};
+
 class HiRedisAccess: public RedisAccess {
 
 enum COMMANDS {
@@ -90,6 +124,8 @@ public:
 
   virtual RedisListPtr asList(const std::string& id);
 
+  virtual RedisHashPtr asHash(const std::string &id);
+
   ReplyPtr runCommand(const std::string& cmd);
 
   void appendCommand(const std::string& cmd);
@@ -117,6 +153,7 @@ private:
   friend class HiRedisTestAccess;
 #endif
   friend class HiRedisList;
+  friend class HiRedisHash;
 
 };
 
