@@ -202,7 +202,7 @@
       
       this.model.document.on('commit:applied', function(commit) {
         // Send update to the server
-        updateDoc(this.model.document.id, commit);
+        updateDoc(this.model.document, commit);
       }, this);
     },
 

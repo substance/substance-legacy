@@ -76,10 +76,13 @@ redis.RedisDocStore = function (settings) {
   this.list = function (cb) {
     var docIds = self.documents.getKeys();
     var docs = [];
-    for (var idx = 0; idx < docs.length; ++idx) {
-      var id = self.snapshotKey(docs[idx]);
-      var snapshots = self.redis.asHash(id);
-      docs.push(snapshots.get("master"));
+    for (var idx = 0; idx < docIds.length; ++idx) {
+      var snapshotId = self.snapshotKey(docIds[idx]);
+      var snapshots = self.redis.asHash(snapshotId);
+
+      var doc = snapshots.getJSON("master");
+      doc.id = docIds[idx];
+      docs.push(doc);
     }
     if(cb) cb(null, docs);
     return docs;
@@ -149,7 +152,7 @@ redis.RedisDocStore = function (settings) {
 
   this.setSnapshot = function (id, data, title, cb) {
 
-    var snapshots = self.redis.asHash(snapshotKey(id));
+    var snapshots = self.redis.asHash(self.snapshotKey(id));
     snapshots.set(title, data);
 
     if(cb) { cb(null); }

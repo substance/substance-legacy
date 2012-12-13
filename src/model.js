@@ -59,6 +59,10 @@ RedisDocumentStore.prototype.update = function(id, commits, cb) {
   this.store.update(id, commits, cb);
 };
 
+RedisDocumentStore.prototype.setSnapshot = function(id, content, scope, cb) {
+  this.store.setSnapshot(id, content, scope, cb);
+};
+
 RedisDocumentStore.prototype.list = function(cb) {
   this.store.list(cb);
 };
@@ -78,9 +82,11 @@ var store = new RedisDocumentStore();
 // Update doc (docstore.update)
 // -----------------
 
-function updateDoc(docId, commit, cb) {
-  store.update(docId, [commit], function(err) {
-    console.log('updated', docId, [commit]);
+function updateDoc(document, commit, cb) {
+  store.update(document.id, [commit], function(err) {
+    store.setSnapshot(document.id, document.content, 'master', function(err) {
+      console.log('updated', document.id, [commit]);
+    });
   });
 }
 
@@ -270,10 +276,10 @@ function listDocuments(cb) {
   store.list(function(err, documents) {
     var res = _.map(documents, function(doc) {
       return {
-        title: doc,
+        title: doc.properties.title,
         author: "le_author",
-        file: doc,
-        id: doc
+        file: doc.id,
+        id: doc.id
       };
     });
     cb(null, res);
