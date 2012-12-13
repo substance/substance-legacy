@@ -201,7 +201,6 @@
       this.views.tools = new Substance.Composer.views.Tools({model: this.model });
       
       this.model.document.on('commit:applied', function(commit) {
-        console.log('current head', this.model.head);
         // Send update to the server
         updateDoc(this.model.document.id, commit);
       }, this);

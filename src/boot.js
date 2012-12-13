@@ -38,12 +38,13 @@ $(function() {
   var Dashboard = Dance.Performer.extend({
     id: 'container',
     render: function() {
-      this.$el.html(_.tpl('dashboard', {
-        documents: [
-          { title: "Substance", author: "michael", file: "substance" },
-          { title: "Hello World", author: "michael", file: "hello" }
-        ]
-      }));
+      var that = this;
+
+      listDocuments(function(err, documents) {
+        that.$el.html(_.tpl('dashboard', {
+          documents: documents
+        }));
+      });
       return this;
     }
   });
