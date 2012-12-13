@@ -69,6 +69,12 @@ redis.RedisDocStore = function (settings) {
     return true;
   };
 
+  this.list = function (cb) {
+    var docs = self.documents.getKeys();
+    if(cb) cb(null, docs);
+    return docs;
+  }
+
   /**
    *  Deletes a document
    *  @param cb callback
