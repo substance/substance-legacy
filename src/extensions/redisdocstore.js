@@ -70,7 +70,7 @@ redis.RedisDocStore = function (settings) {
   };
 
   this.list = function (cb) {
-    var docs = self.documents.getKeys();
+    var docs = self.documents.getValues();
     if(cb) cb(null, docs);
     return docs;
   }
@@ -100,11 +100,15 @@ redis.RedisDocStore = function (settings) {
     if(commits.size() > 0)
       lastSha = commits.get();
 
+    var docUpdate = {};
+
     self.redis.beginTransaction();
     for(var idx=0; idx<newCommits.length; idx++) {
 
+      var commit = newCommits[idx];
+
       // commit must be in proper order
-      if (typeof lastSha !== undefined && newCommits[idx].parent != lastSha) {
+      if (typeof lastSha !== undefined && commit.parent != lastSha) {
         self.redis.cancelTransaction();
         var err = {err: -1, msg: "Invalid commit chain."};
         // TODO: maybe give more details about the problem
@@ -115,17 +119,33 @@ redis.RedisDocStore = function (settings) {
         return false;
       }
 
-      // note: these commands will be executed when executeTransaction is called
-      //       if something is wrong, e.g., invalid sha sequence, then the transaction is cancelled.
-      commits.add(newCommits[idx].sha);
-
-      // store the commit's data into an own field
-      self.redis.set(commitsKey + ":" + newCommits[idx].sha, newCommits[idx]);
+      if (commit.op[0] === "set") {
+        for(var key in commit.op[1]) {
+          docUpdate[key] = commit.op[1];
+        }
+      }
 
       lastSha = newCommits[idx].sha;
     }
 
     self.redis.executeTransaction();
+
+    // save the commits after knowing that everything is fine
+    for(var idx=0; idx<newCommits.length; idx++) {
+      // note: these commands will be executed when executeTransaction is called
+      //       if something is wrong, e.g., invalid sha sequence, then the transaction is cancelled.
+      commits.add(newCommits[idx].sha);
+      // store the commit's data into an own field
+      self.redis.set(commitsKey + ":" + newCommits[idx].sha, newCommits[idx]);
+    }
+
+    if(Object.keys(docUpdate).length > 0) {
+      var doc = JSON.parse(self.documents.get(id));
+      for(var key in docUpdate) {
+        doc[key] = docUpdate[key];
+      }
+      self.documents.set(id, JSON.stringify(doc));
+    }
 
     if(arguments.length == 3)
       cb({err: 0});
