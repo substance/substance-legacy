@@ -34,13 +34,15 @@ redis.RedisDocStore = function (settings) {
   // e.g. tests would use its own, or one could separate user spaces
   this.redis.setScope(scope);
 
+  self.documents = self.redis.asHash("documents");
+
   /**
    *  Checks if a document exists
    *  @param id the document's id
    *  @param cb callback
    */
   this.exists = function (id, cb) {
-    var result = self.redis.exists(id);
+    var result = self.documents.contains(id);
 
     if (cb) cb({err: 0, result: result});
 
@@ -56,9 +58,10 @@ redis.RedisDocStore = function (settings) {
       return cb({err: -1, msg: "Document already exists."});
     }
 
+    var doc = {"id": id};
     // TODO: more initial fields?
     // initial id field
-    self.redis.set(id, {"id": id});
+    self.documents.set(id, JSON.stringify(doc));
 
     // TODO create initial list for commits
     if (cb) cb({err: 0});
@@ -71,6 +74,7 @@ redis.RedisDocStore = function (settings) {
    *  @param cb callback
    */
   this.delete = function (id, cb) {
+    self.documents.remove(id);
     self.redis.remove(id);
 
     if (arguments.length === 2)
@@ -142,7 +146,8 @@ redis.RedisDocStore = function (settings) {
       }
     }
 
-    var doc = self.redis.getJSON(id);
+    var docData = self.documents.get(id);
+    var doc = JSON.parse(docData);
     doc.commits = {};
 
     var commits = self.redis.asList(id + ":commits");
