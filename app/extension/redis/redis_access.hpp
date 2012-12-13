@@ -5,6 +5,7 @@
 
 class RedisAccess;
 class RedisList;
+class RedisHash;
 class RedisError;
 
 #ifdef SWIG
@@ -19,6 +20,7 @@ class RedisError;
 
 typedef RedisAccess* RedisAccessPtr;
 typedef RedisList* RedisListPtr;
+typedef RedisHash* RedisHashPtr;
 
 class RedisAccess {
 
@@ -55,6 +57,8 @@ public:
 
   virtual RedisListPtr asList(const std::string &id) = 0;
 
+  virtual RedisHashPtr asHash(const std::string &id) = 0;
+
 };
 
 class RedisList {
@@ -68,6 +72,22 @@ public:
   virtual std::string get(unsigned int index = 0) _THROW(RedisError) = 0;
 
   virtual jsobjects::JSArrayPtr asArray() = 0;
+};
+
+class RedisHash {
+
+public:
+
+  virtual bool contains(const std::string& key) = 0;
+
+  virtual jsobjects::JSArrayPtr getKeys() = 0;
+
+  virtual std::string get(const std::string& key) _THROW(RedisError) = 0;
+
+  virtual void set(const std::string& key, const std::string& val) = 0;
+
+  virtual void remove(const std::string& key) = 0;
+
 };
 
 #endif // REDIS_ACCESS_HPP
