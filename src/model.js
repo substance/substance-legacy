@@ -37,8 +37,6 @@ DocumentStore.prototype.delete = function(id, cb) {
 };
 
 
-
-
 // RedisDocumentStore (native)
 // -----------------
 
@@ -61,12 +59,8 @@ RedisDocumentStore.prototype.update = function(id, commits, cb) {
   this.store.update(id, commits, cb);
 };
 
-RedisDocumentStore.prototype.list = function(id, cb) {
-  var docs = [
-    { title: "Substance", author: "michael", file: "substance" },
-    { title: "Hello World", author: "michael", file: "hello" }
-  ];
-  cb(null, docs);
+RedisDocumentStore.prototype.list = function(cb) {
+  this.store.list(cb);
 };
 
 RedisDocumentStore.prototype.delete = function(id, cb) {
@@ -266,6 +260,23 @@ function loadDocument(id, cb) {
       document: new Substance.Document(doc)
     });
     cb(err, session);
+  });
+}
+
+// List all documents
+// -----------------
+
+function listDocuments(cb) {
+  store.list(function(err, documents) {
+    var res = _.map(documents, function(doc) {
+      return {
+        title: doc,
+        author: "le_author",
+        file: doc,
+        id: doc
+      };
+    });
+    cb(null, res);
   });
 }
 
