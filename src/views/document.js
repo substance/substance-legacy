@@ -17,12 +17,13 @@ sc.views.Document = Dance.Performer.extend({
   initialize: function(options) {
     var that = this;
 
-    this.model.document.on('operation:applied', function(operation) {
-      switch(operation[0]) {
-        case "move": that.move(operation[1]); break;
-        case "insert": that.insert(operation[1]); break;
-        case "update": that.update(operation[1]); break;
-        case "delete": that.delete(operation[1]); break;
+    this.model.document.on('commit:applied', function(commit) {
+      switch(commit.op[0]) {
+        case "move": that.move(commit.op[1]); break;
+        case "insert": that.insert(commit.op[1]); break;
+        case "update": that.update(commit.op[1]); break;
+        case "set": that.set(commit.op[1]); break;
+        case "delete": that.delete(commit.op[1]); break;
       }
     });
 
@@ -67,6 +68,12 @@ sc.views.Document = Dance.Performer.extend({
   // Get a particular node by id
   getNode: function(id) {
     return this.model.document.content.nodes[id];
+  },
+
+  set: function(options) {
+    // Re-render the whole thing
+    // TODO: just update the document specific parts
+    this.render();
   },
 
   insert: function(options) {

@@ -41,9 +41,7 @@ redis.RedisDocStore = function (settings) {
    */
   this.exists = function (id, cb) {
     var result = self.redis.exists(id);
-
-    if (cb) cb({err: 0, result: result});
-
+    if (cb) cb(result);
     return result;
   };
 
@@ -56,14 +54,17 @@ redis.RedisDocStore = function (settings) {
       return cb({err: -1, msg: "Document already exists."});
     }
 
+    var doc = {"id": id};
+
     // TODO: more initial fields?
     // initial id field
-    self.redis.set(id, {"id": id});
+    // TODO: what to do if this fails?
+    self.redis.set(id, doc);
 
     // TODO create initial list for commits
-    if (cb) cb({err: 0});
+    if (cb) cb(null, doc);
 
-    return true;
+    return doc;
   };
 
   /**
@@ -72,10 +73,7 @@ redis.RedisDocStore = function (settings) {
    */
   this.delete = function (id, cb) {
     self.redis.remove(id);
-
-    if (arguments.length === 2)
-      cb({err: 0});
-
+    if (cb) cb(null);
     return true;
   }
 

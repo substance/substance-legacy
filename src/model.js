@@ -1,4 +1,4 @@
-// Document.Store
+// Document.Store (web debug)
 // -----------------
 
 var DocumentStore = function() {
@@ -36,17 +36,58 @@ DocumentStore.prototype.delete = function(id, cb) {
   // Implement
 };
 
-var store = new DocumentStore();
 
-// Send operation to the server
+
+
+// RedisDocumentStore (native)
 // -----------------
 
-function updateDoc(operation, cb) {
-  // console.log('broadcast operation so the server sees it.');
-  // 
-  // talk.send(["document:update", [operation]], function(err) {
-  //   console.log('updated doc on the server', err);
-  // });
+var RedisDocumentStore = function() {
+  this.store = new redis.RedisDocStore();
+};
+
+
+RedisDocumentStore.prototype.create = function(cb) {
+  this.store.create(Math.uuid(), cb);
+};
+
+
+RedisDocumentStore.prototype.get = function(id, cb) {
+  this.store.get(id, cb);
+};
+
+RedisDocumentStore.prototype.update = function(id, commits, cb) {
+  // Implement
+  this.store.update(id, commits, cb);
+};
+
+RedisDocumentStore.prototype.list = function(id, cb) {
+  var docs = [
+    { title: "Substance", author: "michael", file: "substance" },
+    { title: "Hello World", author: "michael", file: "hello" }
+  ];
+  cb(null, docs);
+};
+
+RedisDocumentStore.prototype.delete = function(id, cb) {
+  // Implement
+  this.store.delete(id, cb);
+};
+
+
+
+
+var store = new RedisDocumentStore();
+
+// var store = new DocumentStore();
+
+// Update doc (docstore.update)
+// -----------------
+
+function updateDoc(docId, commit, cb) {
+  store.update(docId, [commit], function(err) {
+    console.log('updated', docId, [commit]);
+  });
 }
 
 // Comments
@@ -233,12 +274,11 @@ function loadDocument(id, cb) {
 
 function createDocument(cb) {
   store.create(function(err, doc) {
+
     var session = new Substance.Session({
       document: new Substance.Document(doc)
     });
 
-    // Add title
-    session.document.apply(["set", {title: "Untitled", abstract: "Enter abstract"}]);
     cb(err, session);
   });
 }

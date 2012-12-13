@@ -105,8 +105,8 @@ $(function() {
     // TODO: find a better way
     listenForDocumentChanges: function() {
       var that = this;
-      this.view.model.document.on('operation:applied', function(op) {
-        if (op[0] === "set") {
+      this.view.model.document.on('commit:applied', function(commit) {
+        if (commit.op[0] === "set") {
           var title = that.view.model.document.content.properties.title;
           that.$('.menu .document').html(title);
         }
@@ -119,6 +119,11 @@ $(function() {
         that.view = new sc.views.Editor({model: session });
         that.render();
         that.listenForDocumentChanges();
+
+        // Add title / abstract
+        _.delay(function() {
+          session.document.apply(["set", {title: "Untitled", abstract: "Enter abstract"}]);
+        }, 200); 
       });
       return;
     },

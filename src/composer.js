@@ -195,14 +195,15 @@
       this.views = {};
 
       // Rebind event handlers
-      this.model.document.off('operation:applied');
+      this.model.document.off('commit:applied');
 
       this.views.document = new Substance.Composer.views.Document({ model: this.model });
       this.views.tools = new Substance.Composer.views.Tools({model: this.model });
       
-      this.model.document.on('operation:applied', function(operation) {
+      this.model.document.on('commit:applied', function(commit) {
+        console.log('current head', this.model.head);
         // Send update to the server
-        updateDoc(operation);
+        updateDoc(this.model.document.id, commit);
       }, this);
     },
 
