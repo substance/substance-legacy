@@ -209,7 +209,7 @@ h2 { font-size: 160%; padding-bottom: 15px; }
 #tools {
   background: #F0F1EB;
   position: fixed;
-  top: 40px;
+  top: 80px;
   bottom: 0px;
   left: 880px;
   overflow: auto;

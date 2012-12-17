@@ -52,6 +52,8 @@ StaticDocStore.prototype.delete = function(id, cb) {
 
 var store;
 
+// store = new StaticDocStore();
+
 if (window.redis) {
   store = new redis.RedisDocStore();
 } else {
