@@ -119,12 +119,12 @@ $(function() {
       createDocument(function(err, session) {
         that.view = new sc.views.Editor({model: session });
         that.render();
-        that.listenForDocumentChanges();
 
         // Add title / abstract
         _.delay(function() {
           session.document.apply(["set", {title: "Untitled", abstract: "Enter abstract"}]);
-        }, 200); 
+          that.listenForDocumentChanges();
+        }, 100);
       });
       return;
     },

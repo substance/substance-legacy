@@ -52,7 +52,7 @@ StaticDocStore.prototype.delete = function(id, cb) {
 
 var store;
 
-if (redis) {
+if (window.redis) {
   store = new redis.RedisDocStore();
 } else {
   store = new StaticDocStore();
@@ -81,7 +81,6 @@ var Comments = function(session) {
 
 _.extend(Comments.prototype, _.Events, {
   compute: function(scope) {
-
     var node = this.session.node();
     this.scopes = [];
 
@@ -265,16 +264,15 @@ function listDocuments(cb) {
   });
 }
 
+
 // Create a new document
 // -----------------
 
 function createDocument(cb) {
   store.create(Math.uuid(), function(err, doc) {
-
     var session = new Substance.Session({
       document: new Substance.Document(doc)
     });
-
     cb(err, session);
   });
 }

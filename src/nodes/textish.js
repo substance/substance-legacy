@@ -156,6 +156,8 @@ Textish = {
   insertAnnotation: function(type, sel) {
     var id = "annotation:"+Math.uuid();
     this.surface.insertAnnotation({ id: id, type: type, pos: sel });
+
+    if (_.include(["em", "str"], type)) return; // skype comment-scope selection
     choreographer.trigger('comment-scope:selected', id, this.model.id, id);
   },
   

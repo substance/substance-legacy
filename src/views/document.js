@@ -73,7 +73,10 @@ sc.views.Document = Dance.Performer.extend({
   set: function(options) {
     // Re-render the whole thing
     // TODO: just update the document specific parts
-    this.render();
+    // this.render();
+    
+    this.initSurface("abstract");
+    this.initSurface("title");
   },
 
   insert: function(options) {
