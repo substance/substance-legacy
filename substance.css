@@ -215,7 +215,6 @@ body {
 -------------------------------------------------------------------------------*/
 
 #document_menu {
-  display: none;
   background: #DCDDD9;
   position: fixed;
 
@@ -232,6 +231,7 @@ body {
 #document_menu .navigation {
   height: 40px;
   width: 1130px;
+  margin-left: 80px;
   overflow: auto;
 }
 

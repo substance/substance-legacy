@@ -571,7 +571,7 @@ h2 { font-size: 160%; padding-bottom: 15px; }
 #document {
   font-family: 'Palatino Linotype', 'Merriweather';
   position: fixed;
-  top: 40px;
+  top: 80px;
   bottom: 0px;
   overflow: auto;
 

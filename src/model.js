@@ -1,11 +1,11 @@
 // Document.Store (web debug)
 // -----------------
 
-var DocumentStore = function() {
+var StaticDocStore = function() {
 
 };
 
-DocumentStore.prototype.get = function(id, cb) {
+StaticDocStore.prototype.get = function(id, cb) {
   // HACK: under webkitgtk XMLHttpRequests do not work for local resources :(
   //       workaround is to add a native extension that loads local data
   //       usage: substance.resources.getJSON(url)  - returns JS object
@@ -22,62 +22,41 @@ DocumentStore.prototype.get = function(id, cb) {
 };
 
 
-DocumentStore.prototype.create = function(cb) {
+StaticDocStore.prototype.list = function(cb) {
+  cb(null, [
+    { properties: { title: "Substance" }, id: "substance" },
+    { properties: { title: "Hello World" }, id: "hello" }
+  ]);
+};
+
+
+StaticDocStore.prototype.create = function(cb) {
   cb(null, {id: Math.uuid()});
 };
 
 
-DocumentStore.prototype.update = function(id, operations, cb) {
+StaticDocStore.prototype.update = function(id, operations, cb) {
   // Implement
 };
 
 
-DocumentStore.prototype.delete = function(id, cb) {
+StaticDocStore.prototype.delete = function(id, cb) {
   // Implement
 };
 
 
-// RedisDocumentStore (native)
+// Initialize DocStore
 // -----------------
 
-var RedisDocumentStore = function() {
-  this.store = new redis.RedisDocStore();
-};
+// store = new StaticDocStore();
 
+var store;
 
-RedisDocumentStore.prototype.create = function(cb) {
-  this.store.create(Math.uuid(), cb);
-};
-
-
-RedisDocumentStore.prototype.get = function(id, cb) {
-  this.store.get(id, cb);
-};
-
-RedisDocumentStore.prototype.update = function(id, commits, cb) {
-  // Implement
-  this.store.update(id, commits, cb);
-};
-
-RedisDocumentStore.prototype.setSnapshot = function(id, content, scope, cb) {
-  this.store.setSnapshot(id, content, scope, cb);
-};
-
-RedisDocumentStore.prototype.list = function(cb) {
-  this.store.list(cb);
-};
-
-RedisDocumentStore.prototype.delete = function(id, cb) {
-  // Implement
-  this.store.delete(id, cb);
-};
-
-
-
-
-var store = new RedisDocumentStore();
-
-// var store = new DocumentStore();
+if (redis) {
+  store = new redis.RedisDocStore();
+} else {
+  store = new StaticDocStore();
+}
 
 // Update doc (docstore.update)
 // -----------------
@@ -290,7 +269,7 @@ function listDocuments(cb) {
 // -----------------
 
 function createDocument(cb) {
-  store.create(function(err, doc) {
+  store.create(Math.uuid(), function(err, doc) {
 
     var session = new Substance.Session({
       document: new Substance.Document(doc)

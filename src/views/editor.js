@@ -7,8 +7,16 @@ sc.views.Editor = Dance.Performer.extend({
   events: {
     'click .toggle.settings': 'toggleSettings',
     'click .toggle.collaborators': 'toggleCollaborators',
-    'click .toggle.export': 'toggleExport'
+    'click .toggle.export': 'toggleExport',
+    'click a.delete-document': '_deleteDocument'
   },
+
+    _deleteDocument: function() {
+      store.delete(this.model.document.id, function() {
+        choreographer.navigate('/', true);
+      });
+      return false;
+    },
 
   // Handlers
   // --------
