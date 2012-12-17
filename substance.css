@@ -1,4 +1,5 @@
 body {
+  overflow:hidden;
 }
 
 #container {
@@ -217,7 +218,6 @@ body {
 #document_menu {
   background: #DCDDD9;
   position: fixed;
-
   top: 40px;
   left: 0px;
   right: 0px;
