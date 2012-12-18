@@ -23,7 +23,9 @@ extern bool redis_initialize_jsobjects(JSGlobalContextRef context);
     // launch the redis db
   m_redisProcess = [NSTask new];
   [m_redisProcess setLaunchPath:[NSString stringWithFormat: @"%@/Contents/Redis/redis-server", path]];
-  [m_redisProcess setCurrentDirectoryPath:[NSString stringWithFormat: @"%@/Contents/Redis", path]];
+  [m_redisProcess setCurrentDirectoryPath: NSHomeDirectory()];
+  [m_redisProcess setArguments:[NSArray arrayWithObjects:
+    [NSString stringWithFormat: @"%@/Contents/Redis/redis.conf", path], nil]];
   [m_redisProcess launch];
 
   m_webExtension = [[WebViewExtension alloc] init: webView];
