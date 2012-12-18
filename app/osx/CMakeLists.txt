@@ -47,6 +47,8 @@ add_executable(${TARGET_NAME} MACOSX_BUNDLE
   appDelegate.m
   MainView.h
   MainView.m
+  ExtendedNSFileManager.h
+  ExtendedNSFileManager.m
   MainMenu.xib
 )
 
@@ -77,15 +79,19 @@ compile_xib (${TARGET_NAME} ${BUNDLE_LOCATION} ${CMAKE_CURRENT_SOURCE_DIR}/MainM
 if(NOT EXISTS ${BUNDLE_LOCATION}/Contents/Resources)
   file(MAKE_DIRECTORY ${BUNDLE_LOCATION}/Contents/Resources)
 endif()
+if(NOT EXISTS ${BUNDLE_LOCATION}/Contents/Redis)
+  file(MAKE_DIRECTORY ${BUNDLE_LOCATION}/Contents/Redis)
+endif()
 
 execute_process(
   COMMAND rsync -r ${CMAKE_CURRENT_SOURCE_DIR}/Resources/${MACOSX_BUNDLE_ICON_FILE} ${BUNDLE_LOCATION}/Contents/Resources
+  COMMAND rsync -r ${REDIS_CONF} ${BUNDLE_LOCATION}/Contents/Redis/redis.conf
 )
 
 if (NOT EXISTS ${BUNDLE_LOCATION}/Contents/Assets)
   execute_process(
     COMMAND ln -s ${PROJECT_SOURCE_DIR} ${BUNDLE_LOCATION}/Contents/Assets
-    COMMAND ln -s ${PROJECT_SOURCE_DIR}/ext/redisdb/bin ${BUNDLE_LOCATION}/Contents/Redis
+    COMMAND ln -s ${PROJECT_SOURCE_DIR}/ext/redisdb/bin/redis-server ${BUNDLE_LOCATION}/Contents/Redis/redis-server
   )
 endif ()
 
@@ -141,7 +147,7 @@ install(CODE "
     COMMAND rsync ${PROJECT_SOURCE_DIR}/ext/redisdb/bin/redis-server ${REDISDB_DIST_DIR}/
   )
   execute_process(
-    COMMAND rsync ${PROJECT_SOURCE_DIR}/redis.conf ${REDISDB_DIST_DIR}/a
+    COMMAND rsync ${REDIS_CONF} ${REDISDB_DIST_DIR}/redis.conf
   )
 " COMPONENT Runtime)
 
