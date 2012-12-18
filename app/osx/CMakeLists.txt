@@ -120,3 +120,8 @@ add_custom_command(OUTPUT ${BUNDLE_DIST}
 )
 
 add_custom_target(dist DEPENDS ${TARGET_NAME} ${BUNDLE_DIST})
+
+install(CODE "
+  include(BundleUtilities)
+  fixup_bundle(\"${BUNDLE_DIST}\" \"\" \"${OSX_LIBRARY_OUTPUT_DIR}\")
+  " COMPONENT Runtime)

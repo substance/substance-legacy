@@ -38,6 +38,10 @@ add_library(
   ${REDIS_DOCSTORE_SOURCES}
 )
 
+set_target_properties(${TARGET} PROPERTIES
+  LIBRARY_OUTPUT_DIRECTORY ${OSX_LIBRARY_OUTPUT_DIR}
+)
+
 target_link_libraries(${TARGET}
   ${HIREDIS_LIBS}
   ${JS_LIBRARIES}
