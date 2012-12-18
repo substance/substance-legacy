@@ -125,7 +125,6 @@ body {
   height: 40px;
   float: left;
   display: block;
-  background: blue;
 }
 
 #header .user-status a.logout {
@@ -141,20 +140,17 @@ body {
 
 #header .user-status a.new-document {
   -webkit-transition: background 200ms linear;
-  border-radius: 3px;
   margin: 5px 0;
   margin-right: 20px;
   padding: 0 10px;
   height: 30px;
   line-height: 30px;
-  background: #828181;
-  color: #fff;
+  color: rgba(0,0,0,0.8);
 }
 
 #header .user-status a.new-document:hover {
-  background: #999;
+  /*background: #999;*/
 }
-
 
 #help {
   padding-top: 50px;
@@ -250,6 +246,36 @@ body {
   border: none;
 }
 
+
+/* Publish State */
+
+#document_menu .publish-state {
+  float: right;
+  width: 200px;
+  background: rgba(0,0,0,0.10);
+  margin: 3px 0;
+
+  height: 34px;
+  border-radius: 3px;
+}
+
+#document_menu .publish-state .label {
+  float: left;
+  font-size: 10px;
+}
+
+#document_menu .publish-state .action {
+  display: block;
+  float: right;
+  height: 30px;
+  font-size: 12px;
+  text-transform: uppercase;
+  line-height: 30px;
+  padding: 0 5px;
+  font-weight: bold;
+  color: rgba(0,0,0, 0.5);
+}
+
 #document_shelf {
   -webkit-transition-property: height;
   -webkit-transition-duration: 0.6s;
@@ -259,7 +285,7 @@ body {
 
 #document_shelf .shelf-content {
   width: 1200px;
-  /*margin: 0 auto;*/
+  /* margin: 0 auto; */
 }
 
 #document_wrapper {

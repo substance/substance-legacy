@@ -2,6 +2,7 @@
 <html>
   <head>
     <title>Substance</title>
+    <link href="buttons.css" media="screen" rel="stylesheet" type="text/css" />
     <link href="substance.css" media="screen" rel="stylesheet" type="text/css" />
     <link href="composer.css" media="screen" rel="stylesheet" type="text/css" />
     <link href="lib/codemirror/codemirror.css" media="screen" rel="stylesheet" type="text/css" />
@@ -22,7 +23,7 @@
 
           <div class="user-status">
           <% if (user) { %>
-            <a href="#new" class="new-document">New Document</a>
+            <a href="#new" class="new-document button light">New Document</a>
             <div class="username"><%= user %></div>
             <a href="#logout" class="logout"></a>
           <% } else { %>
@@ -71,7 +72,7 @@
               <div class="document">
                 <a class="load-document" href="#demo/<%= doc.file %>" document="<%= doc._id %>">
                   <div class="image">
-                    <img src="http://behance.vo.llnwd.net/profiles/58036/projects/5413899/096b7d0c26ca4e849a000a9b6e135b01.png" width="200">
+                    <img src="/images/document-image-placeholder.png" width="200">
                   </div>
 
                   <div class="title">
@@ -107,6 +108,10 @@
           <!--<div class="toggle collaborators"><a href="#">Collaborators</a></div>
           <div class="toggle settings"><a href="#">Settings</a></div>
           <div class="toggle export"><a href="#">Export</a></div>-->
+          <div class="publish-state">
+            <div class="label">Not yet published</div>
+            <a href="#" class="action publish button green">Publish</a>
+          </div>
         </div>
 
         <div id="document_shelf">
@@ -247,7 +252,7 @@
             <div class="comment-input-wrapper">
               <textarea class="comment-content" name="comment" placeholder="Add a comment"></textarea>
             </div>
-            <a href="#" class="button insert-comment">Add Comment</a>
+            <a href="#" class="button dark insert-comment">Add Comment</a>
           </div>
 
         </div>
