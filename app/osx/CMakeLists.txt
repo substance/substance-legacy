@@ -47,6 +47,8 @@ add_executable(${TARGET_NAME} MACOSX_BUNDLE
   appDelegate.m
   MainView.h
   MainView.m
+  ExtendedNSFileManager.h
+  ExtendedNSFileManager.m
   MainMenu.xib
 )
 
@@ -89,7 +91,7 @@ execute_process(
 if (NOT EXISTS ${BUNDLE_LOCATION}/Contents/Assets)
   execute_process(
     COMMAND ln -s ${PROJECT_SOURCE_DIR} ${BUNDLE_LOCATION}/Contents/Assets
-    COMMAND ln -s ${PROJECT_SOURCE_DIR}/ext/redisdb/bin ${BUNDLE_LOCATION}/Contents/Redis
+    COMMAND ln -s ${PROJECT_SOURCE_DIR}/ext/redisdb/bin/redis-server ${BUNDLE_LOCATION}/Contents/Redis/redis-server
   )
 endif ()
 

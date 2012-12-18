@@ -1,4 +1,5 @@
 #import "appDelegate.h"
+#import "ExtendedNSFileManager.h"
 
 extern bool redis_initialize_jsobjects(JSGlobalContextRef context);
 
@@ -17,13 +18,16 @@ extern bool redis_initialize_jsobjects(JSGlobalContextRef context);
 
   [mainView setWebView: webView];
 
+  ExtendedNSFileManager *fs = [[ExtendedNSFileManager new] init: [NSFileManager defaultManager]];
+
     // Start a webview with the bundled index.html file
   NSString *path = [[NSBundle mainBundle] bundlePath];
+  NSString *appDataDir = [fs applicationSupportDirectory];
 
     // launch the redis db
   m_redisProcess = [NSTask new];
   [m_redisProcess setLaunchPath:[NSString stringWithFormat: @"%@/Contents/Redis/redis-server", path]];
-  [m_redisProcess setCurrentDirectoryPath: NSHomeDirectory()];
+  [m_redisProcess setCurrentDirectoryPath: appDataDir];
   [m_redisProcess setArguments:[NSArray arrayWithObjects:
     [NSString stringWithFormat: @"%@/Contents/Redis/redis.conf", path], nil]];
   [m_redisProcess launch];
@@ -35,7 +39,7 @@ extern bool redis_initialize_jsobjects(JSGlobalContextRef context);
   [webView setFrameLoadDelegate: m_loadDelegate];
 
   NSString *url =  [NSString stringWithFormat: @"file://%@/Contents/Assets/index.html", path];
-	[ [webView mainFrame] loadRequest: 
+	[ [webView mainFrame] loadRequest:
 		[NSURLRequest requestWithURL: [NSURL URLWithString:url] ]
 	];
 }
