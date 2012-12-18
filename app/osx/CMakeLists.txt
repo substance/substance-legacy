@@ -106,17 +106,41 @@ set (REDISDB_DIST_DIR ${BUNDLE_DIST}/Contents/Redis)
 install(CODE "
   execute_process(
     COMMAND rsync -r --exclude=Assets ${BUNDLE_LOCATION} ${DIST_DIR}
+  )
+  execute_process(
     COMMAND rsync -r ${PROJECT_SOURCE_DIR}/data ${ASSETS_DIST_DIR}
+  )
+  execute_process(
     COMMAND rsync -r ${PROJECT_SOURCE_DIR}/images ${ASSETS_DIST_DIR}
+  )
+  execute_process(
     COMMAND rsync -r ${PROJECT_SOURCE_DIR}/lib ${ASSETS_DIST_DIR}
+  )
+  execute_process(
     COMMAND rsync -r ${PROJECT_SOURCE_DIR}/src ${ASSETS_DIST_DIR}
+  )
+  execute_process(
     COMMAND rsync ${PROJECT_SOURCE_DIR}/index.html ${ASSETS_DIST_DIR}
+  )
+  execute_process(
     COMMAND rsync ${PROJECT_SOURCE_DIR}/composer.css ${ASSETS_DIST_DIR}
+  )
+  execute_process(
     COMMAND rsync ${PROJECT_SOURCE_DIR}/substance.css ${ASSETS_DIST_DIR}
+  )
+  execute_process(
     COMMAND rsync ${PROJECT_SOURCE_DIR}/package.json ${ASSETS_DIST_DIR}
+  )
+  execute_process(
     COMMAND rsync ${PROJECT_SOURCE_DIR}/README.md ${ASSETS_DIST_DIR}
+  )
+  execute_process(
     COMMAND rsync ${PROJECT_SOURCE_DIR}/LICENSE ${ASSETS_DIST_DIR}
+  )
+  execute_process(
     COMMAND rsync ${PROJECT_SOURCE_DIR}/ext/redisdb/bin/redis-server ${REDISDB_DIST_DIR}/
+  )
+  execute_process(
     COMMAND rsync ${PROJECT_SOURCE_DIR}/redis.conf ${REDISDB_DIST_DIR}/a
   )
 " COMPONENT Runtime)
