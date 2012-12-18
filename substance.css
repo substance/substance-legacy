@@ -250,6 +250,31 @@ body {
   border: none;
 }
 
+
+/* Publish State */
+
+#document_menu .publish-state {
+  float: right;
+  width: 200px;
+  background: rgba(0,0,0,0.10);
+  margin: 3px 0;
+
+  height: 34px;
+  border-radius: 2px;
+}
+
+#document_menu .publish-state .label {
+  float: left;
+  font-size: 10px;
+}
+
+#document_menu .publish-state .action {
+  display: block;
+  float: right;
+  background: red;
+}
+
+
 #document_shelf {
   -webkit-transition-property: height;
   -webkit-transition-duration: 0.6s;
