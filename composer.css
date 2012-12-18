@@ -497,82 +497,22 @@ h2 { font-size: 160%; padding-bottom: 15px; }
   background: rgba(255,255,255, 1);
 }
 
+
 /* LE button */
 
 .new-comment .button {
   display: block;
-  background: rgba(46, 43, 39, 0.68);
+  /*background: rgba(46, 43, 39, 0.68);*/
   color: #fff;
-  border-radius: 3px;
+  /*border-radius: 3px;*/
   text-align: center;
   font-weight: bold;
   font-size: 12px;
-  border: none;
+  /*border: none;*/
   padding: 5px;
   text-transform: uppercase;
-
-  /* Rectangle 241: */
-
-  border-radius: 3px;
-
-  background: #544C47;
-
-  background-image: -o-linear-gradient(-90deg, #4C4A47 0%, #2A2A24 100%);
-  background-image: -moz-linear-gradient(-90deg, #4C4A47 0%, #2A2A24 100%);
-  background-image: -webkit-linear-gradient(-90deg, #4C4A47 0%, #2A2A24 100%);
-  background-image: -ms-linear-gradient(-90deg, #4C4A47 0%, #2A2A24 100%);
-  background-image: linear-gradient(-90deg, #4C4A47 0%, #2A2A24 100%);
-
-  border: 1px solid #272521;
-
-  -moz-box-shadow:    0px 1px 0px rgba(255,255,255,0.50), inset 0px 1px 0px rgba(0,0,0,0.25);
-  -webkit-box-shadow: 0px 1px 0px rgba(255,255,255,0.50), inset 0px 1px 0px rgba(0,0,0,0.25);
-  box-shadow:         0px 1px 0px rgba(255,255,255,0.50), inset 0px 1px 0px rgba(0,0,0,0.25);
-
 }
 
-.new-comment .button:hover {
-  background: rgba(46, 43, 39, 0.68);
-  /* Rectangle 241: */
-
-  border-radius: 3px;
-
-  background: #544C47;
-
-  background-image: -o-linear-gradient(-90deg, #68655F 0%, #36362E 100%);
-  background-image: -moz-linear-gradient(-90deg, #68655F 0%, #36362E 100%);
-  background-image: -webkit-linear-gradient(-90deg, #68655F 0%, #36362E 100%);
-  background-image: -ms-linear-gradient(-90deg, #68655F 0%, #36362E 100%);
-  background-image: linear-gradient(-90deg, #68655F 0%, #36362E 100%);
-
-  border: 1px solid #272521;
-
-  -moz-box-shadow:    0px 1px 0px rgba(255,255,255,0.50), inset 0px 1px 0px rgba(255,255,255,0.15);
-  -webkit-box-shadow: 0px 1px 0px rgba(255,255,255,0.50), inset 0px 1px 0px rgba(255,255,255,0.15);
-  box-shadow:         0px 1px 0px rgba(255,255,255,0.50), inset 0px 1px 0px rgba(255,255,255,0.15);
-
-}
-
-.new-comment .button:active {
-  /* Rectangle 241: */
-
-border-radius: 3px;
-
-background: #544C47;
-
-background-image: -o-linear-gradient(-90deg, #2A2A24 0%, #383633 100%);
-background-image: -moz-linear-gradient(-90deg, #2A2A24 0%, #383633 100%);
-background-image: -webkit-linear-gradient(-90deg, #2A2A24 0%, #383633 100%);
-background-image: -ms-linear-gradient(-90deg, #2A2A24 0%, #383633 100%);
-background-image: linear-gradient(-90deg, #2A2A24 0%, #383633 100%);
-
-border: 1px solid #272521;
-
--moz-box-shadow:    0px 1px 0px rgba(255,255,255,0.20), inset 0px 2px 3px rgba(0,0,0,0.25);
--webkit-box-shadow: 0px 1px 0px rgba(255,255,255,0.20), inset 0px 2px 3px rgba(0,0,0,0.25);
-box-shadow:         0px 1px 0px rgba(255,255,255,0.20), inset 0px 2px 3px rgba(0,0,0,0.25);
-
-}
 
 /* Patches Tool
 -------------------------------------------------------------------------------*/
