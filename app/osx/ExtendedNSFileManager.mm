@@ -31,7 +31,7 @@ NSString * const DirectoryLocationDomain = @"DirectoryLocationDomain";
 
 @implementation ExtendedNSFileManager
 
-- (id) init: (NSFileManager *) fs
+- (id) initWithFileManager: (NSFileManager *) fs
 {
   fs_delegate = fs;
 

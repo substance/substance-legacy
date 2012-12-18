@@ -1,7 +1,7 @@
 #import "appDelegate.h"
 #import "ExtendedNSFileManager.h"
 
-extern bool redis_initialize_jsobjects(JSGlobalContextRef context);
+extern "C" bool redis_initialize_jsobjects(JSGlobalContextRef context);
 
 @implementation SubstanceAppDelegate
 
@@ -12,13 +12,13 @@ extern bool redis_initialize_jsobjects(JSGlobalContextRef context);
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification {
 
 #ifdef DEVELOPER_EXTRAS
-  [[NSUserDefaults standardUserDefaults] setBool:TRUE forKey:@"WebKitDeveloperExtras"];
-  [[NSUserDefaults standardUserDefaults] synchronize];
+//  [[NSUserDefaults standardUserDefaults] setBool:TRUE forKey:@"WebKitDeveloperExtras"];
+//  [[NSUserDefaults standardUserDefaults] synchronize];
 #endif // DEVELOPER_EXTRAS
 
   [mainView setWebView: webView];
 
-  ExtendedNSFileManager *fs = [[ExtendedNSFileManager new] init: [NSFileManager defaultManager]];
+  ExtendedNSFileManager *fs = [[ExtendedNSFileManager new] initWithFileManager: [NSFileManager defaultManager]];
 
     // Start a webview with the bundled index.html file
   NSString *path = [[NSBundle mainBundle] bundlePath];
@@ -32,7 +32,7 @@ extern bool redis_initialize_jsobjects(JSGlobalContextRef context);
     [NSString stringWithFormat: @"%@/Contents/Redis/redis.conf", path], nil]];
   [m_redisProcess launch];
 
-  m_webExtension = [[WebViewExtension alloc] init: webView];
+  m_webExtension = [[WebViewExtension alloc] initWithWebView: webView];
   [m_webExtension addExtension: (JSCExtension) redis_initialize_jsobjects];
 
   m_loadDelegate = [[WebViewLoadDelegate alloc] init: m_webExtension];

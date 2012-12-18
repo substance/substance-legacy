@@ -28,7 +28,7 @@ typedef bool (*JSCExtension)(JSGlobalContextRef context);
   JSCExtension m_extensions[5];
 }
 
-- (id) init : (WebView *)webView;
+- (id) initWithWebView : (WebView *)webView;
 
 - (WebView *) getWebView;
 

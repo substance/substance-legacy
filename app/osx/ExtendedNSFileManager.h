@@ -30,7 +30,7 @@
 	NSFileManager *fs_delegate;
 }
 
-- (id) init: (NSFileManager *) fs;
+- (id) initWithFileManager: (NSFileManager *) fs;
 
 - (NSString *)findOrCreateDirectory:(NSSearchPathDirectory)searchPathDirectory
 	inDomain:(NSSearchPathDomainMask)domainMask

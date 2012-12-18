@@ -42,13 +42,13 @@ if(ENABLE_DEVELOPER_EXTRAS)
 endif()
 
 add_executable(${TARGET_NAME} MACOSX_BUNDLE
-  main.m
+  main.mm
   appDelegate.h
-  appDelegate.m
+  appDelegate.mm
   MainView.h
-  MainView.m
+  MainView.mm
   ExtendedNSFileManager.h
-  ExtendedNSFileManager.m
+  ExtendedNSFileManager.mm
   MainMenu.xib
 )
 

@@ -60,7 +60,7 @@
 
 @implementation WebViewExtension
 
-- (id) init: (WebView *) webView
+- (id) initWithWebView: (WebView *) webView
 {
   m_webView = webView;
   for (int idx=0; idx < 5; ++idx) {
@@ -78,7 +78,6 @@
 - (void) updateJSEngine
 {
   JSGlobalContextRef context = [[m_webView mainFrame] globalContext];
-
   for (int idx=0; idx < 5; ++idx) {
     if(m_extensions[idx] != 0) {
       m_extensions[idx](context);
