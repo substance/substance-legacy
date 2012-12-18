@@ -251,17 +251,23 @@ body {
 
 #document_menu .publish-state {
   float: right;
-  width: 200px;
+  width: 230px;
   background: rgba(0,0,0,0.10);
   margin: 3px 0;
 
   height: 34px;
   border-radius: 3px;
+  /*box-shadow:         0px 1px 0px rgba(255,255,255,0.50), inset 0px 1px 0px rgba(255,255,255,0.15);*/
 }
 
 #document_menu .publish-state .label {
   float: left;
-  font-size: 10px;
+  line-height: 34px;
+  font-weight: bold;
+  text-transform: uppercase;
+  color: #777;
+  font-size: 12px;
+  padding-left: 15px;
 }
 
 #document_menu .publish-state .action {
@@ -271,7 +277,9 @@ body {
   font-size: 12px;
   text-transform: uppercase;
   line-height: 30px;
-  padding: 0 5px;
+  padding: 0 10px;
+  margin-right: 3px;
+  margin-top: 2px;
   font-weight: bold;
   color: rgba(0,0,0, 0.5);
 }
