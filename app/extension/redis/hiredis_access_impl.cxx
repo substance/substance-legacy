@@ -56,7 +56,8 @@ void HiRedisAccess::setScope(const char* scope) {
 }
 
 void HiRedisAccess::connect() {
-  redis = redisConnect(hostUrl.c_str(), port);
+  //redis = redisConnect(hostUrl.c_str(), port);
+  redis = redisConnectUnix("/tmp/substance.sock");
   if (redis->err) {
     throw RedisError("Connection error: %s\n", redis->errstr);
   }
