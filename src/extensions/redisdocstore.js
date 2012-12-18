@@ -1,5 +1,6 @@
 // check if the redis native extension is available
-//if (typeof redis !== "undefined" || typeof redis.RedisAccess !== "undefined") {
+// if (typeof redis !== "undefined" || typeof redis.RedisAccess !== "undefined") {
+if (window.redis) {
 
 redis.RedisDocStore = function (settings) {
 
@@ -76,11 +77,15 @@ redis.RedisDocStore = function (settings) {
   this.list = function (cb) {
     var docIds = self.documents.getKeys();
     var docs = [];
+
     for (var idx = 0; idx < docIds.length; ++idx) {
       var snapshotId = self.snapshotKey(docIds[idx]);
       var snapshots = self.redis.asHash(snapshotId);
 
-      var doc = snapshots.getJSON("master");
+      var doc = snapshots.getJSON("master") || {
+        properties: {title: "Untitled", abstract: "Enter abstract" }
+      };
+
       doc.id = docIds[idx];
       docs.push(doc);
     }
@@ -204,4 +209,4 @@ redis.RedisDocStore = function (settings) {
 
 var redisstore = new redis.RedisDocStore();
 
-//}
+}

@@ -27,14 +27,14 @@
       return false;
     },
 
+    updateMode: function() {
+      this.views.document.updateMode();
+    },
+
     // Now obsolete for our fixed layout
     positionTools: function() {
       // var leftMargin = Math.max(100, ($(window).width()-1200) / 2);
       // this.$('#tools').css('left', leftMargin+800+'px');
-    },
-
-    updateMode: function() {
-      this.views.document.updateMode();
     },
 
     initialize: function(options) {

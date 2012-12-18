@@ -44,7 +44,11 @@ sc.views.Document = Dance.Performer.extend({
     function updateNode(node) {
       // Update node since its dirty
       var node = this.nodes[node];
+
+      // TypeError: 'undefined' is not an object (evaluating 'node.render')
+
       node.render();
+
       this.updateSelections();
     }
 
@@ -73,7 +77,10 @@ sc.views.Document = Dance.Performer.extend({
   set: function(options) {
     // Re-render the whole thing
     // TODO: just update the document specific parts
-    this.render();
+    // this.render();
+
+    this.initSurface("abstract");
+    this.initSurface("title");
   },
 
   insert: function(options) {
