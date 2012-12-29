@@ -207,9 +207,9 @@ h2 { font-size: 160%; padding-bottom: 15px; }
 -------------------------------------------------------------------------------*/
 
 #tools {
-  background: #F0F1EB;
+  background: #DCDDD6;
   position: fixed;
-  top: 80px;
+  top: 110px;
   bottom: 0px;
   left: 880px;
   overflow: auto;
@@ -269,12 +269,11 @@ h2 { font-size: 160%; padding-bottom: 15px; }
 
 .tool .comment-scopes {
   position: absolute;
-  right: 0px;
+  left: 0px;
   top: 0px;
 
   bottom: 0px;
   width: 40px;
-  /*display: none;*/
   background: #D4D6CD;
   overflow: auto;
 }
@@ -283,11 +282,9 @@ h2 { font-size: 160%; padding-bottom: 15px; }
   background: rgba(0,0,0, 0.1) url(images/icons/discussion.png) center no-repeat;
   float: left;
   margin-bottom: 1px;
-  /*margin-right: 5px;*/
 
   opacity: 0.7;
   padding: 10px 10px;
-  /*padding-left: 40px;*/
   font-weight: bold;
   font-size: 12px;
   cursor: pointer;
@@ -304,8 +301,8 @@ h2 { font-size: 160%; padding-bottom: 15px; }
 .tool .scope-header {
   position: absolute;
   top: 0px;
-  left: 0px;
-  right: 40px;
+  left: 40px;
+  right: 0px;
 
   /*background: rgba(0,0,0, 0.2);*/
   height: 40px;
@@ -398,7 +395,7 @@ h2 { font-size: 160%; padding-bottom: 15px; }
 
 
 .tool .comments {
-  margin-right: 40px;
+  margin-left: 40px;
   display: none;
   font-size: 13px;
   color: #555;
@@ -408,8 +405,8 @@ h2 { font-size: 160%; padding-bottom: 15px; }
   position: absolute;
   top: 40px;
   bottom: 100px;
-  right: 40px;
-  left: 0px;
+  left: 40px;
+  right: 0px;
   overflow: auto;
 }
 
@@ -479,8 +476,8 @@ h2 { font-size: 160%; padding-bottom: 15px; }
 .new-comment {
   position: absolute;
   bottom: 5px;
-  left: 10px;
-  right: 50px;
+  left: 50px;
+  right: 10px;
 }
 
 .new-comment textarea {
@@ -496,7 +493,6 @@ h2 { font-size: 160%; padding-bottom: 15px; }
 .new-comment textarea:hover, .new-comment textarea:focus {
   background: rgba(255,255,255, 1);
 }
-
 
 /* LE button */
 
@@ -575,7 +571,7 @@ h2 { font-size: 160%; padding-bottom: 15px; }
 #document {
   font-family: 'Palatino Linotype', 'Merriweather';
   position: fixed;
-  top: 80px;
+  top: 110px;
   bottom: 0px;
   overflow: auto;
 

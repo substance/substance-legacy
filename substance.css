@@ -26,7 +26,6 @@ body {
   width: 1130px;
   margin-left: 80px;
   overflow: auto;
-  /*margin: 0 auto;*/
 }
 
 #header .logo {
@@ -212,62 +211,152 @@ body {
 -------------------------------------------------------------------------------*/
 
 #document_menu {
-  background: #DCDDD9;
+  background: #F0F1EB;
   position: fixed;
   top: 40px;
   left: 0px;
   right: 0px;
   z-index: 10000;
+}
 
-  /* -webkit-box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.25);
-  -moz-box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.25);
-  box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.25); */
+
+#document_menu .document-menu-wrapper {
+  height: 70px;
+  width: 1130px;
+  margin-left: 80px;
+  /*overflow: auto;*/
 }
 
 #document_menu .navigation {
-  height: 40px;
-  width: 1130px;
-  margin-left: 80px;
-  overflow: auto;
+float: left;
 }
 
-#document_menu .navigation .toggle {
-  line-height: 40px;
-  font-weight: bold;
-  padding: 0 5px;
+#document_menu .actions {
+  float: left;
+  margin-right: 40px;
+}
+
+#document_menu .toggles {
   float: left;
 }
 
-#document_menu .navigation .toggle.active, #document_menu .navigation .toggle:hover {
-  background: rgba(0,0,0, 0.1);
+#document_menu .navigation a {
+  line-height: 40px;
+  font-weight: bold;
+  padding: 0 10px;
+  padding-left: 35px;
+  margin-top: 15px;
+  float: left;
+  background: rgba(0,0,0,0.1);
+  border: none;
+  font-size: 12px;
+  margin-right: 10px;
+  border-radius: 3px;
+  position: relative;
 }
 
-#document_menu .navigation .toggle a {
+#document_menu .navigation a .icon {
+  position: absolute;
+  left: 7px;
+  top: 0px;
+  width: 25px;
+  bottom: 0px;
+  background-image: url(images/icons/discussion.png);
+  background-position: center;
+  background-repeat: no-repeat;
+  opacity: 0.6;
+}
+
+#document_menu .actions a {
+  width: 40px;
+  height: 40px;
+  padding-left: 5px;
+  background-color: rgba(0,0,0, 0.1);
+}
+
+
+#document_menu .actions a.undo .icon {
+  background-image: url(images/icons/undo.png);
+}
+
+#document_menu .actions a.redo .icon {
+  background-image: url(images/icons/redo.png);
+}
+
+#document_menu .toggles a.settings .icon {
+  background-image: url(images/icons/settings.png);
+}
+
+
+
+#document_menu .navigation a.active, #document_menu .navigation a:hover {
+  background-color: rgba(0,0,0, 0.2);
+}
+
+#document_menu .toggles .toggle a {
   border: none;
 }
-
 
 /* Publish State */
 
 #document_menu .publish-state {
+  position: relative;
   float: right;
   width: 230px;
-  background: rgba(0,0,0,0.10);
-  margin: 3px 0;
-
-  height: 34px;
+  background: #9FB22B;
+  margin: 15px 0;
+  height: 40px;
   border-radius: 3px;
   /*box-shadow:         0px 1px 0px rgba(255,255,255,0.50), inset 0px 1px 0px rgba(255,255,255,0.15);*/
 }
 
-#document_menu .publish-state .label {
-  float: left;
-  line-height: 34px;
+#document_menu .publish-state .icon {
+  background-image: url(images/icons/discussion.png);
+  background-position: center;
+  background-repeat: no-repeat;
+  width: 25px;
+  height: 25px;
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  opacity: 0.6;
+}
+
+#document_menu .publish-state a.toggle-publish-actions {
+  display: block;
+  float: right;
+  background-color: rgba(0,0,0,0.2);
+  position: relative;
+  width: 40px;
+  height: 100%;
+  border: none;
+}
+
+#document_menu .publish-state a.toggle-publish-actions:hover {
+  background-color: rgba(0,0,0,0.3);
+}
+
+#document_menu .publish-state a.toggle-publish-actions .icon {
+  background-image: url(images/icons/dropdown.png);
+  top: 8px;
+  left: 8px;
+}
+
+#document_menu .publish-state .state {
+  position: absolute;
+  left: 45px;
+  top: 3px;
   font-weight: bold;
   text-transform: uppercase;
-  color: #777;
+  color: rgba(0,0,0, 0.6);
   font-size: 12px;
-  padding-left: 15px;
+}
+
+#document_menu .publish-state .message {
+  position: absolute;
+  left: 45px;
+  top: 15px;
+  font-size: 11px;
 }
 
 #document_menu .publish-state .action {
@@ -284,6 +373,37 @@ body {
   color: rgba(0,0,0, 0.5);
 }
 
+
+#document_menu .publish-state .publish-actions {
+  display: none;
+  position: absolute;
+  left: 0px;
+  width: 230px;
+  top: 40px;
+  background: #fff;
+}
+
+#document_menu .publish-state .publish-actions a {
+  display: block;
+  border: none;
+  height: 40px;
+  font-size: 13px;
+  line-height: 40px;
+  padding-left: 50px;
+  position: relative;
+}
+
+#document_menu .publish-state .publish-actions a:hover {
+  background: rgba(0,0,0, 0.05);
+}
+
+
+#document_menu .publish-state .publish-actions a.publish-changes {
+
+}
+
+/* Shelf */
+
 #document_shelf {
   -webkit-transition-property: height;
   -webkit-transition-duration: 0.6s;
@@ -292,8 +412,8 @@ body {
 }
 
 #document_shelf .shelf-content {
-  width: 1200px;
-  /* margin: 0 auto; */
+  width: 1130px;
+  margin-left: 80px;
 }
 
 #document_wrapper {

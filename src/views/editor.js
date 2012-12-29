@@ -8,6 +8,7 @@ sc.views.Editor = Dance.Performer.extend({
     'click .toggle.settings': 'toggleSettings',
     'click .toggle.collaborators': 'toggleCollaborators',
     'click .toggle.export': 'toggleExport',
+    'click .toggle-publish-actions': 'togglePublishActions',
     'click a.delete-document': '_deleteDocument'
   },
 
@@ -26,6 +27,11 @@ sc.views.Editor = Dance.Performer.extend({
     this.settings      = new sc.views.Settings({ model: this.model, authorized: this.authorized });
     this.collaborators = new sc.views.Collaborators({ model: this.model, docView: this, authorized: this.authorized });
     this["export"]     = new sc.views.Export({ model: this.model, authorized: this.authorized });
+  },
+
+  togglePublishActions: function() {
+    this.$('.publish-actions').toggle();
+    return false;
   },
 
   toggleSettings:      function (e) { this.toggleView('settings'); return false; },

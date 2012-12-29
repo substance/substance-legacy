@@ -103,16 +103,34 @@
 
     <script type="text/html" name="editor">
       <div id="document_menu">
-        <div class="navigation">
-          <div class="toggle"><a class="delete-document" href="#">Delete Document</a></div>
-          <!--<div class="toggle collaborators"><a href="#">Collaborators</a></div>
-          <div class="toggle settings"><a href="#">Settings</a></div>
-          <div class="toggle export"><a href="#">Export</a></div>-->
-          <div class="publish-state">
-            <div class="label">Not yet published</div>
-            <a href="#" class="action publish button green">Publish</a>
+        <div class="document-menu-wrapper">
+          <div class="navigation">
+            <div class="actions">
+              <a class="action undo" href="#"><div class="icon"></div></a>
+              <a class="action redo" href="#"><div class="icon"></div></a>
+            </div>
+
+            <div class="toggles">
+              <a class="toggle settings" href="#"><div class="icon"></div>Settings</a>
+              <!--<a class="toggle collaborators" href="#"><div class="icon"></div>Collaborators</a>-->
+              <!--<a class="toggle export" href="#"><div class="icon"></div>Export</a>-->
+            </div>
+          </div>
+
+          <div class="publish-state published">
+            <div class="icon"></div>
+            <div class="state">Published</div>
+            <div class="message">3 changes pending</div>
+            
+            <a href="#" class="toggle-publish-actions"><div class="icon"></div></a>
+            <div class="publish-actions">
+              <a href="#" class="publish-document"><div class="icon"></div>Publish Changes</a>
+              <a href="#" class="unpublish-document"><div class="icon"></div>Unpublish Changes</a>
+            </div>
           </div>
         </div>
+
+
 
         <div id="document_shelf">
           <div class="shelf-content">
@@ -127,7 +145,8 @@
 
     <!-- Document Settings -->
     <script type="text/html" name="document_settings">
-      <h1>Document Settings</h1>
+      <h2>Document Settings</h2>
+      <a href="#" class="delete-document">Delete Document</a>
     </script>
 
     <!-- Document Collaborators -->
