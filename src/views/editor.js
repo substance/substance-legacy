@@ -9,15 +9,33 @@ sc.views.Editor = Dance.Performer.extend({
     'click .toggle.collaborators': 'toggleCollaborators',
     'click .toggle.export': 'toggleExport',
     'click .toggle-publish-actions': 'togglePublishActions',
-    'click a.delete-document': '_deleteDocument'
+    'click a.delete-document': '_deleteDocument',
+    'click a.publish-document ': 'publish',
+    'click a.unpublish-document ': 'unpublish'
   },
 
-    _deleteDocument: function() {
-      store.delete(this.model.document.id, function() {
-        choreographer.navigate('/', true);
-      });
-      return false;
-    },
+  publish: function() {
+    var that = this;
+    this.model.publish(function(err) {
+      that.updatePublishState();
+    });
+    return false;
+  },
+
+  unpublish: function() {
+    var that = this;
+    this.model.unpublish(function(err) {
+      that.updatePublishState();
+    });
+    return false;
+  },
+
+  _deleteDocument: function() {
+    store.delete(this.model.document.id, function() {
+      choreographer.navigate('/', true);
+    });
+    return false;
+  },
 
   // Handlers
   // --------
@@ -75,8 +93,32 @@ sc.views.Editor = Dance.Performer.extend({
     this.resizeShelf();
   },
 
+  updatePublishState: function() {
+    var state = this.model.publishState();
+    this.$('.publish-state')
+      .removeClass('published unpublished dirty')
+      .addClass(state);
+
+
+    this.$('.publish-state .state').html(state === "dirty" ? "Published" : state);
+    var message = "Private document";
+    if (state === "published") message = $.timeago(this.model.published_at);
+    if (state === "dirty") message = "Pending changes";
+    this.$('.publish-state .message').html(message);
+
+    state !== "unpublished" ? this.$('.publish-state .unpublish-document').show()
+                            : this.$('.publish-state .unpublish-document').hide();
+
+    this.$('.publish-state .publish-actions').hide();
+
+  },
+
   render: function () {
-    this.$el.html(_.tpl('editor', {}));
+    this.$el.html(_.tpl('editor', {
+      session: this.model
+    }));
+
+    this.updatePublishState();
 
     this.composer = new Substance.Composer({id: 'document_wrapper', model: this.model });
     this.$('#document_wrapper').replaceWith(this.composer.render().el);

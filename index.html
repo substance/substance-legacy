@@ -117,15 +117,15 @@
             </div>
           </div>
 
-          <div class="publish-state published">
+          <div class="publish-state <%= session.publishState() %>">
             <div class="icon"></div>
-            <div class="state">Published</div>
-            <div class="message">3 changes pending</div>
+            <div class="state"><%= session.publishState() %></div>
+            <div class="message">Private document</div>
             
             <a href="#" class="toggle-publish-actions"><div class="icon"></div></a>
             <div class="publish-actions">
               <a href="#" class="publish-document"><div class="icon"></div>Publish Changes</a>
-              <a href="#" class="unpublish-document"><div class="icon"></div>Unpublish Changes</a>
+              <a href="#" class="unpublish-document"><div class="icon"></div>Unpublish</a>
             </div>
           </div>
         </div>

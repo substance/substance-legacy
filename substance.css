@@ -303,15 +303,26 @@ float: left;
   position: relative;
   float: right;
   width: 230px;
-  background: #9FB22B;
+  background-color: rgba(0,0,0, 0.1);
+  -webkit-transition: background-color 0.4s linear;
   margin: 15px 0;
   height: 40px;
   border-radius: 3px;
   /*box-shadow:         0px 1px 0px rgba(255,255,255,0.50), inset 0px 1px 0px rgba(255,255,255,0.15);*/
 }
 
+
+#document_menu .publish-state.published {
+  background-color: #9FB22B;
+}
+
+#document_menu .publish-state.dirty {
+  background-color: #9FB22B;
+}
+
+
 #document_menu .publish-state .icon {
-  background-image: url(images/icons/discussion.png);
+  background-image: url(images/icons/locked.png);
   background-position: center;
   background-repeat: no-repeat;
   width: 25px;
@@ -322,6 +333,14 @@ float: left;
   opacity: 0.6;
 }
 
+#document_menu .publish-state.dirty .icon {
+  background-image: url(images/icons/neutral.png);
+}
+
+#document_menu .publish-state.published .icon {
+  background-image: url(images/icons/smile.png);
+}
+
 #document_menu .publish-state a.toggle-publish-actions {
   display: block;
   float: right;
@@ -330,6 +349,14 @@ float: left;
   width: 40px;
   height: 100%;
   border: none;
+}
+
+#document_menu .publish-state .publish-document .icon {
+  background-image: url(images/icons/smile.png);
+}
+
+#document_menu .publish-state .unpublish-document .icon {
+  background-image: url(images/icons/cry.png);
 }
 
 #document_menu .publish-state a.toggle-publish-actions:hover {

@@ -19,7 +19,6 @@ $(function() {
     }
   });
 
-
   // Welcome screen
   // ---------------
 
@@ -85,7 +84,7 @@ $(function() {
       return false;
     },
 
-    initialize: function (options) {
+    initialize: function(options) {
       var that = this;
       _.bindAll(this, 'document', 'dashboard');
       this.user = localStorage.getItem('user');
@@ -96,6 +95,10 @@ $(function() {
     document: function(id) {
       var that = this;
       loadDocument(id, function(err, session) {
+        // Shortcuts
+        window.doc = session.document;
+        window.session = session;
+
         that.view = new sc.views.Editor({model: session });
         that.render();
         that.listenForDocumentChanges();
@@ -107,6 +110,10 @@ $(function() {
     listenForDocumentChanges: function() {
       var that = this;
       this.view.model.document.on('commit:applied', function(commit) {
+
+        // Update publish state
+        that.view.updatePublishState()
+
         if (commit.op[0] === "set") {
           var title = that.view.model.document.content.properties.title;
           that.$('.menu .document').html(title);
@@ -119,6 +126,10 @@ $(function() {
       createDocument(function(err, session) {
         that.view = new sc.views.Editor({model: session });
         that.render();
+
+        // Shortcuts
+        window.doc = session.document;
+        window.session = session;
 
         // Add title / abstract
         _.delay(function() {
@@ -154,6 +165,10 @@ $(function() {
     }
   });
   
+  Substance.settings = {
+    hub: "http://substance.io"
+  };
+
   // Start the engines
   window.app = new Application({el: 'body'});
   // app.render();

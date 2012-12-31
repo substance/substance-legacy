@@ -178,7 +178,7 @@ _.extend(Substance.Session.prototype, _.Events, {
     var user = options.user || this.user; // Use current user by default
 
     // Do nothing if selection hasn't changed
-    if (!this.hasChanged(user, nodes, !!options.edit)) return;
+    if (!this.selectionChanged(user, nodes, !!options.edit)) return;
 
     this.edit = !!options.edit;
 
@@ -195,12 +195,31 @@ _.extend(Substance.Session.prototype, _.Events, {
     
     // New selection leads to new comment context
     this.comments.compute();
-
     this.trigger('node:selected');
   },
 
+  // Publish/Republish document
+  publish: function(cb) {
+    var doc = this.document;
+    this.published_at = new Date();
+    this.published_commit = doc.getRef('master');
+    cb(null);
+  },
+
+  publishState: function() {
+    if (!this.published_commit) return "unpublished";
+    if (this.document.getRef('master') === this.published_commit) return "published";
+    return "dirty";
+  },
+
+  unpublish: function(cb) {
+    this.published_at = null;
+    this.published_commit = null;
+    cb(null);
+  },
+
   // Checks if selection has actually changed for a user
-  hasChanged: function(user, nodes, edit) {
+  selectionChanged: function(user, nodes, edit) {
     return !_.isEqual(nodes, this.selection(user)) || edit !== this.edit;
   },
 
