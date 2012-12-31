@@ -482,12 +482,12 @@ h2 { font-size: 160%; padding-bottom: 15px; }
 
 .new-comment textarea {
   width: 100%;
-  background: rgba(255,255,255, 0.7);
+  background: rgba(255,255,255, 0.9);
   border-radius: 3px;
   padding: 10px;
   border: none;
   height: 50px;
-  box-shadow: inset 0px 1px 1px rgba(0,0,0,0.4);
+  /*box-shadow: inset 0px 1px 1px rgba(0,0,0,0.4);*/
 }
 
 .new-comment textarea:hover, .new-comment textarea:focus {
@@ -498,15 +498,23 @@ h2 { font-size: 160%; padding-bottom: 15px; }
 
 .new-comment .button {
   display: block;
-  /*background: rgba(46, 43, 39, 0.68);*/
+  background: rgba(0, 0, 0, 0.7);
   color: #fff;
-  /*border-radius: 3px;*/
+  border-radius: 3px;
   text-align: center;
   font-weight: bold;
   font-size: 12px;
-  /*border: none;*/
+  border: none;
   padding: 5px;
   text-transform: uppercase;
+}
+
+.new-comment .button:hover {
+  background: rgba(0, 0, 0, 0.8);
+}
+
+.new-comment .button:active {
+  background: rgba(0, 0, 0, 0.9);
 }
 
 

@@ -138,18 +138,46 @@ body {
 }
 
 #header .user-status a.new-document {
+  position: relative;
   -webkit-transition: background 200ms linear;
+  -webkit-transition: color 200ms linear;
   margin: 5px 0;
   margin-right: 20px;
-  padding: 0 10px;
+  padding: 0 15px;
   height: 30px;
   line-height: 30px;
-  color: rgba(0,0,0,0.8);
+  /*background: rgba(0,0,0, 0.8);*/
+  border-radius: 3px;
+  /*font-size: 13px;*/
+  font-weight: bold;
+  color: rgba(255,255,255,0.7);
+
+  /*background: rgba(0,0,0, 0.3);*/
+  background: rgba(0,0,0, 0.5);
+
+  padding-left: 35px;
+}
+
+#header .user-status a.new-document .icon {
+  width: 25px;
+  position: absolute;
+  left: 5px;
+  top: 0px;
+  bottom: 0px;
+  -webkit-transition: opacity 200ms linear;
+  background: url(images/icons/plus-white.png) center no-repeat;
+  opacity: 0.7;
+}
+
+#header .user-status a.new-document:hover .icon {
+  opacity: 1.0;
 }
 
 #header .user-status a.new-document:hover {
-  /*background: #999;*/
+  color: rgba(255,255,255, 1);
+  background: rgba(0,0,0, 1);
 }
+
 
 #help {
   padding-top: 50px;
@@ -307,6 +335,7 @@ float: left;
   -webkit-transition: background-color 0.4s linear;
   margin: 15px 0;
   height: 40px;
+
   border-radius: 3px;
   /*box-shadow:         0px 1px 0px rgba(255,255,255,0.50), inset 0px 1px 0px rgba(255,255,255,0.15);*/
 }
@@ -328,7 +357,7 @@ float: left;
   width: 25px;
   height: 25px;
   position: absolute;
-  top: 10px;
+  top: 7px;
   left: 10px;
   opacity: 0.6;
 }
@@ -345,6 +374,10 @@ float: left;
   display: block;
   float: right;
   background-color: rgba(0,0,0,0.2);
+
+  border-top-right-radius: 3px;
+  border-bottom-right-radius: 3px;
+
   position: relative;
   width: 40px;
   height: 100%;

@@ -23,7 +23,7 @@
 
           <div class="user-status">
           <% if (user) { %>
-            <a href="#new" class="new-document button light">New Document</a>
+            <a href="#new" class="new-document button"><div class="icon"></div>New Document</a>
             <div class="username"><%= user %></div>
             <a href="#logout" class="logout"></a>
           <% } else { %>
@@ -124,13 +124,9 @@
             
             <a href="#" class="toggle-publish-actions"><div class="icon"></div></a>
             <div class="publish-actions">
-              
-              
             </div>
           </div>
         </div>
-
-
 
         <div id="document_shelf">
           <div class="shelf-content">
@@ -271,7 +267,7 @@
             <div class="comment-input-wrapper">
               <textarea class="comment-content" name="comment" placeholder="Add a comment"></textarea>
             </div>
-            <a href="#" class="button dark insert-comment">Add Comment</a>
+            <a href="#" class="button insert-comment">Add Comment</a>
           </div>
 
         </div>
