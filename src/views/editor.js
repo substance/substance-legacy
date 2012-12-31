@@ -99,18 +99,27 @@ sc.views.Editor = Dance.Performer.extend({
       .removeClass('published unpublished dirty')
       .addClass(state);
 
-
     this.$('.publish-state .state').html(state === "dirty" ? "Published" : state);
     var message = "Private document";
     if (state === "published") message = $.timeago(this.model.published_at);
     if (state === "dirty") message = "Pending changes";
     this.$('.publish-state .message').html(message);
 
-    state !== "unpublished" ? this.$('.publish-state .unpublish-document').show()
-                            : this.$('.publish-state .unpublish-document').hide();
+    this.$('.publish-actions').empty();
+
+    if (state === "unpublished") {
+      this.$('.publish-actions').append('<a href="#" class="publish-document"><div class="icon"></div>Publish</a>');
+    }
+
+    if (state === "dirty") {
+      this.$('.publish-actions').append('<a href="#" class="publish-document"><div class="icon"></div>Publish Changes</a>');
+    }
+
+    if (state !== "unpublished") {
+      this.$('.publish-actions').append('<a href="#" class="unpublish-document"><div class="icon"></div>Unpublish</a>');
+    }
 
     this.$('.publish-state .publish-actions').hide();
-
   },
 
   render: function () {
