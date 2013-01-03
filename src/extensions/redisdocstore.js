@@ -46,6 +46,7 @@ redis.RedisDocStore = function (settings) {
    *  @param id the document's id
    *  @param cb callback
    */
+
   this.exists = function (id, cb) {
     var result = self.documents.contains(id);
     if (cb) cb(result);
@@ -61,11 +62,20 @@ redis.RedisDocStore = function (settings) {
       return cb({err: -1, msg: "Document already exists."});
     }
 
-    var doc = {"id": id};
+    // TODO: also store created_at
+    var doc = {
+      "id": id,
+      "meta": {
+        "created_at": new Date(),
+        "updated_at": new Date()
+      },
+      "data": {}, // conforms to Substance.Document API
+    };
 
     // TODO: more initial fields?
     // initial id field
     // TODO: what to do if this fails?
+    
     self.documents.set(id, doc);
 
     // TODO create initial list for commits
@@ -110,6 +120,7 @@ redis.RedisDocStore = function (settings) {
    *  @param newCommits an array of commit objects
    *  @param cb callback
    */
+
   this.update = function(id, newCommits, cb) {
     var commitsKey = id + ":commits";
     var commits = self.redis.asList(commitsKey);
@@ -180,13 +191,17 @@ redis.RedisDocStore = function (settings) {
     }
 
     var doc = self.documents.getJSON(id);
-    doc.commits = {};
+
+    // TODO: remove this backward-compatibility hack
+    if (!doc.data) doc.data = {};
+
+    doc.data.commits = {};
 
     var commits = self.redis.asList(id + ":commits");
     var shas = commits.asArray();
     for (var idx=0; idx<shas.length; ++idx) {
       var commit = self.redis.getJSON( id + ":commits:" + shas[idx]);
-      doc.commits[shas[idx]] = commit;
+      doc.data.commits[shas[idx]] = commit;
     }
 
     // TODO: more about that refs
@@ -196,13 +211,22 @@ redis.RedisDocStore = function (settings) {
     } else {
       lastSha = undefined;
     }
-    doc.refs = {
+
+    doc.data.refs = {
       master: lastSha
-    }
+    };
+
+    // TODO: retrieve metadata from database
+    // var result = {
+    //   data: doc.data,
+    //   created_at: new Date(),
+    //   published_at: new Date(),
+    //   published_commit: "commit-25"
+    // };
 
     if(arguments.length == 2)
       cb(0, doc);
-
+    
     return doc;
   };
 };
