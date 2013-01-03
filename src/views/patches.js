@@ -1,4 +1,4 @@
-sc.views.Patches = Dance.Performer.extend({
+sc.views.Patches = Backbone.View.extend({
 
   // Events
   // ------

@@ -1,4 +1,4 @@
-sc.views.History = Dance.Performer.extend({
+sc.views.History = Backbone.View.extend({
 
   // Events
   // ------

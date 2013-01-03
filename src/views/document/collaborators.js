@@ -1,4 +1,4 @@
-sc.views.Collaborators = Dance.Performer.extend({
+sc.views.Collaborators = Backbone.View.extend({
 
   // Events
   // ------

@@ -1,4 +1,4 @@
-sc.views.Settings = Dance.Performer.extend({
+sc.views.Settings = Backbone.View.extend({
 
   // Events
   // ------

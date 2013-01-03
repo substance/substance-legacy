@@ -1,4 +1,4 @@
-sc.views.Outline = Dance.Performer.extend({
+sc.views.Outline = Backbone.View.extend({
 
   // Events
   // ------

@@ -1,6 +1,6 @@
 $(function() {
 
-  var Choreographer = Dance.Choreographer.extend({
+  var Router = Backbone.Router.extend({
     initialize: function() {
       // Using this.route, because order matters
       this.route(':document', 'loadDocument', this.loadDocument);
@@ -22,7 +22,7 @@ $(function() {
   // Welcome screen
   // ---------------
 
-  var Start = Dance.Performer.extend({
+  var Start = Backbone.View.extend({
     id: 'container',
     render: function() {
       this.$el.html(_.tpl('start'));
@@ -34,7 +34,7 @@ $(function() {
   // Welcome screen
   // ---------------
 
-  var Dashboard = Dance.Performer.extend({
+  var Dashboard = Backbone.View.extend({
     id: 'container',
     render: function() {
       var that = this;
@@ -51,7 +51,7 @@ $(function() {
   // The Mothership
   // ---------------
 
-  var Application = Dance.Performer.extend({
+  var Application = Backbone.View.extend({
     events: {
       'submit #user_login_form': '_login',
       'click .logout': '_logout',
@@ -102,7 +102,7 @@ $(function() {
         that.view = new sc.views.Editor({model: session });
         that.render();
         that.listenForDocumentChanges();
-        // choreographer.navigate(id, false);
+        // router.navigate(id, false);
       });
     },
 
@@ -171,7 +171,6 @@ $(function() {
 
   // Start the engines
   window.app = new Application({el: 'body'});
-  // app.render();
-  window.choreographer = new Choreographer({});
-  Dance.performance.start();
+  window.router = new Router({});
+  Backbone.history.start();
 });

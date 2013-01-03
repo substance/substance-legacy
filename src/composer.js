@@ -3,7 +3,7 @@
   // The Substance Namespace
   if (!exports.Substance) exports.Substance = {};
 
-  var Composer = Dance.Performer.extend({
+  var Composer = Backbone.View.extend({
     events: {
       'click a.checkout-commit': '_checkoutCommit',
       'click .properties': 'clear',

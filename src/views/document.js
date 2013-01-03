@@ -1,4 +1,4 @@
-sc.views.Document = Dance.Performer.extend({
+sc.views.Document = Backbone.View.extend({
   id: 'document',
 
   // Events
@@ -53,14 +53,14 @@ sc.views.Document = Dance.Performer.extend({
     }
 
     // Bind handlers (but only once)
-    choreographer.off('comment-scope:selected', highlightAnnotation);
-    choreographer.on('comment-scope:selected', highlightAnnotation, this);
+    router.off('comment-scope:selected', highlightAnnotation);
+    router.on('comment-scope:selected', highlightAnnotation, this);
 
-    choreographer.off('annotation:deleted', deleteAnnotation);
-    choreographer.on('annotation:deleted', deleteAnnotation, this);
+    router.off('annotation:deleted', deleteAnnotation);
+    router.on('annotation:deleted', deleteAnnotation, this);
 
-    choreographer.off('node:dirty', updateNode);
-    choreographer.on('node:dirty', updateNode, this);
+    router.off('node:dirty', updateNode);
+    router.on('node:dirty', updateNode, this);
     
     this.model.off('node:selected', this.updateSelections);
     this.model.on('node:selected', this.updateSelections, this);

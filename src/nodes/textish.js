@@ -38,10 +38,10 @@ Textish = {
       var marker = that.surface.getAnnotations(sel, ["idea", "blur", "doubt"])[0];
 
       if (marker) {
-        choreographer.trigger('comment-scope:selected', marker.id, that.model.id, marker.id);
+        router.trigger('comment-scope:selected', marker.id, that.model.id, marker.id);
         that.surface.highlight(marker.id);
       } else {
-        choreographer.trigger('comment-scope:selected', 'node_comments', that.model.id, null);
+        router.trigger('comment-scope:selected', 'node_comments', that.model.id, null);
         that.surface.highlight(null);
       }
       sel[1] > 0 ? that.renderToggles(sel) : that.removeToggles();
@@ -116,7 +116,7 @@ Textish = {
             id: a.id,
             type: type
           });
-          choreographer.trigger('comment-scope:selected', a.id, this.model.id, a.id);
+          router.trigger('comment-scope:selected', a.id, this.model.id, a.id);
         }
       } else {
         if (start <= aStart) {
@@ -158,7 +158,7 @@ Textish = {
     this.surface.insertAnnotation({ id: id, type: type, pos: sel });
 
     if (_.include(["em", "str"], type)) return; // skype comment-scope selection
-    choreographer.trigger('comment-scope:selected', id, this.model.id, id);
+    router.trigger('comment-scope:selected', id, this.model.id, id);
   },
   
   removeToggles: function() {

@@ -1,4 +1,4 @@
-sc.views.Editor = Dance.Performer.extend({
+sc.views.Editor = Backbone.View.extend({
 
   id: 'container',
   // Events
@@ -32,7 +32,7 @@ sc.views.Editor = Dance.Performer.extend({
 
   _deleteDocument: function() {
     store.delete(this.model.document.id, function() {
-      choreographer.navigate('/', true);
+      router.navigate('/', true);
     });
     return false;
   },

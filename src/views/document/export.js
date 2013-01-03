@@ -1,4 +1,4 @@
-sc.views.Export = Dance.Performer.extend({
+sc.views.Export = Backbone.View.extend({
 
   // Events
   // ------

@@ -48,8 +48,6 @@ StaticDocStore.prototype.delete = function(id, cb) {
 // Initialize DocStore
 // -----------------
 
-// store = new StaticDocStore();
-
 var store;
 
 // store = new StaticDocStore();

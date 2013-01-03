@@ -1,4 +1,4 @@
-sc.views.DocumentTool = Dance.Performer.extend({
+sc.views.DocumentTool = Backbone.View.extend({
 
   // Events
   // ------
@@ -35,7 +35,7 @@ sc.views.DocumentTool = Dance.Performer.extend({
   }
 });
 
-sc.views.Tools = Dance.Performer.extend({
+sc.views.Tools = Backbone.View.extend({
 
   // Events
   // ------

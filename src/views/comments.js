@@ -1,4 +1,4 @@
-sc.views.Comments = Dance.Performer.extend({
+sc.views.Comments = Backbone.View.extend({
 
   // Events
   // ------
@@ -35,7 +35,7 @@ sc.views.Comments = Dance.Performer.extend({
     // this.render(); // compute triggers an event that causes re-render
 
     // Notify Composer -> triggers a re-render
-    if (node) choreographer.trigger('node:dirty', node);
+    if (node) router.trigger('node:dirty', node);
     return false;
   },
 
@@ -63,10 +63,10 @@ sc.views.Comments = Dance.Performer.extend({
     this.model.document.apply(["delete_comment", { nodes: _.pluck(comments, 'id')}]);
     
     // Notify Surface
-    choreographer.trigger('annotation:deleted', node, annotation);
+    router.trigger('annotation:deleted', node, annotation);
 
     // Notify Composer -> triggers a re-render
-    choreographer.trigger('node:dirty', node);
+    router.trigger('node:dirty', node);
     return false;
   },
 
@@ -76,7 +76,7 @@ sc.views.Comments = Dance.Performer.extend({
     var scope = $(e.currentTarget).attr('id');
 
     // Notify Surface
-    choreographer.trigger('comment-scope:selected', scope, node, annotation);
+    router.trigger('comment-scope:selected', scope, node, annotation);
   },
 
   activateScope: function(scope) {
@@ -98,8 +98,8 @@ sc.views.Comments = Dance.Performer.extend({
     this.model.comments.compute();
 
     // Triggered by Text Node
-    choreographer.off('comment-scope:selected', this.activateScope);
-    choreographer.on('comment-scope:selected', this.activateScope, this);
+    router.off('comment-scope:selected', this.activateScope);
+    router.on('comment-scope:selected', this.activateScope, this);
 
     // Listing to comments:updated event on session
     this.model.off('comments:updated', this.render);
