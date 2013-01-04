@@ -61,10 +61,10 @@ if (window.redis) {
 // Update doc (docstore.update)
 // -----------------
 
-function updateDoc(session, commit, cb) {
-  store.update(session.id, [commit], function(err) {
-    store.setSnapshot(session.id, session.document.content, 'master', function(err) {
-      console.log('updated', session.id, [commit]);
+function updateDoc(doc, commit, cb) {
+  store.update(doc.id, [commit], function(err) {
+    store.setSnapshot(doc.id, doc.content, 'master', function(err) {
+      console.log('updated', doc.id, [commit]);
     });
   });
 }
@@ -144,25 +144,6 @@ _.extend(Comments.prototype, _.Events, {
 });
 
 
-// Substance.PersistentDocument
-// -----------------
-// 
-// Really??
-// 
-// Wraps a Substance.Document and maintains 
-// app-specific metadata such as creator, creation date
-// and publishing information
-
-// Substance.PersistentDocument = function(doc) {
-//   this.document = new Substance.Document(doc.data);
-
-//   this.created_at = options.created_at;
-//   this.published_at = options.published_at;
-//   this.published_commit = options.published_commit;
-// };
-
-
-
 // Substance.Session
 // -----------------
 // 
@@ -171,13 +152,7 @@ _.extend(Comments.prototype, _.Events, {
 // TODO: No multiuser support yet, use app.user
 
 Substance.Session = function(options) {
-  console.log('constructing session ...');
   this.document = new Substance.Document(options);
-
-  // this.id = options.id;
-  // this.created_at = options.created_at;
-  // this.published_at = options.published_at;
-  // this.published_commit = options.published_commit;
 
   this.users = {
     "michael": {
@@ -284,21 +259,7 @@ _.extend(Substance.Session.prototype, _.Events, {
 
 function loadDocument(id, cb) {
   store.get(id, function(err, doc) {
-    // var data = {
-    //   data: doc,
-    //   created_at: new Date(),
-    //   published_at: new Date(),
-    //   published_commit: "commit-25"
-    // };
-    console.log("DOCDATA", doc);
-
-    var session = new Substance.Session(doc);
-
-    // var session = new Substance.Session({
-    //   document: new Substance.Document(doc)
-    // });
-
-    cb(err, session);
+    cb(err, new Substance.Session(doc));
   });
 }
 
@@ -326,18 +287,7 @@ function listDocuments(cb) {
 
 function createDocument(cb) {
   store.create(Math.uuid(), function(err, doc) {
-    // var data = {
-    //   data: doc,
-    //   created_at: new Date()
-    // };
-
-    var session = new Substance.Session(doc);
-
-    // var session = new Substance.Session({
-    //   document: new Substance.Document(doc)
-    // });
-
-    cb(err, session);
+    cb(err, new Substance.Session(doc));
   });
 }
 

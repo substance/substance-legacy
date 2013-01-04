@@ -202,8 +202,7 @@
       
       this.model.document.on('commit:applied', function(commit) {
         // Send update to the server
-        console.log('SESSION', this.model);
-        updateDoc(this.model, commit);
+        updateDoc(this.model.document, commit);
       }, this);
     },
 
