@@ -230,14 +230,6 @@ redis.RedisDocStore = function (settings) {
       doc.data.commits[shas[idx]] = commit;
     }
 
-    // TODO: more about that refs
-    // var lastSha;
-    // if(shas.length > 0) {
-    //   lastSha = commits.get();
-    // } else {
-    //   lastSha = undefined;
-    // }
-
     var lastSha = shas.length > 0 ? commits.get() : undefined;
 
     doc.data.refs = {

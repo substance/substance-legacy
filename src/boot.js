@@ -31,7 +31,6 @@ $(function() {
     }
   });
 
-
   // Welcome screen
   // ---------------
 
