@@ -95,16 +95,18 @@ sc.views.Editor = Backbone.View.extend({
 
   updatePublishState: function() {
     var state = this.model.publishState();
+    var doc = this.model.document;
+
     this.$('.publish-state')
       .removeClass('published unpublished dirty')
       .addClass(state);
 
     this.$('.publish-state .state').html(state === "dirty" ? "Published" : state);
     var message = "Private document";
-    if (state === "published") message = $.timeago(this.model.published_at);
+    if (state === "published") message = $.timeago(doc.meta.published_at);
     if (state === "dirty") message = "Pending changes";
+    
     this.$('.publish-state .message').html(message);
-
     this.$('.publish-actions').empty();
 
     if (state === "unpublished") {

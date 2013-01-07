@@ -62,27 +62,57 @@ redis.RedisDocStore = function (settings) {
       return cb({err: -1, msg: "Document already exists."});
     }
 
-    // TODO: also store created_at
     var doc = {
       "id": id,
       "meta": {
         "created_at": new Date(),
         "updated_at": new Date()
-      },
-      "data": {}, // conforms to Substance.Document API
+      }
     };
 
-    // TODO: more initial fields?
-    // initial id field
     // TODO: what to do if this fails?
-    
+    // TODO: create initial list for commits
     self.documents.set(id, doc);
 
-    // TODO create initial list for commits
     if (cb) cb(null, doc);
 
     return doc;
   };
+
+  /**
+   * Updates an existing document with the provided metadata object
+   * @param id the document id
+   * @param meta object containing all metadata
+   * @param cb callback
+   */
+
+  this.updateMeta = function(id, meta, cb) {
+    if (!self.exists(id) && cb) {
+      return cb({err: -1, msg: "Document does not exist."});
+    }
+
+    // Load existing doc
+    // var oldDoc = self.documents.getJSON(id);
+
+    // meta = _.extend(meta, {
+    //   "created_at": oldDoc["created_at"],
+    //   "updated_at": new Date()
+    // });
+
+    var doc = {
+      "id": id,
+      "meta": meta
+    };
+
+    console.log('storing new metadata...', doc);
+    self.documents.set(id, doc);
+    if (cb) cb(null, doc);
+  };
+
+
+  /**
+   * List all documents complete with metadata
+   */
 
   this.list = function (cb) {
     var docIds = self.documents.getKeys();
@@ -107,6 +137,7 @@ redis.RedisDocStore = function (settings) {
    *  Deletes a document
    *  @param cb callback
    */
+
   this.delete = function (id, cb) {
     self.documents.remove(id);
     self.redis.remove(id);
@@ -152,9 +183,10 @@ redis.RedisDocStore = function (settings) {
     self.redis.executeTransaction();
 
     // save the commits after knowing that everything is fine
-    for(var idx=0; idx<newCommits.length; idx++) {
+    for (var idx = 0; idx < newCommits.length; idx++) {
       // note: these commands will be executed when executeTransaction is called
-      //       if something is wrong, e.g., invalid sha sequence, then the transaction is cancelled.
+      //       if something is wrong, e.g., invalid sha sequence, then
+      //       the transaction is cancelled.
       commits.add(newCommits[idx].sha);
       // store the commit's data into an own field
       self.redis.set(commitsKey + ":" + newCommits[idx].sha, newCommits[idx]);
@@ -167,10 +199,8 @@ redis.RedisDocStore = function (settings) {
   };
 
   this.setSnapshot = function (id, data, title, cb) {
-
     var snapshots = self.redis.asHash(self.snapshotKey(id));
     snapshots.set(title, data);
-
     if(cb) { cb(null); }
   }
 
@@ -191,11 +221,7 @@ redis.RedisDocStore = function (settings) {
     }
 
     var doc = self.documents.getJSON(id);
-
-    // TODO: remove this backward-compatibility hack
-    if (!doc.data) doc.data = {};
-
-    doc.data.commits = {};
+    doc.data = {commits: {}};
 
     var commits = self.redis.asList(id + ":commits");
     var shas = commits.asArray();
@@ -205,24 +231,18 @@ redis.RedisDocStore = function (settings) {
     }
 
     // TODO: more about that refs
-    var lastSha;
-    if(shas.length > 0) {
-      lastSha = commits.get();
-    } else {
-      lastSha = undefined;
-    }
+    // var lastSha;
+    // if(shas.length > 0) {
+    //   lastSha = commits.get();
+    // } else {
+    //   lastSha = undefined;
+    // }
+
+    var lastSha = shas.length > 0 ? commits.get() : undefined;
 
     doc.data.refs = {
       master: lastSha
     };
-
-    // TODO: retrieve metadata from database
-    // var result = {
-    //   data: doc.data,
-    //   created_at: new Date(),
-    //   published_at: new Date(),
-    //   published_commit: "commit-25"
-    // };
 
     if(arguments.length == 2)
       cb(0, doc);

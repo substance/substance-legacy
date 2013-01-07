@@ -64,9 +64,19 @@ if (window.redis) {
 function updateDoc(doc, commit, cb) {
   store.update(doc.id, [commit], function(err) {
     store.setSnapshot(doc.id, doc.content, 'master', function(err) {
-      console.log('updated', doc.id, [commit]);
+      // Update metadata accordingly
+      if (commit.op[0] === "set") {
+        _.extend(doc.meta, doc.content.properties);
+        updateMeta(doc, cb);
+      };
     });
   });
+};
+
+
+function updateMeta(doc, cb) {
+  doc.meta.updated_at = new Date();
+  store.updateMeta(doc.id, doc.meta, cb);
 }
 
 // Comments
@@ -77,7 +87,6 @@ var Comments = function(session) {
   this.session = session;
   this.scopes = [];
 };
-
 
 _.extend(Comments.prototype, _.Events, {
   compute: function(scope) {
@@ -199,21 +208,28 @@ _.extend(Substance.Session.prototype, _.Events, {
   // Publish/Republish document
   publish: function(cb) {
     var doc = this.document;
-    this.published_at = new Date();
-    this.published_commit = doc.getRef('master');
-    cb(null);
+    doc.meta.published_at = new Date();
+    doc.meta.published_commit = doc.getRef('master');
+
+    // TODO: create publication
+    updateMeta(doc, cb);
+  },
+
+  // Unpublish document
+  unpublish: function(cb) {
+    var doc = this.document;
+    delete doc.meta["published_at"];
+    delete doc.meta["published_commit"];
+
+    // TODO: remove all publications
+    updateMeta(doc, cb);
   },
 
   publishState: function() {
-    if (!this.published_commit) return "unpublished";
-    if (this.document.getRef('master') === this.published_commit) return "published";
+    var doc = this.document;
+    if (!doc.meta.published_commit) return "unpublished";
+    if (doc.getRef('master') === doc.meta.published_commit) return "published";
     return "dirty";
-  },
-
-  unpublish: function(cb) {
-    this.published_at = null;
-    this.published_commit = null;
-    cb(null);
   },
 
   // Checks if selection has actually changed for a user

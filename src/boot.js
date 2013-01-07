@@ -5,6 +5,7 @@ $(function() {
       // Using this.route, because order matters
       this.route(':document', 'loadDocument', this.loadDocument);
       this.route('demo/:document', 'loadDocument', this.loadDocument);
+      this.route('documents/:document', 'loadDocument', this.loadDocument);
       this.route('new', 'newDocument', this.newDocument);
       this.route('dashboard', 'dashboard', app.dashboard);
       this.route('', 'start', app.dashboard);
@@ -109,13 +110,15 @@ $(function() {
     // TODO: find a better way
     listenForDocumentChanges: function() {
       var that = this;
-      this.view.model.document.on('commit:applied', function(commit) {
+      var doc = this.view.model.document;
+
+      doc.on('commit:applied', function(commit) {
 
         // Update publish state
-        that.view.updatePublishState()
+        that.view.updatePublishState();
 
         if (commit.op[0] === "set") {
-          var title = that.view.model.document.content.properties.title;
+          var title = doc.content.properties.title;
           that.$('.menu .document').html(title);
         }
       });
@@ -126,6 +129,7 @@ $(function() {
       createDocument(function(err, session) {
         that.view = new sc.views.Editor({model: session });
         that.render();
+        router.navigate('documents/'+session.document.id, false);
 
         // Shortcuts
         window.doc = session.document;
