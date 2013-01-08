@@ -151,8 +151,11 @@ redis.RedisDocStore = function (settings) {
    * @param id the document id
    */
 
-  this.clearPublications = function (id) {
+  this.clearPublications = function (id, cb) {
+    var publicationsKey = id + ":publications";
+    self.redis.remove(publicationsKey);
 
+    if (cb) cb(null);
   };
 
   /**
@@ -185,7 +188,7 @@ redis.RedisDocStore = function (settings) {
 
   this.delete = function (id, cb) {
     self.documents.remove(id);
-    self.redis.remove(id);
+    self.redis.removeWithPrefix(id);
     if (cb) cb(null);
     return true;
   }
