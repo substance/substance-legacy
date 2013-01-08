@@ -109,7 +109,13 @@ redis.RedisDocStore = function (settings) {
   this.createPublication = function (id, doc, cb) {
     var publicationsKey = id + ":publications";
     var publications = self.redis.asList(publicationsKey);
-    publications.add(doc);
+
+    var poop = {
+      "created_at": new Date(),
+      "data": doc
+    };
+
+    publications.add(poop);
     if (cb) cb(null);
   };
 
