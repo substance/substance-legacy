@@ -234,18 +234,29 @@ unsigned int HiRedisList::size() {
   return reply->integer;
 }
 
-void HiRedisList::add(const std::string &val) {
+void HiRedisList::addAsString(const std::string &val) {
   ReplyPtr reply((redisReply*) redisCommand(redis.redis, commands[PUSH], val.c_str()));
 }
 
 std::string HiRedisList::get(unsigned int index) {
   if(index >= size()) {
-    // TODO: throw error
-    return "undefined";
+    throw RedisError("Index out of bounds.");
   }
 
   ReplyPtr reply((redisReply*) redisCommand(redis.redis, commands[GET], index));
   return reply->str;
+}
+
+void HiRedisList::add(jsobjects::JSValuePtr val) {
+  const std::string& json = redis.jscontext->toJson(val);
+  addAsString(json);
+}
+
+
+jsobjects::JSValuePtr HiRedisList::getJSON(unsigned int index) {
+  const std::string &json = get(index);
+
+  return redis.jscontext->fromJson(json.c_str());  
 }
 
 jsobjects::JSArrayPtr HiRedisList::asArray() {

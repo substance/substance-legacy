@@ -67,9 +67,13 @@ public:
 
   virtual unsigned int size() = 0;
 
-  virtual void add(const std::string &val) = 0;
+  virtual void addAsString(const std::string &val) = 0;
 
   virtual std::string get(unsigned int index = 0) _THROW(RedisError) = 0;
+
+  virtual void add(jsobjects::JSValuePtr val) = 0;
+
+  virtual jsobjects::JSValuePtr getJSON(unsigned int index = 0) _THROW(RedisError) = 0;
 
   virtual jsobjects::JSArrayPtr asArray() = 0;
 };

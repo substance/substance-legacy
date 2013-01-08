@@ -24,9 +24,13 @@ public:
 
   virtual unsigned int size();
 
-  virtual void add(const std::string &val);
+  virtual void addAsString(const std::string &val);
 
   virtual std::string get(unsigned int index);
+
+  virtual void add(jsobjects::JSValuePtr val);
+
+  virtual jsobjects::JSValuePtr getJSON(unsigned int index = 0);  
 
   virtual jsobjects::JSArrayPtr asArray();
 
