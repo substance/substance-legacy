@@ -121,12 +121,18 @@ redis.RedisDocStore = function (settings) {
 
   /**
    * List all publications 
-   * @param id the document id
-   * @param index the publication index
    */
 
   this.listPublications = function(id, cb) {
+    var publicationsKey = id + ":publications";
+    var publications = self.redis.asList(publicationsKey);
+    var poops = [];
 
+    for (var idx = 0; idx < publications.size(); idx++) {
+      poops.push(publications.getJSON(idx));
+    }
+
+    return poops;
   };
 
   /**
