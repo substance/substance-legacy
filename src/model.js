@@ -212,7 +212,11 @@ _.extend(Substance.Session.prototype, _.Events, {
     doc.meta.published_commit = doc.getRef('master');
 
     // TODO: create publication
-    updateMeta(doc, cb);
+    createPublication(doc, function(err) {
+      console.log('created publication');
+      if (err) alert('Failed to create a publication.');
+      updateMeta(doc, cb);  
+    });
   },
 
   // Unpublish document
@@ -221,8 +225,11 @@ _.extend(Substance.Session.prototype, _.Events, {
     delete doc.meta["published_at"];
     delete doc.meta["published_commit"];
 
-    // TODO: remove all publications
-    updateMeta(doc, cb);
+    clearPublications(doc, function(err) {
+      console.log('cleared publications');
+      // TODO: remove all publications
+      updateMeta(doc, cb);
+    });
   },
 
   publishState: function() {
@@ -285,15 +292,77 @@ function loadDocument(id, cb) {
 
 function listDocuments(cb) {
   store.list(function(err, documents) {
+    console.log('store.list: ', documents);
     var res = _.map(documents, function(doc) {
       return {
-        title: doc.properties.title,
+        title: doc.meta.title,
         author: "le_author",
         file: doc.id,
-        id: doc.id
+        id: doc.id,
+        updated_at: doc.meta.updated_at
       };
     });
     cb(null, res);
+  });
+}
+
+
+// Create a new publication on the server
+// -----------------
+
+function createPublication(doc, cb) {
+  console.log('creating publication...');
+  $.ajax({
+    type: 'POST',
+    url: Substance.settings.hub + '/publications',
+    data: {"muh": "meh"},
+    success: function(result) {
+      store.createPublication(doc.id, doc.content, cb);
+    },
+    error: function() {
+      console.log('error when creating publication');
+      cb('error');
+    },
+    dataType: 'json'
+  });
+}
+
+
+// Delete publication by index for a given doc
+// -----------------
+
+function deletePublication(doc, index, cb) {
+  $.ajax({
+    type: 'DELETE',
+    url: Substance.settings.hub + '/publications/'+doc.id+'/'+index,
+    success: function(result) {
+      store.deletePublication(doc.id, index, doc.content, cb);
+    },
+    error: function() {
+      console.log('error when clearing publications');
+      cb('error');
+    },
+    dataType: 'json'
+  });
+}
+
+
+// Remove all publications from the server
+// -----------------
+
+function clearPublications(doc, cb) {
+  console.log('clearing publications');
+  $.ajax({
+    type: 'DELETE',
+    url: Substance.settings.hub + '/publications/'+doc.id,
+    success: function(result) {
+      store.clearPublications(doc.id, cb);
+    },
+    error: function() {
+      console.log('error when clearing publications');
+      cb('error');
+    },
+    dataType: 'json'
   });
 }
 
