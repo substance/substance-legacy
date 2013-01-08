@@ -75,6 +75,8 @@ public:
 
   virtual void add(jsobjects::JSValuePtr val) = 0;
 
+  virtual void remove(unsigned int index) = 0;
+
   virtual jsobjects::JSValuePtr getJSON(unsigned int index) _THROW(RedisError) = 0;
 
   virtual jsobjects::JSArrayPtr asArray() = 0;

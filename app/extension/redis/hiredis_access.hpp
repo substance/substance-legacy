@@ -16,6 +16,7 @@ class HiRedisList: public RedisList {
     PUSH,
     GET,
     GET_ALL,
+    DELETE,
     COMMANDS_MAX
   };
 
@@ -29,6 +30,8 @@ public:
   virtual std::string get(unsigned int index);
 
   virtual void add(jsobjects::JSValuePtr val);
+
+  virtual void remove(unsigned int index);
 
   virtual jsobjects::JSValuePtr getJSON(unsigned int index);  
 

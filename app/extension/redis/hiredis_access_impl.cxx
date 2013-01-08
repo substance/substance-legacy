@@ -256,6 +256,10 @@ void HiRedisList::add(jsobjects::JSValuePtr val) {
   addAsString(json);
 }
 
+void HiRedisList::remove(unsigned int index) {
+  const std::string &val = get(index);  
+  ReplyPtr reply((redisReply*) redisCommand(redis.redis, commands[DELETE], val.c_str()));
+}
 
 jsobjects::JSValuePtr HiRedisList::getJSON(unsigned int index) {
   if(index >= size()) {
@@ -292,6 +296,9 @@ void HiRedisList::createCommands() {
         break;
       case GET_ALL:
         len = snprintf(buf, BUFFER_LEN, "LRANGE %s 0 -1", key.c_str());
+        break;
+      case DELETE:
+        len = snprintf(buf, BUFFER_LEN, "LREM %s 0 %%s", key.c_str());
         break;
     }
     char *str = new char[len+1];
