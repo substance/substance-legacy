@@ -292,7 +292,6 @@ function loadDocument(id, cb) {
 
 function listDocuments(cb) {
   store.list(function(err, documents) {
-    console.log('store.list: ', documents);
     var res = _.map(documents, function(doc) {
       return {
         title: doc.meta.title,
@@ -311,11 +310,13 @@ function listDocuments(cb) {
 // -----------------
 
 function createPublication(doc, cb) {
-  console.log('creating publication...');
   $.ajax({
     type: 'POST',
     url: Substance.settings.hub + '/publications',
-    data: {"muh": "meh"},
+    data: {
+      "document": doc.id,
+      "data": JSON.stringify(doc.content)
+    },
     success: function(result) {
       store.createPublication(doc.id, doc.content, cb);
     },
