@@ -228,7 +228,7 @@ redis.RedisDocStore = function (settings) {
       // note: these commands will be executed when executeTransaction is called
       //       if something is wrong, e.g., invalid sha sequence, then
       //       the transaction is cancelled.
-      commits.add(newCommits[idx].sha);
+      commits.addAsString(newCommits[idx].sha);
       // store the commit's data into an own field
       self.redis.set(commitsKey + ":" + newCommits[idx].sha, newCommits[idx]);
     }
