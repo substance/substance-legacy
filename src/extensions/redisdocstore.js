@@ -202,14 +202,12 @@ redis.RedisDocStore = function (settings) {
     if(commits.size() > 0)
       lastSha = commits.get();
 
-    self.redis.beginTransaction();
     for(var idx=0; idx<newCommits.length; idx++) {
 
       var commit = newCommits[idx];
 
       // commit must be in proper order
       if (typeof lastSha !== undefined && commit.parent != lastSha) {
-        self.redis.cancelTransaction();
         var err = {err: -1, msg: "Invalid commit chain."};
         // TODO: maybe give more details about the problem
         if (typeof cb !== "undefined")
@@ -221,8 +219,6 @@ redis.RedisDocStore = function (settings) {
 
       lastSha = newCommits[idx].sha;
     }
-
-    self.redis.executeTransaction();
 
     // save the commits after knowing that everything is fine
     for (var idx = 0; idx < newCommits.length; idx++) {
