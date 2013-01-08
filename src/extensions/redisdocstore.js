@@ -109,17 +109,8 @@ redis.RedisDocStore = function (settings) {
   this.createPublication = function (id, doc, cb) {
     var publicationsKey = id + ":publications";
     var publications = self.redis.asList(publicationsKey);
-
-    self.redis.beginTransaction();
-    self.redis.executeTransaction();
-
-    publications.add({
-      "name": "Hello",
-      "created_at": new Date(),
-      "data": doc
-    });
-
-    cb(null);
+    publications.add(doc);
+    if (cb) cb(null);
   };
 
   /**
