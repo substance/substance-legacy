@@ -81,7 +81,7 @@
                 </a>
 
                 <div class="author"><a href="#">michael</a></div>
-                <div class="updated-at"><span>updated </span>5 days ago</div>
+                <div class="updated-at"><span>updated </span><%= $.timeago(doc.updated_at) %></div>
               </div>
             <% }); %>
           </div>
@@ -143,6 +143,13 @@
     <script type="text/html" name="document_settings">
       <h2>Document Settings</h2>
       <a href="#" class="delete-document">Delete Document</a>
+
+      <h2>Publications</h2>
+      <div class="publications">
+        <% _.each(publications, function(pub, index) { %>
+          <div class="publication">#<%= index+1 %> <%= pub.created_at %></div>
+        <% }); %>
+      </div>
     </script>
 
     <!-- Document Collaborators -->
