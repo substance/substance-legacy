@@ -91,14 +91,6 @@ redis.RedisDocStore = function (settings) {
       return cb({err: -1, msg: "Document does not exist."});
     }
 
-    // Load existing doc
-    // var oldDoc = self.documents.getJSON(id);
-
-    // meta = _.extend(meta, {
-    //   "created_at": oldDoc["created_at"],
-    //   "updated_at": new Date()
-    // });
-
     var doc = {
       "id": id,
       "meta": meta
@@ -109,6 +101,56 @@ redis.RedisDocStore = function (settings) {
     if (cb) cb(null, doc);
   };
 
+
+  /**
+   * Create a new publication entry, complete with a snapshot
+   */
+
+  this.createPublication = function (id, doc, cb) {
+    var publicationsKey = id + ":publications";
+    var publications = self.redis.asList(publicationsKey);
+
+    self.redis.beginTransaction();
+    self.redis.executeTransaction();
+
+    publications.add({
+      "name": "Hello",
+      "created_at": new Date(),
+      "data": doc
+    });
+
+    cb(null);
+  };
+
+  /**
+   * List all publications 
+   * @param id the document id
+   * @param index the publication index
+   */
+
+  this.listPublications = function(id, cb) {
+
+  };
+
+  /**
+   * Delete an existing publication
+   * @param id the document id
+   * @param index the publication index
+   */
+
+  this.deletePublication = function (id, index, cb) {
+
+  };
+
+  /**
+   * Delete all publications for a document
+   * Aka "unpublish"
+   * @param id the document id
+   */
+
+  this.clearPublications = function (id) {
+
+  };
 
   /**
    * List all documents complete with metadata
