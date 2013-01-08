@@ -30,7 +30,7 @@ public:
 
   virtual void add(jsobjects::JSValuePtr val);
 
-  virtual jsobjects::JSValuePtr getJSON(unsigned int index = 0);  
+  virtual jsobjects::JSValuePtr getJSON(unsigned int index);  
 
   virtual jsobjects::JSArrayPtr asArray();
 

@@ -244,6 +244,7 @@ std::string HiRedisList::get(unsigned int index) {
   }
 
   ReplyPtr reply((redisReply*) redisCommand(redis.redis, commands[GET], index));
+
   return reply->str;
 }
 
@@ -254,9 +255,17 @@ void HiRedisList::add(jsobjects::JSValuePtr val) {
 
 
 jsobjects::JSValuePtr HiRedisList::getJSON(unsigned int index) {
-  const std::string &json = get(index);
+  if(index >= size()) {
+    throw RedisError("Index out of bounds.");
+  }
 
-  return redis.jscontext->fromJson(json.c_str());  
+  ReplyPtr reply((redisReply*) redisCommand(redis.redis, commands[GET], index));
+
+  if(reply->str == 0) {
+    return redis.jscontext->undefined();
+  }
+
+  return redis.jscontext->fromJson(reply->str);
 }
 
 jsobjects::JSArrayPtr HiRedisList::asArray() {
@@ -270,7 +279,7 @@ void HiRedisList::createCommands() {
   for(size_t idx = 0; idx < COMMANDS_MAX; ++idx) {
     switch (idx) {
       case LENGTH:
-	len = snprintf(buf, BUFFER_LEN, "LLEN %s", key.c_str());
+        len = snprintf(buf, BUFFER_LEN, "LLEN %s", key.c_str());
         break;
       case PUSH:
         len = snprintf(buf, BUFFER_LEN, "LPUSH %s %%s", key.c_str());
