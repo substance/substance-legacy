@@ -183,38 +183,18 @@ redis.RedisDocStore = function (settings) {
     var docs = [];
 
     for (var idx = 0; idx < docIds.length; ++idx) {
-      var snapshotId = self.snapshotKey(docIds[idx]);
-      var snapshots = self.redis.asHash(snapshotId);
-
-      var doc = snapshots.getJSON("master") || {
-        properties: {title: "Untitled", abstract: "Enter abstract" }
-      };
-
-      doc.id = docIds[idx];
-      docs.push(doc);
-    }
-    if(cb) cb(null, docs);
-    return docs;
-  }
-
-  this.listDocs = function (cb) {
-    var docIds = self.documents.getKeys();
-    var docs = [];
-
-    for (var idx = 0; idx < docIds.length; ++idx) {
       var doc = self.documents.getJSON(docIds[idx]);
       docs.push(doc);
     }
 
     // sort the documents in descending order with respect to the time of the last update
     docs.sort(function(a, b) {
-      return new Date(b.meta.updated_at) - new Date(b.meta.updated_at);
-    })
+      return new Date(b.meta.updated_at) - new Date(a.meta.updated_at);
+    });
 
     if(cb) cb(null, docs);
-
     return docs;
-  }
+  };
 
   /**
    *  Deletes a document

@@ -169,7 +169,7 @@ $(function() {
   });
   
   Substance.settings = {
-    hub: "http://substance.io"
+    hub: "http://localhost:3000"
   };
 
   // Start the engines
