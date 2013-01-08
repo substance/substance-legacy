@@ -142,7 +142,23 @@ redis.RedisDocStore = function (settings) {
    */
 
   this.deletePublication = function (id, index, cb) {
+    var publicationsKey = id + ":publications";
+    var publications = self.redis.asList(publicationsKey);
 
+    if (index < 0 || index >= publications.size()) {
+      if (cb) {
+        cb({err: -1, msg: "Index out of bounds."});
+        return false;
+      }
+
+      throw "Index out of bounds.";
+    }
+
+    publications.remove(index);
+
+    if(cb) cb(null);
+
+    return true;
   };
 
   /**
