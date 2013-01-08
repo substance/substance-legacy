@@ -47,7 +47,9 @@ public:
   virtual void set(const std::string &id, jsobjects::JSValuePtr val) = 0;
 
   // delete is C++ keyword so this needs to be renamed for JS
-  virtual void remove(const std::string &prefix) = 0;
+  virtual void remove(const std::string &key) = 0;
+
+  virtual void removeWithPrefix(const std::string &prefix) = 0;
 
   virtual void beginTransaction() = 0;
 

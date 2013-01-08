@@ -97,8 +97,11 @@ void HiRedisAccess::set(const std::string &id, jsobjects::JSValuePtr val) {
   ReplyPtr reply((redisReply*) redisCommand(redis, commands[SET_STRING_VALUE], id.c_str(), json.c_str()));
 }
 
+void HiRedisAccess::remove(const std::string &key) {
+    ReplyPtr((redisReply*) redisCommand(redis, commands[DELETE], key.c_str()));
+ }
 
-void HiRedisAccess::remove(const std::string &prefix) {
+void HiRedisAccess::removeWithPrefix(const std::string &prefix) {
   ReplyPtr reply((redisReply*) redisCommand(redis, commands[KEYS], (prefix+"*").c_str()));
 
   runCommand("MULTI");

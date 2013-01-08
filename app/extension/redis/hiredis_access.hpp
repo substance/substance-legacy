@@ -125,7 +125,9 @@ public:
 
   virtual void set(const std::string &id, jsobjects::JSValuePtr obj);
 
-  virtual void remove(const std::string &prefix);
+  virtual void remove(const std::string &key);
+
+  virtual void removeWithPrefix(const std::string &prefix);
 
   virtual void beginTransaction();
 
