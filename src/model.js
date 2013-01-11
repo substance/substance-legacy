@@ -213,8 +213,8 @@ _.extend(Substance.Session.prototype, _.Events, {
 
     // TODO: create publication
     createPublication(doc, function(err) {
-      console.log('created publication');
-      if (err) alert('Failed to create a publication.');
+      console.log('created publication', err);
+      if (err) return alert('Failed to create a publication.');
       updateMeta(doc, cb);  
     });
   },
