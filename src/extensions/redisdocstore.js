@@ -15,14 +15,14 @@ redis.RedisDocStore = function (settings) {
   var scope = "substance";
 
   // use the settings object to override the default settings
-  if (arguments.length == 1) {
-    if (typeof settings.host != "undefined") {
+  if (arguments.length === 1) {
+    if (typeof settings.host !== "undefined") {
       host = settings.host;
     }
-    if (typeof settings.port != "undefined") {
+    if (typeof settings.port !== "undefined") {
       port = settings.port;
     }
-    if (typeof settings.scope != "undefined") {
+    if (typeof settings.scope !== "undefined") {
       scope = settings.scope;
     }
   }
@@ -223,6 +223,8 @@ redis.RedisDocStore = function (settings) {
     if(commits.size() > 0)
       lastSha = commits.get();
 
+
+
     for(var idx=0; idx<newCommits.length; idx++) {
 
       var commit = newCommits[idx];
@@ -243,18 +245,18 @@ redis.RedisDocStore = function (settings) {
 
     // save the commits after knowing that everything is fine
     for (var idx = 0; idx < newCommits.length; idx++) {
-      // note: these commands will be executed when executeTransaction is called
-      //       if something is wrong, e.g., invalid sha sequence, then
-      //       the transaction is cancelled.
-      commits.addAsString(newCommits[idx].sha);
+      var commit = newCommits[idx];
+      if (!_.isObject(commit)) throw "Can not store empty commit.";
+
+      commits.addAsString(commit.sha);
       // store the commit's data into an own field
-      self.redis.set(commitsKey + ":" + newCommits[idx].sha, newCommits[idx]);
+      self.redis.set(commitsKey + ":" + newCommits[idx].sha, commit);
     }
 
-    if(arguments.length == 3)
-      cb({err: 0});
-    else
-      return true;
+    console.log('Stored these commits in the database', newCommits);
+
+    if (cb) cb(null);
+    return true;
   };
 
   this.setSnapshot = function (id, data, title, cb) {
@@ -272,10 +274,10 @@ redis.RedisDocStore = function (settings) {
   this.get = function(id, cb) {
 
     if(!self.exists(id) && typeof cb !== "undefined") {
-      if(arguments.length == 2) {
+      if(arguments.length === 2) {
         cb({err: -1, msg: "Document does not exist."}, undefined);
       } else {
-        throw new RedisError("Document does not exist.")
+        throw "Document does not exist."
       }
     }
 
@@ -295,8 +297,12 @@ redis.RedisDocStore = function (settings) {
       master: lastSha
     };
 
-    if(arguments.length == 2)
-      cb(0, doc);
+    if (!doc.data.commits[lastSha]) {
+      console.log('Corrupted Document: ', doc);
+      throw "Document corrupted, contains empty commit";
+    }
+
+    if(arguments.length === 2) cb(0, doc);
     
     return doc;
   };
