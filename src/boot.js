@@ -169,7 +169,7 @@ $(function() {
   });
   
   Substance.settings = {
-    hub: "http://localhost:3000"
+    hub: "https://substance-hub.heroku.com/api/v1"
   };
 
   // Start the engines
