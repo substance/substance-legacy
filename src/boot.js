@@ -70,6 +70,10 @@ $(function() {
           };
 
       authenticate(options, function(err, data) {
+        if (err) {
+          notify('error', err);
+          return;
+        }
         that.user = options.username;
         localStorage.setItem('user', that.user);
         localStorage.setItem('api-token', data.token);

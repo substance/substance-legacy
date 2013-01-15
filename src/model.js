@@ -322,22 +322,24 @@ function createDocument(cb) {
 // -----------------
 
 function createPublication(doc, cb) {
+  if (!authenticated()) return cb("Error when creating publication. Login first.");
+
   $.ajax({
     type: 'POST',
     headers: {
-      "Authorization": "token "+ localStorage.getItem('api-token')
+      "Authorization": "token " + token()
     },
     url: Substance.settings.hub + '/publications',
     data: {
       "document": doc.id,
-      "data": JSON.stringify(doc.content)
+      "data": JSON.stringify(doc.content),
+      "username": user()
     },
     success: function(result) {
       store.createPublication(doc.id, doc.content, cb);
     },
     error: function() {
-      console.log('error when creating publication');
-      cb('error');
+      cb("Error when creating publication. Can't access server.");
     },
     dataType: 'json'
   });
@@ -348,18 +350,18 @@ function createPublication(doc, cb) {
 // -----------------
 
 function deletePublication(doc, index, cb) {
+  if (!authenticated()) return cb("Deleting publication failed. Login first.");
   $.ajax({
     type: 'DELETE',
     headers: {
-      "Authorization": "token "+ localStorage.getItem('api-token')
+      "Authorization": "token " + token()
     },
     url: Substance.settings.hub + '/publications/'+doc.id+'/'+index,
     success: function(result) {
       store.deletePublication(doc.id, index, doc.content, cb);
     },
     error: function() {
-      console.log('error when clearing publications');
-      cb('error');
+      cb('Deleting publication failed. Login first.');
     },
     dataType: 'json'
   });
@@ -370,24 +372,35 @@ function deletePublication(doc, index, cb) {
 // -----------------
 
 function clearPublications(doc, cb) {
-  console.log('clearing publications');
+  if (!authenticated()) return cb("Unpublishing failed. Login first.");
   $.ajax({
     type: 'DELETE',
     headers: {
-      "Authorization": "token "+ localStorage.getItem('api-token')
+      "Authorization": "token " + token()
     },
-    url: Substance.settings.hub + '/publications/'+doc.id,
+    url: Substance.settings.hub + '/publications/' + doc.id,
     success: function(result) {
       store.clearPublications(doc.id, cb);
     },
     error: function() {
-      console.log('error when clearing publications');
-      cb('error');
+      cb("Unpublishing failed. Can't access server");
     },
     dataType: 'json'
   });
 }
 
+
+function authenticated() {
+  return !!token();
+}
+
+function token() {
+  return localStorage.getItem('api-token');
+}
+
+function user() {
+  return localStorage.getItem('user');
+}
 
 
 
@@ -403,10 +416,11 @@ function authenticate(options, cb) {
       "password": options.password
     },
     success: function(result) {
+      if (result.status === "error") cb('Authentication failed. Check your login credentials.');
       cb(null, result);
     },
     error: function() {
-      cb('error');
+      cb('Authentication failed. Check your login credentials.');
     },
     dataType: 'json'
   });

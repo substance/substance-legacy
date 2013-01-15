@@ -19,7 +19,7 @@ sc.views.Editor = Backbone.View.extend({
     this.model.publish(function(err) {
       if (err) {
         that.togglePublishActions();
-        notify('error', "Publishing failed. Can't connect to server.");
+        notify('error', err);
         return;
       }
       that.updatePublishState();
@@ -32,7 +32,7 @@ sc.views.Editor = Backbone.View.extend({
     this.model.unpublish(function(err) {
       if (err) {
         that.togglePublishActions();
-        notify('error', "Unpublishing failed. Can't connect to server.");
+        notify('error', err);
         return;
       }
       that.updatePublishState();
@@ -143,7 +143,6 @@ sc.views.Editor = Backbone.View.extend({
 
     this.composer = new Substance.Composer({id: 'document_wrapper', model: this.model });
     this.$('#document_wrapper').replaceWith(this.composer.render().el);
-    // this.composer.render();
     return this;
   }
 });
