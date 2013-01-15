@@ -169,7 +169,7 @@ $(function() {
   });
   
   Substance.settings = {
-    hub: "https://substance-hub.heroku.com/api/v1"
+    hub: "https://substance-hub.herokuapp.com/api/v1"
   };
 
   // Start the engines

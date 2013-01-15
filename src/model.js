@@ -107,7 +107,7 @@ _.extend(Comments.prototype, _.Events, {
 
     // Only consider markers as comment scopes
     var annotations = _.filter(annotations, function(a) {
-      return _.include(["idea", "blur", "doubt"], a.type);
+      return _.include(["idea", "question", "error"], a.type);
     });
 
     this.commentsForNode(this.session.document, node, content, annotations);

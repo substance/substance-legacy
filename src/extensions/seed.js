@@ -171,7 +171,7 @@ var doc1Commits = [
       "insert_annotation",
       {
         "id": "annotation:7153fd89e24a8540e4734e1a7f74eca8",
-        "type": "blur",
+        "type": "question",
         "pos": [
           125,
           17
@@ -229,7 +229,7 @@ var doc1Commits = [
       "insert_annotation",
       {
         "id": "annotation:31f465d92dd798a267252962d84a607d",
-        "type": "doubt",
+        "type": "error",
         "pos": [
           194,
           15
@@ -260,7 +260,7 @@ var doc1Commits = [
       "insert_annotation",
       {
         "id": "annotation:d689afc800c602d8bc34a55dc53af4d2",
-        "type": "blur",
+        "type": "question",
         "pos": [
           0,
           8

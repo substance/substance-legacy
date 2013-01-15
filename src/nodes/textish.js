@@ -7,7 +7,6 @@ Textish = {
   // Initialize Surface
   initSurface: function() {
     var that = this;
-
     var annotations = app.view.model.document.annotations(this.model.id);
 
     this.surface = new Substance.Surface({
@@ -20,7 +19,7 @@ Textish = {
     // Events
     // ------
   
-    // Hackish way to prevent node selection to be triggered two times
+    // Hackish way preventing node selection to be triggered two times
     this.$('.content').click(function() {
       return false;
     });
@@ -31,11 +30,11 @@ Textish = {
     });
 
     this.surface.on('surface:active', function(sel) {
-      that.session.select([that.model.id], {edit: true});
+      that.session.select([that.model.id], { edit: true });
     });
 
     function selectionChanged(sel) {
-      var marker = that.surface.getAnnotations(sel, ["idea", "blur", "doubt"])[0];
+      var marker = that.surface.getAnnotations(sel, ["idea", "question", "error"])[0];
 
       if (marker) {
         router.trigger('comment-scope:selected', marker.id, that.model.id, marker.id);
@@ -94,7 +93,7 @@ Textish = {
     if (_.include(["em", "str"], type)) {
       var types = ["em", "str"];
     } else {
-      var types = ["idea", "blur", "doubt"];
+      var types = ["idea", "question", "error"];
     }
 
     var a = this.surface.getAnnotations(sel, types)[0];

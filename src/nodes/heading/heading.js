@@ -14,13 +14,13 @@ sc.views.Node.define('heading', _.extend(Textish, {
       "inclusive": false,
       "visibility" : 'both'
     },
-    "blur": {
-      "description": 'Blur',
+    "question": {
+      "description": 'Question',
       "inclusive": false,
       "visibility" : 'both'
     },
-    "doubt": {
-      "description": 'Doubt',
+    "error": {
+      "description": 'Error',
       "inclusive": false,
       "visibility" : 'both'
     }

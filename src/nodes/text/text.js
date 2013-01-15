@@ -4,7 +4,7 @@ sc.views.Node.define('text', _.extend(Textish, {
 
   types: {
     "em": {
-      "description": 'Emphasize',
+      "description": 'Emphasized',
       "inclusive": true,
       "visibility" : 'both'
     },
@@ -18,13 +18,13 @@ sc.views.Node.define('text', _.extend(Textish, {
       "inclusive": false,
       "visibility" : 'both'
     },
-    "blur": {
+    "question": {
       "description": 'Question',
       "inclusive": false,
       "visibility" : 'both'
     },
-    "doubt": {
-      "description": 'Doubt',
+    "error": {
+      "description": 'Error',
       "inclusive": false,
       "visibility" : 'both'
     }

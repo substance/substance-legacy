@@ -316,11 +316,11 @@ h2 { font-size: 160%; padding-bottom: 15px; }
   background: rgba(171, 201, 36, 1);
 }
 
-.tool .scope-header.blur {
+.tool .scope-header.question {
   background: rgba(16, 167, 222, 1);
 }
 
-.tool .scope-header.doubt {
+.tool .scope-header.error {
   background: rgba(237, 96, 48, 1);
 }*/
 
@@ -361,11 +361,11 @@ h2 { font-size: 160%; padding-bottom: 15px; }
   background: rgba(0, 0, 0, 0.1) url(images/icons/idea.png) center no-repeat;
 }
 
-.comment-scope.blur {
+.comment-scope.question {
   background: rgba(0, 0, 0, 0.1) url(images/icons/question.png) center no-repeat;
 }
 
-.comment-scope.doubt {
+.comment-scope.error {
   background: rgba(0, 0, 0, 0.1) url(images/icons/caution.png) center no-repeat;
 }
 
@@ -377,11 +377,11 @@ h2 { font-size: 160%; padding-bottom: 15px; }
   background: rgba(171, 201, 36, 1) url(images/icons/idea.png) center no-repeat;
 }
 
-.comment-scope.blur.active {
+.comment-scope.question.active {
   background: rgba(16, 167, 222, 1) url(images/icons/question.png) center no-repeat;
 }
 
-.comment-scope.doubt.active {
+.comment-scope.error.active {
   background: rgba(237, 96, 48, 1) url(images/icons/caution.png) center no-repeat;
 }
 
@@ -647,11 +647,11 @@ h2 { font-size: 160%; padding-bottom: 15px; }
   background-color: rgba(171, 201, 36, 1);
 }
 
-#container #document .content-node .annotations a.blur {
+#container #document .content-node .annotations a.question {
   background-color: rgba(16, 167, 222, 1); 
 }
 
-#container #document .content-node .annotations a.doubt {
+#container #document .content-node .annotations a.error {
   background-color: rgba(237, 96, 48, 1);
 }
 
@@ -864,11 +864,11 @@ h2 { font-size: 160%; padding-bottom: 15px; }
   background: rgba(171, 201, 36, 1.0) url(images/icons/idea.png) 7px center no-repeat;
 }
 
-.annotation-toggles a.blur {
+.annotation-toggles a.question {
   background: rgba(16, 167, 222, 1) url(images/icons/question.png) 7px center no-repeat;
 }
 
-.annotation-toggles a.doubt {
+.annotation-toggles a.error {
   background: rgba(237, 96, 48, 1) url(images/icons/caution.png) 7px center no-repeat;
 }
 
@@ -889,12 +889,12 @@ h2 { font-size: 160%; padding-bottom: 15px; }
 }
 
 .content-node .idea { background-color: rgba(171, 201, 36, 0.3); }
-.content-node .blur { background-color: rgba(16, 167, 222, 0.3); }
-.content-node .doubt { background-color: rgba(237, 96, 48, 0.3); }
+.content-node .question { background-color: rgba(16, 167, 222, 0.3); }
+.content-node .error { background-color: rgba(237, 96, 48, 0.3); }
 
 .content-node .idea.highlight { background-color: rgba(171, 201, 36, 0.6); }
-.content-node .blur.highlight { background-color: rgba(16, 167, 222, 0.6);}
-.content-node .doubt.highlight { background-color: rgba(237, 96, 48, 0.6); }
+.content-node .question.highlight { background-color: rgba(16, 167, 222, 0.6);}
+.content-node .error.highlight { background-color: rgba(237, 96, 48, 0.6); }
 
 .content-node.text .em { font-style: italic; }
 .content-node.text .link { background-color: #00CFEA; }
