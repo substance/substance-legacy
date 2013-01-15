@@ -69,9 +69,10 @@ $(function() {
             password: $('#login_password').val()
           };
 
-      authenticate(options, function(err) {
+      authenticate(options, function(err, data) {
         that.user = options.username;
         localStorage.setItem('user', that.user);
+        localStorage.setItem('api-token', data.token);
         that.render();
       });
       return false;
@@ -80,6 +81,7 @@ $(function() {
     _logout: function() {
       this.user = null;
       localStorage.removeItem('user');
+      localStorage.removeItem('api-token');
       this.render();
       return false;
     },
@@ -88,7 +90,8 @@ $(function() {
       var that = this;
       _.bindAll(this, 'document', 'dashboard');
       this.user = localStorage.getItem('user');
-      if (!this.user) this.user = "guest";
+      
+      // if (!this.user) this.user = "guest";
     },
 
     // Toggle document view
@@ -169,7 +172,8 @@ $(function() {
   });
   
   Substance.settings = {
-    hub: "https://substance-hub.herokuapp.com/api/v1"
+    // hub: "https://substance-hub.herokuapp.com/api/v1"
+    hub: "http://localhost:3000/api/v1"
   };
 
   // Start the engines

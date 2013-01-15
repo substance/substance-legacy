@@ -303,12 +303,30 @@ function listDocuments(cb) {
 }
 
 
+// Create a new document
+// -----------------
+
+function createDocument(cb) {
+  store.create(Math.uuid(), function(err, doc) {
+    cb(err, new Substance.Session(doc));
+  });
+}
+
+// Substance.Hub
+// =================
+// 
+// Talk to the Substance.Hub instance
+
+
 // Create a new publication on the server
 // -----------------
 
 function createPublication(doc, cb) {
   $.ajax({
     type: 'POST',
+    headers: {
+      "Authorization": "token "+ localStorage.getItem('api-token')
+    },
     url: Substance.settings.hub + '/publications',
     data: {
       "document": doc.id,
@@ -332,6 +350,9 @@ function createPublication(doc, cb) {
 function deletePublication(doc, index, cb) {
   $.ajax({
     type: 'DELETE',
+    headers: {
+      "Authorization": "token "+ localStorage.getItem('api-token')
+    },
     url: Substance.settings.hub + '/publications/'+doc.id+'/'+index,
     success: function(result) {
       store.deletePublication(doc.id, index, doc.content, cb);
@@ -352,6 +373,9 @@ function clearPublications(doc, cb) {
   console.log('clearing publications');
   $.ajax({
     type: 'DELETE',
+    headers: {
+      "Authorization": "token "+ localStorage.getItem('api-token')
+    },
     url: Substance.settings.hub + '/publications/'+doc.id,
     success: function(result) {
       store.clearPublications(doc.id, cb);
@@ -365,33 +389,26 @@ function clearPublications(doc, cb) {
 }
 
 
-// Create a new document
-// -----------------
 
-function createDocument(cb) {
-  store.create(Math.uuid(), function(err, doc) {
-    cb(err, new Substance.Session(doc));
-  });
-}
 
 // Authenticate with your Substance user
 // -----------------
 
 function authenticate(options, cb) {
-  // talk.send(["session:authenticate", options], function(err) {
-  //   cb(err);
-  // });
-  cb(null);
-}
-
-
-// Error Notifications
-// -----------------
-
-function notify(type, message) {
-  $('#document_menu .error-message').html(message).show();
-  setTimeout(function() {
-    $('#document_menu .error-message').fadeOut();
-  }, 2000);
+  $.ajax({
+    type: 'POST',
+    url: Substance.settings.hub + '/authenticate',
+    data: {
+      "username": options.username,
+      "password": options.password
+    },
+    success: function(result) {
+      cb(null, result);
+    },
+    error: function() {
+      cb('error');
+    },
+    dataType: 'json'
+  });
 }
 

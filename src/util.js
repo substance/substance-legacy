@@ -73,3 +73,13 @@ _.extractOperation = function(baseText, newText) {
   
   return _.map(changes, mapOp);
 }
+
+// Error Notifications
+// -----------------
+
+function notify(type, message) {
+  $('#document_menu .error-message').html(message).show();
+  setTimeout(function() {
+    $('#document_menu .error-message').fadeOut();
+  }, 2000);
+}
