@@ -211,10 +211,8 @@ _.extend(Substance.Session.prototype, _.Events, {
     doc.meta.published_at = new Date();
     doc.meta.published_commit = doc.getRef('master');
 
-    // TODO: create publication
     createPublication(doc, function(err) {
-      console.log('created publication', err);
-      if (err) return alert('Failed to create a publication.');
+      if (err) return cb(err);
       updateMeta(doc, cb);  
     });
   },
@@ -226,8 +224,7 @@ _.extend(Substance.Session.prototype, _.Events, {
     delete doc.meta["published_commit"];
 
     clearPublications(doc, function(err) {
-      console.log('cleared publications');
-      // TODO: remove all publications
+      if (err) return cb(err);
       updateMeta(doc, cb);
     });
   },
@@ -386,3 +383,15 @@ function authenticate(options, cb) {
   // });
   cb(null);
 }
+
+
+// Error Notifications
+// -----------------
+
+function notify(type, message) {
+  $('#document_menu .error-message').html(message).show();
+  setTimeout(function() {
+    $('#document_menu .error-message').fadeOut();
+  }, 2000);
+}
+

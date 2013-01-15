@@ -17,6 +17,11 @@ sc.views.Editor = Backbone.View.extend({
   publish: function() {
     var that = this;
     this.model.publish(function(err) {
+      if (err) {
+        that.togglePublishActions();
+        notify('error', "Publishing failed. Can't connect to server.");
+        return;
+      }
       that.updatePublishState();
     });
     return false;
@@ -25,6 +30,11 @@ sc.views.Editor = Backbone.View.extend({
   unpublish: function() {
     var that = this;
     this.model.unpublish(function(err) {
+      if (err) {
+        that.togglePublishActions();
+        notify('error', "Unpublishing failed. Can't connect to server.");
+        return;
+      }
       that.updatePublishState();
     });
     return false;
