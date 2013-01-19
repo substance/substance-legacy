@@ -403,7 +403,6 @@ function user() {
 }
 
 
-
 // Authenticate with your Substance user
 // -----------------
 
@@ -416,13 +415,37 @@ function authenticate(options, cb) {
       "password": options.password
     },
     success: function(result) {
-      if (result.status === "error") cb('Authentication failed. Check your login credentials.');
+      if (result.status === "error") return cb('Login failed. Check your input.');
       cb(null, result);
     },
     error: function() {
-      cb('Authentication failed. Check your login credentials.');
+      cb('Login failed. Check your input.');
     },
     dataType: 'json'
   });
 }
 
+
+// Register new Substance user
+// -----------------
+
+function registerUser(options, cb) {
+  $.ajax({
+    type: 'POST',
+    url: Substance.settings.hub + '/register',
+    data: {
+      "username": options.username,
+      "email": options.email,
+      "name": options.name,
+      "password": options.password
+    },
+    success: function(result) {
+      if (result.status === "error") return cb('Registration failed. Check your input.');
+      cb(null, result);
+    },
+    error: function() {
+      cb('Registration failed. Check your input.');
+    },
+    dataType: 'json'
+  });
+}
