@@ -32,16 +32,21 @@ extern "C" bool redis_initialize_jsobjects(JSGlobalContextRef context);
     [NSString stringWithFormat: @"%@/Contents/Redis/redis.conf", path], nil]];
   [m_redisProcess launch];
 
-  m_webExtension = [[WebViewExtension alloc] initWithWebView: webView];
+  m_webExtension = [[WebViewWithExtensions alloc] initWithWebView: webView];
   [m_webExtension addExtension: (JSCExtension) redis_initialize_jsobjects];
 
-  m_loadDelegate = [[WebViewLoadDelegate alloc] init: m_webExtension];
+  m_loadDelegate = [[WebViewLoadDelegate alloc] initWithExtendedWebView: m_webExtension];
   [webView setFrameLoadDelegate: m_loadDelegate];
 
   NSString *url =  [NSString stringWithFormat: @"file://%@/Contents/Assets/index.html", path];
 	[ [webView mainFrame] loadRequest:
 		[NSURLRequest requestWithURL: [NSURL URLWithString:url] ]
 	];
+}
+
+- (void) dealloc {
+  [m_loadDelegate release];
+  [m_webExtension release];
 }
 
 - (BOOL)applicationShouldTerminateAfterLastWindowClosed:(NSApplication *)sender {

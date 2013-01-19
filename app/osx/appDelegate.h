@@ -7,7 +7,7 @@
   MainView *mainView;
   WebView *webView;
 
-  WebViewExtension *m_webExtension;
+  WebViewWithExtensions *m_webExtension;
   WebViewLoadDelegate *m_loadDelegate;
   NSTask *m_redisProcess;
 }
