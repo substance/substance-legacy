@@ -120,7 +120,7 @@ redis.RedisDocStore = function (settings) {
   };
 
   /**
-   * List all publications 
+   * List all publications
    */
 
   this.listPublications = function(id, cb) {
@@ -219,28 +219,32 @@ redis.RedisDocStore = function (settings) {
     var commitsKey = id + ":commits";
     var commits = self.redis.asList(commitsKey);
 
-    var lastSha = undefined;
-    if(commits.size() > 0)
-      lastSha = commits.get();
+    // Note: we allow to update the document with commits pointing
+    //       to a commit that does not need to be the last one.
+    //       E.g. this happens after undoing commits and adding new changes.
+    //       Instead of deleting the undone commits we keep them as detached refs
+    //       which allows to recover such versions.
 
-
+    // find the parent commit
+    var existingCommits = commits.asArray();
+    var lastSha = self.getRef(id, "master");
 
     for(var idx=0; idx<newCommits.length; idx++) {
 
       var commit = newCommits[idx];
 
       // commit must be in proper order
-      if (typeof lastSha !== undefined && commit.parent != lastSha) {
+      if (lastSha && commit.parent != lastSha) {
         var err = {err: -1, msg: "Invalid commit chain."};
         // TODO: maybe give more details about the problem
-        if (typeof cb !== "undefined")
+        if (cb)
           cb(err);
         else
           console.log(err.msg);
         return false;
       }
 
-      lastSha = newCommits[idx].sha;
+      lastSha = commit.sha;
     }
 
     // save the commits after knowing that everything is fine
@@ -253,11 +257,26 @@ redis.RedisDocStore = function (settings) {
       self.redis.set(commitsKey + ":" + newCommits[idx].sha, commit);
     }
 
+    self.setRef(id, "master", lastSha);
+
     console.log('Stored these commits in the database', newCommits);
 
     if (cb) cb(null);
     return true;
   };
+
+  this.setRef = function(id, ref, sha, cb) {
+    self.redis.setString(id + ":refs:" + ref, sha);
+    if (cb) cb(null);
+  }
+
+  this.getRef = function(id, ref, cb) {
+    var key = id + ":refs:" + ref;
+    var sha = self.redis.exists(key) ? self.redis.get(key) : null;
+
+    if(cb) cb(0, sha);
+    return sha;
+  }
 
   this.setSnapshot = function (id, data, title, cb) {
     var snapshots = self.redis.asHash(self.snapshotKey(id));
@@ -285,25 +304,44 @@ redis.RedisDocStore = function (settings) {
     doc.data = {commits: {}};
 
     var commits = self.redis.asList(id + ":commits");
-    var shas = commits.asArray();
-    for (var idx=0; idx<shas.length; ++idx) {
-      var commit = self.redis.getJSON( id + ":commits:" + shas[idx]);
-      doc.data.commits[shas[idx]] = commit;
+
+    // Note: Commits are stored non-destructively, i.e., after undos
+    //       new commits will be appended pointing to a commit before
+    //       the reverted commits.
+    //       To retrieve the documents commits we have to traverse the commits
+    //       beginning from the commit referenced by master.
+    var lastSha = self.getRef(id, "master");
+    doc.data.refs = {
+      "master": lastSha
     }
 
-    var lastSha = shas.length > 0 ? commits.get() : undefined;
+    if (commits.size() > 0) {
+      var currentSha = lastSha;
 
-    doc.data.refs = {
-      master: lastSha
-    };
+      for (;;) {
+        if(!currentSha) break;
+
+        var commit = self.redis.getJSON( id + ":commits:" + currentSha);
+        if (!commit) {
+          console.log('Corrupted Document: ', doc);
+          throw "Document corrupted, contains empty commit";
+        }
+        doc.data.commits[currentSha] = commit;
+
+        // pick the parent sha and continue
+        // note: this will stop iteration after the first commit has been processed
+        currentSha = commit.parent;
+      }
+    }
+
 
     if (lastSha && !doc.data.commits[lastSha]) {
       console.log('Corrupted Document: ', doc);
       throw "Document corrupted, contains empty commit";
     }
 
-    if(arguments.length === 2) cb(0, doc);
-    
+    if(cb) cb(0, doc);
+
     return doc;
   };
 };
