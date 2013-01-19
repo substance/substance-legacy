@@ -45,6 +45,7 @@ extern "C" bool redis_initialize_jsobjects(JSGlobalContextRef context);
 }
 
 - (void) dealloc {
+  [super dealloc];
   [m_loadDelegate release];
   [m_webExtension release];
 }

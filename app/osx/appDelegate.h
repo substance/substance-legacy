@@ -12,6 +12,8 @@
   NSTask *m_redisProcess;
 }
 
+- (void) dealloc;
+
 @property (assign) IBOutlet NSWindow *window;
 @property (assign) IBOutlet WebView *webView;
 @property (assign) IBOutlet MainView *mainView;
