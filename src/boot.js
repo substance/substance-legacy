@@ -223,8 +223,8 @@ $(function() {
   });
   
   Substance.settings = {
-    // hub: "https://substance-hub.herokuapp.com/api/v1"
-    hub: "http://localhost:3000/api/v1"
+    hub: "https://substance-hub.herokuapp.com/api/v1"
+    // hub: "http://localhost:3000/api/v1"
   };
 
   // Start the engines
