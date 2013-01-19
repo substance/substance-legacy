@@ -33,12 +33,4 @@ if (NOT EXTERNALS_ONLY)
 
   add_subdirectory(app)
 
-  # Configure Testing
-  # =================
-  if (ENABLE_TESTING)
-    enable_testing()
-    add_subdirectory(test)
-
-  endif()
-
 endif () # EXTERNALS_ONLY
