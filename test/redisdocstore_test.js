@@ -17,7 +17,7 @@ redisstore.delete(doc1.id);
 console.log('Testing document creation ...\n==================');
 redisstore.create(doc1.id);
 
-// console.log("Doc1, just stored: "+redisstore.get(doc1.id));
+console.log("Doc1, just stored: "+redisstore.get(doc1.id));
 
 // Doc Updates
 // ===================
@@ -43,7 +43,7 @@ var ops = [
         "id": "text:42c72d87e40f529dba27a9970c0a6ef3",
         "type": "text",
         "data": {
-          "content": "Hello —— world!"
+          "content": "Hello — world!"
         }
       }
     ],

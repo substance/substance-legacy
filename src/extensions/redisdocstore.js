@@ -297,7 +297,7 @@ redis.RedisDocStore = function (settings) {
       master: lastSha
     };
 
-    if (!doc.data.commits[lastSha]) {
+    if (lastSha && !doc.data.commits[lastSha]) {
       console.log('Corrupted Document: ', doc);
       throw "Document corrupted, contains empty commit";
     }
