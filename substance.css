@@ -178,10 +178,76 @@ body {
   background: rgba(0,0,0, 1);
 }
 
-
 #help {
   padding-top: 50px;
   text-align: center;
+}
+
+
+/* Login / Signup
+-------------------------------------------------------------------------------*/
+
+#login {
+  width: 380px;
+  margin: 0px auto;
+  margin-top: 100px;
+}
+
+#login .error-message {
+  text-align: center;
+  color: #CB0011;
+  height: 40px;
+}
+
+#login h1 {
+  font-family: 'Palatino Linotype', 'Merriweather';
+  font-size: 30px;
+  margin-bottom: 40px;
+  text-align: center;
+}
+
+#login .centered-form {
+  padding: 50px;
+  background: rgba(255,255,255, 0.6);
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+#login .label {
+  text-align: center;
+  font-size: 16px;
+}
+
+#login input {
+  padding: 0 10px;
+  height: 35px;
+  margin: 15px 0;
+  display: block;
+  width: 100%;
+}
+
+#login #login_submit {
+  opacity: 0.8;
+  color: rgba(0,0,0, 0.7);
+  height: 35px;
+  background: #65BC19;
+  border-radius: 5px;
+  cursor: pointer;
+  border: none;
+}
+
+#login #login_submit:hover {
+  opacity: 1.0;
+}
+
+#login .sign-up {
+  font-size: 16px;
+  text-align: center;
+}
+
+#login .sign-up a {
+  /*border: none;*/
+  font-weight: bold;
 }
 
 

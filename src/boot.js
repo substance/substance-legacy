@@ -9,6 +9,8 @@ $(function() {
       this.route('new', 'newDocument', this.newDocument);
       this.route('dashboard', 'dashboard', app.dashboard);
       this.route('', 'start', app.dashboard);
+      this.route('login', 'login', app.login);
+      this.route('signup', 'signup', app.signup);
     },
 
     newDocument: function() {
@@ -20,13 +22,24 @@ $(function() {
     }
   });
 
-  // Welcome screen
+  // Login screen
   // ---------------
 
-  var Start = Backbone.View.extend({
+  var Login = Backbone.View.extend({
     id: 'container',
     render: function() {
-      this.$el.html(_.tpl('start'));
+      this.$el.html(_.tpl('login'));
+      return this;
+    }
+  });
+
+  // Signup screen
+  // ---------------
+
+  var Signup = Backbone.View.extend({
+    id: 'container',
+    render: function() {
+      this.$el.html(_.tpl('signup'));
       return this;
     }
   });
@@ -53,7 +66,8 @@ $(function() {
 
   var Application = Backbone.View.extend({
     events: {
-      'submit #user_login_form': '_login',
+      'submit #login_form': '_login',
+      'submit #signup_form': '_signup',
       'click .logout': '_logout',
       'click #container': '_clear'
     },
@@ -71,14 +85,38 @@ $(function() {
 
       authenticate(options, function(err, data) {
         if (err) {
-          notify('error', err);
+          that.$('#login .error-message').html(err);
           return;
         }
         that.user = options.username;
         localStorage.setItem('user', that.user);
         localStorage.setItem('api-token', data.token);
-        that.render();
+        that.dashboard();
       });
+      return false;
+    },
+
+    _signup: function() {
+      var that = this;
+          options = {
+            name: $('#signup_name').val(),
+            username: $('#signup_username').val(),
+            email: $('#signup_email').val(),
+            password: $('#signup_password').val()
+          };
+
+      registerUser(options, function(err, data) {
+        if (err) {
+          that.$('#login .error-message').html(err);
+          return;
+        }
+
+        that.user = options.username;
+        localStorage.setItem('user', that.user);
+        localStorage.setItem('api-token', data.token);
+        that.dashboard();
+      });
+
       return false;
     },
 
@@ -87,15 +125,15 @@ $(function() {
       localStorage.removeItem('user');
       localStorage.removeItem('api-token');
       this.render();
+      this.login();
+
       return false;
     },
 
     initialize: function(options) {
       var that = this;
-      _.bindAll(this, 'document', 'dashboard');
-      this.user = localStorage.getItem('user');
-      
-      // if (!this.user) this.user = "guest";
+      _.bindAll(this, 'document', 'dashboard', 'login', 'signup');
+      this.user = localStorage.getItem('user');      
     },
 
     // Toggle document view
@@ -119,10 +157,8 @@ $(function() {
       var doc = this.view.model.document;
 
       doc.on('commit:applied', function(commit) {
-
         // Update publish state
         that.view.updatePublishState();
-
         if (commit.op[0] === "set") {
           var title = doc.content.properties.title;
           that.$('.menu .document').html(title);
@@ -151,10 +187,21 @@ $(function() {
     },
 
     dashboard: function() {
+      if (!this.user) return this.login();
       this.view = new Dashboard();
       this.render();
       // this.updateMenu();
       return;
+    },
+
+    login: function() {
+      this.view = new Login();
+      this.render();
+    },
+
+    signup: function() {
+      this.view = new Signup();
+      this.render();
     },
 
     // Render application template
@@ -176,8 +223,8 @@ $(function() {
   });
   
   Substance.settings = {
-    hub: "https://substance-hub.herokuapp.com/api/v1"
-    // hub: "http://localhost:3000/api/v1"
+    // hub: "https://substance-hub.herokuapp.com/api/v1"
+    hub: "http://localhost:3000/api/v1"
   };
 
   // Start the engines
