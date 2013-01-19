@@ -37,7 +37,7 @@ if (NOT EXTERNALS_ONLY)
   # =================
   if (ENABLE_TESTING)
     enable_testing()
-    add_subdirectory(test)
+    #add_subdirectory(test)
 
   endif()
 
