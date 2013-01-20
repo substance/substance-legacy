@@ -39,7 +39,7 @@ redis.RedisDocStore = function (settings) {
 
   this.snapshotKey = function(id) {
     return id + ":snapshots"
-  }
+  };
 
   /**
    *  Checks if a document exists
@@ -80,7 +80,7 @@ redis.RedisDocStore = function (settings) {
   };
 
   /**
-   * Updates an existing document with the provided metadata object
+   * Updates an existing document with the provided meta object
    * @param id the document id
    * @param meta object containing all metadata
    * @param cb callback
@@ -282,22 +282,22 @@ redis.RedisDocStore = function (settings) {
     }
 
     var doc = self.documents.getJSON(id);
-    doc.data = {commits: {}};
+    doc.commits = {};
 
     var commits = self.redis.asList(id + ":commits");
     var shas = commits.asArray();
     for (var idx=0; idx<shas.length; ++idx) {
       var commit = self.redis.getJSON( id + ":commits:" + shas[idx]);
-      doc.data.commits[shas[idx]] = commit;
+      doc.commits[shas[idx]] = commit;
     }
 
     var lastSha = shas.length > 0 ? commits.get() : undefined;
 
-    doc.data.refs = {
+    doc.refs = {
       master: lastSha
     };
 
-    if (lastSha && !doc.data.commits[lastSha]) {
+    if (lastSha && !doc.commits[lastSha]) {
       console.log('Corrupted Document: ', doc);
       throw "Document corrupted, contains empty commit";
     }

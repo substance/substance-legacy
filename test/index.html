@@ -1,30 +1,104 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <title>RedisDocStore Testsuite</title>
+<head>
+  <meta charset='UTF-8'/>
+  <title>Substance Console</title>
 
-    <script src="../lib/underscore.js"></script>
-    <script src="../lib/jquery.min.js"></script>
-    <script src="../lib/data.js"></script>
-    <script src="../lib/backbone.js"></script>
+  <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,700,300' rel='stylesheet' type='text/css'>
+  <link href='http://fonts.googleapis.com/css?family=Source+Code+Pro' rel='stylesheet' type='text/css'/>
 
-    <script src="../lib/dmp.js"></script>
-    <script src="../lib/operation.js"></script>
+  <link rel='stylesheet' href='console.css'/>
 
-    <!-- Extensions -->
-    <script src="../src/extensions/redisdocstore.js"></script>
+  <!-- Extensions -->
+  <script src="../src/extensions/redisdocstore.js"></script>
 
+  <script src="../lib/underscore.js"></script>
+  <script src="../lib/jquery.min.js"></script>
+  <script src="../lib/backbone.js"></script>
+  <script src="../lib/dmp.js"></script>
+  <script src="../lib/operation.js"></script>
+  <script src="../lib/document.js"></script>
+  <script src="console.js"></script>
 
-    <!-- Model -->
-    <script src="../lib/document.js"></script>
+  <!-- Startpage -->
+  <script type="text/html" name="start">
+    <div id="help">
+      <img src="images/introduction.png"/>
+    </div>
+  </script>
 
-    <!-- Test -->
-    <script src="./seed.js"></script>
-    <script src="./redisdocstore_test.js"></script>
+  <script type="text/html" name="application">
+    <div class="testsuites">
+      DOCUMENT: 
+      <select id="document_id" name="document">
+        <option value="empty.json">Empty</option>
+        <% _.each(documents, function(doc) { %>
+          <option value="<%= doc.id %>"><%= doc.meta.title %> <%= doc.id %></option>
+        <% }); %>
+      </select>
+    </div>
+    <div id="document"></div>
+  </script>
 
-  </head>
-  <body>
-    Testing RedisDocStore (see console output)
+  <script type="text/html" name="document">
+    <div class="adsf"><a href="file:///Users/michael/projects/composer/build/app/osx/Substance.app/Contents/Assets/index.html#<%= document.id %>">Open in Composer</a></div>
+    <div class="operations">
+      <% applied = true %>
+      <% var width = parseInt((800 / operations.length) - 1, 10); %>
+      <% width = Math.min(width, 40); %>
+      <% _.each(operations, function(op) { %>
+        <a style="width: <%= width %>px;" href="#" class="operation<%= applied ? ' applied' : '' %>" data-sha="<%= op.sha %>"></a>
+        <% if (op.sha === sha) applied = false; %>
+      <% }); %>
+    </div>
 
-  </body>
+    <div class="console-wrapper">
+      <div class="console">
+        <div class="scope" id="scope">
+
+        </div>
+        <div class="action">
+          <textarea id="command" class="command inactive"></textarea>
+          <div class="apply-operation">Apply</div>
+        </div>
+      </div>
+
+      <div class="output visualization">
+        <div class="select-output">
+          <a href="#" class="toggle-output active" data-output="visualization">Visualization</a>
+          <a href="#" class="toggle-output" data-output="content">Content</a>
+          <a href="#" class="toggle-output last" data-output="operations">Operations</a>
+        </div>
+
+        <div class="document">
+          <% _.each(nodes, function(node) { %>
+            <div class="node <%= node.type %>" data-id="<%= node.id %>">
+              <% _.each(node.content.split(''), function(ch) { %><span><%= ch %></span><% }); %>
+            </div>
+          <% }); %>
+        </div>
+      </div>
+    </div>
+  </script>
+
+  <script type="text/html" name="scope">
+    OPERATION:
+    <select name="scope" id="select_scope">
+      <option value="document"<%= scope === "document" ? " selected" : "" %>>Document</option>
+      <option value="annotation"<%= scope === "annotation" ? " selected" : "" %>>Annotation</option>
+      <option value="comment"<%= scope === "comment" ? " selected" : "" %>>Comment</option>
+    </select>
+    <select name="examples" id="select_example">
+      <option value="">Choose Example</option>
+      <% _.each(commands[scope], function(c, index) { %>
+        <option value="<%= index %>"><%= c.name %></option>
+      <% }); %>
+    </select>
+  </script>
+
+</head>
+<body>
+  <div id="container">
+  </div>
+</body>
 </html>

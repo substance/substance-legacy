@@ -232,5 +232,9 @@ $(function() {
   window.router = new Router({});
   Backbone.history.start();
 
-  key('ctrl+alt+t', _.bind(function() { document.location.href = "file:///Users/michael/projects/composer/build/app/osx/Substance.app/Contents/Assets/test/index.html"; return false }, this));
+  key('ctrl+alt+c', _.bind(function() {
+    var id = window.doc ? window.doc.id : "empty.json";
+    document.location.href = "file:///Users/michael/projects/composer/build/app/osx/Substance.app/Contents/Assets/test/index.html#"+id;
+    return false;
+  }, this));
 });

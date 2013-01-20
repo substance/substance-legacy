@@ -1,4 +1,6 @@
 {
+  "id": "document:hello",
+  "meta": {},
   "refs": {
     "master": "80895d15d6b6eca5733af79cc0f74b1b"
   },
@@ -54,6 +56,5 @@
       "sha": "80895d15d6b6eca5733af79cc0f74b1b",
       "parent": "658ab4f39359c98a2289c5ba0187d9d4"
     }
-  },
-  "id": "document:hello"
+  }
 }

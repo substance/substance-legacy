@@ -1,4 +1,5 @@
 {
+  "id": "document:substance",
   "refs": {
     "master": "47e52bb1da3ce84f3f830028d70d56b0"
   },
@@ -282,6 +283,5 @@
       "sha": "47e52bb1da3ce84f3f830028d70d56b0",
       "parent": "9ef845f834b0d604c5c198e747e108f2"
     }
-  },
-  "id": "document:substance"
+  }
 }
