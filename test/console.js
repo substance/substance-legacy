@@ -224,6 +224,7 @@ $(function() {
       this.model.checkout(sha);
       this.sha = sha;
       this.render(); // Re-render it
+      return false;
     },
 
     initialize: function (options) {

@@ -97,6 +97,10 @@ void HiRedisAccess::set(const std::string &id, jsobjects::JSValuePtr val) {
   ReplyPtr reply((redisReply*) redisCommand(redis, commands[SET_STRING_VALUE], id.c_str(), json.c_str()));
 }
 
+void HiRedisAccess::setString(const std::string &id, const std::string &value) {
+  ReplyPtr reply((redisReply*) redisCommand(redis, commands[SET_STRING_VALUE], id.c_str(), value.c_str()));
+}
+
 void HiRedisAccess::remove(const std::string &key) {
     ReplyPtr((redisReply*) redisCommand(redis, commands[DELETE], key.c_str()));
  }
@@ -257,7 +261,7 @@ void HiRedisList::add(jsobjects::JSValuePtr val) {
 }
 
 void HiRedisList::remove(unsigned int index) {
-  const std::string &val = get(index);  
+  const std::string &val = get(index);
   ReplyPtr reply((redisReply*) redisCommand(redis.redis, commands[DELETE], val.c_str()));
 }
 

@@ -33,7 +33,7 @@ public:
 
   virtual void remove(unsigned int index);
 
-  virtual jsobjects::JSValuePtr getJSON(unsigned int index);  
+  virtual jsobjects::JSValuePtr getJSON(unsigned int index);
 
   virtual jsobjects::JSArrayPtr asArray();
 
@@ -127,6 +127,8 @@ public:
   virtual jsobjects::JSValuePtr getJSON(const std::string &id);
 
   virtual void set(const std::string &id, jsobjects::JSValuePtr obj);
+
+  virtual void setString(const std::string &id, const std::string &value);
 
   virtual void remove(const std::string &key);
 
