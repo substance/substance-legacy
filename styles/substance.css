@@ -130,7 +130,7 @@ body {
   width: 30px;
   opacity: 0.7;
   -webkit-transition: opacity 200ms linear;
-  background: url(images/icons/menu-logout.png) 10px center no-repeat;
+  background: url(../images/icons/menu-logout.png) 10px center no-repeat;
 }
 
 #header .user-status a.logout:hover {
@@ -165,7 +165,7 @@ body {
   top: 0px;
   bottom: 0px;
   -webkit-transition: opacity 200ms linear;
-  background: url(images/icons/plus-white.png) center no-repeat;
+  background: url(../images/icons/plus-white.png) center no-repeat;
   opacity: 0.7;
 }
 
@@ -355,7 +355,7 @@ float: left;
   top: 0px;
   width: 25px;
   bottom: 0px;
-  background-image: url(images/icons/discussion.png);
+  background-image: url(../images/icons/discussion.png);
   background-position: center;
   background-repeat: no-repeat;
   opacity: 0.6;
@@ -370,15 +370,15 @@ float: left;
 
 
 #document_menu .actions a.undo .icon {
-  background-image: url(images/icons/undo.png);
+  background-image: url(../images/icons/undo.png);
 }
 
 #document_menu .actions a.redo .icon {
-  background-image: url(images/icons/redo.png);
+  background-image: url(../images/icons/redo.png);
 }
 
 #document_menu .toggles a.settings .icon {
-  background-image: url(images/icons/settings.png);
+  background-image: url(../images/icons/settings.png);
 }
 
 #document_menu .navigation a.active, #document_menu .navigation a:hover {
@@ -427,7 +427,7 @@ float: left;
 
 
 #document_menu .publish-state .icon {
-  background-image: url(images/icons/locked.png);
+  background-image: url(../images/icons/locked.png);
   background-position: center;
   background-repeat: no-repeat;
   width: 25px;
@@ -439,11 +439,11 @@ float: left;
 }
 
 #document_menu .publish-state.dirty .icon {
-  background-image: url(images/icons/neutral.png);
+  background-image: url(../images/icons/neutral.png);
 }
 
 #document_menu .publish-state.published .icon {
-  background-image: url(images/icons/smile.png);
+  background-image: url(../images/icons/smile.png);
 }
 
 #document_menu .publish-state a.toggle-publish-actions {
@@ -461,11 +461,11 @@ float: left;
 }
 
 #document_menu .publish-state .publish-document .icon {
-  background-image: url(images/icons/smile.png);
+  background-image: url(../images/icons/smile.png);
 }
 
 #document_menu .publish-state .unpublish-document .icon {
-  background-image: url(images/icons/cry.png);
+  background-image: url(../images/icons/cry.png);
 }
 
 #document_menu .publish-state a.toggle-publish-actions:hover {
@@ -473,7 +473,7 @@ float: left;
 }
 
 #document_menu .publish-state a.toggle-publish-actions .icon {
-  background-image: url(images/icons/dropdown.png);
+  background-image: url(../images/icons/dropdown.png);
   top: 8px;
   left: 8px;
 }

@@ -279,7 +279,7 @@ h2 { font-size: 160%; padding-bottom: 15px; }
 }
 
 .tool .comment-scope {
-  background: rgba(0,0,0, 0.1) url(images/icons/discussion.png) center no-repeat;
+  background: rgba(0,0,0, 0.1) url(../images/icons/discussion.png) center no-repeat;
   float: left;
   margin-bottom: 1px;
 
@@ -344,7 +344,7 @@ h2 { font-size: 160%; padding-bottom: 15px; }
   border: none;
   border-radius: 3px;
   padding: 2px 7px;
-  background: rgba(0,0,0, 0.10) url(images/icons/check.png) 4px center no-repeat;
+  background: rgba(0,0,0, 0.10) url(../images/icons/check.png) 4px center no-repeat;
   color: #444;
   line-height: 25px;
   font-size: 12px;
@@ -358,31 +358,31 @@ h2 { font-size: 160%; padding-bottom: 15px; }
 
 
 .comment-scope.idea {
-  background: rgba(0, 0, 0, 0.1) url(images/icons/idea.png) center no-repeat;
+  background: rgba(0, 0, 0, 0.1) url(../images/icons/idea.png) center no-repeat;
 }
 
 .comment-scope.question {
-  background: rgba(0, 0, 0, 0.1) url(images/icons/question.png) center no-repeat;
+  background: rgba(0, 0, 0, 0.1) url(../images/icons/question.png) center no-repeat;
 }
 
 .comment-scope.error {
-  background: rgba(0, 0, 0, 0.1) url(images/icons/caution.png) center no-repeat;
+  background: rgba(0, 0, 0, 0.1) url(../images/icons/caution.png) center no-repeat;
 }
 
 .tool .comment-scope.active {
-  background: rgba(0,0,0, 0.4) url(images/icons/discussion.png) center no-repeat;
+  background: rgba(0,0,0, 0.4) url(../images/icons/discussion.png) center no-repeat;
 }
 
 .comment-scope.idea.active {
-  background: rgba(171, 201, 36, 1) url(images/icons/idea.png) center no-repeat;
+  background: rgba(171, 201, 36, 1) url(../images/icons/idea.png) center no-repeat;
 }
 
 .comment-scope.question.active {
-  background: rgba(16, 167, 222, 1) url(images/icons/question.png) center no-repeat;
+  background: rgba(16, 167, 222, 1) url(../images/icons/question.png) center no-repeat;
 }
 
 .comment-scope.error.active {
-  background: rgba(237, 96, 48, 1) url(images/icons/caution.png) center no-repeat;
+  background: rgba(237, 96, 48, 1) url(../images/icons/caution.png) center no-repeat;
 }
 
 
@@ -415,7 +415,7 @@ h2 { font-size: 160%; padding-bottom: 15px; }
 }
 
 .tool .comments .comments-placeholder {
-  background: url(images/icons/debate.png) 10px center no-repeat;
+  background: url(../images/icons/debate.png) 10px center no-repeat;
   opacity: 0.5;
   margin-top: 20px;
   font-size: 16px;
@@ -451,13 +451,12 @@ h2 { font-size: 160%; padding-bottom: 15px; }
   background: rgba(0,0,0, 0.02);
 }
 
-
 .tool .comments .delete-comment {
   display: none;
   position: absolute;
   top: 10px;
   right: 10px;
-  background: url(images/icons/delete.png) center no-repeat;
+  background: url(../images/icons/delete.png) center no-repeat;
   width: 20px;
   height: 20px;
   text-align: center;
@@ -583,7 +582,7 @@ h2 { font-size: 160%; padding-bottom: 15px; }
   bottom: 0px;
   overflow: auto;
 
-  background: url(images/document_bg.png);
+  background: url(../images/document_bg.png);
   width: 800px;
   -webkit-font-smoothing: subpixel-antialiased;
   font-size: 17px;
@@ -661,7 +660,7 @@ h2 { font-size: 160%; padding-bottom: 15px; }
   top: 0px;
   line-height: 30px;
   font-family: 'Open Sans', Arial, sans-serif;
-  background: url(images/icons/discussion-small.png) center no-repeat;
+  background: url(../images/icons/discussion-small.png) center no-repeat;
   font-size: 13px;
   font-weight: bold;
   color: #000;
@@ -677,7 +676,7 @@ h2 { font-size: 160%; padding-bottom: 15px; }
   width: 20px;
   height: 20px;
   position: absolute;
-  background: url(images/icons/delete.png);
+  background: url(../images/icons/delete.png);
   right: 10px;
   top: 5px;
   border: none;
@@ -694,7 +693,7 @@ h2 { font-size: 160%; padding-bottom: 15px; }
   color: #fff;
   border-radius: 3px;
   opacity: 1.0;
-  background: url(images/icons/comment-white.png) center no-repeat;
+  background: url(../images/icons/comment-white.png) center no-repeat;
   background-color: #00B7E1;
 }
 
@@ -724,7 +723,7 @@ h2 { font-size: 160%; padding-bottom: 15px; }
 
 
 #container #document .content-node.selected .handle .up {
-  background: url(images/icons/arrow-up.png) center no-repeat;
+  background: url(../images/icons/arrow-up.png) center no-repeat;
   display: none;
   width: 20px;
   height: 20px;
@@ -734,7 +733,7 @@ h2 { font-size: 160%; padding-bottom: 15px; }
 }
 
 #container #document .content-node.selected .handle .down {
-  background: url(images/icons/arrow-down.png) center no-repeat;
+  background: url(../images/icons/arrow-down.png) center no-repeat;
   display: none;
   width: 20px;
   height: 20px;
@@ -853,23 +852,23 @@ h2 { font-size: 160%; padding-bottom: 15px; }
 }
 
 .annotation-toggles a.em {
-  background: #ccc url(images/icons/em.png) 7px center no-repeat;
+  background: #ccc url(../images/icons/em.png) 7px center no-repeat;
 }
 
 .annotation-toggles a.str {
-  background: #ccc url(images/icons/str.png) 7px center no-repeat;
+  background: #ccc url(../images/icons/str.png) 7px center no-repeat;
 }
 
 .annotation-toggles a.idea {
-  background: rgba(171, 201, 36, 1.0) url(images/icons/idea.png) 7px center no-repeat;
+  background: rgba(171, 201, 36, 1.0) url(../images/icons/idea.png) 7px center no-repeat;
 }
 
 .annotation-toggles a.question {
-  background: rgba(16, 167, 222, 1) url(images/icons/question.png) 7px center no-repeat;
+  background: rgba(16, 167, 222, 1) url(../images/icons/question.png) 7px center no-repeat;
 }
 
 .annotation-toggles a.error {
-  background: rgba(237, 96, 48, 1) url(images/icons/caution.png) 7px center no-repeat;
+  background: rgba(237, 96, 48, 1) url(../images/icons/caution.png) 7px center no-repeat;
 }
 
 .annotation-toggles a.active {

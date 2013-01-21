@@ -346,28 +346,6 @@ function createPublication(doc, cb) {
 }
 
 
-// Delete publication by index for a given doc
-// -----------------
-
-function deletePublication(doc, index, cb) {
-  if (!authenticated()) return cb("Deleting publication failed. Login first.");
-  $.ajax({
-    type: 'DELETE',
-    headers: {
-      "Authorization": "token " + token()
-    },
-    url: Substance.settings.hub + '/publications/'+doc.id+'/'+index,
-    success: function(result) {
-      cb(null);
-    },
-    error: function() {
-      cb("Deleting publication failed. Can't access server.");
-    },
-    dataType: 'json'
-  });
-}
-
-
 // Remove all publications from the server
 // -----------------
 
