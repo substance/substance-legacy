@@ -73,6 +73,13 @@ function updateDoc(doc, commit, cb) {
   });
 };
 
+// Update doc (docstore.setRef)
+// -----------------
+
+function updateRef(doc, ref, sha, cb) {
+  store.setRef(doc.id, ref, sha); //  = function(id, ref, sha, cb) {
+};
+
 
 function updateMeta(doc, cb) {
   doc.meta.updated_at = new Date();

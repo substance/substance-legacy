@@ -204,6 +204,10 @@
         // Send update to the server
         updateDoc(this.model.document, commit);
       }, this);
+
+      this.model.document.on('ref:updated', function(ref, sha) {
+        updateRef(this.model.document, ref, sha);
+      }, this);
     },
 
     render: function() {

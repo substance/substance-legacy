@@ -175,6 +175,7 @@ redis.RedisDocStore = function (settings) {
     }
 
     self.setRef(id, "master", lastSha);
+    self.setRef(id, "tail", lastSha);
 
     console.log('Stored these commits in the database', newCommits);
 
@@ -227,11 +228,12 @@ redis.RedisDocStore = function (settings) {
     //       the reverted commits.
     //       To retrieve the documents commits we have to traverse the commits
     //       beginning from the commit referenced by master.
-    var lastSha = self.getRef(id, "master");
+    var lastSha = self.getRef(id, "tail");
 
     doc.refs = {
-      "master": lastSha
-    }
+      "master": self.getRef(id, "master"),
+      "tail": lastSha
+    };
 
     if (commits.size() > 0) {
       var currentSha = lastSha;
