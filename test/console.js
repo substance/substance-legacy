@@ -132,6 +132,19 @@ $(function() {
 
       loadDocument(id, function(err, rawDoc) {
         var doc = new Substance.Document(rawDoc);
+
+        // Add global ref for convenience
+        window.doc = doc;
+
+        doc.on('commit:applied', function(commit) {
+          // Send update to the server
+          updateDoc(doc, commit);
+        }, this);
+
+        doc.on('ref:updated', function(ref, sha) {
+          updateRef(doc, ref, sha);
+        }, this);
+
         that.view = new Document({el: '#document', model: doc });
         that.view.render();
       });
@@ -193,27 +206,34 @@ $(function() {
 
     _selectExample: function() {
       this._makeEditable();
-      var index = $('#select_example').val();
-      if (index === "") {
+
+      var option = $('#select_example').val().split(':');
+
+      var scope = option[0];
+      var index = option[1];
+      if (index) {
         $('#command').val('');
         return;
       }
 
-      var op = SUBSTANCE_COMMANDS[this.scope][index];
-      $('#command').val(JSON.stringify(op.op, null, '  '));
+      console.log(option);
+
+      // var op = SUBSTANCE_COMMANDS[this.scope][index];
+      // $('#command').val(JSON.stringify(op.op, null, '  '));
       return false;
     },
 
     _applyOperation: function(e) {
+
       if (!$(e.currentTarget).hasClass('active')) return;
       var op = JSON.parse(this.$('#command').val());
 
       this.model.apply(op, {
-        user: "demo",
-        scope: this.scope
+        user: "demo"
       });
 
       this.sha = this.model.model.refs['master'];
+
       this.render();
       return false;
     },
@@ -222,6 +242,10 @@ $(function() {
       var sha = $(e.currentTarget).attr('data-sha');
       // Checkout previous version
       this.model.checkout(sha);
+
+      // TODO: setRef
+      this.model.setRef('master', sha);
+
       this.sha = sha;
       this.render(); // Re-render it
       return false;
@@ -239,7 +263,10 @@ $(function() {
 
     // Render application template
     render: function() {
-      var commits = this.model.commits('master');
+
+      var tail = this.model.getRef('tail') || this.model.getRef('master');
+      console.log('tail', tail);
+      var commits = this.model.commits(tail);
 
       this.$el.html(_.tpl('document', {
         sha: this.sha,
@@ -301,3 +328,26 @@ function loadDocument(doc, cb) {
     store.get(doc, cb);
   }
 }
+
+
+// Update doc (docstore.update)
+// -----------------
+
+function updateDoc(doc, commit, cb) {
+  store.update(doc.id, [commit], function(err) {
+    store.setSnapshot(doc.id, doc.content, 'master', function(err) {
+      // Update metadata accordingly
+      if (commit.op[0] === "set") {
+        _.extend(doc.meta, doc.content.properties);
+        updateMeta(doc, cb);
+      };
+    });
+  });
+};
+
+// Update doc (docstore.setRef)
+// -----------------
+
+function updateRef(doc, ref, sha, cb) {
+  store.setRef(doc.id, ref, sha); //  = function(id, ref, sha, cb) {
+};

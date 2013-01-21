@@ -9,10 +9,11 @@
 
   <link rel='stylesheet' href='console.css'/>
 
+  <script src="../lib/underscore.js"></script>
+
   <!-- Extensions -->
   <script src="../src/extensions/redisdocstore.js"></script>
 
-  <script src="../lib/underscore.js"></script>
   <script src="../lib/jquery.min.js"></script>
   <script src="../lib/backbone.js"></script>
   <script src="../lib/dmp.js"></script>
@@ -83,15 +84,15 @@
 
   <script type="text/html" name="scope">
     OPERATION:
-    <select name="scope" id="select_scope">
-      <option value="document"<%= scope === "document" ? " selected" : "" %>>Document</option>
-      <option value="annotation"<%= scope === "annotation" ? " selected" : "" %>>Annotation</option>
-      <option value="comment"<%= scope === "comment" ? " selected" : "" %>>Comment</option>
-    </select>
     <select name="examples" id="select_example">
       <option value="">Choose Example</option>
-      <% _.each(commands[scope], function(c, index) { %>
-        <option value="<%= index %>"><%= c.name %></option>
+
+      <% _.each(["document", "annotation", "comment"], function(scope) { %>
+        <option value="">------------------</option>
+
+        <% _.each(commands[scope], function(c, index) { %>
+          <option value="<%= scope %>:<%= index %>"><%= c.name %></option>
+        <% }); %>
       <% }); %>
     </select>
   </script>
