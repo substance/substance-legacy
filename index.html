@@ -137,14 +137,11 @@
     <!-- Document Settings -->
     <script type="text/html" name="document_settings">
       <h2>Document Settings</h2>
+      <form id="document_settings">
+        <div class="label">Name</div>
+        <input type="text" name="document_name" id="document_name"/>
+      </form>
       <a href="#" class="delete-document">Delete Document</a>
-
-      <h2>Publications</h2>
-      <div class="publications">
-        <% _.each(publications, function(pub, index) { %>
-          <div class="publication">#<%= index+1 %> <%= pub.created_at %></div>
-        <% }); %>
-      </div>
     </script>
 
     <!-- User Login -->
@@ -221,44 +218,6 @@
         <div id="document"></div>
       </div>
     </script>
-
-    <!-- Controls Insert -->
-    <!--<script type="text/x-ejs-template" name="controls_insert">
-      <div class="actions insert">
-        <div class="placeholder">Insert Content</div>
-        <ul>
-          <% childTypes.each(function (position, type) { %>
-            <% if (_.isArray(position)) { %>
-              <li class="container">
-                <span><%= getTypeName(type) %></span>
-                <ul>
-                  <% _.each(position, function (position) { %>
-                    <li>
-                      <a href="/"
-                         data-parent="<%= position.parent._id %>"
-                         data-after="<%= position.after ? position.after._id : ''%>"
-                         data-type="<%= type %>">
-                        Level <%= position.level %>
-                      </a>
-                    </li>
-                  <% }); %>
-                </ul>
-              </li>
-            <% } else { %>
-              <li>
-                <a href="/"
-                   data-parent="<%= position.parent._id %>"
-                   data-after="<%= position.after ? position.after._id : ''%>"
-                   data-type="<%= type %>">
-                  <%= getTypeName(type) %>
-                </a>
-              </li>
-            <% } %>
-          <% }); %>
-        </ul>
-        <br class="clear" />
-      </div>
-    </script>-->
 
     <script type="text/x-ejs-template" name="document">
       <div id="document_content">

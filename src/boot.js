@@ -223,6 +223,7 @@ $(function() {
   });
   
   Substance.settings = {
+    hub_frontend: "http://substance-hub.herokuapp.com",
     hub: "https://substance-hub.herokuapp.com/api/v1"
     // hub: "http://localhost:3000/api/v1"
   };

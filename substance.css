@@ -400,6 +400,10 @@ float: left;
 
 /* Publish State */
 
+#document_menu .publish-state a {
+  border: none;
+}
+
 #document_menu .publish-state {
   position: relative;
   float: right;
@@ -477,7 +481,7 @@ float: left;
 #document_menu .publish-state .state {
   position: absolute;
   left: 45px;
-  top: 3px;
+  top: 2px;
   font-weight: bold;
   text-transform: uppercase;
   color: rgba(0,0,0, 0.6);
@@ -487,7 +491,7 @@ float: left;
 #document_menu .publish-state .message {
   position: absolute;
   left: 45px;
-  top: 15px;
+  top: 18px;
   font-size: 11px;
 }
 

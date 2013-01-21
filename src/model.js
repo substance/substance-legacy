@@ -336,7 +336,7 @@ function createPublication(doc, cb) {
       "username": user()
     },
     success: function(result) {
-      store.createPublication(doc.id, doc.content, cb);
+      cb(null);
     },
     error: function() {
       cb("Error when creating publication. Can't access server.");
@@ -358,10 +358,10 @@ function deletePublication(doc, index, cb) {
     },
     url: Substance.settings.hub + '/publications/'+doc.id+'/'+index,
     success: function(result) {
-      store.deletePublication(doc.id, index, doc.content, cb);
+      cb(null);
     },
     error: function() {
-      cb('Deleting publication failed. Login first.');
+      cb("Deleting publication failed. Can't access server.");
     },
     dataType: 'json'
   });
@@ -380,7 +380,7 @@ function clearPublications(doc, cb) {
     },
     url: Substance.settings.hub + '/publications/' + doc.id,
     success: function(result) {
-      store.clearPublications(doc.id, cb);
+      cb(null);
     },
     error: function() {
       cb("Unpublishing failed. Can't access server");

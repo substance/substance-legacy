@@ -9,31 +9,21 @@ redis.RedisDocStore = function (settings) {
 
   this.redis = redis.RedisAccess.Create(0);
 
-  // default settings for redis db
-  var host = "127.0.0.1";
-  var port = 6379;
-  var scope = "substance";
+  var defaults = {
+    host: "127.0.0.1",
+    port: 6379,
+    scope: "substance"
+  };
 
-  // use the settings object to override the default settings
-  if (arguments.length === 1) {
-    if (typeof settings.host !== "undefined") {
-      host = settings.host;
-    }
-    if (typeof settings.port !== "undefined") {
-      port = settings.port;
-    }
-    if (typeof settings.scope !== "undefined") {
-      scope = settings.scope;
-    }
-  }
+  var settings = _.extend(defaults, settings);
 
-  this.redis.setHost(host);
-  this.redis.setPort(port);
+  this.redis.setHost(settings.host);
+  this.redis.setPort(settings.port);
   this.redis.connect();
 
   // the scope is useful to keep parts of the redis db separated
   // e.g. tests would use its own, or one could separate user spaces
-  this.redis.setScope(scope);
+  this.redis.setScope(settings.scope);
 
   self.documents = self.redis.asHash("documents");
 
@@ -96,83 +86,10 @@ redis.RedisDocStore = function (settings) {
       "meta": meta
     };
 
-    console.log('storing new metadata...', doc);
     self.documents.set(id, doc);
     if (cb) cb(null, doc);
   };
 
-
-  /**
-   * Create a new publication entry, complete with a snapshot
-   */
-
-  this.createPublication = function (id, doc, cb) {
-    var publicationsKey = id + ":publications";
-    var publications = self.redis.asList(publicationsKey);
-
-    var poop = {
-      "created_at": new Date(),
-      "data": doc
-    };
-
-    publications.add(poop);
-    if (cb) cb(null);
-  };
-
-  /**
-   * List all publications
-   */
-
-  this.listPublications = function(id, cb) {
-    var publicationsKey = id + ":publications";
-    var publications = self.redis.asList(publicationsKey);
-    var poops = [];
-
-    for (var idx = 0; idx < publications.size(); idx++) {
-      poops.push(publications.getJSON(idx));
-    }
-
-    return poops;
-  };
-
-  /**
-   * Delete an existing publication
-   * @param id the document id
-   * @param index the publication index
-   */
-
-  this.deletePublication = function (id, index, cb) {
-    var publicationsKey = id + ":publications";
-    var publications = self.redis.asList(publicationsKey);
-
-    if (index < 0 || index >= publications.size()) {
-      if (cb) {
-        cb({err: -1, msg: "Index out of bounds."});
-        return false;
-      }
-
-      throw "Index out of bounds.";
-    }
-
-    publications.remove(index);
-
-    if(cb) cb(null);
-
-    return true;
-  };
-
-  /**
-   * Delete all publications for a document
-   * Aka "unpublish"
-   * @param id the document id
-   */
-
-  this.clearPublications = function (id, cb) {
-    var publicationsKey = id + ":publications";
-    self.redis.remove(publicationsKey);
-
-    if (cb) cb(null);
-  };
 
   /**
    * List all documents complete with metadata
@@ -334,7 +251,6 @@ redis.RedisDocStore = function (settings) {
         currentSha = commit.parent;
       }
     }
-
 
     if (lastSha && !doc.commits[lastSha]) {
       console.log('Corrupted Document: ', doc);

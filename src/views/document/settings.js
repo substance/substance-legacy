@@ -15,9 +15,7 @@ sc.views.Settings = Backbone.View.extend({
   },
 
   render: function () {
-    this.$el.html(_.tpl('document_settings', {
-      publications: store.listPublications(this.model.document.id)
-    }));
+    this.$el.html(_.tpl('document_settings', {}));
     return this;
   }
 });

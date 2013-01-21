@@ -111,7 +111,8 @@ sc.views.Editor = Backbone.View.extend({
       .removeClass('published unpublished dirty')
       .addClass(state);
 
-    this.$('.publish-state .state').html(state === "dirty" ? "Published" : state);
+    this.$('.publish-state .state').html(state === "dirty" ? '<a href="'+Substance.settings.hub_frontend+'/documents/'+doc.id+'">Published</a>' : state);
+
     var message = "Private document";
     if (state === "published") message = $.timeago(doc.meta.published_at);
     if (state === "dirty") message = "Pending changes";
