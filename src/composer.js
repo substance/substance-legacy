@@ -203,19 +203,44 @@
       this.model.document.on('commit:applied', function(commit) {
         // Send update to the server
         updateDoc(this.model.document, commit);
+        this.updateUndoRedoControls();
       }, this);
 
       this.model.document.on('ref:updated', function(ref, sha) {
         updateRef(this.model.document, ref, sha);
+        this.updateUndoRedoControls();
       }, this);
     },
 
     render: function() {
+      var that = this;
       this.$el.html(_.tpl('composer'));
       this.renderDoc();
       this.positionTools();
       this.updateMode();
+
+      _.delay(function() {
+        that.updateUndoRedoControls();  
+      }, 1);
+      
       return this;
+    },
+
+    updateUndoRedoControls: function() {
+      var master = this.model.document.getRef('master');
+      var tail = this.model.document.getRef('tail');
+      
+      if (master === tail) {
+        $('#document_menu .redo').addClass('disabled');
+      } else {
+        $('#document_menu .redo').removeClass('disabled');
+      }
+
+      if (master === null) {
+        $('#document_menu .undo').addClass('disabled');
+      } else {
+        $('#document_menu .undo').removeClass('disabled');
+      }
     },
 
     renderDoc: function() {

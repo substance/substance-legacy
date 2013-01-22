@@ -369,6 +369,13 @@ float: left;
 }
 
 
+#document_menu .actions a.disabled {
+  pointer-events: none;
+  opacity: 0.2;
+  pointer-events: none;
+  cursor: default;
+}
+
 #document_menu .actions a.undo .icon {
   background-image: url(../images/icons/undo.png);
 }

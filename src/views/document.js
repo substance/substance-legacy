@@ -290,7 +290,6 @@ sc.views.Document = Backbone.View.extend({
 
   initSurface: function(property) {
     var that = this;
-
     this.surface = new Substance.Surface({
       el: this.$('.document-'+property)[0],
       content: that.model.document.content.properties[property]
@@ -301,12 +300,8 @@ sc.views.Document = Backbone.View.extend({
 
     this.surface.on('content:changed', function(content, prevContent) {
       var delta = _.extractOperation(prevContent, content);
-
-      console.log("Partial Text Update", delta);
-
       var opts = {};
       opts[property] = delta;
-
       that.model.document.apply(["set", opts]);
     });
   },

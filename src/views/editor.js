@@ -11,7 +11,17 @@ sc.views.Editor = Backbone.View.extend({
     'click .toggle-publish-actions': 'togglePublishActions',
     'click a.delete-document': '_deleteDocument',
     'click a.publish-document ': 'publish',
-    'click a.unpublish-document ': 'unpublish'
+    'click a.unpublish-document ': 'unpublish',
+    'click a.undo': 'undo',
+    'click a.redo': 'redo'
+  },
+
+  undo: function() {
+    return this.composer.undo();
+  },
+
+  redo: function() {
+    return this.composer.redo();
   },
 
   publish: function() {
@@ -111,7 +121,7 @@ sc.views.Editor = Backbone.View.extend({
       .removeClass('published unpublished dirty')
       .addClass(state);
 
-    this.$('.publish-state .state').html(state === "dirty" ? '<a href="'+Substance.settings.hub_frontend+'/documents/'+doc.id+'">Published</a>' : state);
+    this.$('.publish-state .state').html(state !== "unpublished" ? '<a href="'+Substance.settings.hub_frontend+'/documents/'+doc.id+'">Published</a>' : state);
 
     var message = "Private document";
     if (state === "published") message = $.timeago(doc.meta.published_at);
@@ -141,7 +151,6 @@ sc.views.Editor = Backbone.View.extend({
     }));
 
     this.updatePublishState();
-
     this.composer = new Substance.Composer({id: 'document_wrapper', model: this.model });
     this.$('#document_wrapper').replaceWith(this.composer.render().el);
     return this;
