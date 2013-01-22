@@ -10,7 +10,6 @@ $(function() {
     return _.template(source, ctx);
   };
 
-
   // Commands
   // ---------------
 
@@ -45,30 +44,30 @@ $(function() {
     "annotation": [
       {
         "name": "Insert Annotation",
-        "op": ["insert", {"id": "suggestion:1", "type": "suggestion", "node": "text:2", "pos": [4, 5]}]
+        "op": ["insert_annotation", {"id": "suggestion:1", "type": "suggestion", "node": "text:2", "pos": [4, 5]}]
       },
       {
         "name": "Update Annotation",
-        "op": ["update", {"id": "suggestion:1", "type": "suggestion", "node": "text:2", "pos": [5, 10]}]
+        "op": ["update_annotation", {"id": "suggestion:1", "type": "suggestion", "node": "text:2", "pos": [5, 10]}]
       }
     ],
 
     "comment": [
       {
         "name": "Insert Comment (document)",
-        "op": ["insert", {"id": "comment:a", "content": "I like this document!"}]
+        "op": ["insert_comment", {"id": "comment:a", "content": "I like this document!"}]
       },
       {
         "name": "Insert Comment (node)",
-        "op": ["insert", {"id": "comment:a", "node": "text:2", "content": "Good argumentation."}]
+        "op": ["insert_comment", {"id": "comment:a", "node": "text:2", "content": "Good argumentation."}]
       },
       {
         "name": "Insert Comment (annotation)",
-        "op": ["insert", {"id": "comment:a", "node": "text:2", "annotation": "suggestion:1", "content": "A way of saying helo."}]
+        "op": ["insert_comment", {"id": "comment:a", "node": "text:2", "annotation": "suggestion:1", "content": "A way of saying helo."}]
       },
       {
         "name": "Update comment",
-        "op": ["insert", {"id": "comment:a", "content": "A way of saying hello."}]
+        "op": ["update_comment", {"id": "comment:a", "content": "A way of saying hello."}]
       }
     ]
   };
@@ -206,25 +205,16 @@ $(function() {
 
     _selectExample: function() {
       this._makeEditable();
-
       var option = $('#select_example').val().split(':');
-
       var scope = option[0];
       var index = option[1];
-      if (index) {
-        $('#command').val('');
-        return;
-      }
-
-      console.log(option);
-
-      // var op = SUBSTANCE_COMMANDS[this.scope][index];
-      // $('#command').val(JSON.stringify(op.op, null, '  '));
+      
+      var op = SUBSTANCE_COMMANDS[scope][index];
+      $('#command').val(JSON.stringify(op.op, null, '  '));
       return false;
     },
 
     _applyOperation: function(e) {
-
       if (!$(e.currentTarget).hasClass('active')) return;
       var op = JSON.parse(this.$('#command').val());
 
