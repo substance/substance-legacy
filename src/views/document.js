@@ -136,7 +136,7 @@ sc.views.Document = Backbone.View.extend({
     properties["content"] = options.content || "";
 
     this.model.document.apply(["insert", {
-      "id": type+":"+Math.uuid(),
+      "id": Math.uuid(type+':', 8),
       "type": type,
       "target": target,
       "data": properties
