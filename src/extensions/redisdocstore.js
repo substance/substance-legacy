@@ -184,23 +184,27 @@ redis.RedisDocStore = function (settings) {
   };
 
   this.setRef = function(id, ref, sha, cb) {
+    if (!sha) sha = "";
     self.redis.setString(id + ":refs:" + ref, sha);
     if (cb) cb(null);
-  }
+  };
 
   this.getRef = function(id, ref, cb) {
     var key = id + ":refs:" + ref;
     var sha = self.redis.exists(key) ? self.redis.get(key) : null;
 
+    // Hack (since redis does not have explicit null values)
+    if (sha === "") sha = null;
+
     if(cb) cb(0, sha);
     return sha;
-  }
+  };
 
   this.setSnapshot = function (id, data, title, cb) {
     var snapshots = self.redis.asHash(self.snapshotKey(id));
     snapshots.set(title, data);
     if(cb) { cb(null); }
-  }
+  };
 
   /**
    * Retrieves a document
