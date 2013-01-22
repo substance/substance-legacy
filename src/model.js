@@ -101,7 +101,8 @@ _.extend(Comments.prototype, _.Events, {
     this.scopes = [];
 
     if (node) {
-      var content = this.session.document.content.nodes[node].content;
+      var nodeData = this.session.document.content.nodes[node];
+      var content = nodeData.content;
       var annotations = this.session.document.annotations(node);
     }
 

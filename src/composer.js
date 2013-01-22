@@ -138,6 +138,7 @@
     },
 
     undo: function() {
+      this.model.select([]); // Deselect
       this.model.document.undo();
       this.init();
       this.render();
@@ -145,6 +146,7 @@
     },
 
     redo: function() {
+      this.model.select([]); // Deselect
       this.model.document.redo();
       this.init();
       this.render();
