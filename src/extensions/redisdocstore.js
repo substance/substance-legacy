@@ -21,6 +21,7 @@ redis.RedisDocStore = function (settings) {
   this.redis.setPort(settings.port);
   this.redis.connect();
 
+
   // the scope is useful to keep parts of the redis db separated
   // e.g. tests would use its own, or one could separate user spaces
   this.redis.setScope(settings.scope);
@@ -47,6 +48,7 @@ redis.RedisDocStore = function (settings) {
    * Creates a new document with the provided id
    * @param cb callback
    */
+
   this.create = function (id, cb) {
     if(self.exists(id) && cb) {
       return cb({err: -1, msg: "Document already exists."});

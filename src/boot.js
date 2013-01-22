@@ -89,8 +89,8 @@ $(function() {
           return;
         }
         that.user = options.username;
-        localStorage.setItem('user', that.user);
-        localStorage.setItem('api-token', data.token);
+        userSettings.set('user', that.user);
+        userSettings.set('api-token', data.token);
         that.dashboard();
       });
       return false;
@@ -112,8 +112,8 @@ $(function() {
         }
 
         that.user = options.username;
-        localStorage.setItem('user', that.user);
-        localStorage.setItem('api-token', data.token);
+        userSettings.set('user', that.user);
+        userSettings.set('api-token', data.token);
         that.dashboard();
       });
 
@@ -122,8 +122,8 @@ $(function() {
 
     _logout: function() {
       this.user = null;
-      localStorage.removeItem('user');
-      localStorage.removeItem('api-token');
+      userSettings.set('user', '');
+      userSettings.set('api-token', '');
       this.render();
       this.login();
 
@@ -133,7 +133,7 @@ $(function() {
     initialize: function(options) {
       var that = this;
       _.bindAll(this, 'document', 'dashboard', 'login', 'signup');
-      this.user = localStorage.getItem('user');      
+      this.user = userSettings.get('user');      
     },
 
     // Toggle document view
@@ -236,6 +236,12 @@ $(function() {
   key('ctrl+alt+c', _.bind(function() {
     var id = window.doc ? window.doc.id : "empty.json";
     document.location.href = "file:///Users/michael/projects/composer/build/app/osx/Substance.app/Contents/Assets/test/index.html#"+id;
+    return false;
+  }, this));
+
+  // Trigger sync with hub
+  key('ctrl+alt+s', _.bind(function() {
+    console.log('synchronizing ...');
     return false;
   }, this));
 });

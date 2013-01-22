@@ -58,6 +58,8 @@ if (window.redis) {
   store = new StaticDocStore();
 }
 
+// var replicator = new Substance.Replicator();
+
 // Update doc (docstore.update)
 // -----------------
 
@@ -381,11 +383,11 @@ function authenticated() {
 }
 
 function token() {
-  return localStorage.getItem('api-token');
+  return userSettings.get('api-token');
 }
 
 function user() {
-  return localStorage.getItem('user');
+  return userSettings.get('user');
 }
 
 
@@ -435,3 +437,46 @@ function registerUser(options, cb) {
     dataType: 'json'
   });
 }
+
+
+// Sync (synchronize with Substance Hub)
+// -----------------
+
+function sync() {
+  // 1. Ask the
+  // replicator.sync();
+}
+
+
+// UserSettings
+// -----------------
+// 
+// Persistence for user settings
+
+var UserSettings = function(settings) {
+  var defaults = {
+    host: "127.0.0.1",
+    port: 6379,
+    scope: "substance-user-settings"
+  };
+
+  var settings = _.extend(defaults, settings);
+
+  this.db = redis.RedisAccess.Create(0);
+  this.db.setHost(settings.host);
+  this.db.setPort(settings.port);
+  this.db.connect();
+  this.db.setScope(settings.scope);
+
+  var hash = this.db.asHash("data");
+
+  this.set = function(key, value) {
+    hash.set(key, value);
+  };
+
+  this.get = function(key) {
+    return hash.getJSON(key);
+  };
+};
+
+var userSettings = new UserSettings();
