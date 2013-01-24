@@ -77,7 +77,7 @@ $(function() {
   var Router = Backbone.Router.extend({
     initialize: function() {
       // Using this.route, because order matters
-      this.route(':document', 'loadDocument', this.loadDocument);
+      this.route(':user/:document', 'loadDocument', this.loadDocument);
       this.route('new', 'newDocument', this.newDocument);
       this.route('', 'start', this.loadDocument);
     },
@@ -86,8 +86,8 @@ $(function() {
       app.document(Math.uuid());
     },
 
-    loadDocument: function(id) {
-      app.document(id || "empty.json");
+    loadDocument: function(user, id) {
+      app.document(user, id || "empty.json");
     }
   });
 
@@ -121,31 +121,39 @@ $(function() {
     },
 
     // Toggle document view
-    document: function(id) {
+    document: function(user, id) {
       var that = this;
 
       router.navigate(id, false);
+      console.log('document!!!');
 
       // Select correct doc in dropdown
       $('option[value="'+id+'"]').attr('selected', 'true');
 
-      loadDocument(id, function(err, rawDoc) {
-        var doc = new Substance.Document(rawDoc);
+      loadDocument(user, id, function(err, rawDoc) {
+        store.list(function(err, documents) {
+          var doc = new Substance.Document(rawDoc);
 
-        // Add global ref for convenience
-        window.doc = doc;
+          // Add global ref for convenience
+          window.doc = doc;
 
-        doc.on('commit:applied', function(commit) {
-          // Send update to the server
-          updateDoc(doc, commit);
-        }, this);
+          console.log('MEEH');
+          that.model = { documents: documents };
 
-        doc.on('ref:updated', function(ref, sha) {
-          updateRef(doc, ref, sha);
-        }, this);
+          that.render();
 
-        that.view = new Document({el: '#document', model: doc });
-        that.view.render();
+          doc.on('commit:applied', function(commit) {
+            // Send update to the server
+            updateDoc(doc, commit);
+          }, this);
+
+          doc.on('ref:updated', function(ref, sha) {
+            updateRef(doc, ref, sha);
+          }, this);
+
+          that.view = new Document({el: '#document', model: doc });
+          that.view.render();
+        });
       });
     },
 
@@ -292,24 +300,26 @@ $(function() {
     }
   });
 
-  store.list(function(err, documents) {
-    window.app = new Application({el: '#container', model: {documents: documents}});
-    app.render();
+  
+    window.app = new Application({el: '#container'});
 
     // Start responding to routes
     window.router = new Router({});
 
     Backbone.history.start();
-  });
 });
 
 
 // Global stuff
 // ---------------
 
-var store = new redis.RedisDocStore();
+var store;
 
-function loadDocument(doc, cb) {
+function loadDocument(user, doc, cb) {
+  store = new RedisStore({
+    scope: user
+  });
+
   if (doc.indexOf('json')>=0) {
     $.getJSON('../data/' + doc, function(rawDoc) {
       cb(null, rawDoc);
