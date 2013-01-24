@@ -21,7 +21,7 @@
 
     this.redis.setHost(settings.host);
     this.redis.setPort(settings.port);
-    
+
     // the scope is useful to keep parts of the redis db separated
     // e.g. tests would use its own, or one could separate user spaces
     self.redis.setScope(settings.scope);
@@ -106,8 +106,11 @@
 
         doc.refs = {
           "master": self.getRef(docIds[idx], "master"),
-          "tail": self.getRef(docIds[idx], "tail")
+          "tail": self.getRef(docIds[idx], "tail"),
         };
+
+        var syncedSha = self.getRef(docIds[idx], "synced");
+        if (syncedSha) doc.refs["synced"] = syncedSha;
 
         docs.push(doc);
       }
@@ -240,8 +243,12 @@
 
       doc.refs = {
         "master": self.getRef(id, "master"),
-        "tail": lastSha
+        "tail": lastSha,
       };
+
+      var syncedSha = self.getRef(id, "synced");
+
+      if (syncedSha) doc.refs["synced"] = syncedSha;
 
       if (commits.size() > 0) {
         var currentSha = lastSha;
