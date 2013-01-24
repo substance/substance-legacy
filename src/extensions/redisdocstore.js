@@ -21,20 +21,17 @@
 
     this.redis.setHost(settings.host);
     this.redis.setPort(settings.port);
-
-    console.log('setting scope to:', settings.scope);
     
     // the scope is useful to keep parts of the redis db separated
     // e.g. tests would use its own, or one could separate user spaces
-    this.redis.setScope(settings.scope);
-
-    this.redis.connect();
+    self.redis.setScope(settings.scope);
+    self.redis.connect();
 
     self.documents = self.redis.asHash("documents");
 
     this.snapshotKey = function(id) {
       return id + ":snapshots"
-    }
+    };
 
     /**
      *  Checks if a document exists

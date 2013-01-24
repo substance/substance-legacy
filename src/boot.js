@@ -91,6 +91,8 @@ $(function() {
         that.user = options.username;
         userSettings.set('user', that.user);
         userSettings.set('api-token', data.token);
+
+        initStore(that.user); // Re-init store as user scope changes
         that.dashboard();
       });
       return false;
@@ -236,12 +238,13 @@ $(function() {
 
   key('ctrl+alt+c', _.bind(function() {
     var id = window.doc ? window.doc.id : "empty.json";
-    document.location.href = "file:///Users/michael/projects/composer/build/app/osx/Substance.app/Contents/Assets/test/index.html#"+id;
+    document.location.href = "file:///Users/michael/projects/composer/build/app/osx/Substance.app/Contents/Assets/test/index.html#"+app.user+"/"+id;
     return false;
   }, this));
 
   // Trigger sync with hub
   key('ctrl+alt+s', _.bind(function() {
+    var replicator = new Substance.Replicator({store: store, user: user()});
     replicator.sync(function() {
       console.log("sync complete ...");
     });

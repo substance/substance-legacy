@@ -86,15 +86,18 @@ var store;
 
 // store = new StaticDocStore();
 
-if (window.redis) {
-  store = new RedisStore({
-    scope: user() || "anonymous"
-  });
-} else {
-  store = new StaticDocStore();
+function initStore(username) {
+  if (window.redis) {
+    store = new RedisStore({
+      scope: username
+    });
+  } else {
+    store = new StaticDocStore();
+  }
 }
 
-var replicator = new Substance.Replicator({store: store, user: user()});
+initStore(user() || "anonymous");
+
 
 // Update doc (docstore.update)
 // -----------------

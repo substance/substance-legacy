@@ -17,7 +17,7 @@ Substance.Replicator = function(params) {
     // Current commit (=head)
     // var commit = this.getRef(ref) || ref;
     // var commit2 = this.getRef(ref2) || ref2;
-    // var skip = false;
+    var skip = false;
     
     // if (commit === commit2) return [];
 
@@ -26,6 +26,7 @@ Substance.Replicator = function(params) {
     commit.sha = tail;
 
     var commits = [commit];
+
     var prev = commit;
 
     while (!skip && (commit = doc.commits[commit.parent])) {
@@ -42,18 +43,18 @@ Substance.Replicator = function(params) {
 
   this.sync = function(cb) {
   	this.computeDiff(function(err, jobs) {
-      console.log('JOBS TO BE PROCESSED', jobs);
-  		var index = 0;
+      console.log('JOBS', jobs);      
+  		// var index = 0;
 
-  		function next() {
-  			if (index === jobs.length) return cb(null);
-  			that.processDocument(jobs[index], function(err) {
-  				index += 1;
-  				next();
-  			});
-  		}
+  		// function next() {
+  		// 	if (index === jobs.length) return cb(null);
+  		// 	that.processDocument(jobs[index], function(err) {
+  		// 		index += 1;
+  		// 		next();
+  		// 	});
+  		// }
 
-  		next(); // start processing the first doc
+  		// next(); // start processing the first doc
   	});
   };
 
@@ -61,7 +62,6 @@ Substance.Replicator = function(params) {
   // -----------------
 
   this.processDocument = function(doc, cb) {
-    console.log('processing ', doc);
     if (doc.action === "create") return that.create(doc, cb);
     if (doc.action === "update") return that.update(doc, cb);
     if (doc.action === "fetch") return that.fetch(doc, cb);
@@ -73,21 +73,23 @@ Substance.Replicator = function(params) {
   this.fetch = function(doc, cb) {
     console.log('fetching ', doc.id, ' from server');
     _.request("GET", Substance.settings.hub + '/documents/get/'+that.user+'/'+doc.id, {}, function(err, doc) {
-      console.log('UUH YEAH the new doc', doc);
+      // console.log('UUH YEAH the new doc', doc);
 
-      var commits = extractCommits(doc);
-      console.log('COMMITS', commits);
-
+      var commits = extractCommits(doc, doc.refs.tail);
+      // console.log('COMMITS', commits);
 
       // 1. create doc locally
-      // store.create(doc.id, function(err, doc) {
-      //   // 2. send commits
-      //   store.update(doc.id, commits, function(err) {
-      //     // TODO: Update meta accordingly.
-      //     cb(err);
-      //   });
-      // });
-
+      store.create(doc.id, function(err, doc) {
+        if (err) return cb(err);
+        // 2. send commits
+        store.update(doc.id, commits, function(err) {
+          if (err) return cb(err);
+          // TODO: Update meta accordingly.
+          store.updateMeta(doc.id, doc.meta, function(err) {
+            cb(err);
+          });
+        });
+      });
     });
   };
 
@@ -103,7 +105,23 @@ Substance.Replicator = function(params) {
   // -----------------
 
   this.create = function(doc, cb) {
-    cb(null);
+    console.log('creating ', doc.id, ' on the server');
+
+    // 1. Get doc from local docstore
+    store.get(doc.id, function(err, doc) {
+      // extract commits
+      var commits = extractCommits(doc, doc.refs.tail);
+      // console.log("COMMITS", commits);
+      // cb(null);
+      // 2. Create empty doc on the server
+      _.request("POST", Substance.settings.hub + '/documents/create', {"username": that.user, id: doc.id}, function (err) {
+        // 3. Send updates to server
+        _.request("POST", Substance.settings.hub + '/documents/update', {"username": that.user, id: doc.id, commits: commits}, function (err) {
+          cb(err);
+        });
+      });
+    });
+
   };
 
 
