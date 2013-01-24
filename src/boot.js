@@ -224,8 +224,9 @@ $(function() {
   
   Substance.settings = {
     hub_frontend: "http://substance-hub.herokuapp.com",
-    hub: "https://substance-hub.herokuapp.com/api/v1"
+    // hub: "https://substance-hub.herokuapp.com/api/v1"
     // hub: "http://localhost:3000/api/v1"
+    hub: "http://duese.quasipartikel.at:3000/api/v1"
   };
 
   // Start the engines
@@ -241,7 +242,9 @@ $(function() {
 
   // Trigger sync with hub
   key('ctrl+alt+s', _.bind(function() {
-    console.log('synchronizing ...');
+    replicator.sync(function() {
+      console.log("sync complete ...");
+    });
     return false;
   }, this));
 });

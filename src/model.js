@@ -1,3 +1,37 @@
+// UserSettings
+// -----------------
+// 
+// Persistence for user settings
+
+var UserSettings = function(settings) {
+  var defaults = {
+    host: "127.0.0.1",
+    port: 6379,
+    scope: "substance-user-settings"
+  };
+
+  var settings = _.extend(defaults, settings);
+
+  this.db = redis.RedisAccess.Create(0);
+  this.db.setHost(settings.host);
+  this.db.setPort(settings.port);
+  this.db.connect();
+  this.db.setScope(settings.scope);
+
+  var hash = this.db.asHash("data");
+
+  this.set = function(key, value) {
+    hash.set(key, value);
+  };
+
+  this.get = function(key) {
+    return hash.getJSON(key);
+  };
+};
+
+var userSettings = new UserSettings();
+
+
 // Document.Store (web debug)
 // -----------------
 
@@ -53,12 +87,14 @@ var store;
 // store = new StaticDocStore();
 
 if (window.redis) {
-  store = new redis.RedisDocStore();
+  store = new RedisStore({
+    scope: user() || "anonymous"
+  });
 } else {
   store = new StaticDocStore();
 }
 
-// var replicator = new Substance.Replicator();
+var replicator = new Substance.Replicator({store: store, user: user()});
 
 // Update doc (docstore.update)
 // -----------------
@@ -448,35 +484,4 @@ function sync() {
 }
 
 
-// UserSettings
-// -----------------
-// 
-// Persistence for user settings
 
-var UserSettings = function(settings) {
-  var defaults = {
-    host: "127.0.0.1",
-    port: 6379,
-    scope: "substance-user-settings"
-  };
-
-  var settings = _.extend(defaults, settings);
-
-  this.db = redis.RedisAccess.Create(0);
-  this.db.setHost(settings.host);
-  this.db.setPort(settings.port);
-  this.db.connect();
-  this.db.setScope(settings.scope);
-
-  var hash = this.db.asHash("data");
-
-  this.set = function(key, value) {
-    hash.set(key, value);
-  };
-
-  this.get = function(key) {
-    return hash.getJSON(key);
-  };
-};
-
-var userSettings = new UserSettings();

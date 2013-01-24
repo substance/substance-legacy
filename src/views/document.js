@@ -41,14 +41,13 @@ sc.views.Document = Backbone.View.extend({
       if (node && node.surface) node.surface.deleteAnnotation(annotation);
     }
 
-    function updateNode(node) {
+    function updateNode(nodeId) {
       // Update node since its dirty
-      var node = this.nodes[node];
+      var node = this.nodes[nodeId];
 
       // TypeError: 'undefined' is not an object (evaluating 'node.render')
-
-      node.render();
-
+      if (!node) console.log('ERROR Spottid', nodeId, ' not found');
+      if (node) node.render();
       this.updateSelections();
     }
 
