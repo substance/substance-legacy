@@ -107,7 +107,6 @@ function updateDoc(doc, commit, cb) {
     store.setSnapshot(doc.id, doc.content, 'master', function(err) {
       // Update metadata accordingly
       if (commit.op[0] === "set") {
-        _.extend(doc.meta, doc.content.properties);
         updateMeta(doc, cb);
       };
     });
@@ -118,13 +117,16 @@ function updateDoc(doc, commit, cb) {
 // -----------------
 
 function updateRef(doc, ref, sha, cb) {
-  store.setRef(doc.id, ref, sha); //  = function(id, ref, sha, cb) {
+  store.setRef(doc.id, ref, sha);
+  updateMeta(doc, cb);
 };
 
 
 function updateMeta(doc, cb) {
+  _.extend(doc.meta, doc.content.properties);
   doc.meta.updated_at = new Date();
   store.updateMeta(doc.id, doc.meta, cb);
+  console.log('META', doc.meta.title);
 }
 
 // Comments
@@ -476,15 +478,4 @@ function registerUser(options, cb) {
     dataType: 'json'
   });
 }
-
-
-// Sync (synchronize with Substance Hub)
-// -----------------
-
-function sync() {
-  // 1. Ask the
-  // replicator.sync();
-}
-
-
 
