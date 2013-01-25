@@ -40,7 +40,7 @@ _.request = function(method, path, data) {
       dataType: 'json',
       contentType: "application/json",
       success: function(res) { cb(null, res); },
-      error: function(err) { cb(err); }
+      error: function(err) { cb(JSON.parse(err.responseText)); }
   });
 };
 
