@@ -109,9 +109,6 @@
           "tail": self.getRef(docIds[idx], "tail"),
         };
 
-        var syncedSha = self.getRef(docIds[idx], "synced");
-        if (syncedSha) doc.refs["synced"] = syncedSha;
-
         docs.push(doc);
       }
 
@@ -144,6 +141,12 @@
      */
 
     this.update = function(id, newCommits, cb) {
+      // No commits supplied. Go ahead
+      if (newCommits.length === 0) {
+        cb(null);
+        return true;
+      }
+
       var commitsKey = id + ":commits";
       var commits = self.redis.asList(commitsKey);
 
@@ -153,9 +156,13 @@
       //       Instead of deleting the undone commits we keep them as detached refs
       //       which allows to recover such versions.
 
-      // find the parent commit
-      var existingCommits = commits.asArray();
-      var lastSha = self.getRef(id, "master");
+      // Find the parent commit
+      var lastSha = newCommits[0].parent;
+      if (lastSha && !self.redis.exists(commitsKey + ":" + lastSha)) {
+        var msg = "Parent commit not found.";
+        cb ? cb({"error": msg}) : console.log(msg);
+        return false;
+      }
 
       for(var idx=0; idx<newCommits.length; idx++) {
 
@@ -164,11 +171,7 @@
         // commit must be in proper order
         if (lastSha && commit.parent != lastSha) {
           var err = {err: -1, msg: "Invalid commit chain."};
-          // TODO: maybe give more details about the problem
-          if (cb)
-            cb(err);
-          else
-            console.log(err.msg);
+          cb ? cb(err) : console.log(err.msg);
           return false;
         }
 
@@ -197,7 +200,7 @@
     this.setRef = function(id, ref, sha, cb) {
       self.redis.setString(id + ":refs:" + ref, sha);
       if (cb) cb(null);
-    }
+    };
 
     this.getRef = function(id, ref, cb) {
       var key = id + ":refs:" + ref;
@@ -205,13 +208,53 @@
 
       if(cb) cb(0, sha);
       return sha;
-    }
+    };
 
     this.setSnapshot = function (id, data, title, cb) {
       var snapshots = self.redis.asHash(self.snapshotKey(id));
       snapshots.set(title, data);
       if(cb) { cb(null); }
-    }
+    };
+
+
+    /**
+     * Retrieves a range of the document's commits
+     *
+     * @param id the document's id
+     * @param head where to start traversing the commits
+     * @param stop the commit that is excluded
+     */
+
+    this.commits = function(id, head, stop, cb) {
+
+      function getCommit(sha) {
+        return self.redis.getJSON( id + ":commits:" + sha);
+      }
+
+      if (head === stop) return [];
+      var commit = getCommit(head);
+
+      if (!commit) {
+        if (cb) cb(null, []);
+        return [];
+      }
+
+      commit.sha = head;
+
+      var commits = [commit];
+      var prev = commit;
+
+      while (commit = getCommit(commit.parent)) {
+        if (stop && commit.sha === stop) break;
+        commit.sha = prev.parent;
+        commits.push(commit);
+        prev = commit;
+      }
+
+      commits = commits.reverse();
+      if (cb) cb(null, commits);
+      return commits;
+    };
 
     /**
      * Retrieves a document
@@ -221,24 +264,16 @@
      */
     this.get = function(id, cb) {
 
-      if(!self.exists(id) && typeof cb !== "undefined") {
-        if(arguments.length === 2) {
-          cb({err: -1, msg: "Document does not exist."}, undefined);
-        } else {
-          throw "Document does not exist."
-        }
+      if(!self.exists(id)) {
+        if (cb) cb({error: "Document does not exist."});
+        return null;
       }
+
+      console.log('meeh');
 
       var doc = self.documents.getJSON(id);
       doc.commits = {};
 
-      var commits = self.redis.asList(id + ":commits");
-
-      // Note: Commits are stored non-destructively, i.e., after undos
-      //       new commits will be appended pointing to a commit before
-      //       the reverted commits.
-      //       To retrieve the documents commits we have to traverse the commits
-      //       beginning from the commit referenced by master.
       var lastSha = self.getRef(id, "tail");
 
       doc.refs = {
@@ -246,27 +281,12 @@
         "tail": lastSha,
       };
 
-      var syncedSha = self.getRef(id, "synced");
+      if (lastSha) {
+        var commits = self.commits(id, lastSha);
 
-      if (syncedSha) doc.refs["synced"] = syncedSha;
-
-      if (commits.size() > 0) {
-        var currentSha = lastSha;
-
-        for (;;) {
-          if(!currentSha) break;
-
-          var commit = self.redis.getJSON( id + ":commits:" + currentSha);
-          if (!commit) {
-            console.log('Corrupted Document: ', doc);
-            throw "Document corrupted, contains empty commit";
-          }
-          doc.commits[currentSha] = commit;
-
-          // pick the parent sha and continue
-          // note: this will stop iteration after the first commit has been processed
-          currentSha = commit.parent;
-        }
+        _.each(commits, function(c) {
+          doc.commits[c.sha] = c;
+        });        
       }
 
       if (lastSha && !doc.commits[lastSha]) {
