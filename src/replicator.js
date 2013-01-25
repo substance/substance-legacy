@@ -6,32 +6,6 @@ Substance.Replicator = function(params) {
 
   var that = this;
 
-  // Util
-  function extractCommits(doc, start, end) {
-    var skip = false;
-    
-    if (start === end) return [];
-    var commit = doc.commits[start];
-
-    if (!commit) return [];
-    commit.sha = start;
-
-    var commits = [commit];
-    var prev = commit;
-
-    while (!skip && (commit = doc.commits[commit.parent])) {
-      if (end && commit.sha === end) {
-        skip = true;
-      } else {
-        commit.sha = prev.parent;
-        commits.push(commit);
-        prev = commit;
-      }
-    }
-    return commits.reverse();
-  }
-
-
   // Start sync
   // -----------------
 
@@ -65,41 +39,13 @@ Substance.Replicator = function(params) {
 
   // Fetch doc from remote store
   // -----------------
-  // 
-  // TODO: create dedicated fetch method on server, returning commits in a sequence
-  // so we don't have to use extractCommits
 
   this.fetch = function(doc, cb) {
-    console.log('fetching ', doc.id, ' from server');
-    _.request("GET", Substance.settings.hub + '/documents/get/'+that.user+'/'+doc.id, {}, function(err, doc) {
-
-      console.log('THE DOC, just fetched', doc);
-      // var commits = store.commits(doc.id, doc.refs.tail);
-      var commits = extractCommits(doc, doc.refs.tail);
-      console.log('commits to be applied locally', commits);
-
-      // 1. create doc locally
-      store.create(doc.id, function(err) {
-        if (err) return cb(err);
-        // 2. send commits
-        console.log('storing commits');
-        store.update(doc.id, commits, function(err) {
-          console.log('updated local doc. ERRORS?', err);
-          if (err) return cb(err);
-          
-          // TODO: Update meta accordingly.
-          console.log('updating local metadata from server', doc.meta);
-
-          store.updateMeta(doc.id, doc.meta, function(err) {
-            store.setRef(doc.id, 'tail-remote', doc.refs.tail);
-            store.setRef(doc.id, 'tail-master', doc.refs.master);
-            // In case there are some undone commits
-            store.setRef(doc.id, 'master', doc.refs.master);
-
-            cb(err);
-          });
-        });
-      });
+    // 1. create doc locally
+    store.create(doc.id, function(err) {
+      if (err) return cb(err);
+      // 2. Pull in remote data
+      that.pull(doc, cb);
     });
   };
 
@@ -176,22 +122,6 @@ Substance.Replicator = function(params) {
     });
   };
 
-  // Sync doc with remote store (bi-directional)
-  // -----------------
-
-  // this.update = function(doc, cb) {
-  //   that.pull(doc, function(err, fastForward) {
-  //     // For now only fast forward sync works smoothly
-  //     // In case ther are local changes, they are lost (not pushed! what ever is on the server wins)
-  //     if (fastForward) {
-  //       that.push(doc, cb);
-  //       console.log('pull successfull. no changes.. fast forwarding..');  
-  //     } else {
-  //       console.log('pull with changes ignoring local changes');
-  //       cb(null); // done
-  //     }
-  //   });
-  // };
 
   // Create doc on the server
   // -----------------
