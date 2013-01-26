@@ -13,6 +13,6 @@ include(Redis)
 
 include(JavaScriptCore)
 include(JSObjects)
-include(SwigJS)
 
+include(SwigJS)
 include(RedisDocStore)
