@@ -51,7 +51,8 @@ sc.views.Editor = Backbone.View.extend({
   },
 
   _deleteDocument: function() {
-    store.delete(this.model.document.id, function() {
+    store.markAsDeleted(this.model.document.id, function(err) {
+      console.log('marked as deleted');
       router.navigate('/', true);
     });
     return false;

@@ -32,6 +32,8 @@ Substance.Replicator = function(params) {
 
   this.processDocument = function(doc, cb) {
     if (doc.action === "create") return that.create(doc, cb);
+    if (doc.action === "delete") return that.deleteRemote(doc, cb);
+    if (doc.action === "delete-locally") return that.deleteLocally(doc, cb);
     if (doc.action === "push") return that.push(doc, cb);
     if (doc.action === "pull") return that.pull(doc, cb);
     if (doc.action === "fetch") return that.fetch(doc, cb);
@@ -47,6 +49,28 @@ Substance.Replicator = function(params) {
       // 2. Pull in remote data
       that.pull(doc, cb);
     });
+  };
+
+
+  // Delete doc from hub
+  // -----------------
+
+  this.deleteRemote = function(doc, cb) {
+    console.log('DELETING REMOTELY!!');
+    _.request("POST", Substance.settings.hub + '/documents/delete', {username: that.user, id: doc.id}, function(err, data) {
+      if (err) return cb(err);
+      // Delete locally
+      store.delete(doc.id);
+      cb(err);
+    });
+  };
+
+  // Delete doc locally (Someone has deleted it)
+  // -----------------
+
+  this.deleteLocally = function(doc, cb) {
+    store.delete(doc.id);
+    cb(null);
   };
 
 
@@ -155,21 +179,27 @@ Substance.Replicator = function(params) {
     var jobs = [];
     that.localDocStates(function(err, localDocs) {
       _.request("GET", Substance.settings.hub + '/documents/status/'+that.user, {}, function (err, remoteDocs) {
-        console.log('diff', localDocs, remoteDocs);
+        // console.log('diff', localDocs, remoteDocs);
 
         _.each(localDocs, function(doc, id) {
           var remoteDoc = remoteDocs[id];
-          // New unsynced doc?
-          if (!remoteDoc) {
-            jobs.push({id: id, action: "create"});
-            return;
-          }
 
           // Local refs
           var masterRemote = store.getRef(id, 'master-remote');
           var tailRemote = store.getRef(id, 'tail-remote');
 
-          if (tailRemote !== remoteDoc.refs['tail'] || masterRemote !== remoteDoc.refs['master']) {
+          // New unsynced doc? or delete locally
+          if (!remoteDoc) {
+            if (masterRemote) {
+              jobs.push({id: id, action: "delete-locally"});
+            } else {
+              jobs.push({id: id, action: "create"});  
+            }
+          } else if (store.isDeleted(id) && masterRemote) {
+            // Delete if flagged as deleted and there's a remote version, other 
+            // console.log(id, ' should be deleted');
+            jobs.push({id: id, action: "delete"}); // delete remotely
+          } else if (tailRemote !== remoteDoc.refs['tail'] || masterRemote !== remoteDoc.refs['master']) {
             jobs.push({id: id, action: "pull"});
             return;
           } else if (tailRemote !== doc.refs['tail'] || doc.refs['master'] !== masterRemote) {
