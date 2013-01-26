@@ -69,11 +69,36 @@ $(function() {
       'submit #login_form': '_login',
       'submit #signup_form': '_signup',
       'click .logout': '_logout',
-      'click #container': '_clear'
+      'click #container': '_clear',
+      'click #header .sync': '_sync'
     },
 
     _clear: function(e) {
       if (_.include(['container', 'tools', 'composer'], e.target.id) && this.view.composer) this.view.composer.clear();
+    },
+
+    // Synchronizing
+    _sync: function() {
+      var that = this;
+      var replicator = new Substance.Replicator({store: store, user: user()});
+
+      this.$('#header .sync').removeClass('disabled').addClass('active');
+      replicator.sync(function(err) {
+        console.log('Replication ERROR?', err);
+        that.$('#header .sync').removeClass('active');
+        that.$('#header .sync').addClass('disabled');
+
+        // Document active, reload document, just to be safe
+        if (that.view instanceof sc.views.Editor) {
+          // TODO: remove that hack (relying on global doc.id)
+          that.document(doc.id);
+        } else {
+          // View Dashboard by default
+          that.dashboard();
+        }
+      });
+
+      return false;
     },
 
     _login: function() {
@@ -228,7 +253,8 @@ $(function() {
     hub_frontend: "http://substance-hub.herokuapp.com",
     // hub: "https://substance-hub.herokuapp.com/api/v1"
     // hub: "http://localhost:3000/api/v1"
-    hub: "http://duese.quasipartikel.at:3000/api/v1"
+    // hub: "http://duese.quasipartikel.at:3000/api/v1"
+    hub: "http://10.0.0.4:3000/api/v1"
   };
 
   // Start the engines
@@ -244,10 +270,7 @@ $(function() {
 
   // Trigger sync with hub
   key('ctrl+alt+s', _.bind(function() {
-    var replicator = new Substance.Replicator({store: store, user: user()});
-    replicator.sync(function() {
-      console.log("sync complete ...");
-    });
+    app._sync();
     return false;
   }, this));
 });

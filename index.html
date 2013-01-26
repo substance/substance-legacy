@@ -22,6 +22,7 @@
           </div>
 
           <div class="user-status">
+            <a href="#" class="sync button"><div class="icon"></div></a>
             <a href="#new" class="new-document button"><div class="icon"></div>New Document</a>
             <div class="username"><%= user %></div>
             <a href="#logout" class="logout"></a>
@@ -63,17 +64,20 @@
           <div id="documents">
             <% _.each(documents, function(doc) { %>
               <div class="document">
-                <a class="load-document" href="#demo/<%= doc.file %>" document="<%= doc._id %>">
-                  <div class="image">
-                    <img src="images/document-image-placeholder.png" width="200">
-                  </div>
+                <% if (synced(doc.id)) { %>
+                  <div class="status synced">synced</div>
+                <% } else { %>
+                  <div class="status">local changes</div>
+                <% } %>
+
+                <a class="load-document" href="#<%= doc.file %>" document="<%= doc._id %>">
 
                   <div class="title">
                     <%= doc.title %>
                   </div>
                 </a>
 
-                <div class="author"><a href="#">michael</a></div>
+                <!--<div class="author"><a href="#">michael</a></div>-->
                 <div class="updated-at"><span>updated </span><%= $.timeago(doc.updated_at) %></div>
               </div>
             <% }); %>

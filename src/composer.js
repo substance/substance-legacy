@@ -206,6 +206,7 @@
       this.model.document.on('commit:applied', function(commit) {
         // Send update to the server
         updateDoc(this.model.document, commit);
+        $('#header .sync').removeClass('disabled');
         this.updateUndoRedoControls();
       }, this);
 

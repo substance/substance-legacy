@@ -28,6 +28,8 @@ body {
   overflow: auto;
 }
 
+
+
 #header .logo {
   -webkit-transition: color 200ms linear;
   float: left;
@@ -178,6 +180,76 @@ body {
   background: rgba(0,0,0, 1);
 }
 
+
+
+
+
+
+#header .user-status a.sync {
+  position: relative;
+  -webkit-transition: background 200ms linear;
+  -webkit-transition: color 200ms linear;
+  margin: 5px 0;
+  margin-right: 20px;
+  padding: 0 15px;
+  height: 30px;
+  line-height: 30px;
+  border-radius: 3px;
+  font-weight: bold;
+  color: rgba(255,255,255,0.7);
+  background: rgba(0,0,0, 0.5);
+  padding-left: 20px;
+}
+
+#header .user-status a.sync.disabled {
+  opacity: 0.3;
+}
+
+@-webkit-keyframes rotate {
+  from {
+    -webkit-transform: rotate(0deg);
+  }
+  to { 
+    -webkit-transform: rotate(360deg);
+  }
+}
+
+#header .user-status a.sync .icon {
+  width: 25px;
+  position: absolute;
+  left: 5px;
+  top: 0px;
+  bottom: 0px;
+  -webkit-transition: opacity 200ms linear;
+
+  background: url(../images/icons/sync-white.png) center no-repeat;
+  opacity: 0.7;
+}
+
+#header .user-status a.sync.active {
+  pointer-events: none;
+  pointer-events: none;
+  cursor: default;
+}
+
+#header .user-status a.sync.active .icon {
+  -webkit-animation-name:             rotate; 
+  -webkit-animation-duration:         0.9s;
+  -webkit-animation-iteration-count:  infinite;
+  -webkit-animation-timing-function: linear;
+}
+
+#header .user-status a.sync:hover .icon {
+  opacity: 1.0;
+}
+
+#header .user-status a.sync:hover {
+  color: rgba(255,255,255, 1);
+  background: rgba(0,0,0, 1);
+}
+
+
+
 #help {
   padding-top: 50px;
   text-align: center;
@@ -257,7 +329,6 @@ body {
 #dashboard {
   padding-top: 60px;
 
-  width: 1200px;
   margin-left: 80px;
 }
 
@@ -268,20 +339,38 @@ body {
 #dashboard #documents .document {
   float: left;
   position: relative;
-  width: 200px;
-  height: 280px;
+  width: 300px;
+  height: 150px;
   background: #fff;
-  margin-right: 10px;
+  margin-right: 20px;
+  margin-bottom: 20px;
 
   -webkit-box-shadow: 0px 1px 4px rgba(0, 0, 0, 0.35), inset 0px 0px 1px rgba(255, 255, 255, 0.15);
   -moz-box-shadow: 0px 1px 4px rgba(0, 0, 0, 0.35), inset 0px 0px 1px rgba(255, 255, 255, 0.15);
   box-shadow: 0px 1px 4px rgba(0, 0, 0, 0.35), inset 0px 0px 1px rgba(255, 255, 255, 0.15);
 }
 
+#dashboard #documents .document .status {
+  position: absolute;
+  left: 20px;
+  top: 0px;
+  padding: 0 10px;
+  background: rgba(0,0,0, 0.4);
+  font-size: 12px;
+  font-weight: bold;
+  color: rgba(255,255,255, 0.8);
+}
+
+#dashboard #documents .document .status.synced {
+  background: #66B620;
+}
+
 #dashboard #documents .document .title {
-  padding: 10px;
+  margin-top: 20px;
+  padding: 20px;
+  /*background: green;*/
   font-family: 'Palatino Linotype', 'Merriweather';
-  font-size: 16px;
+  font-size: 18px;
 }
 
 #dashboard #documents .document .author {

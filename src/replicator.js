@@ -101,8 +101,6 @@ Substance.Replicator = function(params) {
       // Find all commits after synced (remote) commit
       var commits = store.commits(doc.id, localTail, remoteTail);
 
-      console.log('LE LOCAL COMMITTES to be pushed: ', commits);
-
       var data = {
         username: that.user, 
         id: doc.id,

@@ -98,18 +98,13 @@ function initStore(username) {
 
 initStore(user() || "anonymous");
 
-
 // Update doc (docstore.update)
 // -----------------
 
 function updateDoc(doc, commit, cb) {
   store.update(doc.id, [commit], function(err) {
-    store.setSnapshot(doc.id, doc.content, 'master', function(err) {
-      // Update metadata accordingly
-      if (commit.op[0] === "set") {
-        updateMeta(doc, cb);
-      };
-    });
+    // Update metadata accordingly
+    updateMeta(doc, cb);
   });
 };
 
@@ -126,7 +121,6 @@ function updateMeta(doc, cb) {
   _.extend(doc.meta, doc.content.properties);
   doc.meta.updated_at = new Date();
   store.updateMeta(doc.id, doc.meta, cb);
-  console.log('META', doc.meta.title);
 }
 
 // Comments
@@ -429,6 +423,10 @@ function token() {
 
 function user() {
   return userSettings.get('user');
+}
+
+function synced(docId) {
+  return store.getRef(docId, 'master') === store.getRef(docId, 'master-remote');
 }
 
 
