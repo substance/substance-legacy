@@ -1,7 +1,7 @@
 set(DOWNLOAD_DIR ${EXTERNALS_DIR}/jsobjects)
-set (JSOBJECTS_INCLUDED ON CACHE INTERNAL "" FORCE)
 
 if (NOT JSOBJECTS_INCLUDED AND DOWNLOAD_EXTERNALS)
+  set (JSOBJECTS_INCLUDED ON CACHE INTERNAL "" FORCE)
 
   ExternalProject_Add(jsobjects
     GIT_REPOSITORY git://github.com/oliver----/jsobjects.git
@@ -23,5 +23,5 @@ if (NOT JSOBJECTS_INCLUDED AND DOWNLOAD_EXTERNALS)
 endif ()
 
 set(jsobjects_INCLUDE_DIRS ${DOWNLOAD_DIR}/jsobjects/include)
-set(jsobjects_LIBRARY_DIRS ${DOWNLOAD_DIR}/bin/src/jsc ${DOWNLOAD_DIR}/bin/src/cpp)
+set(jsobjects_LIBRARY_DIRS)
 set(jsobjects_SWIG_INCLUDE_DIRS ${DOWNLOAD_DIR}/jsobjects/swig)

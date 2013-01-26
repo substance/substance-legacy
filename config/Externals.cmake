@@ -16,5 +16,5 @@ include(JSObjects)
 
 include(SwigJS)
 include(RedisDocStore)
-add_dependencies(store_external swig_js)
+
 

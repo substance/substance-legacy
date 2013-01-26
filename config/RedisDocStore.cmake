@@ -1,6 +1,6 @@
 set(DOWNLOAD_DIR ${EXTERNALS_DIR}/store)
 
-if (NOT EXISTS ${DOWNLOAD_DIR} AND DOWNLOAD_EXTERNALS)
+if (DOWNLOAD_EXTERNALS)
 
 	ExternalProject_Add(store_external
 		GIT_REPOSITORY https://github.com/substance/store.git
@@ -18,7 +18,13 @@ if (NOT EXISTS ${DOWNLOAD_DIR} AND DOWNLOAD_EXTERNALS)
 		INSTALL_COMMAND "" # skip install
 	)
 
-else ()
+	if(SWIGJS_INCLUDED)
+		add_dependencies(store_external swig_js)
+	endif()
+
+endif ()
+
+if (NOT DOWNLOAD_EXTERNALS)
 
 	include(${DOWNLOAD_DIR}/store/RedisDocStore.cmake)
 

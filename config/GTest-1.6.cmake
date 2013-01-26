@@ -1,7 +1,7 @@
 set (DOWNLOAD_DIR {EXTERNALS_DIR}/gtest)
-set (GTEST_INCLUDED ON CACHE INTERNAL "" FORCE)
 
 if (NOT GTEST_INCLUDED AND DOWNLOAD_EXTERNALS)
+  set (GTEST_INCLUDED ON CACHE INTERNAL "" FORCE)
 
   # Configure GoogleTest library
   # ----------------------------
