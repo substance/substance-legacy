@@ -9,7 +9,7 @@ set(EXTERNALS_ONLY OFF CACHE BOOL "Set this if you want to build externals only.
 set(ENABLE_DEVELOPER_EXTRAS OFF CACHE BOOL "Activate developer extras (e.g., WebInspector). (ON|OFF)")
 
 set(ENABLE_JSC ON)
-set(ENABLE_TESTING ON CACHE BOOL "Enable test suite. (ON|OFF)")
+set(ENABLE_TESTS OFF CACHE BOOL "Enable test suite. (ON|OFF)")
 
 # Configure external projects
 # ===========================

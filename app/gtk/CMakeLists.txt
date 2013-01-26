@@ -1,3 +1,5 @@
+ADD_SUBDIRECTORY(extension/core)
+
 set(SUBSTANCE_APP_SOURCES
   main.cxx
   mainframe.h

@@ -33,8 +33,7 @@ SET (TARGET_NAME "Substance")
 SET(BUNDLE_LOCATION ${CMAKE_CURRENT_BINARY_DIR}/${CONFIGURATION}/${TARGET_NAME}.app)
 
 link_directories(
-  ${HIREDIS_LIB_DIRS}
-  ${jsobjects_LIBRARY_DIRS}
+  ${JS_LIBRARY_DIRS}
 )
 
 if(ENABLE_DEVELOPER_EXTRAS)
@@ -56,6 +55,7 @@ target_link_libraries(${TARGET_NAME}
   ${COREDATA} ${FOUNDATION}
   ${APPKIT} ${COCOA}
   ${WEBKIT}
+  ${JSC}
   redisdocstore
 )
 
