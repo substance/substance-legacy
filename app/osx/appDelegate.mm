@@ -1,3 +1,4 @@
+#import <Cocoa/Cocoa.h>
 #import "appDelegate.h"
 #import "ExtendedNSFileManager.h"
 
@@ -25,11 +26,13 @@ extern "C" bool redis_initialize_jsobjects(JSGlobalContextRef context);
   NSString *appDataDir = [fs applicationSupportDirectory];
 
     // launch the redis db
-  m_redisProcess = [NSTask new];
-  [m_redisProcess setLaunchPath:[NSString stringWithFormat: @"%@/Contents/Redis/redis-server", path]];
-  [m_redisProcess setCurrentDirectoryPath: appDataDir];
-  [m_redisProcess setArguments:[NSArray arrayWithObjects:
+  NSTask *redisProcess = [NSTask new];
+  [redisProcess setLaunchPath:[NSString stringWithFormat: @"%@/Contents/Redis/redis-server", path]];
+  [redisProcess setCurrentDirectoryPath: appDataDir];
+  [redisProcess setArguments:[NSArray arrayWithObjects:
     [NSString stringWithFormat: @"%@/Contents/Redis/redis.conf", path], nil]];
+
+  m_redisProcess = [[ForkedSubProcess alloc] initWithTask: redisProcess];
   [m_redisProcess launch];
 
   m_webExtension = [[WebViewWithExtensions alloc] initWithWebView: webView];
@@ -47,11 +50,11 @@ extern "C" bool redis_initialize_jsobjects(JSGlobalContextRef context);
 	];
 }
 
-- (void) dealloc {
-  [super dealloc];
-  [m_loadDelegate release];
-  [m_policyDelegate release];
-  [m_webExtension release];
+- (void) dispose {
+  if (m_redisProcess) { [m_redisProcess release]; m_redisProcess = NULL; }
+  if (m_loadDelegate) { [m_loadDelegate release]; m_loadDelegate = NULL; }
+  if (m_policyDelegate) { [m_policyDelegate release]; m_policyDelegate = NULL; }
+  if (m_webExtension) { [m_webExtension release]; m_webExtension = NULL; }
 }
 
 - (BOOL)applicationShouldTerminateAfterLastWindowClosed:(NSApplication *)sender {
@@ -59,14 +62,32 @@ extern "C" bool redis_initialize_jsobjects(JSGlobalContextRef context);
 }
 
 - (void)applicationWillTerminate:(NSNotification *)aNotification {
-  [m_redisProcess terminate];
+  [self dispose];
 }
-
 
 - (void) keyDown:(NSEvent *)theEvent {
   // Note: this consumes all key events that have not been handled
   //       by within the child views (e.g. WebView)
   //       if some application wide key handling is necessary, handle the keyEvent
+}
+
+@end
+
+@implementation ForkedSubProcess
+
+- (id) initWithTask: (NSTask *) task {
+  m_task = task;
+  return self;
+}
+
+- (void) launch {
+  [m_task launch];
+}
+
+- (void) dealloc {
+  [m_task terminate];
+  [m_task release];
+  [super dealloc];
 }
 
 @end
