@@ -48,6 +48,10 @@ add_executable(${TARGET_NAME} MACOSX_BUNDLE
   MainView.mm
   ExtendedNSFileManager.h
   ExtendedNSFileManager.mm
+  WebViewDelegates.h
+  WebViewDelegates.mm
+  ExtendedWebView.h
+  ExtendedWebView.mm
   MainMenu.xib
 )
 

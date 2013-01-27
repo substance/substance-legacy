@@ -1,6 +1,8 @@
 #import <Cocoa/Cocoa.h>
 #import <WebKit/WebKit.h>
 #import "MainView.h"
+#import "ExtendedWebView.h"
+#import "WebViewDelegates.h"
 
 @interface SubstanceAppDelegate : NSObject <NSApplicationDelegate> {
   NSWindow *window;
@@ -9,6 +11,7 @@
 
   WebViewWithExtensions *m_webExtension;
   WebViewLoadDelegate *m_loadDelegate;
+  WebViewPolicyDelegate *m_policyDelegate;
   NSTask *m_redisProcess;
 }
 

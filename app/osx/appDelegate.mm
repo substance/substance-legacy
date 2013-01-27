@@ -38,6 +38,9 @@ extern "C" bool redis_initialize_jsobjects(JSGlobalContextRef context);
   m_loadDelegate = [[WebViewLoadDelegate alloc] initWithExtendedWebView: m_webExtension];
   [webView setFrameLoadDelegate: m_loadDelegate];
 
+  m_policyDelegate = [[WebViewPolicyDelegate alloc] init];
+  [webView setPolicyDelegate: m_policyDelegate];
+
   NSString *url =  [NSString stringWithFormat: @"file://%@/Contents/Assets/index.html", path];
 	[ [webView mainFrame] loadRequest:
 		[NSURLRequest requestWithURL: [NSURL URLWithString:url] ]
@@ -47,6 +50,7 @@ extern "C" bool redis_initialize_jsobjects(JSGlobalContextRef context);
 - (void) dealloc {
   [super dealloc];
   [m_loadDelegate release];
+  [m_policyDelegate release];
   [m_webExtension release];
 }
 
