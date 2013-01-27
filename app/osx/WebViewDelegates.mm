@@ -41,9 +41,20 @@
   frame:(WebFrame *)frame
   decisionListener:(id < WebPolicyDecisionListener >) listener
 {
-  NSLog(@"Received policy decision request for navigation.");
+  NSString *host = [[request URL] host];
+  NSUInteger actionType = [[actionInformation valueForKey: WebActionNavigationTypeKey] unsignedIntValue];
 
-  // accept the navigation request
+  if (actionType == WebNavigationTypeLinkClicked) {
+    // if the user clicks a link to another host
+    // open the url in the default browser and
+    // ignore the request here.
+    if (host) {
+      [[NSWorkspace sharedWorkspace] openURL:[request URL]];
+      [listener ignore];
+      return;
+    }
+  }
+
   [listener use];
 }
 
@@ -53,7 +64,6 @@
   newFrameName:(NSString *)frameName
   decisionListener:(id < WebPolicyDecisionListener >)listener
 {
-
   [listener use];
 }
 
