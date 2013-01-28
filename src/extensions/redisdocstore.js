@@ -328,8 +328,6 @@
         return null;
       }
 
-      console.log('meeh');
-
       var doc = self.documents.getJSON(id);
       doc.commits = {};
 

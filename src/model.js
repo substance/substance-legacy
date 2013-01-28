@@ -176,13 +176,16 @@ _.extend(Comments.prototype, _.Events, {
       });
 
       _.each(annotations, function(a) {
-        this.scopes.push({
-          name: annotationText(a),
-          type: a.type,
-          annotation: a.id,
-          id: a.id,
-          comments: document.commentsForAnnotation(a.id)
-        });
+        if (_.include(["idea", "question", "error"], a.type)) {
+          this.scopes.push({
+            name: annotationText(a),
+            type: a.type,
+            annotation: a.id,
+            id: a.id,
+            comments: document.commentsForAnnotation(a.id)
+          });
+        }
+
       }, this);
     } else {
       this.scopes.push({
