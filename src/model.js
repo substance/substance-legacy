@@ -439,10 +439,11 @@ function synced(docId) {
 function authenticate(options, cb) {
   $.ajax({
     type: 'POST',
-    url: Substance.settings.hub + '/authenticate',
+    url: Substance.settings.hub + '/authorizations',
+    accepts: "application/substance.v1+json",
     data: {
-      "username": options.username,
-      "password": options.password
+      "client_id": Substance.settings.client_id,
+      "client_secret": Substance.settings.client_secret
     },
     success: function(result) {
       if (result.status === "error") return cb('Login failed. Check your input.');
@@ -451,7 +452,8 @@ function authenticate(options, cb) {
     error: function() {
       cb('Login failed. Check your input.');
     },
-    dataType: 'json'
+    username: options.username,
+    password: options.password
   });
 }
 
@@ -467,7 +469,9 @@ function registerUser(options, cb) {
       "username": options.username,
       "email": options.email,
       "name": options.name,
-      "password": options.password
+      "password": options.password,
+      "client_id": Substance.settings.client_id,
+      "client_secret": Substance.settings.client_secret
     },
     success: function(result) {
       if (result.status === "error") return cb('Registration failed. Check your input.');
