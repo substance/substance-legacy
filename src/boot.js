@@ -168,7 +168,6 @@ $(function() {
       userSettings.set('api-token', '');
       this.render();
       this.login();
-
       return false;
     },
 
