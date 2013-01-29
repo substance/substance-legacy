@@ -336,7 +336,7 @@ function loadDocument(id, cb) {
 // -----------------
 
 function listDocuments(cb) {
-  store.list(function(err, documents) {
+  store.listWithoutDeleted(function(err, documents) {
     var res = _.map(documents, function(doc) {
       return {
         title: doc.meta.title,
