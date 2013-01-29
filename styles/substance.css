@@ -571,11 +571,11 @@ float: left;
 
 
 #document_menu .publish-state.published {
-  background-color: #9FB22B;
+  background-color: #66B620;
 }
 
 #document_menu .publish-state.dirty {
-  background-color: #9FB22B;
+  background-color: #D5A700;
 }
 
 #document_menu .publish-state .icon {

@@ -374,7 +374,7 @@ h2 { font-size: 160%; padding-bottom: 15px; }
 }
 
 .comment-scope.idea.active {
-  background: rgba(171, 201, 36, 1) url(../images/icons/idea.png) center no-repeat;
+  background: rgba(102, 182, 32, 1) url(../images/icons/idea.png) center no-repeat;
 }
 
 .comment-scope.question.active {
@@ -643,7 +643,7 @@ h2 { font-size: 160%; padding-bottom: 15px; }
 }
 
 #container #document .content-node .annotations a.idea {
-  background-color: rgba(171, 201, 36, 1);
+  background-color: rgba(102, 182, 32, 1);
 }
 
 #container #document .content-node .annotations a.question {
@@ -860,7 +860,7 @@ h2 { font-size: 160%; padding-bottom: 15px; }
 }
 
 .annotation-toggles a.idea {
-  background: rgba(171, 201, 36, 1.0) url(../images/icons/idea.png) 7px center no-repeat;
+  background: rgba(102, 182, 32, 1.0) url(../images/icons/idea.png) 7px center no-repeat;
 }
 
 .annotation-toggles a.question {
@@ -887,11 +887,11 @@ h2 { font-size: 160%; padding-bottom: 15px; }
   background: blue;
 }
 
-.content-node .idea { background-color: rgba(171, 201, 36, 0.3); }
+.content-node .idea { background-color: rgba(102, 182, 32, 0.3); }
 .content-node .question { background-color: rgba(16, 167, 222, 0.3); }
 .content-node .error { background-color: rgba(237, 96, 48, 0.3); }
 
-.content-node .idea.highlight { background-color: rgba(171, 201, 36, 0.6); }
+.content-node .idea.highlight { background-color: rgba(102, 182, 32, 0.6); }
 .content-node .question.highlight { background-color: rgba(16, 167, 222, 0.6);}
 .content-node .error.highlight { background-color: rgba(237, 96, 48, 0.6); }
 
