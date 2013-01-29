@@ -36,9 +36,13 @@ _.request = function(method, path, data) {
   $.ajax({
       type: method,
       url: path,
+      headers: {
+        "Authorization": "token " + token()
+      },
       data: data !== undefined ? JSON.stringify(data) : null,
       dataType: 'json',
       contentType: "application/json",
+      accepts: "application/substance.v1+json",
       success: function(res) { cb(null, res); },
       error: function(err) { cb(JSON.parse(err.responseText)); }
   });

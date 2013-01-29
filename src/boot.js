@@ -113,6 +113,7 @@ $(function() {
           that.$('#login .error-message').html(err);
           return;
         }
+
         that.user = options.username;
         userSettings.set('user', that.user);
         userSettings.set('api-token', data.token);

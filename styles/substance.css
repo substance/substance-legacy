@@ -361,7 +361,7 @@ body {
   color: rgba(255,255,255, 0.8);
 }
 
-#dashboard #documents .document .status.synced {
+#dashboard #documents .document .status.published {
   background: #66B620;
 }
 
@@ -388,6 +388,22 @@ body {
   bottom: 10px;
   font-size: 12px;
   color: #777;
+}
+
+#dashboard #documents .document .sync-state {
+  background: #eee;
+  border-radius: 3px;
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
+  font-size: 12px;
+  padding: 0 5px;
+  color: #777;
+}
+
+#dashboard #documents .document .sync-state.synced {
+  background: #D4F1BA;
+
 }
 
 /* Editor

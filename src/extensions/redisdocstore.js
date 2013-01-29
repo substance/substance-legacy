@@ -92,6 +92,15 @@
       if (cb) cb(null, doc);
     };
 
+    /**
+     * Get document info (no contents)
+     */
+
+    this.getInfo = function(id, cb) {
+      var doc = self.documents.getJSON(id);
+      if (cb) cb(null, doc);
+      return doc;
+    };
 
     /**
      * List all documents complete with metadata

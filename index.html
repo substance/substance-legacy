@@ -64,10 +64,10 @@
           <div id="documents">
             <% _.each(documents, function(doc) { %>
               <div class="document">
-                <% if (synced(doc.id)) { %>
-                  <div class="status synced">synced</div>
+                <% if (published(doc)) { %>
+                  <div class="status published">Published</div>
                 <% } else { %>
-                  <div class="status">local changes</div>
+                  <div class="status">Private</div>
                 <% } %>
 
                 <a class="load-document" href="#<%= doc.file %>" document="<%= doc._id %>">
@@ -79,6 +79,9 @@
 
                 <!--<div class="author"><a href="#">michael</a></div>-->
                 <div class="updated-at"><span>updated </span><%= $.timeago(doc.updated_at) %></div>
+                <div class="sync-state<%= synced(doc.id) ? " synced" : "" %>">
+                  <%= synced(doc.id) ? "synced" : "local changes" %>
+                </div>
               </div>
             <% }); %>
           </div>

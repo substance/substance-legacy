@@ -343,6 +343,7 @@ function listDocuments(cb) {
         author: "le_author",
         file: doc.id,
         id: doc.id,
+        meta: doc.meta,
         updated_at: doc.meta.updated_at
       };
     });
@@ -371,7 +372,6 @@ function createDocument(cb) {
 
 function createPublication(doc, cb) {
   if (!authenticated()) return cb("Error when creating publication. Login first.");
-
   $.ajax({
     type: 'POST',
     headers: {
@@ -432,6 +432,9 @@ function synced(docId) {
   return store.getRef(docId, 'master') === store.getRef(docId, 'master-remote');
 }
 
+function published(doc) {
+  return !!doc.meta.published_commit;
+}
 
 // Authenticate with your Substance user
 // -----------------
