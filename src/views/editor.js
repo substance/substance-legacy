@@ -122,7 +122,13 @@ sc.views.Editor = Backbone.View.extend({
       .removeClass('published unpublished dirty')
       .addClass(state);
 
-    this.$('.publish-state .state').html(state !== "unpublished" ? '<a href="'+Substance.settings.hub_frontend+'/documents/'+doc.id+'">Published</a>' : state);
+    this.$('.publish-state .state').html(state !== 'unpublished' ? 'Published' : state);
+
+    if (state !== 'unpublished') {
+      this.$('.view-online').removeClass('hidden');
+    } else {
+      this.$('.view-online').addClass('hidden');
+    }
 
     var message = "Private document";
     if (state === "published") message = $.timeago(doc.meta.published_at);

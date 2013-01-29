@@ -2,6 +2,7 @@ body {
   overflow:hidden;
 }
 
+
 #container {
   width: 1210px;
 }
@@ -423,6 +424,7 @@ body {
   height: 70px;
   width: 1130px;
   margin-left: 80px;
+  position: relative;
   /*overflow: auto;*/
 }
 
@@ -493,6 +495,12 @@ float: left;
   background-image: url(../images/icons/settings.png);
 }
 
+
+#document_menu .toggles a.view-online .icon {
+  background-image: url(../images/icons/eye.png);
+}
+
+
 #document_menu .navigation a.active, #document_menu .navigation a:hover {
   background-color: rgba(0,0,0, 0.2);
 }
@@ -510,11 +518,25 @@ float: left;
   color: #93101B;
 }
 
+
+/* View Online Button */
+
+#document_menu a.view-online {
+  display: block;
+  position: absolute;
+  right: 250px;
+}
+
+#document_menu a.view-online.hidden {
+  display: none;
+}
+
 /* Publish State */
 
 #document_menu .publish-state a {
   border: none;
 }
+
 
 #document_menu .publish-state {
   position: relative;

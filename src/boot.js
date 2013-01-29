@@ -251,7 +251,7 @@ $(function() {
   });
   
   Substance.settings = {
-    hub_frontend: "http://hub.substance.io",
+    hub_frontend: "http://localhost:3000",
     // hub: "https://substance-hub.herokuapp.com/api/v1"
     // hub: "http://localhost:3000/api/v1"
     // hub: "http://duese.quasipartikel.at:3000/api/v1"
@@ -267,7 +267,7 @@ $(function() {
 
   key('ctrl+alt+c', _.bind(function() {
     var id = window.doc ? window.doc.id : "empty.json";
-    document.location.href = "file:///Users/michael/projects/composer/build/app/osx/Substance.app/Contents/Assets/test/index.html#"+app.user+"/"+id;
+    document.location.href = "test/index.html#"+app.user+"/"+id;
     return false;
   }, this));
 
