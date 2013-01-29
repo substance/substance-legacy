@@ -9,7 +9,6 @@ sc.views.Editor = Backbone.View.extend({
     'click .toggle.collaborators': 'toggleCollaborators',
     'click .toggle.export': 'toggleExport',
     'click .toggle-publish-actions': 'togglePublishActions',
-    'click a.delete-document': '_deleteDocument',
     'click a.publish-document ': 'publish',
     'click a.unpublish-document ': 'unpublish',
     'click a.undo': 'undo',
@@ -46,14 +45,6 @@ sc.views.Editor = Backbone.View.extend({
         return;
       }
       that.updatePublishState();
-    });
-    return false;
-  },
-
-  _deleteDocument: function() {
-    store.markAsDeleted(this.model.document.id, function(err) {
-      console.log('marked as deleted');
-      router.navigate('/', true);
     });
     return false;
   },
@@ -154,7 +145,8 @@ sc.views.Editor = Backbone.View.extend({
 
   render: function () {
     this.$el.html(_.tpl('editor', {
-      session: this.model
+      session: this.model,
+      doc: this.model.document
     }));
 
     this.updatePublishState();

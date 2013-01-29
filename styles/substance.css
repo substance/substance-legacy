@@ -351,6 +351,26 @@ body {
   box-shadow: 0px 1px 4px rgba(0, 0, 0, 0.35), inset 0px 0px 1px rgba(255, 255, 255, 0.15);
 }
 
+#dashboard #documents .document .delete-document {
+  display: none;
+  width: 25px;
+  height: 25px;
+  position: absolute;
+  right: 5px;
+  top: 5px;
+  border: none;
+  opacity: 0.4;
+  background: url(../images/icons/delete.png) center;
+}
+
+#dashboard #documents .document:hover .delete-document {
+  display: block;
+}
+
+#dashboard #documents .document .delete-document:hover {
+  opacity: 0.8;
+}
+
 #dashboard #documents .document .status {
   position: absolute;
   left: 20px;
@@ -558,7 +578,6 @@ float: left;
 #document_menu .publish-state.dirty {
   background-color: #9FB22B;
 }
-
 
 #document_menu .publish-state .icon {
   background-image: url(../images/icons/locked.png);

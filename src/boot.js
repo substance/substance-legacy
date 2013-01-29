@@ -49,6 +49,20 @@ $(function() {
 
   var Dashboard = Backbone.View.extend({
     id: 'container',
+    events: {
+      'click .delete-document': '_deleteDocument',
+    },
+
+    _deleteDocument: function(e) {
+      var that = this;
+      var docId = $(e.currentTarget).attr('data-id');
+
+      store.markAsDeleted(docId, function(err) {
+        that.render();
+      });
+      return false;
+    },
+    
     render: function() {
       var that = this;
 
