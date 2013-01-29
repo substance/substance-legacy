@@ -144,10 +144,17 @@ sc.views.Editor = Backbone.View.extend({
   },
 
   render: function () {
+    var that = this;
     this.$el.html(_.tpl('editor', {
       session: this.model,
       doc: this.model.document
     }));
+
+    // TODO: deconstructor-ish thing for clearing the interval when the view is no longer
+    clearInterval(window.leInterval);
+    window.leInterval = setInterval(function(){
+      that.updatePublishState();
+    }, 5000);
 
     this.updatePublishState();
     this.composer = new Substance.Composer({id: 'document_wrapper', model: this.model });
