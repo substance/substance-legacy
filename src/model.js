@@ -377,7 +377,7 @@ function createPublication(doc, cb) {
     headers: {
       "Authorization": "token " + token()
     },
-    url: Substance.settings.hub + '/publications',
+    url: Substance.settings.hub_api + '/publications',
     data: {
       "document": doc.id,
       "data": JSON.stringify(doc.content),
@@ -404,7 +404,7 @@ function clearPublications(doc, cb) {
     headers: {
       "Authorization": "token " + token()
     },
-    url: Substance.settings.hub + '/publications/' + doc.id,
+    url: Substance.settings.hub_api + '/publications/' + doc.id,
     success: function(result) {
       cb(null);
     },
@@ -442,7 +442,7 @@ function published(doc) {
 function authenticate(options, cb) {
   $.ajax({
     type: 'POST',
-    url: Substance.settings.hub + '/authorizations',
+    url: Substance.settings.hub_api + '/authorizations',
     accepts: "application/substance.v1+json",
     data: {
       "client_id": Substance.settings.client_id,
@@ -467,7 +467,7 @@ function authenticate(options, cb) {
 function registerUser(options, cb) {
   $.ajax({
     type: 'POST',
-    url: Substance.settings.hub + '/register',
+    url: Substance.settings.hub_api + '/register',
     data: {
       "username": options.username,
       "email": options.email,

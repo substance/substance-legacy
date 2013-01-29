@@ -251,29 +251,39 @@ $(function() {
   });
   
   Substance.settings = {
-    hub_frontend: "http://localhost:3000",
-    // hub: "https://substance-hub.herokuapp.com/api/v1"
-    // hub: "http://localhost:3000/api/v1"
-    // hub: "http://duese.quasipartikel.at:3000/api/v1"
-    hub: "http://localhost:3000/api/v1",
+    hub: "http://hub.substance.io",
+    hub_api: "http://hub.substance.io/api/v1",
     client_id: "f7043dc691102f3ac3175e606af2c8cb",
     client_secret: "ca85e9a193c721e5d65eba26164c0d87"
   };
 
-  // Start the engines
-  window.app = new Application({el: 'body'});
-  window.router = new Router({});
-  Backbone.history.start();
+  // Load config from config.json
 
-  key('ctrl+alt+c', _.bind(function() {
-    var id = window.doc ? window.doc.id : "empty.json";
-    document.location.href = "test/index.html#"+app.user+"/"+id;
-    return false;
-  }, this));
+  function loadConfig(cb) {
+    $.getJSON('config.json', function(data) {
+      _.extend(Substance.settings, data);
+      cb(null);
+    })
+    .error(function() { cb('not_found: using defaults'); });
+  }
 
-  // Trigger sync with hub
-  key('ctrl+alt+s', _.bind(function() {
-    app._sync();
-    return false;
-  }, this));
+  loadConfig(function(err, config) {
+    
+    // Start the engines
+    window.app = new Application({el: 'body'});
+    window.router = new Router({});
+    Backbone.history.start();
+
+    key('ctrl+alt+c', _.bind(function() {
+      var id = window.doc ? window.doc.id : "empty.json";
+      document.location.href = "test/index.html#"+app.user+"/"+id;
+      return false;
+    }, this));
+
+    // Trigger sync with hub
+    key('ctrl+alt+s', _.bind(function() {
+      app._sync();
+      return false;
+    }, this));
+  });
 });
