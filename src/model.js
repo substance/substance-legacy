@@ -480,8 +480,8 @@ function registerUser(options, cb) {
       if (result.status === "error") return cb('Registration failed. Check your input.');
       cb(null, result);
     },
-    error: function() {
-      cb('Registration failed. Check your input.');
+    error: function(err) {
+      cb(JSON.parse(err.responseText).message);
     },
     dataType: 'json'
   });
