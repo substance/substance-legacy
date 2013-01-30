@@ -7,7 +7,7 @@ body {
 }
 
 #header {
-  font-family: 'Palatino Linotype', 'Merriweather';
+  font-family: 'Baskerville', 'Merriweather';
   font-size: 20px;
   height: 40px;
   line-height: 40px;
@@ -272,7 +272,7 @@ body {
 }
 
 #login h1 {
-  font-family: 'Palatino Linotype', 'Merriweather';
+  font-family: 'Baskerville', 'Merriweather';
   font-size: 30px;
   margin-bottom: 40px;
   text-align: center;
@@ -389,7 +389,7 @@ body {
   margin-top: 20px;
   padding: 20px;
   /*background: green;*/
-  font-family: 'Palatino Linotype', 'Merriweather';
+  font-family: 'Baskerville', 'Merriweather';
   font-size: 18px;
 }
 
