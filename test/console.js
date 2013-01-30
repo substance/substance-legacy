@@ -16,8 +16,8 @@ $(function() {
   var SUBSTANCE_COMMANDS = {
     "document": [
       {
-        "name": "Insert Section",
-        "op": ["insert", {"id": "UNIQUE_ID", "type": "section", "target": "back", "data": {"content": "SECTION_NAME"}}]
+        "name": "Insert Heading",
+        "op": ["insert", {"id": "UNIQUE_ID", "type": "heading", "target": "back", "data": {"content": "HEADING_NAME"}}]
       },
       {
         "name": "Insert Text",
@@ -28,7 +28,7 @@ $(function() {
         "op": ["update", {"id": "NODE_ID", "data": [["ret", 5], ["ins", " world!"]]}]
       },
       {
-        "name": "Update Section (Properties)",
+        "name": "Update Heading (Properties)",
         "op": ["update", {"id": "NODE_ID", "data": {"content": "NEW_CONTENT"}}]
       },
       {
