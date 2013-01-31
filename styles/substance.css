@@ -327,13 +327,17 @@ body {
 -------------------------------------------------------------------------------*/
 
 #dashboard {
-  padding-top: 60px;
-
-  margin-left: 80px;
+  position: absolute;
+  top: 40px;
+  left: 60px;
+  bottom: 0px;
+  overflow: auto;
+  
 }
 
 #dashboard #documents {
-
+  padding: 20px;
+  overflow: auto;
 }
 
 #dashboard #documents .document {
