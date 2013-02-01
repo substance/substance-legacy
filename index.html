@@ -21,7 +21,7 @@
           <div class="user-status">
             <a href="#" class="sync button"><div class="icon"></div></a>
             <a href="#new" class="new-document button"><div class="icon"></div>New Document</a>
-            <div class="username"><%= user %></div>
+            <div class="username"><a title="Show User Profile" href="<%= Substance.settings.hub + '/' + user %>"><%= user %></a></div>
             <a href="#logout" class="logout"></a>
           </div>
         </div>
