@@ -443,10 +443,12 @@ function authenticate(options, cb) {
   $.ajax({
     type: 'POST',
     url: Substance.settings.hub_api + '/authorizations',
-    accepts: "application/substance.v1+json",
     data: {
       "client_id": Substance.settings.client_id,
       "client_secret": Substance.settings.client_secret
+    },
+    headers: {
+      "Authorization": "Basic "+Base64.encode(options.username+ ":"+options.password)
     },
     success: function(result) {
       if (result.status === "error") return cb('Login failed. Check your input.');
@@ -454,9 +456,7 @@ function authenticate(options, cb) {
     },
     error: function() {
       cb('Login failed. Check your input.');
-    },
-    username: options.username,
-    password: options.password
+    }
   });
 }
 
