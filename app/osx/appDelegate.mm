@@ -44,7 +44,14 @@ extern "C" bool redis_initialize_jsobjects(JSGlobalContextRef context);
   m_policyDelegate = [[WebViewPolicyDelegate alloc] init];
   [webView setPolicyDelegate: m_policyDelegate];
 
-  NSString *url =  [NSString stringWithFormat: @"file://%@/Contents/Assets/index.html", path];
+  // Escape blanks in bundle file path so that we can use it in the file url
+  NSString *pathEscaped = (NSString *)CFURLCreateStringByAddingPercentEscapes(NULL, (CFStringRef)path,
+   NULL,
+   // add more characters if needed
+   CFSTR(" "), kCFStringEncodingUTF8);
+
+  NSString *url = [NSString stringWithFormat: @"file://%@/Contents/Assets/index.html", pathEscaped];
+
 	[ [webView mainFrame] loadRequest:
 		[NSURLRequest requestWithURL: [NSURL URLWithString:url] ]
 	];
