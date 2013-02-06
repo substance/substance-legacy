@@ -883,9 +883,6 @@ h2 { font-size: 160%; padding-bottom: 15px; }
   padding: 10px 80px;
 }
 
-.content-node.text .toolbar {
-  background: blue;
-}
 
 .content-node .idea { background-color: rgba(102, 182, 32, 0.3); }
 .content-node .question { background-color: rgba(16, 167, 222, 0.3); }
@@ -898,6 +895,14 @@ h2 { font-size: 160%; padding-bottom: 15px; }
 .content-node.text .em { font-style: italic; }
 .content-node.text .link { background-color: #00CFEA; }
 .content-node.text .str { font-weight: bold; }
+
+
+/* Image Node
+-------------------------------------------------------------------------------*/
+
+.content-node.image .content {
+  padding: 10px 80px;
+}
 
 
 /* Heading Node
