@@ -56,10 +56,19 @@ $(function() {
     _deleteDocument: function(e) {
       var that = this;
       var docId = $(e.currentTarget).attr('data-id');
+      
+      var synced = !!store.getRef(docId, 'master-remote');
+      if (synced) {
+        store.markAsDeleted(docId, function(err) {
+          that.render();
+        });
+      } else {
+        // If not replicated yet, just delete!
+        store.delete(docId, function(err) {
+          that.render();
+        });
+      }
 
-      store.markAsDeleted(docId, function(err) {
-        that.render();
-      });
       return false;
     },
     
