@@ -881,6 +881,7 @@ h2 { font-size: 160%; padding-bottom: 15px; }
 
 .content-node.text .content {
   padding: 10px 80px;
+  padding-right: 60px;
 }
 
 
@@ -902,6 +903,62 @@ h2 { font-size: 160%; padding-bottom: 15px; }
 
 .content-node.image .content {
   padding: 10px 80px;
+  padding-right: 60px;
+  font: normal 14px/20px 'Open Sans',Arial,sans-serif;
+}
+
+.content-node.image .content img {
+  max-width: 609px;
+  border: none;
+}
+
+.content-node.image .content {
+  min-height: 300px;
+}
+
+.content-node.image .content input {
+  display: block;
+  position: absolute;
+  top: 0px;
+  bottom: 0px;
+  left: 80px;
+  right: 80px;
+  opacity: 0;
+  padding: 0;
+  margin: 0;
+}
+
+.content-node.image .content .placeholder {
+  display: none;
+  position: absolute;
+  top: 10px;
+  bottom: 10px;
+  left: 80px;
+  right: 60px;
+  text-align: center;
+  color: rgba(255,255,255, 0.9);
+  padding-top: 100px;
+  
+  background: rgba(0,0,0, 0.8);
+}
+
+.content-node.image:hover .content .placeholder {
+  display: block;
+}
+
+.content-node.image .content .message {
+  position: absolute;
+  display: none;
+  
+  top: 10px;
+  bottom: 10px;
+  left: 80px;
+  right: 60px;
+  padding-top: 100px;
+
+  text-align: center;
+  background: rgba(0,0,0, 0.8);
+  color: rgba(255,255,255, 0.8);
 }
 
 
@@ -915,6 +972,7 @@ h2 { font-size: 160%; padding-bottom: 15px; }
   font-size: 25px;
   line-height: 30px;
   padding: 10px 80px;
+  padding-right: 60px;
 }
 
 /* Code Node
