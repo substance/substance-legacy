@@ -273,8 +273,8 @@ $(function() {
   });
   
   Substance.settings = {
-    hub: "http://hub.substance.io",
-    hub_api: "http://hub.substance.io/api/v1",
+    hub: "http://substance.io",
+    hub_api: "https://substance.io/api/v1",
     client_id: "f7043dc691102f3ac3175e606af2c8cb",
     client_secret: "ca85e9a193c721e5d65eba26164c0d87"
   };
