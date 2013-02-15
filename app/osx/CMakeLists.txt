@@ -130,19 +130,16 @@ install(CODE "
     COMMAND rsync -r ${PROJECT_SOURCE_DIR}/src ${ASSETS_DIST_DIR}
   )
   execute_process(
+    COMMAND rsync -r ${PROJECT_SOURCE_DIR}/styles ${ASSETS_DIST_DIR}
+  )
+  execute_process(
     COMMAND rsync ${PROJECT_SOURCE_DIR}/index.html ${ASSETS_DIST_DIR}
   )
   execute_process(
-    COMMAND rsync ${PROJECT_SOURCE_DIR}/buttons.css ${ASSETS_DIST_DIR}
-  )
-  execute_process(
-    COMMAND rsync ${PROJECT_SOURCE_DIR}/composer.css ${ASSETS_DIST_DIR}
-  )
-  execute_process(
-    COMMAND rsync ${PROJECT_SOURCE_DIR}/substance.css ${ASSETS_DIST_DIR}
-  )
-  execute_process(
     COMMAND rsync ${PROJECT_SOURCE_DIR}/package.json ${ASSETS_DIST_DIR}
+  )
+  execute_process(
+    COMMAND rsync ${PROJECT_SOURCE_DIR}/config.example.json ${ASSETS_DIST_DIR}/config.json
   )
   execute_process(
     COMMAND rsync ${PROJECT_SOURCE_DIR}/README.md ${ASSETS_DIST_DIR}

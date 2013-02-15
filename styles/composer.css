@@ -388,7 +388,7 @@ h2 { font-size: 160%; padding-bottom: 15px; }
 
 .tool .comment-scope .header {
   color: rgba(255,255,255, 0.7);
-  font-family: 'Palatino Linotype', 'Merriweather';
+  font-family: 'Baskerville', 'Merriweather';
   padding: 5px 10px;
   cursor: pointer;
 }
@@ -576,7 +576,7 @@ h2 { font-size: 160%; padding-bottom: 15px; }
 
 
 #document {
-  font-family: 'Palatino Linotype', 'Merriweather';
+  font-family: 'Baskerville', 'Merriweather';
   position: fixed;
   top: 110px;
   bottom: 0px;
@@ -585,7 +585,7 @@ h2 { font-size: 160%; padding-bottom: 15px; }
   background: url(../images/document_bg.png);
   width: 800px;
   -webkit-font-smoothing: subpixel-antialiased;
-  font-size: 17px;
+  font-size: 19px;
   line-height: 28px;
 }
 
@@ -597,16 +597,17 @@ h2 { font-size: 160%; padding-bottom: 15px; }
 #document .properties .document-title {
   padding: 50px 80px;
   text-align: center;
-  font-weight: bold;
+  /*font-weight: bold;*/
   line-height: 60px;
-  font-size: 50px;
+  font-size: 60px;
 }
 
 #document .properties .document-abstract {
   padding: 40px 80px;
   padding-bottom: 60px;
-  font-size: 20px;
-  font-family: 'Open Sans',Arial,sans-serif;
+  font-size: 24px;
+  font-style: italic;
+  /*font-family: 'Open Sans',Arial,sans-serif;*/
   color: #777;
   text-align: center;
 }
@@ -996,8 +997,8 @@ h2 { font-size: 160%; padding-bottom: 15px; }
 .content-node.heading { }
 
 .content-node.heading .content {
-  font-weight: bold;
-  font-size: 25px;
+  /*font-weight: bold;*/
+  font-size: 27px;
   line-height: 30px;
   padding: 10px 80px;
   padding-right: 60px;

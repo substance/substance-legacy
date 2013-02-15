@@ -809,7 +809,7 @@
 			<object class="NSWindowTemplate" id="972006081">
 				<int key="NSWindowStyleMask">15</int>
 				<int key="NSWindowBacking">2</int>
-				<string key="NSWindowRect">{{335, 239}, {1400, 900}}</string>
+				<string key="NSWindowRect">{{335, 239}, {1280, 900}}</string>
 				<int key="NSWTFlags">1954021376</int>
 				<string key="NSWindowTitle">Substance</string>
 				<string key="NSWindowClass">NSWindow</string>
@@ -844,7 +844,7 @@
 									<string>public.url-name</string>
 								</object>
 							</object>
-							<string key="NSFrameSize">{1400, 900}</string>
+							<string key="NSFrameSize">{1280, 900}</string>
 							<reference key="NSSuperview" ref="439893737"/>
 							<reference key="NSWindow"/>
 							<reference key="NSNextKeyView"/>
@@ -873,7 +873,7 @@
 							<bool key="AllowsUndo">YES</bool>
 						</object>
 					</object>
-					<string key="NSFrameSize">{1400, 900}</string>
+					<string key="NSFrameSize">{1280, 900}</string>
 					<reference key="NSSuperview"/>
 					<reference key="NSWindow"/>
 					<reference key="NSNextKeyView" ref="719816262"/>
