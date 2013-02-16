@@ -56,8 +56,8 @@ Substance.Replicator = function(params) {
   // -----------------
 
   this.deleteRemote = function(doc, cb) {
-    console.log('DELETING REMOTELY!!');
-    _.request("POST", Substance.settings.hub_api + '/documents/delete', {username: that.user, id: doc.id}, function(err, data) {
+    console.log('DELETING REMOTELY!');
+    _.request("DELETE", Substance.settings.hub_api + '/users/'+that.user+'/documents/'+doc.id, function(err, data) {
       if (err) return cb(err);
       // Delete locally
       store.delete(doc.id);
@@ -84,7 +84,7 @@ Substance.Replicator = function(params) {
     var tailRemote = store.getRef(doc.id, 'tail-remote');
     console.log('pulling in changes... for', tailRemote);
 
-    _.request("GET", Substance.settings.hub_api + '/documents/commits/'+that.user+'/'+doc.id+'/'+tailRemote, {}, function(err, data) {
+    _.request("GET", Substance.settings.hub_api + '/users/'+that.user+'/documents/'+doc.id+'/commits', {since: tailRemote}, function(err, data) {
       console.log('what does remote say?', data);
       console.log('remote commits', data.commits);
       // Should also give me remote refs
@@ -126,14 +126,14 @@ Substance.Replicator = function(params) {
       var commits = store.commits(doc.id, localTail, remoteTail);
 
       var data = {
-        username: that.user, 
-        id: doc.id,
+        // username: that.user, 
+        // id: doc.id,
         commits: commits, // may be empty
         meta: doc.meta,
         refs: doc.refs // make sure refs are updated on the server (for now master, tail is updated implicitly)
       };
 
-      _.request("POST", Substance.settings.hub_api + '/documents/update', data, function (err) {
+      _.request("PUT", Substance.settings.hub_api + '/users/'+that.user+'/documents/'+doc.id, data, function (err) {
         // Set synced reference accordingly
         if (err) return cb(err);
         store.setRef(doc.id, 'tail-remote', doc.refs.tail);
@@ -157,11 +157,11 @@ Substance.Replicator = function(params) {
       var commits = store.commits(doc.id, doc.refs.tail);
       console.log("COMMITS OF NEW DOC", commits);
       // 2. Create empty doc on the server
-      _.request("POST", Substance.settings.hub_api + '/documents/create', {"username": that.user, id: doc.id}, function (err) {
+      _.request("POST", Substance.settings.hub_api + '/users/'+that.user+'/documents', {id: doc.id}, function (err) {
         console.log('created on the server..');
         if (err) return cb(err);
         // 3. Send updates to server
-        _.request("POST", Substance.settings.hub_api + '/documents/update', {"username": that.user, id: doc.id, commits: commits, meta: doc.meta}, function (err) {
+        _.request("PUT", Substance.settings.hub_api + '/users/'+that.user+'/documents/'+doc.id, {commits: commits, meta: doc.meta, refs: doc.refs}, function (err) {
           store.setRef(doc.id, 'tail-remote', doc.refs.tail);
           store.setRef(doc.id, 'master-remote', doc.refs.master);
           cb(err);
@@ -178,7 +178,7 @@ Substance.Replicator = function(params) {
   	// Status object looks like this
     var jobs = [];
     that.localDocStates(function(err, localDocs) {
-      _.request("GET", Substance.settings.hub_api + '/documents/status/'+that.user, {}, function (err, remoteDocs) {
+      _.request("GET", Substance.settings.hub_api + '/users/'+that.user+'/documents/statuses', {}, function (err, remoteDocs) {
         // console.log('diff', localDocs, remoteDocs);
 
         _.each(localDocs, function(doc, id) {
@@ -240,5 +240,4 @@ Substance.Replicator = function(params) {
       cb(null, result);
     });
   };
-
 };
