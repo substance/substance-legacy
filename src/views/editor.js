@@ -105,6 +105,15 @@ sc.views.Editor = Backbone.View.extend({
     this.resizeShelf();
   },
 
+  updateMessage: function() {
+    var state = this.model.publishState();
+    var doc = this.model.document;
+
+    if (state === 'published') {
+      this.$('.publish-state .message').html($.timeago(doc.meta.published_at));
+    }
+  },
+
   updatePublishState: function() {
     var state = this.model.publishState();
     var doc = this.model.document;
@@ -153,8 +162,8 @@ sc.views.Editor = Backbone.View.extend({
     // TODO: deconstructor-ish thing for clearing the interval when the view is no longer
     clearInterval(window.leInterval);
     window.leInterval = setInterval(function(){
-      that.updatePublishState();
-    }, 5000);
+      that.updateMessage();
+    }, 1000);
 
     this.updatePublishState();
     this.composer = new Substance.Composer({id: 'document_wrapper', model: this.model });
