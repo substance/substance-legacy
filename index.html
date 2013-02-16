@@ -30,11 +30,19 @@
       <div id="container">
 
       </div>
+
+      <!-- Temp Canvas for image manipulation -->
+      <canvas id="canvas" style="display: none;"></canvas>
     </script>
 
     <!-- Annotation Toggles -->
     <script type="text/html" name="annotation_toggles">
       <div class="annotation-toggles">
+        <% if (link){ %>
+          <div class="annotation-data">
+            <input type="text" class="link-url" name="link-url" data-id="<%= link.id %>" value="<%= link.url %>"></input>
+          </div>
+        <% } %>
         <% _.each(annotations, function(a) { %>
           <a href="#" class="toggle <%= a.type %><%= a.active ? " active" : "" %> " data-type="<%= a.type %>" title="<%= a.description %>"></a>
         <% }) %>
@@ -379,6 +387,7 @@
     <script src="src/nodes/node.js"></script>
     <script src="src/nodes/textish.js"></script>
     <script src="src/nodes/text/text.js"></script>
+    <script src="src/nodes/image/image.js"></script>
     <script src="src/nodes/heading/heading.js"></script>
 
     <!-- Boot -->
@@ -386,7 +395,6 @@
 
   </head>
   <body>
-
 
   </body>
 </html>

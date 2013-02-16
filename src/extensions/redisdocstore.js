@@ -1,7 +1,7 @@
 (function(ctx){
 
   // Native extension
-  var redis = typeof exports !== 'undefined' ? require('../dist/redis') : ctx.redis;
+  var redis = typeof exports !== 'undefined' ? require('substance-store/lib/redis') : ctx.redis;
   var _ = typeof exports !== 'undefined' ? require('underscore') : ctx._;
   
 

@@ -26,7 +26,8 @@ Textish = {
 
     // TODO: problematic since this is triggered when a toggle is being clicked.
     this.$('.content').bind('blur', function(e) {
-      that.removeToggles();
+      // TODO: reactivate when problems with link URL input are solved
+      // that.removeToggles();
     });
 
     this.surface.on('surface:active', function(sel) {
@@ -75,10 +76,22 @@ Textish = {
     });
   },
 
+  updateLink: function(e) {
+    var annotation = $(e.currentTarget).attr('data-id');
+    var url = $(e.currentTarget).val();
+  
+    this.surface.updateAnnotation({
+      id: annotation,
+      url: url
+    });
+    return false;
+  },
+
   // This should be moved into a separate module
   toggleAnnotation: function(e) {
-    // console.log('toggleannotation');
-    var type = $(e.currentTarget).attr('data-type');
+    var $el = $(e.currentTarget);
+    var type = $el.attr('data-type');
+
     this.annotate(type);
     return false;
   },
@@ -90,8 +103,8 @@ Textish = {
 
     if (!sel) return;
 
-    if (_.include(["em", "str"], type)) {
-      var types = ["em", "str"];
+    if (_.include(["em", "str", "link"], type)) {
+      var types = ["em", "str", "link"];
     } else {
       var types = ["idea", "question", "error"];
     }
@@ -154,9 +167,19 @@ Textish = {
   // Create a new annotation with the given annotation type
   insertAnnotation: function(type, sel) {
     var id = "annotation:"+Math.uuid();
-    this.surface.insertAnnotation({ id: id, type: type, pos: sel });
+    var data = {
+      id: id,
+      type: type,
+      pos: sel,
+    };
 
-    if (_.include(["em", "str"], type)) return; // skype comment-scope selection
+    if (type === "link") {
+      data.url = "http://www.example.com";
+    }
+
+    this.surface.insertAnnotation(data);
+
+    if (_.include(["em", "str", "link"], type)) return; // skip comment-scope selection
     router.trigger('comment-scope:selected', id, this.model.id, id);
   },
   
@@ -169,8 +192,9 @@ Textish = {
 
     // Find last char
     var lastChar = this.$('.content').children()[sel[0]+sel[1]-1];
-
     var annotations = [];
+    var link = null;
+
     _.each(this.types, function(a, type) {
       var anns = that.surface.getAnnotations(sel, [type]);
       annotations.push({
@@ -178,11 +202,19 @@ Textish = {
         active: anns.length > 0, // Overlap or not
         description: a.description
       });
+
+      if (type === "link" && anns.length) {
+        link = {
+          url: anns[0].url,
+          id: anns[0].id
+        }
+      }
     });
 
     // Render tools
     this.$('.annotation-tools').html(_.tpl('annotation_toggles', {
-      "annotations": annotations
+      "annotations": annotations,
+      "link": link
     })).show();
 
     // Position dem

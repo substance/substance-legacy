@@ -180,9 +180,11 @@ sc.views.Document = Backbone.View.extend({
     // Render context bar
     this.$('#context_bar').html(_.tpl('context_bar', {
       level: this.model.level(),
+      // TODO: Use Plugin System!
       node_types: [
         {name: "Heading", type: "heading"},
-        {name: "Text", type: "text"}
+        {name: "Text", type: "text"},
+        {name: "Image", type: "image"}
       ]
     }));
   },

@@ -13,6 +13,7 @@ sc.views.Node = Backbone.View.extend(_.extend({}, s.StateMachine, {
     $(this.el).attr({ id: _.htmlId(this.model) });
   },
 
+  // Do we need this?
   transitionTo: function (state) {
     StateMachine.transitionTo.call(this, state);
     if (this.state === state) {
@@ -35,7 +36,7 @@ sc.views.Node = Backbone.View.extend(_.extend({}, s.StateMachine, {
 
   focus: function () {},
 
-  render: function () {
+  render: function (notEditable) {
     var cnt = this.document.comments(this.model.id).length;
     var annotations = [];
 
@@ -43,7 +44,7 @@ sc.views.Node = Backbone.View.extend(_.extend({}, s.StateMachine, {
     //   annotations.push('<a href="#" class="'+a.type+'"></a>');
     // });
 
-    $(this.el).html('<div class="content" contenteditable="true"></div><div class="handle"><a href="#" class="up move" title="Move Selection Up (ALT + ▲)"></a><a href="#" class="move down" title="Move Selection Down (ALT + ▼)"></a></div><div class="handle-2"></div><a href="#" class="delete" title="Delete Selection (←)"></a> <a href="#" class="comments-toggle'+(cnt > 0 ? ' active' : '')+'">'+''+'</a><div class="annotation-tools"></div><div class="annotations">'+annotations.join('')+'</a></div>');
+    $(this.el).html('<div class="content"'+(notEditable ? '' : ' contenteditable="true"')+'></div><div class="handle"><a href="#" class="up move" title="Move Selection Up (ALT + ▲)"></a><a href="#" class="move down" title="Move Selection Down (ALT + ▼)"></a></div><div class="handle-2"></div><a href="#" class="delete" title="Delete Selection (←)"></a> <a href="#" class="comments-toggle'+(cnt > 0 ? ' active' : '')+'">'+''+'</a><div class="annotation-tools"></div><div class="annotations">'+annotations.join('')+'</a></div>');
     return this;
   }
 }), {

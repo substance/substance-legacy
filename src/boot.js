@@ -56,10 +56,19 @@ $(function() {
     _deleteDocument: function(e) {
       var that = this;
       var docId = $(e.currentTarget).attr('data-id');
+      
+      var synced = !!store.getRef(docId, 'master-remote');
+      if (synced) {
+        store.markAsDeleted(docId, function(err) {
+          that.render();
+        });
+      } else {
+        // If not replicated yet, just delete!
+        store.delete(docId, function(err) {
+          that.render();
+        });
+      }
 
-      store.markAsDeleted(docId, function(err) {
-        that.render();
-      });
       return false;
     },
     
@@ -264,8 +273,8 @@ $(function() {
   });
   
   Substance.settings = {
-    hub: "http://hub.substance.io",
-    hub_api: "http://hub.substance.io/api/v1",
+    hub: "http://substance.io",
+    hub_api: "https://substance.io/api/v1",
     client_id: "f7043dc691102f3ac3175e606af2c8cb",
     client_secret: "ca85e9a193c721e5d65eba26164c0d87"
   };
