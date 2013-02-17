@@ -1,28 +1,8 @@
-sc.views.Node.define('text', _.extend(Textish, {
+sc.views.Node.define('code', _.extend(Textish, {
 
-  className: 'content-node text',
+  className: 'content-node code',
 
   types: {
-    "em": {
-      "description": 'Emphasized',
-      "inclusive": true,
-      "visibility" : 'both'
-    },
-    "str": {
-      "description": 'Strong',
-      "inclusive": true,
-      "visibility" : 'both'
-    },
-    "code": {
-      "description": 'Code',
-      "inclusive": true,
-      "visibility" : 'both'
-    },
-    "link": {
-      "description": 'Link',
-      "inclusive": true,
-      "visibility" : 'both'
-    },
     "idea": {
       "description": 'Idea',
       "inclusive": false,

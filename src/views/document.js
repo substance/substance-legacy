@@ -17,6 +17,7 @@ sc.views.Document = Backbone.View.extend({
   initialize: function(options) {
     var that = this;
 
+    // Delegate update operations
     this.model.document.on('commit:applied', function(commit) {
       switch(commit.op[0]) {
         case "move": that.move(commit.op[1]); break;
@@ -182,9 +183,10 @@ sc.views.Document = Backbone.View.extend({
       level: this.model.level(),
       // TODO: Use Plugin System!
       node_types: [
-        {name: "Heading", type: "heading"},
-        {name: "Text", type: "text"},
-        {name: "Image", type: "image"}
+        { name: "Heading", type: "heading" },
+        { name: "Text", type: "text" },
+        { name: "Code", type: "code" },
+        { name: "Image", type: "image" }
       ]
     }));
   },
@@ -262,9 +264,10 @@ sc.views.Document = Backbone.View.extend({
   moveUp: function() {
     var selection = this.model.users[this.model.user].selection;
     var first = this.getNode(_.first(selection));
+    var doc = this.model.document.content;
 
     if (first.prev) { 
-      var target = this.model.document.content.head === first.prev ? 'front' : this.getNode(first.prev).prev;
+      var target = doc.head === first.prev ? 'front' : this.getNode(first.prev).prev;
       this.model.document.apply(["move", {
         "nodes": selection, "target": target
       }], {

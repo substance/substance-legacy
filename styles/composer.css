@@ -830,7 +830,7 @@ h2 { font-size: 160%; padding-bottom: 15px; }
 
 .content-node .annotation-tools .annotation-toggles {
   background: #2F2B27;
-  width: 292px; /* links */
+  width: 339px; /* links */
   border-radius: 2px;
   position: relative;
   height: 40px;
@@ -838,6 +838,10 @@ h2 { font-size: 160%; padding-bottom: 15px; }
 }
 
 .content-node.heading .annotation-tools .annotation-toggles {
+  width: 152px;
+}
+
+.content-node.code .annotation-tools .annotation-toggles {
   width: 152px;
 }
 
@@ -853,6 +857,10 @@ h2 { font-size: 160%; padding-bottom: 15px; }
 }
 
 .content-node.heading .annotation-toggles .arrow-down {
+  left: 65px;
+}
+
+.content-node.code .annotation-toggles .arrow-down {
   left: 65px;
 }
 
@@ -887,6 +895,10 @@ h2 { font-size: 160%; padding-bottom: 15px; }
   background: #ccc url(../images/icons/link.png) 7px center no-repeat;
 }
 
+.annotation-toggles a.code {
+  background: #ccc url(../images/icons/link.png) 7px center no-repeat;
+}
+
 .annotation-toggles a.idea {
   background: rgba(102, 182, 32, 1.0) url(../images/icons/idea.png) 7px center no-repeat;
 }
@@ -912,11 +924,11 @@ h2 { font-size: 160%; padding-bottom: 15px; }
   padding-right: 60px;
 }
 
-
 .content-node .idea { background-color: rgba(102, 182, 32, 0.3); }
 .content-node .question { background-color: rgba(16, 167, 222, 0.3); }
 .content-node .error { background-color: rgba(237, 96, 48, 0.3); }
 .content-node .link { color: #DC4A1D; text-decoration: underline;}
+.content-node .code { font-family: Consolas, "Liberation Mono", Courier, monospace; background: #eee; font-size: 15px; }
 
 .content-node .idea.highlight { background-color: rgba(102, 182, 32, 0.6); }
 .content-node .question.highlight { background-color: rgba(16, 167, 222, 0.6);}
@@ -926,6 +938,22 @@ h2 { font-size: 160%; padding-bottom: 15px; }
 /*.content-node.text .link { background-color: #00CFEA; }*/
 .content-node.text .str { font-weight: bold; }
 
+
+/* Code Node
+-------------------------------------------------------------------------------*/
+
+.content-node.code {
+
+}
+
+.content-node.code .content {
+  background: #eee;
+  padding: 10px 80px;
+  padding-right: 60px;
+  font-family: Consolas, "Liberation Mono", Courier, monospace;
+  font-size: 14px;
+  line-height: 18px;
+}
 
 /* Image Node
 -------------------------------------------------------------------------------*/

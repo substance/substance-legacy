@@ -103,8 +103,8 @@ Textish = {
 
     if (!sel) return;
 
-    if (_.include(["em", "str", "link"], type)) {
-      var types = ["em", "str", "link"];
+    if (_.include(["em", "str", "code", "link"], type)) {
+      var types = ["em", "str", "code", "link"];
     } else {
       var types = ["idea", "question", "error"];
     }
@@ -179,7 +179,7 @@ Textish = {
 
     this.surface.insertAnnotation(data);
 
-    if (_.include(["em", "str", "link"], type)) return; // skip comment-scope selection
+    if (_.include(["em", "str", "code", "link"], type)) return; // skip comment-scope selection
     router.trigger('comment-scope:selected', id, this.model.id, id);
   },
   
