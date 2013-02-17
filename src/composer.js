@@ -107,16 +107,22 @@
       if (this.model.level() === 3) {
         var node = this.views.document.nodes[_.first(this.model.selection())];
         
-        if (!_.include(["text", "heading"], node.model.type)) return; // Skip for non-text nodes
-        var text = node.surface.content;
-        var pos = node.surface.selection()[0]; // current cursor position
+        if (!_.include(["text", "heading", "code"], node.model.type)) return; // Skip for non-text nodes
 
-        var remainder = _.rest(text, pos).join("");
-        var newContent = text.substr(0, pos);
+        if (node.model.type === "code") {
+          node.surface.addNewline();
+        } else {
+          var text = node.surface.content;
+          var pos = node.surface.selection()[0]; // current cursor position
 
-        node.surface.deleteRange([pos, remainder.length]);
-        node.surface.commit();
-        that.views.document.insertNode("text", {content: remainder, target: node.model.id});
+          var remainder = _.rest(text, pos).join("");
+          var newContent = text.substr(0, pos);
+
+          node.surface.deleteRange([pos, remainder.length]);
+          node.surface.commit();
+          that.views.document.insertNode("text", {content: remainder, target: node.model.id});
+        }
+
         
         return false;
       }
