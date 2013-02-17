@@ -896,7 +896,7 @@ h2 { font-size: 160%; padding-bottom: 15px; }
 }
 
 .annotation-toggles a.code {
-  background: #ccc url(../images/icons/link.png) 7px center no-repeat;
+  background: #ccc url(../images/icons/code.png) 7px center no-repeat;
 }
 
 .annotation-toggles a.idea {
