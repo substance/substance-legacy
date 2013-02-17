@@ -123,8 +123,19 @@
           that.views.document.insertNode("text", {content: remainder, target: node.model.id});
         }
 
-        
         return false;
+      }
+    },
+
+    handleTab: function(reverse) {
+      var that = this;
+      if (this.model.level() === 3) {
+        var node = this.views.document.nodes[_.first(this.model.selection())];
+        
+        if (node.model.type === "heading") {
+          console.log('indenting dedenting heading', reverse);
+          return false;
+        }
       }
     },
 
@@ -191,6 +202,9 @@
 
       key('⌘+z', _.bind(function() { return this.undo(); }, this));
       key('shift+⌘+z', _.bind(function() { return this.redo(); }, this));
+
+      key('tab', _.bind(function() { return this.handleTab(); }, this));
+      key('shift+tab', _.bind(function() { return this.handleTab(true); }, this));
 
       // Possible modes: edit, view, patch, apply-patch
       this.mode = "edit";
