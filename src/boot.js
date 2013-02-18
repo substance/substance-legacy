@@ -290,13 +290,12 @@ $(function() {
   }
 
   loadConfig(function(err, config) {
-    
     // Start the engines
     window.app = new Application({el: 'body'});
     window.router = new Router({});
     Backbone.history.start();
 
-    key('ctrl+alt+c', _.bind(function() {
+    key('ctrl+alt+d', _.bind(function() {
       var id = window.doc ? window.doc.id : "empty.json";
       document.location.href = "test/index.html#"+app.user+"/"+id;
       return false;

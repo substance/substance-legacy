@@ -130,11 +130,12 @@ sc.views.Document = Backbone.View.extend({
   insertNode: function(type, options) {
     var selection = this.model.users[this.model.user].selection;
     var target = options.target || _.last(selection);
-
     var properties = {};
 
     properties["content"] = options.content || "";
 
+    if (type === "heading") properties["level"] = 1;
+  
     this.model.document.apply(["insert", {
       "id": Math.uuid(type+':', 8),
       "type": type,

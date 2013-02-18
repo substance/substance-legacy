@@ -1024,12 +1024,21 @@ h2 { font-size: 160%; padding-bottom: 15px; }
 
 .content-node.heading { }
 
+
 .content-node.heading .content {
   /*font-weight: bold;*/
-  font-size: 27px;
+  font-size: 40px;
   line-height: 30px;
   padding: 10px 80px;
   padding-right: 60px;
+}
+
+.content-node.heading.level-2 .content {
+  font-size: 30px;
+}
+
+.content-node.heading.level-3 .content {
+  font-size: 24px;
 }
 
 /* Code Node

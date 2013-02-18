@@ -33,6 +33,9 @@ sc.views.Node.define('heading', _.extend(Textish, {
 
   render: function () {
     sc.views.Node.prototype.render.apply(this, arguments);
+    var level = this.model.level || 1;
+    $(this.el).addClass('level-'+level);
+
     this.initSurface();
     return this;
   }

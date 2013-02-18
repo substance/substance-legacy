@@ -133,9 +133,28 @@
         var node = this.views.document.nodes[_.first(this.model.selection())];
         
         if (node.model.type === "heading") {
-          console.log('indenting dedenting heading', reverse);
+          var level = node.model.level;
+
+          if (!level) level = 1;
+          if (reverse) {
+            level = Math.max(level-1, 1);
+          } else {
+            level = Math.min(level+1, 3);
+          }
+
+          that.model.document.apply(["update", {id: node.model.id, "data": {
+            "level": level
+          }}]);
+
+          $(node.el).removeClass('level-1')
+                    .removeClass('level-2')
+                    .removeClass('level-3');
+
+          $(node.el).addClass('level-'+level);
+
           return false;
         }
+        return false;
       }
     },
 
