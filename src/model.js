@@ -372,7 +372,21 @@ function createDocument(cb) {
 
 function createPublication(doc, cb) {
   if (!authenticated()) return cb("Error when creating publication. Login first.");
-  $.ajax({
+  API.post('/publications', {
+    token: token(),
+    data: {
+      "document": doc.id,
+      "data": doc.content,
+      "username": user()
+    },
+    success: function(result) {
+      cb(null);
+    },
+    error: function() {
+      cb("Error when creating publication. Can't access server.");
+    }
+  });
+  /*$.ajax({
     type: 'POST',
     headers: {
       "Authorization": "token " + token()
@@ -390,7 +404,7 @@ function createPublication(doc, cb) {
       cb("Error when creating publication. Can't access server.");
     },
     dataType: 'json'
-  });
+  });*/
 }
 
 
@@ -487,3 +501,69 @@ function registerUser(options, cb) {
   });
 }
 
+
+// Generic API util
+// -----------------
+
+function API(options) {
+  var oToken = options.token;
+  var oClient = options.client;
+  var oType = options.type;
+
+  options.dataType = 'json';
+
+  if (oType && oType !== 'GET') {
+    options.contentType = 'application/json; charset=UTF-8';
+    options.processData = false;
+  }
+
+  if (!options.headers) {
+    options.headers = {};
+  }
+
+  if (!options.data) {
+    options.data = {};
+  }
+
+  if (oClient) {
+    if (oClient === true) {
+      options.data.client_id = Substance.settings.client_id;
+      options.data.client_secret = Substance.settings.client_secret;
+    } else {
+      options.data.client_id = oClient.id || oClient.client_id;
+      options.data.client_secret = oClient.secret || oClient.client_secret;
+    }
+  }
+
+  if (options.data) {
+    options.data = JSON.stringify(options.data);
+  }
+
+  if (oToken) {
+    options.headers["Authorization"] = "token " + (oToken === true ? token() : oToken);
+  }
+
+  if (options.path) {
+    options.url = Substance.settings.hub_api + options.path;
+  }
+
+  return $.ajax(options);
+}
+
+// API.put, API.get...
+// -----------------
+
+_.each('get post put delete patch head options'.split(' '), function (m) {
+  var method = m.toLowerCase();
+  var METHOD = m.toUpperCase();
+  // This is because .delete === .del
+  API[method] = API[method.slice(0, 3)] = function (path, options) {
+    if (!_.isString(path)) {
+      options = path;
+    } else {
+      options.path = path;
+    }
+    options.type = METHOD;
+    return API(options);
+  };
+});
