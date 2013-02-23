@@ -554,18 +554,16 @@ function API(options) {
 // -----------------
 
 _.each('get post put delete patch head options'.split(' '), function (m) {
-    var method = m.toLowerCase();
-    var METHOD = m.toUpperCase();
-    // This is because .delete === .del
-    API[method] = API[method.slice(0, 3)] = function (path, options) {
-      if (!_.isString(path)) {
-        options = path;
-      } else {
-        options.path = path;
-      }
-      options.type = METHOD;
-      return API(options);
-    };
-  });
-};
-
+  var method = m.toLowerCase();
+  var METHOD = m.toUpperCase();
+  // This is because .delete === .del
+  API[method] = API[method.slice(0, 3)] = function (path, options) {
+    if (!_.isString(path)) {
+      options = path;
+    } else {
+      options.path = path;
+    }
+    options.type = METHOD;
+    return API(options);
+  };
+});
