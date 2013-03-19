@@ -56,18 +56,8 @@ $(function() {
     _deleteDocument: function(e) {
       var that = this;
       var docId = $(e.currentTarget).attr('data-id');
-      
-      var synced = !!store.getRef(docId, 'master-remote');
-      if (synced) {
-        store.markAsDeleted(docId, function(err) {
-          that.render();
-        });
-      } else {
-        // If not replicated yet, just delete!
-        store.delete(docId, function(err) {
-          that.render();
-        });
-      }
+
+      if (store.delete(docId)) that.render();
 
       return false;
     },
@@ -127,7 +117,7 @@ $(function() {
     _login: function() {
       var that = this,
           options = {
-            username: $('#login_username').val(),  
+            username: $('#login_username').val(),
             password: $('#login_password').val()
           };
 
@@ -138,8 +128,8 @@ $(function() {
         }
 
         that.user = options.username;
-        userSettings.set('user', that.user);
-        userSettings.set('api-token', data.token);
+        appSettings.set('user', that.user);
+        appSettings.set('api-token', data.token);
 
         initStore(that.user); // Re-init store as user scope changes
         that.dashboard();
@@ -163,8 +153,8 @@ $(function() {
         }
 
         that.user = options.username;
-        userSettings.set('user', that.user);
-        userSettings.set('api-token', data.token);
+        appSettings.set('user', that.user);
+        appSettings.set('api-token', data.token);
         that.dashboard();
       });
 
@@ -173,8 +163,8 @@ $(function() {
 
     _logout: function() {
       this.user = null;
-      userSettings.set('user', '');
-      userSettings.set('api-token', '');
+      appSettings.set('user', '');
+      appSettings.set('api-token', '');
       this.render();
       this.login();
       return false;
@@ -183,7 +173,7 @@ $(function() {
     initialize: function(options) {
       var that = this;
       _.bindAll(this, 'document', 'dashboard', 'login', 'signup');
-      this.user = userSettings.get('user');      
+      this.user = appSettings.get('user');
     },
 
     // Toggle document view

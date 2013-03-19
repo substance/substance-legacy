@@ -14,35 +14,41 @@ Substance.Replicator = function(params) {
       console.log('JOBS', jobs);
   		var index = 0;
 
-  		function next() {
-  			if (index === jobs.length) return cb(null);
-  			that.processDocument(jobs[index], function(err) {
+      function next() {
+        if (index === jobs.length) return cb(null);
+        that.processDocument(jobs[index], function(err) {
           if (err) console.log('ERROR WHILE PROCSSING JOB', jobs[index], "ERROR", err);
-  				index += 1;
-  				next();
-  			});
-  		}
+          else console.log("... finished " + jobs[index].action);
+          index += 1;
+          next();
+        });
+      }
 
-  		next(); // start processing the first doc
-  	});
+      next(); // start processing the first doc
+    });
   };
 
   // Process a single doc sync job
   // -----------------
 
   this.processDocument = function(doc, cb) {
-    if (doc.action === "create") return that.create(doc, cb);
-    if (doc.action === "delete") return that.deleteRemote(doc, cb);
-    if (doc.action === "delete-locally") return that.deleteLocally(doc, cb);
+    console.log("Processing " + doc.action + "...");
+
+    // TODO: refactor this. Could be more 'command pattern'isher...
+    //  doc is infact not a doc, but a document command (action, docId).
+    //  The functions could be used directly, whereas the first argument is docId
+    if (doc.action === "create-remote") return that.createRemote(doc, cb);
+    if (doc.action === "create-local") return that.createLocal(doc, cb);
+    if (doc.action === "delete-remote") return that.deleteRemote(doc, cb);
+    if (doc.action === "delete-local") return that.deleteLocal(doc, cb);
     if (doc.action === "push") return that.push(doc, cb);
     if (doc.action === "pull") return that.pull(doc, cb);
-    if (doc.action === "fetch") return that.fetch(doc, cb);
   };
 
   // Fetch doc from remote store
   // -----------------
 
-  this.fetch = function(doc, cb) {
+  this.createLocal = function(doc, cb) {
     // 1. create doc locally
     store.create(doc.id, function(err) {
       if (err) return cb(err);
@@ -51,24 +57,54 @@ Substance.Replicator = function(params) {
     });
   };
 
+  // Create doc on the server
+  // -----------------
+
+  this.createRemote = function(doc, cb) {
+    console.log('creating ', doc.id, ' on the server');
+
+    // 1. Get doc from local docstore
+    store.get(doc.id, function(err, doc) {
+      // extract commits
+      var commits = store.commits(doc.id, doc.refs.tail);
+      console.log("COMMITS OF NEW DOC", commits);
+      // 2. Create empty doc on the server
+      _.request("POST", Substance.settings.hub_api + '/documents', {id: doc.id}, function (err) {
+        console.log('created on the server..');
+        if (err) return cb(err);
+        // 3. Send updates to server
+        _.request("PUT", Substance.settings.hub_api + '/documents/'+doc.id, {commits: commits, meta: doc.meta, refs: doc.refs}, function (err) {
+          console.log('updated on the server..');
+          store.setRef(doc.id, 'tail-remote', doc.refs.tail);
+          store.setRef(doc.id, 'master-remote', doc.refs.master);
+          cb(err);
+        });
+      });
+    });
+  };
 
   // Delete doc from hub
   // -----------------
 
   this.deleteRemote = function(doc, cb) {
-    console.log('DELETING REMOTELY!');
-    _.request("DELETE", Substance.settings.hub_api + '/users/'+that.user+'/documents/'+doc.id, function(err, data) {
-      if (err) return cb(err);
-      // Delete locally
-      store.delete(doc.id);
-      cb(err);
+    console.log('DELETING REMOTELY:' + doc.id);
+    _.request("DELETE", Substance.settings.hub_api+'/documents/' + doc.id, null, function(err, data) {
+      // Note: being tolerant if the remote document has been removed already
+      // TODO: is there a better way to deal with errors?
+      if (!err || err.status === 404) {
+        // Note: when a document is deleted locally, a flag is kept to manage remote deletions.
+        //  To finish the deletion, the local store needs to be confirmed about deletion.
+        store.confirmDeletion(doc.id);
+        cb(err);
+      }
+      else return cb(err);
     });
   };
 
   // Delete doc locally (Someone has deleted it)
   // -----------------
 
-  this.deleteLocally = function(doc, cb) {
+  this.deleteLocal = function(doc, cb) {
     store.delete(doc.id);
     cb(null);
   };
@@ -76,7 +112,7 @@ Substance.Replicator = function(params) {
 
   // Pull
   // -----------------
-  // 
+  //
   // TODO: Fetch metadata on pull and update locally / this overwrites pending local commits
 
   this.pull = function(doc, cb) {
@@ -84,7 +120,7 @@ Substance.Replicator = function(params) {
     var tailRemote = store.getRef(doc.id, 'tail-remote');
     console.log('pulling in changes... for', tailRemote);
 
-    _.request("GET", Substance.settings.hub_api + '/users/'+that.user+'/documents/'+doc.id+'/commits', {since: tailRemote}, function(err, data) {
+    _.request("GET", Substance.settings.hub_api +'/documents/'+doc.id+'/commits', {since: tailRemote}, function(err, data) {
       console.log('what does remote say?', data);
       console.log('remote commits', data.commits);
       // Should also give me remote refs
@@ -119,21 +155,21 @@ Substance.Replicator = function(params) {
 
   this.push = function(doc, cb) {
     store.get(doc.id, function(err, doc) {
-      var remoteTail = store.getRef(doc.id, 'tail-remote');  
+      var remoteTail = store.getRef(doc.id, 'tail-remote');
       var localTail = store.getRef(doc.id, 'tail');
 
       // Find all commits after synced (remote) commit
       var commits = store.commits(doc.id, localTail, remoteTail);
 
       var data = {
-        // username: that.user, 
+        // username: that.user,
         // id: doc.id,
         commits: commits, // may be empty
         meta: doc.meta,
         refs: doc.refs // make sure refs are updated on the server (for now master, tail is updated implicitly)
       };
 
-      _.request("PUT", Substance.settings.hub_api + '/users/'+that.user+'/documents/'+doc.id, data, function (err) {
+      _.request("PUT", Substance.settings.hub_api + '/documents/'+doc.id, data, function (err) {
         // Set synced reference accordingly
         if (err) return cb(err);
         store.setRef(doc.id, 'tail-remote', doc.refs.tail);
@@ -144,33 +180,6 @@ Substance.Replicator = function(params) {
     });
   };
 
-
-  // Create doc on the server
-  // -----------------
-
-  this.create = function(doc, cb) {
-    console.log('creating ', doc.id, ' on the server');
-
-    // 1. Get doc from local docstore
-    store.get(doc.id, function(err, doc) {
-      // extract commits
-      var commits = store.commits(doc.id, doc.refs.tail);
-      console.log("COMMITS OF NEW DOC", commits);
-      // 2. Create empty doc on the server
-      _.request("POST", Substance.settings.hub_api + '/users/'+that.user+'/documents', {id: doc.id}, function (err) {
-        console.log('created on the server..');
-        if (err) return cb(err);
-        // 3. Send updates to server
-        _.request("PUT", Substance.settings.hub_api + '/users/'+that.user+'/documents/'+doc.id, {commits: commits, meta: doc.meta, refs: doc.refs}, function (err) {
-          store.setRef(doc.id, 'tail-remote', doc.refs.tail);
-          store.setRef(doc.id, 'master-remote', doc.refs.master);
-          cb(err);
-        });
-      });
-    });
-  };
-
-
   // Compute jobs for dirty documents
   // -----------------
 
@@ -178,56 +187,77 @@ Substance.Replicator = function(params) {
   	// Status object looks like this
     var jobs = [];
     that.localDocStates(function(err, localDocs) {
-      _.request("GET", Substance.settings.hub_api + '/users/'+that.user+'/documents/statuses', {}, function (err, remoteDocs) {
-        // console.log('diff', localDocs, remoteDocs);
+      _.request("GET", Substance.settings.hub_api + '/documents', {}, function (err, remoteDocs) {
+      _.request("GET", Substance.settings.hub_api + '/collaborations', {}, function (err, collaborations) {
+
+        remoteDocs = _.extend(remoteDocs, collaborations);
+
+        console.log('diff', localDocs, remoteDocs);
 
         _.each(localDocs, function(doc, id) {
           var remoteDoc = remoteDocs[id];
 
-          // Local refs
+          // Local refs: these are set if a document had been synched before
+          //  otherwise they are undefined
           var masterRemote = store.getRef(id, 'master-remote');
           var tailRemote = store.getRef(id, 'tail-remote');
 
-          // New unsynced doc? or delete locally
+          // document does exist locally but not remotely
           if (!remoteDoc) {
+            // if it was remote last-time, it must have been deleted remotely
+            // and needs to be deleted locally, too
             if (masterRemote) {
-              jobs.push({id: id, action: "delete-locally"});
-            } else {
-              jobs.push({id: id, action: "create"});  
+              jobs.push({id: id, action: "delete-local"});
             }
-          } else if (store.isDeleted(id) && masterRemote) {
-            // Delete if flagged as deleted and there's a remote version, other 
-            // console.log(id, ' should be deleted');
-            jobs.push({id: id, action: "delete"}); // delete remotely
-          } else if (tailRemote !== remoteDoc.refs['tail'] || masterRemote !== remoteDoc.refs['master']) {
-            jobs.push({id: id, action: "pull"});
-            return;
-          } else if (tailRemote !== doc.refs['tail'] || doc.refs['master'] !== masterRemote) {
-            // Local changes only -> Push (fast-forward)
-            jobs.push({id: id, action: "push"});
-            return;
+            // if it was not remote before, it must be created remotely
+            else {
+              jobs.push({id: id, action: "create-remote"});
+            }
+          }
+          // document exists locally and remotely
+          else {
+
+            // the remote document has been changed.
+            // either by adding commits which affects the tail,
+            // or by changing the master via undo/redo
+            if (tailRemote !== remoteDoc.refs['tail'] || masterRemote !== remoteDoc.refs['master']) {
+              jobs.push({id: id, action: "pull"});
+            }
+            // if there are local changes the locally kept refs for master or tail differ
+            else if (tailRemote !== doc.refs['tail'] || masterRemote !== doc.refs['master']) {
+              // Local changes only -> Push (fast-forward)
+              jobs.push({id: id, action: "push"});
+            }
+
+            // retain unsynched remoteDocs: remoteDocs - localDocs
+            remoteDocs[id] = undefined;
           }
         });
 
-        _.each(remoteDocs, function(remoteDoc, id) {
-          var doc = localDocs[id];
+        // clean up pending local deletions
+        _.each(store.deletedDocuments(), function(docId) {
+            jobs.push({id: docId, action: "delete-remote"}); // delete remotely
 
-          // New remote doc? -> Fetch
-          if (!doc) {
-            jobs.push({id: id, action: "fetch"});
-            return;
-          }
+            // retain unsynched remoteDocs (part 2): remoteDocs - locally deleted docs
+            remoteDocs[docId] = undefined;
+        });
+
+        // now remoteDocs contains only document's that have not been local
+        // and need to be created locally
+        _.each(remoteDocs, function(remoteDoc, id) {
+            console.log("create local doc?", remoteDoc, id);
+            if(remoteDoc) jobs.push({id: id, action: "create-local"});
         });
 
         cb(null, jobs);
-      });
+      })});
     });
   };
 
 
   // Ask for status of all local documents
   // -----------------
-  // 
+  //
   // Returns: A hash of document status objects
 
   this.localDocStates = function(cb) {

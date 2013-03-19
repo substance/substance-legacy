@@ -1,22 +1,20 @@
-// UserSettings
+// AppSettings
 // -----------------
-// 
-// Persistence for user settings
+//
+// Persistence for application settings
 
-var UserSettings = function(settings) {
-  var defaults = {
+var AppSettings = function(settings) {
+  var dbSettings = {
     host: "127.0.0.1",
     port: 6379,
-    scope: "substance-user-settings"
+    scope: "substance-app-settings"
   };
 
-  var settings = _.extend(defaults, settings);
-
   this.db = redis.RedisAccess.Create(0);
-  this.db.setHost(settings.host);
-  this.db.setPort(settings.port);
+  this.db.setHost(dbSettings.host);
+  this.db.setPort(dbSettings.port);
   this.db.connect();
-  this.db.setScope(settings.scope);
+  this.db.setScope(dbSettings.scope);
 
   var hash = this.db.asHash("data");
 
@@ -29,7 +27,43 @@ var UserSettings = function(settings) {
   };
 };
 
-var userSettings = new UserSettings();
+
+var LocalStore = function(options) {
+  var that = this;
+  var store = options.store;
+  var appSettings = options.appSettings;
+  var key = appSettings.get('user')+":deleted-documents";
+  var deletedDocuments = appSettings.db.asHash(key);
+
+  // Delegate
+  var methods = _.keys(store);
+  _.each(methods, function(methodName) {
+    var method = store[methodName];
+    if (typeof method === "function") {
+      that[methodName] = method;
+    }
+  });
+
+  function markAsDeleted(id) {
+    deletedDocuments.set(id, id);
+    return true;
+  }
+
+  this.delete = function(id) {
+    if (store.delete(id)) return markAsDeleted(id);
+    return false;
+  };
+
+  this.deletedDocuments = function() {
+    return deletedDocuments.getKeys();
+  };
+
+  this.confirmDeletion = function(id) {
+    return deletedDocuments.remove(id);
+  };
+}
+
+var appSettings = new AppSettings();
 
 
 // Document.Store (web debug)
@@ -88,8 +122,12 @@ var store;
 
 function initStore(username) {
   if (window.redis) {
-    store = new RedisStore({
-      scope: username
+    store = new LocalStore({
+      scope: username,
+      store: new RedisStore({
+        scope: username
+      }),
+      appSettings: appSettings
     });
   } else {
     store = new StaticDocStore();
@@ -336,7 +374,7 @@ function loadDocument(id, cb) {
 // -----------------
 
 function listDocuments(cb) {
-  store.listWithoutDeleted(function(err, documents) {
+  store.list(function(err, documents) {
     var res = _.map(documents, function(doc) {
       return {
         title: doc.meta.title,
@@ -421,11 +459,11 @@ function authenticated() {
 }
 
 function token() {
-  return userSettings.get('api-token');
+  return appSettings.get('api-token');
 }
 
 function user() {
-  return userSettings.get('user');
+  return appSettings.get('user');
 }
 
 function synced(docId) {
