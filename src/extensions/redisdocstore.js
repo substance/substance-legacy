@@ -131,25 +131,6 @@
     };
 
     /**
-     * List all documents but exclude docs that are flagged as deleted
-     */
-
-    this.listWithoutDeleted = function(cb) {
-      var docs = this.list();
-      var result = [];
-
-      _.each(docs, function(doc) {
-        // Don't show if flagged as deleted
-        if (!self.isDeleted(doc.id)) {
-          result.push(doc);
-        }
-      });
-
-      if (cb) cb(null, result);
-      return result;
-    };
-
-    /**
      *  Permanently deletes a document
      *  @param cb callback
      */
@@ -157,48 +138,8 @@
     this.delete = function (id, cb) {
       self.documents.remove(id);
       self.redis.removeWithPrefix(id);
-
-      var deletedDocs = self.redis.asHash("deleted-documents");
-      deletedDocs.remove(id);
-
       if (cb) cb(null);
       return true;
-    };
-
-    /**
-     *  Marks a document as deleted
-     *  Will be removed on next sync
-     *  @param cb callback
-     */
-
-    this.markAsDeleted = function(id, cb) {
-      if (self.exists(id)) {
-        var deletedDocs = self.redis.asHash("deleted-documents");
-        deletedDocs.set(id, id);
-        cb(null);
-        return true;
-      }
-      cb('not found');
-      return false;
-    };
-
-
-    this.isDeleted = function(id, cb) {
-      var deletedDocs = self.redis.asHash("deleted-documents");
-      var res = deletedDocs.contains(id);
-      if (cb) cb(null, res);
-      return res;
-    };
-
-    /**
-     *  Retrieves all documents that are marked as deleted
-     *  Will be removed on next sync
-     *  @param cb callback
-     */
-
-    this.deletedDocuments = function(cb) {
-      var deletedDocs = self.redis.asHash("deleted-documents");
-      return deletedDocs.getKeys();
     };
 
     /**
