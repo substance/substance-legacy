@@ -602,7 +602,7 @@ float: left;
   background-image: url(../images/icons/smile.png);
 }
 
-#document_menu .publish-state a.toggle-publish-actions {
+#document_menu .publish-state a.toggle-publish-settings {
   display: block;
   float: right;
   background-color: rgba(0,0,0,0.2);
@@ -624,11 +624,11 @@ float: left;
   background-image: url(../images/icons/cry.png);
 }
 
-#document_menu .publish-state a.toggle-publish-actions:hover {
+#document_menu .publish-state a.toggle-publish-settings:hover {
   background-color: rgba(0,0,0,0.3);
 }
 
-#document_menu .publish-state a.toggle-publish-actions .icon {
+#document_menu .publish-state a.toggle-publish-settings .icon {
   background-image: url(../images/icons/dropdown.png);
   top: 8px;
   left: 8px;
@@ -665,33 +665,168 @@ float: left;
   color: rgba(0,0,0, 0.5);
 }
 
+/* Publish Settings */
 
-#document_menu .publish-state .publish-actions {
+#document_menu .publish-state .publish-settings {
   display: none;
   position: absolute;
+  right: 0px;
+  width: 600px;
+  height: 500px;
+  top: 45px;
+
+  background: #F0F1EB;
+  border: 1px solid #ccc;
+}
+
+#document_menu .publish-state .status {
+  padding: 20px;
+  overflow: auto;
+}
+
+#document_menu .publish-state .status .label {
+  padding: 10 0px;
+  line-height: 40px;
+  font-style: italic;
+  font-size: 14px;
+  float: left;
+}
+
+#document_menu .publish-state .publish-actions {
+  background: rgba(0,0,0,0.1);
+  position: absolute;
+  bottom: 0px;
+  padding: 20px;
   left: 0px;
-  width: 230px;
-  top: 40px;
-  background: #fff;
+  right: 0px;
+  overflow: auto;
 }
 
 #document_menu .publish-state .publish-actions a {
   display: block;
   border: none;
+  font-weight: bold;
+  float: right;
   height: 40px;
   font-size: 13px;
   line-height: 40px;
   padding-left: 50px;
+  padding-right: 20px;
+  margin-left: 10px;
+  border-radius: 3px;
+  background: rgba(0,0,0, 0.1);
   position: relative;
 }
 
 #document_menu .publish-state .publish-actions a:hover {
-  background: rgba(0,0,0, 0.05);
+  background: rgba(0,0,0, 0.2);
 }
-
 
 #document_menu .publish-state .publish-actions a.publish-changes {
 
+}
+
+.publish-settings .publication-settings {
+  
+}
+
+.publish-settings .add-publication-wrapper {
+  padding: 10px;
+  overflow: auto;
+  margin: 20px;
+  background: rgba(0,0,0,0.05);
+  line-height: 50px;
+}
+
+.publish-settings .add-publication-wrapper .network {
+  float: left;
+  margin-left: 20px;
+}
+
+.publish-settings .add-publication-wrapper .add-publication {
+  float: right;
+  display: block;
+  background: rgba(0,0,0,0.1);
+  font-weight: bold;
+  text-transform: uppercase;
+  padding: 0 20px;
+  border-radius: 4px;
+}
+
+.publish-settings .add-publication-wrapper .add-publication:hover {
+  background: rgba(0,0,0,0.2);
+}
+
+.publish-settings .publications {
+  margin: 20px;
+  height: 300px;
+  overflow: auto;
+}
+
+.publish-settings .publications .publication {
+  display: block;
+  background: rgba(0,0,0, 0.05);
+  margin-right: 1px;
+  margin-bottom: 1px;
+  overflow: hidden;
+  padding: 10px;
+  position: relative;
+  /*float: left;*/
+}
+
+
+.publish-settings .publications .publication .delete-publication {
+  display: none;
+  width: 25px;
+  height: 25px;
+  position: absolute;
+  right: 20px;
+  top: 25px;
+  border: none;
+  opacity: 0.4;
+  background: url(../images/icons/delete.png) center;
+}
+
+.publish-settings .publications .publication:hover .delete-publication {
+  display: block;
+}
+
+.publish-settings .publications .publication .delete-publication:hover {
+  opacity: 0.7;
+}
+
+.publish-settings .publications .publication.active {
+  /*background: blue;*/
+  background: rgba(0,0,0, 0.8);
+  color: white;
+}
+
+.publish-settings .publications .publication:hover {
+  background: rgba(0,0,0, 0.1);
+}
+
+.publish-settings .publications .publication.active:hover {
+  background: rgba(0,0,0, 0.9);
+}
+
+.publish-settings .publications .publication .cover {
+  float: left;
+}
+
+.publish-settings .publications .publication .cover img {
+  width: 50px;
+  height: 50px;
+  border: none;
+  margin: 0px;
+  padding: 0px;
+}
+
+.publish-settings .publications .publication .label {
+  line-height: 50px;
+  padding-left: 30px;
+  font-weight: bold;
+
+  float: left;
 }
 
 /* Shelf */

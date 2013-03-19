@@ -200,7 +200,6 @@ sc.views.Document = Backbone.View.extend({
     $('.content-node .delete').hide();
     $('.content-node.selected').removeClass('selected');
 
-
     this.updateMode();
     
     _.each(this.model.selections, function(user, node) {

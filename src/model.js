@@ -254,27 +254,52 @@ _.extend(Substance.Session.prototype, _.Events, {
   },
 
   // Publish/Republish document
-  publish: function(cb) {
-    var doc = this.document;
-    doc.meta.published_at = new Date();
-    doc.meta.published_commit = doc.getRef('master');
+  // publish: function(cb) {
+  //   var doc = this.document;
+  //   doc.meta.published_at = new Date();
+  //   doc.meta.published_commit = doc.getRef('master');
 
-    createPublication(doc, function(err) {
+  //   createPublication(doc, function(err) {
+  //     if (err) return cb(err);
+  //     updateMeta(doc, cb);  
+  //   });
+  // },
+
+  createPublication: function(network, cb) {
+    var doc = this.document;
+    var that = this;
+  
+    createPublication(doc, network, function(err) {
       if (err) return cb(err);
-      updateMeta(doc, cb);  
+      that.loadPublications(cb);
+      // updateMeta(doc, cb);  
+    });
+  },
+
+  createVersion: function() {
+    // doc.meta.published_at = new Date();
+    // doc.meta.published_commit = doc.getRef('master');
+  },
+
+  deletePublication: function(network, cb) {
+    var that = this;
+    var doc = this.document;
+    deletePublication(doc, network, function(err) {
+      console.log('delting pub succeeded?', err);
+      that.loadPublications(cb);
     });
   },
 
   // Unpublish document
   unpublish: function(cb) {
-    var doc = this.document;
-    delete doc.meta["published_at"];
-    delete doc.meta["published_commit"];
+    // var doc = this.document;
+    // delete doc.meta["published_at"];
+    // delete doc.meta["published_commit"];
 
-    clearPublications(doc, function(err) {
-      if (err) return cb(err);
-      updateMeta(doc, cb);
-    });
+    // clearPublications(doc, function(err) {
+    //   if (err) return cb(err);
+    //   updateMeta(doc, cb);
+    // });
   },
 
   publishState: function() {
@@ -318,6 +343,27 @@ _.extend(Substance.Session.prototype, _.Events, {
 
     // no selection -> document level
     return 1;
+  },
+
+  // Load Publish state
+  loadPublications: function(cb) {
+    var doc = this.document;
+    var that = this;
+
+    loadNetworks(function(err, networks) {
+      if (err) return cb(err);
+      that.networks = networks; // all networks
+      loadPublications(doc, function(err, publications) {
+        that.publications = publications;
+
+        _.each(that.publications, function(p) {
+          // Attach network information
+          p.network = _.find(that.networks, function(n) { return n.id === p.network; });
+        });
+        cb(null);
+        // that.trigger('publications:loaded');
+      });
+    });
   }
 });
 
@@ -328,6 +374,47 @@ _.extend(Substance.Session.prototype, _.Events, {
 function loadDocument(id, cb) {
   store.get(id, function(err, doc) {
     cb(err, new Substance.Session(doc));
+  });
+}
+
+
+// Get Networks from the server
+// -----------------
+
+function loadNetworks(cb) {
+  $.ajax({
+    type: 'GET',
+    headers: {
+      "Authorization": "token " + token()
+    },
+    url: Substance.settings.hub_api + '/networks',
+    success: function(networks) {
+      cb(null, networks);
+    },
+    error: function() {
+      cb("Unpublishing failed. Can't access server");
+    },
+    dataType: 'json'
+  });
+}
+
+// Get Document Networks from the server
+// -----------------
+
+function loadPublications(doc, cb) {
+  $.ajax({
+    type: 'GET',
+    headers: {
+      "Authorization": "token " + token()
+    },
+    url: Substance.settings.hub_api + '/documents/' + doc.id + '/publications',
+    success: function(publications) {
+      cb(null, publications);
+    },
+    error: function() {
+      cb("Unpublishing failed. Can't access server");
+    },
+    dataType: 'json'
   });
 }
 
@@ -370,18 +457,18 @@ function createDocument(cb) {
 // Create a new publication on the server
 // -----------------
 
-function createPublication(doc, cb) {
+function createPublication(doc, network, cb) {
   if (!authenticated()) return cb("Error when creating publication. Login first.");
+
   $.ajax({
     type: 'POST',
     headers: {
       "Authorization": "token " + token()
     },
-    url: Substance.settings.hub_api + '/publications',
+    url: Substance.settings.hub_api + '/documents/'+doc.id+'/publications',
     data: {
-      "document": doc.id,
       "data": JSON.stringify(doc.content),
-      "username": user()
+      "network": network
     },
     success: function(result) {
       cb(null);
@@ -394,22 +481,62 @@ function createPublication(doc, cb) {
 }
 
 
-// Remove all publications from the server
+function deletePublication(doc, network, cb) {
+  if (!authenticated()) return cb("Error when deleting publication. Login first.");
+
+  $.ajax({
+    type: 'DELETE',
+    headers: {
+      "Authorization": "token " + token()
+    },
+    url: Substance.settings.hub_api + '/documents/'+doc.id+'/publications/' + network,
+    success: function(result) {
+      cb(null);
+    },
+    error: function() {
+      cb("Error when deleting publication. Can't access server.");
+    },
+    dataType: 'json'
+  });
+}
+
+// Remove all versions from the server (=unpublish)
 // -----------------
 
-function clearPublications(doc, cb) {
+function unpublish(doc, cb) {
   if (!authenticated()) return cb("Unpublishing failed. Login first.");
   $.ajax({
     type: 'DELETE',
     headers: {
       "Authorization": "token " + token()
     },
-    url: Substance.settings.hub_api + '/publications/' + doc.id,
+    url: Substance.settings.hub_api + '/documents/' + doc.id +'/versions',
     success: function(result) {
       cb(null);
     },
     error: function() {
       cb("Unpublishing failed. Can't access server");
+    },
+    dataType: 'json'
+  });
+}
+
+// Create a new version on the server
+// -----------------
+
+function createVersion(doc, cb) {
+  if (!authenticated()) return cb("Creating version failed. Login first.");
+  $.ajax({
+    type: 'POST',
+    headers: {
+      "Authorization": "token " + token()
+    },
+    url: Substance.settings.hub_api + '/documents/' + doc.id + '/versions',
+    success: function(result) {
+      cb(null);
+    },
+    error: function() {
+      cb("Creating version failed. Can't access server");
     },
     dataType: 'json'
   });
@@ -459,7 +586,6 @@ function authenticate(options, cb) {
     }
   });
 }
-
 
 // Register new Substance user
 // -----------------

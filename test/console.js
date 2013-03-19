@@ -301,12 +301,12 @@ $(function() {
   });
 
   
-    window.app = new Application({el: '#container'});
+  window.app = new Application({el: '#container'});
 
-    // Start responding to routes
-    window.router = new Router({});
+  // Start responding to routes
+  window.router = new Router({});
 
-    Backbone.history.start();
+  Backbone.history.start();
 });
 
 

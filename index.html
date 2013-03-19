@@ -120,7 +120,7 @@
             <div class="toggles">
               <!--<a class="toggle settings" href="#"><div class="icon"></div>Settings</a>-->
               <a class="toggle view-online hidden" href="<%= Substance.settings.hub+'/documents/'+doc.id %>"><div class="icon"></div>View Online</a>
-              <!--<a class="toggle collaborators" href="#"><div class="icon"></div>Collaborators</a>-->
+              <a class="toggle collaborators" href="#"><div class="icon"></div>Collaborators</a>
               <!--<a class="toggle export" href="#"><div class="icon"></div>Export</a>-->
             </div>
           </div>
@@ -132,9 +132,11 @@
             <div class="state"><%= session.publishState() %></div>
             <div class="message">Private document</div>
             
-            <a href="#" class="toggle-publish-actions"><div class="icon"></div></a>
-            <div class="publish-actions">
+            <a href="#" class="toggle-publish-settings"><div class="icon"></div></a>
+            <div class="publish-settings">
+
             </div>
+            <!--<div class="publish-actions"></div>-->
           </div>
         </div>
 
@@ -202,6 +204,49 @@
             Already registered? <a href="#login">Login</a>
           </div>
         </form>
+      </div>
+    </script>
+
+    <!-- Publish Settings -->
+    <script type="text/html" name="publish_settings">
+      <!--<div class="status">
+        <div class="label">Published in 3 networks</div>
+        <div class="publish-actions">
+
+        </div>
+      </div>-->
+
+      <div class="publication-settings">
+        <div class="add-publication-wrapper">
+          <div class="network">
+            <select name="networks" id="substance_networks">
+              <% _.each(networks, function(n) { %>
+                <option value="<%= n.id %>"><%= n.name %></option>
+              <% }); %>
+            </select>
+          </div>
+          <a href="#" class="add-publication">Add</a>
+        </div>
+        <div class="publications">
+          <% _.each(publications, function(p) { %>
+            <div class="publication">
+              <div class="cover"><img src="<%= p.network.cover %>"/></div>
+              <div class="label"><%= p.network.name %></div>
+              <a href="#" class="delete-publication" data-id="<%= p.network.id %>"></a>
+            </div>
+          <% }); %>
+        </div>
+      </div>
+      <div class="publish-actions">
+        <% if (publishState() === "unpublished") { %>
+          <a href="#" class="publish-document"><div class="icon"></div>Publish</a>
+        <% } %>
+        <% if (publishState() === "dirty") { %>
+          <a href="#" class="publish-document"><div class="icon"></div>Publish Changes</a>
+        <% } %>
+        <% if (publishState() !== "unpublished") { %>
+          <a href="#" class="unpublish-document"><div class="icon"></div>Unpublish</a>
+        <% } %>
       </div>
     </script>
 
@@ -375,6 +420,7 @@
     <script src="src/views/document/settings.js"></script>
     <script src="src/views/document/collaborators.js"></script>
     <script src="src/views/document/export.js"></script>
+    <script src="src/views/document/publish_settings.js"></script>
 
     <script src="src/views/document.js"></script>
     <script src="src/views/tools.js"></script>

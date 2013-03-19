@@ -8,7 +8,7 @@ sc.views.Editor = Backbone.View.extend({
     'click .toggle.settings': 'toggleSettings',
     'click .toggle.collaborators': 'toggleCollaborators',
     'click .toggle.export': 'toggleExport',
-    'click .toggle-publish-actions': 'togglePublishActions',
+    'click .toggle-publish-settings': 'togglePublishSettings',
     'click a.publish-document ': 'publish',
     'click a.unpublish-document ': 'unpublish',
     'click a.undo': 'undo',
@@ -24,14 +24,18 @@ sc.views.Editor = Backbone.View.extend({
   },
 
   publish: function() {
+    var network = this.$('#substance_networks').val();
+
     var that = this;
-    this.model.publish(function(err) {
+    this.model.createPublication(network, function(err) {
       if (err) {
-        that.togglePublishActions();
+        // that.togglePublishActions();
         notify('error', err);
         return;
       }
       that.updatePublishState();
+
+      that.publishSettings.render();
     });
     return false;
   },
@@ -40,11 +44,12 @@ sc.views.Editor = Backbone.View.extend({
     var that = this;
     this.model.unpublish(function(err) {
       if (err) {
-        that.togglePublishActions();
+        // that.togglePublishActions();
         notify('error', err);
         return;
       }
       that.updatePublishState();
+      that.publishSettings.render();
     });
     return false;
   },
@@ -57,10 +62,30 @@ sc.views.Editor = Backbone.View.extend({
     this.settings      = new sc.views.Settings({ model: this.model, authorized: this.authorized });
     this.collaborators = new sc.views.Collaborators({ model: this.model, docView: this, authorized: this.authorized });
     this["export"]     = new sc.views.Export({ model: this.model, authorized: this.authorized });
+
+    // Publish Settings
+    this.publishSettings = new sc.views.PublishSettings({
+      model: this.model,
+      authorized: this.authorized
+    });
   },
 
-  togglePublishActions: function() {
-    this.$('.publish-actions').toggle();
+  renderPublishSettings: function() {
+    this.$('.publish-settings').html(this.publishSettings.render().el);
+  },
+
+  togglePublishSettings: function() {
+    var that = this;
+
+    this.$('.publish-settings').toggle();
+
+    var documentId = this.model.document.id;
+
+    // Triggers a re-render
+    this.model.loadPublications(function(err) {
+      that.renderPublishSettings();
+    });
+    
     return false;
   },
 
@@ -137,19 +162,19 @@ sc.views.Editor = Backbone.View.extend({
     this.$('.publish-state .message').html(message);
     this.$('.publish-actions').empty();
 
-    if (state === "unpublished") {
-      this.$('.publish-actions').append('<a href="#" class="publish-document"><div class="icon"></div>Publish</a>');
-    }
+    // if (state === "unpublished") {
+    //   this.$('.publish-actions').append('<a href="#" class="publish-document"><div class="icon"></div>Publish</a>');
+    // }
 
-    if (state === "dirty") {
-      this.$('.publish-actions').append('<a href="#" class="publish-document"><div class="icon"></div>Publish Changes</a>');
-    }
+    // if (state === "dirty") {
+    //   this.$('.publish-actions').append('<a href="#" class="publish-document"><div class="icon"></div>Publish Changes</a>');
+    // }
 
-    if (state !== "unpublished") {
-      this.$('.publish-actions').append('<a href="#" class="unpublish-document"><div class="icon"></div>Unpublish</a>');
-    }
+    // if (state !== "unpublished") {
+    //   this.$('.publish-actions').append('<a href="#" class="unpublish-document"><div class="icon"></div>Unpublish</a>');
+    // }
 
-    this.$('.publish-state .publish-actions').hide();
+    // this.$('.publish-state .publish-settings').hide();
   },
 
   render: function () {
@@ -159,6 +184,7 @@ sc.views.Editor = Backbone.View.extend({
       doc: this.model.document
     }));
 
+
     // TODO: deconstructor-ish thing for clearing the interval when the view is no longer
     clearInterval(window.leInterval);
     window.leInterval = setInterval(function(){
@@ -166,8 +192,11 @@ sc.views.Editor = Backbone.View.extend({
     }, 1000);
 
     this.updatePublishState();
+
     this.composer = new Substance.Composer({id: 'document_wrapper', model: this.model });
     this.$('#document_wrapper').replaceWith(this.composer.render().el);
+
+    this.togglePublishSettings();
     return this;
   }
 });
