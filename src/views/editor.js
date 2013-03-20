@@ -10,7 +10,7 @@ sc.views.Editor = Backbone.View.extend({
     'click .toggle.export': 'toggleExport',
     'click .toggle-publish-settings': 'togglePublishSettings',
     'click a.publish-document ': 'publish',
-    'click a.unpublish-document ': 'unpublish',
+    // 'click a.unpublish-document ': 'unpublish',
     'click a.undo': 'undo',
     'click a.redo': 'redo'
   },
@@ -40,24 +40,25 @@ sc.views.Editor = Backbone.View.extend({
     return false;
   },
 
-  unpublish: function() {
-    var that = this;
-    this.model.unpublish(function(err) {
-      if (err) {
-        // that.togglePublishActions();
-        notify('error', err);
-        return;
-      }
-      that.updatePublishState();
-      that.publishSettings.render();
-    });
-    return false;
-  },
+  // unpublish: function() {
+  //   var that = this;
+  //   this.model.unpublish(function(err) {
+  //     if (err) {
+  //       // that.togglePublishActions();
+  //       notify('error', err);
+  //       return;
+  //     }
+  //     that.updatePublishState();
+  //     that.publishSettings.render();
+  //   });
+  //   return false;
+  // },
 
   // Handlers
   // --------
 
   initialize: function() {
+    var that = this;
     // Setup shelf views
     this.settings      = new sc.views.Settings({ model: this.model, authorized: this.authorized });
     this.collaborators = new sc.views.Collaborators({ model: this.model, docView: this, authorized: this.authorized });
@@ -67,6 +68,11 @@ sc.views.Editor = Backbone.View.extend({
     this.publishSettings = new sc.views.PublishSettings({
       model: this.model,
       authorized: this.authorized
+    });
+
+    // Refresh publish state on demand
+    this.publishSettings.on('publish_state:updated', function() {
+      that.updatePublishState();
     });
   },
 
@@ -87,6 +93,10 @@ sc.views.Editor = Backbone.View.extend({
     });
     
     return false;
+  },
+
+  hidePublishSettings: function() {
+    this.$('.publish-settings').hide();
   },
 
   toggleSettings:      function (e) { this.toggleView('settings'); return false; },
@@ -160,7 +170,11 @@ sc.views.Editor = Backbone.View.extend({
     if (state === "dirty") message = "Pending changes";
     
     this.$('.publish-state .message').html(message);
-    this.$('.publish-actions').empty();
+
+    // Re-render publish settings
+    this.hidePublishSettings();
+
+    // this.$('.publish-actions').empty();
 
     // if (state === "unpublished") {
     //   this.$('.publish-actions').append('<a href="#" class="publish-document"><div class="icon"></div>Publish</a>');

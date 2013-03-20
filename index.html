@@ -209,13 +209,6 @@
 
     <!-- Publish Settings -->
     <script type="text/html" name="publish_settings">
-      <!--<div class="status">
-        <div class="label">Published in 3 networks</div>
-        <div class="publish-actions">
-
-        </div>
-      </div>-->
-
       <div class="publication-settings">
         <div class="add-publication-wrapper">
           <div class="network">
@@ -237,17 +230,20 @@
           <% }); %>
         </div>
       </div>
-      <div class="publish-actions">
-        <% if (publishState() === "unpublished") { %>
-          <a href="#" class="publish-document"><div class="icon"></div>Publish</a>
-        <% } %>
-        <% if (publishState() === "dirty") { %>
-          <a href="#" class="publish-document"><div class="icon"></div>Publish Changes</a>
-        <% } %>
-        <% if (publishState() !== "unpublished") { %>
-          <a href="#" class="unpublish-document"><div class="icon"></div>Unpublish</a>
-        <% } %>
-      </div>
+
+      <% if (publications.length > 0) { %>
+        <div class="publish-actions">
+          <% if (publishState() === "unpublished") { %>
+            <a href="#" class="create-version"><div class="icon"></div>Publish</a>
+          <% } %>
+          <% if (publishState() === "dirty") { %>
+            <a href="#" class="create-version"><div class="icon"></div>Publish Changes</a>
+          <% } %>
+          <% if (publishState() !== "unpublished") { %>
+            <a href="#" class="unpublish-document"><div class="icon"></div>Unpublish</a>
+          <% } %>
+        </div>
+      <% } %>
     </script>
 
     <!-- Document Collaborators -->

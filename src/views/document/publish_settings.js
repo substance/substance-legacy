@@ -5,7 +5,26 @@ sc.views.PublishSettings = Backbone.View.extend({
 
   events: {
     'click .add-publication': 'addPublication',
-    'click .delete-publication': 'deletePublication'
+    'click .delete-publication': 'deletePublication',
+    'click .create-version': 'createVersion',
+    'click .unpublish-document': 'unpublish',
+  },
+
+  createVersion: function() {
+    var that = this;
+    this.model.createVersion(function(err) {
+      that.trigger('publish_state:updated');
+      that.render();
+    });
+    return false;
+  },
+
+  unpublish: function() {
+    console.log('unpublish...');
+    // this.model.unpublish(function(err) {
+    //   console.log('meehee');
+    // });
+    return false;
   },
 
   addPublication: function(e) {

@@ -27,7 +27,6 @@ var AppSettings = function(settings) {
   };
 };
 
-
 var LocalStore = function(options) {
   var that = this;
   var store = options.store;
@@ -310,31 +309,42 @@ _.extend(Substance.Session.prototype, _.Events, {
     createPublication(doc, network, function(err) {
       if (err) return cb(err);
       that.loadPublications(cb);
-      // updateMeta(doc, cb);  
     });
-  },
-
-  createVersion: function() {
-    // doc.meta.published_at = new Date();
-    // doc.meta.published_commit = doc.getRef('master');
   },
 
   deletePublication: function(network, cb) {
     var that = this;
     var doc = this.document;
     deletePublication(doc, network, function(err) {
-      console.log('delting pub succeeded?', err);
+      if (err) return cb(err);
       that.loadPublications(cb);
     });
   },
 
-  // Unpublish document
+  createVersion: function(cb) {
+    var doc = this.document;
+    var that = this;
+
+    createVersion(doc, function(err) {
+      console.log('version created?', err);
+      if (err) return cb(err);
+
+      doc.meta.published_at = new Date();
+      doc.meta.published_commit = doc.getRef('master');
+      updateMeta(doc, function() {
+        that.loadPublications(cb);
+      });
+    });
+  },
+
+    // Unpublish document
   unpublish: function(cb) {
-    // var doc = this.document;
-    // delete doc.meta["published_at"];
-    // delete doc.meta["published_commit"];
+    var doc = this.document;
+    console.log('unpublishing...');
 
     // clearPublications(doc, function(err) {
+      delete doc.meta["published_at"];
+      delete doc.meta["published_commit"];
     //   if (err) return cb(err);
     //   updateMeta(doc, cb);
     // });
@@ -505,7 +515,6 @@ function createPublication(doc, network, cb) {
     },
     url: Substance.settings.hub_api + '/documents/'+doc.id+'/publications',
     data: {
-      "data": JSON.stringify(doc.content),
       "network": network
     },
     success: function(result) {
@@ -568,6 +577,9 @@ function createVersion(doc, cb) {
     type: 'POST',
     headers: {
       "Authorization": "token " + token()
+    },
+    data: {
+      "data": JSON.stringify(doc.content),
     },
     url: Substance.settings.hub_api + '/documents/' + doc.id + '/versions',
     success: function(result) {

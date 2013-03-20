@@ -679,7 +679,7 @@ float: left;
   border: 1px solid #ccc;
 }
 
-#document_menu .publish-state .status {
+/*#document_menu .publish-state .status {
   padding: 20px;
   overflow: auto;
 }
@@ -690,7 +690,7 @@ float: left;
   font-style: italic;
   font-size: 14px;
   float: left;
-}
+}*/
 
 #document_menu .publish-state .publish-actions {
   background: rgba(0,0,0,0.1);
@@ -776,7 +776,6 @@ float: left;
 
 
 .publish-settings .publications .publication .delete-publication {
-  display: none;
   width: 25px;
   height: 25px;
   position: absolute;
@@ -785,10 +784,6 @@ float: left;
   border: none;
   opacity: 0.4;
   background: url(../images/icons/delete.png) center;
-}
-
-.publish-settings .publications .publication:hover .delete-publication {
-  display: block;
 }
 
 .publish-settings .publications .publication .delete-publication:hover {
