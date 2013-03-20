@@ -77,7 +77,7 @@ sc.views.Editor = Backbone.View.extend({
   },
 
   renderPublishSettings: function() {
-    this.$('.publish-settings').html(this.publishSettings.render().el);
+    this.publishSettings.render();
   },
 
   togglePublishSettings: function() {
@@ -171,7 +171,6 @@ sc.views.Editor = Backbone.View.extend({
     
     this.$('.publish-state .message').html(message);
 
-    // Re-render publish settings
     this.hidePublishSettings();
 
     // this.$('.publish-actions').empty();
@@ -198,6 +197,8 @@ sc.views.Editor = Backbone.View.extend({
       doc: this.model.document
     }));
 
+    // Initial render of publish settings (empty)
+    this.$('.publish-settings').html(this.publishSettings.render().el);
 
     // TODO: deconstructor-ish thing for clearing the interval when the view is no longer
     clearInterval(window.leInterval);

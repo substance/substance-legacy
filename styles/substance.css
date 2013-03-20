@@ -616,7 +616,23 @@ float: left;
   border: none;
 }
 
-#document_menu .publish-state .publish-document .icon {
+#document_menu .publish-state .publish-actions a {
+  color: rgba(0,0,0, 0.5);
+}
+
+#document_menu .publish-state .publish-actions a:hover {
+ color: rgba(0,0,0, 0.6); 
+}
+
+#document_menu .publish-state .publish-actions .create-version {
+  background: #66B620;
+}
+
+#document_menu .publish-state .publish-actions .create-version:hover {
+  background: #6ED612;
+}
+
+#document_menu .publish-state .create-version .icon {
   background-image: url(../images/icons/smile.png);
 }
 
@@ -784,6 +800,13 @@ float: left;
   border: none;
   opacity: 0.4;
   background: url(../images/icons/delete.png) center;
+}
+
+.publish-settings .publications .no-publications {
+  font-size: 20px;
+  text-align: center;
+  margin-top: 30px;
+  color: rgba(0,0,0,0.2);
 }
 
 .publish-settings .publications .publication .delete-publication:hover {

@@ -221,6 +221,11 @@
           <a href="#" class="add-publication">Add</a>
         </div>
         <div class="publications">
+
+          <% if (publications.length === 0) { %>
+            <div class="no-publications">No publications so far</div>
+          <% } %>
+
           <% _.each(publications, function(p) { %>
             <div class="publication">
               <div class="cover"><img src="<%= p.network.cover %>"/></div>

@@ -20,10 +20,11 @@ sc.views.PublishSettings = Backbone.View.extend({
   },
 
   unpublish: function() {
-    console.log('unpublish...');
-    // this.model.unpublish(function(err) {
-    //   console.log('meehee');
-    // });
+    var that = this;
+    this.model.unpublish(function(err) {
+      that.trigger('publish_state:updated');
+      that.render();
+    });
     return false;
   },
 
@@ -50,8 +51,12 @@ sc.views.PublishSettings = Backbone.View.extend({
 
   // Make sure view is populated with data before rendering it
   render: function() {
-    console.log('rerender');
-    this.$el.html(_.tpl('publish_settings', this.model));
+    if (this.model.networks) {
+      this.$el.html(_.tpl('publish_settings', this.model));  
+    } else {
+      this.$el.html('loading...');
+    }
+    
     return this;
   }
 });

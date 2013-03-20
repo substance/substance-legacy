@@ -326,9 +326,7 @@ _.extend(Substance.Session.prototype, _.Events, {
     var that = this;
 
     createVersion(doc, function(err) {
-      console.log('version created?', err);
       if (err) return cb(err);
-
       doc.meta.published_at = new Date();
       doc.meta.published_commit = doc.getRef('master');
       updateMeta(doc, function() {
@@ -337,17 +335,16 @@ _.extend(Substance.Session.prototype, _.Events, {
     });
   },
 
-    // Unpublish document
+  // Unpublish document
   unpublish: function(cb) {
     var doc = this.document;
-    console.log('unpublishing...');
 
-    // clearPublications(doc, function(err) {
+    unpublish(doc, function(err) {
+      if (err) return cb(err);
       delete doc.meta["published_at"];
       delete doc.meta["published_commit"];
-    //   if (err) return cb(err);
-    //   updateMeta(doc, cb);
-    // });
+      updateMeta(doc, cb);
+    });
   },
 
   publishState: function() {
