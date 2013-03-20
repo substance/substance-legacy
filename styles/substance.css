@@ -695,18 +695,6 @@ float: left;
   border: 1px solid #ccc;
 }
 
-/*#document_menu .publish-state .status {
-  padding: 20px;
-  overflow: auto;
-}
-
-#document_menu .publish-state .status .label {
-  padding: 10 0px;
-  line-height: 40px;
-  font-style: italic;
-  font-size: 14px;
-  float: left;
-}*/
 
 #document_menu .publish-state .publish-actions {
   background: rgba(0,0,0,0.1);
@@ -787,7 +775,6 @@ float: left;
   overflow: hidden;
   padding: 10px;
   position: relative;
-  /*float: left;*/
 }
 
 
@@ -811,12 +798,6 @@ float: left;
 
 .publish-settings .publications .publication .delete-publication:hover {
   opacity: 0.7;
-}
-
-.publish-settings .publications .publication.active {
-  /*background: blue;*/
-  background: rgba(0,0,0, 0.8);
-  color: white;
 }
 
 .publish-settings .publications .publication:hover {
@@ -843,7 +824,6 @@ float: left;
   line-height: 50px;
   padding-left: 30px;
   font-weight: bold;
-
   float: left;
 }
 
