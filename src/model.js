@@ -266,10 +266,13 @@ Substance.Session = function(options) {
 
 _.extend(Substance.Session.prototype, _.Events, {
   select: function(nodes, options) {
+
     if (!options) options = {};
     var user = options.user || this.user; // Use current user by default
 
     // Do nothing if selection hasn't changed
+    // It's considered a change if you operate on the same node 
+    // but change from edit to selection mode (options.edit check)
     if (!this.selectionChanged(user, nodes, !!options.edit)) return;
 
     this.edit = !!options.edit;
@@ -356,6 +359,7 @@ _.extend(Substance.Session.prototype, _.Events, {
 
   // Checks if selection has actually changed for a user
   selectionChanged: function(user, nodes, edit) {
+    // this.edit remembers the previous selection/edit state
     return !_.isEqual(nodes, this.selection(user)) || edit !== this.edit;
   },
 
@@ -488,8 +492,14 @@ function listDocuments(cb) {
 // -----------------
 
 function createDocument(cb) {
-  store.create(Math.uuid(), function(err, doc) {
-    cb(err, new Substance.Session(doc));
+  var id = Math.uuid();
+  store.create(id, function(err, doc) {
+    if (err) return cb(err);
+    doc.meta = {"creator": user()};
+    store.updateMeta(id, doc.meta, function(err) {
+      if (err) return cb(err);
+      cb(err, new Substance.Session(doc));  
+    });
   });
 }
 
