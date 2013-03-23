@@ -44,9 +44,9 @@ sc.views.Node.define('text', _.extend(Textish, {
   events: {
     'mousedown .annotation-tools .toggle': 'toggleAnnotation',
     'click .annotation-tools .toggle': function() { return false; },
-    'change .annotation-tools .link-url': 'updateLink'
-    // 'mousedown .annotation-tools': function() { console.log('intercepted.'); return false; },
-    // 'click .annotation-tools': function() { return false; }
+    'change .annotation-tools .link-url': 'updateLink',
+    // In order to prevent from bubbeling down to the document node underneath
+    'click .annotation-tools': function() { return false; },
   },
 
   initialize: function (options) {

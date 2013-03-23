@@ -211,7 +211,7 @@ sc.views.Editor = Backbone.View.extend({
     this.composer = new Substance.Composer({id: 'document_wrapper', model: this.model });
     this.$('#document_wrapper').replaceWith(this.composer.render().el);
 
-    this.togglePublishSettings();
+    // this.togglePublishSettings();
     return this;
   }
 });

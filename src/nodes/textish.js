@@ -25,10 +25,10 @@ Textish = {
     });
 
     // TODO: problematic since this is triggered when a toggle is being clicked.
-    this.$('.content').bind('blur', function(e) {
-      // TODO: reactivate when problems with link URL input are solved
-      // that.removeToggles();
-    });
+    // this.$('.content').bind('blur', function(e) {
+    //   // TODO: reactivate when problems with link URL input are solved
+    //   // that.removeToggles();
+    // });
 
     this.surface.on('surface:active', function(sel) {
       that.session.select([that.model.id], { edit: true });
@@ -189,6 +189,8 @@ Textish = {
 
   renderToggles: function(sel) {
     var that = this;
+    // HACK: ensures there are no remaining floating annotation controls
+    $('.annotation-tools').hide();
 
     // Find last char
     var lastChar = this.$('.content').children()[sel[0]+sel[1]-1];

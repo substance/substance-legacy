@@ -199,6 +199,9 @@ sc.views.Document = Backbone.View.extend({
     $('.content-node .up').hide();
     $('.content-node .delete').hide();
     $('.content-node.selected').removeClass('selected');
+    
+    // HACK: ensures there are no remaining floating annotation controls
+    $('.annotation-tools').hide();
 
     this.updateMode();
     

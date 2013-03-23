@@ -46,6 +46,8 @@
     // ---------------
 
     clear: function() {
+      // HACK: ensures there are no remaining floating annotation controls
+      $('.annotation-tools').hide();
       this.model.select([]);
       this.updateMode();
     },
