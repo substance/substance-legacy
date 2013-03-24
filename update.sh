@@ -31,7 +31,7 @@ function readopts {
 OPTIND=1
 readopts "$@"
 
-if [ $VERBOSE==1 ]; then
+if [ $VERBOSE == 1 ]; then
   echo "Updating composer..."
   echo "Storing into directory: $EXTERNALS"
 fi
