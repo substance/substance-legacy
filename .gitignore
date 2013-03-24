@@ -23,3 +23,6 @@ ext
 *.kdev4
 /dist/
 /_site/
+lib/document
+lib/surface
+lib/store
