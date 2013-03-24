@@ -87,6 +87,7 @@ if(NOT EXISTS ${BUNDLE_LOCATION}/Contents/Redis)
   file(MAKE_DIRECTORY ${BUNDLE_LOCATION}/Contents/Redis)
 endif()
 
+
 execute_process(
   COMMAND rsync -r ${CMAKE_CURRENT_SOURCE_DIR}/Resources/${MACOSX_BUNDLE_ICON_FILE} ${BUNDLE_LOCATION}/Contents/Resources
   COMMAND rsync -r ${REDIS_CONF} ${BUNDLE_LOCATION}/Contents/Redis/redis.conf
@@ -95,7 +96,7 @@ execute_process(
 if (NOT EXISTS ${BUNDLE_LOCATION}/Contents/Assets)
   execute_process(
     COMMAND ln -s ${PROJECT_SOURCE_DIR} ${BUNDLE_LOCATION}/Contents/Assets
-    COMMAND ln -s ${PROJECT_SOURCE_DIR}/ext/redisdb/bin/redis-server ${BUNDLE_LOCATION}/Contents/Redis/redis-server
+    COMMAND ln -s ${REDIS_SERVER_EXECUTABLE} ${BUNDLE_LOCATION}/Contents/Redis/redis-server
   )
 endif ()
 
@@ -148,7 +149,7 @@ install(CODE "
     COMMAND rsync ${PROJECT_SOURCE_DIR}/LICENSE ${ASSETS_DIST_DIR}
   )
   execute_process(
-    COMMAND rsync ${PROJECT_SOURCE_DIR}/ext/redisdb/bin/redis-server ${REDISDB_DIST_DIR}/
+    COMMAND rsync ${REDIS_SERVER_EXECUTABLE} ${REDISDB_DIST_DIR}/
   )
   execute_process(
     COMMAND rsync ${REDIS_CONF} ${REDISDB_DIST_DIR}/redis.conf

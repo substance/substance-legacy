@@ -1,4 +1,3 @@
-
 if(APPLE)
 
     find_library(JSC JavaScriptCore)

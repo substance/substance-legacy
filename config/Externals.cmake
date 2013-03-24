@@ -1,20 +1,38 @@
 include(ExternalProject)
 
-FIND_PACKAGE(Boost)
-if(Boost-NOTFOUND)
-  include(BoostMinimal)
-endif()
+#################
+# Boost
 
-if(ENABLE_TESTS)
-	include(GTest-1.6)
-endif()
+FIND_PACKAGE(Boost REQUIRED)
 
-include(Redis)
+#################
+# JavaScriptCore
 
 include(JavaScriptCore)
-include(JSObjects)
+
+#################
+# jsobjects
+
+set(JSOBJECTS_DIR ${EXTERNALS_DIR}/jsobjects)
+if(NOT EXISTS ${JSOBJECTS_DIR})
+	message(FATAL_ERROR "JSOBJECTS_DIR does not exist: ${JSOBJECTS_DIR}.")
+endif()
+set(jsobjects_INCLUDE_DIRS ${JSOBJECTS_DIR}/include)
+set(jsobjects_SWIG_INCLUDE_DIRS ${JSOBJECTS_DIR}/swig)
+
+#################
+# SWIG
 
 include(SwigJS)
-include(RedisDocStore)
 
+#################
+# substance redis store
 
+include(${EXTERNALS_DIR}/store/build/RedisDocStore.cmake)
+
+################
+# redis server
+set(REDIS_SERVER_EXECUTABLE ${EXTERNALS_DIR}/redis/bin/redis-server)
+if(NOT EXISTS ${REDIS_SERVER_EXECUTABLE})
+	message(FATAL_ERROR "REDIS_SERVER_EXECUTABLE not found: ${REDIS_SERVER_EXECUTABLE}.")
+endif()
