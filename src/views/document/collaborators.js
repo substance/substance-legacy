@@ -4,18 +4,42 @@ sc.views.Collaborators = Backbone.View.extend({
   // ------
 
   events: {
-
+    'submit #add_collaborator_form': 'addCollaborator',
+    'click .remove-collaborator': 'removeCollaborator'
   },
 
   // Handlers
   // --------
+
+  addCollaborator: function(e) {
+    var collaborator = this.$('#collaborator').val();
+    var that = this;
+
+    this.model.createCollaborator(collaborator, function(err) {
+      that.render();
+    });
+    return false;
+  },
+
+  removeCollaborator: function(e) {
+    var collaborator = $(e.currentTarget).attr('data-username');
+    var that = this;
+    this.model.deleteCollaborator(collaborator, function(err) {
+      that.render();
+    });
+    return false;
+  },
 
   initialize: function() {
 
   },
 
   render: function () {
-    this.$el.html(_.tpl('document_collaborators', {}));
+    if (this.model.collaborators) {
+      this.$el.html(_.tpl('document_collaborators', this.model)); 
+    } else {
+      this.$el.html('loading...');
+    }
     return this;
   }
 });

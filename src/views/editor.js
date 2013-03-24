@@ -9,8 +9,6 @@ sc.views.Editor = Backbone.View.extend({
     'click .toggle.collaborators': 'toggleCollaborators',
     'click .toggle.export': 'toggleExport',
     'click .toggle-publish-settings': 'togglePublishSettings',
-    'click a.publish-document ': 'publish',
-    // 'click a.unpublish-document ': 'unpublish',
     'click a.undo': 'undo',
     'click a.redo': 'redo'
   },
@@ -22,37 +20,6 @@ sc.views.Editor = Backbone.View.extend({
   redo: function() {
     return this.composer.redo();
   },
-
-  publish: function() {
-    var network = this.$('#substance_networks').val();
-
-    var that = this;
-    this.model.createPublication(network, function(err) {
-      if (err) {
-        // that.togglePublishActions();
-        notify('error', err);
-        return;
-      }
-      that.updatePublishState();
-
-      that.publishSettings.render();
-    });
-    return false;
-  },
-
-  // unpublish: function() {
-  //   var that = this;
-  //   this.model.unpublish(function(err) {
-  //     if (err) {
-  //       // that.togglePublishActions();
-  //       notify('error', err);
-  //       return;
-  //     }
-  //     that.updatePublishState();
-  //     that.publishSettings.render();
-  //   });
-  //   return false;
-  // },
 
   // Handlers
   // --------
@@ -100,7 +67,13 @@ sc.views.Editor = Backbone.View.extend({
   },
 
   toggleSettings:      function (e) { this.toggleView('settings'); return false; },
-  toggleCollaborators: function (e) { this.toggleView('collaborators'); return false; },
+  toggleCollaborators: function (e) {
+    var that = this;
+    this.model.loadCollaborators(function(err, collaborators) {
+      that.toggleView('collaborators');
+    });
+    return false;
+  },
   toggleExport:        function (e) { this.toggleView('export'); return false; },
 
   resizeShelf: function () {
@@ -211,7 +184,6 @@ sc.views.Editor = Backbone.View.extend({
     this.composer = new Substance.Composer({id: 'document_wrapper', model: this.model });
     this.$('#document_wrapper').replaceWith(this.composer.render().el);
 
-    // this.togglePublishSettings();
     return this;
   }
 });

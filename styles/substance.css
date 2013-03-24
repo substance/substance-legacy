@@ -849,3 +849,27 @@ float: left;
   -webkit-transition-property: margin-top;
   -webkit-transition-duration: 0.6s;
 }
+
+/* Shelf: Collaborators */
+
+#document_shelf .collaborators {
+  width: 500px;
+  overflow: auto;
+  margin: 20px 0;
+  height: 200px;
+}
+
+#document_shelf .collaborators .collaborator {
+  border-radius: 4px;
+  background: rgba(0,0,0,0.15);
+  padding: 7px;
+  margin-bottom: 5px;
+}
+
+#document_shelf .collaborators .collaborator a {
+  float: right;
+}
+
+#document_shelf .add_collaborator {
+  height: 80px;
+}

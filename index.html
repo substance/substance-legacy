@@ -108,6 +108,7 @@
       </div>
     </script>
 
+    <!-- Editor -->
     <script type="text/html" name="editor">
       <div id="document_menu">
         <div class="document-menu-wrapper">
@@ -253,7 +254,17 @@
 
     <!-- Document Collaborators -->
     <script type="text/html" name="document_collaborators">
-      <h1>Document Collaborators</h1>
+      <div class="collaborators">
+        <% _.each(collaborators, function(c) { %>
+          <div class="collaborator"><%= c.collaborator %> <a href="#" class="remove-collaborator" data-username="<%= c.collaborator %>">Remove</a></div>
+        <% }); %>
+      </div>
+      <div class="add_collaborator">
+        <form id="add_collaborator_form">
+          <input type="text" name="collaborator" id="collaborator"/>
+          <input type="submit" id="add_collaborator" value="Add Collaborator"/>
+        </form>
+      </div>
     </script>
 
     <!-- Document Export -->

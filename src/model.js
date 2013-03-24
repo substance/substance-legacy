@@ -413,6 +413,35 @@ _.extend(Substance.Session.prototype, _.Events, {
         // that.trigger('publications:loaded');
       });
     });
+  },
+
+  // Load Collaborators for current document
+  loadCollaborators: function(cb) {
+    var doc = this.document;
+    var that = this;
+    loadCollaborators(doc, function(err, collaborators) {
+      that.collaborators = collaborators;
+      cb(null);
+    });
+  },
+
+  // Create new collaborator on the server
+  createCollaborator: function(collaborator, cb) {
+    var doc = this.document;
+    var that = this;
+    createCollaborator(doc, collaborator, function(err) {
+      if (err) return cb(err);
+      that.loadCollaborators(cb);
+    });
+  },
+
+  deleteCollaborator: function(collaborator, cb) {
+    var doc = this.document;
+    var that = this;
+    deleteCollaborator(doc, collaborator, function(err) {
+      if (err) return cb(err);
+      that.loadCollaborators(cb);
+    });
   }
 });
 
@@ -447,7 +476,7 @@ function loadNetworks(cb) {
   });
 }
 
-// Get Document Networks from the server
+// Get Publications from the server
 // -----------------
 
 function loadPublications(doc, cb) {
@@ -466,6 +495,74 @@ function loadPublications(doc, cb) {
     dataType: 'json'
   });
 }
+
+// Get Document Collaborators from the server
+// -----------------
+
+function loadCollaborators(doc, cb) {
+  $.ajax({
+    type: 'GET',
+    headers: {
+      "Authorization": "token " + token()
+    },
+    url: Substance.settings.hub_api + '/documents/' + doc.id + '/collaborators',
+    success: function(publications) {
+      cb(null, publications);
+    },
+    error: function() {
+      cb("Loading collaborators failed. Can't access server");
+    },
+    dataType: 'json'
+  });
+}
+
+
+// Create a new collaborator on the server
+// -----------------
+
+function createCollaborator(doc, collaborator, cb) {
+  if (!authenticated()) return cb("Creating collaborator failed. Login first.");
+  $.ajax({
+    type: 'POST',
+    headers: {
+      "Authorization": "token " + token()
+    },
+    data: {
+      "collaborator": collaborator
+    },
+    url: Substance.settings.hub_api + '/documents/' + doc.id + '/collaborators',
+    success: function(result) {
+      cb(null);
+    },
+    error: function() {
+      cb("Creating version failed. Can't access server");
+    },
+    dataType: 'json'
+  });
+}
+
+
+// Delete collaborator for a particular document
+// -----------------
+
+function deleteCollaborator(doc, collaborator, cb) {
+  if (!authenticated()) return cb("Creating collaborator failed. Login first.");
+  $.ajax({
+    type: 'DELETE',
+    headers: {
+      "Authorization": "token " + token()
+    },
+    url: Substance.settings.hub_api + '/documents/' + doc.id + '/collaborators/'+collaborator,
+    success: function(result) {
+      cb(null);
+    },
+    error: function() {
+      cb("Deleting collaborator failed failed. Can't access server");
+    },
+    dataType: 'json'
+  });
+}
+
 
 
 // List all documents

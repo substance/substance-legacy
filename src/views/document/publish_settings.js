@@ -56,7 +56,6 @@ sc.views.PublishSettings = Backbone.View.extend({
     } else {
       this.$el.html('loading...');
     }
-    
     return this;
   }
 });
