@@ -993,13 +993,16 @@ h2 { font-size: 160%; padding-bottom: 15px; }
   left: 80px;
   right: 60px;
   text-align: center;
-  color: rgba(255,255,255, 0.9);
+  color: rgba(255,255,255, 0.6);
+  font-size: 12px;
+  text-transform: uppercase;
+  font-weight: normal;
   padding-top: 100px;
   
   background: rgba(0,0,0, 0.8);
 }
 
-.content-node.image:hover .content .placeholder {
+.content-node.image.selected .content .placeholder {
   display: block;
 }
 

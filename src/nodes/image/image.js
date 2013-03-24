@@ -104,9 +104,11 @@ sc.views.Node.define('image', {
     if (that.model.content) {
       that.$('.content').append(['<img class="thumb" src="', that.model.content,
                                  '" title="', escape(that.model.filename), '"/>'].join(''));
+    } else {
+      that.$('.content').append(['<img class="thumb" src="images/image_placeholder.png" title="', escape(that.model.filename), '"/>'].join(''));
     }
 
-    this.$('.content').append('<div class="placeholder">Drop image here</div>');
+    this.$('.content').append('<div class="placeholder">Drop new image here</div>');
 
     _.delay(function() {
       that.$('.files').bind('change', function(e) {
