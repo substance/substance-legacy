@@ -116,42 +116,27 @@ set (REDISDB_DIST_DIR ${BUNDLE_DIST}/Contents/Redis)
 
 install(CODE "
   execute_process(
+    COMMAND mkdir -p ${ASSETS_DIST_DIR}
+    COMMAND mkdir -p ${ASSETS_DIST_DIR}/lib/store/src
+    COMMAND mkdir ${ASSETS_DIST_DIR}/lib/surface
+    COMMAND mkdir ${ASSETS_DIST_DIR}/lib/document
+    COMMAND mkdir ${ASSETS_DIST_DIR}/lib/store
+
     COMMAND rsync -r --exclude=Assets ${BUNDLE_LOCATION} ${DIST_DIR}
-  )
-  execute_process(
     COMMAND rsync -r ${PROJECT_SOURCE_DIR}/data ${ASSETS_DIST_DIR}
-  )
-  execute_process(
     COMMAND rsync -r ${PROJECT_SOURCE_DIR}/images ${ASSETS_DIST_DIR}
-  )
-  execute_process(
     COMMAND rsync -r ${PROJECT_SOURCE_DIR}/lib ${ASSETS_DIST_DIR}
-  )
-  execute_process(
+    COMMAND rsync ${PROJECT_SOURCE_DIR}/lib/surface/surface.js ${ASSETS_DIST_DIR}/lib/surface/
+    COMMAND rsync ${PROJECT_SOURCE_DIR}/lib/document/document.js ${ASSETS_DIST_DIR}/lib/document/
+    COMMAND rsync ${PROJECT_SOURCE_DIR}/lib/store/src/store.js ${ASSETS_DIST_DIR}/lib/store/src/
     COMMAND rsync -r ${PROJECT_SOURCE_DIR}/src ${ASSETS_DIST_DIR}
-  )
-  execute_process(
     COMMAND rsync -r ${PROJECT_SOURCE_DIR}/styles ${ASSETS_DIST_DIR}
-  )
-  execute_process(
     COMMAND rsync ${PROJECT_SOURCE_DIR}/index.html ${ASSETS_DIST_DIR}
-  )
-  execute_process(
     COMMAND rsync ${PROJECT_SOURCE_DIR}/package.json ${ASSETS_DIST_DIR}
-  )
-  execute_process(
     COMMAND rsync ${PROJECT_SOURCE_DIR}/config.example.json ${ASSETS_DIST_DIR}/config.json
-  )
-  execute_process(
     COMMAND rsync ${PROJECT_SOURCE_DIR}/README.md ${ASSETS_DIST_DIR}
-  )
-  execute_process(
     COMMAND rsync ${PROJECT_SOURCE_DIR}/LICENSE ${ASSETS_DIST_DIR}
-  )
-  execute_process(
     COMMAND rsync ${REDIS_SERVER_EXECUTABLE} ${REDISDB_DIST_DIR}/
-  )
-  execute_process(
     COMMAND rsync ${REDIS_CONF} ${REDISDB_DIST_DIR}/redis.conf
   )
 " COMPONENT Runtime)
