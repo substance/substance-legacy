@@ -15,11 +15,11 @@ VERBOSE=0
 
 function readopts {
   while ((OPTIND<=$#)); do
-    if getopts ":d:h" opt; then
+    if getopts ":d:hv" opt; then
       case $opt in
         d) EXTERNALS=$OPTARG;;
-    v) VERBOSE=1;;
-    h) echo "Usage: update.sh [-d <directory>]" $$ exit;;
+        v) VERBOSE=1;;
+        h) echo "Usage: update.sh [-d <directory>]" $$ exit;;
         *) ;;
       esac
     else
@@ -31,8 +31,8 @@ function readopts {
 OPTIND=1
 readopts "$@"
 
-if [ VERBOSE==1 ]; then
-  echo "Updating store..."
+if [ $VERBOSE==1 ]; then
+  echo "Updating composer..."
   echo "Storing into directory: $EXTERNALS"
 fi
 
