@@ -3,6 +3,7 @@ PROJECT_DIR=$(pwd)
 # sanity check: executed in the root folder?
 if [ ! -f src/composer.js ]; then
   echo "composer/update.sh must be executed in the root dir of the repository."
+  exit -1
 fi
 
 ##########################
@@ -10,12 +11,14 @@ fi
 #
 
 EXTERNALS=/tmp/substance
+VERBOSE=0
 
 function readopts {
   while ((OPTIND<=$#)); do
     if getopts ":d:h" opt; then
       case $opt in
         d) EXTERNALS=$OPTARG;;
+    v) VERBOSE=1;;
     h) echo "Usage: update.sh [-d <directory>]" $$ exit;;
         *) ;;
       esac
@@ -28,8 +31,10 @@ function readopts {
 OPTIND=1
 readopts "$@"
 
-echo "Updating store..."
-echo "Storing into directory: $EXTERNALS"
+if [ VERBOSE==1 ]; then
+  echo "Updating store..."
+  echo "Storing into directory: $EXTERNALS"
+fi
 
 if [ ! -d $EXTERNALS ]; then
   mkdir $EXTERNALS
@@ -56,7 +61,7 @@ if [ ! -d jsobjects ]; then
 fi
 
 cd jsobjects
-./update.sh -d $EXTERNALS -v
+./update.sh -d $EXTERNALS
 
 ######################
 # redis store
@@ -79,7 +84,7 @@ if [ ! -d redis ]; then
 fi
 
 cd redis
-if [ ! -f redis-server ]; then
+if [ ! -f bin/redis-server ]; then
 	make
 	make PREFIX=$EXTERNALS/redis install
 fi
@@ -93,5 +98,7 @@ if [ ! -d build ]; then
 	mkdir build
 fi
 cd build
-cmake -DEXTERNALS_DIR=$EXTERNALS -DCMAKE_PREFIX_PATH=$EXTERNALS ..
+if [ ! -f CMakeCache.txt ]; then
+  cmake -DEXTERNALS_DIR=$EXTERNALS -DCMAKE_PREFIX_PATH=$EXTERNALS ..
+fi
 make
