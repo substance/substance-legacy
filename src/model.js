@@ -48,8 +48,13 @@ var LocalStore = function(options) {
     return true;
   }
 
-  this.delete = function(id) {
-    if (store.delete(id)) return markAsDeleted(id);
+  this.delete = function(id, cb) {
+    if (store.delete(id)) {
+      markAsDeleted(id);
+      cb(null);
+      return true;
+    }
+    cb('deletion-failed');
     return false;
   };
 
