@@ -27,3 +27,5 @@ lib/document
 lib/surface
 lib/store
 lib/client
+
+/tests
