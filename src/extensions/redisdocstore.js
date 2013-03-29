@@ -3,7 +3,7 @@
   // Native extension
   var redis = typeof exports !== 'undefined' ? require('substance-store/lib/redis') : ctx.redis;
   var _ = typeof exports !== 'undefined' ? require('underscore') : ctx._;
-  
+
 
   var RedisStore = function(settings) {
     // reference to this for use within instance methods
@@ -79,6 +79,11 @@
      */
 
     this.updateMeta = function(id, meta, cb) {
+      if (!meta) {
+        if (cb) cb(null);
+        return;
+      }
+
       if (!self.exists(id) && cb) {
         return cb({err: -1, msg: "Document does not exist."});
       }
@@ -148,8 +153,8 @@
      *  @param newCommits an array of commit objects
      *  @param cb callback
      */
+    function update_old(id, newCommits, cb_or_meta) {
 
-    this.update = function(id, newCommits, cb) {
       // No commits supplied. Go ahead
       if (newCommits.length === 0) {
         cb(null);
@@ -202,9 +207,33 @@
 
       console.log('Stored these commits in the database', newCommits);
 
+
       if (cb) cb(null);
       return true;
     };
+
+    this.update = function(id, newCommits, cb_or_meta, refs, cb) {
+      // TODO: remove this legacy dispatcher as soon we are stable again
+      if(arguments.length < 4) {
+        var cb = cb_or_meta;
+        return update_old(id, newCommit, cb);
+      } else {
+        var meta = cb_or_meta;
+        update_old(id, newCommits, function(err) {
+          // TODO: what about rolling back on errors?
+          if (cb && err) return cb(err);
+
+          self.updateMeta(id, meta, function(err) {
+            // TODO: what about rolling back on errors?
+            if (cb && err) return cb(err);
+            _.each(refs, function(value, key, refs) {
+              self.setRef(key, value);
+            });
+            if (cb) cb(null);
+          });
+        });
+      }
+    }
 
     this.setRef = function(id, ref, sha, cb) {
       self.redis.setString(id + ":refs:" + ref, sha);
@@ -293,7 +322,7 @@
 
         _.each(commits, function(c) {
           doc.commits[c.sha] = c;
-        });        
+        });
       }
 
       if (lastSha && !doc.commits[lastSha]) {
@@ -306,7 +335,12 @@
     };
 
   };
-  
+
+  this.clear = function(cb) {
+    self.redis.removeWithPrefix("");
+    if (cb) cb(null);
+  };
+
   // Exports
   if (typeof exports !== 'undefined') {
     // Store = exports;
