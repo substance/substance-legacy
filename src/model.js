@@ -9,6 +9,8 @@ var AppSettings = function(settings) {
     port: 6379,
     scope: "substance-app-settings"
   };
+  // override the default values if given
+  dbSettings = _.extend(dbSettings, settings);
 
   this.db = redis.RedisAccess.Create(0);
   this.db.setHost(dbSettings.host);
@@ -65,10 +67,80 @@ var LocalStore = function(options) {
   this.confirmDeletion = function(id) {
     return deletedDocuments.remove(id);
   };
+
+  this.seed = function(data, cb) {
+    // TODO: check if the provided data is valid
+    if (!data['store'] || !data['settings'] || !data['deleted']) {
+      return cb("Error: data is incompatible for seeding local doc store.");
+    }
+
+    _.each(data['store'], function(doc, id) {
+      store.exists(id, function(err, exists) {
+        if (err) return cb(err);
+
+        function add(err) {
+          if (err) return cb(err);
+          // first create the doc
+          store.create(id, function(err) {
+            if (err) return cb(err);
+            // then update everything
+            store.updateMeta(doc.id, doc.commits, doc.meta, doc.refs, cb)
+          })
+        }
+
+        if (exists) {
+          store.delete(id, add);
+        } else {
+          add(null, doc);
+        }
+      });
+    });
+  };
+
+  this.dump = function(cb) {
+    // TODO: how to dump settings?
+    var settings = {}
+    var deletedDocs = []
+
+    var docs = {};
+    var docInfos = store.list();
+
+    _.each(docInfos, function(info, idx, docInfos) {
+      docs[info.id] = store.get(info.id);
+    });
+
+    _.each(deletedDocs.getKeys(), function(id, index, keys) {
+      deletedDocs.push(id);
+    });
+
+    _.each(appSettings.getKeys(), function(value, key, keys) {
+      settings[key] = value;
+    });
+
+     var dump = {
+      'store': docs,
+      'settings': settings,
+      'deleted': deletedDocs
+    };
+
+    cb(null, dump);
+  };
+
+  this.clear = function(cb) {
+    store.clear(function(err) {
+      if (err) return cb(err);
+      _.each(appSettings.getKeys(), function(key) {
+        appSettings.remove(key);
+      });
+      _.each(deletedDocuments.getKeys(), function(key) {
+        deletedDocuments.remove(key);
+      });
+      return cb(null);
+    });
+  }
 }
 
 var appSettings = new AppSettings();
-
 
 // Document.Store (web debug)
 // -----------------
