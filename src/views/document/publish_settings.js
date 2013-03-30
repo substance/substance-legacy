@@ -12,7 +12,7 @@ sc.views.PublishSettings = Backbone.View.extend({
 
   createVersion: function() {
     var that = this;
-    this.model.createVersion(function(err) {
+    session.createVersion(function(err) {
       that.trigger('publish_state:updated');
       that.render();
     });
@@ -21,7 +21,7 @@ sc.views.PublishSettings = Backbone.View.extend({
 
   unpublish: function() {
     var that = this;
-    this.model.unpublish(function(err) {
+    session.unpublish(function(err) {
       that.trigger('publish_state:updated');
       that.render();
     });
@@ -31,7 +31,7 @@ sc.views.PublishSettings = Backbone.View.extend({
   addPublication: function(e) {
     var network = $('#substance_networks').val();
     var that = this;
-    this.model.createPublication(network, function(err) {
+    session.createPublication(network, function(err) {
       that.render();
     });
     return false;
@@ -40,7 +40,7 @@ sc.views.PublishSettings = Backbone.View.extend({
   deletePublication: function(e) {
     var network = $(e.currentTarget).attr('data-id');
     var that = this;
-    this.model.deletePublication(network, function(err) {
+    session.deletePublication(network, function(err) {
       that.render();
     });
     return false;

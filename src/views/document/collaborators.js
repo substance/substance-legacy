@@ -15,7 +15,7 @@ sc.views.Collaborators = Backbone.View.extend({
     var collaborator = this.$('#collaborator').val();
     var that = this;
 
-    this.model.createCollaborator(collaborator, function(err) {
+    session.createCollaborator(collaborator, function(err) {
       that.render();
     });
     return false;
@@ -24,14 +24,14 @@ sc.views.Collaborators = Backbone.View.extend({
   removeCollaborator: function(e) {
     var collaborator = $(e.currentTarget).attr('data-username');
     var that = this;
-    this.model.deleteCollaborator(collaborator, function(err) {
+    session.deleteCollaborator(collaborator, function(err) {
       that.render();
     });
     return false;
   },
 
   initialize: function() {
-
+    
   },
 
   render: function () {

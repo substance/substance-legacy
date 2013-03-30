@@ -17,7 +17,6 @@ _.extend(Substance.Comments.prototype, _.Events, {
       var content = nodeData.content;
       var annotations = this.session.document.annotations(node);
     }
-
     this.commentsForNode(this.session.document, node, content, annotations, scope);
   },
 
@@ -70,7 +69,6 @@ _.extend(Substance.Comments.prototype, _.Events, {
         comments: document.documentComments()
       });
     }
-
     this.session.trigger('comments:updated', scope);
   }
 });
@@ -84,7 +82,7 @@ _.extend(Substance.Comments.prototype, _.Events, {
 // TODO: No multiuser support yet, use app.user
 
 var Session = function(options) {
-  this.hub = options.hub;
+  this.client = options.client;
   this.remoteStore = options.remoteStore;
   this.localStore = options.localStore;
 
@@ -101,16 +99,27 @@ var Session = function(options) {
   this.comments = new Substance.Comments(this);
 
   // That's the current editor
-  // this.user = "michael";
+  this.user = "michael";
 };
 
 _.extend(Session.prototype, _.Events, {
-    
   // When a doc changes, bind event handlers etc.
   initDoc: function() {
+    var that = this;
+
+    // Rebind event handlers
+    this.document.off('commit:applied');
+    this.document.off('ref:updated');
+
     this.document.on('commit:applied', function(commit) {
       // Persist update in docstore
       this.updateDocument([commit]);
+      this.updateMeta();
+    }, this);
+
+    this.document.on('ref:updated', function(ref, sha) {
+      this.localStore.setRef(this.document.id, ref, sha);
+      this.updateMeta();
     }, this);
   },
 
@@ -123,7 +132,7 @@ _.extend(Session.prototype, _.Events, {
       if (err) return cb(err);
       doc.meta = {"creator": user()};
       // Instead use new update + empty commit array
-      store.updateMeta(id, doc.meta, function(err) {
+      this.localStore.updateMeta(id, doc.meta, function(err) {
         if (err) return cb(err);
 
         that.document = new Substance.Document(doc);
@@ -133,9 +142,29 @@ _.extend(Session.prototype, _.Events, {
     });
   },
 
+  // Load new Document from localStore
+  loadDocument: function(id, cb) {
+    var that = this;
+    this.localStore.get(id, function(err, doc) {
+      that.document = new Substance.Document(doc);
+      that.initDoc();
+      cb(err, that.document);
+    });
+  },
+
   // Update local document
-  updateDocument: function(commits, cb) {
-    this.localStore.update(this.document.id, commits, cb);
+  updateDocument: function(commits, meta, refs, cb) {
+    this.localStore.update(this.document.id, commits, meta, refs, cb);
+  },
+
+  // Update meta info of current document
+  updateMeta: function(cb) {
+    var doc = this.document;
+    _.extend(doc.meta, doc.content.properties);
+    doc.meta.updated_at = new Date();
+    this.localStore.updateMeta(doc.id, doc.meta, function(err) {
+      if (cb) cb(err);
+    });
   },
 
   deleteDocument: function(id, cb) {
@@ -147,10 +176,6 @@ _.extend(Session.prototype, _.Events, {
   replicate: function(cb) {
     var replicator = new Substance.Replicator();
     replicator.replicate(this.localStore, this.remoteStore, cb);
-  },
-
-  createPublication: function(cb) {
-    if (!this.document) cb('not possible');
   },
 
   // Select a document
@@ -187,16 +212,16 @@ _.extend(Session.prototype, _.Events, {
     var doc = this.document;
     var that = this;
   
-    this.hub.createPublication(doc.id, network, function(err) {
+    this.client.createPublication(doc.id, network, function(err) {
       if (err) return cb(err);
-      that.hub.loadPublications(doc.id, cb);
+      that.loadPublications(cb);
     });
   },
 
   deletePublication: function(network, cb) {
     var that = this;
     var doc = this.document;
-    this.hub.deletePublication(doc, network, function(err) {
+    this.client.deletePublication(doc.id, network, function(err) {
       if (err) return cb(err);
       that.loadPublications(cb);
     });
@@ -206,11 +231,11 @@ _.extend(Session.prototype, _.Events, {
     var doc = this.document;
     var that = this;
 
-    createVersion(doc, function(err) {
+    this.client.createVersion(doc.id, doc.content, function(err) {
       if (err) return cb(err);
       doc.meta.published_at = new Date();
       doc.meta.published_commit = doc.getRef('master');
-      updateMeta(doc, function() {
+      that.updateMeta(function() {
         that.loadPublications(cb);
       });
     });
@@ -219,12 +244,13 @@ _.extend(Session.prototype, _.Events, {
   // Unpublish document
   unpublish: function(cb) {
     var doc = this.document;
-
-    this.hub.unpublish(doc, function(err) {
+    var that = this;
+    // console.log('unpublishing...');
+    this.client.unpublish(doc.id, function(err) {
       if (err) return cb(err);
       delete doc.meta["published_at"];
       delete doc.meta["published_commit"];
-      this.localStore.updateMeta(doc, cb);
+      that.updateMeta(cb)
     });
   },
 
@@ -278,12 +304,11 @@ _.extend(Session.prototype, _.Events, {
     var doc = this.document;
     var that = this;
 
-    this.hub.loadNetworks(function(err, networks) {
+    this.client.loadNetworks(function(err, networks) {
       if (err) return cb(err);
       that.networks = networks; // all networks
-      that.hub.loadPublications(doc.id, function(err, publications) {
+      that.client.loadPublications(doc.id, function(err, publications) {
         that.publications = publications;
-
         _.each(that.publications, function(p) {
           // Attach network information
           p.network = _.find(that.networks, function(n) { return n.id === p.network; });
@@ -297,7 +322,7 @@ _.extend(Session.prototype, _.Events, {
   loadCollaborators: function(cb) {
     var doc = this.document;
     var that = this;
-    this.hub.loadCollaborators(doc, function(err, collaborators) {
+    this.client.loadCollaborators(doc.id, function(err, collaborators) {
       that.collaborators = collaborators;
       cb(null);
     });
@@ -307,18 +332,44 @@ _.extend(Session.prototype, _.Events, {
   createCollaborator: function(collaborator, cb) {
     var doc = this.document;
     var that = this;
-    this.hub.createCollaborator(doc, collaborator, function(err) {
+    this.client.createCollaborator(doc.id, collaborator, function(err) {
       if (err) return cb(err);
-      that.hub.loadCollaborators(cb);
+      that.loadCollaborators(cb);
     });
   },
 
+  // Delete collaborator on the server
   deleteCollaborator: function(collaborator, cb) {
     var doc = this.document;
     var that = this;
-    this.hub.deleteCollaborator(doc, collaborator, function(err) {
+    this.client.deleteCollaborator(doc.id, collaborator, function(err) {
       if (err) return cb(err);
-      that.hub.loadCollaborators(cb);
+      that.loadCollaborators(cb);
+    });
+  },
+
+  // Authenticate session
+  authenticate: function(username, password, cb) {
+    this.client.authenticate(username, password, cb);
+  },
+
+  createUser: function(user, cb) {
+    this.client.createUser(user, cb);
+  },
+
+  listDocuments: function(cb) {
+    this.localStore.list(function(err, documents) {
+      var res = _.map(documents, function(doc) {
+        return {
+          title: doc.meta.title,
+          author: "le_author",
+          file: doc.id,
+          id: doc.id,
+          meta: doc.meta,
+          updated_at: doc.meta.updated_at
+        };
+      });
+      cb(null, res);
     });
   }
 });
