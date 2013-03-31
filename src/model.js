@@ -104,7 +104,7 @@ function initSession() {
     client: client
   });
 
-  session = new Session({
+  session = new Substance.Session({
     client: client,
     remoteStore: remoteStore,
     localStore: localStore

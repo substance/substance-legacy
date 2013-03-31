@@ -74,14 +74,14 @@ _.extend(Substance.Comments.prototype, _.Events, {
 });
 
 
-// Session
+// Substance.Session
 // -----------------
 // 
 // The Composer works with a session object, which maintains 
 // all the state of a document session
 // TODO: No multiuser support yet, use app.user
 
-var Session = function(options) {
+Substance.Session = function(options) {
   this.client = options.client;
   this.remoteStore = options.remoteStore;
   this.localStore = options.localStore;
@@ -102,7 +102,7 @@ var Session = function(options) {
   this.user = "michael";
 };
 
-_.extend(Session.prototype, _.Events, {
+_.extend(Substance.Session.prototype, _.Events, {
   // When a doc changes, bind event handlers etc.
   initDoc: function() {
     var that = this;
@@ -353,6 +353,7 @@ _.extend(Session.prototype, _.Events, {
     this.client.authenticate(username, password, cb);
   },
 
+  // Create a new user on the server
   createUser: function(user, cb) {
     this.client.createUser(user, cb);
   },
