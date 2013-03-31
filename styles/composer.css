@@ -602,6 +602,34 @@ h2 { font-size: 160%; padding-bottom: 15px; }
   font-size: 60px;
 }
 
+#document .cover-image-wrapper {
+  max-height: 300px;
+  overflow: hidden;
+  position: relative;
+}
+
+#document .cover-image-wrapper .cover-file {
+  position: absolute;
+  left: 50px;
+  top: 0px;
+  right: 0px;
+  bottom: 0px;
+}
+
+#document .cover-image-wrapper .cover-image {
+  width: 100%;
+  z-index: 0;
+}
+
+#document .properties .cover-image .cover-image-wrapper {
+  z-index: 1;
+}
+
+#document .properties .cover {
+  background: #ccc;
+  text-align: center;
+}
+
 #document .properties .document-abstract {
   padding: 40px 80px;
   padding-bottom: 60px;
@@ -610,6 +638,7 @@ h2 { font-size: 160%; padding-bottom: 15px; }
   /*font-family: 'Open Sans',Arial,sans-serif;*/
   color: #777;
   text-align: center;
+  z-index: 100;
 }
 
 #document .nodes {

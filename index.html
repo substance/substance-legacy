@@ -293,9 +293,18 @@
 
     <script type="text/x-ejs-template" name="document">
       <div id="document_content">
+        <div class="cover-image-wrapper">
+          <% if (properties.cover) { %>
+            <img class="cover-image" src="<%= properties.cover %>"/>  
+          <% } else { %>
+            <img class="cover-image" src="http://farm7.staticflickr.com/6235/6279776790_19e9569720_b.jpg"/>  
+          <% } %>
+          <input type="file" class="cover-file" name="cover[]"/>
+        </div>
         <div class="properties">
-          <div class="document-title" contenteditable="true"></div>
-          <div class="document-abstract" contenteditable="true"></div>
+            <div class="document-title" contenteditable="true"></div>
+            <div class="document-abstract" contenteditable="true"></div>
+            
         </div>
 
         <div class="left-rail"></div>

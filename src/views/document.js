@@ -69,6 +69,82 @@ sc.views.Document = Backbone.View.extend({
     $(document.body).keydown(this.onKeydown);
   },
 
+
+  handleFileSelect: function(evt) {
+    var that = this;
+    evt.stopPropagation();
+    evt.preventDefault();
+
+    // from an input element
+    var filesToUpload = evt.target.files;
+    var file = filesToUpload[0];
+
+    // this.message('Processing Image ...');
+
+    // TODO: display error message
+    if (!file.type.match('image.*')) return /*this.message('Not an image. Skipping ...')*/;
+
+    var img = document.createElement("img");
+    var reader = new FileReader();
+
+    reader.onload = function(e) {
+      img.src = e.target.result;
+
+      _.delay(function() {
+        var canvas = document.getElementById('canvas');
+        var ctx = canvas.getContext("2d");
+        ctx.drawImage(img, 0, 0);
+
+        var MAX_WIDTH = 2000;
+        var MAX_HEIGHT = 3000;
+        var width = img.width;
+        var height = img.height;
+
+        if (width > height) {
+          if (width > MAX_WIDTH) {
+            height *= MAX_WIDTH / width;
+            width = MAX_WIDTH;
+          }
+        } else {
+          if (height > MAX_HEIGHT) {
+            width *= MAX_HEIGHT / height;
+            height = MAX_HEIGHT;
+          }
+        }
+        canvas.width = width;
+        canvas.height = height;
+        var ctx = canvas.getContext("2d");
+        ctx.drawImage(img, 0, 0, width, height);
+
+        var dataurl = canvas.toDataURL("image/png");
+
+        // Debug stuff
+        // console.log({
+        //   original: img.src,
+        //   thumb: dataurl
+        // });
+        // console.log(that.model.document);
+        that.model.document.apply(["set", {"cover": dataurl }]);
+        
+        console.log(that.model.document.content);
+
+        that.render(); // re-render the shit out of it
+
+      }, 800);
+    }
+
+    reader.readAsDataURL(file);
+  },
+
+  bindFileEvents: function() {
+    var that = this;
+    _.delay(function() {
+      that.$('.cover-file').bind('change', function(e) {
+        that.handleFileSelect(e);
+      });
+    }, 200);
+  },
+
   // Get a particular node by id
   getNode: function(id) {
     return this.model.document.content.nodes[id];
@@ -315,7 +391,7 @@ sc.views.Document = Backbone.View.extend({
 
   // Initial render of all nodes
   render: function () {
-    this.$el.html(_.tpl('document', this.model));
+    this.$el.html(_.tpl('document', this.model.document.content));
 
     // Init editor for document abstract and title
     this.initSurface("abstract");
@@ -324,6 +400,8 @@ sc.views.Document = Backbone.View.extend({
     this.model.document.list(function(node) {
       $(this.nodes[node.id].render().el).appendTo(this.$('.nodes'));
     }, this);
+
+    this.bindFileEvents();
     return this;
   }
 });
