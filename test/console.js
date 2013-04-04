@@ -316,7 +316,7 @@ $(function() {
 var store;
 
 function loadDocument(user, doc, cb) {
-  store = new RedisStore({
+  store = new Substance.RedisStore({
     scope: user
   });
 
