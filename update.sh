@@ -9,8 +9,8 @@ fi
 ##########################
 # command line options
 #
-
-EXTERNALS=/tmp/substance
+TMPDIR=$HOME/tmp/substance
+EXTERNALS=$TMPDIR
 VERBOSE=0
 
 function readopts {
@@ -37,7 +37,7 @@ if [ $VERBOSE == 1 ]; then
 fi
 
 if [ ! -d $EXTERNALS ]; then
-  mkdir $EXTERNALS
+  mkdir -p $EXTERNALS
 fi
 
 ######################
