@@ -29,3 +29,4 @@ lib/store
 lib/client
 
 /tests
+/lib/util
