@@ -18,6 +18,8 @@ sc.views.Comments = Backbone.View.extend({
     var annotation = this.$('.comment-scope.active').attr('data-annotation');
     var content = $(e.currentTarget).parent().find('.comment-content').val();
 
+    if (content.trim().length === 0) return false;
+
     if (!node) node = undefined;
     if (!annotation) annotation = undefined;
 

@@ -237,23 +237,17 @@
       // Views
       this.views = {};
 
-      // Rebind event handlers
-      this.model.document.off('commit:applied');
-      this.model.document.off('ref:updated');
-
       this.views.document = new Substance.Composer.views.Document({ model: this.model });
       this.views.tools = new Substance.Composer.views.Tools({model: this.model });
-    
+      
       this.model.document.on('commit:applied', function(commit) {
         // Send update to the server
-        updateDoc(this.model.document, commit);
         $('#header .sync').removeClass('disabled');
         this.updateUndoRedoControls();
       }, this);
 
       
       this.model.document.on('ref:updated', function(ref, sha) {
-        updateRef(this.model.document, ref, sha);
         this.updateUndoRedoControls();
       }, this);
     },

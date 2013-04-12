@@ -57,7 +57,9 @@ $(function() {
       var that = this;
       var docId = $(e.currentTarget).attr('data-id');
 
-      if (store.delete(docId)) that.render();
+      session.deleteDocument(docId, function(err) {
+        if (!err) that.render();
+      });
 
       return false;
     },
@@ -65,7 +67,7 @@ $(function() {
     render: function() {
       var that = this;
 
-      listDocuments(function(err, documents) {
+      session.listDocuments(function(err, documents) {
         that.$el.html(_.tpl('dashboard', {
           documents: documents
         }));
@@ -93,7 +95,7 @@ $(function() {
     // Synchronizing
     _sync: function() {
       var that = this;
-      var replicator = new Substance.Replicator({store: store, user: user()});
+      var replicator = new Substance.Replicator({store: session.localStore, user: user()});
 
       this.$('#header .sync').removeClass('disabled').addClass('active');
       replicator.sync(function(err) {
@@ -116,45 +118,45 @@ $(function() {
 
     _login: function() {
       var that = this,
-          options = {
-            username: $('#login_username').val(),
-            password: $('#login_password').val()
-          };
+          username = $('#login_username').val(),
+          password = $('#login_password').val();
 
-      authenticate(options, function(err, data) {
+      session.authenticate(username, password, function(err, data) {
         if (err) {
           that.$('#login .error-message').html(err);
           return;
         }
 
-        that.user = options.username;
+        that.user = username;
         appSettings.set('user', that.user);
         appSettings.set('api-token', data.token);
 
-        initStore(that.user); // Re-init store as user scope changes
+        initSession(); // Re-init session as user scope changes
         that.dashboard();
       });
       return false;
     },
 
     _signup: function() {
-      var that = this;
-          options = {
+      var that = this,
+          user = {
             name: $('#signup_name').val(),
             username: $('#signup_username').val(),
             email: $('#signup_email').val(),
             password: $('#signup_password').val()
           };
 
-      registerUser(options, function(err, data) {
+      session.createUser(user, function(err, data) {
         if (err) {
           that.$('#login .error-message').html(err);
           return;
         }
 
-        that.user = options.username;
+        that.user = user.username;
         appSettings.set('user', that.user);
         appSettings.set('api-token', data.token);
+
+        initSession(); // Re-init session as user scope changes
         that.dashboard();
       });
 
@@ -179,10 +181,11 @@ $(function() {
     // Toggle document view
     document: function(id) {
       var that = this;
-      loadDocument(id, function(err, session) {
+      session.loadDocument(id, function(err, doc) {
+        // console.log('YOO', doc);
         // Shortcuts
         window.doc = session.document;
-        window.session = session;
+        // window.session = session;
 
         that.view = new sc.views.Editor({model: session });
         that.render();
@@ -208,7 +211,8 @@ $(function() {
 
     newDocument: function() {
       var that = this;
-      createDocument(function(err, session) {
+      session.createDocument(function(err, doc) {
+        console.log('doc created', doc);
         that.view = new sc.views.Editor({model: session });
         that.render();
         router.navigate('documents/'+session.document.id, false);

@@ -26,16 +26,14 @@ sc.views.Editor = Backbone.View.extend({
 
   initialize: function() {
     var that = this;
+
     // Setup shelf views
-    this.settings      = new sc.views.Settings({ model: this.model, authorized: this.authorized });
-    this.collaborators = new sc.views.Collaborators({ model: this.model, docView: this, authorized: this.authorized });
-    this["export"]     = new sc.views.Export({ model: this.model, authorized: this.authorized });
+    this.settings      = new sc.views.Settings({ model: this.model });
+    this.collaborators = new sc.views.Collaborators({ model: session, docView: this });
+    this["export"]     = new sc.views.Export({ model: this.model });
 
     // Publish Settings
-    this.publishSettings = new sc.views.PublishSettings({
-      model: this.model,
-      authorized: this.authorized
-    });
+    this.publishSettings = new sc.views.PublishSettings({ model: session });
 
     // Refresh publish state on demand
     this.publishSettings.on('publish_state:updated', function() {
@@ -55,7 +53,7 @@ sc.views.Editor = Backbone.View.extend({
     var documentId = this.model.document.id;
 
     // Triggers a re-render
-    this.model.loadPublications(function(err) {
+    session.loadPublications(function(err) {
       that.renderPublishSettings();
     });
     
@@ -69,7 +67,7 @@ sc.views.Editor = Backbone.View.extend({
   toggleSettings:      function (e) { this.toggleView('settings'); return false; },
   toggleCollaborators: function (e) {
     var that = this;
-    this.model.loadCollaborators(function(err, collaborators) {
+    session.loadCollaborators(function(err, collaborators) {
       that.toggleView('collaborators');
     });
     return false;

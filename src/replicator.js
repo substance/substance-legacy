@@ -50,7 +50,7 @@ Substance.Replicator = function(params) {
 
   this.createLocal = function(doc, cb) {
     // 1. create doc locally
-    store.create(doc.id, function(err) {
+    localStore.create(doc.id, function(err) {
       if (err) return cb(err);
       // 2. Pull in remote data
       that.pull(doc, cb);
@@ -64,9 +64,9 @@ Substance.Replicator = function(params) {
     console.log('creating ', doc.id, ' on the server');
 
     // 1. Get doc from local docstore
-    store.get(doc.id, function(err, doc) {
+    localStore.get(doc.id, function(err, doc) {
       // extract commits
-      var commits = store.commits(doc.id, doc.refs.tail);
+      var commits = localStore.commits(doc.id, doc.refs.tail);
       console.log("COMMITS OF NEW DOC", commits);
       // 2. Create empty doc on the server
       _.request("POST", Substance.settings.hub_api + '/documents', {id: doc.id}, function (err) {
@@ -75,8 +75,8 @@ Substance.Replicator = function(params) {
         // 3. Send updates to server
         _.request("PUT", Substance.settings.hub_api + '/documents/'+doc.id, {commits: commits, meta: doc.meta, refs: doc.refs}, function (err) {
           console.log('updated on the server..');
-          store.setRef(doc.id, 'tail-remote', doc.refs.tail);
-          store.setRef(doc.id, 'master-remote', doc.refs.master);
+          localStore.setRef(doc.id, 'tail-remote', doc.refs.tail);
+          localStore.setRef(doc.id, 'master-remote', doc.refs.master);
           cb(err);
         });
       });
@@ -94,7 +94,7 @@ Substance.Replicator = function(params) {
       if (!err || err.status === 404) {
         // Note: when a document is deleted locally, a flag is kept to manage remote deletions.
         //  To finish the deletion, the local store needs to be confirmed about deletion.
-        store.confirmDeletion(doc.id);
+        localStore.confirmDeletion(doc.id);
         cb(err);
       }
       else return cb(err);
@@ -105,7 +105,7 @@ Substance.Replicator = function(params) {
   // -----------------
 
   this.deleteLocal = function(doc, cb) {
-    store.delete(doc.id);
+    localStore.delete(doc.id);
     cb(null);
   };
 
@@ -117,7 +117,7 @@ Substance.Replicator = function(params) {
 
   this.pull = function(doc, cb) {
     // Get latest synced commit
-    var tailRemote = store.getRef(doc.id, 'tail-remote');
+    var tailRemote = localStore.getRef(doc.id, 'tail-remote');
     console.log('pulling in changes... for', tailRemote);
 
     _.request("GET", Substance.settings.hub_api +'/documents/'+doc.id+'/commits', {since: tailRemote}, function(err, data) {
@@ -126,24 +126,24 @@ Substance.Replicator = function(params) {
       // Should also give me remote refs
       // data.commits |data.refs
       if (data.commits.length > 0) {
-        store.update(doc.id, data.commits, function(err) {
+        localStore.update(doc.id, data.commits, function(err) {
           console.log('applied remote commits.. Any ERRORS?', err);
 
           // Update references
-          store.setRef(doc.id, 'master', data.refs.master);
-          store.setRef(doc.id, 'tail', data.refs.tail); // now done implicitly by update
+          localStore.setRef(doc.id, 'master', data.refs.master);
+          localStore.setRef(doc.id, 'tail', data.refs.tail); // now done implicitly by update
 
           // Tail and master are now up to date. Now set 'tail-remote' to new tail
-          store.setRef(doc.id, 'tail-remote', data.refs.tail);
-          store.setRef(doc.id, 'master-remote', data.refs.master);
+          localStore.setRef(doc.id, 'tail-remote', data.refs.tail);
+          localStore.setRef(doc.id, 'master-remote', data.refs.master);
 
           // Update metadata (remote version)
-          store.updateMeta(doc.id, data.meta);
+          localStore.updateMeta(doc.id, data.meta);
           cb(null);
         });
       } else {
         // Update metadata (remote version)
-        store.updateMeta(doc.id, data.meta);
+        localStore.updateMeta(doc.id, data.meta);
         cb(null);
       }
     });
@@ -154,12 +154,12 @@ Substance.Replicator = function(params) {
   // -----------------
 
   this.push = function(doc, cb) {
-    store.get(doc.id, function(err, doc) {
-      var remoteTail = store.getRef(doc.id, 'tail-remote');
-      var localTail = store.getRef(doc.id, 'tail');
+    localStore.get(doc.id, function(err, doc) {
+      var remoteTail = localStore.getRef(doc.id, 'tail-remote');
+      var localTail = localStore.getRef(doc.id, 'tail');
 
       // Find all commits after synced (remote) commit
-      var commits = store.commits(doc.id, localTail, remoteTail);
+      var commits = localStore.commits(doc.id, localTail, remoteTail);
 
       var data = {
         // username: that.user,
@@ -172,8 +172,8 @@ Substance.Replicator = function(params) {
       _.request("PUT", Substance.settings.hub_api + '/documents/'+doc.id, data, function (err) {
         // Set synced reference accordingly
         if (err) return cb(err);
-        store.setRef(doc.id, 'tail-remote', doc.refs.tail);
-        store.setRef(doc.id, 'master-remote', doc.refs.master);
+        localStore.setRef(doc.id, 'tail-remote', doc.refs.tail);
+        localStore.setRef(doc.id, 'master-remote', doc.refs.master);
 
         cb(null);
       });
@@ -199,8 +199,8 @@ Substance.Replicator = function(params) {
 
           // Local refs: these are set if a document had been synched before
           //  otherwise they are undefined
-          var masterRemote = store.getRef(id, 'master-remote');
-          var tailRemote = store.getRef(id, 'tail-remote');
+          var masterRemote = localStore.getRef(id, 'master-remote');
+          var tailRemote = localStore.getRef(id, 'tail-remote');
 
           // document does exist locally but not remotely
           if (!remoteDoc) {
@@ -235,7 +235,7 @@ Substance.Replicator = function(params) {
         });
 
         // clean up pending local deletions
-        _.each(store.deletedDocuments(), function(docId) {
+        _.each(localStore.deletedDocuments(), function(docId) {
             jobs.push({id: docId, action: "delete-remote"}); // delete remotely
 
             // retain unsynched remoteDocs (part 2): remoteDocs - locally deleted docs
@@ -261,7 +261,7 @@ Substance.Replicator = function(params) {
   // Returns: A hash of document status objects
 
   this.localDocStates = function(cb) {
-    store.list(function(err, localDocs) {
+    localStore.list(function(err, localDocs) {
       var result = {};
       _.each(localDocs, function(doc) {
         result[doc.id] = doc;

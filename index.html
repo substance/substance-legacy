@@ -120,7 +120,7 @@
 
             <div class="toggles">
               <!--<a class="toggle settings" href="#"><div class="icon"></div>Settings</a>-->
-              <a class="toggle view-online hidden" href="<%= Substance.settings.hub+'/documents/'+doc.id %>"><div class="icon"></div>View Online</a>
+              <a class="toggle view-online hidden" href="<%= Substance.settings.hub+'/public/'+doc.id %>"><div class="icon"></div>View Online</a>
               <a class="toggle collaborators" href="#"><div class="icon"></div>Collaborators</a>
               <!--<a class="toggle export" href="#"><div class="icon"></div>Export</a>-->
             </div>
@@ -293,9 +293,22 @@
 
     <script type="text/x-ejs-template" name="document">
       <div id="document_content">
+        <div class="cover-image-wrapper">
+          <% if (properties.cover) { %>
+            <img class="cover-image" src="<%= properties.cover %>"/>  
+          <% } else { %>
+            <img class="cover-image" src="http://farm7.staticflickr.com/6235/6279776790_19e9569720_b.jpg"/>  
+          <% } %>
+          <input type="file" class="cover-file" name="cover[]"/>
+
+          <div class="cover-image-placeholder">
+            Drop image here to replace cover
+          </div>
+        </div>
         <div class="properties">
-          <div class="document-title" contenteditable="true"></div>
-          <div class="document-abstract" contenteditable="true"></div>
+            <div class="document-title" contenteditable="true"></div>
+            <div class="document-abstract" contenteditable="true"></div>
+            
         </div>
 
         <div class="left-rail"></div>
@@ -408,15 +421,20 @@
     <script src="lib/data.js"></script>
     <script src="lib/backbone.js"></script>
     <script src="lib/base64.js"></script>
+    <script src="lib/async.js"></script>
+    <script src="lib/client/client.js"></script>
 
     <script src="lib/dmp.js"></script>
-    <script src="lib/operation.js"></script>
+    <script src="lib/document/lib/operation.js"></script>
     <script src="lib/jquery.timeago.js"></script>
 
     <script src="lib/surface/surface.js"></script>
 
     <!-- Extensions -->
-    <script src="lib/store/src/store.js"></script>
+    <script src="lib/store/src/redis_store.js"></script>
+    <script src="lib/store/src/local_store.js"></script>
+    <script src="lib/store/src/remote_store.js"></script>
+
 
     <!-- Model -->
     <script src="lib/document/document.js"></script>
@@ -424,6 +442,7 @@
     <script src="src/util.js"></script>
 
     <script src="src/replicator.js"></script>
+    <script src="src/session.js"></script>
     <script src="src/model.js"></script>
 
     <!-- Views -->
@@ -451,6 +470,9 @@
 
     <!-- Boot -->
     <script src="src/boot.js"></script>
+
+    <!-- Load test case -->
+    <!--<script src="tests/001-hello-world/composer.js"></script>-->
 
   </head>
   <body>
