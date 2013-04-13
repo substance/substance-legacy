@@ -294,7 +294,12 @@ $(function() {
 
     key('ctrl+alt+d', _.bind(function() {
       var id = window.doc ? window.doc.id : "empty.json";
-      document.location.href = "test/index.html#"+app.user+"/"+id;
+      document.location.href = "console/index.html#"+app.user+"/"+id;
+      return false;
+    }, this));
+
+    key('ctrl+alt+t', _.bind(function() {
+      document.location.href = "test/index.html";
       return false;
     }, this));
 
