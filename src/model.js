@@ -99,13 +99,6 @@ function initSession() {
     "token": token() // auto-authenticate
   });
 
-  // localStore = new Substance.LocalStore({
-  //   scope: username,
-  //   store: new Substance.RedisStore({
-  //     scope: username
-  //   }),
-  //   appSettings: appSettings
-  // });
 
   localStore = new Substance.RedisStore({
     scope: username
@@ -124,3 +117,37 @@ function initSession() {
   });
 }
 
+
+// TODO: Find a better place
+
+function createDump() {
+  // TODO: Iterate over all exisiting scopes
+  var scopes = ["michael", "oliver"];
+  var dump = {};
+
+  _.each(scopes, function(scope) {
+    var store = new Substance.RedisStore({scope: scope});
+    dump[scope] = store.dump();
+  });
+  return dump;
+}
+
+// This is redundant to hub/lib/documents.js
+function seed(seeds, cb) {
+  console.log('Seeding the docstore...');
+
+  new Substance.RedisStore({
+        scope: "test"
+      }).clear();
+
+  if (seeds) {
+    _.each(seeds, function(seed, scope) {
+      new Substance.RedisStore({
+        scope: scope
+      }).seed(seed);
+    });    
+  }
+
+  if (cb) cb(null);
+  return true;
+}
