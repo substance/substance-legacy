@@ -1,7 +1,7 @@
 // Helpers
 // ---------------
 
-s.util = {};
+Substance.util = {};
 
 // A fake console to calm down some browsers.
 if (!window.console) {
