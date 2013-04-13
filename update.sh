@@ -102,3 +102,6 @@ if [ ! -f CMakeCache.txt ]; then
   cmake -DEXTERNALS_DIR=$EXTERNALS -DCMAKE_PREFIX_PATH=$EXTERNALS ..
 fi
 make
+
+cd $PROJECT_DIR
+cp config.example.json config.json
