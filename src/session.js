@@ -350,7 +350,11 @@ _.extend(Substance.Session.prototype, _.Events, {
 
   // Authenticate session
   authenticate: function(username, password, cb) {
-    this.client.authenticate(username, password, cb);
+    this.client.authenticate(username, password, function(err, data) {
+      if (err) return cb(err);
+      initSession(username, data.token);
+      cb(null, data);
+    });
   },
 
   // Create a new user on the server

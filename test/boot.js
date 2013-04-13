@@ -1,4 +1,4 @@
-  Substance.settings = {
+Substance.settings = {
   hub: "http://substance.io",
   hub_api: "https://substance.io/api/v1",
   client_id: "f7043dc691102f3ac3175e606af2c8cb",

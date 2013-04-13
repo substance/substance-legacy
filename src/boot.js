@@ -10,6 +10,7 @@ $(function() {
       this.route('dashboard', 'dashboard', app.dashboard);
       this.route('', 'start', app.dashboard);
       this.route('login', 'login', app.login);
+      this.route('logout', 'logout', app.login);
       this.route('signup', 'signup', app.signup);
     },
 
@@ -128,10 +129,7 @@ $(function() {
         }
 
         that.user = username;
-        appSettings.set('user', that.user);
-        appSettings.set('api-token', data.token);
 
-        initSession(); // Re-init session as user scope changes
         that.dashboard();
       });
       return false;
@@ -153,10 +151,7 @@ $(function() {
         }
 
         that.user = user.username;
-        appSettings.set('user', that.user);
-        appSettings.set('api-token', data.token);
 
-        initSession(); // Re-init session as user scope changes
         that.dashboard();
       });
 
@@ -165,8 +160,7 @@ $(function() {
 
     _logout: function() {
       this.user = null;
-      appSettings.set('user', '');
-      appSettings.set('api-token', '');
+      initSession();
       this.render();
       this.login();
       return false;
@@ -212,7 +206,6 @@ $(function() {
     newDocument: function() {
       var that = this;
       session.createDocument(function(err, doc) {
-        console.log('doc created', doc);
         that.view = new sc.views.Editor({model: session });
         that.render();
         router.navigate('documents/'+session.document.id, false);
@@ -234,7 +227,7 @@ $(function() {
       if (!this.user) return this.login();
       this.view = new Dashboard();
       this.render();
-      // this.updateMenu();
+      router.navigate('/');
       return;
     },
 
@@ -285,7 +278,8 @@ $(function() {
 
 
   loadConfig(function(err, config) {
-    initSession();
+  
+    initSession(user(), token());
 
     // Start the engines
     window.app = new Application({el: 'body'});

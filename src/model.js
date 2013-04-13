@@ -89,26 +89,31 @@ var client,
     remoteStore,
     session;
 
-function initSession() {
-  var username = user() || "anonymous";
+function initSession(username, token) {
+  appSettings.set('user', username || '');
+  appSettings.set('api-token', token || '');
 
   client = new Substance.Client({
     "hub_api": Substance.settings.hub_api,
     "client_id": Substance.settings.client_id,
     "client_secret": Substance.settings.client_secret,
-    "token": token() // auto-authenticate
+    "token": token // auto-authenticate
   });
 
+  if (username) {
+    localStore = new Substance.RedisStore({
+      scope: username
+    });
 
-  localStore = new Substance.RedisStore({
-    scope: username
-  });
+    // Assumes client instance is authenticated
+    remoteStore = new Substance.RemoteStore({
+      client: client
+    });
 
-
-  // Assumes client instance is authenticated
-  remoteStore = new Substance.RemoteStore({
-    client: client
-  });
+  } else {
+    localStore = null;
+    remoteStore = null;
+  }
 
   session = new Substance.Session({
     client: client,
@@ -122,7 +127,7 @@ function initSession() {
 
 function createDump() {
   // TODO: Iterate over all exisiting scopes
-  var scopes = ["michael", "oliver"];
+  var scopes = ["michael", "oliver", "admin"];
   var dump = {};
 
   _.each(scopes, function(scope) {
