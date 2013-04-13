@@ -25,6 +25,14 @@ var AppSettings = function(settings) {
     hash.set(key, value);
   };
 
+  this.toJSON = function() {
+    var res = {};
+    _.each(hash.getKeys(), function(key) {
+      res[key] = this.get(key);
+    }, this);
+    return res;
+  };
+
   this.get = function(key) {
     return hash.getJSON(key);
   };
@@ -85,19 +93,24 @@ function initSession() {
   var username = user() || "anonymous";
 
   client = new Substance.Client({
-    "hub_api": "http://localhost:3000/api/v1",
-    "client_id": "8ba8c3b60c2d703f84619c1edfbf4cef",
-    "client_secret": "e781e119242c5a998b27a7c024f3acdc",
+    "hub_api": Substance.settings.hub_api,
+    "client_id": Substance.settings.client_id,
+    "client_secret": Substance.settings.client_secret,
     "token": token() // auto-authenticate
   });
 
-  localStore = new Substance.LocalStore({
-    scope: username,
-    store: new Substance.RedisStore({
-      scope: username
-    }),
-    appSettings: appSettings
+  // localStore = new Substance.LocalStore({
+  //   scope: username,
+  //   store: new Substance.RedisStore({
+  //     scope: username
+  //   }),
+  //   appSettings: appSettings
+  // });
+
+  localStore = new Substance.RedisStore({
+    scope: username
   });
+
 
   // Assumes client instance is authenticated
   remoteStore = new Substance.RemoteStore({
@@ -111,4 +124,3 @@ function initSession() {
   });
 }
 
-initSession();
