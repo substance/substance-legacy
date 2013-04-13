@@ -283,7 +283,10 @@ $(function() {
     .error(function() { cb('not_found: using defaults'); });
   }
 
+
   loadConfig(function(err, config) {
+    initSession();
+
     // Start the engines
     window.app = new Application({el: 'body'});
     window.router = new Router({});
