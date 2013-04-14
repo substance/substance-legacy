@@ -28,5 +28,5 @@ lib/surface
 lib/store
 lib/client
 
-/tests
+/test/tests
 /lib/util
