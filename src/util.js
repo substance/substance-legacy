@@ -1,7 +1,8 @@
 // Helpers
 // ---------------
 
-Substance.util = {};
+if (typeof Substance === 'undefined') Substance = {};
+if (typeof Substance.util === 'undefined') Substance.util = {};
 
 // A fake console to calm down some browsers.
 if (!window.console) {
@@ -86,7 +87,7 @@ _.extractOperation = function(baseText, newText) {
 
     return m === 1 ? d : (m === -1 ? -1*d.length : d.length)
   }
-  
+
   return _.map(changes, mapOp);
 }
 
