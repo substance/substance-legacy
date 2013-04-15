@@ -14,8 +14,9 @@ function runTest(name, test) {
   test.run(function(err) {
     if(err) {
       $(selResult).text("Failed").removeClass("success").addClass("fail").show();
-      $(selOutput).text(err.toString()).show();
-      console.log("Test failed:" + err);
+
+      $(selOutput).text(JSON.stringify(err, null, '  ')).show();
+      console.log("Test failed:", err);
     } else {
       $(selResult).text("Ok").removeClass("fail").addClass("success").show();
       console.log("Test succeeded.");
