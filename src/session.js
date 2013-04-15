@@ -146,6 +146,7 @@ _.extend(Substance.Session.prototype, _.Events, {
   loadDocument: function(id, cb) {
     var that = this;
     this.localStore.get(id, function(err, doc) {
+      if (err) return cb(err);
       that.document = new Substance.Document(doc);
       that.initDoc();
       cb(err, that.document);
