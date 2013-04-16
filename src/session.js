@@ -364,6 +364,7 @@ _.extend(Substance.Session.prototype, _.Events, {
   },
 
   listDocuments: function(cb) {
+    if (!this.localStore) return cb(null, []);
     this.localStore.list(function(err, documents) {
       var res = _.map(documents, function(doc) {
         return {
