@@ -245,7 +245,6 @@ Substance.Replicator = function(params) {
         // now remoteDocs contains only document's that have not been local
         // and need to be created locally
         _.each(remoteDocs, function(remoteDoc, id) {
-            console.log("create local doc?", remoteDoc, id);
             if(remoteDoc) jobs.push({id: id, action: "create-local"});
         });
 
