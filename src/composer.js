@@ -267,16 +267,16 @@
     },
 
     updateUndoRedoControls: function() {
-      var master = this.model.document.getRef('master');
-      var tail = this.model.document.getRef('tail');
-      
-      if (master === tail) {
+      var head = this.model.document.getRef('master', 'head');
+      var last = this.model.document.getRef('master', 'last');
+
+      if (head === last) {
         $('#document_menu .redo').addClass('disabled');
       } else {
         $('#document_menu .redo').removeClass('disabled');
       }
 
-      if (master === null) {
+      if (head === null) {
         $('#document_menu .undo').addClass('disabled');
       } else {
         $('#document_menu .undo').removeClass('disabled');

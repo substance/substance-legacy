@@ -45,7 +45,7 @@ var appSettings = new AppSettings();
 // -----------------
 
 function updateRef(doc, ref, sha, cb) {
-  store.setRef(doc.id, ref, sha);
+  store.setRef(doc.id, "master", ref, sha);
   updateMeta(doc, cb);
 };
 
@@ -73,7 +73,7 @@ function user() {
 }
 
 function synced(docId) {
-  return session.localStore.getRef(docId, 'master') === session.localStore.getRef(docId, 'master-remote');
+  return session.localStore.getRef(docId, 'master', 'head') === session.localStore.getRef(docId, 'remote:master', 'head');
 }
 
 function published(doc) {
