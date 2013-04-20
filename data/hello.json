@@ -2,7 +2,9 @@
   "id": "document:hello",
   "meta": {},
   "refs": {
-    "master": "80895d15d6b6eca5733af79cc0f74b1b"
+    "master": {
+       "head": "80895d15d6b6eca5733af79cc0f74b1b"
+    }
   },
   "commits": {
     "b0a4df43adba704eaef6809ada25bc4a": {

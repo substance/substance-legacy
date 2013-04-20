@@ -119,7 +119,7 @@ _.extend(Substance.Session.prototype, _.Events, {
     }, this);
 
     this.document.on('ref:updated', function(ref, sha) {
-      this.localStore.setRef(this.document.id, ref, sha);
+      this.localStore.setRef(this.document.id, 'master', ref, sha);
       this.updateMeta();
     }, this);
   },
@@ -236,7 +236,7 @@ _.extend(Substance.Session.prototype, _.Events, {
     this.client.createVersion(doc.id, doc.content, function(err) {
       if (err) return cb(err);
       doc.meta.published_at = new Date();
-      doc.meta.published_commit = doc.getRef('master');
+      doc.meta.published_commit = doc.getRef('master', 'head');
       that.updateMeta(function() {
         that.loadPublications(cb);
       });
@@ -260,7 +260,7 @@ _.extend(Substance.Session.prototype, _.Events, {
   publishState: function() {
     var doc = this.document;
     if (!doc.meta.published_commit) return "unpublished";
-    if (doc.getRef('master') === doc.meta.published_commit) return "published";
+    if (doc.getRef('master', 'head') === doc.meta.published_commit) return "published";
     return "dirty";
   },
 
@@ -365,6 +365,7 @@ _.extend(Substance.Session.prototype, _.Events, {
   },
 
   listDocuments: function(cb) {
+    if (!this.localStore) return cb(null, []);
     this.localStore.list(function(err, documents) {
       var res = _.map(documents, function(doc) {
         return {

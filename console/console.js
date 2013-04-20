@@ -230,7 +230,7 @@ $(function() {
         user: "demo"
       });
 
-      this.sha = this.model.model.refs['master'];
+      this.sha = this.model.getRef('head');
 
       this.render();
       return false;
@@ -241,8 +241,7 @@ $(function() {
       // Checkout previous version
       this.model.checkout(sha);
 
-      // TODO: setRef
-      this.model.setRef('master', sha);
+      this.model.setRef('head', sha);
 
       this.sha = sha;
       this.render(); // Re-render it
@@ -250,7 +249,7 @@ $(function() {
     },
 
     initialize: function (options) {
-      this.sha = this.model.model.refs['master'];
+      this.sha = this.model.getRef('head');
       this.scope = 'document';
     },
 
@@ -262,9 +261,9 @@ $(function() {
     // Render application template
     render: function() {
 
-      var tail = this.model.getRef('tail') || this.model.getRef('master');
-      console.log('tail', tail);
-      var commits = this.model.commits(tail);
+      var last = this.model.getRef('last') || this.model.getRef('head');
+      console.log('last', last);
+      var commits = this.model.commits(last);
 
       this.$el.html(_.tpl('document', {
         sha: this.sha,
@@ -335,7 +334,7 @@ function loadDocument(user, doc, cb) {
 
 function updateDoc(doc, commit, cb) {
   store.update(doc.id, [commit], function(err) {
-    store.setSnapshot(doc.id, doc.content, 'master', function(err) {
+    store.setSnapshot(doc.id, doc.content, 'master', 'head', function(err) {
       // Update metadata accordingly
       if (commit.op[0] === "set") {
         _.extend(doc.meta, doc.content.properties);
@@ -349,5 +348,6 @@ function updateDoc(doc, commit, cb) {
 // -----------------
 
 function updateRef(doc, ref, sha, cb) {
-  store.setRef(doc.id, ref, sha); //  = function(id, ref, sha, cb) {
+  // TODO: provisionally branch hard coded
+  store.setRef(doc.id, 'master', ref, sha); //  = function(id, ref, sha, cb) {
 };

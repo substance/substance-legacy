@@ -14,9 +14,12 @@ function runTest(name, test) {
   test.run(function(err) {
     if(err) {
       $(selResult).text("Failed").removeClass("success").addClass("fail").show();
-
-      $(selOutput).text(JSON.stringify(err, null, '  ')).show();
-      console.log("Test failed:", err);
+      var output = $(selOutput);
+      output.append($('<div></div>').text(err.toString()));
+      output.append($('<div></div>').text(JSON.stringify(err, null, '  ')));
+      output.show();
+      console.log("Test failed.");
+      console.log(err.toString())
     } else {
       $(selResult).text("Ok").removeClass("fail").addClass("success").show();
       console.log("Test succeeded.");
@@ -32,6 +35,8 @@ function createTestUI() {
     var button = $('<div class="button">Run</div>');
     var result = $('<div class="result"></div>');
     var output = $('<div class="output"></div>');
+    result.hide();
+    output.hide();
 
     button.click(function() { runTest(name, test); } );
 

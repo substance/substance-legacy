@@ -1,7 +1,9 @@
 {
   "id": "document:substance",
   "refs": {
-    "master": "47e52bb1da3ce84f3f830028d70d56b0"
+    "master": {
+      "head": "47e52bb1da3ce84f3f830028d70d56b0"
+    }
   },
   "commits": {
     "b0a4df43adba704eaef6809ada25bc4a": {

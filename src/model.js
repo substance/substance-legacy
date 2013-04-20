@@ -45,7 +45,7 @@ var appSettings = new AppSettings();
 // -----------------
 
 function updateRef(doc, ref, sha, cb) {
-  store.setRef(doc.id, ref, sha);
+  store.setRef(doc.id, "master", ref, sha);
   updateMeta(doc, cb);
 };
 
@@ -73,7 +73,7 @@ function user() {
 }
 
 function synced(docId) {
-  return session.localStore.getRef(docId, 'master') === session.localStore.getRef(docId, 'master-remote');
+  return session.localStore.getRef(docId, 'master', 'head') === session.localStore.getRef(docId, 'remote:master', 'head');
 }
 
 function published(doc) {
@@ -90,6 +90,7 @@ var client,
     session;
 
 function initSession(username, token) {
+  env = Substance.env || "";
   appSettings.set('user', username || '');
   appSettings.set('api-token', token || '');
 
@@ -102,7 +103,7 @@ function initSession(username, token) {
 
   if (username) {
     localStore = new Substance.RedisStore({
-      scope: username
+      scope: env+":"+username
     });
 
     // Assumes client instance is authenticated
@@ -124,8 +125,9 @@ function initSession(username, token) {
 
 
 // TODO: Find a better place
+if (typeof Substance.test === 'undefined') Substance.test = {};
 
-function createDump() {
+Substance.test.createDump = function() {
   // TODO: Iterate over all exisiting scopes
   var scopes = ["michael", "oliver", "admin"];
   var dump = {};
@@ -138,19 +140,21 @@ function createDump() {
 }
 
 // This is redundant to hub/lib/documents.js
-function seed(seeds, cb) {
+Substance.test.seed = function (seeds, cb) {
   console.log('Seeding the docstore...');
 
-  new Substance.RedisStore({
-        scope: "test"
-      }).clear();
+  // flush the test store
+  var testStore = new Substance.RedisStore({
+    scope: "test"
+  })
+  testStore.clear();
 
   if (seeds) {
     _.each(seeds, function(seed, scope) {
       new Substance.RedisStore({
-        scope: scope
+        scope: "test:"+scope
       }).seed(seed);
-    });    
+    });
   }
 
   if (cb) cb(null);

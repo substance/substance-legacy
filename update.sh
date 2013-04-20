@@ -1,3 +1,5 @@
+#!/bin/bash
+
 PROJECT_DIR=$(pwd)
 
 # sanity check: executed in the root folder?
