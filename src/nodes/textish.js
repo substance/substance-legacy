@@ -7,7 +7,14 @@ Textish = {
   // Initialize Surface
   initSurface: function() {
     var that = this;
-    var annotations = app.view.model.document.annotations(this.model.id);
+    var annos = app.view.model.document.find('annotations', this.model.id);
+
+    var annotations = {};
+
+    // Convert annotations to object format
+    _.each(annos, function(a) {
+      annotations[a.id] = a;
+    });
 
     this.surface = new Substance.Surface({
       el: this.$('.content')[0],
@@ -15,6 +22,7 @@ Textish = {
       annotations: annotations,
       types: this.types
     });
+
 
     // Events
     // ------
@@ -57,21 +65,18 @@ Textish = {
 
     // Changes are confirmed.
     this.surface.on('content:changed', function(content, prevContent, ops) {
-
       var delta = _.extractOperation(prevContent, content);
 
       // Update content incrementally
       if (content !== prevContent) {
-        that.document.apply(["update", {id: that.model.id, "data": delta}]);
+        that.document.apply(["update", {id: that.model.id, "data": {"content": delta}}]);
       }
-
-      // console.log('annotation ops', ops);
 
       // Applying annotation ops...
       _.each(ops, function(op) {
-        op[0] += "_annotation"; // should be done on the surface level?
-        op[1].node = that.model.id;
-        that.document.apply(op, {user: "michael"});
+        consoel.log('op to be executed', op);
+        if (op[1].data) op[1].data.node = that.model.id;
+        that.document.apply(op);
       });
     });
   },
@@ -103,8 +108,8 @@ Textish = {
 
     if (!sel) return;
 
-    if (_.include(["em", "str", "code", "link"], type)) {
-      var types = ["em", "str", "code", "link"];
+    if (_.include(["emphasis", "strong", "code", "link"], type)) {
+      var types = ["emphasis", "strong", "code", "link"];
     } else {
       var types = ["idea", "question", "error"];
     }
@@ -166,6 +171,7 @@ Textish = {
 
   // Create a new annotation with the given annotation type
   insertAnnotation: function(type, sel) {
+
     var id = "annotation:"+Math.uuid();
     var data = {
       id: id,
@@ -179,7 +185,7 @@ Textish = {
 
     this.surface.insertAnnotation(data);
 
-    if (_.include(["em", "str", "code", "link"], type)) return; // skip comment-scope selection
+    if (_.include(["emphasis", "strong", "code", "link"], type)) return; // skip comment-scope selection
     router.trigger('comment-scope:selected', id, this.model.id, id);
   },
   

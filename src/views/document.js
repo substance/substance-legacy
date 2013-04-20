@@ -161,6 +161,10 @@ sc.views.Document = Backbone.View.extend({
 
   insert: function(options) {
     var node = this.getNode(options.id);
+
+    var types = this.model.document.getTypes(node.type);
+    if (types[0] !== "content") return; // skip non-content nodes
+
     var view = this.createNodeView(node);
 
     this.nodes[node.id] = view;
@@ -177,6 +181,9 @@ sc.views.Document = Backbone.View.extend({
 
   // Node content has been updated
   update: function(options) {
+    var types = this.model.document.getTypes(this.getNode(options.id).type);
+    if (types[0] !== "content") return; // skip non-content nodes
+
     var node = this.nodes[options.id];
 
     // Only rerender if not update comes from outside
@@ -195,7 +202,7 @@ sc.views.Document = Backbone.View.extend({
 
   build: function() {
     this.nodes = {};
-    this.model.document.list(function(node) {
+    this.model.document.each(function(node) {
       this.nodes[node.id] = this.createNodeView(node);
     }, this);
   },
@@ -331,9 +338,11 @@ sc.views.Document = Backbone.View.extend({
     var selection = this.model.users[this.model.user].selection;
     var last = this.getNode(_.last(selection));
 
-    if (last.next) {
+    var successor = this.model.document.getSuccessor(last.id);
+
+    if (successor) {
       this.model.document.apply(["move", {
-        "nodes": selection, "target": last.next
+        "nodes": selection, "target": successor
       }], {
         user: this.model.user
       });
@@ -345,8 +354,13 @@ sc.views.Document = Backbone.View.extend({
     var first = this.getNode(_.first(selection));
     var doc = this.model.document.content;
 
-    if (first.prev) { 
-      var target = doc.head === first.prev ? 'front' : this.getNode(first.prev).prev;
+    var pos = this.model.document.position(first.id);
+    var pred = this.model.document.getPredecessor(first.id);
+
+    pred = this.model.document.getPredecessor(pred);
+    if (pred || pos === 1) {
+      // If first selected node is at index 1 move selection to front
+      var target = pos === 1 ? 'front' : pred;
       this.model.document.apply(["move", {
         "nodes": selection, "target": target
       }], {
@@ -366,7 +380,6 @@ sc.views.Document = Backbone.View.extend({
   select: function (e) {
     // Skip when move handle has been clicked
     if ($(e.target).hasClass('move')) return;
-
     var id = $(e.currentTarget)[0].id.replace(/_/g, ":");
     this.model.select([id]);
   },
@@ -397,7 +410,7 @@ sc.views.Document = Backbone.View.extend({
     this.initSurface("abstract");
     this.initSurface("title");
 
-    this.model.document.list(function(node) {
+    this.model.document.each(function(node) {
       $(this.nodes[node.id].render().el).appendTo(this.$('.nodes'));
     }, this);
 

@@ -931,11 +931,11 @@ h2 { font-size: 160%; padding-bottom: 15px; }
   opacity: 0.6;
 }
 
-.annotation-toggles a.em {
+.annotation-toggles a.emphasis {
   background: #ccc url(../images/icons/em.png) 7px center no-repeat;
 }
 
-.annotation-toggles a.str {
+.annotation-toggles a.strong {
   background: #ccc url(../images/icons/str.png) 7px center no-repeat;
 }
 
@@ -943,7 +943,7 @@ h2 { font-size: 160%; padding-bottom: 15px; }
   background: #ccc url(../images/icons/link.png) 7px center no-repeat;
 }
 
-.annotation-toggles a.code {
+.annotation-toggles a.inline-code {
   background: #ccc url(../images/icons/code.png) 7px center no-repeat;
 }
 
@@ -976,7 +976,7 @@ h2 { font-size: 160%; padding-bottom: 15px; }
 .content-node .question { background-color: rgba(16, 167, 222, 0.3); }
 .content-node .error { background-color: rgba(237, 96, 48, 0.3); }
 .content-node .link { color: #DC4A1D; text-decoration: underline;}
-.content-node .code {
+.content-node .inline-code {
   font-family: Consolas, "Liberation Mono", Courier, monospace; background: #eee; font-size: 15px
   -webkit-font-smoothing: subpixel-antialiased;
 }
@@ -985,9 +985,9 @@ h2 { font-size: 160%; padding-bottom: 15px; }
 .content-node .question.highlight { background-color: rgba(16, 167, 222, 0.6);}
 .content-node .error.highlight { background-color: rgba(237, 96, 48, 0.6); }
 
-.content-node.text .em { font-style: italic; }
+.content-node.text .emphasis { font-style: italic; }
 /*.content-node.text .link { background-color: #00CFEA; }*/
-.content-node.text .str { font-weight: bold; }
+.content-node.text .strong { font-weight: bold; }
 
 
 /* Code Node

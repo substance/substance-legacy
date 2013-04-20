@@ -23,13 +23,16 @@ sc.views.Comments = Backbone.View.extend({
     if (!node) node = undefined;
     if (!annotation) annotation = undefined;
 
-    this.model.document.apply(["insert_comment", {
+    this.model.document.apply(["insert", {
       id: "comment:"+Math.uuid(),
-      content: content,
-      node: node,
-      annotation: annotation,
-      created_at: new Date().toJSON(),
-      user: app.user
+      type: "comment",
+      data: {
+        content: content,
+        node: node,
+        annotation: annotation,
+        created_at: new Date().toJSON(),
+        user: app.user
+      }
     }]);
 
     // Not too smart™
@@ -44,7 +47,7 @@ sc.views.Comments = Backbone.View.extend({
   _deleteComment: function(e) {
     var comment = $(e.currentTarget).attr('data-id');
 
-    this.model.document.apply(["delete_comment", { id: comment }]);
+    this.model.document.apply(["delete", { nodes: [comment] }]);
     this.model.comments.compute(this.scope);
     return false;
   },
@@ -53,16 +56,16 @@ sc.views.Comments = Backbone.View.extend({
     var node = this.$('.comment-scope.active').attr('data-node');
     var annotation = this.$('.comment-scope.active').attr('data-annotation');
 
-    this.model.document.apply(["delete_annotation", { id: annotation }]);
+    this.model.document.apply(["delete", { nodes: [annotation] }]);
 
     this.model.comments.compute();
-    // this.render();
+
     this.activateScope('node_comments');
 
     // Delete all associated comments
-    var comments = this.model.document.commentsForAnnotation(annotation);
+    var comments = this.model.document.find('comments', annotation);
 
-    this.model.document.apply(["delete_comment", { nodes: _.pluck(comments, 'id')}]);
+    this.model.document.apply(["delete", { nodes: _.pluck(comments, 'id')}]);
     
     // Notify Surface
     router.trigger('annotation:deleted', node, annotation);

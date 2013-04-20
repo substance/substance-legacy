@@ -3,17 +3,17 @@ sc.views.Node.define('text', _.extend(Textish, {
   className: 'content-node text',
 
   types: {
-    "em": {
-      "description": 'Emphasized',
+    "emphasis": {
+      "description": 'Emphasis',
       "inclusive": true,
       "visibility" : 'both'
     },
-    "str": {
+    "strong": {
       "description": 'Strong',
       "inclusive": true,
       "visibility" : 'both'
     },
-    "code": {
+    "inline-code": {
       "description": 'Code',
       "inclusive": true,
       "visibility" : 'both'

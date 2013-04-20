@@ -15,7 +15,7 @@ _.extend(Substance.Comments.prototype, _.Events, {
     if (node) {
       var nodeData = this.session.document.content.nodes[node];
       var content = nodeData.content;
-      var annotations = this.session.document.annotations(node);
+      var annotations = this.session.document.find('annotations', node);
     }
     this.commentsForNode(this.session.document, node, content, annotations, scope);
   },
@@ -46,7 +46,7 @@ _.extend(Substance.Comments.prototype, _.Events, {
         name: "Node",
         type: "node",
         id: "node_comments",
-        comments: document.comments(node)
+        comments: document.find('comments', node)
       });
 
       _.each(annotations, function(a) {
@@ -56,18 +56,19 @@ _.extend(Substance.Comments.prototype, _.Events, {
             type: a.type,
             annotation: a.id,
             id: a.id,
-            comments: document.commentsForAnnotation(a.id)
+            comments: document.find('comments', a.id)
           });
         }
 
       }, this);
     } else {
-      this.scopes.push({
-        id: "document_comments",
-        name: "Document",
-        type: "document",
-        comments: document.documentComments()
-      });
+      // No document scopes for now
+      // this.scopes.push({
+      //   id: "document_comments",
+      //   name: "Document",
+      //   type: "document",
+      //   comments: []
+      // });
     }
     this.session.trigger('comments:updated', scope);
   }

@@ -37,7 +37,7 @@ sc.views.Node = Backbone.View.extend(_.extend({}, s.StateMachine, {
   focus: function () {},
 
   render: function (notEditable) {
-    var cnt = this.document.comments(this.model.id).length;
+    var cnt = this.document.find('comments', this.model.id).length; // this.document.comments(this.model.id).length;
     var annotations = [];
 
     // _.each(this.document.annotations(this.model.id), function(a) {
