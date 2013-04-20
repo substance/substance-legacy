@@ -74,7 +74,6 @@ Textish = {
 
       // Applying annotation ops...
       _.each(ops, function(op) {
-        consoel.log('op to be executed', op);
         if (op[1].data) op[1].data.node = that.model.id;
         that.document.apply(op);
       });
