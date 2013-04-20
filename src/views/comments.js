@@ -24,7 +24,7 @@ sc.views.Comments = Backbone.View.extend({
     if (!annotation) annotation = undefined;
 
     this.model.document.apply(["insert", {
-      id: "comment:"+Math.uuid(),
+      id: "comment:"+Substance.util.uuid(),
       type: "comment",
       data: {
         content: content,

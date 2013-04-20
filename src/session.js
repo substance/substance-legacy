@@ -126,7 +126,7 @@ _.extend(Substance.Session.prototype, _.Events, {
 
   // Create a new document locally
   createDocument: function(cb) {
-    var id = Math.uuid();
+    var id = Substance.util.uuid();
     var that = this;
 
     this.localStore.create(id, function(err, doc) {

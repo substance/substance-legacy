@@ -171,7 +171,7 @@ Textish = {
   // Create a new annotation with the given annotation type
   insertAnnotation: function(type, sel) {
 
-    var id = "annotation:"+Math.uuid();
+    var id = "annotation:"+Substance.util.uuid();
     var data = {
       id: id,
       type: type,

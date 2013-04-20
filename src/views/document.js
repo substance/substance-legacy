@@ -220,7 +220,7 @@ sc.views.Document = Backbone.View.extend({
     if (type === "heading") properties["level"] = 1;
   
     this.model.document.apply(["insert", {
-      "id": Math.uuid(type+':', 8),
+      "id": Substance.util.uuid(type+':', 8),
       "type": type,
       "target": target,
       "data": properties
