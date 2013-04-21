@@ -224,7 +224,7 @@ sc.views.Document = Backbone.View.extend({
       "target": target,
       "data": properties
     }], {
-      user: this.model.user  
+      user: this.model.user()  
     });
   },
 
@@ -232,7 +232,7 @@ sc.views.Document = Backbone.View.extend({
     this.model.document.apply(["delete", {
       "nodes": this.model.selection()
     }], {
-      user: this.model.user
+      user: this.model.user()
     });
   },
 
@@ -301,7 +301,7 @@ sc.views.Document = Backbone.View.extend({
   // --------
 
   selectNext: function() {
-    var selection = this.model.users[this.model.user].selection;
+    var selection = this.model.users[this.model.user()].selection;
     var doc = this.model.document;
     if (selection.length === 0) return this.model.select([_.first(doc.lists.content)]);
     var next = doc.getSuccessor(_.last(selection));
@@ -309,7 +309,7 @@ sc.views.Document = Backbone.View.extend({
   },
 
   selectPrev: function() {
-    var selection = this.model.users[this.model.user].selection;
+    var selection = this.model.users[this.model.user()].selection;
     var doc = this.model.document;
     if (selection.length === 0) return this.model.select([_.last(doc.lists.content)]);
     var prev = doc.getPredecessor(_.first(selection));
@@ -317,7 +317,7 @@ sc.views.Document = Backbone.View.extend({
   },
 
   expandSelection: function() {
-    var selection = this.model.users[this.model.user].selection;
+    var selection = this.model.users[this.model.user()].selection;
     var lastnode = _.last(selection);
     var doc = this.model.document;
 
@@ -330,12 +330,12 @@ sc.views.Document = Backbone.View.extend({
   },
 
   narrowSelection: function() {
-    var selection = this.model.users[this.model.user].selection;
+    var selection = this.model.users[this.model.user()].selection;
     this.model.select(_.clone(selection).splice(0, selection.length-1));
   },
 
   moveDown: function() {
-    var selection = this.model.users[this.model.user].selection;
+    var selection = this.model.users[this.model.user()].selection;
     var last = this.getNode(_.last(selection));
 
     var successor = this.model.document.getSuccessor(last.id);
@@ -344,13 +344,13 @@ sc.views.Document = Backbone.View.extend({
       this.model.document.apply(["move", {
         "nodes": selection, "target": successor
       }], {
-        user: this.model.user
+        user: this.model.user()
       });
     }
   },
 
   moveUp: function() {
-    var selection = this.model.users[this.model.user].selection;
+    var selection = this.model.users[this.model.user()].selection;
     var first = this.getNode(_.first(selection));
     var doc = this.model.document;
 
@@ -364,7 +364,7 @@ sc.views.Document = Backbone.View.extend({
       doc.apply(["move", {
         "nodes": selection, "target": target
       }], {
-        user: this.model.user
+        user: this.model.user()
       });
     }
   },
