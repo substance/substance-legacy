@@ -6,6 +6,8 @@ $(function() {
       this.route(':document', 'loadDocument', this.loadDocument);
       this.route('demo/:document', 'loadDocument', this.loadDocument);
       this.route('documents/:document', 'loadDocument', this.loadDocument);
+      this.route('tests', 'tests', app.testsuite);
+      this.route('console/:document', 'tests', app.console);
       this.route('new', 'newDocument', this.newDocument);
       this.route('dashboard', 'dashboard', app.dashboard);
       this.route('', 'start', app.dashboard);
@@ -86,7 +88,16 @@ $(function() {
       'submit #signup_form': '_signup',
       'click .logout': '_logout',
       'click #container': '_clear',
-      'click #header .sync': '_sync'
+      'click #header .sync': '_sync',
+      'change #environment': '_switchEnvironment'
+    },
+
+    _switchEnvironment: function() {
+      var env = $('#environment').val();
+
+      initSession(env);
+      appSettings.setItem('env', env);
+      this.dashboard();
     },
 
     _clear: function(e) {
@@ -159,33 +170,49 @@ $(function() {
     },
 
     _logout: function() {
-      this.user = null;
-      initSession();
+      session.logout();
       this.render();
+
+      // Show login screen
       this.login();
       return false;
     },
 
     initialize: function(options) {
       var that = this;
-      _.bindAll(this, 'document', 'dashboard', 'login', 'signup');
-      this.user = appSettings.get('user');
+      _.bindAll(this, 'document', 'dashboard', 'login', 'signup', 'console', 'testsuite');
     },
 
     // Toggle document view
     document: function(id) {
       var that = this;
       session.loadDocument(id, function(err, doc) {
-        // console.log('YOO', doc);
         // Shortcuts
         window.doc = session.document;
-        // window.session = session;
 
         that.view = new sc.views.Editor({model: session });
         that.render();
         that.listenForDocumentChanges();
-        // router.navigate(id, false);
       });
+    },
+
+    // Toggle document view
+    console: function(id) {
+      var that = this;
+
+      session.loadDocument(id, function(err, doc) {
+        // Shortcuts
+        window.doc = session.document;
+
+        that.view = new sc.views.Console({model: session });
+        that.render();
+      });
+    },
+
+    testsuite: function() {
+      this.view = new sc.views.Testsuite();
+      this.render();
+      return;
     },
 
     // TODO: find a better way
@@ -224,7 +251,7 @@ $(function() {
     },
 
     dashboard: function() {
-      if (!this.user) return this.login();
+      if (!session.user()) return this.login();
       this.view = new Dashboard();
       this.render();
       router.navigate('/');
@@ -249,7 +276,7 @@ $(function() {
       }
 
       this.$el.html(_.tpl('substance', {
-        user: this.user,
+        user: session.user(),
         document: document
       }));
 
@@ -271,15 +298,13 @@ $(function() {
   function loadConfig(cb) {
     $.getJSON('config.json', function(data) {
       _.extend(Substance.settings, data);
-      cb(null);
+      cb(null, data);
     })
     .error(function() { cb('not_found: using defaults'); });
   }
 
-
-  loadConfig(function(err, config) {
-  
-    initSession(user(), token());
+  loadConfig(function(err, config) {    
+    initSession(appSettings.getItem('env') || config.env);
 
     // Start the engines
     window.app = new Application({el: 'body'});

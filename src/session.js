@@ -83,30 +83,30 @@ _.extend(Substance.Comments.prototype, _.Events, {
 // TODO: No multiuser support yet, use app.user
 
 Substance.Session = function(options) {
-  this.client = options.client;
-  this.remoteStore = options.remoteStore;
-  this.localStore = options.localStore;
+  this.env = options.env;
 
-  this.users = {
-    "michael": {
-      "color": "#2F2B26",
-      "selection": []
-    }
-  };
-
-  this.selections = {};
-
-  // Comments view
-  this.comments = new Substance.Comments(this);
-
-  // That's the current editor
-  this.user = "michael";
+  this.client = new Substance.Client({
+    "hub_api": Substance.settings.hub_api,
+    "client_id": Substance.settings.client_id,
+    "client_secret": Substance.settings.client_secret,
+  });
 };
 
 _.extend(Substance.Session.prototype, _.Events, {
   // When a doc changes, bind event handlers etc.
   initDoc: function() {
-    var that = this;
+
+    this.selections = {};
+
+    // Comments view
+    this.comments = new Substance.Comments(this);
+
+    // Register user
+    this.users = {};
+    this.users[this.user()] = {
+      "color": "#2F2B26",
+      "selection": []        
+    };
 
     // Rebind event handlers
     this.document.off('commit:applied');
@@ -185,7 +185,7 @@ _.extend(Substance.Session.prototype, _.Events, {
   select: function(nodes, options) {
 
     if (!options) options = {};
-    var user = options.user || this.user; // Use current user by default
+    var user = this.user(); // Use current user by default
 
     // Do nothing if selection hasn't changed
     // It's considered a change if you operate on the same node 
@@ -194,7 +194,7 @@ _.extend(Substance.Session.prototype, _.Events, {
 
     this.edit = !!options.edit;
 
-    if (this.users[this.user].selection) {
+    if (this.users[user].selection) {
       _.each(this.users[user].selection, function(node) {
         delete this.selections[node];
       }, this);
@@ -272,7 +272,7 @@ _.extend(Substance.Session.prototype, _.Events, {
 
   // Retrieve current node selection
   selection: function(user) {
-    if (!user) user = this.user;
+    if (!user) user = this.user();
     return this.users[user].selection;
   },
 
@@ -289,7 +289,7 @@ _.extend(Substance.Session.prototype, _.Events, {
 
   // Returns current navigation level (1..3)
   level: function() {
-    var selection = this.users[this.user].selection;
+    var selection = this.users[this.user()].selection;
 
     // Edit mode
     if (this.edit) return 3;
@@ -350,13 +350,53 @@ _.extend(Substance.Session.prototype, _.Events, {
     });
   },
 
+  setProperty: function(key, val) {
+    appSettings.setItem(this.env+":"+key, val);
+  },
+
+  getProperty: function(key) {
+    return appSettings.getItem(this.env+":"+key);
+  },
+
+  user: function() {
+    return this.getProperty('user') || "";
+  },
+
+  token: function() {
+    return this.getProperty('token') || "";
+  },
+
   // Authenticate session
   authenticate: function(username, password, cb) {
+    var that = this;
     this.client.authenticate(username, password, function(err, data) {
       if (err) return cb(err);
-      initSession(username, data.token);
+
+      that.localStore = new Substance.RedisStore({
+        scope: that.env+":"+username
+      });
+
+      // Assumes client instance is authenticated
+      that.remoteStore = new Substance.RemoteStore({
+        client: that.client
+      });
+
+      that.setProperty('user', username);
+      that.setProperty('api-token', data.token);
+
       cb(null, data);
     });
+  },
+
+  logout: function() {
+    this.localStore = null;
+    this.remoteStore = null;
+    this.setProperty('user', '');
+    this.setProperty('api-token', '');
+  },
+
+  authenticated: function() {
+    return !!this.getProperty("user");
   },
 
   // Create a new user on the server

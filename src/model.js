@@ -3,11 +3,12 @@
 //
 // Persistence for application settings
 
+// TODO: Make localStorage work
 var AppSettings = function(settings) {
   var dbSettings = {
     host: "127.0.0.1",
     port: 6379,
-    scope: "substance-app-settings"
+    scope: "substance:app-settings"
   };
 
   // override the default values if given
@@ -21,7 +22,7 @@ var AppSettings = function(settings) {
 
   var hash = this.db.asHash("data");
 
-  this.set = function(key, value) {
+  this.setItem = function(key, value) {
     hash.set(key, value);
   };
 
@@ -33,44 +34,16 @@ var AppSettings = function(settings) {
     return res;
   };
 
-  this.get = function(key) {
+  this.getItem = function(key) {
     return hash.getJSON(key);
   };
 };
 
-var appSettings = new AppSettings();
+window.appSettings = new AppSettings();
 
 
-// Update doc (docstore.setRef)
+// Helpers
 // -----------------
-
-function updateRef(doc, ref, sha, cb) {
-  store.setRef(doc.id, "master", ref, sha);
-  updateMeta(doc, cb);
-};
-
-
-function updateMeta(doc, cb) {
-  _.extend(doc.meta, doc.content.properties);
-  doc.meta.updated_at = new Date();
-  store.updateMeta(doc.id, doc.meta, cb);
-}
-
-// Some userful helpers
-// -----------------
-
-
-function authenticated() {
-  return !!token();
-}
-
-function token() {
-  return appSettings.get('api-token');
-}
-
-function user() {
-  return appSettings.get('user');
-}
 
 function synced(docId) {
   return session.localStore.getRef(docId, 'master', 'head') === session.localStore.getRef(docId, 'remote:master', 'head');
@@ -84,48 +57,17 @@ function published(doc) {
 // Initialization
 // -----------------
 
-var client,
-    localStore,
-    remoteStore,
-    session;
+var session;
 
-function initSession(username, token) {
-  env = Substance.env || "";
-  appSettings.set('user', username || '');
-  appSettings.set('api-token', token || '');
-
-  client = new Substance.Client({
-    "hub_api": Substance.settings.hub_api,
-    "client_id": Substance.settings.client_id,
-    "client_secret": Substance.settings.client_secret,
-    "token": token // auto-authenticate
-  });
-
-  if (username) {
-    localStore = new Substance.RedisStore({
-      scope: env+":"+username
-    });
-
-    // Assumes client instance is authenticated
-    remoteStore = new Substance.RemoteStore({
-      client: client
-    });
-
-  } else {
-    localStore = null;
-    remoteStore = null;
-  }
-
-  session = new Substance.Session({
-    client: client,
-    remoteStore: remoteStore,
-    localStore: localStore
-  });
+function initSession(env) {
+  session = new Substance.Session({env: env});
 }
 
 
 // TODO: Find a better place
 if (typeof Substance.test === 'undefined') Substance.test = {};
+
+
 
 Substance.test.createDump = function() {
   // TODO: Iterate over all exisiting scopes

@@ -9,24 +9,35 @@
 
     <!-- Templates -->
     <script type="text/html" name="substance">
-      <% if (user) { %>
+      
       <div id="header">
         <div class="header-container">
           <a href="#" class="logo">Substance</a>
-          <div class="menu">
-            <a href="#" class="dashboard<%= !document ? ' active' : ''%>">My Documents</a>
-            <% if (document) { %> <a href="#" class="document active"><%= document.title || 'Untitled' %></a><% } %>
-          </div>
+          <% if (session.env === "test") { %> <a href="#tests" class="testsuite button">Open Testsuite</a><% } %>
+          <select id="environment">
+            <option value="development"<%= session.env === "development" ? ' selected="selected"' : '' %>>Development</option>
+            <option value="test" <%= session.env === "test" ? ' selected="selected"' : '' %>>Test</option>
+            <option value="production" <%= session.env === "production" ? ' selected="selected"' : '' %>>Production</option>
+          </select>
 
-          <div class="user-status">
-            <a href="#" class="sync button"><div class="icon"></div></a>
-            <a href="#new" class="new-document button"><div class="icon"></div>New Document</a>
-            <div class="username"><a title="Show User Profile" href="<%= Substance.settings.hub + '/' + user %>"><%= user %></a></div>
-            <a href="#logout" class="logout"></a>
-          </div>
+          <% if (user) { %>
+            <div class="menu">
+              <a href="#" class="dashboard<%= !document ? ' active' : ''%>">My Documents</a>
+              <% if (document) { %> <a href="#" class="document active"><%= document.title || 'Untitled' %></a><% } %>
+            </div>
+
+            <div class="user-status">
+              <a href="#" class="sync button"><div class="icon"></div></a>
+              
+              <a href="#new" class="new-document button"><div class="icon"></div>New Document</a>
+              <div class="username"><a title="Show User Profile" href="<%= Substance.settings.hub + '/' + user %>"><%= user %></a></div>
+              <a href="#logout" class="logout"></a>
+              
+            </div>
+          <% } %>
         </div>
       </div>
-      <% } %>
+
       <div id="container">
 
       </div>
@@ -105,6 +116,22 @@
     <script type="text/html" name="start">
       <div id="help">
         <img src="images/introduction.png"/>
+      </div>
+    </script>
+
+    <!-- Testsuite -->
+    <script type="text/html" name="testsuite">
+      <div id="testsuite">
+        <h1>Substance Testsuite</h1>
+        The Substance Testsuite to come here.
+      </div>
+    </script>
+
+    <!-- Console -->
+    <script type="text/html" name="console">
+      <div id="testsuite">
+        <h1>Substance Console</h1>
+        The Substance Testsuite to come here.
       </div>
     </script>
 
@@ -449,6 +476,7 @@
 
     <!-- Views -->
     <script src="src/views/editor.js"></script>
+    <script src="src/views/testsuite.js"></script>
 
     <script src="src/views/document/settings.js"></script>
     <script src="src/views/document/collaborators.js"></script>
@@ -472,9 +500,6 @@
 
     <!-- Boot -->
     <script src="src/boot.js"></script>
-
-    <!-- Load test case -->
-    <!--<script src="tests/001-hello-world/composer.js"></script>-->
 
   </head>
   <body>
