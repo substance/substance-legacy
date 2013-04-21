@@ -119,13 +119,6 @@ sc.views.Document = Backbone.View.extend({
 
         var mediumImage = canvas.toDataURL("image/png");
 
-        // Debug stuff
-        // console.log({
-        //   original: img.src,
-        //   thumb: dataurl
-        // });
-        // console.log(that.model.document);
-
         var mediumImageId = Substance.util.uuid('image:');
         var largeImageId = Substance.util.uuid('image:');
 
@@ -163,10 +156,6 @@ sc.views.Document = Backbone.View.extend({
   },
 
   set: function(options) {
-    // Re-render the whole thing
-    // TODO: just update the document specific parts
-    // this.render();
-
     this.initSurface("abstract");
     this.initSurface("title");
   },
@@ -289,7 +278,6 @@ sc.views.Document = Backbone.View.extend({
 
   // Updates the current selection
   updateSelections: function(selections) {
-    // $('.content-node.selected .handle').css('background', '');
     $('.content-node .down').hide();
     $('.content-node .up').hide();
     $('.content-node .delete').hide();
@@ -302,7 +290,6 @@ sc.views.Document = Backbone.View.extend({
     
     _.each(this.model.selections, function(user, node) {
       $('#'+_.htmlId(node)).addClass('selected')
-        // .find('.handle').css('background', this.model.users[user].color);
     }, this);
 
     $('.content-node.selected').first().find('.up').show();
@@ -335,7 +322,7 @@ sc.views.Document = Backbone.View.extend({
     var doc = this.model.document;
 
     if (lastnode) {
-      var next = doc.getSuccessor(lastnode); //  this.model.document.content.nodes[lastnode].next;
+      var next = doc.getSuccessor(lastnode);
       if (next) {
         this.model.select(selection.concat([next]));
       }
@@ -350,7 +337,6 @@ sc.views.Document = Backbone.View.extend({
   moveDown: function() {
     var selection = this.model.users[this.model.user()].selection;
     var last = this.getNode(_.last(selection));
-
     var successor = this.model.document.getSuccessor(last.id);
 
     if (successor) {
