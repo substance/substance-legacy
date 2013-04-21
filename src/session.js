@@ -94,14 +94,12 @@ _.extend(Substance.Session.prototype, _.Events, {
     var username = this.user();
     var token = this.token();
 
-    var clientCfg =  {
+    this.client = new Substance.Client({
       "hub_api": Substance.settings.hub_api,
       "client_id": Substance.settings.client_id,
       "client_secret": Substance.settings.client_secret,
       "token": token
-    };
-
-    this.client = new Substance.Client(clientCfg);
+    });
 
     if (username) {  
       this.localStore = new Substance.RedisStore({
@@ -197,6 +195,7 @@ _.extend(Substance.Session.prototype, _.Events, {
     var doc = this.document;
     _.extend(doc.meta, doc.properties);
     doc.meta.updated_at = new Date();
+
     this.localStore.updateMeta(doc.id, doc.meta, function(err) {
       if (cb) cb(err);
     });
@@ -269,7 +268,8 @@ _.extend(Substance.Session.prototype, _.Events, {
     this.client.createVersion(doc.id, doc.toJSON(), function(err) {
       if (err) return cb(err);
       doc.meta.published_at = new Date();
-      doc.meta.published_commit = doc.getRef('master', 'head');
+      doc.meta.published_commit = doc.getRef('head');
+
       that.updateMeta(function() {
         that.loadPublications(cb);
       });
@@ -280,7 +280,6 @@ _.extend(Substance.Session.prototype, _.Events, {
   unpublish: function(cb) {
     var doc = this.document;
     var that = this;
-    // console.log('unpublishing...');
     this.client.unpublish(doc.id, function(err) {
       if (err) return cb(err);
       delete doc.meta["published_at"];
@@ -396,7 +395,7 @@ _.extend(Substance.Session.prototype, _.Events, {
   },
 
   token: function() {
-    return this.getProperty('token') || "";
+    return this.getProperty('api-token') || "";
   },
 
   // Authenticate session
@@ -408,7 +407,7 @@ _.extend(Substance.Session.prototype, _.Events, {
       that.setProperty('user', username);
       that.setProperty('api-token', data.token);
 
-      this.initStores();
+      that.initStores();
 
       cb(null, data);
     });

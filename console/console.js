@@ -227,7 +227,7 @@ $(function() {
         user: "demo"
       });
 
-      this.sha = this.model.getRef('head');
+      this.sha = this.model.getRef('master', 'head');
 
       this.render();
       return false;
