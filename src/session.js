@@ -13,7 +13,7 @@ _.extend(Substance.Comments.prototype, _.Events, {
     this.scopes = [];
 
     if (node) {
-      var nodeData = this.session.document.content.nodes[node];
+      var nodeData = this.session.document.nodes[node];
       var content = nodeData.content;
       var annotations = this.session.document.find('annotations', node);
     }
@@ -162,7 +162,7 @@ _.extend(Substance.Session.prototype, _.Events, {
   // Update meta info of current document
   updateMeta: function(cb) {
     var doc = this.document;
-    _.extend(doc.meta, doc.content.properties);
+    _.extend(doc.meta, doc.properties);
     doc.meta.updated_at = new Date();
     this.localStore.updateMeta(doc.id, doc.meta, function(err) {
       if (cb) cb(err);
@@ -233,7 +233,7 @@ _.extend(Substance.Session.prototype, _.Events, {
     var doc = this.document;
     var that = this;
 
-    this.client.createVersion(doc.id, doc.content, function(err) {
+    this.client.createVersion(doc.id, doc.toJSON(), function(err) {
       if (err) return cb(err);
       doc.meta.published_at = new Date();
       doc.meta.published_commit = doc.getRef('master', 'head');

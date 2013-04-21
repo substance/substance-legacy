@@ -126,7 +126,6 @@ sc.views.Document = Backbone.View.extend({
         // console.log(that.model.document);
         that.model.document.apply(["set", {"cover": dataurl }]);
         
-        console.log(that.model.document.content);
 
         that.render(); // re-render the shit out of it
 
@@ -147,7 +146,7 @@ sc.views.Document = Backbone.View.extend({
 
   // Get a particular node by id
   getNode: function(id) {
-    return this.model.document.content.nodes[id];
+    return this.model.document.nodes[id];
   },
 
   set: function(options) {
@@ -303,28 +302,29 @@ sc.views.Document = Backbone.View.extend({
 
   selectNext: function() {
     var selection = this.model.users[this.model.user].selection;
-    var head = this.model.document.content.head;
-    var tail = this.model.document.content.tail;
-    if (selection.length === 0) return this.model.select([head]);
-    var next = this.getNode(_.last(selection)).next;
-    this.model.select(next ? [next] : [tail]);
+    var doc = this.model.document;
+    if (selection.length === 0) return this.model.select([_.first(doc.lists.content)]);
+    var next = doc.getSuccessor(_.last(selection));
+    if (next) this.model.select([next]);
   },
 
   selectPrev: function() {
     var selection = this.model.users[this.model.user].selection;
-    var head = this.model.document.content.head;
-    var tail = this.model.document.content.tail;
-    if (selection.length === 0) return this.model.select([tail]);
-    var prev = this.getNode(_.first(selection)).prev;
-    this.model.select(prev ? [prev] : [head]);
+    var doc = this.model.document;
+    if (selection.length === 0) return this.model.select([_.last(doc.lists.content)]);
+    var prev = doc.getPredecessor(_.first(selection));
+    this.model.select(prev ? [prev] : [_.first(doc.lists.content)]);
   },
 
   expandSelection: function() {
-    var lastnode = _.last(this.model.users[this.model.user].selection);
+    var selection = this.model.users[this.model.user].selection;
+    var lastnode = _.last(selection);
+    var doc = this.model.document;
+
     if (lastnode) {
-      var next = this.model.document.content.nodes[lastnode].next;
+      var next = doc.getSuccessor(lastnode); //  this.model.document.content.nodes[lastnode].next;
       if (next) {
-        this.model.select(this.model.users[this.model.user].selection.concat([next]));
+        this.model.select(selection.concat([next]));
       }
     }
   },
@@ -352,16 +352,16 @@ sc.views.Document = Backbone.View.extend({
   moveUp: function() {
     var selection = this.model.users[this.model.user].selection;
     var first = this.getNode(_.first(selection));
-    var doc = this.model.document.content;
+    var doc = this.model.document;
 
-    var pos = this.model.document.position(first.id);
-    var pred = this.model.document.getPredecessor(first.id);
+    var pos = doc.position(first.id);
+    var pred = doc.getPredecessor(first.id);
 
-    pred = this.model.document.getPredecessor(pred);
+    pred = doc.getPredecessor(pred);
     if (pred || pos === 1) {
       // If first selected node is at index 1 move selection to front
       var target = pos === 1 ? 'front' : pred;
-      this.model.document.apply(["move", {
+      doc.apply(["move", {
         "nodes": selection, "target": target
       }], {
         user: this.model.user
@@ -388,7 +388,7 @@ sc.views.Document = Backbone.View.extend({
     var that = this;
     this.surface = new Substance.Surface({
       el: this.$('.document-'+property)[0],
-      content: that.model.document.content.properties[property]
+      content: that.model.document.properties[property]
     });
 
     // Events
@@ -404,7 +404,7 @@ sc.views.Document = Backbone.View.extend({
 
   // Initial render of all nodes
   render: function () {
-    this.$el.html(_.tpl('document', this.model.document.content));
+    this.$el.html(_.tpl('document', this.model.document));
 
     // Init editor for document abstract and title
     this.initSurface("abstract");

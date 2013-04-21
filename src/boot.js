@@ -197,7 +197,7 @@ $(function() {
         // Update publish state
         that.view.updatePublishState();
         if (commit.op[0] === "set") {
-          var title = doc.content.properties.title;
+          var title = doc.properties.title;
           that.$('.menu .document').html(title);
         }
       });
@@ -245,7 +245,7 @@ $(function() {
     render: function() {
       var document = null;
       if (this.view instanceof sc.views.Editor) {
-        var document = this.view.model.document.content.properties;
+        var document = this.view.model.document.properties;
       }
 
       this.$el.html(_.tpl('substance', {
