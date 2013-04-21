@@ -2,5 +2,6 @@
   "hub": "http://127.0.0.1:3000",
   "hub_api": "http://127.0.0.1:3000/api/v1",
   "client_id": "hello-kitty",
-  "client_secret": "abcd"
+  "client_secret": "abcd",
+  "env": "development"
 }
