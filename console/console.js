@@ -124,8 +124,7 @@ $(function() {
     document: function(user, id) {
       var that = this;
 
-      router.navigate(id, false);
-      console.log('document!!!');
+      router.navigate([user, id].join('/'), false);
 
       // Select correct doc in dropdown
       $('option[value="'+id+'"]').attr('selected', 'true');
@@ -137,7 +136,6 @@ $(function() {
           // Add global ref for convenience
           window.doc = doc;
 
-          console.log('MEEH');
           that.model = { documents: documents };
 
           that.render();
@@ -170,7 +168,6 @@ $(function() {
     }
   });
 
-
   // Document Visualization
   // ---------------
 
@@ -198,9 +195,9 @@ $(function() {
       if (view === "visualization") {
         this.render();
       } else if (view === "content") {
-        this.$('.output .document').html('<textarea class="json">'+JSON.stringify(this.model.content, null, '  ')+'</textarea>');
-      } else {
         this.$('.output .document').html('<textarea class="json">'+JSON.stringify(this.model.toJSON(), null, '  ')+'</textarea>');
+      } else {
+        this.$('.output .document').html('<textarea class="json">'+JSON.stringify(this.model.export(), null, '  ')+'</textarea>');
       }
       return false;
     },
@@ -262,18 +259,18 @@ $(function() {
     render: function() {
 
       var last = this.model.getRef('last') || this.model.getRef('head');
-      console.log('last', last);
-      var commits = this.model.commits(last);
+      var that = this;
+      var commits = this.model.getCommits(last);
 
       this.$el.html(_.tpl('document', {
         sha: this.sha,
         operations: commits,
-        nodes: this.model.nodes(),
+        nodes: _.map(this.model.lists.content, function(n) { return that.model.nodes[n];}),
         document: this.model
       }));
 
       // Get current op
-      var op = this.model.model.commits[this.sha];
+      var op = this.model.commits[this.sha];
       
       if (op) $('#command').val(JSON.stringify(op.op, null, '  '));
       this.renderAnnotations();
@@ -282,8 +279,9 @@ $(function() {
 
     renderAnnotations: function() {
       var that = this;
-      _.each(this.model.nodes(), function(node) {
-        var annotations = that.model.annotations(node.id);
+      _.each(this.model.lists.content, function(nodeId) {
+        var node = that.model.nodes[nodeId];
+        var annotations = that.model.find('annotations', node.id);
         _.each(annotations, function(a) {
           var elems = $('div[data-id="'+a.node+'"]').children().slice(a.pos[0], a.pos[0] + a.pos[1]);
           elems.addClass(a.type);
@@ -315,8 +313,10 @@ $(function() {
 var store;
 
 function loadDocument(user, doc, cb) {
+  env = Substance.env || "";
+
   store = new Substance.RedisStore({
-    scope: user
+    scope: env+":"+user
   });
 
   if (doc.indexOf('json')>=0) {
