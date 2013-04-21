@@ -321,8 +321,8 @@
     <script type="text/x-ejs-template" name="document">
       <div id="document_content">
         <div class="cover-image-wrapper">
-          <% if (properties.cover) { %>
-            <img class="cover-image" src="<%= properties.cover %>"/>  
+          <% if (cover_medium) { %>
+            <img class="cover-image" src="<%= cover_medium %>"/>  
           <% } else { %>
             <img class="cover-image" src="http://farm7.staticflickr.com/6235/6279776790_19e9569720_b.jpg"/>  
           <% } %>

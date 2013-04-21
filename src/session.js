@@ -164,6 +164,18 @@ _.extend(Substance.Session.prototype, _.Events, {
     });
   },
 
+  getBlob: function(id, cb) {
+    return this.localStore.getBlob(id, cb);
+  },
+
+  createBlob: function(id, data, cb) {
+    return this.localStore.createBlob(id, data, cb);
+  },
+
+  deleteBlob: function(id, cb) {
+    return this.localStore.deleteBlob(id, cb);
+  },
+
   // Load new Document from localStore
   loadDocument: function(id, cb) {
     var that = this;

@@ -46,6 +46,7 @@ sc.views.Node.define('image', {
 
     reader.onload = function(e) {
       img.src = e.target.result;
+      var largeImage = img.src;
 
       _.delay(function() {
         var canvas = document.getElementById('canvas');
@@ -73,17 +74,18 @@ sc.views.Node.define('image', {
         var ctx = canvas.getContext("2d");
         ctx.drawImage(img, 0, 0, width, height);
 
-        var dataurl = canvas.toDataURL("image/png");
+        var mediumImage = canvas.toDataURL("image/png");
 
-        // Debug stuff
-        console.log({
-          original: img.src,
-          thumb: dataurl
-        });
+        var mediumImageId = Substance.util.uuid('image:');
+
+        if (!session.localStore.createBlob(mediumImageId, mediumImage)) {
+          throw new Substance.errors.Error('Storing image failed');
+        }
 
         that.document.apply(["update", {id: that.model.id, "data": {
-          "content": dataurl,
-          "filename": file.name
+          "medium": mediumImageId,
+          "large": mediumImageId,
+          "caption": file.name
         }}]);
 
         that.render(); // re-render the node;
@@ -101,11 +103,12 @@ sc.views.Node.define('image', {
     // Inject some image related stuff
     this.$('.content').append('<input type="file" class="files" name="files[]"/><div class="message"></div>');
     
-    if (that.model.content) {
-      that.$('.content').append(['<img class="thumb" src="', that.model.content,
-                                 '" title="', escape(that.model.filename), '"/>'].join(''));
+    if (that.model.medium) {
+      var imageData = session.getBlob(that.model.medium);
+      that.$('.content').append(['<img class="thumb" src="', imageData,
+                                 '" title="', escape(that.model.caption), '"/>'].join(''));
     } else {
-      that.$('.content').append(['<img class="thumb" src="images/image_placeholder.png" title="', escape(that.model.filename), '"/>'].join(''));
+      that.$('.content').append(['<img class="thumb" src="images/image_placeholder.png" title="', escape(that.model.caption), '"/>'].join(''));
     }
 
     this.$('.content').append('<div class="placeholder">Drop new image here</div>');

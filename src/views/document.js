@@ -89,6 +89,7 @@ sc.views.Document = Backbone.View.extend({
 
     reader.onload = function(e) {
       img.src = e.target.result;
+      var largeImage = img.src;
 
       _.delay(function() {
         var canvas = document.getElementById('canvas');
@@ -116,7 +117,7 @@ sc.views.Document = Backbone.View.extend({
         var ctx = canvas.getContext("2d");
         ctx.drawImage(img, 0, 0, width, height);
 
-        var dataurl = canvas.toDataURL("image/png");
+        var mediumImage = canvas.toDataURL("image/png");
 
         // Debug stuff
         // console.log({
@@ -124,8 +125,20 @@ sc.views.Document = Backbone.View.extend({
         //   thumb: dataurl
         // });
         // console.log(that.model.document);
-        that.model.document.apply(["set", {"cover": dataurl }]);
-        
+
+        var mediumImageId = Substance.util.uuid('image:');
+        var largeImageId = Substance.util.uuid('image:');
+
+
+        if (!session.localStore.createBlob(mediumImageId, mediumImage) ||
+            !session.localStore.createBlob(largeImageId, largeImage)) {
+          throw new Substance.errors.Error('Storing images failed');
+        }
+
+        that.model.document.apply(["set", {
+          "cover_medium": mediumImageId,
+          "cover_large": largeImageId,
+        }]);
 
         that.render(); // re-render the shit out of it
 
@@ -404,7 +417,14 @@ sc.views.Document = Backbone.View.extend({
 
   // Initial render of all nodes
   render: function () {
-    this.$el.html(_.tpl('document', this.model.document));
+    var coverLarge = session.getBlob(this.model.document.properties.cover_large);
+    var coverMedium = session.getBlob(this.model.document.properties.cover_medium);
+
+    this.$el.html(_.tpl('document', {
+      document: this.model.document,
+      cover_large: coverLarge,
+      cover_medium: coverMedium
+    }));
 
     // Init editor for document abstract and title
     this.initSurface("abstract");
