@@ -63,10 +63,8 @@ function initSession(env) {
   session = new Substance.Session({env: env});
 }
 
-
 // TODO: Find a better place
 if (typeof Substance.test === 'undefined') Substance.test = {};
-
 
 
 Substance.test.createDump = function() {

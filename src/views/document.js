@@ -210,7 +210,7 @@ sc.views.Document = Backbone.View.extend({
   // --------
 
   insertNode: function(type, options) {
-    var selection = this.model.users[this.model.user].selection;
+    var selection = this.model.users[this.model.user()].selection;
     var target = options.target || _.last(selection);
     var properties = {};
 

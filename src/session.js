@@ -85,14 +85,35 @@ _.extend(Substance.Comments.prototype, _.Events, {
 Substance.Session = function(options) {
   this.env = options.env;
 
-  this.client = new Substance.Client({
-    "hub_api": Substance.settings.hub_api,
-    "client_id": Substance.settings.client_id,
-    "client_secret": Substance.settings.client_secret,
-  });
+  this.initStores();
 };
 
 _.extend(Substance.Session.prototype, _.Events, {
+
+  initStores: function() {
+    var username = this.user();
+    var token = this.token();
+
+    var clientCfg =  {
+      "hub_api": Substance.settings.hub_api,
+      "client_id": Substance.settings.client_id,
+      "client_secret": Substance.settings.client_secret,
+      "token": token
+    };
+
+    this.client = new Substance.Client(clientCfg);
+
+    if (username) {  
+      this.localStore = new Substance.RedisStore({
+        scope: this.env+":"+username
+      });
+
+      // Assumes client instance is authenticated
+      this.remoteStore = new Substance.RemoteStore({
+        client: this.client
+      });
+    }
+  },
   // When a doc changes, bind event handlers etc.
   initDoc: function() {
 
@@ -131,9 +152,9 @@ _.extend(Substance.Session.prototype, _.Events, {
 
     this.localStore.create(id, function(err, doc) {
       if (err) return cb(err);
-      doc.meta = {"creator": user()};
+      doc.meta = {"creator": that.user()};
       // Instead use new update + empty commit array
-      this.localStore.updateMeta(id, doc.meta, function(err) {
+      that.localStore.updateMeta(id, doc.meta, function(err) {
         if (err) return cb(err);
 
         that.document = new Substance.Document(doc);
@@ -372,17 +393,10 @@ _.extend(Substance.Session.prototype, _.Events, {
     this.client.authenticate(username, password, function(err, data) {
       if (err) return cb(err);
 
-      that.localStore = new Substance.RedisStore({
-        scope: that.env+":"+username
-      });
-
-      // Assumes client instance is authenticated
-      that.remoteStore = new Substance.RemoteStore({
-        client: that.client
-      });
-
       that.setProperty('user', username);
       that.setProperty('api-token', data.token);
+
+      this.initStores();
 
       cb(null, data);
     });
