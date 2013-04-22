@@ -953,3 +953,50 @@ float: left;
 #document_shelf .add_collaborator {
   height: 80px;
 }
+
+
+
+/* Testsuite
+-------------------------------------------------------------------------------*/
+
+#testsuite {
+  margin-top: 100px;
+  width: 1130px;
+  margin-left: 80px;
+  overflow: auto;
+}
+
+#testsuite .tests {
+  float: left;
+  width: 300px;
+}
+
+#testsuite .tests .test {
+  border: none;
+  display: block;
+  padding: 10px;
+  margin-bottom: 1px;
+  background: rgba(0,0,0,0.05);
+}
+#testsuite .tests .test:hover {
+  background: rgba(0,0,0,0.1);
+}
+
+#testsuite .test-results {
+  overflow: auto;
+  position: absolute;
+  font-family: 'Source Code Pro';
+  top: 80px;
+  left: 400px;
+  right: 20px;
+  bottom: 20px;
+  color: rgba(0,0,0, 0.6);
+}
+
+#testsuite .test-results.success {
+  background: rgba(121, 208, 25, 1.0);
+}
+
+#testsuite .test-results.error {
+  background: rgba(215, 0, 20, 0.8);
+}

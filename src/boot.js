@@ -7,6 +7,7 @@ $(function() {
       this.route('demo/:document', 'loadDocument', this.loadDocument);
       this.route('documents/:document', 'loadDocument', this.loadDocument);
       this.route('tests', 'tests', app.testsuite);
+      this.route('tests/:test', 'executeTest', app.testsuite);
       this.route('console/:document', 'tests', app.console);
       this.route('new', 'newDocument', this.newDocument);
       this.route('dashboard', 'dashboard', app.dashboard);
@@ -226,9 +227,13 @@ $(function() {
       });
     },
 
-    testsuite: function() {
+    testsuite: function(test) {
       this.view = new sc.views.Testsuite();
       this.render();
+
+      if (test) {
+        this.view.runTest(test);
+      }
       return;
     },
 

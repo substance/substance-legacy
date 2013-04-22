@@ -100,3 +100,15 @@ Substance.test.seed = function (seeds, cb) {
   if (cb) cb(null);
   return true;
 }
+
+
+// Load Tests
+// -----------------
+
+function loadTests() {
+  _.each(Substance.tests, function(test, name) {
+    Substance.loadTest(name, "composer");
+  });
+}
+
+loadTests();
