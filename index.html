@@ -3,6 +3,7 @@
   <head>
     <title>Substance</title>
     <link href='styles/fonts/open-sans/open-sans.css' rel='stylesheet' type='text/css'>
+    <link href='styles/font-awesome.css' rel='stylesheet' type='text/css'>
     <link href="styles/buttons.css" media="screen" rel="stylesheet" type="text/css" />
     <link href="styles/substance.css" media="screen" rel="stylesheet" type="text/css" />
     <link href="styles/composer.css" media="screen" rel="stylesheet" type="text/css" />
@@ -12,13 +13,18 @@
       
       <div id="header">
         <div class="header-container">
+          <a href="#" class="toggle-environments" title="Toggle User Actions" >
+            <div class="current-env <%= session.env %>"></div>
+          </a>
+          <div class="environments">
+            <a href="#" class="load-environment development" data-env="development"><div class="dot"></div>Development</a>
+            <a href="#" class="load-environment test" data-env="test"><div class="dot"></div>Test</a>
+            <a href="#" class="load-environment production" data-env="production"><div class="dot"></div>Production</a>
+          </div>
+
           <a href="#" class="logo">Substance</a>
-          <% if (session.env === "test") { %> <a href="#tests" class="testsuite button">Open Testsuite</a><% } %>
-          <select id="environment">
-            <option value="development"<%= session.env === "development" ? ' selected="selected"' : '' %>>Development</option>
-            <option value="test" <%= session.env === "test" ? ' selected="selected"' : '' %>>Test</option>
-            <option value="production" <%= session.env === "production" ? ' selected="selected"' : '' %>>Production</option>
-          </select>
+          
+
 
           <% if (user) { %>
             <div class="menu">
@@ -30,8 +36,16 @@
               <a href="#" class="sync button"><div class="icon"></div></a>
               
               <a href="#new" class="new-document button"><div class="icon"></div>New Document</a>
-              <div class="username"><a title="Show User Profile" href="<%= Substance.settings.hub + '/' + user %>"><%= user %></a></div>
-              <a href="#logout" class="logout"></a>
+
+              <!--<div class="username"><a title="Show User Profile" href=""><%= user %></a></div>-->
+
+              <a href="#" class="toggle-user-actions" title="Toggle User Actions" ><%= user %><i class="icon-caret-down"></i></a>
+              <div class="user-actions">
+                <!--<a href="#settings" class="user-action settings"><i class="icon-user"></i>User Settings</a>-->
+                <a href="<%= Substance.settings.hub + '/' + user %>" class="user-action profile"><i class="icon-user"></i>User Profile</a>
+                <% if (session.env === "test") { %><a href="#tests" class="user-action testsuite"><i class="icon-tasks"></i>Test Suite</a><% } %>
+                <a href="#logout" class="user-action logout"><i class="icon-off"></i>Logout</a>
+              </div>
               
             </div>
           <% } %>

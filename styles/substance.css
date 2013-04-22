@@ -7,7 +7,10 @@ body {
 }
 
 #header {
-  font-family: 'Baskerville', Georgia, serif;
+  /*font-family: 'Baskerville', Georgia, serif;*/
+  font-family: 'Source Sans Pro', 'Open Sans';
+  font-weight: bold;
+
   font-size: 20px;
   height: 40px;
   line-height: 40px;
@@ -19,15 +22,15 @@ body {
   left: 0px;
   right: 0px;
   top: 0px;
-  overflow: auto;
+  overflow: visible;
 }
 
 #header .header-container {
   width: 1130px;
   margin-left: 80px;
-  overflow: auto;
+  overflow: visible;
+  position: relative;
 }
-
 
 
 #header .logo {
@@ -48,8 +51,8 @@ body {
   display: block;
   float: left;
   height: 40px;
-  font-size: 14px;
-  font-family: 'Open Sans';
+  font-size: 16px;
+  font-family: 'Source Sans Pro', 'Open Sans';
   font-weight: bold;
 }
 
@@ -68,7 +71,7 @@ body {
 }
 
 #header .actions {
-  font-family: "Open Sans";
+  font-family: 'Source Sans Pro', 'Open Sans';
   float: right;
   overflow: auto;
 }
@@ -77,11 +80,10 @@ body {
   float: right;
   display: block;
   height: 40px;
-  font-size: 14px;
+  font-size: 16px;
   font-weight: bold;
   line-height: 40px;
-  font-family: "Open Sans";
-  overflow: auto;
+  font-family: 'Source Sans Pro', 'Open Sans';
 }
 
 #header .user-status #user_login_form {
@@ -97,7 +99,7 @@ body {
   margin: 5px 0;
   margin-right: 5px;
   height: 30px;
-  font-family: "Open Sans";
+  font-family: 'Source Sans Pro', 'Open Sans';
   font-size: 14px;
   font-weight: bold;
   float: left;
@@ -122,22 +124,106 @@ body {
   height: 40px;
 }
 
-#header .user-status a {
+#header .user-status > a {
   height: 40px;
   float: left;
   display: block;
 }
 
-#header .user-status a.logout {
-  width: 30px;
-  opacity: 0.7;
-  -webkit-transition: opacity 200ms linear;
-  background: url(../images/icons/menu-logout.png) 10px center no-repeat;
+/* Toggle user actions */
+#header .toggle-user-actions {
+  padding-right: 40px;
 }
 
-#header .user-status a.logout:hover {
-  opacity: 1;
+#header .toggle-user-actions i {
+  padding-left: 10px;
 }
+
+#header .user-status .user-actions {
+  display: none;
+  width: 200px;
+  position: absolute;
+  top: 40px;
+  right: 0px;
+  background: #2F2B27;
+  z-index: 20000;
+}
+
+#header .toggle-environments {
+  position: absolute;
+  left: -60px;
+  height: 40px;
+}
+
+#header .toggle-environments:hover {
+  background: #000;
+}
+
+#header .toggle-environments .current-env {
+  margin: 12px;
+  width: 16px;
+  height: 16px;
+  background: red;
+  border-radius: 8px;
+}
+
+#header .toggle-environments .current-env.development {
+  background: #B3FF00;
+}
+
+#header .toggle-environments .current-env.test {
+  background: #06D6FF;
+}
+
+#header .toggle-environments .current-env.production {
+  background: #FF3535;
+}
+
+#header .environments {
+  display: none;
+  background: #2F2B27;
+  position: absolute;
+  top: 40px;
+  left: -60px;
+  font-size: 16px;
+}
+
+#header .environments a {
+  padding-right: 12px;
+  height: 40px;
+  line-height: 40px;
+  display: block;
+}
+
+#header .environments a .dot {
+  float: left;
+  width: 16px;
+  height: 16px;
+  border-radius: 8px;
+  background: #fff;
+  margin: 12px;
+}
+
+#header .environments a.development .dot {
+  background: #B3FF00;
+}
+
+#header .environments a.test .dot {
+  background: #06D6FF;
+}
+
+#header .environments a.production .dot {
+  background: #FF3535;
+}
+
+#header .user-status .user-actions .user-action {
+  display: block;
+}
+
+#header .user-status .user-actions .user-action i {
+  padding: 0px 10px;
+}
+
 
 #header .user-status a.new-document {
   position: relative;
@@ -148,13 +234,9 @@ body {
   padding: 0 15px;
   height: 30px;
   line-height: 30px;
-  /*background: rgba(0,0,0, 0.8);*/
   border-radius: 3px;
-  /*font-size: 13px;*/
   font-weight: bold;
   color: rgba(255,255,255,0.7);
-
-  /*background: rgba(0,0,0, 0.3);*/
   background: rgba(0,0,0, 0.5);
 
   padding-left: 35px;
@@ -410,7 +492,6 @@ body {
   position: absolute;
   left: 10px;
   bottom: 10px;
-  font-size: 12px;
   color: #777;
 }
 
@@ -420,7 +501,6 @@ body {
   position: absolute;
   right: 10px;
   bottom: 10px;
-  font-size: 12px;
   padding: 0 5px;
   color: #777;
 }
@@ -439,7 +519,7 @@ body {
   top: 40px;
   left: 0px;
   right: 0px;
-  z-index: 10000;
+  z-index: 2000;
 }
 
 

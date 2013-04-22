@@ -72,7 +72,7 @@ html, body {
 }
 
 body, input, textarea {
-  font: normal 14px/20px 'Open Sans',Arial,sans-serif;
+  font: normal 14px/20px 'Source Sans Pro', 'Open Sans',Arial,sans-serif;
   font-weight: 400;
   color: #444;
 }
@@ -147,7 +147,7 @@ h2 { font-size: 160%; padding-bottom: 15px; }
   /*height: 60px;*/
   bottom: 0px;
   /*left: 0px;*/
-  font-family: 'Open Sans';
+  font-family: 'Source Sans Pro', 'Open Sans';
   padding: 8px 60px;
 
   width: 729px;
@@ -596,7 +596,7 @@ h2 { font-size: 160%; padding-bottom: 15px; }
 
 #document .properties .document-title {
   padding: 50px 80px;
-  font-family: 'Open Sans Condensed', 'Open Sans', sans-serif;
+  font-family: 'Source Sans Pro', 'Open Sans Condensed', 'Open Sans', sans-serif;
   font-weight: bold;
   line-height: 60px;
   font-size: 50px;
@@ -708,7 +708,7 @@ h2 { font-size: 160%; padding-bottom: 15px; }
   right: -35px;
   top: 0px;
   line-height: 30px;
-  font-family: 'Open Sans', Arial, sans-serif;
+  font-family: 'Source Sans Pro', 'Open Sans', Arial, sans-serif;
   background: url(../images/icons/discussion-small.png) center no-repeat;
   font-size: 13px;
   font-weight: bold;
@@ -1012,7 +1012,7 @@ h2 { font-size: 160%; padding-bottom: 15px; }
 .content-node.image .content {
   padding: 10px 80px;
   padding-right: 60px;
-  font: normal 14px/20px 'Open Sans',Arial,sans-serif;
+  font: normal 14px/20px 'Source Sans Pro', 'Open Sans',Arial,sans-serif;
 }
 
 .content-node.image .content img {

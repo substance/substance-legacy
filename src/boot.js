@@ -89,11 +89,28 @@ $(function() {
       'click .logout': '_logout',
       'click #container': '_clear',
       'click #header .sync': '_sync',
-      'change #environment': '_switchEnvironment'
+      'click .toggle-user-actions': '_toggleUserActions',
+      'click .toggle-environments': '_toggleEnvironments',
+      'click a.load-environment': '_loadEnvironment',
+      'click .user-actions': '_hideUserActions'
     },
 
-    _switchEnvironment: function() {
-      var env = $('#environment').val();
+    _toggleUserActions: function() {
+      $('.user-actions').toggle();
+      return false;
+    },
+
+    _hideUserActions: function() {
+      $('.user-actions').hide();
+    },
+
+    _toggleEnvironments: function() {
+      $('#header .environments').toggle();
+      return false;
+    },
+
+    _loadEnvironment: function(e) {
+      var env = $(e.currentTarget).attr('data-env');
 
       initSession(env);
       appSettings.setItem('env', env);
