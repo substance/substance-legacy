@@ -264,16 +264,48 @@ _.extend(Substance.Session.prototype, _.Events, {
   createVersion: function(cb) {
     var doc = this.document;
     var that = this;
+    var data = doc.toJSON(true);
 
-    this.client.createVersion(doc.id, doc.toJSON(), function(err) {
+    var funcs = [];
+    var blobs = {};
+    function pushBlob(docId, blobId, blobData) {
+      if (blobs[blobId]) return; // skip -> already queued
+      blobs[blobId] = true;
+      funcs.push(function(data, cb) {
+        that.client.createBlob(docId, blobId, blobData, cb);
+      });
+    }
+
+    // Push document cover?
+    if (doc.properties.cover_medium) {
+      pushBlob(doc.id, doc.properties.cover_medium, that.getBlob(doc.properties.cover_medium));
+      pushBlob(doc.id, doc.properties.cover_large, that.getBlob(doc.properties.cover_large));
+    }
+
+    // Find all images
+    _.each(doc.nodes, function(node) {
+      if (node.type === "image") {
+        pushBlob(doc.id, node.medium, that.getBlob(node.medium));
+        pushBlob(doc.id, node.large, that.getBlob(node.large));
+      }
+    });
+
+    // Push blobs first
+    Substance.util.async(funcs, null, function(err) {
       if (err) return cb(err);
-      doc.meta.published_at = new Date();
-      doc.meta.published_commit = doc.getRef('head');
 
-      that.updateMeta(function() {
-        that.loadPublications(cb);
+      // Now create version on the server
+      that.client.createVersion(doc.id, data, function(err) {
+        if (err) return cb(err);
+        doc.meta.published_at = new Date();
+        doc.meta.published_commit = doc.getRef('head');
+
+        that.updateMeta(function() {
+          that.loadPublications(cb);
+        });
       });
     });
+
   },
 
   // Unpublish document
@@ -403,12 +435,10 @@ _.extend(Substance.Session.prototype, _.Events, {
     var that = this;
     this.client.authenticate(username, password, function(err, data) {
       if (err) return cb(err);
-
       that.setProperty('user', username);
       that.setProperty('api-token', data.token);
 
       that.initStores();
-
       cb(null, data);
     });
   },
