@@ -66,7 +66,6 @@ function initSession(env) {
 // TODO: Find a better place
 if (typeof Substance.test === 'undefined') Substance.test = {};
 
-
 Substance.test.createDump = function() {
   // TODO: Iterate over all exisiting scopes
   var scopes = ["michael", "oliver", "admin"];
@@ -79,36 +78,3 @@ Substance.test.createDump = function() {
   return dump;
 }
 
-// This is redundant to hub/lib/documents.js
-Substance.test.seed = function (seeds, cb) {
-  console.log('Seeding the docstore...');
-
-  // flush the test store
-  var testStore = new Substance.RedisStore({
-    scope: "test"
-  })
-  testStore.clear();
-
-  if (seeds) {
-    _.each(seeds, function(seed, scope) {
-      new Substance.RedisStore({
-        scope: "test:"+scope
-      }).seed(seed);
-    });
-  }
-
-  if (cb) cb(null);
-  return true;
-}
-
-
-// Load Tests
-// -----------------
-
-function loadTests() {
-  _.each(Substance.tests, function(test, name) {
-    Substance.loadTest(name, "composer");
-  });
-}
-
-loadTests();
