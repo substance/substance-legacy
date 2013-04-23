@@ -35,11 +35,8 @@
               
               <a href="#new" class="new-document button"><div class="icon"></div>New Document</a>
 
-              <!--<div class="username"><a title="Show User Profile" href=""><%= user %></a></div>-->
-
               <a href="#" class="toggle-user-actions" title="Toggle User Actions" ><%= user %><i class="icon-caret-down"></i></a>
               <div class="user-actions">
-                <!--<a href="#settings" class="user-action settings"><i class="icon-user"></i>User Settings</a>-->
                 <a href="<%= Substance.settings.hub + '/' + user %>" class="user-action profile"><i class="icon-user"></i>User Profile</a>
                 <% if (session.env === "test") { %><a href="#tests" class="user-action testsuite"><i class="icon-tasks"></i>Test Suite</a><% } %>
                 <a href="#logout" class="user-action logout"><i class="icon-off"></i>Logout</a>
@@ -370,7 +367,6 @@
       <div class="comment-scopes">
         <% _.each(comments.scopes, function(scope, i) { %>
           <div id="<%= _.htmlId(scope.id) %>" class="comment-scope<%= i === 0 ? ' active' : ''%><%= scope.type ? ' '+scope.type : '' %>" data-node="<%= node() %>" data-annotation="<%= scope.annotation %>">
-            <!--<%= scope.comments.length %>-->
           </div>
         <% }); %>
       </div>
