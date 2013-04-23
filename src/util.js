@@ -29,37 +29,6 @@ _.htmlId = function(node) {
   return node.split(':').join('_');
 };
 
-// Request abstraction
-// --------------
-
-_.request = function(method, path, data) {
-  var cb = _.last(arguments);
-
-  var options = {
-    type: method,
-    url: path,
-    headers: {
-      "Authorization": "token " + token()
-    },
-    data: data !== undefined ? JSON.stringify(data) : null,
-    dataType: 'json',
-
-    //contentType: "application/json",
-    accepts: "application/substance.v1+json",
-    success: function(res) { cb(null, res); },
-    error: function(err) {
-      console.log('Request Error:', err);
-      cb(JSON.parse(err.responseText));
-    }
-  }
-
-  //HACK: because DELETE doesnt accept application/json content type
-  if (method.toUpperCase() !== 'DELETE') {
-    options['contentType'] = "application/json";
-  }
-
-  $.ajax(options);
-};
 
 // Silly op code extraction for the history view
 // --------------

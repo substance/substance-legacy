@@ -69,11 +69,11 @@ Substance.Replicator = function(params) {
       var commits = session.localStore.commits(doc.id, doc.refs.master.last);
       console.log("COMMITS OF NEW DOC", commits);
       // 2. Create empty doc on the server
-      _.request("POST", Substance.settings.hub_api + '/documents', {id: doc.id}, function (err) {
+      session.client.request("POST", '/documents', {id: doc.id}, function (err) {
         console.log('created on the server..');
         if (err) return cb(err);
         // 3. Send updates to server
-        _.request("PUT", Substance.settings.hub_api + '/documents/'+doc.id, {commits: commits, meta: doc.meta, refs: doc.refs}, function (err) {
+        session.client.request("PUT", '/documents/'+doc.id, {commits: commits, meta: doc.meta, refs: doc.refs}, function (err) {
           console.log('updated on the server..');
           session.localStore.setRef(doc.id, "remote:master", "last", doc.refs.master.last);
           session.localStore.setRef(doc.id, "remote:master", "head", doc.refs.master.head);
@@ -88,7 +88,7 @@ Substance.Replicator = function(params) {
 
   this.deleteRemote = function(doc, cb) {
     console.log('DELETING REMOTELY:' + doc.id);
-    _.request("DELETE", Substance.settings.hub_api+'/documents/' + doc.id, null, function(err, data) {
+    session.client.request("DELETE", '/documents/' + doc.id, null, function(err, data) {
       // Note: being tolerant if the remote document has been removed already
       // TODO: is there a better way to deal with errors?
       if (!err || err.status === 404) {
@@ -120,7 +120,7 @@ Substance.Replicator = function(params) {
     var lastRemote = session.localStore.getRef(doc.id, 'remote:master', 'last');
     console.log('pulling in changes... for', lastRemote);
 
-    _.request("GET", Substance.settings.hub_api +'/documents/'+doc.id+'/commits', {since: lastRemote}, function(err, data) {
+    session.client.request("GET", '/documents/'+doc.id+'/commits', {since: lastRemote}, function(err, data) {
       console.log('what does remote say?', data);
       console.log('remote commits', data.commits);
       // Should also give me remote refs
@@ -169,7 +169,7 @@ Substance.Replicator = function(params) {
         refs: doc.refs // make sure refs are updated on the server (for now master, last is updated implicitly)
       };
 
-      _.request("PUT", Substance.settings.hub_api + '/documents/'+doc.id, data, function (err) {
+      session.client.request("PUT", '/documents/'+doc.id, data, function (err) {
         // Set synced reference accordingly
         if (err) return cb(err);
         session.localStore.setRef(doc.id, 'remote:master', 'last', doc.refs.master.last);
@@ -186,8 +186,8 @@ Substance.Replicator = function(params) {
   	// Status object looks like this
     var jobs = [];
     that.localDocStates(function(err, localDocs) {
-      _.request("GET", Substance.settings.hub_api + '/documents', {}, function (err, remoteDocs) {
-      _.request("GET", Substance.settings.hub_api + '/collaborations', {}, function (err, collaborations) {
+      session.client.request("GET", '/documents', {}, function (err, remoteDocs) {
+      session.client.request("GET", '/collaborations', {}, function (err, collaborations) {
 
         remoteDocs = _.extend(remoteDocs, collaborations);
 
