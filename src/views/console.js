@@ -9,7 +9,7 @@ sc.views.Console = Backbone.View.extend({
 
   render: function () {
     this.$el.html(_.tpl('console', {
-
+      
     }));
 
     return this;

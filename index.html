@@ -136,7 +136,7 @@
       <div id="testsuite">
         <div class="tests">
           <% _.each(tests, function(test, key) { %>
-            <a href="#tests/<%= test.name %>" class="test"><%= test.name %></a>
+            <a href="#tests/<%= test.id %>" class="test"><%= test.name %></a>
           <% }); %>
         </div>
         <div class="test-results">
@@ -167,6 +167,7 @@
               <!--<a class="toggle settings" href="#"><div class="icon"></div>Settings</a>-->
               <a class="toggle view-online hidden" href="<%= Substance.settings.hub+'/public/'+doc.id %>"><div class="icon"></div>View Online</a>
               <a class="toggle collaborators" href="#"><div class="icon"></div>Collaborators</a>
+              <a class="toggle console" href="#"><div class="icon"></div>Console</a>
               <!--<a class="toggle export" href="#"><div class="icon"></div>Export</a>-->
             </div>
           </div>
@@ -516,7 +517,8 @@
     <script src="src/nodes/heading/heading.js"></script>
 
     <!-- Test API -->
-    <script src="./test/tests/test-api.js" type="text/javascript"></script>
+    <script src="./test/tests/assert.js"></script>
+    <script src="./test/tests/test.js" type="text/javascript"></script>
 
     <!-- Load tests here -->
     <script src="./test/tests/tests/001-hello-world.js" type="text/javascript"></script>

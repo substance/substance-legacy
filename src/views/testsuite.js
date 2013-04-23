@@ -14,7 +14,8 @@ sc.views.Testsuite = Backbone.View.extend({
     that.$('.test-results').removeClass('error success');
     test.run(function(err) {
       if(err) {
-        that.$('.test-results').html('<pre>'+JSON.stringify(err, null, '  ')+'</pre>').addClass('error');
+
+        that.$('.test-results').html(err.toString()+'<br/><pre>'+JSON.stringify(err, null, '  ')+'</pre>').addClass('error');
       } else {
         that.$('.test-results').html('Success').addClass('success');
       }

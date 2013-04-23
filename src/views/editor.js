@@ -7,6 +7,7 @@ sc.views.Editor = Backbone.View.extend({
   events: {
     'click .toggle.settings': 'toggleSettings',
     'click .toggle.collaborators': 'toggleCollaborators',
+    'click .toggle.console': 'toggleConsole',
     'click .toggle.export': 'toggleExport',
     'click .toggle-publish-settings': 'togglePublishSettings',
     'click a.undo': 'undo',
@@ -70,6 +71,15 @@ sc.views.Editor = Backbone.View.extend({
     session.loadCollaborators(function(err, collaborators) {
       that.toggleView('collaborators');
     });
+    return false;
+  },
+  toggleConsole: function (e) {
+    var that = this;
+    // session.loadCollaborators(function(err, collaborators) {
+    //   that.toggleView('collaborators');
+    // });
+    that.toggleView('console');
+    
     return false;
   },
   toggleExport:        function (e) { this.toggleView('export'); return false; },
