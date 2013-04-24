@@ -960,7 +960,7 @@ float: left;
 -------------------------------------------------------------------------------*/
 
 #testsuite {
-  margin-top: 100px;
+  margin-top: 80px;
   width: 1130px;
   margin-left: 80px;
   overflow: auto;
@@ -971,6 +971,21 @@ float: left;
   width: 300px;
 }
 
+#testsuite .tests .run-all-tests {
+  display: block;
+  border: none;
+  padding: 2px 10px;
+  background: rgba(0,0,0,0.8);
+  width: 100px;
+  color: rgba(255,255,255,0.6);
+
+  margin-bottom: 10px;
+}
+#testsuite .tests .run-all-tests:hover {
+  background: rgba(0,0,0,1);
+  color: #fff;
+}
+
 #testsuite .tests .test {
   border: none;
   display: block;
@@ -978,6 +993,24 @@ float: left;
   margin-bottom: 1px;
   background: rgba(0,0,0,0.05);
 }
+
+#testsuite .tests .test {
+  color: rgba(0,0,0, 0.7);
+}
+
+
+#testsuite .tests .test.error, #testsuite .tests .test.error:hover {
+  background: rgba(215, 0, 20, 0.8);
+}
+
+#testsuite .tests .test.success, #testsuite .tests .test.success:hover {
+  background: rgba(121, 208, 25, 1.0);
+}
+
+#testsuite .tests .test i {
+  float: right;
+}
+
 #testsuite .tests .test:hover {
   background: rgba(0,0,0,0.1);
 }
@@ -999,4 +1032,24 @@ float: left;
 
 #testsuite .test-results.error {
   background: rgba(215, 0, 20, 0.8);
+}
+
+#testsuite .test-results .action-success {
+  margin-bottom: 1px;
+  background: rgba(121, 208, 25, 1.0);
+  padding: 5px 10px;
+}
+
+#testsuite .test-results .action-success i {
+  float: right;
+}
+
+#testsuite .test-results .action-error {
+  margin-bottom: 1px;
+  background: rgba(215, 0, 20, 0.8);
+  padding: 5px 10px;
+}
+
+#testsuite .test-results .action-error i {
+  float: right;
 }

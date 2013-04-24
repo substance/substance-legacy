@@ -132,12 +132,13 @@
     <script type="text/html" name="testsuite">
       <div id="testsuite">
         <div class="tests">
+          <a href="#" class="run-all-tests">Run All</a>
           <% _.each(tests, function(test, key) { %>
-            <a href="#tests/<%= test.id %>" class="test"><%= test.name %></a>
+            <a href="#tests/<%= test.id %>" class="test" id="<%= key %>"><i></i><%= test.name %></a>
           <% }); %>
         </div>
         <div class="test-results">
-          Testresults go here
+          
         </div>
       </div>
     </script>
