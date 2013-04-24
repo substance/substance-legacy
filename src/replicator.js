@@ -219,11 +219,13 @@ Substance.Replicator = function(params) {
             // the remote document has been changed.
             // either by adding commits which affects the tail,
             // or by changing the master via undo/redo
-            if (lastRemote !== remoteDoc.refs['last'] || masterRemote !== remoteDoc.refs['master']) {
+            if (lastRemote !== remoteDoc.refs['master']['last']
+              || masterRemote !== remoteDoc.refs['master']['head']) {
               jobs.push({id: id, action: "pull"});
             }
             // if there are local changes the locally kept refs for master or tail differ
-            else if (lastRemote !== doc.refs['last'] || masterRemote !== doc.refs['master']) {
+            else if (lastRemote !== doc.refs['master']['last']
+              || masterRemote !== doc.refs['master']['head']) {
               // Local changes only -> Push (fast-forward)
               jobs.push({id: id, action: "push"});
             }
