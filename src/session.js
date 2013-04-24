@@ -124,7 +124,7 @@ _.extend(Substance.Session.prototype, _.Events, {
     this.users = {};
     this.users[this.user()] = {
       "color": "#2F2B26",
-      "selection": []        
+      "selection": []
     };
 
     // Rebind event handlers
@@ -133,13 +133,22 @@ _.extend(Substance.Session.prototype, _.Events, {
 
     this.document.on('commit:applied', function(commit) {
       // Persist update in docstore
-      this.updateDocument([commit]);
+      var refs = {
+        'master': {
+          'head': commit.sha,
+          'last': commit.sha
+        }
+      };
+      this.updateDocument([commit], null, refs);
       this.updateMeta();
     }, this);
 
     this.document.on('ref:updated', function(ref, sha) {
-      this.localStore.setRef(this.document.id, 'master', ref, sha);
-      this.updateMeta();
+      var refs = {}
+      refs[ref, sha];
+      this.localStore.setRefs(this.document.id, 'master', refs, function(err) {
+        this.updateMeta();
+      });
     }, this);
   },
 
@@ -206,10 +215,13 @@ _.extend(Substance.Session.prototype, _.Events, {
   },
 
   // Replicate local docstore with remote docstore
-  // Not yet working
   replicate: function(cb) {
-    var replicator = new Substance.Replicator();
-    replicator.replicate(this.localStore, this.remoteStore, cb);
+    var replicator = new Substance.Replicator({
+      user: this.user(),
+      localStore: this.localStore,
+      remoteStore: this.remoteStore
+    });
+    replicator.sync(cb);
   },
 
   // Select a document
@@ -220,7 +232,7 @@ _.extend(Substance.Session.prototype, _.Events, {
     var user = this.user(); // Use current user by default
 
     // Do nothing if selection hasn't changed
-    // It's considered a change if you operate on the same node 
+    // It's considered a change if you operate on the same node
     // but change from edit to selection mode (options.edit check)
     if (!this.selectionChanged(user, nodes, !!options.edit)) return;
 

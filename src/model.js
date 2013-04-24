@@ -46,7 +46,12 @@ window.appSettings = new AppSettings();
 // -----------------
 
 function synced(docId) {
-  return session.localStore.getRef(docId, 'master', 'head') === session.localStore.getRef(docId, 'remote:master', 'head');
+  var refs = session.localStore.getRefs(docId);
+  if (refs.master && refs['remote:master']) {
+    return refs.master.head === refs['remote:master'].head;
+  } else {
+    return false;
+  }
 }
 
 function published(doc) {

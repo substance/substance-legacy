@@ -349,5 +349,7 @@ function updateDoc(doc, commit, cb) {
 
 function updateRef(doc, ref, sha, cb) {
   // TODO: provisionally branch hard coded
-  store.setRef(doc.id, 'master', ref, sha); //  = function(id, ref, sha, cb) {
+  var refs = {}
+  refs[ref] = sha;
+  store.setRefs(doc.id, 'master', refs, cb); //  = function(id, ref, sha, cb) {
 };

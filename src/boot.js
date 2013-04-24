@@ -125,7 +125,11 @@ $(function() {
     // Synchronizing
     _sync: function() {
       var that = this;
-      var replicator = new Substance.Replicator({store: session.localStore, user: user()});
+      var replicator = new Substance.Replicator({
+        localStore: session.localStore,
+        remoteStore: session.remoteStore,
+        user: session.user()
+      });
 
       this.$('#header .sync').removeClass('disabled').addClass('active');
       replicator.sync(function(err) {
