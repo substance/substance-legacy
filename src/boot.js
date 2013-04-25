@@ -337,17 +337,6 @@ $(function() {
     window.router = new Router({});
     Backbone.history.start();
 
-    key('ctrl+alt+d', _.bind(function() {
-      var id = window.doc ? window.doc.id : "empty.json";
-      document.location.href = "console/index.html#"+app.user+"/"+id;
-      return false;
-    }, this));
-
-    key('ctrl+alt+t', _.bind(function() {
-      document.location.href = "test/index.html";
-      return false;
-    }, this));
-
     // Trigger sync with hub
     key('ctrl+alt+s', _.bind(function() {
       app._sync();
