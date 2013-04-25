@@ -376,7 +376,7 @@ sc.views.Document = Backbone.View.extend({
     });
   },
 
-  select: function (e) {
+  select: function(e) {
     // Skip when move handle has been clicked
     if ($(e.target).hasClass('move')) return;
     var id = $(e.currentTarget)[0].id.replace(/_/g, ":");
@@ -402,7 +402,7 @@ sc.views.Document = Backbone.View.extend({
   },
 
   // Initial render of all nodes
-  render: function () {
+  render: function() {
     var coverLarge = session.getBlob(this.model.document.properties.cover_large);
     var coverMedium = session.getBlob(this.model.document.properties.cover_medium);
 

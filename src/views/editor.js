@@ -77,7 +77,7 @@ sc.views.Editor = Backbone.View.extend({
   toggleConsole: function (e) {
     var that = this;
 
-    if (this.composer) {
+    if (this.currentView === 'composer') {
       this.renderConsole();
     } else {
       this.renderComposer();
@@ -88,14 +88,14 @@ sc.views.Editor = Backbone.View.extend({
 
   renderComposer: function() {
     this.composer = new Substance.Composer({id: 'document_wrapper', model: this.model });
-    this.console = null;
+    this.currentView = 'composer';
     this.$('#document_wrapper').replaceWith(this.composer.render().el);
     $('#console_wrapper').hide();
   },
 
   renderConsole: function() {    
     this.console = new Substance.Console({id: 'console_wrapper', model: this.model.document });
-    this.composer = null;
+    this.currentView = 'console';
     this.$('#console_wrapper').replaceWith(this.console.render().el);
     $('#document_wrapper').hide();
   },
@@ -190,6 +190,7 @@ sc.views.Editor = Backbone.View.extend({
     this.updatePublishState();
 
     this.composer = new Substance.Composer({id: 'document_wrapper', model: this.model });
+    this.currentView = 'composer';
     this.$('#document_wrapper').replaceWith(this.composer.render().el);
 
     return this;

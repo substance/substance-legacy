@@ -270,8 +270,8 @@
     },
 
     updateUndoRedoControls: function() {
-      var head = this.model.document.getRef('master', 'head');
-      var last = this.model.document.getRef('master', 'last');
+      var head = this.model.document.getRef('head');
+      var last = this.model.document.getRef('last');
 
       if (head === last) {
         $('#document_menu .redo').addClass('disabled');

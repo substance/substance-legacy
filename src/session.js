@@ -148,10 +148,11 @@ _.extend(Substance.Session.prototype, _.Events, {
       that.updateMeta();
     }, this);
 
-    this.document.on('ref:updated', function(branch, ref, sha) {
+    this.document.on('ref:updated', function(ref, sha) {
       var refs = {}
       refs[ref] = sha;
-      that.localStore.setRefs(that.document.id, 'master', refs, function(err) {
+
+      that.localStore.setRefs(that.document.id, {"master": refs}, function(err) {
         that.updateMeta();
       });
     }, this);
@@ -355,7 +356,7 @@ _.extend(Substance.Session.prototype, _.Events, {
   publishState: function() {
     var doc = this.document;
     if (!doc.meta.published_commit) return "unpublished";
-    if (doc.getRef('master', 'head') === doc.meta.published_commit) return "published";
+    if (doc.getRef('head') === doc.meta.published_commit) return "published";
     return "dirty";
   },
 
