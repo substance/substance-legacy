@@ -228,6 +228,7 @@ var Replicator = function(params) {
     var remoteDocs;
 
     function getLocalStates(data, cb) {
+
       that.localDocStates(cb);
     }
 
@@ -305,6 +306,7 @@ var Replicator = function(params) {
       _.each(remoteDocs, function(remoteDoc, id) {
         if(remoteDoc) jobs.push({id: id, action: "create-local"});
       });
+
       cb(null);
     }
 
@@ -319,7 +321,10 @@ var Replicator = function(params) {
   // Returns: A hash of document status objects
 
   this.localDocStates = function(cb) {
+
     that.localStore.list(function(err, localDocs) {
+      if (err) return cb(err);
+      
       var result = {};
       _.each(localDocs, function(doc) {
         result[doc.id] = doc;

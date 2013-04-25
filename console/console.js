@@ -10,68 +10,6 @@ $(function() {
     return _.template(source, ctx);
   };
 
-  // Commands
-  // ---------------
-
-  var SUBSTANCE_COMMANDS = {
-    "document": [
-      {
-        "name": "Insert Heading",
-        "op": ["insert", {"id": "UNIQUE_ID", "type": "heading", "target": "back", "data": {"content": "HEADING_NAME"}}]
-      },
-      {
-        "name": "Insert Text",
-        "op": ["insert", {"id": "UNIQUE_ID", "type": "text", "target": "back", "data": {"content": "CONTENT"}}]
-      },
-      {
-        "name": "Update Text (Delta)",
-        "op": ["update", {"id": "NODE_ID", "data": [["ret", 5], ["ins", " world!"]]}]
-      },
-      {
-        "name": "Update Heading (Properties)",
-        "op": ["update", {"id": "NODE_ID", "data": {"content": "NEW_CONTENT"}}]
-      },
-      {
-        "name": "Move Node(s)",
-        "op": ["move", {"nodes": ["NODE_ID", "ANOTHER_NODE_ID"], "target": "TARGET_NODE_ID"}]
-      },
-      {
-        "name": "Delete Node(s)",
-        "op": ["delete", {"nodes": ["NODE_ID", "ANOTHER_NODE_ID"]}]
-      }
-    ],
-
-    "annotation": [
-      {
-        "name": "Insert Annotation",
-        "op": ["insert_annotation", {"id": "suggestion:1", "type": "suggestion", "node": "text:2", "pos": [4, 5]}]
-      },
-      {
-        "name": "Update Annotation",
-        "op": ["update_annotation", {"id": "suggestion:1", "type": "suggestion", "node": "text:2", "pos": [5, 10]}]
-      }
-    ],
-
-    "comment": [
-      {
-        "name": "Insert Comment (document)",
-        "op": ["insert_comment", {"id": "comment:a", "content": "I like this document!"}]
-      },
-      {
-        "name": "Insert Comment (node)",
-        "op": ["insert_comment", {"id": "comment:a", "node": "text:2", "content": "Good argumentation."}]
-      },
-      {
-        "name": "Insert Comment (annotation)",
-        "op": ["insert_comment", {"id": "comment:a", "node": "text:2", "annotation": "suggestion:1", "content": "A way of saying helo."}]
-      },
-      {
-        "name": "Update comment",
-        "op": ["update_comment", {"id": "comment:a", "content": "A way of saying hello."}]
-      }
-    ]
-  };
-
 
 
   var Router = Backbone.Router.extend({
@@ -332,24 +270,24 @@ function loadDocument(user, doc, cb) {
 // Update doc (docstore.update)
 // -----------------
 
-function updateDoc(doc, commit, cb) {
-  store.update(doc.id, [commit], function(err) {
-    store.setSnapshot(doc.id, doc.content, 'master', 'head', function(err) {
-      // Update metadata accordingly
-      if (commit.op[0] === "set") {
-        _.extend(doc.meta, doc.content.properties);
-        updateMeta(doc, cb);
-      };
-    });
-  });
-};
+// function updateDoc(doc, commit, cb) {
+//   store.update(doc.id, [commit], function(err) {
+//     store.setSnapshot(doc.id, doc.content, 'master', 'head', function(err) {
+//       // Update metadata accordingly
+//       if (commit.op[0] === "set") {
+//         _.extend(doc.meta, doc.content.properties);
+//         updateMeta(doc, cb);
+//       };
+//     });
+//   });
+// };
 
 // Update doc (docstore.setRef)
 // -----------------
 
-function updateRef(doc, ref, sha, cb) {
-  // TODO: provisionally branch hard coded
-  var refs = {}
-  refs[ref] = sha;
-  store.setRefs(doc.id, 'master', refs, cb); //  = function(id, ref, sha, cb) {
-};
+// function updateRef(doc, ref, sha, cb) {
+//   // TODO: provisionally branch hard coded
+//   var refs = {}
+//   refs[ref] = sha;
+//   store.setRefs(doc.id, 'master', refs, cb); //  = function(id, ref, sha, cb) {
+// };

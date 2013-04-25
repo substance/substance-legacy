@@ -4,9 +4,10 @@
     <title>Substance</title>
     <link href='styles/fonts/open-sans/open-sans.css' rel='stylesheet' type='text/css'>
     <link href='styles/font-awesome.css' rel='stylesheet' type='text/css'>
-    <link href="styles/buttons.css" media="screen" rel="stylesheet" type="text/css" />
+
     <link href="styles/substance.css" media="screen" rel="stylesheet" type="text/css" />
     <link href="styles/composer.css" media="screen" rel="stylesheet" type="text/css" />
+    <link href="styles/console.css" media="screen" rel="stylesheet" type="text/css" />
 
     <!-- Templates -->
     <script type="text/html" name="substance">
@@ -32,7 +33,6 @@
 
             <div class="user-status">
               <a href="#" class="sync button"><div class="icon"></div></a>
-              
               <a href="#new" class="new-document button"><div class="icon"></div>New Document</a>
 
               <a href="#" class="toggle-user-actions" title="Toggle User Actions" ><%= user %><i class="icon-caret-down"></i></a>
@@ -41,7 +41,6 @@
                 <% if (session.env === "test") { %><a href="#tests" class="user-action testsuite"><i class="icon-tasks"></i>Test Suite</a><% } %>
                 <a href="#logout" class="user-action logout"><i class="icon-off"></i>Logout</a>
               </div>
-              
             </div>
           <% } %>
         </div>
@@ -145,10 +144,58 @@
 
     <!-- Console -->
     <script type="text/html" name="console">
-      <div id="testsuite">
-        <h1>Substance Console</h1>
-        The Substance Testsuite to come here.
+      <div class="operations">
+        <% applied = true %>
+        <% var width = parseInt((800 / operations.length) - 1, 10); %>
+        <% width = Math.min(width, 40); %>
+        <% _.each(operations, function(op) { %>
+          <a style="width: <%= width %>px;" href="#" class="operation<%= applied ? ' applied' : '' %>" data-sha="<%= op.sha %>"></a>
+          <% if (op.sha === sha) applied = false; %>
+        <% }); %>
       </div>
+
+      <div class="console-wrapper">
+        <div class="console">
+          <div class="scope" id="scope">
+
+          </div>
+          <div class="action">
+            <textarea id="command" class="command inactive"></textarea>
+            <div class="apply-operation">Apply</div>
+          </div>
+        </div>
+
+        <div class="output visualization">
+          <div class="select-output">
+            <a href="#" class="toggle-output active" data-output="visualization">Visualization</a>
+            <a href="#" class="toggle-output" data-output="content">Content</a>
+            <a href="#" class="toggle-output last" data-output="operations">Operations</a>
+          </div>
+
+          <div class="document">
+            <% _.each(nodes, function(node) { %>
+              <div class="node <%= node.type %>" data-id="<%= node.id %>">
+                <% _.each(node.content.split(''), function(ch) { %><span><%= ch %></span><% }); %>
+              </div>
+            <% }); %>
+          </div>
+        </div>
+      </div>
+    </script>
+
+    <script type="text/html" name="scope">
+      OPERATION:
+      <select name="examples" id="select_example">
+        <option value="">Choose Example</option>
+
+        <% _.each(["document", "annotation", "comment"], function(scope) { %>
+          <option value="">------------------</option>
+
+          <% _.each(commands[scope], function(c, index) { %>
+            <option value="<%= scope %>:<%= index %>"><%= c.name %></option>
+          <% }); %>
+        <% }); %>
+      </select>
     </script>
 
     <!-- Editor -->
@@ -165,7 +212,7 @@
               <!--<a class="toggle settings" href="#"><div class="icon"></div>Settings</a>-->
               <a class="toggle view-online hidden" href="<%= Substance.settings.hub+'/public/'+doc.id %>"><div class="icon"></div>View Online</a>
               <a class="toggle collaborators" href="#"><div class="icon"></div>Collaborators</a>
-              <a class="toggle console" href="#"><div class="icon"></div>Console</a>
+              <a class="toggle toggle-console" href="#"><div class="icon"></div>Console</a>
               <!--<a class="toggle export" href="#"><div class="icon"></div>Export</a>-->
             </div>
           </div>
@@ -192,7 +239,10 @@
       </div>
 
       <div id="document_wrapper">
-        Content goes here
+        
+      </div>
+      <div id="console_wrapper">
+        
       </div>
     </script>
 
@@ -478,11 +528,12 @@
     <!-- Extensions -->
     <script src="lib/store/src/redis_store.js"></script>
     <script src="lib/store/src/remote_store.js"></script>
-
     
     <!-- Model -->
     <script src="lib/document/document.js"></script>
+    <script src="lib/document/console.js"></script>
     <script src="src/composer.js"></script>
+
     <script src="src/util.js"></script>
 
     <script src="src/replicator.js"></script>
@@ -499,6 +550,7 @@
     <script src="src/views/document/publish_settings.js"></script>
 
     <script src="src/views/document.js"></script>
+    
     <script src="src/views/tools.js"></script>
     <script src="src/views/outline.js"></script>
     <script src="src/views/history.js"></script>

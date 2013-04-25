@@ -114,7 +114,7 @@ _.extend(Substance.Session.prototype, _.Events, {
   },
   // When a doc changes, bind event handlers etc.
   initDoc: function() {
-
+    var that = this;
     this.selections = {};
 
     // Comments view
@@ -139,15 +139,15 @@ _.extend(Substance.Session.prototype, _.Events, {
           'last': commit.sha
         }
       };
-      this.updateDocument([commit], null, refs);
-      this.updateMeta();
+      that.updateDocument([commit], null, refs);
+      that.updateMeta();
     }, this);
 
-    this.document.on('ref:updated', function(ref, sha) {
+    this.document.on('ref:updated', function(branch, ref, sha) {
       var refs = {}
-      refs[ref, sha];
-      this.localStore.setRefs(this.document.id, 'master', refs, function(err) {
-        this.updateMeta();
+      refs[ref] = sha;
+      that.localStore.setRefs(that.document.id, 'master', refs, function(err) {
+        that.updateMeta();
       });
     }, this);
   },

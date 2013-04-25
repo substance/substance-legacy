@@ -7,7 +7,7 @@ sc.views.Editor = Backbone.View.extend({
   events: {
     'click .toggle.settings': 'toggleSettings',
     'click .toggle.collaborators': 'toggleCollaborators',
-    'click .toggle.console': 'toggleConsole',
+    'click .toggle-console': 'toggleConsole',
     'click .toggle.export': 'toggleExport',
     'click .toggle-publish-settings': 'togglePublishSettings',
     'click a.undo': 'undo',
@@ -66,6 +66,7 @@ sc.views.Editor = Backbone.View.extend({
   },
 
   toggleSettings:      function (e) { this.toggleView('settings'); return false; },
+  toggleExport:        function (e) { this.toggleView('export'); return false; },
   toggleCollaborators: function (e) {
     var that = this;
     session.loadCollaborators(function(err, collaborators) {
@@ -75,14 +76,29 @@ sc.views.Editor = Backbone.View.extend({
   },
   toggleConsole: function (e) {
     var that = this;
-    // session.loadCollaborators(function(err, collaborators) {
-    //   that.toggleView('collaborators');
-    // });
-    that.toggleView('console');
-    
+
+    if (this.composer) {
+      this.renderConsole();
+    } else {
+      this.renderComposer();
+    }
+
     return false;
   },
-  toggleExport:        function (e) { this.toggleView('export'); return false; },
+
+  renderComposer: function() {
+    this.composer = new Substance.Composer({id: 'document_wrapper', model: this.model });
+    this.console = null;
+    this.$('#document_wrapper').replaceWith(this.composer.render().el);
+    $('#console_wrapper').hide();
+  },
+
+  renderConsole: function() {    
+    this.console = new Substance.Console({id: 'console_wrapper', model: this.model.document });
+    this.composer = null;
+    this.$('#console_wrapper').replaceWith(this.console.render().el);
+    $('#document_wrapper').hide();
+  },
 
   resizeShelf: function () {
     var shelfHeight   = this.currentView ? $(this.currentView.el).outerHeight() : 0,
@@ -153,22 +169,6 @@ sc.views.Editor = Backbone.View.extend({
     this.$('.publish-state .message').html(message);
 
     this.hidePublishSettings();
-
-    // this.$('.publish-actions').empty();
-
-    // if (state === "unpublished") {
-    //   this.$('.publish-actions').append('<a href="#" class="publish-document"><div class="icon"></div>Publish</a>');
-    // }
-
-    // if (state === "dirty") {
-    //   this.$('.publish-actions').append('<a href="#" class="publish-document"><div class="icon"></div>Publish Changes</a>');
-    // }
-
-    // if (state !== "unpublished") {
-    //   this.$('.publish-actions').append('<a href="#" class="unpublish-document"><div class="icon"></div>Unpublish</a>');
-    // }
-
-    // this.$('.publish-state .publish-settings').hide();
   },
 
   render: function () {

@@ -517,42 +517,6 @@ h2 { font-size: 160%; padding-bottom: 15px; }
 }
 
 
-/* Patches Tool
--------------------------------------------------------------------------------*/
-
-/* Insert Styles */
-
-
-/* History Tool
--------------------------------------------------------------------------------*/
-
-.operations {
-  padding: 20px;
-  overflow: auto;
-}
-
-.operations .operation {
-  opacity: 0.6;
-  display: block;
-  float: left;
-  margin-right: 10px;
-  margin-bottom: 10px;
-  width: 30px;
-  height: 30px;
-  display: block;
-  background: #82AA15;
-  font-weight: bold;
-  color: #fff;
-  line-height: 26px;
-  text-align: center;
-  border: none;
-  border-radius: 15px;
-  border: 2px solid #fff;
-}
-
-.operations .operation:hover {
-  opacity: 1.0;
-}
 
 /* Document
 -------------------------------------------------------------------------------*/

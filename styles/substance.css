@@ -2,8 +2,8 @@ body {
   overflow:hidden;
 }
 
-
 #container {
+
 }
 
 #header {
@@ -31,7 +31,6 @@ body {
   overflow: visible;
   position: relative;
 }
-
 
 #header .logo {
   -webkit-transition: color 200ms linear;
@@ -528,11 +527,10 @@ body {
   width: 1130px;
   margin-left: 80px;
   position: relative;
-  /*overflow: auto;*/
 }
 
 #document_menu .navigation {
-float: left;
+  float: left;
 }
 
 #document_menu .actions {
@@ -553,7 +551,7 @@ float: left;
   float: left;
   background: rgba(0,0,0,0.1);
   border: none;
-  font-size: 12px;
+  font-size: 14px;
   margin-right: 10px;
   border-radius: 3px;
   position: relative;
@@ -569,6 +567,14 @@ float: left;
   background-position: center;
   background-repeat: no-repeat;
   opacity: 0.6;
+}
+
+#document_menu .navigation a.toggle-console .icon {
+  background: none;
+}
+
+#document_menu .navigation a.toggle-console {
+  padding-left: 10px;
 }
 
 #document_menu .actions a {
@@ -928,6 +934,13 @@ float: left;
   margin-top: 110px;
   -webkit-transition-property: margin-top;
   -webkit-transition-duration: 0.6s;
+}
+
+#console_wrapper {
+  margin-left: 80px;
+  width: 1130px;
+  position: relative;
+  margin-top: 110px;
 }
 
 /* Shelf: Collaborators */
