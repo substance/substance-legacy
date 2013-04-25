@@ -17,15 +17,22 @@ var Replicator = function(params) {
   // -----------------
 
   this.sync = function(cb) {
+    if (this.syncing) return cb(null); // do nothing
+    this.syncing = true;
   	this.computeJobs(function(err, jobs) {
-      console.log('JOBS', jobs);
   		var index = 0;
 
       function next() {
-        if (index === jobs.length) return cb(null);
+        if (index === jobs.length) {
+          that.syncing = false;
+          return cb(null);
+        }
         that.processDocument(jobs[index], function(err) {
-          if (err) console.log('ERROR WHILE PROCSSING JOB', jobs[index], "ERROR", err);
-          else console.log("... finished " + jobs[index].action);
+          if (err) {
+            that.syncing = false;
+            console.log('ERROR WHILE PROCSSING JOB', jobs[index], "ERROR", err);
+            return cb(err);
+          }
           index += 1;
           next();
         });

@@ -263,9 +263,6 @@ body {
 
 
 
-
-
-
 #header .user-status a.sync {
   position: relative;
   -webkit-transition: background 200ms linear;
@@ -281,6 +278,15 @@ body {
   background: rgba(0,0,0, 0.5);
   padding-left: 20px;
 }
+
+#header .user-status a.sync.error {
+  background: rgba(171, 0, 0, 0.8);
+}
+
+#header .user-status a.sync.error:hover {
+  background: rgba(171, 0, 0, 1.0);
+}
+
 
 #header .user-status a.sync.disabled {
   opacity: 0.3;

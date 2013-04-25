@@ -96,6 +96,32 @@ $(function() {
       'click .user-actions': '_hideUserActions'
     },
 
+    initialize: function(options) {
+      var that = this;
+      _.bindAll(this, 'document', 'dashboard', 'login', 'signup', 'console', 'testsuite', 'replicationStart', 'replicationFinish');
+
+      session.on('replication:started', this.replicationStart);
+      session.on('replication:finished', this.replicationFinish);
+    },
+
+    replicationStart: function() {
+      this.$('#header .sync').addClass('active').addClass('disabled');
+    },
+
+    replicationFinish: function(err) {
+      var that = this;
+
+      // UI update
+      _.delay(function() {
+        this.$('#header .sync').removeClass('active');
+
+        // Update status
+        if (err) this.$('#header .sync').removeClass('disabled').addClass('error');
+        
+      }, 500);
+      
+    },
+
     _toggleUserActions: function() {
       $('.user-actions').toggle();
       return false;
@@ -125,28 +151,8 @@ $(function() {
     // Synchronizing
     _sync: function() {
       var that = this;
-      var replicator = new Substance.Replicator({
-        localStore: session.localStore,
-        remoteStore: session.remoteStore,
-        user: session.user()
-      });
 
-      this.$('#header .sync').removeClass('disabled').addClass('active');
-      replicator.sync(function(err) {
-        console.log('Replication ERROR?', err);
-        that.$('#header .sync').removeClass('active');
-        that.$('#header .sync').addClass('disabled');
-
-        // Document active, reload document, just to be safe
-        if (that.view instanceof sc.views.Editor) {
-          // TODO: remove that hack (relying on global doc.id)
-          that.document(doc.id);
-        } else {
-          // View Dashboard by default
-          that.dashboard();
-        }
-      });
-
+      session.replicate();
       return false;
     },
 
@@ -162,7 +168,6 @@ $(function() {
         }
 
         that.user = username;
-
         that.dashboard();
       });
       return false;
@@ -200,10 +205,6 @@ $(function() {
       return false;
     },
 
-    initialize: function(options) {
-      var that = this;
-      _.bindAll(this, 'document', 'dashboard', 'login', 'signup', 'console', 'testsuite');
-    },
 
     // Toggle document view
     document: function(id) {

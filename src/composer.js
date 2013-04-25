@@ -239,10 +239,13 @@
 
       this.views.document = new Substance.Composer.views.Document({ model: this.model });
       this.views.tools = new Substance.Composer.views.Tools({model: this.model });
-      
+
       this.model.document.on('commit:applied', function(commit) {
         // Send update to the server
         $('#header .sync').removeClass('disabled');
+        
+        // $('#header .sync .status').html('Sync');
+
         this.updateUndoRedoControls();
       }, this);
 

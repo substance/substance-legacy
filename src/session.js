@@ -83,8 +83,13 @@ _.extend(Substance.Comments.prototype, _.Events, {
 // TODO: No multiuser support yet, use app.user
 
 Substance.Session = function(options) {
+  var that = this;
   this.env = options.env;
 
+  this.lazySync = _.debounce(function() {
+    if (!this.pendingSync) return;
+    this.replicate();
+  }, 4000);
   this.initStores();
 };
 
@@ -199,8 +204,13 @@ _.extend(Substance.Session.prototype, _.Events, {
     this.localStore.update(this.document.id, commits, meta, refs, cb);
   },
 
+
   // Update meta info of current document
   updateMeta: function(cb) {
+    // Triggers a sync with remote store if available
+    this.pendingSync = true;
+    this.lazySync();
+
     var doc = this.document;
     _.extend(doc.meta, doc.properties);
     doc.meta.updated_at = new Date();
@@ -216,12 +226,21 @@ _.extend(Substance.Session.prototype, _.Events, {
 
   // Replicate local docstore with remote docstore
   replicate: function(cb) {
+    var that = this;
+    this.pendingSync = false;
+    
     var replicator = new Substance.Replicator({
       user: this.user(),
       localStore: this.localStore,
       remoteStore: this.remoteStore
     });
-    replicator.sync(cb);
+
+    this.trigger('replication:started');
+
+    replicator.sync(function(err) {
+      that.trigger('replication:finished', err);
+      if (cb) cb(err);
+    });
   },
 
   // Select a document
