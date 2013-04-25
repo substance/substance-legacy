@@ -92,6 +92,7 @@ var Replicator = function(params) {
 
     function extractLocalCommits(data, cb) {
       doc = data;
+      if (!doc.refs.master || !doc.refs.master.last) return cb(null, []);
       that.localStore.commits(doc.id, doc.refs.master.last, null, cb);
     }
 
@@ -108,7 +109,11 @@ var Replicator = function(params) {
     }
 
     function setRefs(data, cb) {
-      that.localStore.setRefs(doc.id, "remote:master", doc.refs.master, cb);
+      var refs = {
+        "remote-head": doc.refs.master ? doc.refs.master.head : null,
+        "remote-last": doc.refs.master ? doc.refs.master.last : null,
+      };
+      that.localStore.setRefs(doc.id, "master", refs, cb);
     }
 
     util.async([getLocalDoc, extractLocalCommits, createRemoteDoc, updateRemoteDoc, setRefs], cb);
@@ -161,7 +166,7 @@ var Replicator = function(params) {
     }
 
     function getCommits (data, cb) {
-      lastRemote = (data['remote:master']) ? data['remote:master'].last : null;
+      lastRemote = (data['master']) ? data['master']['remote-last'] : null;
 
       console.log('pulling in changes... for', lastRemote);
       that.remoteStore.commits(doc.id, null, lastRemote, cb);
@@ -169,11 +174,11 @@ var Replicator = function(params) {
 
     function pullData(data, cb) {
       if (data.commits.length > 0) {
-        var refs = {
-          'master': data.refs.master,
-          'remote:master': data.refs.master
-        };
-        that.localStore.update(doc.id, data.commits, data.meta, refs, cb)
+        var refs = _.clone(data.refs.master);
+        refs["remote-head"] = refs.head;
+        refs["remote-last"] = refs.last;
+
+        that.localStore.update(doc.id, data.commits, data.meta, {"master": refs}, cb);
       } else {
         that.localStore.update(doc.id, null, data.meta, null, cb)
       }
@@ -201,7 +206,7 @@ var Replicator = function(params) {
 
     function getCommits(data, cb) {
       lastLocal = data.master.last;
-      lastRemote = (data['remote:master']) ? data['remote:master'].last : null;
+      lastRemote = (data['master']) ? data['master']['remote-last'] : null;
 
       // Find all commits after synced (remote) commit
       that.localStore.commits(doc.id, lastLocal, lastRemote, cb);
@@ -210,14 +215,16 @@ var Replicator = function(params) {
     function pushData(data, cb) {
       commits = data;
       var refs = {
-        'master': doc.refs.master
-      }
+        'master': doc.refs.master || {}
+      };
       that.remoteStore.update(doc.id, commits, doc.meta, refs, cb);
     }
 
     function setLocalRefs(data, cb) {
       var refs = doc.refs;
-      refs['remote:master'] = doc.refs.master;
+      refs['master']['remote-head'] = refs.master.head;
+      refs['master']['remote-last'] = refs.master.last;
+
       that.localStore.update(doc.id, null, null, refs, cb);
     }
 
@@ -261,8 +268,12 @@ var Replicator = function(params) {
       selector: function(data) { return localDocs; },
       iterator: function(localDoc, id, cb) {
         var remoteDoc = remoteDocs[id];
-        var headRemote = (localDoc.refs['remote:master']) ? localDoc.refs['remote:master'].head : null;
-        var lastRemote = (localDoc.refs['remote:master']) ? localDoc.refs['remote:master'].last : null;
+
+        var head = localDoc.refs['master'] ? localDoc.refs['master']['head'] : null;
+        var last = localDoc.refs['master'] ? localDoc.refs['master']['last'] : null;
+
+        var headRemote = (localDoc.refs['master']) ? localDoc.refs['master']['remote-head'] : null;
+        var lastRemote = (localDoc.refs['master']) ? localDoc.refs['master']['remote-last'] : null;
 
         // document does exist locally but not remotely
         if (!remoteDoc) {
@@ -279,16 +290,18 @@ var Replicator = function(params) {
         // document exists locally and remotely
         else {
 
+          var headRemoteUpstream = remoteDoc.refs['master'] ? remoteDoc.refs['master']['head'] : null;
+          var lastRemoteUpstream = remoteDoc.refs['master'] ? remoteDoc.refs['master']['last'] : null;
+
+
           // the remote document has been changed.
           // either by adding commits which affects the tail,
           // or by changing the master via undo/redo
-          if (lastRemote !== remoteDoc.refs['master']['last']
-            || headRemote !== remoteDoc.refs['master']['head']) {
+          if (lastRemote !== lastRemoteUpstream || headRemote !== headRemoteUpstream) {
             jobs.push({id: id, action: "pull"});
           }
           // if there are local changes the locally kept refs for master or tail differ
-          else if (lastRemote !== localDoc.refs['master']['last']
-            || headRemote !== localDoc.refs['master']['head']) {
+          else if (lastRemote !== last || headRemote !== head) {
             // Local changes only -> Push (fast-forward)
             jobs.push({id: id, action: "push"});
           }
@@ -296,7 +309,6 @@ var Replicator = function(params) {
           // retain unsynched remoteDocs: remoteDocs - localDocs
           remoteDocs[id] = undefined;
         }
-
         cb(null);
       }
     });

@@ -117,7 +117,6 @@ $(function() {
 
         // Update status
         if (err) this.$('#header .sync').removeClass('disabled').addClass('error');
-        
       }, 500);
       
     },
@@ -189,7 +188,6 @@ $(function() {
         }
 
         that.user = user.username;
-
         that.dashboard();
       });
 
