@@ -280,7 +280,7 @@ _.extend(Substance.Session.prototype, _.Events, {
   
     this.client.createPublication(doc.id, network, function(err) {
       if (err) return cb(err);
-      that.loadPublications(cb);
+      that.listPublications(cb);
     });
   },
 
@@ -289,7 +289,7 @@ _.extend(Substance.Session.prototype, _.Events, {
     var doc = this.document;
     this.client.deletePublication(doc.id, network, function(err) {
       if (err) return cb(err);
-      that.loadPublications(cb);
+      that.listPublications(cb);
     });
   },
 
@@ -333,7 +333,7 @@ _.extend(Substance.Session.prototype, _.Events, {
         doc.meta.published_commit = doc.getRef('head');
 
         that.updateMeta(function() {
-          that.loadPublications(cb);
+          that.listPublications(cb);
         });
       });
     });
@@ -402,10 +402,10 @@ _.extend(Substance.Session.prototype, _.Events, {
     var doc = this.document;
     var that = this;
 
-    this.client.loadNetworks(function(err, networks) {
+    this.client.listNetworks(function(err, networks) {
       if (err) return cb(err);
       that.networks = networks; // all networks
-      that.client.loadPublications(doc.id, function(err, publications) {
+      that.client.listPublications(doc.id, function(err, publications) {
         that.publications = publications;
         _.each(that.publications, function(p) {
           // Attach network information
@@ -420,7 +420,7 @@ _.extend(Substance.Session.prototype, _.Events, {
   loadCollaborators: function(cb) {
     var doc = this.document;
     var that = this;
-    this.client.loadCollaborators(doc.id, function(err, collaborators) {
+    this.client.listCollaborators(doc.id, function(err, collaborators) {
       that.collaborators = collaborators;
       cb(null);
     });
@@ -432,7 +432,7 @@ _.extend(Substance.Session.prototype, _.Events, {
     var that = this;
     this.client.createCollaborator(doc.id, collaborator, function(err) {
       if (err) return cb(err);
-      that.loadCollaborators(cb);
+      that.listCollaborators(cb);
     });
   },
 
@@ -442,7 +442,7 @@ _.extend(Substance.Session.prototype, _.Events, {
     var that = this;
     this.client.deleteCollaborator(doc.id, collaborator, function(err) {
       if (err) return cb(err);
-      that.loadCollaborators(cb);
+      that.listCollaborators(cb);
     });
   },
 
