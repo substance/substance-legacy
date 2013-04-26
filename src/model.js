@@ -47,8 +47,8 @@ window.appSettings = new AppSettings();
 
 function synced(docId) {
   var refs = session.localStore.getRefs(docId);
-  if (refs.master && refs['remote:master']) {
-    return refs.master.head === refs['remote:master'].head;
+  if (refs.master) {
+    return refs.master.head === refs['master']['remote-head'];
   } else {
     return false;
   }
