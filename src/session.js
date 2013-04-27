@@ -421,7 +421,7 @@ _.extend(Substance.Session.prototype, _.Events, {
     var that = this;
     this.client.createCollaborator(doc.id, collaborator, function(err) {
       if (err) return cb(err);
-      that.listCollaborators(cb);
+      that.loadCollaborators(cb);
     });
   },
 
@@ -431,7 +431,7 @@ _.extend(Substance.Session.prototype, _.Events, {
     var that = this;
     this.client.deleteCollaborator(doc.id, collaborator, function(err) {
       if (err) return cb(err);
-      that.listCollaborators(cb);
+      that.loadCollaborators(cb);
     });
   },
 
