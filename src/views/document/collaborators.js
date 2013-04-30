@@ -22,9 +22,10 @@ sc.views.Collaborators = Backbone.View.extend({
   },
 
   removeCollaborator: function(e) {
-    var collaborator = $(e.currentTarget).attr('data-username');
+    var id = $(e.currentTarget).attr('data-id');
     var that = this;
-    session.deleteCollaborator(collaborator, function(err) {
+    
+    session.deleteCollaborator(id, function(err) {
       that.render();
     });
     return false;

@@ -38,9 +38,10 @@ sc.views.PublishSettings = Backbone.View.extend({
   },
 
   deletePublication: function(e) {
-    var network = $(e.currentTarget).attr('data-id');
+    var id = $(e.currentTarget).attr('data-id');
     var that = this;
-    session.deletePublication(network, function(err) {
+    
+    session.deletePublication(id, function(err) {
       that.render();
     });
     return false;

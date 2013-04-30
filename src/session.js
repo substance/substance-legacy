@@ -284,10 +284,10 @@ _.extend(Substance.Session.prototype, _.Events, {
     });
   },
 
-  deletePublication: function(network, cb) {
+  deletePublication: function(id, cb) {
     var that = this;
     var doc = this.document;
-    this.client.deletePublication(doc.id, network, function(err) {
+    this.client.deletePublication(id, function(err) {
       if (err) return cb(err);
       that.loadPublications(cb);
     });
@@ -410,6 +410,7 @@ _.extend(Substance.Session.prototype, _.Events, {
     var doc = this.document;
     var that = this;
     this.client.listCollaborators(doc.id, function(err, collaborators) {
+      console.log('collaborators', collaborators);
       that.collaborators = collaborators;
       cb(null);
     });
@@ -429,7 +430,7 @@ _.extend(Substance.Session.prototype, _.Events, {
   deleteCollaborator: function(collaborator, cb) {
     var doc = this.document;
     var that = this;
-    this.client.deleteCollaborator(doc.id, collaborator, function(err) {
+    this.client.deleteCollaborator(collaborator, function(err) {
       if (err) return cb(err);
       that.loadCollaborators(cb);
     });

@@ -325,7 +325,7 @@
             <div class="publication">
               <div class="cover"><img src="<%= p.network.cover %>"/></div>
               <div class="label"><%= p.network.name %></div>
-              <a href="#" class="delete-publication" data-id="<%= p.network.id %>"></a>
+              <a href="#" class="delete-publication" data-id="<%= p.id %>"></a>
             </div>
           <% }); %>
         </div>
@@ -350,7 +350,7 @@
     <script type="text/html" name="document_collaborators">
       <div class="collaborators">
         <% _.each(collaborators, function(c) { %>
-          <div class="collaborator"><%= c.collaborator %> <a href="#" class="remove-collaborator" data-username="<%= c.collaborator %>">Remove</a></div>
+          <div class="collaborator"><%= c.collaborator %> <a href="#" class="remove-collaborator" data-id="<%= c.id %>">Remove</a></div>
         <% }); %>
       </div>
       <div class="add_collaborator">
