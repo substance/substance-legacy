@@ -1,3 +1,5 @@
+set(CMAKE_OSX_SYSROOT macosx10.8)
+
 project(Substance)
 cmake_minimum_required(VERSION 2.8.4)
 
