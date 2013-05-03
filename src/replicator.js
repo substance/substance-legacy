@@ -250,18 +250,10 @@ var Replicator = function(params) {
       localDocs = data;
       console.log("localDocs", localDocs);
 
-      that.remoteStore.list(cb);
-    }
-
-    function getCollabDocs(data, cb) {
-      remoteDocs = data;
-      console.log("remoteDocs", remoteDocs);
-
-      // TODO: collaborations is currently a Hub only feature
-      // Replicator should use two Store instances
-      // and remote_store should mix these into the previous result?
-      console.log("TODO: let remote store provide collaborating docs.");
-      cb(null);
+      that.remoteStore.list(function(err, documents) {
+        remoteDocs = documents;
+        cb(err);
+      });
     }
 
     var processDocs = util.async.each({
@@ -329,7 +321,7 @@ var Replicator = function(params) {
       cb(null);
     }
 
-    util.async([getLocalStates, getRemoteDocs, getCollabDocs,
+    util.async([getLocalStates, getRemoteDocs,
       processDocs, processRest], util.propagate(jobs, cb));
   };
 
@@ -343,7 +335,7 @@ var Replicator = function(params) {
 
     that.localStore.list(function(err, localDocs) {
       if (err) return cb(err);
-      
+
       var result = {};
       _.each(localDocs, function(doc) {
         result[doc.id] = doc;
