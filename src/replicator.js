@@ -171,7 +171,7 @@ var Replicator = function(params) {
         util.async.iterator({
           items: blobIds,
           iterator: function(blobId, cb) {
-            src.getBlob(blobId, function(err, blob) {
+            src.getBlob(docId, blobId, function(err, blob) {
               if (err) return cb(err);
               blobs.push(blob);
               cb(null);
@@ -278,7 +278,10 @@ var Replicator = function(params) {
       lastRemote = (data['master']) ? data['master']['remote-last'] : null;
 
       // Find all commits after synced (remote) commit
-      that.localStore.commits(doc.id, lastLocal, lastRemote, cb);
+      that.localStore.commits(doc.id, lastLocal, lastRemote, function (err, data) {
+        commits = data;
+        cb(err);
+      });
     }
 
     function getBlobs(data, cb) {
@@ -289,7 +292,6 @@ var Replicator = function(params) {
     }
 
     function storeData(data, cb) {
-      commits = data;
 
       var options = {
         commits: commits,
@@ -312,13 +314,14 @@ var Replicator = function(params) {
       util.async.iterator({
         items: blobs,
         iterator: function(blob, cb) {
-          that.localStore.createBlob(blob.document, blob.id, blob.data, cb);
+          that.remoteStore.createBlob(blob.document, blob.id, blob.data, cb);
         }
       })(null, cb);
     }
 
     var options = {
-      functions: [getDoc, getRefs, getCommits, storeData, setLocalRefs, storeBlobs]
+      functions: [getDoc, getRefs, getCommits, getBlobs,
+        storeData, setLocalRefs, storeBlobs]
     };
     util.async.sequential(options, cb);
   };
