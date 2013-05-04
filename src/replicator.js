@@ -16,18 +16,6 @@ var Replicator = function(params) {
   // Process a single doc sync job
   // -----------------
 
-  this.processDocument = function(doc, cb) {
-    // TODO: refactor this. Could be more 'command pattern'isher...
-    //  doc is infact not a doc, but a document command (action, docId).
-    //  The functions could be used directly, whereas the first argument is docId
-    if (doc.action === "create-remote") return that.createRemote(doc, cb);
-    if (doc.action === "create-local") return that.createLocal(doc, cb);
-    if (doc.action === "delete-remote") return that.deleteRemote(doc, cb);
-    if (doc.action === "delete-local") return that.deleteLocal(doc, cb);
-    if (doc.action === "push") return that.push(doc, cb);
-    if (doc.action === "pull") return that.pull(doc, cb);
-  };
-
   // Fetch doc from remote store
   // -----------------
 
@@ -50,10 +38,12 @@ var Replicator = function(params) {
   // Create doc on the server
   // -----------------
 
+  // TODO: can this also be solved by delegating to push?
   this.createRemote = function(docInfo, cb) {
     console.log("replicator.createRemote", docInfo);
 
     var commits;
+    var blobs;
     var doc;
 
     // 1. Get doc from local docstore
@@ -64,11 +54,32 @@ var Replicator = function(params) {
     function extractLocalCommits(data, cb) {
       doc = data;
       if (!doc.refs.master || !doc.refs.master.last) return cb(null, []);
-      that.localStore.commits(doc.id, doc.refs.master.last, null, cb);
+      that.localStore.commits(doc.id, doc.refs.master.last, null, function(err, data) {
+        commits = data;
+        cb(err);
+      });
+    }
+
+    function getBlobs(data, cb) {
+      that.localStore.listBlobs(docInfo.id, function(err, data) {
+        if (err) return cb(err);
+
+        var blobIds = data;
+        var options = {
+          items: blobIds,
+          iterator: function (blobId, cb) {
+            that.localStore.getBlob(docInfo.id, blobId, function(err, data) {
+              if (err) return cb(err);
+              blobs.push(data);
+              cb(null);
+            })
+          }
+        };
+        util.async.iterator(options)(null, cb);
+      })
     }
 
     function createRemoteDoc(data, cb) {
-      commits = data;
       //console.log("replicator.createRemote: commits", commits);
       that.remoteStore.create(doc.id, cb);
     }
@@ -90,7 +101,18 @@ var Replicator = function(params) {
       that.localStore.setRefs(doc.id, "master", refs, cb);
     }
 
-    util.async([getLocalDoc, extractLocalCommits, createRemoteDoc, updateRemoteDoc, setRefs], cb);
+    var createRemoteBlobs = util.async.iterator({
+      items: blobs,
+      iterator: function(blob, cb) {
+        that.remoteStore.createBlob(blob.document, blob.id, blob.data, cb);
+      }
+    });
+
+    var options = {
+      functions: [getLocalDoc, extractLocalCommits, getBlobs,
+        createRemoteDoc, updateRemoteDoc, setRefs, createRemoteBlobs]
+    };
+    util.async.sequential(options, cb);
   };
 
   // Delete doc from hub
@@ -127,6 +149,43 @@ var Replicator = function(params) {
     });
   };
 
+
+  function getDiffBlobs(src, dst, docId, cb) {
+    dst.listBlobs(docId, function(err, data) {
+      if (err) return cb(err);
+
+      var dstBlobs = data;
+      console.log("replicator.getDiffBlobs: dstBlobs", dstBlobs)
+
+      src.listBlobs(docId, function(err, data) {
+        if (err) return cb(err);
+
+        var srcBlobs = data;
+        console.log("replicator.getDiffBlobs: srcBlobs", srcBlobs)
+
+        var blobIds = _.without(srcBlobs, dstBlobs);
+        console.log("replicator.getDiffBlobs: blobIds", blobIds)
+
+        var blobs = [];
+
+        util.async.iterator({
+          items: blobIds,
+          iterator: function(blobId, cb) {
+            src.getBlob(blobId, function(err, blob) {
+              if (err) return cb(err);
+              blobs.push(blob);
+              cb(null);
+            });
+          },
+          finally: function(err, data) {
+            console.log("replicator.getDiffBlobs: blobs", blobs);
+            cb(null, blobs);
+          }
+        })(null, cb);
+      });
+    });
+  }
+
   // Pull
   // -----------------
   //
@@ -136,6 +195,8 @@ var Replicator = function(params) {
     console.log("replicator.pull", doc);
 
     var lastRemote;
+    var docData;
+    var blobs;
 
     function getRefs(data, cb) {
       that.localStore.getRefs(doc.id, cb);
@@ -145,30 +206,52 @@ var Replicator = function(params) {
       lastRemote = (data['master']) ? data['master']['remote-last'] : null;
 
       //console.log('pulling in changes for', doc.id, 'starting from', lastRemote);
-      that.remoteStore.commits(doc.id, null, lastRemote, cb);
+      that.remoteStore.commits(doc.id, null, lastRemote, function(err, data) {
+        docData = data;
+        cb(err);
+      });
     }
 
-    function pullData(data, cb) {
-      if (data.commits.length > 0) {
-        var refs = _.clone(data.refs.master);
+    function getBlobs(data, cb) {
+      getDiffBlobs(that.remoteStore, that.localStore, doc.id, function(err, data) {
+        blobs = data;
+        cb(err);
+      });
+    }
+
+    function storeData(data, cb) {
+      if (docData.commits.length > 0) {
+        var refs = _.clone(docData.refs.master);
         refs["remote-head"] = refs.head;
         refs["remote-last"] = refs.last;
 
         var options = {
-          commits: data.commits,
-          meta:  data.meta,
+          commits: docData.commits,
+          meta:  docData.meta,
           refs: {"master": refs}
         };
         that.localStore.update(doc.id, options, cb);
       } else {
         var options = {
-          meta:  data.meta,
+          meta:  docData.meta,
         };
-        that.localStore.update(doc.id, null, data.meta, null, cb)
+        that.localStore.update(doc.id, null, docData.meta, null, cb)
       }
     }
 
-    util.async([getRefs, getCommits, pullData], cb);
+    function storeBlobs(data, cb) {
+      util.async.iterator({
+        items: blobs,
+        iterator: function(blob, cb) {
+          that.localStore.createBlob(blob.document, blob.id, blob.data, cb);
+        }
+      })(null, cb);
+    }
+
+    var options = {
+      functions: [getRefs, getCommits, getBlobs, storeData, storeBlobs]
+    };
+    util.async.sequential(options, cb);
   };
 
   this.push = function(docInfo, cb) {
@@ -178,6 +261,7 @@ var Replicator = function(params) {
     var lastLocal;
     var lastRemote;
     var commits;
+    var blobs;
 
     function getDoc(data, cb) {
       console.log('pushing changes...', lastRemote);
@@ -197,7 +281,14 @@ var Replicator = function(params) {
       that.localStore.commits(doc.id, lastLocal, lastRemote, cb);
     }
 
-    function pushData(data, cb) {
+    function getBlobs(data, cb) {
+      getDiffBlobs(that.localStore, that.remoteStore, doc.id, function(err, data) {
+        blobs = data;
+        cb(err);
+      });
+    }
+
+    function storeData(data, cb) {
       commits = data;
 
       var options = {
@@ -217,9 +308,20 @@ var Replicator = function(params) {
       that.localStore.update(doc.id, options, cb);
     }
 
-    util.async([getDoc, getRefs, getCommits, pushData, setLocalRefs], cb);
-  };
+    function storeBlobs(data, cb) {
+      util.async.iterator({
+        items: blobs,
+        iterator: function(blob, cb) {
+          that.localStore.createBlob(blob.document, blob.id, blob.data, cb);
+        }
+      })(null, cb);
+    }
 
+    var options = {
+      functions: [getDoc, getRefs, getCommits, storeData, setLocalRefs, storeBlobs]
+    };
+    util.async.sequential(options, cb);
+  };
 
   // Compute jobs for dirty documents
   // -----------------
@@ -347,10 +449,22 @@ var Replicator = function(params) {
     if (this.syncing) return cb(null); // do nothing
     this.syncing = true;
 
+    var processJob = function(job, cb) {
+      // TODO: refactor this. Could be more 'command pattern'isher...
+      //  doc is infact not a doc, but a document command (action, docId).
+      //  The functions could be used directly, whereas the first argument is docId
+      if (job.action === "create-remote") return that.createRemote(job, cb);
+      if (job.action === "create-local") return that.createLocal(job, cb);
+      if (job.action === "delete-remote") return that.deleteRemote(job, cb);
+      if (job.action === "delete-local") return that.deleteLocal(job, cb);
+      if (job.action === "push") return that.push(job, cb);
+      if (job.action === "pull") return that.pull(job, cb);
+    };
+
     var processJobs = util.async.iterator({
       selector: function(jobs) { return jobs; },
       iterator: function(job, cb) {
-        that.processDocument(job, cb);
+        processJob(job, cb);
       }
     });
 
