@@ -74,7 +74,12 @@ var Replicator = function(params) {
     }
 
     function updateRemoteDoc(data, cb) {
-      that.remoteStore.update(doc.id, commits, doc.meta, doc.refs, cb)
+      var options = {
+        commits: commits,
+        meta: doc.meta,
+        refs: doc.refs
+      };
+      that.remoteStore.update(doc.id, options, cb)
     }
 
     function setRefs(data, cb) {
@@ -149,8 +154,16 @@ var Replicator = function(params) {
         refs["remote-head"] = refs.head;
         refs["remote-last"] = refs.last;
 
-        that.localStore.update(doc.id, data.commits, data.meta, {"master": refs}, cb);
+        var options = {
+          commits: data.commits,
+          meta:  data.meta,
+          refs: {"master": refs}
+        };
+        that.localStore.update(doc.id, options, cb);
       } else {
+        var options = {
+          meta:  data.meta,
+        };
         that.localStore.update(doc.id, null, data.meta, null, cb)
       }
     }
@@ -186,10 +199,13 @@ var Replicator = function(params) {
 
     function pushData(data, cb) {
       commits = data;
-      var refs = {
-        'master': doc.refs.master || {}
+
+      var options = {
+        commits: commits,
+        meta:  doc.meta,
+        refs: { 'master': doc.refs.master || {} }
       };
-      that.remoteStore.update(doc.id, commits, doc.meta, refs, cb);
+      that.remoteStore.update(doc.id, options, cb);
     }
 
     function setLocalRefs(data, cb) {
@@ -197,7 +213,8 @@ var Replicator = function(params) {
       refs['master']['remote-head'] = refs.master.head;
       refs['master']['remote-last'] = refs.master.last;
 
-      that.localStore.update(doc.id, null, null, refs, cb);
+      var options = { refs: refs };
+      that.localStore.update(doc.id, options, cb);
     }
 
     util.async([getDoc, getRefs, getCommits, pushData, setLocalRefs], cb);

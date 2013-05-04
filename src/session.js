@@ -152,7 +152,8 @@ _.extend(Substance.Session.prototype, _.Events, {
       var refs = {}
       refs[ref] = sha;
 
-      that.localStore.setRefs(that.document.id, {"master": refs}, function(err) {
+      var options = {refs: {"master": refs}}
+      that.localStore.update(that.document.id, options, function(err) {
         that.updateMeta();
       });
     }, this);
@@ -166,8 +167,9 @@ _.extend(Substance.Session.prototype, _.Events, {
     this.localStore.create(id, function(err, doc) {
       if (err) return cb(err);
       doc.meta = {"creator": that.user()};
-      // Instead use new update + empty commit array
-      that.localStore.updateMeta(id, doc.meta, function(err) {
+
+      var options = {meta: doc.meta};
+      that.localStore.update(id, options, function(err) {
         if (err) return cb(err);
 
         that.document = new Substance.Document(doc);
@@ -202,7 +204,12 @@ _.extend(Substance.Session.prototype, _.Events, {
 
   // Update local document
   updateDocument: function(commits, meta, refs, cb) {
-    this.localStore.update(this.document.id, commits, meta, refs, cb);
+    var options = {
+      commits: commits,
+      meta: meta,
+      refs: refs
+    };
+    this.localStore.update(this.document.id, options, cb);
   },
 
 
@@ -216,9 +223,8 @@ _.extend(Substance.Session.prototype, _.Events, {
     _.extend(doc.meta, doc.properties);
     doc.meta.updated_at = new Date();
 
-    this.localStore.updateMeta(doc.id, doc.meta, function(err) {
-      if (cb) cb(err);
-    });
+    var options = { meta: doc.meta };
+    this.localStore.update(doc.id, options, cb);
   },
 
   deleteDocument: function(id, cb) {
