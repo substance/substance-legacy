@@ -77,8 +77,8 @@ _.extend(Substance.Comments.prototype, _.Events, {
 
 // Substance.Session
 // -----------------
-// 
-// The Composer works with a session object, which maintains 
+//
+// The Composer works with a session object, which maintains
 // all the state of a document session
 // TODO: No multiuser support yet, use app.user
 
@@ -106,7 +106,7 @@ _.extend(Substance.Session.prototype, _.Events, {
       "token": token
     });
 
-    if (username) {  
+    if (username) {
       this.localStore = new Substance.RedisStore({
         scope: this.env+":"+username
       });
@@ -229,7 +229,7 @@ _.extend(Substance.Session.prototype, _.Events, {
   replicate: function(cb) {
     var that = this;
     this.pendingSync = false;
-    
+
     var replicator = new Substance.Replicator({
       user: this.user(),
       localStore: this.localStore,
@@ -268,7 +268,7 @@ _.extend(Substance.Session.prototype, _.Events, {
     _.each(nodes, function(node) {
       this.selections[node] = user;
     }, this);
-    
+
     // New selection leads to new comment context
     this.comments.compute();
     this.trigger('node:selected');
@@ -277,7 +277,7 @@ _.extend(Substance.Session.prototype, _.Events, {
   createPublication: function(network, cb) {
     var doc = this.document;
     var that = this;
-  
+
     this.client.createPublication(doc.id, network, function(err) {
       if (err) return cb(err);
       that.loadPublications(cb);
@@ -410,7 +410,7 @@ _.extend(Substance.Session.prototype, _.Events, {
     var doc = this.document;
     var that = this;
     this.client.listCollaborators(doc.id, function(err, collaborators) {
-      console.log('collaborators', collaborators);
+      //console.log('client.loadCollaborators: collaborators', collaborators);
       that.collaborators = collaborators;
       cb(null);
     });

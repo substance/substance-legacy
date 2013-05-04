@@ -13,41 +13,10 @@ var Replicator = function(params) {
 
   var that = this;
 
-  // Start sync
-  // -----------------
-
-  this.sync = function(cb) {
-    if (this.syncing) return cb(null); // do nothing
-    this.syncing = true;
-  	this.computeJobs(function(err, jobs) {
-  		var index = 0;
-
-      function next() {
-        if (index === jobs.length) {
-          that.syncing = false;
-          return cb(null);
-        }
-        that.processDocument(jobs[index], function(err) {
-          if (err) {
-            that.syncing = false;
-            console.log('ERROR WHILE PROCSSING JOB', jobs[index], "ERROR", err);
-            return cb(err);
-          }
-          index += 1;
-          next();
-        });
-      }
-
-      next(); // start processing the first doc
-    });
-  };
-
   // Process a single doc sync job
   // -----------------
 
   this.processDocument = function(doc, cb) {
-    console.log("Processing " + doc.action + "...");
-
     // TODO: refactor this. Could be more 'command pattern'isher...
     //  doc is infact not a doc, but a document command (action, docId).
     //  The functions could be used directly, whereas the first argument is docId
@@ -63,6 +32,7 @@ var Replicator = function(params) {
   // -----------------
 
   this.createLocal = function(doc, cb) {
+    console.log("replicator.createLocal", doc);
 
     // 1. create doc locally
     function createDoc(data, cb) {
@@ -70,6 +40,7 @@ var Replicator = function(params) {
     }
 
     function pull(data, cb) {
+      //console.log("replicator.createLocal: pulling", doc);
       that.pull(doc, cb);
     }
 
@@ -80,7 +51,7 @@ var Replicator = function(params) {
   // -----------------
 
   this.createRemote = function(docInfo, cb) {
-    console.log('creating ', docInfo.id, ' on the server');
+    console.log("replicator.createRemote", docInfo);
 
     var commits;
     var doc;
@@ -98,9 +69,7 @@ var Replicator = function(params) {
 
     function createRemoteDoc(data, cb) {
       commits = data;
-      console.log("commits", commits);
-      console.log("COMMITS OF NEW DOC", commits);
-
+      //console.log("replicator.createRemote: commits", commits);
       that.remoteStore.create(doc.id, cb);
     }
 
@@ -123,10 +92,9 @@ var Replicator = function(params) {
   // -----------------
 
   this.deleteRemote = function(doc, cb) {
-
+    console.log("replicator.deleteRemote", doc);
 
     function delRemote(data, cb) {
-      console.log('DELETING REMOTELY:' + doc.id);
       that.remoteStore.delete(doc.id, function(err) {
         // Note: being tolerant if the remote document has been removed already
         // TODO: is there a better way to deal with errors?
@@ -146,6 +114,8 @@ var Replicator = function(params) {
   // -----------------
 
   this.deleteLocal = function(doc, cb) {
+    console.log("replicator.deleteLocal", doc);
+
     that.localStore.delete(doc.id, function(err, data) {
       if (err) return cb(err);
       that.localStore.confirmDeletion(doc.id, cb);
@@ -158,6 +128,7 @@ var Replicator = function(params) {
   // TODO: Fetch metadata on pull and update locally / this overwrites last local commits
 
   this.pull = function(doc, cb) {
+    console.log("replicator.pull", doc);
 
     var lastRemote;
 
@@ -168,7 +139,7 @@ var Replicator = function(params) {
     function getCommits (data, cb) {
       lastRemote = (data['master']) ? data['master']['remote-last'] : null;
 
-      console.log('pulling in changes... for', lastRemote);
+      //console.log('pulling in changes for', doc.id, 'starting from', lastRemote);
       that.remoteStore.commits(doc.id, null, lastRemote, cb);
     }
 
@@ -188,6 +159,7 @@ var Replicator = function(params) {
   };
 
   this.push = function(docInfo, cb) {
+    console.log("replicator.push", docInfo);
 
     var doc;
     var lastLocal;
@@ -235,28 +207,31 @@ var Replicator = function(params) {
   // Compute jobs for dirty documents
   // -----------------
 
-  this.computeJobs = function(cb) {
+  this.computeJobs = function(ignored, cb) {
+    //console.log("replicator.computeJobs");
+
   	// Status object looks like this
     var jobs = [];
     var localDocs;
     var remoteDocs;
 
     function getLocalStates(data, cb) {
-
       that.localDocStates(cb);
     }
 
     function getRemoteDocs(data, cb) {
       localDocs = data;
-      console.log("localDocs", localDocs);
+      //console.log("replicator.computeJobs: localDocs=", localDocs);
 
       that.remoteStore.list(function(err, documents) {
         remoteDocs = documents;
+        //console.log("replicator.computeJobs: remoteDocs=", localDocs);
+
         cb(err);
       });
     }
 
-    var processDocs = util.async.each({
+    var processDocs = util.async.iterator({
       selector: function(data) { return localDocs; },
       iterator: function(localDoc, id, cb) {
         var remoteDoc = remoteDocs[id];
@@ -322,7 +297,10 @@ var Replicator = function(params) {
     }
 
     util.async([getLocalStates, getRemoteDocs,
-      processDocs, processRest], util.propagate(jobs, cb));
+      processDocs, processRest], function(err, data) {
+        console.log("replicator.computeJobs: jobs=", jobs);
+        cb(err, jobs);
+      });
   };
 
 
@@ -343,6 +321,30 @@ var Replicator = function(params) {
       });
       cb(null, result);
     });
+  };
+
+  // Start sync
+  // -----------------
+
+  this.sync = function(cb) {
+    if (this.syncing) return cb(null); // do nothing
+    this.syncing = true;
+
+    var processJobs = util.async.iterator({
+      selector: function(jobs) { return jobs; },
+      iterator: function(job, cb) {
+        that.processDocument(job, cb);
+      }
+    });
+
+    var options = {
+      functions: [this.computeJobs, processJobs],
+      finally: function(err, data) {
+        that.syncing = false;
+        cb(err, data);
+      }
+    }
+    util.async.sequential(options, cb);
   };
 };
 
