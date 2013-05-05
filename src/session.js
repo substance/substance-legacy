@@ -59,7 +59,6 @@ _.extend(Substance.Comments.prototype, _.Events, {
             comments: document.find('comments', a.id)
           });
         }
-
       }, this);
     } else {
       // No document scopes for now
@@ -159,7 +158,8 @@ _.extend(Substance.Session.prototype, _.Events, {
   },
 
   // Create a new document locally
-  createDocument: function(cb) {
+  // Schema is optional (currently only used by testsuite)
+  createDocument: function(cb, schema) {
     var id = Substance.util.uuid();
     var that = this;
 
@@ -170,7 +170,7 @@ _.extend(Substance.Session.prototype, _.Events, {
       that.localStore.updateMeta(id, doc.meta, function(err) {
         if (err) return cb(err);
 
-        that.document = new Substance.Document(doc);
+        that.document = new Substance.Document(doc, schema);
         that.initDoc();
         cb(null, that.document);
       });
