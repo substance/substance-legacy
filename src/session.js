@@ -76,8 +76,8 @@ _.extend(Substance.Comments.prototype, _.Events, {
 
 // Substance.Session
 // -----------------
-// 
-// The Composer works with a session object, which maintains 
+//
+// The Composer works with a session object, which maintains
 // all the state of a document session
 // TODO: No multiuser support yet, use app.user
 
@@ -105,7 +105,7 @@ _.extend(Substance.Session.prototype, _.Events, {
       "token": token
     });
 
-    if (username) {  
+    if (username) {
       this.localStore = new Substance.RedisStore({
         scope: this.env+":"+username
       });
@@ -151,7 +151,8 @@ _.extend(Substance.Session.prototype, _.Events, {
       var refs = {}
       refs[ref] = sha;
 
-      that.localStore.setRefs(that.document.id, {"master": refs}, function(err) {
+      var options = {refs: {"master": refs}}
+      that.localStore.update(that.document.id, options, function(err) {
         that.updateMeta();
       });
     }, this);
@@ -166,8 +167,9 @@ _.extend(Substance.Session.prototype, _.Events, {
     this.localStore.create(id, function(err, doc) {
       if (err) return cb(err);
       doc.meta = {"creator": that.user()};
-      // Instead use new update + empty commit array
-      that.localStore.updateMeta(id, doc.meta, function(err) {
+
+      var options = {meta: doc.meta};
+      that.localStore.update(id, options, function(err) {
         if (err) return cb(err);
 
         that.document = new Substance.Document(doc, schema);
@@ -177,16 +179,16 @@ _.extend(Substance.Session.prototype, _.Events, {
     });
   },
 
-  getBlob: function(id, cb) {
-    return this.localStore.getBlob(id, cb);
+  getBlob: function(docId, blobId, cb) {
+    return this.localStore.getBlob(docId, blobId, cb);
   },
 
-  createBlob: function(id, data, cb) {
-    return this.localStore.createBlob(id, data, cb);
+  createBlob: function(docId, blobId, data, cb) {
+    return this.localStore.createBlob(docId, blobId, data, cb);
   },
 
-  deleteBlob: function(id, cb) {
-    return this.localStore.deleteBlob(id, cb);
+  deleteBlob: function(docId, blobId, cb) {
+    return this.localStore.deleteBlob(docId, blobId, cb);
   },
 
   // Load new Document from localStore
@@ -202,7 +204,12 @@ _.extend(Substance.Session.prototype, _.Events, {
 
   // Update local document
   updateDocument: function(commits, meta, refs, cb) {
-    this.localStore.update(this.document.id, commits, meta, refs, cb);
+    var options = {
+      commits: commits,
+      meta: meta,
+      refs: refs
+    };
+    this.localStore.update(this.document.id, options, cb);
   },
 
 
@@ -216,9 +223,8 @@ _.extend(Substance.Session.prototype, _.Events, {
     _.extend(doc.meta, doc.properties);
     doc.meta.updated_at = new Date();
 
-    this.localStore.updateMeta(doc.id, doc.meta, function(err) {
-      if (cb) cb(err);
-    });
+    var options = { meta: doc.meta };
+    this.localStore.update(doc.id, options, cb);
   },
 
   deleteDocument: function(id, cb) {
@@ -229,7 +235,7 @@ _.extend(Substance.Session.prototype, _.Events, {
   replicate: function(cb) {
     var that = this;
     this.pendingSync = false;
-    
+
     var replicator = new Substance.Replicator({
       user: this.user(),
       localStore: this.localStore,
@@ -268,7 +274,7 @@ _.extend(Substance.Session.prototype, _.Events, {
     _.each(nodes, function(node) {
       this.selections[node] = user;
     }, this);
-    
+
     // New selection leads to new comment context
     this.comments.compute();
     this.trigger('node:selected');
@@ -277,7 +283,7 @@ _.extend(Substance.Session.prototype, _.Events, {
   createPublication: function(network, cb) {
     var doc = this.document;
     var that = this;
-  
+
     this.client.createPublication(doc.id, network, function(err) {
       if (err) return cb(err);
       that.loadPublications(cb);
@@ -410,7 +416,7 @@ _.extend(Substance.Session.prototype, _.Events, {
     var doc = this.document;
     var that = this;
     this.client.listCollaborators(doc.id, function(err, collaborators) {
-      console.log('collaborators', collaborators);
+      //console.log('client.loadCollaborators: collaborators', collaborators);
       that.collaborators = collaborators;
       cb(null);
     });
