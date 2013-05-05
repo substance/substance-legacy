@@ -171,7 +171,7 @@ sc.views.Document = Backbone.View.extend({
     this.nodes[node.id] = view;
     
     var newEl = $(view.render().el);
-    if (options.target) {
+    if (options.target && options.target !== "back") {
       newEl.insertAfter($('#'+_.htmlId(options.target)));  
     } else {
       this.$('.nodes').append(newEl)
@@ -219,11 +219,11 @@ sc.views.Document = Backbone.View.extend({
     properties["content"] = options.content || "";
 
     if (type === "heading") properties["level"] = 1;
-  
+    
     this.model.document.apply(["insert", {
       "id": Substance.util.uuid(type+':', 8),
       "type": type,
-      "target": target,
+      "target": "back",
       "data": properties
     }], {
       user: this.model.user()  
