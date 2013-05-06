@@ -97,11 +97,12 @@ _.extend(Substance.Session.prototype, _.Events, {
   initStores: function() {
     var username = this.user();
     var token = this.token();
+    var config = Substance.config();
 
     this.client = new Substance.Client({
-      "hub_api": Substance.settings.hub_api,
-      "client_id": Substance.settings.client_id,
-      "client_secret": Substance.settings.client_secret,
+      "hub_api": config.hub_api,
+      "client_id": config.client_id,
+      "client_secret": config.client_secret,
       "token": token
     });
 

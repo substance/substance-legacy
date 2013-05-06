@@ -1,7 +1,20 @@
 {
-  "hub": "http://127.0.0.1:3000",
-  "hub_api": "http://127.0.0.1:3000/api/v1",
-  "client_id": "hello-kitty",
-  "client_secret": "abcd",
-  "env": "development"
+  "production": {
+    "hub": "http://substance.io",
+    "hub_api": "https://substance.io/api/v1",
+    "client_id": "123",
+    "client_secret": "456"
+  },
+  "test": {
+    "hub": "http://127.0.0.1:3000",
+    "hub_api": "http://127.0.0.1:3000/api/v1",
+    "client_id": "hello-kitty",
+    "client_secret": "abcd"
+  },
+  "development": {
+    "hub": "http://127.0.0.1:3000",
+    "hub_api": "http://127.0.0.1:3000/api/v1",
+    "client_id": "hello-kitty",
+    "client_secret": "abcd"
+  }
 }

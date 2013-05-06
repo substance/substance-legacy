@@ -67,7 +67,7 @@ $(function() {
 
       return false;
     },
-    
+
     render: function() {
       var that = this;
 
@@ -118,7 +118,7 @@ $(function() {
         // Update status
         if (err) this.$('#header .sync').removeClass('disabled').addClass('error');
       }, 500);
-      
+
     },
 
     _toggleUserActions: function() {
@@ -137,9 +137,8 @@ $(function() {
 
     _loadEnvironment: function(e) {
       var env = $(e.currentTarget).attr('data-env');
-
-      initSession(env);
       appSettings.setItem('env', env);
+      initSession(env);
       this.dashboard();
     },
 
@@ -310,25 +309,30 @@ $(function() {
       }
     }
   });
-  
-  Substance.settings = {
-    hub: "http://substance.io",
-    hub_api: "https://substance.io/api/v1",
-    client_id: "f7043dc691102f3ac3175e606af2c8cb",
-    client_secret: "ca85e9a193c721e5d65eba26164c0d87"
+
+  var config = {
+    "production": {
+      hub: "http://substance.io",
+      hub_api: "https://substance.io/api/v1",
+      client_id: "f7043dc691102f3ac3175e606af2c8cb",
+      client_secret: "ca85e9a193c721e5d65eba26164c0d87"
+    }
   };
-
   // Load config from config.json
-
   function loadConfig(cb) {
     $.getJSON('config.json', function(data) {
-      _.extend(Substance.settings, data);
+      _.extend(config, data);
       cb(null, data);
     })
     .error(function() { cb('not_found: using defaults'); });
   }
 
-  loadConfig(function(err, config) {    
+  Substance.config = function() {
+    var env = appSettings.getItem('env') || 'development';
+    return config[env];
+  };
+
+  loadConfig(function(err, config) {
     initSession(appSettings.getItem('env') || config.env);
 
     // Start the engines
@@ -342,4 +346,5 @@ $(function() {
       return false;
     }, this));
   });
+
 });

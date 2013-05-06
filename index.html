@@ -37,7 +37,7 @@
 
               <a href="#" class="toggle-user-actions" title="Toggle User Actions" ><%= user %><i class="icon-caret-down"></i></a>
               <div class="user-actions">
-                <a href="<%= Substance.settings.hub + '/' + user %>" class="user-action profile"><i class="icon-user"></i>User Profile</a>
+                <a href="<%= Substance.config().hub + '/' + user %>" class="user-action profile"><i class="icon-user"></i>User Profile</a>
                 <% if (session.env === "test") { %><a href="#tests" class="user-action testsuite"><i class="icon-tasks"></i>Test Suite</a><% } %>
                 <a href="#logout" class="user-action logout"><i class="icon-off"></i>Logout</a>
               </div>
@@ -210,7 +210,7 @@
 
             <div class="toggles">
               <!--<a class="toggle settings" href="#"><div class="icon"></div>Settings</a>-->
-              <a class="toggle view-online hidden" href="<%= Substance.settings.hub+'/public/'+doc.id %>"><div class="icon"></div>View Online</a>
+              <a class="toggle view-online hidden" href="<%= Substance.config().hub+'/public/'+doc.id %>"><div class="icon"></div>View Online</a>
               <a class="toggle collaborators" href="#"><div class="icon"></div>Collaborators</a>
               <a class="toggle toggle-console" href="#"><div class="icon"></div>Console</a>
               <!--<a class="toggle export" href="#"><div class="icon"></div>Export</a>-->
