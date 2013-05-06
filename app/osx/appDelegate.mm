@@ -53,18 +53,6 @@ extern "C" bool redis_initialize_jsobjects(JSGlobalContextRef context);
   NSArray *arguments = [[NSProcessInfo processInfo] arguments];
   NSString *url = [NSString stringWithFormat: @"file://%@/Contents/Assets/index.html", pathEscaped];
 
-  for (int idx=0; idx < [arguments count]; ++idx) {
-    NSString* argAsStr = (NSString*) [arguments objectAtIndex:idx];
-    NSLog(@"Argument: %@", argAsStr);
-    if ([argAsStr isEqualToString:@"test"]) {
-      idx++;
-      if (idx >= [arguments count]) {
-        throw @"Invalid argument. Substance test <test_id>";
-      }
-      url = [NSString stringWithFormat: @"file://%@/Contents/Assets/test.html?testname=%@", pathEscaped, arguments[idx]];
-    }
-  }
-
 	[ [webView mainFrame] loadRequest:
 		[NSURLRequest requestWithURL: [NSURL URLWithString:url] ]
 	];
