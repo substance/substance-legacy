@@ -75,10 +75,9 @@ sc.views.Node.define('image', {
         ctx.drawImage(img, 0, 0, width, height);
 
         var mediumImage = canvas.toDataURL("image/png");
+        var mediumImageId = Substance.util.uuid('');
 
-        var mediumImageId = Substance.util.uuid('image:');
-
-        if (!session.localStore.createBlob(mediumImageId, mediumImage)) {
+        if (!session.localStore.createBlob(that.document.id, mediumImageId, mediumImage)) {
           throw new Substance.errors.Error('Storing image failed');
         }
 
@@ -104,8 +103,9 @@ sc.views.Node.define('image', {
     this.$('.content').append('<input type="file" class="files" name="files[]"/><div class="message"></div>');
     
     if (that.model.medium) {
-      var imageData = session.getBlob(that.model.medium);
-      that.$('.content').append(['<img class="thumb" src="', imageData,
+      var imageData = session.getBlob(that.document.id, that.model.medium);
+
+      that.$('.content').append(['<img class="thumb" src="', imageData.data,
                                  '" title="', escape(that.model.caption), '"/>'].join(''));
     } else {
       that.$('.content').append(['<img class="thumb" src="images/image_placeholder.png" title="', escape(that.model.caption), '"/>'].join(''));

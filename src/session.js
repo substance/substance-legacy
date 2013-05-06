@@ -308,15 +308,15 @@ _.extend(Substance.Session.prototype, _.Events, {
 
     // Push document cover?
     if (doc.properties.cover_medium) {
-      blobs[doc.properties.cover_medium] = that.getBlob(doc.properties.cover_medium);
-      blobs[doc.properties.cover_large] = that.getBlob(doc.properties.cover_large);
+      blobs[doc.properties.cover_medium] = that.getBlob(doc.id, doc.properties.cover_medium);
+      blobs[doc.properties.cover_large] = that.getBlob(doc.id, doc.properties.cover_large);
     }
 
     // Find all images
     _.each(doc.nodes, function(node) {
       if (node.type === "image") {
-        blobs[node.medium] = that.getBlob(node.medium);
-        blobs[node.large] = that.getBlob(node.large);
+        blobs[node.medium] = that.getBlob(doc.id, node.medium);
+        blobs[node.large] = that.getBlob(doc.id, node.large);
       }
     });
 
