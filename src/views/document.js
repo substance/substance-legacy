@@ -119,12 +119,12 @@ sc.views.Document = Backbone.View.extend({
 
         var mediumImage = canvas.toDataURL("image/png");
 
-        var mediumImageId = Substance.util.uuid('image:');
-        var largeImageId = Substance.util.uuid('image:');
+        var mediumImageId = Substance.util.uuid();
+        var largeImageId = Substance.util.uuid();
 
 
-        if (!session.localStore.createBlob(mediumImageId, mediumImage) ||
-            !session.localStore.createBlob(largeImageId, largeImage)) {
+        if (!session.localStore.createBlob(that.model.document.id, mediumImageId, mediumImage) ||
+            !session.localStore.createBlob(that.model.document.id, largeImageId, largeImage)) {
           throw new Substance.errors.Error('Storing images failed');
         }
 
@@ -403,8 +403,8 @@ sc.views.Document = Backbone.View.extend({
 
   // Initial render of all nodes
   render: function() {
-    var coverLarge = session.getBlob(this.model.document.properties.cover_large);
-    var coverMedium = session.getBlob(this.model.document.properties.cover_medium);
+    var coverLarge = session.getBlob(this.model.document.id, this.model.document.properties.cover_large);
+    var coverMedium = session.getBlob(this.model.document.id, this.model.document.properties.cover_medium);
 
     this.$el.html(_.tpl('document', {
       document: this.model.document,
