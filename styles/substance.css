@@ -104,7 +104,7 @@ body {
   float: left;
   background: rgba(255,255,255, 0.9);
   border: none;
-  
+
   -webkit-font-smoothing: antialiased;
 }
 
@@ -296,7 +296,7 @@ body {
   from {
     -webkit-transform: rotate(0deg);
   }
-  to { 
+  to {
     -webkit-transform: rotate(360deg);
   }
 }
@@ -320,7 +320,7 @@ body {
 }
 
 #header .user-status a.sync.active .icon {
-  -webkit-animation-name:             rotate; 
+  -webkit-animation-name:             rotate;
   -webkit-animation-duration:         0.9s;
   -webkit-animation-iteration-count:  infinite;
   -webkit-animation-timing-function: linear;
@@ -419,7 +419,7 @@ body {
   left: 60px;
   bottom: 0px;
   overflow: auto;
-  
+
 }
 
 #dashboard #documents {
@@ -713,7 +713,7 @@ body {
 }
 
 #document_menu .publish-state .publish-actions a:hover {
- color: rgba(0,0,0, 0.6); 
+ color: rgba(0,0,0, 0.6);
 }
 
 #document_menu .publish-state .publish-actions .create-version {
@@ -823,7 +823,7 @@ body {
 }
 
 .publish-settings .publication-settings {
-  
+
 }
 
 .publish-settings .add-publication-wrapper {
@@ -983,6 +983,9 @@ body {
   width: 1130px;
   margin-left: 80px;
   overflow: auto;
+  position: fixed;
+  top: 0px;
+  bottom: 0px;
 }
 
 #testsuite .tests {
@@ -997,7 +1000,6 @@ body {
   background: rgba(0,0,0,0.8);
   width: 100px;
   color: rgba(255,255,255,0.6);
-
   margin-bottom: 10px;
 }
 #testsuite .tests .run-all-tests:hover {
