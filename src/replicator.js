@@ -163,7 +163,7 @@ var Replicator = function(params) {
         var srcBlobs = data;
         console.log("replicator.getDiffBlobs: srcBlobs", srcBlobs)
 
-        var blobIds = _.without(srcBlobs, dstBlobs);
+        var blobIds = _.difference(srcBlobs, dstBlobs);
         console.log("replicator.getDiffBlobs: blobIds", blobIds)
 
         var blobs = [];
