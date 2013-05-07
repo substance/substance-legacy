@@ -453,6 +453,10 @@ var Replicator = function(params) {
 
   this.sync = function(cb) {
     if (this.syncing) return cb(null); // do nothing
+    // ignore, if the remoteStore is not available
+    // TODO: more serious checking?
+    if (!this.remoteStore) return cb(null);
+
     this.syncing = true;
 
     var processJob = function(job, cb) {

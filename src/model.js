@@ -3,8 +3,11 @@
 //
 // Persistence for application settings
 
+// TODO: switch between native and web-client version:
+// web -> localstoreage, native->
+
 // TODO: Make localStorage work
-var AppSettings = function(settings) {
+var NativeAppSettings = function(settings) {
   var dbSettings = {
     host: "127.0.0.1",
     port: 6379,
@@ -39,13 +42,37 @@ var AppSettings = function(settings) {
   };
 };
 
-window.appSettings = new AppSettings();
+var WebAppSettings = function(settings) {
 
+  this.setItem = function(key, value) {
+    console.log("WebAppSettings.setItem", key, value);
+    localStorage.setItem(key, value);
+  };
+
+  this.toJSON = function() {
+    var json = JSON.stringify(localStorage);
+    console.log("WebAppSettings.toJSON", json);
+    return json;
+  };
+
+  this.getItem = function(key) {
+    console.log("WebAppSettings.getItem", key);
+    return localStorage.getItem(key);
+  };
+};
+
+if (typeof redis === 'undefined') {
+  window.appSettings = new WebAppSettings();
+} else {
+  window.appSettings = new NativeAppSettings();
+}
 
 // Helpers
 // -----------------
 
 function synced(docId) {
+  if (!session.remoteStore) return true;
+
   var refs = session.localStore.getRefs(docId);
   if (refs.master) {
     return refs.master.head === refs['master']['remote-head'];

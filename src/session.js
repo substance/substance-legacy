@@ -107,14 +107,21 @@ _.extend(Substance.Session.prototype, _.Events, {
     });
 
     if (username) {
-      this.localStore = new Substance.RedisStore({
-        scope: this.env+":"+username
-      });
-
-      // Assumes client instance is authenticated
-      this.remoteStore = new Substance.RemoteStore({
-        client: this.client
-      });
+      // TODO: maybe more exlicitely
+      if (typeof redis !== 'undefined') {
+        this.localStore = new Substance.RedisStore({
+          scope: this.env+":"+username
+        });
+        // Assumes client instance is authenticated
+        this.remoteStore = new Substance.RemoteStore({
+          client: this.client
+        });
+      } else {
+        this.localStore = new Substance.RemoteStore({
+          client: this.client
+        });
+        this.remoteStore = null;
+      }
     }
   },
   // When a doc changes, bind event handlers etc.
