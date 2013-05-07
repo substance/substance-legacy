@@ -16,12 +16,12 @@ sc.views.Testsuite = Backbone.View.extend({
     var that = this;
 
     _.each(Substance.tests, function(test, testId) {
-      funcs.push(function(data, cb) {
+      funcs.push(function(cb) {
         that.runTest(testId, cb);
       });
     });
 
-    Substance.util.async(funcs, null, function(err) {
+    Substance.util.async.sequential(funcs, function(err) {
       // All successful?
     });
 
@@ -59,7 +59,7 @@ sc.views.Testsuite = Backbone.View.extend({
         that.$('#'+testName).addClass('error');
         that.$('#'+testName+' i').addClass('icon-exclamation-sign');
       } else {
-        that.$('#'+testName).addClass('success'); 
+        that.$('#'+testName).addClass('success');
         that.$('#'+testName+' i').addClass('icon-ok');
       }
       if (cb) cb(null);
