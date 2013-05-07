@@ -970,6 +970,16 @@ h2 { font-size: 160%; padding-bottom: 15px; }
   line-height: 18px;
 }
 
+/* Necessary to make the new lines visible
+-------------------------------------------------------------------------------*/
+
+.content-node .content br.br
+{   
+  content: "\n" !important;
+  display: block !important;
+  width: 100% !important;
+}
+
 /* Image Node
 -------------------------------------------------------------------------------*/
 
