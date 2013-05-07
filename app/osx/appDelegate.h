@@ -24,6 +24,7 @@
   WebViewWithExtensions *m_webExtension;
   WebViewLoadDelegate *m_loadDelegate;
   WebViewPolicyDelegate *m_policyDelegate;
+  WebUIDelegate *m_uiDelegate;
   ForkedSubProcess *m_redisProcess;
 }
 

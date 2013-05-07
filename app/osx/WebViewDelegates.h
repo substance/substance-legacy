@@ -2,6 +2,7 @@
 #import <Webkit/WebView.h>
 #import <Webkit/WebFrameLoadDelegate.h>
 #import <Webkit/WebPolicyDelegate.h>
+#import <Webkit/WebUIDelegate.h>
 
 #import "ExtendedWebView.h"
 
@@ -37,5 +38,14 @@
 	request:(NSURLRequest *)request
 	newFrameName:(NSString *)frameName
 	decisionListener:(id < WebPolicyDecisionListener >)listener;
+
+@end
+
+@interface WebUIDelegate : NSObject
+{
+}
+
+- (void)webView:(WebView *)sender
+  runOpenPanelForFileButtonWithResultListener:(id < WebOpenPanelResultListener >)resultListener;
 
 @end

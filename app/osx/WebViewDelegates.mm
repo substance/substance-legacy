@@ -68,3 +68,20 @@
 }
 
 @end
+
+@implementation WebUIDelegate
+
+- (void)webView:(WebView *)sender
+  runOpenPanelForFileButtonWithResultListener:(id < WebOpenPanelResultListener >)resultListener
+{
+    NSOpenPanel* dlg = [NSOpenPanel openPanel];
+    [dlg setCanChooseFiles:YES];
+    [dlg setCanChooseDirectories:NO];
+    [dlg setAllowsMultipleSelection:NO];
+    if ([dlg runModal] == NSOKButton) {
+        NSArray* files = [[dlg URLs]valueForKey:@"relativePath"];
+        [resultListener chooseFilenames:files];
+    }
+}
+
+@end

@@ -44,6 +44,9 @@ extern "C" bool redis_initialize_jsobjects(JSGlobalContextRef context);
   m_policyDelegate = [[WebViewPolicyDelegate alloc] init];
   [webView setPolicyDelegate: m_policyDelegate];
 
+  m_uiDelegate = [[WebUIDelegate alloc] init];
+  [webView setUIDelegate: m_uiDelegate];
+
   // Escape blanks in bundle file path so that we can use it in the file url
   NSString *pathEscaped = (NSString *)CFURLCreateStringByAddingPercentEscapes(NULL, (CFStringRef)path,
    NULL,
