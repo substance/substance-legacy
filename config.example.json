@@ -6,8 +6,8 @@
     "client_secret": "456"
   },
   "test": {
-    "hub": "http://127.0.0.1:3000",
-    "hub_api": "http://127.0.0.1:3000/api/v1",
+    "hub": "http://127.0.0.1:3001",
+    "hub_api": "http://127.0.0.1:3001/api/v1",
     "client_id": "hello-kitty",
     "client_secret": "abcd"
   },
