@@ -332,15 +332,35 @@ $(function() {
       hub_api: "https://substance.io/api/v1",
       client_id: "f7043dc691102f3ac3175e606af2c8cb",
       client_secret: "ca85e9a193c721e5d65eba26164c0d87"
+    },
+    "development": {
+      hub: "http://127.0.0.1:3000",
+      hub_api: "http://127.0.0.1:3000/api/v1",
+      client_id: "hello-kitty",
+      client_secret: "abcd"
+    },
+    "test": {
+      hub: "http://127.0.0.1:3001",
+      hub_api: "http://127.0.0.1:3001/api/v1",
+      client_id: "hello-kitty",
+      client_secret: "abcd"
     }
   };
   // Load config from config.json
   function loadConfig(cb) {
-    $.getJSON('config.json', function(data) {
-      _.extend(config, data);
-      cb(null, data);
-    })
-    .error(function() { cb('not_found: using defaults'); });
+    // TODO: we need some bootstrapping for the web-client
+    if (Substance.client_type === "browser") {
+      var _config = localStorage['config'];
+      if(_config) _.extend(config, _config);
+      else localStorage['config'] = config;
+      cb(null, config);
+    } else {
+      $.getJSON('config.json', function(data) {
+        _.extend(config, data);
+        cb(null, data);
+      })
+      .error(function() { cb('not_found: using defaults'); });
+    }
   }
 
   Substance.config = function() {
