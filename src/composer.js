@@ -108,7 +108,7 @@
       var that = this;
       if (this.model.level() === 3) {
         var node = this.views.document.nodes[_.first(this.model.selection())];
-        
+
         if (!_.include(["text", "heading", "code"], node.model.type)) return; // Skip for non-text nodes
 
         if (node.model.type === "code") {
@@ -133,7 +133,7 @@
       var that = this;
       if (this.model.level() === 3) {
         var node = this.views.document.nodes[_.first(this.model.selection())];
-        
+
         if (node.model.type === "heading") {
           var level = node.model.level;
 
@@ -214,7 +214,7 @@
       key('alt+t', _.bind(function() { this.views.document.insertNode("text", {}); return false }, this));
       key('alt+h', _.bind(function() { this.views.document.insertNode("heading", {}); return false; }, this));
 
-      // Marker shortcuts  
+      // Marker shortcuts
       key('⌘+i', _.bind(function() { return this.toggleAnnotation('em'); }, this));
       key('⌘+b', _.bind(function() { return this.toggleAnnotation('str'); }, this));
       key('ctrl+1', _.bind(function() { return this.toggleAnnotation('idea'); }, this));
@@ -243,29 +243,32 @@
       this.model.document.on('commit:applied', function(commit) {
         // Send update to the server
         $('#header .sync').removeClass('disabled');
-        
+
         // $('#header .sync .status').html('Sync');
 
         this.updateUndoRedoControls();
       }, this);
 
-      
+
       this.model.document.on('ref:updated', function(ref, sha) {
         this.updateUndoRedoControls();
       }, this);
     },
 
-    render: function() {
+    render: function(cb) {
       var that = this;
       this.$el.html(_.tpl('composer'));
-      this.renderDoc();
-      this.positionTools();
-      this.updateMode();
+      this.renderDoc(function(err) {
 
-      _.delay(function() {
-        that.updateUndoRedoControls();  
-      }, 1);
-      
+        that.positionTools();
+        that.updateMode();
+        _.delay(function() {
+          that.updateUndoRedoControls();
+        }, 1);
+
+        cb(err);
+      });
+
       return this;
     },
 
@@ -286,12 +289,19 @@
       }
     },
 
-    renderDoc: function() {
-      this.$('#document').replaceWith(this.views.document.render().el);
-      this.$('#tools').html(this.views.tools.render().el);
+    renderDoc: function(cb) {
+      var that = this;
+      var doc = this.views.document;
+      doc.render(function(err) {
+        if (err) console.log("composer.renderDoc", err);
+        that.$('#document').replaceWith(doc.el);
+        that.$('#tools').html(that.views.tools.render().el);
+
+        cb(err);
+      })
     }
   },
-  
+
   // Class Variables
   {
     models: {},

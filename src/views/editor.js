@@ -57,7 +57,7 @@ sc.views.Editor = Backbone.View.extend({
     session.loadPublications(function(err) {
       that.renderPublishSettings();
     });
-    
+
     return false;
   },
 
@@ -171,7 +171,9 @@ sc.views.Editor = Backbone.View.extend({
     this.hidePublishSettings();
   },
 
-  render: function () {
+  asynchronous: true,
+
+  render: function (cb) {
     var that = this;
     this.$el.html(_.tpl('editor', {
       session: this.model,
@@ -191,7 +193,12 @@ sc.views.Editor = Backbone.View.extend({
 
     this.composer = new Substance.Composer({id: 'document_wrapper', model: this.model });
     this.currentView = 'composer';
-    this.$('#document_wrapper').replaceWith(this.composer.render().el);
+
+    this.composer.render(function(err) {
+      that.$('#document_wrapper').replaceWith(that.composer.el);
+
+      cb(err);
+    });
 
     return this;
   }

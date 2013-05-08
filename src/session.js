@@ -73,6 +73,78 @@ _.extend(Substance.Comments.prototype, _.Events, {
   }
 });
 
+function adaptDocument(session, doc) {
+    var delegate = {
+      apply: doc.apply,
+      setRef: doc.setRef
+    };
+    var adapters = {
+      // Adapter that persists the change before updating the model
+      apply: function(operation, options, cb) {
+
+        if(arguments.length == 2) {
+          if (_.isFunction(options)) {
+            cb = options;
+            options = null;
+          }
+        }
+        options = options || {};
+
+        // don't trigger events
+        var commit = delegate.apply.call(doc, operation, {"silent": true});
+
+        if (!options['no-commit']) {
+          function updateDocument(cb) {
+            console.log("Session.document.apply: updateDocument");
+            var refs = {
+              'master': {
+                'head': commit.sha,
+                'last': commit.sha
+              }
+            };
+            session.updateDocument([commit], null, refs, cb);
+          }
+          function updateMeta(cb) {
+            console.log("Session.document.apply: updateMeta");
+            session.updateMeta(cb);
+          }
+          function triggerEvent(cb) {
+            console.log("Session.document.apply: triggerEvent");
+            if(!options['silent']) {
+              doc.trigger('commit:applied', commit);
+            }
+            cb(null);
+          }
+          return Substance.util.async.sequential([updateDocument, updateMeta, triggerEvent], function(err) {
+            if (cb) cb(err);
+          });
+        } else if(!options['silent']) {
+          doc.trigger('commit:applied', commit);
+        }
+        if (cb) cb(null);
+      },
+      // adapter that persists the new ref before triggering
+      setRef: function(ref, sha, silent, cb) {
+        if (arguments.length === 3) {
+          if (_.isFunction(silent)) {
+            cb = silent;
+            silent = false;
+          }
+        }
+        delegate.setRef.call(doc, ref, sha, true);
+        var refs = {}
+        refs[ref] = sha;
+        var options = {refs: {"master": refs}}
+        session.localStore.update(doc.id, options, function(err) {
+          session.updateMeta(function(err) {
+            if (!silent) doc.trigger('ref:updated', ref, sha);
+            if(cb) cb(err);
+          });
+        });
+      }
+  };
+  return _.extend(doc, adapters);
+}
 
 // Substance.Session
 // -----------------
@@ -138,32 +210,6 @@ _.extend(Substance.Session.prototype, _.Events, {
       "color": "#2F2B26",
       "selection": []
     };
-
-    // Rebind event handlers
-    this.document.off('commit:applied');
-    this.document.off('ref:updated');
-
-    this.document.on('commit:applied', function(commit) {
-      // Persist update in docstore
-      var refs = {
-        'master': {
-          'head': commit.sha,
-          'last': commit.sha
-        }
-      };
-      that.updateDocument([commit], null, refs);
-      that.updateMeta();
-    }, this);
-
-    this.document.on('ref:updated', function(ref, sha) {
-      var refs = {}
-      refs[ref] = sha;
-
-      var options = {refs: {"master": refs}}
-      that.localStore.update(that.document.id, options, function(err) {
-        that.updateMeta();
-      });
-    }, this);
   },
 
   // Create a new document locally
@@ -180,7 +226,7 @@ _.extend(Substance.Session.prototype, _.Events, {
       that.localStore.update(id, options, function(err) {
         if (err) return cb(err);
 
-        that.document = new Substance.Document(doc, schema);
+        that.document = adaptDocument(that, new Substance.Document(doc, schema));
         that.initDoc();
         cb(null, that.document);
       });
@@ -204,7 +250,7 @@ _.extend(Substance.Session.prototype, _.Events, {
     var that = this;
     this.localStore.get(id, function(err, doc) {
       if (err) return cb(err);
-      that.document = new Substance.Document(doc);
+      that.document = adaptDocument(that, new Substance.Document(doc));
       that.initDoc();
       cb(err, that.document);
     });

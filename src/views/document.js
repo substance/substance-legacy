@@ -402,25 +402,47 @@ sc.views.Document = Backbone.View.extend({
   },
 
   // Initial render of all nodes
-  render: function() {
-    var coverLarge = session.getBlob(this.model.document.id, this.model.document.properties.cover_large);
-    var coverMedium = session.getBlob(this.model.document.id, this.model.document.properties.cover_medium);
+  render: function(cb) {
+    if (!cb) throw "Fix me!";
 
-    this.$el.html(_.tpl('document', {
-      document: this.model.document,
-      cover_large: coverLarge,
-      cover_medium: coverMedium
-    }));
+    var that = this;
+    var coverLarge;
+    var coverMedium;
 
-    // Init editor for document abstract and title
-    this.initSurface("abstract");
-    this.initSurface("title");
+    function getLargeCover(cb) {
+      session.getBlob(that.model.document.id, that.model.document.properties.cover_large, function(err, data) {
+        coverLarge = err ? null : data;
+        cb(null);
+      });
+    }
 
-    this.model.document.each(function(node) {
-      $(this.nodes[node.id].render().el).appendTo(this.$('.nodes'));
-    }, this);
+    function getMediumCover(cb) {
+      session.getBlob(that.model.document.id, that.model.document.properties.cover_medium, function(err, data) {
+        coverMedium = err ? null : data;
+        cb(null);
+      });
+    }
 
-    this.bindFileEvents();
-    return this;
+    function update(cb) {
+      that.$el.html(_.tpl('document', {
+        document: that.model.document,
+        cover_large: coverLarge,
+        cover_medium: coverMedium
+      }));
+
+      // Init editor for document abstract and title
+      that.initSurface("abstract");
+      that.initSurface("title");
+
+      that.model.document.each(function(node) {
+        $(that.nodes[node.id].render().el).appendTo(that.$('.nodes'));
+      }, that);
+
+      that.bindFileEvents();
+
+      cb(null);
+    }
+
+    Substance.util.async.sequential([getLargeCover, getMediumCover, update], cb);
   }
 });

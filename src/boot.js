@@ -216,8 +216,9 @@ $(function() {
         window.doc = session.document;
 
         that.view = new sc.views.Editor({model: session });
-        that.render();
-        that.listenForDocumentChanges();
+        that.render(function(err) {
+          that.listenForDocumentChanges();
+        });
       });
     },
 
@@ -298,7 +299,9 @@ $(function() {
     },
 
     // Render application template
-    render: function() {
+    render: function(cb) {
+      var that = this;
+
       var document = null;
       if (this.view instanceof sc.views.Editor) {
         var document = this.view.model.document.properties;
@@ -310,7 +313,15 @@ $(function() {
       }));
 
       if (this.view) {
-        this.$('#container').replaceWith(this.view.render().el);
+        if (this.view.asynchronous) {
+          this.view.render(function(err) {
+            that.$('#container').replaceWith(that.view.el);
+            if (cb) cb(err);
+          });
+        } else {
+          that.$('#container').replaceWith(that.view.render().el);
+          if(cb) cb(null);
+        }
       }
     }
   });

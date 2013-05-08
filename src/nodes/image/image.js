@@ -77,20 +77,24 @@ sc.views.Node.define('image', {
         var mediumImage = canvas.toDataURL("image/png");
         var mediumImageId = Substance.util.uuid('');
 
-        if (!session.localStore.createBlob(that.document.id, mediumImageId, mediumImage)) {
-          throw new Substance.errors.Error('Storing image failed');
-        }
+        session.localStore.createBlob(that.document.id, mediumImageId, mediumImage, function(err) {
+          if (err) return cb(new Substance.errors.Error('Storing image failed'));
+          var change = [
+            "update", {
+              id: that.model.id,
+              "data": {
+                "medium": mediumImageId,
+                "large": mediumImageId,
+                "caption": file.name
+          }}];
+          that.document.apply(change, function(err) {
+            that.render();
+          });
 
-        that.document.apply(["update", {id: that.model.id, "data": {
-          "medium": mediumImageId,
-          "large": mediumImageId,
-          "caption": file.name
-        }}]);
-
-        that.render(); // re-render the node;
+        });
 
       }, 800);
-    }
+    };
 
     reader.readAsDataURL(file);
   },
@@ -101,23 +105,27 @@ sc.views.Node.define('image', {
 
     // Inject some image related stuff
     this.$('.content').append('<input type="file" class="files" name="files[]"/><div class="message"></div>');
-    
-    if (that.model.medium) {
-      var imageData = session.getBlob(that.document.id, that.model.medium);
 
-      that.$('.content').append(['<img class="thumb" src="', imageData.data,
-                                 '" title="', escape(that.model.caption), '"/>'].join(''));
-    } else {
-      that.$('.content').append(['<img class="thumb" src="images/image_placeholder.png" title="', escape(that.model.caption), '"/>'].join(''));
+    function bindFileHandler() {
+      _.delay(function() {
+        that.$('.files').bind('change', function(e) {
+          that.handleFileSelect(e);
+        });
+      }, 200);
     }
 
-    this.$('.content').append('<div class="placeholder">Drop new image here</div>');
-
-    _.delay(function() {
-      that.$('.files').bind('change', function(e) {
-        that.handleFileSelect(e);
+    if (that.model.medium) {
+      session.getBlob(that.document.id, that.model.medium, function(err, imageData) {
+        if (err) return console.log("Node.image.render: Error", err);
+        that.$('.content').append(['<img class="thumb" src="', imageData.data,
+                                   '" title="', escape(that.model.caption), '"/>'].join(''));
+        bindFileHandler();
       });
-    }, 200);
+    } else {
+      that.$('.content').append(['<img class="thumb" src="images/image_placeholder.png" title="', escape(that.model.caption), '"/>'].join(''));
+      this.$('.content').append('<div class="placeholder">Drop new image here</div>');
+      bindFileHandler();
+    }
     return this;
   }
 });
