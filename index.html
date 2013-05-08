@@ -508,6 +508,16 @@
       </div>
     </script>
 
+    <script>
+      window.Substance = {};
+      // TODO: better check for client type
+      if(typeof redis === 'undefined') {
+        window.Substance.client_type = "browser";
+      } else {
+        window.Substance.client_type = "native";
+      }
+    </script>
+
     <script src="lib/underscore.js"></script>
     <script src="lib/jquery.min.js"></script>
     <script src="lib/keymaster.min.js"></script>

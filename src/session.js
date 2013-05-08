@@ -179,8 +179,7 @@ _.extend(Substance.Session.prototype, _.Events, {
     });
 
     if (username) {
-      // TODO: maybe more exlicitely
-      if (typeof redis !== 'undefined') {
+      if (Substance.client_type === "native") {
         this.localStore = new Substance.RedisStore({
           scope: this.env+":"+username
         });

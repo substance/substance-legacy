@@ -45,23 +45,20 @@ var NativeAppSettings = function(settings) {
 var WebAppSettings = function(settings) {
 
   this.setItem = function(key, value) {
-    console.log("WebAppSettings.setItem", key, value);
     localStorage.setItem(key, value);
   };
 
   this.toJSON = function() {
     var json = JSON.stringify(localStorage);
-    console.log("WebAppSettings.toJSON", json);
     return json;
   };
 
   this.getItem = function(key) {
-    console.log("WebAppSettings.getItem", key);
     return localStorage.getItem(key);
   };
 };
 
-if (typeof redis === 'undefined') {
+if (Substance.client_type === "browser") {
   window.appSettings = new WebAppSettings();
 } else {
   window.appSettings = new NativeAppSettings();
