@@ -113,10 +113,15 @@ $(function() {
 
       // UI update
       _.delay(function() {
-        this.$('#header .sync').removeClass('active');
-
+        that.$('#header .sync').removeClass('active');
         // Update status
         if (err) this.$('#header .sync').removeClass('disabled').addClass('error');
+
+        // HACK: only re-render after sync when on dashboard
+        if (that.view instanceof Dashboard) {
+          console.log(that.view);
+          that.render();
+        }
       }, 500);
 
     },
