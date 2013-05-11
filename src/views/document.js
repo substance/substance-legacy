@@ -223,7 +223,7 @@ sc.views.Document = Backbone.View.extend({
     this.model.document.apply(["insert", {
       "id": Substance.util.uuid(type+':', 8),
       "type": type,
-      "target": "back",
+      "target": target,
       "data": properties
     }], {
       user: this.model.user()  
@@ -410,6 +410,7 @@ sc.views.Document = Backbone.View.extend({
     var coverMedium;
 
     function getLargeCover(cb) {
+      if (!that.model.document.properties.cover_large) return cb(null);
       session.getBlob(that.model.document.id, that.model.document.properties.cover_large, function(err, data) {
         coverLarge = err ? null : data;
         cb(null);
@@ -417,6 +418,7 @@ sc.views.Document = Backbone.View.extend({
     }
 
     function getMediumCover(cb) {
+      if (!that.model.document.properties.cover_medium) return cb(null);
       session.getBlob(that.model.document.id, that.model.document.properties.cover_medium, function(err, data) {
         coverMedium = err ? null : data;
         cb(null);

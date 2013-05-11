@@ -213,7 +213,7 @@ $(function() {
       var that = this;
       session.loadDocument(id, function(err, doc) {
         // Shortcuts
-        window.doc = session.document;
+        window.doc = session.doc;
 
         that.view = new sc.views.Editor({model: session });
         that.render(function(err) {
@@ -304,7 +304,7 @@ $(function() {
 
       var document = null;
       if (this.view instanceof sc.views.Editor) {
-        var document = this.view.model.document.properties;
+        document = this.view.model.document.properties;
       }
 
       this.$el.html(_.tpl('substance', {

@@ -106,8 +106,14 @@
 
     handleEnter: function() {
       var that = this;
+
       if (this.model.level() === 3) {
-        var node = this.views.document.nodes[_.first(this.model.selection())];
+        var selectedNode = _.first(this.model.selection());
+        var node = this.views.document.nodes[selectedNode];
+
+        if (!node) {
+          console.log("AAAArgg... Model corrupt.");
+        }
 
         if (!_.include(["text", "heading", "code"], node.model.type)) return; // Skip for non-text nodes
 
@@ -115,14 +121,20 @@
           node.surface.addNewline();
         } else {
           var text = node.surface.content;
-          var pos = node.surface.selection()[0]; // current cursor position
+          var sel = node.surface.selection();
 
-          var remainder = _.rest(text, pos).join("");
-          var newContent = text.substr(0, pos);
-
-          node.surface.deleteRange([pos, remainder.length]);
-          node.surface.commit();
-          that.views.document.insertNode("text", {content: remainder, target: node.model.id});
+            // TODO: this is not working... furthermore, a bit under-documented...
+            // newContent is not used?
+          if(sel) {
+            var pos = sel[0]; // current cursor position
+            var remainder = _.rest(text, pos).join("");
+            var newContent = text.substr(0, pos);
+            node.surface.deleteRange([pos, remainder.length]);
+            node.surface.commit();
+            that.views.document.insertNode("text", {content: remainder, target: node.model.id});
+          } else {
+            that.views.document.insertNode("text", {content: "", target: node.model.id});
+          }
         }
 
         return false;
@@ -193,37 +205,47 @@
 
     build: function() {
       // Selection shortcuts
+      key.unbind('down, up');
+      key('down', _.bind(function() { return this.handleDown(); }, this));
       key('down', _.bind(function() { return this.handleDown(); }, this));
       key('up', _.bind(function() { return this.handleUp(); }, this));
 
+      key.unbind('shift+down, shift+up, esc');
       key('shift+down', _.bind(function() { return this.handleShiftDown(); }, this));
       key('shift+up', _.bind(function() { return this.handleShiftUp(); }, this));
       key('esc', _.bind(function() { return this.goBack(); }, this));
 
       // Move shortcuts
+      key.unbind('alt+down, alt+up');
       key('alt+down', _.bind(function() { return this.handleAltDown(); }, this));
       key('alt+up', _.bind(function() { return this.handleAltUp(); }, this));
 
       // Handle enter (creates new paragraphs)
+      key.unbind('enter');
       key('enter', _.bind(function() { return this.handleEnter(); }, this));
 
       // Handle backspace
+      key.unbind('backspace');
       key('backspace', _.bind(function() { return this.handleBackspace(); }, this));
 
       // Node insertion shortcuts
+      key.unbind('alt+t, alt+h');
       key('alt+t', _.bind(function() { this.views.document.insertNode("text", {}); return false }, this));
       key('alt+h', _.bind(function() { this.views.document.insertNode("heading", {}); return false; }, this));
 
       // Marker shortcuts
+      key.unbind('⌘+i, ⌘+b, ctrl+1, ctrl+2, ctrl+3');
       key('⌘+i', _.bind(function() { return this.toggleAnnotation('em'); }, this));
       key('⌘+b', _.bind(function() { return this.toggleAnnotation('str'); }, this));
       key('ctrl+1', _.bind(function() { return this.toggleAnnotation('idea'); }, this));
       key('ctrl+2', _.bind(function() { return this.toggleAnnotation('blur'); }, this));
       key('ctrl+3', _.bind(function() { return this.toggleAnnotation('doubt'); }, this));
 
+      key.unbind('⌘+z, shift+⌘+z');
       key('⌘+z', _.bind(function() { return this.undo(); }, this));
       key('shift+⌘+z', _.bind(function() { return this.redo(); }, this));
 
+      key.unbind('tab, shift+tab');
       key('tab', _.bind(function() { return this.handleTab(); }, this));
       key('shift+tab', _.bind(function() { return this.handleTab(true); }, this));
 
@@ -296,7 +318,6 @@
         if (err) console.log("composer.renderDoc", err);
         that.$('#document').replaceWith(doc.el);
         that.$('#tools').html(that.views.tools.render().el);
-
         cb(err);
       })
     }
