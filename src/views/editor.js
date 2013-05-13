@@ -165,15 +165,13 @@ sc.views.Editor = Backbone.View.extend({
     var message = "Private document";
     if (state === "published") message = $.timeago(doc.meta.published_at);
     if (state === "dirty") message = "Pending changes";
-    
+
     this.$('.publish-state .message').html(message);
 
     this.hidePublishSettings();
   },
 
-  asynchronous: true,
-
-  render: function (cb) {
+  render: function () {
     var that = this;
     this.$el.html(_.tpl('editor', {
       session: this.model,
@@ -194,11 +192,7 @@ sc.views.Editor = Backbone.View.extend({
     this.composer = new Substance.Composer({id: 'document_wrapper', model: this.model });
     this.currentView = 'composer';
 
-    this.composer.render(function(err) {
-      that.$('#document_wrapper').replaceWith(that.composer.el);
-
-      cb(err);
-    });
+    that.$('#document_wrapper').replaceWith(that.composer.render().el);
 
     return this;
   }

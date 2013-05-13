@@ -58,24 +58,17 @@ $(function() {
     },
 
     _deleteDocument: function(e) {
-      var that = this;
       var docId = $(e.currentTarget).attr('data-id');
-
-      session.deleteDocument(docId, function(err) {
-        if (!err) that.render();
-      });
-
+      session.deleteDocument(docId);
+      this.render();
       return false;
     },
 
     render: function() {
-      var that = this;
-
-      session.listDocuments(function(err, documents) {
-        that.$el.html(_.tpl('dashboard', {
-          documents: documents
-        }));
-      });
+      var documents = session.listDocuments();
+      this.$el.html(_.tpl('dashboard', {
+        documents: documents
+      }));
       return this;
     }
   });
@@ -211,28 +204,24 @@ $(function() {
     // Toggle document view
     document: function(id) {
       var that = this;
-      session.loadDocument(id, function(err, doc) {
-        // Shortcuts
-        window.doc = session.doc;
-
-        that.view = new sc.views.Editor({model: session });
-        that.render(function(err) {
-          that.listenForDocumentChanges();
-        });
-      });
+      session.loadDocument(id);
+      // Shortcuts
+      window.doc = session.document;
+      that.view = new sc.views.Editor({model: session});
+      that.render();
+      that.listenForDocumentChanges();
     },
 
     // Toggle document view
     console: function(id) {
       var that = this;
 
-      session.loadDocument(id, function(err, doc) {
-        // Shortcuts
-        window.doc = session.document;
+      session.loadDocument(id);
+      // Shortcuts
+      window.doc = session.document;
 
-        that.view = new sc.views.Console({model: session });
-        that.render();
-      });
+      that.view = new sc.views.Console({model: session});
+      that.render();
     },
 
     testsuite: function(test) {
@@ -262,22 +251,21 @@ $(function() {
 
     newDocument: function() {
       var that = this;
-      session.createDocument(function(err, doc) {
-        that.view = new sc.views.Editor({model: session });
-        that.render();
-        router.navigate('documents/'+session.document.id, false);
 
-        // Shortcuts
-        window.doc = session.document;
-        window.session = session;
+      session.createDocument();
+      that.view = new sc.views.Editor({model: session });
+      that.render();
+      router.navigate('documents/'+session.document.id, false);
 
-        // Add title / abstract
-        _.delay(function() {
-          session.document.apply(["set", {title: "Untitled", abstract: "Enter abstract"}]);
-          that.listenForDocumentChanges();
-        }, 100);
-      });
-      return;
+      // Shortcuts
+      window.doc = session.document;
+      window.session = session;
+
+      // Add title / abstract
+      _.delay(function() {
+        session.document.apply(["set", {title: "Untitled", abstract: "Enter abstract"}]);
+        that.listenForDocumentChanges();
+      }, 100);
     },
 
     dashboard: function() {
@@ -299,9 +287,7 @@ $(function() {
     },
 
     // Render application template
-    render: function(cb) {
-      var that = this;
-
+    render: function() {
       var document = null;
       if (this.view instanceof sc.views.Editor) {
         document = this.view.model.document.properties;
@@ -313,15 +299,7 @@ $(function() {
       }));
 
       if (this.view) {
-        if (this.view.asynchronous) {
-          this.view.render(function(err) {
-            that.$('#container').replaceWith(that.view.el);
-            if (cb) cb(err);
-          });
-        } else {
-          that.$('#container').replaceWith(that.view.render().el);
-          if(cb) cb(null);
-        }
+        this.$('#container').replaceWith(this.view.render().el);
       }
     }
   });

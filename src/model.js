@@ -68,8 +68,9 @@ if (Substance.client_type === "browser") {
 // -----------------
 
 function synced(docId) {
-  if (!session.remoteStore) return true;
+  return true;
 
+  // TODO: this should not be here as it contains implementation details
   var refs = session.localStore.getRefs(docId);
   if (refs.master) {
     return refs.master.head === refs['master']['remote-head'];

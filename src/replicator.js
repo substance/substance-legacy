@@ -197,7 +197,8 @@ var Replicator = function(params) {
     console.log("replicator.pull", doc);
 
     var lastRemote;
-    var docData;
+    var docInfo;
+    var commits;
     var blobs;
 
     function getRefs(cb) {
@@ -207,10 +208,18 @@ var Replicator = function(params) {
       });
     }
 
+    function getInfo(cb) {
+      that.remoteStore.getInfo(doc.id, function(err, data) {
+        if (err) return cb(err);
+        docInfo = data;
+        cb(null);
+      });
+    }
+
     function getCommits (cb) {
       //console.log('pulling in changes for', doc.id, 'starting from', lastRemote);
-      that.remoteStore.commits(doc.id, null, lastRemote, function(err, data) {
-        docData = data;
+      that.remoteStore.commits(doc.id, docInfo.refs["master"]["last"], lastRemote, function(err, data) {
+        commits = data;
         cb(err);
       });
     }
@@ -223,23 +232,17 @@ var Replicator = function(params) {
     }
 
     function storeData(cb) {
-      if (docData.commits.length > 0) {
-        var refs = _.clone(docData.refs.master);
-        refs["remote-head"] = refs.head;
-        refs["remote-last"] = refs.last;
-
-        var options = {
-          commits: docData.commits,
-          meta:  docData.meta,
-          refs: {"master": refs}
-        };
-        that.localStore.update(doc.id, options, cb);
-      } else {
-        var options = {
-          meta:  docData.meta,
-        };
-        that.localStore.update(doc.id, null, docData.meta, null, cb)
+      var refs = _.clone(docInfo.refs.master);
+      refs["remote-head"] = refs.head;
+      refs["remote-last"] = refs.last;
+      var options = {
+        meta:  docInfo.meta,
+        refs: {"master": refs}
+      };
+      if (commits.length > 0) {
+        options.commits = commits;
       }
+      that.localStore.update(doc.id, options, cb);
     }
 
     function storeBlobs(cb) {
@@ -251,7 +254,7 @@ var Replicator = function(params) {
       })(null, cb);
     }
 
-    var functions = [getRefs, getCommits, getBlobs, storeData, storeBlobs];
+    var functions = [getRefs, getInfo, getCommits, getBlobs, storeData, storeBlobs];
     util.async.sequential(functions, cb);
   };
 
@@ -405,24 +408,29 @@ var Replicator = function(params) {
       }
     });
 
-    function processRest(cb) {
-      _.each(that.localStore.deletedDocuments(), function(docId) {
-        jobs.push({id: docId, action: "delete-remote"}); // delete remotely
-
-        // retain unsynched remoteDocs (part 2): remoteDocs - locally deleted docs
-        remoteDocs[docId] = undefined;
+    function processDeletedDocs(cb) {
+      that.localStore.deletedDocuments(function(err, deletedDocs) {
+        if (err) return cb(err);
+        _.each(deletedDocs, function(docId) {
+          jobs.push({id: docId, action: "delete-remote"}); // delete remotely
+          // retain unsynched remoteDocs (part 2): remoteDocs - locally deleted docs
+          remoteDocs[docId] = undefined;
+        });
+        cb(null);
       });
+    }
+
+    function processRest(cb) {
       // now remoteDocs contains only document's that have not been local
       // and need to be created locally
       _.each(remoteDocs, function(remoteDoc, id) {
         if(remoteDoc) jobs.push({id: id, action: "create-local"});
       });
-
       cb(null);
     }
 
     util.async.sequential([getLocalStates, getRemoteDocs,
-      processDocs, processRest], function(err, data) {
+      processDocs, processDeletedDocs, processRest], function(err, data) {
         console.log("replicator.computeJobs: jobs=", jobs);
         cb(err, jobs);
       });

@@ -112,7 +112,7 @@
         var node = this.views.document.nodes[selectedNode];
 
         if (!node) {
-          console.log("AAAArgg... Model corrupt.");
+          throw "corrupted model";
         }
 
         if (!_.include(["text", "heading", "code"], node.model.type)) return; // Skip for non-text nodes
@@ -277,19 +277,16 @@
       }, this);
     },
 
-    render: function(cb) {
+    render: function() {
       var that = this;
       this.$el.html(_.tpl('composer'));
-      this.renderDoc(function(err) {
+      this.renderDoc()
 
-        that.positionTools();
-        that.updateMode();
-        _.delay(function() {
-          that.updateUndoRedoControls();
-        }, 1);
-
-        cb(err);
-      });
+      that.positionTools();
+      that.updateMode();
+      _.delay(function() {
+        that.updateUndoRedoControls();
+      }, 1);
 
       return this;
     },
@@ -311,15 +308,12 @@
       }
     },
 
-    renderDoc: function(cb) {
+    renderDoc: function() {
       var that = this;
       var doc = this.views.document;
-      doc.render(function(err) {
-        if (err) console.log("composer.renderDoc", err);
-        that.$('#document').replaceWith(doc.el);
-        that.$('#tools').html(that.views.tools.render().el);
-        cb(err);
-      })
+      doc.render();
+      that.$('#document').replaceWith(doc.el);
+      that.$('#tools').html(that.views.tools.render().el);
     }
   },
 

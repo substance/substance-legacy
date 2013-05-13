@@ -82,18 +82,15 @@ _.extend(Substance.Comments.prototype, _.Events, {
 
 Substance.Session = function(options) {
   var that = this;
+  var proto = Substance.util.prototype(this);
   this.env = options.env;
 
   this.lazySync = _.debounce(function() {
     if (!this.pendingSync) return;
     this.replicate();
   }, 4000);
-  this.initStores();
-};
 
-_.extend(Substance.Session.prototype, _.Events, {
-
-  initStores: function() {
+  proto.initStores = function() {
     var username = this.user();
     var token = this.token();
     var config = Substance.config();
@@ -115,15 +112,16 @@ _.extend(Substance.Session.prototype, _.Events, {
           client: this.client
         });
       } else {
-        this.localStore = new Substance.RemoteStore({
+        this.localStore = new Substance.MemoryStore();
+        this.remoteStore = new Substance.RemoteStore({
           client: this.client
         });
-        this.remoteStore = null;
       }
     }
-  },
+  };
+
   // When a doc changes, bind event handlers etc.
-  initDoc: function() {
+  proto.initDoc = function() {
     var that = this;
     this.selections = {};
 
@@ -140,85 +138,54 @@ _.extend(Substance.Session.prototype, _.Events, {
 
   // Create a new document locally
   // Schema is optional (currently only used by testsuite)
-  createDocument: function(cb, schema) {
+  proto.createDocument = function(schema) {
     var id = Substance.util.uuid();
-    var that = this;
+    var meta = {"creator": that.user()};
+    var options = {meta: meta};
+    var doc = this.localStore.create(id, options);
+    that.document = new Substance.Session.Document(that, doc, schema);
+    that.initDoc();
+  },
 
-    this.localStore.create(id, function(err, doc) {
-      if (err) return cb(err);
-      doc.meta = {"creator": that.user()};
+  proto.listDocuments = function() {
+    if (!this.localStore) return [];
 
-      var options = {meta: doc.meta};
-      that.localStore.update(id, options, function(err) {
-        if (err) return cb(err);
-
-        that.document = new Substance.Session.Document(that, doc, schema);
-        that.initDoc();
-        cb(null, that.document);
-      });
+    var documents = this.localStore.list();
+    var result = _.map(documents, function(doc) {
+      return {
+        title: doc.meta.title,
+        author: "le_author",
+        file: doc.id,
+        id: doc.id,
+        meta: doc.meta,
+        updated_at: doc.meta.updated_at
+      };
     });
-  },
-
-  getBlob: function(docId, blobId, cb) {
-    return this.localStore.getBlob(docId, blobId, cb);
-  },
-
-  createBlob: function(docId, blobId, data, cb) {
-    return this.localStore.createBlob(docId, blobId, data, cb);
-  },
-
-  deleteBlob: function(docId, blobId, cb) {
-    return this.localStore.deleteBlob(docId, blobId, cb);
+    return result;
   },
 
   // Load new Document from localStore
-  loadDocument: function(id, cb) {
+  proto.loadDocument = function(id) {
     var that = this;
-    this.localStore.get(id, function(err, doc) {
-      if (err) return cb(err);
-      that.document = new Substance.Session.Document(that, doc);
-      that.initDoc();
-      cb(err, that.document);
-    });
-  },
+    var doc = this.localStore.get(id);
+    that.document = new Substance.Session.Document(that, doc);
+    that.initDoc();
+  };
 
-  // Update local document
-  updateDocument: function(commits, meta, refs, cb) {
-    var options = {
-      commits: commits,
-      meta: meta,
-      refs: refs
-    };
-    this.localStore.update(this.document.id, options, cb);
-  },
-
-
-  // Update meta info of current document
-  updateMeta: function(cb) {
-    // Triggers a sync with remote store if available
-    this.pendingSync = true;
-    this.lazySync();
-
-    var doc = this.document;
-    _.extend(doc.meta, doc.properties);
-    doc.meta.updated_at = new Date();
-
-    var options = { meta: doc.meta };
-    this.localStore.update(doc.id, options, cb);
-  },
-
-  deleteDocument: function(id, cb) {
-    this.localStore.delete(id, cb);
-  },
+  proto.deleteDocument = function(id) {
+    this.localStore.delete(id);
+  };
 
   // Replicate local docstore with remote docstore
-  replicate: function(cb) {
+  proto.replicate = function(cb) {
     var that = this;
     this.pendingSync = false;
 
+
     var replicator = new Substance.Replicator({
       user: this.user(),
-      localStore: this.localStore,
+      // HACK: provisionally, as remote store relies on asynchronous API
+      localStore: new Substance.AsyncStore(this.localStore),
       remoteStore: this.remoteStore
     });
 
@@ -228,11 +195,11 @@ _.extend(Substance.Session.prototype, _.Events, {
       that.trigger('replication:finished', err);
       if (cb) cb(err);
     });
-  },
+  };
 
   // Select a document
   // Triggers re-render of comments panel etc.
-  select: function(nodes, options) {
+  proto.select = function(nodes, options) {
 
     if (!options) options = {};
     var user = this.user(); // Use current user by default
@@ -258,9 +225,9 @@ _.extend(Substance.Session.prototype, _.Events, {
     // New selection leads to new comment context
     this.comments.compute();
     this.trigger('node:selected');
-  },
+  };
 
-  createPublication: function(network, cb) {
+  proto.createPublication = function(network, cb) {
     var doc = this.document;
     var that = this;
 
@@ -268,35 +235,36 @@ _.extend(Substance.Session.prototype, _.Events, {
       if (err) return cb(err);
       that.loadPublications(cb);
     });
-  },
+  };
 
-  deletePublication: function(id, cb) {
+  proto.deletePublication = function(id, cb) {
     var that = this;
     var doc = this.document;
     this.client.deletePublication(id, function(err) {
       if (err) return cb(err);
       that.loadPublications(cb);
     });
-  },
+  };
 
-  createVersion: function(cb) {
+  proto.createVersion = function(cb) {
     var doc = this.document;
     var that = this;
     var data = doc.toJSON(true); // includes indexes
 
     var blobs = {};
 
+
     // Push document cover?
     if (doc.properties.cover_medium) {
-      blobs[doc.properties.cover_medium] = that.getBlob(doc.id, doc.properties.cover_medium);
-      blobs[doc.properties.cover_large] = that.getBlob(doc.id, doc.properties.cover_large);
+      blobs[doc.properties.cover_medium] = doc.store.getBlob(doc.id, doc.properties.cover_medium);
+      blobs[doc.properties.cover_large] = doc.store.getBlob(doc.id, doc.properties.cover_large);
     }
 
     // Find all images
     _.each(doc.nodes, function(node) {
       if (node.type === "image") {
-        blobs[node.medium] = that.getBlob(doc.id, node.medium);
-        blobs[node.large] = that.getBlob(doc.id, node.large);
+        blobs[node.medium] = doc.store.getBlob(doc.id, node.medium);
+        blobs[node.large] = doc.store.getBlob(doc.id, node.large);
       }
     });
 
@@ -308,58 +276,56 @@ _.extend(Substance.Session.prototype, _.Events, {
       if (err) return cb(err);
       doc.meta.published_at = new Date();
       doc.meta.published_commit = doc.getRef('head');
-
-      that.updateMeta(function() {
-        that.loadPublications(cb);
-      });
+      doc.store.update({meta: doc.meta});
+      that.loadPublications(cb);
     });
-  },
+  };
 
   // Unpublish document
-  unpublish: function(cb) {
+  proto.unpublish = function(cb) {
     var doc = this.document;
     var that = this;
     this.client.unpublish(doc.id, function(err) {
       if (err) return cb(err);
       delete doc.meta["published_at"];
       delete doc.meta["published_commit"];
-      that.updateMeta(cb)
+      doc.store.update({meta: doc.meta});
     });
-  },
+  };
 
   // Retrieve current publish state
-  publishState: function() {
+  proto.publishState = function() {
     var doc = this.document;
     if (!doc.meta.published_commit) return "unpublished";
     if (doc.getRef('head') === doc.meta.published_commit) return "published";
     return "dirty";
-  },
+  };
 
   // Checks if selection has actually changed for a user
-  selectionChanged: function(user, nodes, edit) {
+  proto.selectionChanged = function(user, nodes, edit) {
     // this.edit remembers the previous selection/edit state
     return !_.isEqual(nodes, this.selection(user)) || edit !== this.edit;
-  },
+  };
 
   // Retrieve current node selection
-  selection: function(user) {
+  proto.selection = function(user) {
     if (!user) user = this.user();
     return this.users[user].selection;
-  },
+  };
 
   // Returns the node id of current active node
   // Only works if there's just one node selected
-  node: function() {
+  proto.node = function() {
     var lvl = this.level(),
         sel = this.selection();
 
     if (lvl >= 2 && sel.length === 1) {
       return sel[0];
     }
-  },
+  };
 
   // Returns current navigation level (1..3)
-  level: function() {
+  proto.level = function() {
     var selection = this.users[this.user()].selection;
 
     // Edit mode
@@ -370,10 +336,10 @@ _.extend(Substance.Session.prototype, _.Events, {
 
     // no selection -> document level
     return 1;
-  },
+  };
 
   // Load Publish state
-  loadPublications: function(cb) {
+  proto.loadPublications = function(cb) {
     var doc = this.document;
     var that = this;
 
@@ -389,10 +355,10 @@ _.extend(Substance.Session.prototype, _.Events, {
         cb(null);
       });
     });
-  },
+  };
 
   // Load Collaborators for current document
-  loadCollaborators: function(cb) {
+  proto.loadCollaborators = function(cb) {
     var doc = this.document;
     var that = this;
     this.client.listCollaborators(doc.id, function(err, collaborators) {
@@ -400,46 +366,46 @@ _.extend(Substance.Session.prototype, _.Events, {
       that.collaborators = collaborators;
       cb(null);
     });
-  },
+  };
 
   // Create new collaborator on the server
-  createCollaborator: function(collaborator, cb) {
+  proto.createCollaborator = function(collaborator, cb) {
     var doc = this.document;
     var that = this;
     this.client.createCollaborator(doc.id, collaborator, function(err) {
       if (err) return cb(err);
       that.loadCollaborators(cb);
     });
-  },
+  };
 
   // Delete collaborator on the server
-  deleteCollaborator: function(collaborator, cb) {
+  proto.deleteCollaborator = function(collaborator, cb) {
     var doc = this.document;
     var that = this;
     this.client.deleteCollaborator(collaborator, function(err) {
       if (err) return cb(err);
       that.loadCollaborators(cb);
     });
-  },
+  };
 
-  setProperty: function(key, val) {
+  proto.setProperty = function(key, val) {
     appSettings.setItem(this.env+":"+key, val);
-  },
+  };
 
-  getProperty: function(key) {
+  proto.getProperty = function(key) {
     return appSettings.getItem(this.env+":"+key);
-  },
+  };
 
-  user: function() {
+  proto.user = function() {
     return this.getProperty('user') || "";
-  },
+  };
 
-  token: function() {
+  proto.token = function() {
     return this.getProperty('api-token') || "";
-  },
+  };
 
   // Authenticate session
-  authenticate: function(username, password, cb) {
+  proto.authenticate = function(username, password, cb) {
     var that = this;
     this.client.authenticate(username, password, function(err, data) {
       if (err) return cb(err);
@@ -449,119 +415,132 @@ _.extend(Substance.Session.prototype, _.Events, {
       that.initStores();
       cb(null, data);
     });
-  },
+  };
 
-  logout: function() {
+  proto.logout = function() {
     this.localStore = null;
     this.remoteStore = null;
     this.setProperty('user', '');
     this.setProperty('api-token', '');
-  },
+  };
 
-  authenticated: function() {
+  proto.authenticated = function() {
     return !!this.getProperty("user");
-  },
+  };
 
   // Create a new user on the server
-  createUser: function(user, cb) {
+  proto.createUser = function(user, cb) {
     this.client.createUser(user, cb);
-  },
+  };
 
-  listDocuments: function(cb) {
-    if (!this.localStore) return cb(null, []);
-    this.localStore.list(function(err, documents) {
-      var res = _.map(documents, function(doc) {
-        return {
-          title: doc.meta.title,
-          author: "le_author",
-          file: doc.id,
-          id: doc.id,
-          meta: doc.meta,
-          updated_at: doc.meta.updated_at
-        };
-      });
-      cb(null, res);
-    });
-  }
-});
+  this.initStores();
+};
+_.extend(Substance.Session.prototype, _.Events);
 
 Substance.Session.Document = function(session, document, schema) {
   var self = this;
-  var _super = Substance.util.prototype(this);
-  Substance.Document.call(_super, document, schema);
+
+  var proto = Substance.util.prototype(this);
+  Substance.Document.call(this, document, schema);
+
+  this.store = new Substance.Session.DocumentStore(session, document);
 
   // override apply and setRef to let Session stay in control
 
   // Adapter that persists the change before updating the model
-  this.apply = function(operation, options, cb) {
-
-    // options as well as callback is optional
-    if(arguments.length == 2) {
-      if (_.isFunction(options)) {
-        cb = options;
-        options = null;
-      }
-    }
+  this.apply = function(operation, options) {
     options = options || {};
-
     // apply the operation to the document (Substance.Document.apply)
     // without triggering events
-    var commit = _super.apply(operation, {"silent": true});
+    var commit = proto.apply.call(this, operation, {"silent": true});
 
     if (!options['no-commit']) {
-      function updateDocument(cb) {
-        // console.log("Session.document.apply: updateDocument");
-        var refs = {
-          'master': {
-            'head': commit.sha,
-            'last': commit.sha
-          }
-        };
-        session.updateDocument([commit], null, refs, cb);
-      }
-      function updateMeta(cb) {
-        // console.log("Session.document.apply: updateMeta");
-        session.updateMeta(cb);
-      }
-      function triggerEvent(cb) {
-        if(!options['silent']) {
-          // console.log("Session.document.apply: triggerEvent");
-          self.trigger('commit:applied', commit);
+      var refs = {
+        'master': {
+          'head': commit.sha,
+          'last': commit.sha
         }
-        cb(null);
-      }
-      Substance.util.async.sequential([updateDocument, updateMeta, triggerEvent], function(err) {
-        if (cb) cb(err);
-      });
-
-      return;
+      };
+      var options = {commits: [commit], refs: refs};
+      this.store.update(options);
     }
 
     if(!options['silent']) {
       self.trigger('commit:applied', commit);
     }
-    if (cb) cb(null);
   };
 
   // adapter that persists the new ref before triggering
-  this.setRef = function(ref, sha, silent, cb) {
-    if (arguments.length === 3) {
-      if (_.isFunction(silent)) {
-        cb = silent;
-        silent = false;
-      }
+  this.setRef = function(ref, sha, silent) {
+    proto.setRef.call(this, ref, sha, true);
+
+    if (!silent) {
+      var refs = {}
+      refs[ref] = sha;
+      var options = {refs: {"master": refs}}
+      this.store.update(options);
+      self.trigger('ref:updated', ref, sha);
     }
-    _super.setRef(ref, sha, true);
-    var refs = {}
-    refs[ref] = sha;
-    var options = {refs: {"master": refs}}
-    session.localStore.update(_super.id, options, function(err) {
-      session.updateMeta(function(err) {
-        if (!silent) self.trigger('ref:updated', ref, sha);
-        if(cb) cb(err);
-      });
-    });
   };
 }
 // inherit the prototype of Substance.Document which extends util.Events
 Substance.Session.Document.prototype = Substance.Document.prototype;
+
+// A facette of the localStore for a specific document
+Substance.Session.DocumentStore = function(session, document) {
+
+  var id = document.id;
+  var store = session.localStore;
+
+  var proto = Substance.util.prototype(this);
+
+  proto.getInfo = function() {
+    return store.getInfo(id);
+  };
+
+  proto.get = function() {
+    return store.get();
+  };
+
+  proto.commits = function(last, since) {
+    if (arguments.length == 0) return store.commits(id);
+    return store.commits(id, last, since);
+  };
+
+  proto.update = function(options) {
+    // Triggers a sync with remote store if available
+    session.pendingSync = true;
+    session.lazySync();
+
+    var meta = options.meta || {};
+    _.extend(meta, session.document.properties);
+    meta.updated_at = new Date();
+    options.meta = meta;
+
+    return store.update(id, options);
+  }
+
+  proto.getRefs = function(branch) {
+    return store.getRefs(id, branch);
+  };
+
+  proto.setRefs = function(branch, refs) {
+    return store.setRefs(id, branch, refs);
+  };
+
+  proto.createBlob = function(blobId, base64data) {
+    return store.createBlob(id, blobId, base64data);
+  };
+
+  proto.getBlob = function(blobId) {
+    return store.blobExists(id, blobId) ? store.getBlob(id, blobId) : null;
+  };
+
+  proto.deleteBlob = function(blobId) {
+    return store.deleteBlob(blobId);
+  };
+
+  proto.listBlobs = function() {
+    return store.listBlobs();
+  };
+};

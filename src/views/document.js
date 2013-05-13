@@ -402,49 +402,29 @@ sc.views.Document = Backbone.View.extend({
   },
 
   // Initial render of all nodes
-  render: function(cb) {
-    if (!cb) throw "Fix me!";
+  render: function() {
 
     var that = this;
-    var coverLarge;
-    var coverMedium;
+    var doc = that.model.document;
 
-    function getLargeCover(cb) {
-      if (!that.model.document.properties.cover_large) return cb(null);
-      session.getBlob(that.model.document.id, that.model.document.properties.cover_large, function(err, data) {
-        coverLarge = err ? null : data;
-        cb(null);
-      });
-    }
+    var coverLarge = doc.store.getBlob(doc.properties.cover_large);
+    var coverMedium = doc.store.getBlob(doc.properties.cover_medium);
 
-    function getMediumCover(cb) {
-      if (!that.model.document.properties.cover_medium) return cb(null);
-      session.getBlob(that.model.document.id, that.model.document.properties.cover_medium, function(err, data) {
-        coverMedium = err ? null : data;
-        cb(null);
-      });
-    }
+    that.$el.html(_.tpl('document', {
+      document: that.model.document,
+      cover_large: coverLarge,
+      cover_medium: coverMedium
+    }));
 
-    function update(cb) {
-      that.$el.html(_.tpl('document', {
-        document: that.model.document,
-        cover_large: coverLarge,
-        cover_medium: coverMedium
-      }));
+    // Init editor for document abstract and title
+    that.initSurface("abstract");
+    that.initSurface("title");
 
-      // Init editor for document abstract and title
-      that.initSurface("abstract");
-      that.initSurface("title");
+    that.model.document.each(function(node) {
+      $(that.nodes[node.id].render().el).appendTo(that.$('.nodes'));
+    }, that);
 
-      that.model.document.each(function(node) {
-        $(that.nodes[node.id].render().el).appendTo(that.$('.nodes'));
-      }, that);
-
-      that.bindFileEvents();
-
-      cb(null);
-    }
-
-    Substance.util.async.sequential([getLargeCover, getMediumCover, update], cb);
+    that.bindFileEvents();
   }
+
 });
