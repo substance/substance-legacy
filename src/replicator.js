@@ -24,7 +24,7 @@ var Replicator = function(params) {
 
     // 1. create doc locally
     function createDoc(cb) {
-      that.localStore.create(doc.id, cb);
+      that.localStore.create(doc.id, {}, cb);
     }
 
     function pull(cb) {
@@ -83,7 +83,7 @@ var Replicator = function(params) {
 
     function createRemoteDoc(cb) {
       //console.log("replicator.createRemote: commits", commits);
-      that.remoteStore.create(doc.id, cb);
+      that.remoteStore.create(doc.id, {}, cb);
     }
 
     function updateRemoteDoc(cb) {

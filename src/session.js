@@ -140,11 +140,36 @@ Substance.Session = function(options) {
   // Schema is optional (currently only used by testsuite)
   proto.createDocument = function(schema) {
     var id = Substance.util.uuid();
-    var meta = {"creator": that.user()};
-    var options = {meta: meta};
-    var doc = this.localStore.create(id, options);
+    var that = this;
+
+    var cid = Substance.util.uuid();
+
+    var meta = {
+      "creator": that.user(),
+      "title": "Untitled",
+      "abstract": "Enter abstract"
+    };
+
+    var c1 = {
+      "op": ["set", {title: meta.title, abstract: meta.abstract}],
+      "sha": cid,
+      "parent": null
+    };
+
+    var refs = {"master": {"head": cid, "last": cid}};
+
+    var doc = {
+      "id": id,
+      "meta": meta,
+      "commits": {},
+      "refs": refs
+    };
+
+    doc.commits[cid] = c1;
+
+    var doc = this.localStore.create(id, {meta: meta, commits: [c1], refs: refs});
     that.document = new Substance.Session.Document(that, doc, schema);
-    that.initDoc();
+    this.initDoc();
   },
 
   proto.listDocuments = function() {

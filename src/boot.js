@@ -249,23 +249,20 @@ $(function() {
       });
     },
 
-    newDocument: function() {
-      var that = this;
+    // Create and edit a new document
+    // ---------------
 
+    newDocument: function() {
       session.createDocument();
-      that.view = new sc.views.Editor({model: session });
-      that.render();
+      this.view = new sc.views.Editor({model: session });
+      this.render();
       router.navigate('documents/'+session.document.id, false);
 
       // Shortcuts
       window.doc = session.document;
       window.session = session;
 
-      // Add title / abstract
-      _.delay(function() {
-        session.document.apply(["set", {title: "Untitled", abstract: "Enter abstract"}]);
-        that.listenForDocumentChanges();
-      }, 100);
+      this.listenForDocumentChanges();
     },
 
     dashboard: function() {
