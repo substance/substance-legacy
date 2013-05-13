@@ -93,7 +93,7 @@ sc.views.Editor = Backbone.View.extend({
     $('#console_wrapper').hide();
   },
 
-  renderConsole: function() {    
+  renderConsole: function() {
     this.console = new Substance.Console({id: 'console_wrapper', model: this.model.document });
     this.currentView = 'console';
     this.$('#console_wrapper').replaceWith(this.console.render().el);
@@ -124,9 +124,9 @@ sc.views.Editor = Backbone.View.extend({
     var view = this[viewname];
     var shelf   = this.$('#document_shelf .shelf-content'),
         content = this.$('#document_content');
-    
+
     if (this.currentView && this.currentView === view) return this.closeShelf();
-    
+
     this.$('.navigation .toggle').removeClass('active');
     $('.navigation .toggle.'+viewname).addClass('active');
 

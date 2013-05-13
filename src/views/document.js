@@ -61,7 +61,7 @@ sc.views.Document = Backbone.View.extend({
 
     router.off('node:dirty', updateNode);
     router.on('node:dirty', updateNode, this);
-    
+
     this.model.off('node:selected', this.updateSelections);
     this.model.on('node:selected', this.updateSelections, this);
     this.build();
@@ -169,10 +169,10 @@ sc.views.Document = Backbone.View.extend({
     var view = this.createNodeView(node);
 
     this.nodes[node.id] = view;
-    
+
     var newEl = $(view.render().el);
     if (options.target && options.target !== "back") {
-      newEl.insertAfter($('#'+_.htmlId(options.target)));  
+      newEl.insertAfter($('#'+_.htmlId(options.target)));
     } else {
       this.$('.nodes').append(newEl)
     }
@@ -219,14 +219,14 @@ sc.views.Document = Backbone.View.extend({
     properties["content"] = options.content || "";
 
     if (type === "heading") properties["level"] = 1;
-    
+
     this.model.document.apply(["insert", {
       "id": Substance.util.uuid(type+':', 8),
       "type": type,
       "target": target,
       "data": properties
     }], {
-      user: this.model.user()  
+      user: this.model.user()
     });
   },
 
@@ -282,12 +282,12 @@ sc.views.Document = Backbone.View.extend({
     $('.content-node .up').hide();
     $('.content-node .delete').hide();
     $('.content-node.selected').removeClass('selected');
-    
+
     // HACK: ensures there are no remaining floating annotation controls
     $('.annotation-tools').hide();
 
     this.updateMode();
-    
+
     _.each(this.model.selections, function(user, node) {
       $('#'+_.htmlId(node)).addClass('selected')
     }, this);
