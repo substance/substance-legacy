@@ -122,6 +122,7 @@ _.extend(Substance.Session.prototype, _.Events, {
       }
     }
   },
+
   // When a doc changes, bind event handlers etc.
   initDoc: function() {
     var that = this;
@@ -144,18 +145,36 @@ _.extend(Substance.Session.prototype, _.Events, {
     var id = Substance.util.uuid();
     var that = this;
 
-    this.localStore.create(id, function(err, doc) {
+    var cid = Substance.util.uuid();
+
+    var meta = {
+      "creator": that.user(),
+      "title": "Untitled",
+      "abstract": "Enter abstract"
+    };
+
+    var c1 = {
+      "op": ["set", {title: meta.title, abstract: meta.abstract}],
+      "sha": cid,
+      "parent": null
+    };
+
+    var refs = {"master": {"head": cid, "last": cid}};
+
+    var doc = {
+      "id": id,
+      "meta": meta,
+      "commits": {},
+      "refs": refs
+    };
+
+    doc.commits[cid] = c1;
+
+    this.localStore.create(id, {meta: meta, commits: [c1], refs: refs}, function(err) {
       if (err) return cb(err);
-      doc.meta = {"creator": that.user()};
-
-      var options = {meta: doc.meta};
-      that.localStore.update(id, options, function(err) {
-        if (err) return cb(err);
-
-        that.document = new Substance.Session.Document(that, doc, schema);
-        that.initDoc();
-        cb(null, that.document);
-      });
+      that.document = new Substance.Session.Document(that, doc, schema);
+      that.initDoc();
+      cb(null, that.document);
     });
   },
 
@@ -183,15 +202,9 @@ _.extend(Substance.Session.prototype, _.Events, {
   },
 
   // Update local document
-  updateDocument: function(commits, meta, refs, cb) {
-    var options = {
-      commits: commits,
-      meta: meta,
-      refs: refs
-    };
+  updateDocument: function(options, cb) {
     this.localStore.update(this.document.id, options, cb);
   },
-
 
   // Update meta info of current document
   updateMeta: function(cb) {
@@ -202,9 +215,6 @@ _.extend(Substance.Session.prototype, _.Events, {
     var doc = this.document;
     _.extend(doc.meta, doc.properties);
     doc.meta.updated_at = new Date();
-
-    var options = { meta: doc.meta };
-    this.localStore.update(doc.id, options, cb);
   },
 
   deleteDocument: function(id, cb) {
@@ -487,14 +497,14 @@ _.extend(Substance.Session.prototype, _.Events, {
 
 Substance.Session.Document = function(session, document, schema) {
   var self = this;
-  var _super = Substance.util.prototype(this);
-  Substance.Document.call(_super, document, schema);
+
+  Substance.Document.call(this, document, schema);
+
+  var proto = Substance.util.prototype(this);
 
   // override apply and setRef to let Session stay in control
-
   // Adapter that persists the change before updating the model
   this.apply = function(operation, options, cb) {
-
     // options as well as callback is optional
     if(arguments.length == 2) {
       if (_.isFunction(options)) {
@@ -502,44 +512,37 @@ Substance.Session.Document = function(session, document, schema) {
         options = null;
       }
     }
+
     options = options || {};
 
     // apply the operation to the document (Substance.Document.apply)
     // without triggering events
-    var commit = _super.apply(operation, {"silent": true});
+    var commit = proto.apply.call(self, operation, _.extend({"silent": true}, options));
 
     if (!options['no-commit']) {
-      function updateDocument(cb) {
-        // console.log("Session.document.apply: updateDocument");
-        var refs = {
-          'master': {
-            'head': commit.sha,
-            'last': commit.sha
+
+      session.updateMeta();
+
+      var options = {
+        "refs": {
+          "master": {
+            "head": commit.sha,
+            "last": commit.sha
           }
-        };
-        session.updateDocument([commit], null, refs, cb);
-      }
-      function updateMeta(cb) {
-        // console.log("Session.document.apply: updateMeta");
-        session.updateMeta(cb);
-      }
-      function triggerEvent(cb) {
-        if(!options['silent']) {
-          // console.log("Session.document.apply: triggerEvent");
-          self.trigger('commit:applied', commit);
-        }
-        cb(null);
-      }
-      Substance.util.async.sequential([updateDocument, updateMeta, triggerEvent], function(err) {
+        },
+        meta: session.document.meta,
+        commits: [commit]
+      };
+
+      return session.updateDocument(options, function(err) {
+        if (!options.silent) self.trigger('commit:applied', commit);
         if (cb) cb(err);
       });
-
-      return;
-    }
-
-    if(!options['silent']) {
+    } else if (!options['silent']) {
       self.trigger('commit:applied', commit);
+      if (cb) return cb(null);
     }
+
     if (cb) cb(null);
   };
 
@@ -551,17 +554,27 @@ Substance.Session.Document = function(session, document, schema) {
         silent = false;
       }
     }
-    _super.setRef(ref, sha, true);
-    var refs = {}
-    refs[ref] = sha;
-    var options = {refs: {"master": refs}}
-    session.localStore.update(_super.id, options, function(err) {
-      session.updateMeta(function(err) {
-        if (!silent) self.trigger('ref:updated', ref, sha);
+
+    // Do the thing
+    proto.setRef.call(self, ref, sha, true);
+
+    if (!silent) {
+      var refs = {};
+      refs[ref] = sha;
+      var options = {refs: {"master": refs}};
+
+      session.updateMeta();
+      options.meta = session.document.meta;
+
+      session.localStore.update(self.id, options, function(err) {        
+        self.trigger('ref:updated', ref, sha);
         if(cb) cb(err);
       });
-    });
+    } else {
+      if (cb) cb(null);
+    }
   };
 }
+
 // inherit the prototype of Substance.Document which extends util.Events
 Substance.Session.Document.prototype = Substance.Document.prototype;

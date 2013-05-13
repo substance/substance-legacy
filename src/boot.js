@@ -271,11 +271,7 @@ $(function() {
         window.doc = session.document;
         window.session = session;
 
-        // Add title / abstract
-        _.delay(function() {
-          session.document.apply(["set", {title: "Untitled", abstract: "Enter abstract"}]);
-          that.listenForDocumentChanges();
-        }, 100);
+        that.listenForDocumentChanges();
       });
       return;
     },

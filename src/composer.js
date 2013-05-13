@@ -288,7 +288,7 @@
           that.updateUndoRedoControls();
         }, 1);
 
-        cb(err);
+        if (cb) cb(err);
       });
 
       return this;
@@ -319,7 +319,7 @@
         that.$('#document').replaceWith(doc.el);
         that.$('#tools').html(that.views.tools.render().el);
         cb(err);
-      })
+      });
     }
   },
 

@@ -203,6 +203,7 @@ sc.views.Document = Backbone.View.extend({
 
   build: function() {
     this.nodes = {};
+
     this.model.document.each(function(node) {
       this.nodes[node.id] = this.createNodeView(node);
     }, this);
@@ -213,7 +214,7 @@ sc.views.Document = Backbone.View.extend({
 
   insertNode: function(type, options) {
     var selection = this.model.users[this.model.user()].selection;
-    var target = options.target || _.last(selection);
+    var target = options.target || _.last(selection) || 'back';
     var properties = {};
 
     properties["content"] = options.content || "";
@@ -225,9 +226,7 @@ sc.views.Document = Backbone.View.extend({
       "type": type,
       "target": target,
       "data": properties
-    }], {
-      user: this.model.user()  
-    });
+    }]);
   },
 
   deleteNodes: function() {
@@ -403,7 +402,6 @@ sc.views.Document = Backbone.View.extend({
 
   // Initial render of all nodes
   render: function(cb) {
-    if (!cb) throw "Fix me!";
 
     var that = this;
     var coverLarge;
