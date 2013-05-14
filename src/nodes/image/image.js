@@ -86,9 +86,8 @@ sc.views.Node.define('image', {
               "large": mediumImageId,
               "caption": file.name
         }}];
-        that.document.apply(change, function(err) {
-          that.render();
-        });
+        that.document.apply(change);
+        that.render();
       }, 800);
     };
 
