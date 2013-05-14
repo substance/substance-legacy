@@ -67,18 +67,6 @@ if (Substance.client_type === "browser") {
 // Helpers
 // -----------------
 
-function synced(docId) {
-  return true;
-
-  // TODO: this should not be here as it contains implementation details
-  var refs = session.localStore.getRefs(docId);
-  if (refs.master) {
-    return refs.master.head === refs['master']['remote-head'];
-  } else {
-    return false;
-  }
-}
-
 function published(doc) {
   return !!doc.meta.published_commit;
 }

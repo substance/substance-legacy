@@ -1,78 +1,3 @@
-// Comments
-// -----------------
-// This seems to be very UI specific and should be removed from Substance.Session
-
-Substance.Comments = function(session) {
-  this.session = session;
-  this.scopes = [];
-};
-
-_.extend(Substance.Comments.prototype, _.Events, {
-  compute: function(scope) {
-    var node = this.session.node();
-    this.scopes = [];
-
-    if (node) {
-      var nodeData = this.session.document.nodes[node];
-      var content = nodeData.content;
-      var annotations = this.session.document.find('annotations', node);
-    }
-    this.commentsForNode(this.session.document, node, content, annotations, scope);
-  },
-
-  // Based on a new set of annotations (during editing)
-  updateAnnotations: function(content, annotations) {
-    var node = this.session.node();
-
-    // Only consider markers as comment scopes
-    var annotations = _.filter(annotations, function(a) {
-      return _.include(["idea", "question", "error"], a.type);
-    });
-
-    this.commentsForNode(this.session.document, node, content, annotations);
-  },
-
-  commentsForNode: function(document, node, content, annotations, scope) {
-    this.scopes = [];
-
-    // Extract annotation text from the model
-    function annotationText(a) {
-      if (!a.pos) return "No pos";
-      return content.substr(a.pos[0], a.pos[1]);
-    }
-
-    if (node) {
-      this.scopes.push({
-        name: "Node",
-        type: "node",
-        id: "node_comments",
-        comments: document.find('comments', node)
-      });
-
-      _.each(annotations, function(a) {
-        if (_.include(["idea", "question", "error"], a.type)) {
-          this.scopes.push({
-            name: annotationText(a),
-            type: a.type,
-            annotation: a.id,
-            id: a.id,
-            comments: document.find('comments', a.id)
-          });
-        }
-      }, this);
-    } else {
-      // No document scopes for now
-      // this.scopes.push({
-      //   id: "document_comments",
-      //   name: "Document",
-      //   type: "document",
-      //   comments: []
-      // });
-    }
-    this.session.trigger('comments:updated', scope);
-  }
-});
-
 // Substance.Session
 // -----------------
 //
@@ -171,6 +96,16 @@ Substance.Session = function(options) {
     that.document = new Substance.Session.Document(that, doc, schema);
     this.initDoc();
   },
+
+  proto.synched = function(docId) {
+    // TODO: this should not be here as it contains implementation details
+    var refs = this.localStore.getRefs(docId);
+    if (refs.master) {
+      return refs.master.head === refs['master']['remote-head'];
+    } else {
+      return false;
+    }
+  }
 
   proto.listDocuments = function() {
     if (!this.localStore) return [];
@@ -569,3 +504,78 @@ Substance.Session.DocumentStore = function(session, document) {
     return store.listBlobs();
   };
 };
+
+// Comments
+// -----------------
+// This seems to be very UI specific and should be removed from Substance.Session
+
+Substance.Comments = function(session) {
+  this.session = session;
+  this.scopes = [];
+};
+
+_.extend(Substance.Comments.prototype, _.Events, {
+  compute: function(scope) {
+    var node = this.session.node();
+    this.scopes = [];
+
+    if (node) {
+      var nodeData = this.session.document.nodes[node];
+      var content = nodeData.content;
+      var annotations = this.session.document.find('annotations', node);
+    }
+    this.commentsForNode(this.session.document, node, content, annotations, scope);
+  },
+
+  // Based on a new set of annotations (during editing)
+  updateAnnotations: function(content, annotations) {
+    var node = this.session.node();
+
+    // Only consider markers as comment scopes
+    var annotations = _.filter(annotations, function(a) {
+      return _.include(["idea", "question", "error"], a.type);
+    });
+
+    this.commentsForNode(this.session.document, node, content, annotations);
+  },
+
+  commentsForNode: function(document, node, content, annotations, scope) {
+    this.scopes = [];
+
+    // Extract annotation text from the model
+    function annotationText(a) {
+      if (!a.pos) return "No pos";
+      return content.substr(a.pos[0], a.pos[1]);
+    }
+
+    if (node) {
+      this.scopes.push({
+        name: "Node",
+        type: "node",
+        id: "node_comments",
+        comments: document.find('comments', node)
+      });
+
+      _.each(annotations, function(a) {
+        if (_.include(["idea", "question", "error"], a.type)) {
+          this.scopes.push({
+            name: annotationText(a),
+            type: a.type,
+            annotation: a.id,
+            id: a.id,
+            comments: document.find('comments', a.id)
+          });
+        }
+      }, this);
+    } else {
+      // No document scopes for now
+      // this.scopes.push({
+      //   id: "document_comments",
+      //   name: "Document",
+      //   type: "document",
+      //   comments: []
+      // });
+    }
+    this.session.trigger('comments:updated', scope);
+  }
+});

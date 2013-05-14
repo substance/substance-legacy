@@ -105,8 +105,8 @@
 
                 <!--<div class="author"><a href="#">michael</a></div>-->
                 <div class="updated-at"><span>updated </span><%= doc.updated_at ? $.timeago(doc.updated_at) : "NO_DATE" %></div>
-                <div class="sync-state<%= synced(doc.id) ? " synced" : "" %>">
-                  <%= synced(doc.id) ? "synced" : "local changes" %>
+                <div class="sync-state<%= session.synched(doc.id) ? " synced" : "" %>">
+                  <%= session.synched(doc.id) ? "synced" : "local changes" %>
                 </div>
               </div>
             <% }); %>
