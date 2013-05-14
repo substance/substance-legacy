@@ -15,6 +15,20 @@ Substance.Session = function(options) {
     this.replicate();
   }, 4000);
 
+  function getUserStore(username) {
+    var scope = username ? that.env+":"+username : that.env;
+    if (Substance.client_type === "native") {
+      var settings = {
+        scope: scope
+      };
+      return new Substance.RedisStore(settings);
+    }
+    if (Substance.LocalStore) {
+      return new Substance.LocalStore(scope);
+    }
+    return new Substance.MemoryStore();
+  }
+
   proto.initStores = function() {
     var username = this.user();
     var token = this.token();
@@ -28,20 +42,10 @@ Substance.Session = function(options) {
     });
 
     if (username) {
-      if (Substance.client_type === "native") {
-        this.localStore = new Substance.RedisStore({
-          scope: this.env+":"+username
-        });
-        // Assumes client instance is authenticated
-        this.remoteStore = new Substance.RemoteStore({
-          client: this.client
-        });
-      } else {
-        this.localStore = new Substance.MemoryStore();
-        this.remoteStore = new Substance.RemoteStore({
-          client: this.client
-        });
-      }
+      this.localStore = getUserStore(username);
+      this.remoteStore = new Substance.RemoteStore({
+        client: this.client
+      });
     }
   };
 
@@ -67,32 +71,25 @@ Substance.Session = function(options) {
     var id = Substance.util.uuid();
     var that = this;
 
-    var cid = Substance.util.uuid();
-
     var meta = {
       "creator": that.user(),
       "title": "Untitled",
       "abstract": "Enter abstract"
     };
 
-    var c1 = {
+    var cid = Substance.util.uuid();
+    var commit = {
       "op": ["set", {title: meta.title, abstract: meta.abstract}],
       "sha": cid,
       "parent": null
     };
+    var commits = [commit];
 
     var refs = {"master": {"head": cid, "last": cid}};
 
-    var doc = {
-      "id": id,
-      "meta": meta,
-      "commits": {},
-      "refs": refs
-    };
+    this.localStore.create(id, {meta: meta, commits: commits, refs: refs});
 
-    doc.commits[cid] = c1;
-
-    var doc = this.localStore.create(id, {meta: meta, commits: [c1], refs: refs});
+    var doc = this.localStore.get(id);
     that.document = new Substance.Session.Document(that, doc, schema);
     this.initDoc();
   },
@@ -392,6 +389,18 @@ Substance.Session = function(options) {
   proto.createUser = function(user, cb) {
     this.client.createUser(user, cb);
   };
+
+  // only available for testing
+  proto.seed = function(seedData) {
+    console.log("Seeding", seedData);
+    if (this.env !== "test") return;
+    // flush the test store
+    getUserStore().clear();
+    _.each(seedData, function(seed, user) {
+      var userStore = getUserStore(user);
+      userStore.seed(seed);
+    });
+  }
 
   this.initStores();
 };
