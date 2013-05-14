@@ -43,7 +43,7 @@ var Replicator = function(params) {
     console.log("replicator.createRemote", docInfo);
 
     var commits;
-    var blobs;
+    var blobs = [];
     var doc;
 
     // 1. Get doc from local docstore

@@ -213,15 +213,15 @@ Substance.Session = function(options) {
 
     // Push document cover?
     if (doc.properties.cover_medium) {
-      blobs[doc.properties.cover_medium] = doc.store.getBlob(doc.id, doc.properties.cover_medium);
-      blobs[doc.properties.cover_large] = doc.store.getBlob(doc.id, doc.properties.cover_large);
+      blobs[doc.properties.cover_medium] = doc.store.getBlob(doc.properties.cover_medium);
+      blobs[doc.properties.cover_large] = doc.store.getBlob(doc.properties.cover_large);
     }
 
     // Find all images
     _.each(doc.nodes, function(node) {
       if (node.type === "image") {
-        blobs[node.medium] = doc.store.getBlob(doc.id, node.medium);
-        blobs[node.large] = doc.store.getBlob(doc.id, node.large);
+        blobs[node.medium] = doc.store.getBlob(node.medium);
+        blobs[node.large] = doc.store.getBlob(node.large);
       }
     });
 
