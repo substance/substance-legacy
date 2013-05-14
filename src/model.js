@@ -45,7 +45,7 @@ var NativeAppSettings = function(settings) {
 var WebAppSettings = function(settings) {
 
   this.setItem = function(key, value) {
-    localStorage.setItem(key, value);
+    localStorage.setItem(key, JSON.stringify(value));
   };
 
   this.toJSON = function() {
@@ -54,7 +54,7 @@ var WebAppSettings = function(settings) {
   };
 
   this.getItem = function(key) {
-    return localStorage.getItem(key);
+    return JSON.parse(localStorage.getItem(key));
   };
 };
 
@@ -70,7 +70,6 @@ if (Substance.client_type === "browser") {
 function published(doc) {
   return !!doc.meta.published_commit;
 }
-
 
 // Initialization
 // -----------------
