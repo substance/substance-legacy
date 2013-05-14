@@ -205,18 +205,21 @@
 
     build: function() {
       // Selection shortcuts
-      key.unbind('down, up');
-      key('down', _.bind(function() { return this.handleDown(); }, this));
+      key.unbind('down')
+      key.unbind('up');
       key('down', _.bind(function() { return this.handleDown(); }, this));
       key('up', _.bind(function() { return this.handleUp(); }, this));
 
-      key.unbind('shift+down, shift+up, esc');
+      key.unbind('shift+down');
+      key.unbind('shift+up');
+      key.unbind('esc');
       key('shift+down', _.bind(function() { return this.handleShiftDown(); }, this));
       key('shift+up', _.bind(function() { return this.handleShiftUp(); }, this));
       key('esc', _.bind(function() { return this.goBack(); }, this));
 
       // Move shortcuts
-      key.unbind('alt+down, alt+up');
+      key.unbind('alt+down')
+      key.unbind('alt+up');
       key('alt+down', _.bind(function() { return this.handleAltDown(); }, this));
       key('alt+up', _.bind(function() { return this.handleAltUp(); }, this));
 
@@ -229,23 +232,30 @@
       key('backspace', _.bind(function() { return this.handleBackspace(); }, this));
 
       // Node insertion shortcuts
-      key.unbind('alt+t, alt+h');
+      key.unbind('alt+t');
+      key.unbind('alt+h');
       key('alt+t', _.bind(function() { this.views.document.insertNode("text", {}); return false }, this));
       key('alt+h', _.bind(function() { this.views.document.insertNode("heading", {}); return false; }, this));
 
       // Marker shortcuts
-      key.unbind('⌘+i, ⌘+b, ctrl+1, ctrl+2, ctrl+3');
+      key.unbind('⌘+i');
+      key.unbind('⌘+b');
+      key.unbind('ctrl+1');
+      key.unbind('ctrl+2');
+      key.unbind('ctrl+3');
       key('⌘+i', _.bind(function() { return this.toggleAnnotation('em'); }, this));
       key('⌘+b', _.bind(function() { return this.toggleAnnotation('str'); }, this));
       key('ctrl+1', _.bind(function() { return this.toggleAnnotation('idea'); }, this));
       key('ctrl+2', _.bind(function() { return this.toggleAnnotation('blur'); }, this));
       key('ctrl+3', _.bind(function() { return this.toggleAnnotation('doubt'); }, this));
 
-      key.unbind('⌘+z, shift+⌘+z');
+      key.unbind('⌘+z');
+      key.unbind('shift+⌘+z');
       key('⌘+z', _.bind(function() { return this.undo(); }, this));
       key('shift+⌘+z', _.bind(function() { return this.redo(); }, this));
 
-      key.unbind('tab, shift+tab');
+      key.unbind('tab');
+      key.unbind('shift+tab');
       key('tab', _.bind(function() { return this.handleTab(); }, this));
       key('shift+tab', _.bind(function() { return this.handleTab(true); }, this));
 
