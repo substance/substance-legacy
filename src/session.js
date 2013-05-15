@@ -392,10 +392,10 @@ Substance.Session = function(options) {
 
   // only available for testing
   proto.seed = function(seedData) {
-    console.log("Seeding", seedData);
+    console.log("Seeding local store", seedData);
     if (this.env !== "test") return;
-    // flush the test store
-    getUserStore().clear();
+    // Note: usually we do not want to use this function, only for seeding
+    getUserStore().__clear__();
     _.each(seedData, function(seed, user) {
       var userStore = getUserStore(user);
       userStore.seed(seed);

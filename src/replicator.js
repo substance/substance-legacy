@@ -157,16 +157,16 @@ var Replicator = function(params) {
       if (err) return cb(err);
 
       var dstBlobs = data;
-      console.log("replicator.getDiffBlobs: dstBlobs", dstBlobs)
+      //console.log("replicator.getDiffBlobs: dstBlobs", dstBlobs)
 
       src.listBlobs(docId, function(err, data) {
         if (err) return cb(err);
 
         var srcBlobs = data;
-        console.log("replicator.getDiffBlobs: srcBlobs", srcBlobs)
+        //console.log("replicator.getDiffBlobs: srcBlobs", srcBlobs)
 
         var blobIds = _.difference(srcBlobs, dstBlobs);
-        console.log("replicator.getDiffBlobs: blobIds", blobIds)
+        //console.log("replicator.getDiffBlobs: blobIds", blobIds)
 
         var blobs = [];
 
@@ -180,7 +180,7 @@ var Replicator = function(params) {
             });
           },
           finally: function(err, data) {
-            console.log("replicator.getDiffBlobs: blobs", blobs);
+            //console.log("replicator.getDiffBlobs: blobs", blobs);
             cb(null, blobs);
           }
         })(null, cb);
@@ -268,7 +268,7 @@ var Replicator = function(params) {
     var blobs;
 
     function getDoc(cb) {
-      console.log('pushing changes...', lastRemote);
+      //console.log('pushing changes...', lastRemote);
       that.localStore.get(docInfo.id, function(err, data) {
         doc = data;
         cb(err);
