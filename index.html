@@ -14,13 +14,15 @@
 
       <div id="header">
         <div class="header-container">
-          <a href="#" class="toggle-environments" title="Toggle User Actions" >
+          <a href="#" class="toggle-environments" title="Toggle Environments" >
             <div class="current-env <%= session.env %>"></div>
           </a>
           <div class="environments">
-            <a href="#" class="load-environment development" data-env="development"><div class="dot"></div>Development</a>
-            <a href="#" class="load-environment test" data-env="test"><div class="dot"></div>Test</a>
-            <a href="#" class="load-environment production" data-env="production"><div class="dot"></div>Production</a>
+            <% if (Object.keys(Substance.configurations).length > 1) { %>
+              <% _.each(Substance.configurations, function(c, key) { %>
+                <a href="#" class="load-environment <%= key %>" data-env="<%= key %>"><div class="dot"></div><%= key %></a>  
+              <% }); %>
+            <% } %>
           </div>
 
           <a href="#" class="logo">Substance</a>
@@ -546,7 +548,7 @@
     <!-- Model -->
     <script src="lib/document/document.js"></script>
     <script src="lib/document/console.js"></script>
-    <script src="src/composer.js"></script>
+    
 
     <script src="src/util.js"></script>
 
@@ -554,7 +556,11 @@
     <script src="src/session.js"></script>
     <script src="src/model.js"></script>
 
+    <!-- Router -->
+    <script src="src/router.js"></script>
+
     <!-- Views -->
+    <script src="src/views/composer.js"></script>
     <script src="src/views/editor.js"></script>
     <script src="src/views/testsuite.js"></script>
 
@@ -570,6 +576,11 @@
     <script src="src/views/history.js"></script>
     <script src="src/views/patches.js"></script>
     <script src="src/views/comments.js"></script>
+
+    <script src="src/views/application.js"></script>
+    <script src="src/views/dashboard.js"></script>
+    <script src="src/views/login.js"></script>
+    <script src="src/views/signup.js"></script>
 
     <!-- Nodes -->
     <script src="src/nodes/node.js"></script>
@@ -600,8 +611,8 @@
     <script src="./tests/tests/replicator/005-pull-changes.js" type="text/javascript"></script>
     <script src="./tests/tests/replicator/006-push-changes.js" type="text/javascript"></script>
     <script src="./tests/tests/replicator/007-replicate-empty-doc.js" type="text/javascript"></script>
-   <script src="./tests/tests/replicator/008-push-blob.js" type="text/javascript"></script>
-   <script src="./tests/tests/replicator/009-update-blob.js" type="text/javascript"></script>
+    <script src="./tests/tests/replicator/008-push-blob.js" type="text/javascript"></script>
+    <script src="./tests/tests/replicator/009-update-blob.js" type="text/javascript"></script>
 
     <script src="./tests/tests/store/001-create.js" type="text/javascript"></script>
     <script src="./tests/tests/store/002-update.js" type="text/javascript"></script>
