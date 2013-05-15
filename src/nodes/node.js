@@ -1,4 +1,4 @@
-sc.views.Node = Backbone.View.extend(_.extend({}, s.StateMachine, {
+sc.views.Node = Substance.View.extend(_.extend({}, s.StateMachine, {
 
   className: 'content-node',
 

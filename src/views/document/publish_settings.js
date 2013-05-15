@@ -1,4 +1,4 @@
-sc.views.PublishSettings = Backbone.View.extend({
+sc.views.PublishSettings = Substance.View.extend({
 
   // Events
   // ------
@@ -58,5 +58,9 @@ sc.views.PublishSettings = Backbone.View.extend({
       this.$el.html('loading...');
     }
     return this;
+  },
+  dispose: function() {
+    console.log('disposing publish settings view');
+    this.disposeBindings();
   }
 });

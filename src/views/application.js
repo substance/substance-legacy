@@ -1,7 +1,7 @@
   // The Mothership
   // ---------------
 
-  var Application = Backbone.View.extend({
+  var Application = Substance.View.extend({
     events: {
       'submit #login_form': '_login',
       'submit #signup_form': '_signup',
@@ -16,32 +16,14 @@
 
     initialize: function(options) {
       var that = this;
-      _.bindAll(this, 'document', 'dashboard', 'login', 'signup', 'console', 'testsuite', 'replicationStart', 'replicationFinish');
+      _.bindAll(this, 'document', 'dashboard', 'login', 'signup', 
+                      'console', 'testsuite', 'replicationStart', 
+                      'replicationFinish');
 
       session.on('replication:started', this.replicationStart);
       session.on('replication:finished', this.replicationFinish);
-    },
 
-    replicationStart: function() {
-      this.$('#header .sync').addClass('active').addClass('disabled');
-    },
-
-    replicationFinish: function(err) {
-      var that = this;
-
-      // UI update
-      _.delay(function() {
-        that.$('#header .sync').removeClass('active');
-        // Update status
-        if (err) this.$('#header .sync').removeClass('disabled').addClass('error');
-
-        // HACK: only re-render after sync when on dashboard
-        if (that.view instanceof Dashboard) {
-          console.log(that.view);
-          that.render();
-        }
-      }, 500);
-
+      this.registerKeyBindings();
     },
 
     _toggleUserActions: function() {
@@ -71,8 +53,6 @@
 
     // Synchronizing
     _sync: function() {
-      var that = this;
-
       session.replicate();
       return false;
     },
@@ -125,6 +105,26 @@
       return false;
     },
 
+    replicationStart: function() {
+      this.$('#header .sync').addClass('active').addClass('disabled');
+    },
+
+    replicationFinish: function(err) {
+      var that = this;
+
+      // UI update
+      _.delay(function() {
+        that.$('#header .sync').removeClass('active');
+        // Update status
+        if (err) this.$('#header .sync').removeClass('disabled').addClass('error');
+
+        // HACK: only re-render after sync when on dashboard
+        if (that.view instanceof Dashboard) {
+          that.render();
+        }
+      }, 500);
+    },
+
 
     // Toggle document view
     document: function(id) {
@@ -132,6 +132,7 @@
       session.loadDocument(id);
       // Shortcuts
       window.doc = session.document;
+      if (this.view) this.view.dispose();
       that.view = new sc.views.Editor({model: session});
       that.render();
       that.listenForDocumentChanges();
@@ -142,14 +143,16 @@
       var that = this;
 
       session.loadDocument(id);
+
       // Shortcuts
       window.doc = session.document;
-
+      if (this.view) this.view.dispose();
       that.view = new sc.views.Console({model: session});
       that.render();
     },
 
     testsuite: function(test) {
+      if (this.view) this.view.dispose();
       this.view = new sc.views.Testsuite();
       this.render();
 
@@ -179,6 +182,7 @@
 
     newDocument: function() {
       session.createDocument();
+      if (this.view) this.view.dispose();
       this.view = new sc.views.Editor({model: session });
       this.render();
       router.navigate('documents/'+session.document.id, false);
@@ -192,19 +196,23 @@
 
     dashboard: function() {
       if (!session.user()) return this.login();
-      this.view = new Dashboard();
+      
+      if (this.view) this.view.dispose();
+      this.view = new sv.view.Dashboard();
       this.render();
       router.navigate('/');
       return;
     },
 
     login: function() {
-      this.view = new Login();
+      if (this.view) this.view.dispose();
+      this.view = new sc.views.Login();
       this.render();
     },
 
     signup: function() {
-      this.view = new Signup();
+      if (this.view) this.view.dispose();
+      this.view = new sc.views.Signup();
       this.render();
     },
 
@@ -223,5 +231,110 @@
       if (this.view) {
         this.$('#container').replaceWith(this.view.render().el);
       }
+    },
+
+    registerKeyBindings: function() {
+
+      // Selection Shortcuts
+      // ----------
+
+      key('down', _.bind(function(e) {
+        this.trigger('message:select-next', e);
+      }, this));
+
+      key('up', _.bind(function(e) {
+        this.trigger('message:select-previous', e);
+      }, this));
+
+      key('shift+down', _.bind(function(e) {
+        this.trigger('message:expand-selection', e);
+      }, this));
+
+      key('shift+up', _.bind(function(e) {
+        this.trigger('message:narrow-selection', e);
+      }, this));
+
+      key('esc', _.bind(function(e) {
+        this.trigger('message:go-back', e);
+      }, this));
+
+
+      // Move Shortcuts
+      // ----------
+
+      key('alt+down', _.bind(function(e) {
+        this.trigger('message:move-down', e);
+      }, this));
+
+      key('alt+up', _.bind(function(e) {
+        this.trigger('message:move-up', e);
+      }, this));
+
+      // Handle enter (creates new paragraphs)
+      key('enter', _.bind(function(e) {
+        this.trigger('message:break-text', e);
+      }, this));
+
+      // Handle backspace
+      key('backspace', _.bind(function(e) {
+        this.trigger('message:delete-node', e);
+      }, this));
+
+      // Node insertion shortcuts
+      key('alt+t', _.bind(function(e) {
+        this.trigger('message:insert-node', e, 'text');
+      }, this));
+
+      key('alt+h', _.bind(function(e) {
+        this.trigger('message:insert-node', e, 'heading');
+      }, this));
+
+
+      // Marker Shortcuts
+      // ----------
+
+      key('⌘+i', _.bind(function(e) {
+        this.trigger('message:toggle-annotation', e, 'emphasis');
+      }, this));
+
+      key('⌘+b', _.bind(function(e) {
+        this.trigger('message:toggle-annotation', e, 'strong');
+      }, this));
+
+      key('ctrl+1', _.bind(function(e) {
+        this.trigger('message:toggle-annotation', e, 'idea');
+      }, this));
+
+      key('ctrl+2', _.bind(function(e) {
+        this.trigger('message:toggle-annotation', e, 'question');
+      }, this));
+
+      key('ctrl+3', _.bind(function(e) {
+        this.trigger('message:toggle-annotation', e, 'error');
+      }, this));
+
+
+      // Indent / Dedent Headings
+      // ----------
+
+      key('tab', _.bind(function(e) {
+        this.trigger('message:indent', e);
+      }, this));
+
+      key('shift+tab', _.bind(function(e) {
+        this.trigger('message:dedent', e);
+      }, this));
+
+
+      // Undo / Redo
+      // ----------
+
+      key('⌘+z', _.bind(function(e) {
+        this.trigger('message:undo', e);
+      }, this));
+
+      key('shift+⌘+z', _.bind(function(e) {
+        this.trigger('message:redo', e);
+      }, this));
     }
   });

@@ -3,23 +3,20 @@
   // The Substance Namespace
   if (!exports.Substance) exports.Substance = {};
 
-  var Composer = Backbone.View.extend({
+  var Composer = Substance.View.extend({
+
+    // DOM Event Handlers
+    // --------
+
     events: {
-      'click a.checkout-commit': '_checkoutCommit',
-      'click .properties': 'clear',
+      'click .properties': '_clear',
       'click a.insert': '_insert',
-      'click a.move.up': 'moveUp',
-      'click a.move.down': 'moveDown',
-      'click .content-node a.delete': 'handleBackspace'
+      'click a.move.up': '_moveUp',
+      'click a.move.down': '_moveDown',
+      'click .content-node a.delete': '_deleteNode'
     },
 
-    _checkoutCommit: function(e) {
-      var sha = $(e.currentTarget).attr('data-commit');
-      this.model.document.checkout(sha);
-      this.views.document.build();
-      this.render();
-      return false;
-    },
+    _clear: function() { return this.clear(); },
 
     _insert: function(e) {
       var type = $(e.currentTarget).attr('data-type');
@@ -27,84 +24,96 @@
       return false;
     },
 
-    updateMode: function() {
-      this.views.document.updateMode();
+    // Message Handlers
+    // --------
+
+    messages: {
+      'select-previous': '_selectPrevious',
+      'select-next': '_selectNext',
+      'expand-selection': '_expandSelection',
+      'narrow-selection': '_narrowSelection',
+      'go-back': '_goBack',
+      'move-down': '_moveDown',
+      'move-up': '_moveUp',
+      'break-text': '_breakText',
+      'delete-node': '_deleteNode',
+      'insert-node': '_insertNode',
+      'toggle-annotation': '_toggleAnnotation',
+      'undo': '_undo',
+      'redo': '_redo',
+      'indent': '_indent',
+      'dedent': '_dedent'
     },
 
-    // Now obsolete for our fixed layout
-    positionTools: function() {
-      // var leftMargin = Math.max(100, ($(window).width()-1200) / 2);
-      // this.$('#tools').css('left', leftMargin+800+'px');
+    // Select next node
+    _selectNext: function(e) {
+      // If in selection/structure mode
+      if (this.model.level() <= 2) {
+        var cont = this.views.document.selectNext();
+        // stop propageting the key events
+        e.preventDefault();
+      }
     },
 
-    initialize: function(options) {
-      this.build();
-      $(window).resize(this.positionTools);
+    // Select previous node
+    _selectPrevious: function(e) {
+      // If in selection/structure mode
+      if (this.model.level() <= 2) {
+        this.views.document.selectPrev();
+        // stop propageting the key events
+        e.preventDefault();
+      }
     },
 
-    // Handling keys
-    // ---------------
+    // Move current selection down by one
+    _moveDown: function(e) {
+      if (this.model.level() === 2) {
+        this.moveDown();
+      } else {
+        e.preventDefault();
+      }
+    },
 
-    clear: function() {
-      // HACK: ensures there are no remaining floating annotation controls
-      $('.annotation-tools').hide();
-      this.model.select([]);
-      this.updateMode();
+    // Move current selection up by one
+    _moveUp: function(e) {
+      if (this.model.level() === 2) {
+        return this.moveUp();
+        e.preventDefault();
+      }
+      return false;
     },
 
     // Go up one level
-    goBack: function() {
+    _goBack: function(e) {
       var lvl = this.model.level();
       if (lvl === 2) return this.clear();
 
       this.model.edit = false;
-
       // TODO: Only deactivate currently active surface -> performance
       $(".content-node .content").blur();
       this.updateMode();
-      return false;
+      e.preventDefault();
     },
 
-    handleDown: function() {
-      // If in selection/structure mode
-      if (this.model.level() <= 2) { this.views.document.selectNext(); return false; }
-    },
-
-    handleUp: function() {
-      // If in selection/structure mode
-      if (this.model.level() <= 2) { this.views.document.selectPrev(); return false; }
-    },
-
-    handleShiftDown: function() {
+    // Current select + next element
+    _expandSelection: function(e) {
       // Structure mode
-      if (this.model.level() === 2) this.views.document.expandSelection();
+      if (this.model.level() === 2) {
+        this.views.document.expandSelection();
+        e.preventDefault();
+      }
     },
 
-    handleShiftUp: function() {
-      if (this.model.level() === 2) this.views.document.narrowSelection();
+    // Current select - last element
+    _narrowSelection: function(e) {
+      if (this.model.level() === 2) {
+        this.views.document.narrowSelection();
+        e.preventDefault();
+      }
     },
 
-    moveDown: function() {
-      this.views.document.moveDown();
-      return false;
-    },
-
-    moveUp: function() {
-      this.views.document.moveUp();
-      return false;
-    },
-
-    handleAltDown: function() {
-      // If in selection/structure mode
-      if (this.model.level() === 2) return this.moveDown();
-    },
-
-    handleAltUp: function() {
-      // If in selection/structure mode
-      if (this.model.level() === 2) return this.moveUp();
-    },
-
-    handleEnter: function() {
+    // Break text into two pieces and move
+    _breakText: function(e) {
       var that = this;
 
       if (this.model.level() === 3) {
@@ -123,8 +132,8 @@
           var text = node.surface.content;
           var sel = node.surface.selection();
 
-            // TODO: this is not working... furthermore, a bit under-documented...
-            // newContent is not used?
+          // TODO: this is not working... furthermore, a bit under-documented...
+          // newContent is not used?
           if(sel) {
             var pos = sel[0]; // current cursor position
             var remainder = _.rest(text, pos).join("");
@@ -136,12 +145,50 @@
             that.views.document.insertNode("text", {content: "", target: node.model.id});
           }
         }
-
-        return false;
+        e.preventDefault();
       }
     },
 
-    handleTab: function(reverse) {
+    // Delete currently selected nodes
+    _deleteNode: function(e) {
+      if (this.model.level() === 2) {
+        this.views.document.deleteNodes();
+        e.preventDefault();
+      }
+    },
+
+    // Insert node based on current selection
+    _insertNode: function(e, type) {
+      this.views.document.insertNode(type, {});
+      e.preventDefault();
+    },
+
+    // Toggle annotation for given selection
+    _toggleAnnotation: function(e, type) {
+      if (this.model.level() === 3) {
+        var node = this.views.document.nodes[this.model.selection()[0]];
+        node.annotate(type);
+        e.preventDefault();
+      }
+    },
+
+    _undo: function(e) {
+      this.model.select([]); // Deselect
+      this.model.document.undo();
+      this.init();
+      this.render();
+      return false;
+    },
+
+    _redo: function(e) {
+      this.model.select([]); // Deselect
+      this.model.document.redo();
+      this.init();
+      this.render();
+      return false;
+    },
+
+    _indent: function(e, reverse) {
       var that = this;
       if (this.model.level() === 3) {
         var node = this.views.document.nodes[_.first(this.model.selection())];
@@ -166,139 +213,64 @@
 
           $(node.el).addClass('level-'+level);
 
-          return false;
+          e.preventDefault();
         }
-        return false;
+        e.preventDefault();
       }
     },
 
-    handleBackspace: function() {
-      if (this.model.level() === 2) {
-        this.views.document.deleteNodes();
-        return false;
-      }
+    _dedent: function(e) {
+      this._indent(e, true);
     },
 
-    toggleAnnotation: function(type) {
-      if (this.model.level() === 3) {
-        var node = this.views.document.nodes[this.model.selection()[0]];
-        node.annotate(type);
-        return false;
-      }
+
+    // Bindings
+    // --------
+
+    bindings: [
+      ['model.document', 'commit:applied', '_commitApplied'],
+      ['model.document', 'ref:updated', '_refUpdated']
+    ],
+
+
+    // State, that there's a sync pending
+    _commitApplied: function() {
+      $('#header .sync').removeClass('disabled');
+      this.updateUndoRedoControls();
     },
 
-    undo: function() {
-      this.model.select([]); // Deselect
-      this.model.document.undo();
-      this.init();
-      this.render();
-      return false;
+    _refUpdated: function(ref, sha) {
+      console.log('ref updated, yay');
+      this.updateUndoRedoControls();
     },
 
-    redo: function() {
-      this.model.select([]); // Deselect
-      this.model.document.redo();
-      this.init();
-      this.render();
-      return false;
-    },
-
-    build: function() {
-      // Selection shortcuts
-      key.unbind('down')
-      key.unbind('up');
-      key('down', _.bind(function() { return this.handleDown(); }, this));
-      key('up', _.bind(function() { return this.handleUp(); }, this));
-
-      key.unbind('shift+down');
-      key.unbind('shift+up');
-      key.unbind('esc');
-      key('shift+down', _.bind(function() { return this.handleShiftDown(); }, this));
-      key('shift+up', _.bind(function() { return this.handleShiftUp(); }, this));
-      key('esc', _.bind(function() { return this.goBack(); }, this));
-
-      // Move shortcuts
-      key.unbind('alt+down')
-      key.unbind('alt+up');
-      key('alt+down', _.bind(function() { return this.handleAltDown(); }, this));
-      key('alt+up', _.bind(function() { return this.handleAltUp(); }, this));
-
-      // Handle enter (creates new paragraphs)
-      key.unbind('enter');
-      key('enter', _.bind(function() { return this.handleEnter(); }, this));
-
-      // Handle backspace
-      key.unbind('backspace');
-      key('backspace', _.bind(function() { return this.handleBackspace(); }, this));
-
-      // Node insertion shortcuts
-      key.unbind('alt+t');
-      key.unbind('alt+h');
-      key('alt+t', _.bind(function() { this.views.document.insertNode("text", {}); return false }, this));
-      key('alt+h', _.bind(function() { this.views.document.insertNode("heading", {}); return false; }, this));
-
-      // Marker shortcuts
-      key.unbind('⌘+i');
-      key.unbind('⌘+b');
-      key.unbind('ctrl+1');
-      key.unbind('ctrl+2');
-      key.unbind('ctrl+3');
-      key('⌘+i', _.bind(function() { return this.toggleAnnotation('em'); }, this));
-      key('⌘+b', _.bind(function() { return this.toggleAnnotation('str'); }, this));
-      key('ctrl+1', _.bind(function() { return this.toggleAnnotation('idea'); }, this));
-      key('ctrl+2', _.bind(function() { return this.toggleAnnotation('blur'); }, this));
-      key('ctrl+3', _.bind(function() { return this.toggleAnnotation('doubt'); }, this));
-
-      key.unbind('⌘+z');
-      key.unbind('shift+⌘+z');
-      key('⌘+z', _.bind(function() { return this.undo(); }, this));
-      key('shift+⌘+z', _.bind(function() { return this.redo(); }, this));
-
-      key.unbind('tab');
-      key.unbind('shift+tab');
-      key('tab', _.bind(function() { return this.handleTab(); }, this));
-      key('shift+tab', _.bind(function() { return this.handleTab(true); }, this));
-
-      // Possible modes: edit, view, patch, apply-patch
+    initialize: function(options) {
       this.mode = "edit";
-
       this.init();
     },
+
+
+    // View Logic
+    // --------
 
     init: function() {
-      // Views
+      // Views go here
       this.views = {};
 
       this.views.document = new Substance.Composer.views.Document({ model: this.model });
       this.views.tools = new Substance.Composer.views.Tools({model: this.model });
-
-      this.model.document.on('commit:applied', function(commit) {
-        // Send update to the server
-        $('#header .sync').removeClass('disabled');
-
-        // $('#header .sync .status').html('Sync');
-
-        this.updateUndoRedoControls();
-      }, this);
-
-
-      this.model.document.on('ref:updated', function(ref, sha) {
-        this.updateUndoRedoControls();
-      }, this);
     },
 
-    render: function() {
-      var that = this;
-      this.$el.html(_.tpl('composer'));
-      this.renderDoc()
+    clear: function() {
+      // HACK: ensures there are no remaining floating annotation controls
+      $('.annotation-tools').hide();
+      this.model.select([]);
+      this.updateMode();
+    },
 
-      that.positionTools();
-      that.updateMode();
-      _.delay(function() {
-        that.updateUndoRedoControls();
-      }, 1);
-
-      return this;
+    // Is that cool?
+    updateMode: function() {
+      this.views.document.updateMode();
     },
 
     updateUndoRedoControls: function() {
@@ -318,12 +290,31 @@
       }
     },
 
+    render: function() {
+      var that = this;
+      this.$el.html(_.tpl('composer'));
+      this.renderDoc()
+
+      that.updateMode();
+      _.delay(function() {
+        that.updateUndoRedoControls();
+      }, 1);
+      return this;
+    },
+
     renderDoc: function() {
       var that = this;
       var doc = this.views.document;
       doc.render();
       that.$('#document').replaceWith(doc.el);
       that.$('#tools').html(that.views.tools.render().el);
+    },
+
+    dispose: function() {
+      console.log('disposing composer instance...');
+      this.disposeBindings();
+      this.views.document.dispose();
+      this.views.tools.dispose();
     }
   },
 
@@ -331,7 +322,6 @@
   {
     models: {},
     views: {},
-    instructors: {},
     utils: {}
   });
 

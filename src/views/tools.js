@@ -1,4 +1,4 @@
-sc.views.DocumentTool = Backbone.View.extend({
+sc.views.DocumentTool = Substance.View.extend({
 
   // Events
   // ------
@@ -35,7 +35,7 @@ sc.views.DocumentTool = Backbone.View.extend({
   }
 });
 
-sc.views.Tools = Backbone.View.extend({
+sc.views.Tools = Substance.View.extend({
 
   // Events
   // ------
@@ -98,5 +98,11 @@ sc.views.Tools = Backbone.View.extend({
     this.$el.html(_.tpl('tools', _.extend(this.model, {view: this.view})));
     this.$('.tool').html(this.views.tool.render().el);
     return this;
+  },
+
+  dispose: function() {
+    console.log('disposing tools view');
+    this.disposeBindings();
+    this.views.tool.dispose();
   }
 });

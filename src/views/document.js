@@ -1,4 +1,4 @@
-sc.views.Document = Backbone.View.extend({
+sc.views.Document = Substance.View.extend({
   id: 'document',
 
   // Events
@@ -29,7 +29,6 @@ sc.views.Document = Backbone.View.extend({
     });
 
     // Handlers
-
     function highlightAnnotation(scope, node, annotation) {
       var node = this.nodes[node];
       if (node && node.surface) {
@@ -37,11 +36,13 @@ sc.views.Document = Backbone.View.extend({
       }
     }
 
+    // Delete Annotation
     function deleteAnnotation(node, annotation) {
       var node = this.nodes[node];
       if (node && node.surface) node.surface.deleteAnnotation(annotation);
     }
 
+    // Update Node
     function updateNode(nodeId) {
       // Update node since its dirty
       var node = this.nodes[nodeId];
@@ -68,7 +69,6 @@ sc.views.Document = Backbone.View.extend({
 
     $(document.body).keydown(this.onKeydown);
   },
-
 
   handleFileSelect: function(evt) {
     var that = this;
@@ -197,6 +197,9 @@ sc.views.Document = Backbone.View.extend({
   delete: function(options) {
     _.each(options.nodes, function(node) {
       this.$('#'+_.htmlId(node)).remove();
+      // var view = this.nodes[node];
+      // view.dispose();
+      // delete this.nodes[node];
     }, this);
     this.model.select([]);
   },
@@ -251,6 +254,7 @@ sc.views.Document = Backbone.View.extend({
   },
 
   // Set the right mode
+  // REWORK
   updateMode: function() {
     var selection = this.model.selection();
     $('#document').removeClass();
@@ -301,17 +305,17 @@ sc.views.Document = Backbone.View.extend({
   selectNext: function() {
     var selection = this.model.users[this.model.user()].selection;
     var doc = this.model.document;
-    if (selection.length === 0) return this.model.select([_.first(doc.lists.content)]);
+    if (selection.length === 0) return this.model.select([_.first(doc.views.content)]);
     var next = doc.getSuccessor(_.last(selection));
-    if (next) this.model.select([next]);
+    if (next) return this.model.select([next]);
   },
 
   selectPrev: function() {
     var selection = this.model.users[this.model.user()].selection;
     var doc = this.model.document;
-    if (selection.length === 0) return this.model.select([_.last(doc.lists.content)]);
+    if (selection.length === 0) return this.model.select([_.last(doc.views.content)]);
     var prev = doc.getPredecessor(_.first(selection));
-    this.model.select(prev ? [prev] : [_.first(doc.lists.content)]);
+    return this.model.select(prev ? [prev] : [_.first(doc.views.content)]);
   },
 
   expandSelection: function() {
@@ -401,7 +405,6 @@ sc.views.Document = Backbone.View.extend({
 
   // Initial render of all nodes
   render: function() {
-
     var that = this;
     var doc = that.model.document;
 
@@ -421,8 +424,15 @@ sc.views.Document = Backbone.View.extend({
     that.model.document.each(function(node) {
       $(that.nodes[node.id].render().el).appendTo(that.$('.nodes'));
     }, that);
-
     that.bindFileEvents();
+  },
+
+  dispose: function() {
+    console.log('disposing document view');
+    this.disposeBindings();
+    _.each(this.nodes, function(node) {
+      node.dispose();
+    });
   }
 
 });

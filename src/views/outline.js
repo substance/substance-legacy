@@ -1,4 +1,4 @@
-sc.views.Outline = Backbone.View.extend({
+sc.views.Outline = Substance.View.extend({
 
   // Events
   // ------
@@ -16,5 +16,10 @@ sc.views.Outline = Backbone.View.extend({
   render: function () {
     this.$el.html(_.tpl('outline', this.model));
     return this;
+  },
+
+  dispose: function() {
+    console.log('disposing outline view');
+    this.disposeBindings();
   }
 });

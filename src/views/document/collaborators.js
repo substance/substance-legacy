@@ -1,4 +1,4 @@
-sc.views.Collaborators = Backbone.View.extend({
+sc.views.Collaborators = Substance.View.extend({
 
   // Events
   // ------
@@ -42,5 +42,11 @@ sc.views.Collaborators = Backbone.View.extend({
       this.$el.html('loading...');
     }
     return this;
+  },
+
+  dispose: function() {
+    console.log('disposing collaborators view');
+    this.disposeBindings();
   }
+
 });

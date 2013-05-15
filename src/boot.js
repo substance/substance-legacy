@@ -21,12 +21,12 @@ $(function() {
   };
 
   loadConfigurations(function(err, configs) {
-    Substance.configurations = configs;
+    Substance.configurations = JSON.parse(JSON.stringify(configs));
     delete Substance.configurations.env;
-    
+
     // Initially set env based on config value
     if (!appSettings.getItem('env')) {
-      appSettings.setItem('env', config.env || 'development');
+      appSettings.setItem('env', configs.env || 'development');
     }
 
     initSession(appSettings.getItem('env'));

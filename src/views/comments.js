@@ -1,4 +1,4 @@
-sc.views.Comments = Backbone.View.extend({
+sc.views.Comments = Substance.View.extend({
 
   // Events
   // ------
@@ -46,7 +46,6 @@ sc.views.Comments = Backbone.View.extend({
 
   _deleteComment: function(e) {
     var comment = $(e.currentTarget).attr('data-id');
-
     this.model.document.apply(["delete", { nodes: [comment] }]);
     this.model.comments.compute(this.scope);
     return false;
@@ -57,7 +56,6 @@ sc.views.Comments = Backbone.View.extend({
     var annotation = this.$('.comment-scope.active').attr('data-annotation');
 
     this.model.document.apply(["delete", { nodes: [annotation] }]);
-
     this.model.comments.compute();
 
     this.activateScope('node_comments');
@@ -109,6 +107,11 @@ sc.views.Comments = Backbone.View.extend({
     // Listing to comments:updated event on session
     this.model.off('comments:updated', this.render);
     this.model.on('comments:updated', this.render, this);
+  },
+
+  dispose: function() {
+    console.log('disposing comments view');
+    this.disposeBindings();
   },
 
   render: function (scope) {

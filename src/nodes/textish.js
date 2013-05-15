@@ -231,5 +231,9 @@ Textish = {
       pos.top -= 54;
       this.$('.annotation-tools').css(pos);      
     }
+  },
+  dispose: function() {
+    console.log('disposing textish view');
+    this.disposeBindings();
   }
 };

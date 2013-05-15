@@ -116,5 +116,9 @@ sc.views.Node.define('image', {
       });
     }, 200);
     return this;
+  },
+  dispose: function() {
+    console.log('disposing image view');
+    this.disposeBindings();
   }
 });

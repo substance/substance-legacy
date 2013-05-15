@@ -1,4 +1,4 @@
-sc.views.History = Backbone.View.extend({
+sc.views.History = Substance.View.extend({
 
   // Events
   // ------
@@ -10,5 +10,10 @@ sc.views.History = Backbone.View.extend({
   render: function () {
     this.$el.html(_.tpl('history', {operations: this.model.document.operations('master')}));
     return this;
+  },
+
+  dispose: function() {
+    console.log('disposing history view');
+    this.disposeBindings();
   }
 });

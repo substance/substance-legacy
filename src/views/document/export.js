@@ -1,4 +1,4 @@
-sc.views.Export = Backbone.View.extend({
+sc.views.Export = Substance.View.extend({
 
   // Events
   // ------
@@ -17,5 +17,10 @@ sc.views.Export = Backbone.View.extend({
   render: function () {
     this.$el.html(_.tpl('document_export', {}));
     return this;
+  },
+
+  dispose: function() {
+    console.log('disposing export view');
+    this.disposeBindings();
   }
 });

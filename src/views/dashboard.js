@@ -1,7 +1,7 @@
   // Dashboard
   // ---------------
 
-  var Dashboard = Backbone.View.extend({
+  sc.views.Dashboard = Substance.View.extend({
     id: 'container',
     events: {
       'click .delete-document': '_deleteDocument',
@@ -20,5 +20,11 @@
         documents: documents
       }));
       return this;
+    },
+
+    dispose: function() {
+      console.log('disposing dashboard view');
+      this.disposeBindings();
     }
+
   });

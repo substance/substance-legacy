@@ -1,4 +1,4 @@
-sc.views.Editor = Backbone.View.extend({
+sc.views.Editor = Substance.View.extend({
 
   id: 'container',
   // Events
@@ -15,11 +15,11 @@ sc.views.Editor = Backbone.View.extend({
   },
 
   undo: function() {
-    return this.composer.undo();
+    return this.composer._undo();
   },
 
   redo: function() {
-    return this.composer.redo();
+    return this.composer._redo();
   },
 
   // Handlers
@@ -171,6 +171,7 @@ sc.views.Editor = Backbone.View.extend({
     this.hidePublishSettings();
   },
 
+
   render: function () {
     var that = this;
     this.$el.html(_.tpl('editor', {
@@ -195,5 +196,12 @@ sc.views.Editor = Backbone.View.extend({
     that.$('#document_wrapper').replaceWith(that.composer.render().el);
 
     return this;
+  },
+
+  dispose: function() {
+    console.log('disposing editor...');
+    this.disposeBindings();
+    this.composer.dispose();
   }
+
 });

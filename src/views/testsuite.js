@@ -1,4 +1,4 @@
-sc.views.Testsuite = Backbone.View.extend({
+sc.views.Testsuite = Substance.View.extend({
 
   // Events
   // ------
@@ -72,5 +72,11 @@ sc.views.Testsuite = Backbone.View.extend({
       tests: Substance.tests
     }));
     return this;
+  },
+
+  dispose: function() {
+    console.log('disposing testsuite view');
+    this.disposeBindings();
   }
+
 });
