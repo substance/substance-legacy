@@ -44,7 +44,7 @@ sc.views.Node = Substance.View.extend(_.extend({}, s.StateMachine, {
     //   annotations.push('<a href="#" class="'+a.type+'"></a>');
     // });
 
-    $(this.el).html('<div class="content"'+(notEditable ? '' : ' contenteditable="true"')+'></div><div class="handle"><a href="#" class="up move" title="Move Selection Up (ALT + ▲)"></a><a href="#" class="move down" title="Move Selection Down (ALT + ▼)"></a></div><div class="handle-2"></div><a href="#" class="delete" title="Delete Selection (←)"></a> <a href="#" class="comments-toggle'+(cnt > 0 ? ' active' : '')+'">'+''+'</a><div class="annotation-tools"></div><div class="annotations">'+annotations.join('')+'</a></div>');
+    $(this.el).html('<div class="content"'+(notEditable ? '' : ' contenteditable="true"')+'></div><div class="handle"><a href="#" class="up move" title="Move Selection Up (ALT + ▲)"><i class="icon-chevron-up"></i></a><a href="#" class="move down" title="Move Selection Down (ALT + ▼)"><i class="icon-chevron-down"></i></a></div><div class="handle-2"><div class="arrow"></div></div><a href="#" class="delete" title="Delete Selection (←)"><i class="icon-remove"></i></a> <a href="#" class="comments-toggle'+(cnt > 0 ? ' active' : '')+'">'+''+'</a><div class="annotation-tools"></div><div class="annotations">'+annotations.join('')+'</a></div>');
     return this;
   }
 }), {

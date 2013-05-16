@@ -31,7 +31,7 @@ sc.views.Comments = Substance.View.extend({
         node: node,
         annotation: annotation,
         created_at: new Date().toJSON(),
-        user: app.user
+        user: session.user()
       }
     }]);
 

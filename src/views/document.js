@@ -30,6 +30,13 @@ sc.views.Document = Substance.View.extend({
 
     // Handlers
     function highlightAnnotation(scope, node, annotation) {
+      var a = this.model.document.nodes[annotation];
+
+      if (a) {
+        $('#'+_.htmlId(node)+' .handle-2').removeClass().addClass('handle-2').addClass(a.type);
+      } else {
+        $('#'+_.htmlId(node)+' .handle-2').removeClass().addClass('handle-2');
+      }
       var node = this.nodes[node];
       if (node && node.surface) {
         node.surface.highlight(annotation);
@@ -280,9 +287,9 @@ sc.views.Document = Substance.View.extend({
 
   // Updates the current selection
   updateSelections: function(selections) {
-    $('.content-node .down').hide();
-    $('.content-node .up').hide();
-    $('.content-node .delete').hide();
+    // $('.content-node .down').hide();
+    // $('.content-node .up').hide();
+    // $('.content-node .delete').hide();
     $('.content-node.selected').removeClass('selected');
 
     // HACK: ensures there are no remaining floating annotation controls
@@ -291,12 +298,12 @@ sc.views.Document = Substance.View.extend({
     this.updateMode();
 
     _.each(this.model.selections, function(user, node) {
-      $('#'+_.htmlId(node)).addClass('selected')
+      $('#'+_.htmlId(node)).addClass('selected');
     }, this);
 
-    $('.content-node.selected').first().find('.up').show();
-    $('.content-node.selected').first().find('.delete').show();
-    $('.content-node.selected').last().find('.down').show();
+    // $('.content-node.selected').first().find('.up').show();
+    // $('.content-node.selected').first().find('.delete').show();
+    // $('.content-node.selected').last().find('.down').show();
   },
 
   // Issue commands

@@ -3,7 +3,7 @@
 PROJECT_DIR=$(pwd)
 
 # sanity check: executed in the root folder?
-if [ ! -f src/composer.js ]; then
+if [ ! -f index.html ]; then
   echo "composer/update.sh must be executed in the root dir of the repository."
   exit -1
 fi

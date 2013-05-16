@@ -142,15 +142,16 @@ h2 { font-size: 160%; padding-bottom: 15px; }
   /*display: none;*/
   position: fixed;
   /*margin: 0 80px;*/
-  margin-left: 20px;
-  ;
+  /*margin-left: 20px;*/
   /*height: 60px;*/
   bottom: 0px;
+  left: 80px;
+  border-left: 1px solid #ddd;
   /*left: 0px;*/
   font-family: 'Source Sans Pro', 'Open Sans';
   padding: 8px 60px;
 
-  width: 729px;
+  width: 779px;
 
   /*background: #DCDDD9;*/
   background: #fff;
@@ -207,7 +208,12 @@ h2 { font-size: 160%; padding-bottom: 15px; }
 -------------------------------------------------------------------------------*/
 
 #tools {
-  background: #DCDDD6;
+  /*background: #DCDDD6;*/
+  /*background: #fff;*/
+  background: rgb(235, 236, 229);
+  border-top: 1px solid #ddd;
+  border-left: 1px solid #ddd;
+  border-right: 1px solid #ddd;
   position: fixed;
   top: 110px;
   bottom: 0px;
@@ -268,6 +274,7 @@ h2 { font-size: 160%; padding-bottom: 15px; }
 -------------------------------------------------------------------------------*/
 
 .tool .comment-scopes {
+  display: none;
   position: absolute;
   left: 0px;
   top: 0px;
@@ -405,7 +412,7 @@ h2 { font-size: 160%; padding-bottom: 15px; }
   position: absolute;
   top: 40px;
   bottom: 100px;
-  left: 40px;
+  left: 0px;
   right: 0px;
   overflow: auto;
 }
@@ -475,7 +482,7 @@ h2 { font-size: 160%; padding-bottom: 15px; }
 .new-comment {
   position: absolute;
   bottom: 5px;
-  left: 50px;
+  left: 10px;
   right: 10px;
 }
 
@@ -524,9 +531,11 @@ h2 { font-size: 160%; padding-bottom: 15px; }
 #document_content {
   background: #fff;
 
-  width: 750px;
+  /*width: 750px;*/
   border-right: 1px solid #dedede;
+  border-left: 1px solid #dedede;
   padding-bottom: 200px;
+  margin-right: 20px;
 }
 
 #document .left-rail {
@@ -535,7 +544,7 @@ h2 { font-size: 160%; padding-bottom: 15px; }
   top: 0px;
   bottom: 0px;
   width: 20px;
-  background: #B9BAB3;
+  /*background: #B9BAB3;*/
 }
 
 
@@ -546,7 +555,7 @@ h2 { font-size: 160%; padding-bottom: 15px; }
   bottom: 0px;
   overflow: auto;
 
-  background: url(../images/document_bg.png);
+  /*background: url(../images/document_bg.png);*/
   width: 800px;
   /*-webkit-font-smoothing: subpixel-antialiased;*/
   font-size: 19px;
@@ -560,8 +569,10 @@ h2 { font-size: 160%; padding-bottom: 15px; }
 
 #document .properties .document-title {
   padding: 50px 80px;
-  font-family: 'Source Sans Pro', 'Open Sans Condensed', 'Open Sans', sans-serif;
-  font-weight: bold;
+
+  font-family: 'Montserrat', 'Source Sans Pro', 'Open Sans Condensed', 'Open Sans', sans-serif;
+
+  /*font-weight: bold;*/
   line-height: 60px;
   font-size: 50px;
 }
@@ -668,6 +679,7 @@ h2 { font-size: 160%; padding-bottom: 15px; }
 }
 
 #container #document .content-node .comments-toggle {
+  display: none;
   position: absolute;
   right: -35px;
   top: 0px;
@@ -686,15 +698,18 @@ h2 { font-size: 160%; padding-bottom: 15px; }
 }
 
 #container #document .content-node .delete {
-  width: 20px;
-  height: 20px;
+/*  width: 20px;
+  height: 20px;*/
   position: absolute;
-  background: url(../images/icons/delete.png);
+  /*background: url(../images/icons/delete.png);*/
   right: 10px;
   top: 5px;
   border: none;
+  opacity: 0;
+}
+
+#container #document.structure-mode .content-node.selected .delete {
   opacity: 0.5;
-  display: none;
 }
 
 #container #document .content-node .delete:hover {
@@ -727,33 +742,28 @@ h2 { font-size: 160%; padding-bottom: 15px; }
 /* Selection Handle */
 #container #document .content-node .handle {
   position: absolute;
-  left: 0px;
-  top: 0px;
+  left: -1px;
+  cursor: pointer;
+  top: -1px;
   bottom: 0px;
-  width: 20px;
+  width: 50px;
+  border-left: 1px solid #ddd;
+  border-bottom: 1px solid #ddd;
+  /*border-top: 1px solid #ddd;*/
+  
   z-index: 100;
 }
 
 
-#container #document .content-node.selected .handle .up {
-  background: url(../images/icons/arrow-up.png) center no-repeat;
+#container #document .content-node .handle .up {
+  padding: 0 10px;
   display: none;
-  width: 20px;
-  height: 20px;
   border: none;
   position: absolute;
   top: 0px;
 }
 
-#container #document .content-node.selected .handle .down {
-  background: url(../images/icons/arrow-down.png) center no-repeat;
-  display: none;
-  width: 20px;
-  height: 20px;
-  border: none;
-  position: absolute;
-  bottom: 0px;
-}
+
 
 @-webkit-keyframes pulsate {
     0% {opacity: 0.4;}
@@ -761,37 +771,121 @@ h2 { font-size: 160%; padding-bottom: 15px; }
     100% {opacity: 0.4;}
 }
 
-#container #document .content-node .handle-2 {
 
+#container #document.structure-mode .content-node.selected .handle .up {
+  display: block;
+}
+
+#container #document.structure-mode .content-node.selected .handle .down {
+  display: block;
+}
+
+#container #document .content-node .handle .down {
+  display: none;
+  border: none;
+  position: absolute;
+  padding: 0 10px;
+  bottom: 0px;ƒƒ
+}
+
+#container #document .content-node .handle-2 {
   position: absolute;
   right: -2px;
   top: 0px;
   bottom: 0px;
   width: 3px;
   background: #2F2B27;
-/*  -webkit-animation: pulsate 2s ease-in-out;
-  -webkit-animation-iteration-count: infinite; 
-  opacity: 0.0;*/
-  display: none;
+
+  /*display: none;*/
+  opacity: 0;
   z-index: 100;
 }
 
+#container #document .content-node.selected .handle-2.idea {
+  background: rgba(102, 182, 32, 1);
+}
+
+#container #document .content-node.selected .handle-2.question {
+  background: rgba(16, 167, 222, 1);
+}
+
+#container #document .content-node.selected .handle-2.error {
+  background: rgba(237, 96, 48, 1);
+}
+
+#container #document .content-node .handle-2 .arrow {
+  position: absolute;
+  top: 30px;
+  right: -9px;
+  width: 0;
+  height: 0;
+  border-top: 10px solid transparent;
+  border-bottom: 10px solid transparent;
+  border-left: 10px solid black;
+  display: none;
+}
+
+#container #document .content-node.selected .handle-2.idea .arrow {
+  border-left: 10px solid rgba(102, 182, 32, 1);
+}
+
+#container #document .content-node.selected .handle-2.question .arrow {
+  border-left: 10px solid rgba(16, 167, 222, 1);
+}
+
+#container #document .content-node.selected .handle-2.error .arrow {
+  border-left: 10px solid rgba(237, 96, 48, 1);
+}
+
+#container #document .content-node.selected .handle-2 .arrow {
+  display: block;
+}
+
+#container #document .content-node:hover .handle-2 {
+  opacity: 0.3;
+}
+
+#container #document .content-node.selected .handle-2 {
+  opacity: 1;
+}
+
+/*#container #document.edit-mode .content-node.selected .handle-2 {
+  display: block;
+}*/
+
 
 #container #document.structure-mode .content-node.selected .handle {
-  background: #2F2B27;
+  /*background: #2F2B27;*/
+  border-left: 1px solid #333;
+
   opacity: 0.9;
 }
 
-#container #document.edit-mode .content-node.selected .handle {
-  background: #2F2B27;
-  opacity: 0.9;
+#container #document .content-node .handle:hover {
+  border-left: 1px solid #444;
+}
+
+#container #document .content-node.selected .handle {
+  border-left: 1px solid #333;
+  border-bottom: 1px solid #333;
+  border-top: 1px solid #333;
+}
+
+#container #document .content-node:hover .handle  {
+  border-left: 1px solid #aaa;
+  border-bottom: 1px solid #aaa;
+  /*border-top: 1px solid #aaa;*/
+}
+
+#container #document .content-node.selected:hover .handle {
+  border-left: 1px solid #333;
+  border-bottom: 1px solid #333;
+  border-bottom: 1px solid #333;
 }
 
 
-#container #document .content-node:hover .handle {
-  background: #2F2B27;
-  opacity: 0.1;
-}
+
+
 
 
 #container #document .content-node.selected .content {
@@ -807,9 +901,7 @@ h2 { font-size: 160%; padding-bottom: 15px; }
   opacity: 0.5;
 }
 
-#container #document.edit-mode .content-node.selected .handle-2 {
-  display: block;
-}
+
 
 /* Annotation tools
 -------------------------------------------------------------------------------*/
@@ -1056,18 +1148,19 @@ h2 { font-size: 160%; padding-bottom: 15px; }
 
 .content-node.heading .content {
   /*font-weight: bold;*/
-  font-size: 40px;
+  font-family: 'Montserrat';
+  font-size: 30px;
   line-height: 30px;
   padding: 10px 80px;
   padding-right: 60px;
 }
 
 .content-node.heading.level-2 .content {
-  font-size: 30px;
+  font-size: 20px;
 }
 
 .content-node.heading.level-3 .content {
-  font-size: 24px;
+  font-size: 17px;
 }
 
 /* Code Node

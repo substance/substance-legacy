@@ -68,8 +68,7 @@
     // Move current selection down by one
     _moveDown: function(e) {
       if (this.model.level() === 2) {
-        this.moveDown();
-      } else {
+        this.views.document.moveDown();
         e.preventDefault();
       }
     },
@@ -77,7 +76,7 @@
     // Move current selection up by one
     _moveUp: function(e) {
       if (this.model.level() === 2) {
-        return this.moveUp();
+        this.views.document.moveUp();
         e.preventDefault();
       }
       return false;
