@@ -16,8 +16,8 @@
 
     initialize: function(options) {
       var that = this;
-      _.bindAll(this, 'document', 'dashboard', 'login', 'signup', 
-                      'console', 'testsuite', 'replicationStart', 
+      _.bindAll(this, 'document', 'dashboard', 'login', 'signup',
+                      'console', 'testsuite', 'replicationStart',
                       'replicationFinish');
 
       session.on('replication:started', this.replicationStart);
@@ -196,7 +196,7 @@
 
     dashboard: function() {
       if (!session.user()) return this.login();
-      
+
       if (this.view) this.view.dispose();
       this.view = new sc.views.Dashboard();
       this.render();

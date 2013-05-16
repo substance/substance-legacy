@@ -79,7 +79,6 @@
         this.views.document.moveUp();
         e.preventDefault();
       }
-      return false;
     },
 
     // Go up one level
