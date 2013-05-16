@@ -198,7 +198,7 @@
       if (!session.user()) return this.login();
       
       if (this.view) this.view.dispose();
-      this.view = new sv.view.Dashboard();
+      this.view = new sc.views.Dashboard();
       this.render();
       router.navigate('/');
       return;
