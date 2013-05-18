@@ -229,7 +229,8 @@ Session.__prototype__ = function() {
     data.blobs = blobs;
 
     // Now create version on the server
-    that.client.createVersion(doc.id, data, function(err) {
+    var that = this;
+    this.client.createVersion(doc.id, data, function(err) {
       if (err) return cb(err);
       doc.meta.published_at = new Date();
       doc.meta.published_commit = doc.getRef('head');
@@ -241,7 +242,6 @@ Session.__prototype__ = function() {
   // Unpublish document
   this.unpublish = function(cb) {
     var doc = this.document;
-    var that = this;
     this.client.unpublish(doc.id, function(err) {
       if (err) return cb(err);
       delete doc.meta["published_at"];
@@ -404,7 +404,7 @@ Session.__prototype__ = function() {
     _.each(seedData, function(seed, user) {
       var userStore = getUserStore.call(this, user);
       userStore.seed(seed);
-    });
+    }, this);
   }
 };
 Session.prototype = new Session.__prototype__();
