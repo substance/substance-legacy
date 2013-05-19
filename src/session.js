@@ -71,7 +71,7 @@ Session.__prototype__ = function() {
       "color": "#2F2B26",
       "selection": []
     };
-  },
+  };
 
   // Create a new document locally
   // Schema is optional (currently only used by testsuite)
@@ -95,7 +95,7 @@ Session.__prototype__ = function() {
 
     this.document = new Session.Document(this, doc, schema);
     this.initDoc();
-  },
+  };
 
   this.synched = function(docId) {
     // TODO: this should not be here as it contains implementation details
@@ -105,7 +105,7 @@ Session.__prototype__ = function() {
     } else {
       return false;
     }
-  }
+  };
 
   this.listDocuments = function() {
     if (!this.localStore) return [];
@@ -122,7 +122,7 @@ Session.__prototype__ = function() {
       };
     });
     return result;
-  },
+  };
 
   // Load new Document from localStore
   this.loadDocument = function(id) {
@@ -407,6 +407,7 @@ Session.__prototype__ = function() {
     }, this);
   }
 };
+
 Session.prototype = new Session.__prototype__();
 _.extend(Session.prototype, util.Events);
 
@@ -419,12 +420,11 @@ Session.Document.__prototype__ = function() {
   var __super__ = util.prototype(this);
 
   // Persists the change before triggering any observers.
-  this.__apply__ = __super__.apply;
   this.apply = function(operation, options) {
     options = options || {};
     // apply the operation to the document (Substance.Document.apply)
     // without triggering events
-    var commit = this.__apply__(operation, {"silent": true});
+    var commit = __super__.apply.call(this, operation, {"silent": true});
 
     if (!options['no-commit']) {
       var refs = {
@@ -443,9 +443,8 @@ Session.Document.__prototype__ = function() {
   };
 
   // persists the new ref before triggering
-  this.__setRef__ = __super__.setRef;
   this.setRef = function(ref, sha, silent) {
-    this.__setRef__(ref, sha, true);
+    __super__.setRef.call(this, ref, sha, true);
     if (!silent) {
       var refs = {}
       refs[ref] = sha;
@@ -464,6 +463,7 @@ Session.DocumentStore = function(session, document) {
   this.id = document.id;
   this.store = session.localStore;
 };
+
 Session.DocumentStore.__prototype__ = function() {
 
   this.getInfo = function() {
