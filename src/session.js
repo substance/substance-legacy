@@ -400,7 +400,7 @@ Session.__prototype__ = function() {
     console.log("Seeding local store", seedData);
     if (this.env !== "test") return;
     // Note: usually we do not want to use this function, only for seeding
-    getUserStore.call(this).__impl__.clear();
+    getUserStore.call(this).impl.clear();
     _.each(seedData, function(seed, user) {
       var userStore = getUserStore.call(this, user);
       userStore.seed(seed);
