@@ -52,9 +52,7 @@ Session.__prototype__ = function() {
 
     if (username) {
       this.localStore = getUserStore.call(this, username);
-      this.remoteStore = new Substance.RemoteStore({
-        client: this.client
-      });
+      this.remoteStore = this.client.store;
     }
   };
 
@@ -481,7 +479,7 @@ Session.DocumentStore.__prototype__ = function() {
 
   this.commits = function(last, since) {
     if (arguments.length == 0) return this.store.commits(this.id);
-    return this.store.commits(this.id, last, since);
+    return this.store.commits(this.id, {last: last, since: since});
   };
 
   this.update = function(options) {

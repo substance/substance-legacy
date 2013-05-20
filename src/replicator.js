@@ -66,7 +66,7 @@ var Replicator = function(params) {
 
     function extractLocalCommits(cb) {
       if (!doc.refs.master || !doc.refs.master.last) return cb(null, []);
-      that.localStore.commits(doc.id, doc.refs.master.last, null, function(err, data) {
+      that.localStore.commits(doc.id, {last: doc.refs.master.last}, function(err, data) {
         commits = data;
         cb(err);
       });
@@ -228,7 +228,7 @@ var Replicator = function(params) {
 
     function getCommits (cb) {
       //console.log('pulling in changes for', doc.id, 'starting from', lastRemote);
-      that.remoteStore.commits(doc.id, docInfo.refs["master"]["last"], lastRemote, function(err, data) {
+      that.remoteStore.commits(doc.id, {last: docInfo.refs["master"]["last"], since: lastRemote}, function(err, data) {
         commits = data;
         cb(err);
       });
@@ -297,7 +297,7 @@ var Replicator = function(params) {
 
     function getCommits(cb) {
       // Find all commits after synced (remote) commit
-      that.localStore.commits(doc.id, lastLocal, lastRemote, function (err, data) {
+      that.localStore.commits(doc.id, {last: lastLocal, since: lastRemote}, function (err, data) {
         commits = data;
         cb(err);
       });
