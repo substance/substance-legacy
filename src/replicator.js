@@ -13,6 +13,16 @@ var Replicator = function(params) {
 
   var that = this;
 
+  function listToMap(docs) {
+    if (!_.isArray(docs)) return docs;
+
+    var result = {};
+    _.each(docs, function(doc) {
+      result[doc.id] = doc;
+    });
+    return result;
+  };
+
   // Process a single doc sync job
   // -----------------
 
@@ -63,14 +73,14 @@ var Replicator = function(params) {
     }
 
     function getBlobs(cb) {
-      that.localStore.listBlobs(docInfo.id, function(err, data) {
+      that.localStore.blobs.list(docInfo.id, function(err, data) {
         if (err) return cb(err);
 
         var blobIds = data;
         var options = {
           items: blobIds,
           iterator: function (blobId, cb) {
-            that.localStore.getBlob(docInfo.id, blobId, function(err, data) {
+            that.localStore.blobs.get(docInfo.id, blobId, function(err, data) {
               if (err) return cb(err);
               blobs.push(data);
               cb(null);
@@ -106,7 +116,7 @@ var Replicator = function(params) {
     var createRemoteBlobs = util.async.iterator({
       items: blobs,
       iterator: function(blob, cb) {
-        that.remoteStore.createBlob(blob.document, blob.id, blob.data, cb);
+        that.remoteStore.blobs.create(blob.document, blob.id, blob.data, cb);
       }
     });
 
@@ -153,13 +163,13 @@ var Replicator = function(params) {
 
 
   function getDiffBlobs(src, dst, docId, cb) {
-    dst.listBlobs(docId, function(err, data) {
+    dst.blobs.list(docId, function(err, data) {
       if (err) return cb(err);
 
       var dstBlobs = data;
       //console.log("replicator.getDiffBlobs: dstBlobs", dstBlobs)
 
-      src.listBlobs(docId, function(err, data) {
+      src.blobs.list(docId, function(err, data) {
         if (err) return cb(err);
 
         var srcBlobs = data;
@@ -173,7 +183,7 @@ var Replicator = function(params) {
         util.async.iterator({
           items: blobIds,
           iterator: function(blobId, cb) {
-            src.getBlob(docId, blobId, function(err, blob) {
+            src.blobs.get(docId, blobId, function(err, blob) {
               if (err) return cb(err);
               blobs.push(blob);
               cb(null);
@@ -249,7 +259,7 @@ var Replicator = function(params) {
       util.async.iterator({
         items: blobs,
         iterator: function(blob, cb) {
-          that.localStore.createBlob(blob.document, blob.id, blob.data, cb);
+          that.localStore.blobs.create(blob.document, blob.id, blob.data, cb);
         }
       })(null, cb);
     }
@@ -322,7 +332,7 @@ var Replicator = function(params) {
       util.async.iterator({
         items: blobs,
         iterator: function(blob, cb) {
-          that.remoteStore.createBlob(blob.document, blob.id, blob.data, cb);
+          that.remoteStore.blobs.create(blob.document, blob.id, blob.data, cb);
         }
       })(null, cb);
     }
@@ -343,24 +353,23 @@ var Replicator = function(params) {
     var localDocs;
     var remoteDocs;
 
-    function getLocalStates(cb) {
-      that.localDocStates(function(err, data) {
-        localDocs = data;
+    function getLocalDocs(cb) {
+      that.localStore.list(function(err, data) {
+        localDocs = listToMap(data);
         cb(err);
       });
     }
 
     function getRemoteDocs(cb) {
       //console.log("replicator.computeJobs: localDocs=", localDocs);
-      that.remoteStore.list(function(err, documents) {
-        remoteDocs = documents;
-        //console.log("replicator.computeJobs: remoteDocs=", localDocs);
+      that.remoteStore.list(function(err, data) {
+        remoteDocs = listToMap(data);
         cb(err);
       });
     }
 
     var processDocs = util.async.iterator({
-      selector: function(data) { return localDocs; },
+      selector: function() { return localDocs; },
       iterator: function(localDoc, id, cb) {
         var remoteDoc = remoteDocs[id];
 
@@ -429,7 +438,7 @@ var Replicator = function(params) {
       cb(null);
     }
 
-    util.async.sequential([getLocalStates, getRemoteDocs,
+    util.async.sequential([getLocalDocs, getRemoteDocs,
       processDocs, processDeletedDocs, processRest], function(err, data) {
         console.log("replicator.computeJobs: jobs=", jobs);
         cb(err, jobs);
@@ -441,20 +450,6 @@ var Replicator = function(params) {
   // -----------------
   //
   // Returns: A hash of document status objects
-
-  this.localDocStates = function(cb) {
-
-    that.localStore.list(function(err, localDocs) {
-      if (err) return cb(err);
-
-      var result = {};
-      _.each(localDocs, function(doc) {
-        result[doc.id] = doc;
-        delete result[doc.id].id;
-      });
-      cb(null, result);
-    });
-  };
 
   // Start sync
   // -----------------

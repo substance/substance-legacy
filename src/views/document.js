@@ -130,8 +130,8 @@ sc.views.Document = Substance.View.extend({
         var largeImageId = Substance.util.uuid();
 
 
-        if (!session.localStore.createBlob(that.model.document.id, mediumImageId, mediumImage) ||
-            !session.localStore.createBlob(that.model.document.id, largeImageId, largeImage)) {
+        if (!session.localStore.blobs.create(that.model.document.id, mediumImageId, mediumImage) ||
+            !session.localStore.blobs.create(that.model.document.id, largeImageId, largeImage)) {
           throw new Substance.errors.Error('Storing images failed');
         }
 
@@ -415,8 +415,8 @@ sc.views.Document = Substance.View.extend({
     var that = this;
     var doc = that.model.document;
 
-    var coverLarge = doc.store.getBlob(doc.properties.cover_large);
-    var coverMedium = doc.store.getBlob(doc.properties.cover_medium);
+    var coverLarge = doc.store.blobs.get(doc.properties.cover_large);
+    var coverMedium = doc.store.blobs.get(doc.properties.cover_medium);
 
     that.$el.html(_.tpl('document', {
       document: that.model.document,

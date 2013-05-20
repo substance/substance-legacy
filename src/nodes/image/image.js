@@ -77,7 +77,7 @@ sc.views.Node.define('image', {
         var mediumImage = canvas.toDataURL("image/png");
         var mediumImageId = Substance.util.uuid('');
 
-        that.document.store.createBlob(mediumImageId, mediumImage);
+        that.document.store.blobs.create(mediumImageId, mediumImage);
         var change = [
           "update", {
             id: that.model.id,
@@ -102,7 +102,7 @@ sc.views.Node.define('image', {
     this.$('.content').append('<input type="file" class="files" name="files[]"/><div class="message"></div>');
 
     if (that.model.medium) {
-      var imageData = session.document.store.getBlob(that.model.medium);
+      var imageData = session.document.store.blobs.get(that.model.medium);
       that.$('.content').append(['<img class="thumb" src="', imageData.data,
                                  '" title="', escape(that.model.caption), '"/>'].join(''));
     } else {
