@@ -21,7 +21,7 @@
           <div class="environments">
             <% if (Object.keys(Substance.configurations).length > 1) { %>
               <% _.each(Substance.configurations, function(c, key) { %>
-                <a href="#" class="load-environment <%= key %>" data-env="<%= key %>"><div class="dot"></div><%= key %></a>  
+                <a href="#" class="load-environment <%= key %>" data-env="<%= key %>"><div class="dot"></div><%= key %></a>
               <% }); %>
             <% } %>
           </div>
