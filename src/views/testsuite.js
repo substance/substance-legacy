@@ -69,7 +69,7 @@ sc.views.Testsuite = Substance.View.extend({
 
   render: function () {
     this.$el.html(_.tpl('testsuite', {
-      tests: Substance.tests
+      testTree: Substance.getTestTree()
     }));
     return this;
   },
