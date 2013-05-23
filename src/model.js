@@ -54,7 +54,12 @@ var WebAppSettings = function(settings) {
   };
 
   this.getItem = function(key) {
-    return JSON.parse(localStorage.getItem(key));
+    try {
+      return JSON.parse(localStorage.getItem(key));
+    } catch (err) {
+      console.log("Localstore contains illegal value.");
+      return null;
+    }
   };
 };
 
@@ -92,4 +97,3 @@ Substance.test.createDump = function() {
   });
   return dump;
 }
-
