@@ -12,13 +12,15 @@ var _ = root._;
 // TODO: No multiuser support yet, use app.user
 
 var Session = function(options) {
+  // an instance id to analyze problems with
+  this.__id__ = util.uuid();
   this.env = options.env;
   this.initStores();
 };
 
 Session.__prototype__ = function() {
 
-  var getUserStore = function(username) {
+  this.getUserStore = function(username) {
     var scope = username ? this.env+":"+username : this.env;
 
     if (Substance.client_type === "native") {
@@ -30,6 +32,7 @@ Session.__prototype__ = function() {
     if (Substance.LocalStore) {
       return new Substance.LocalStore(scope);
     }
+
     return new Substance.MemoryStore();
   };
 
@@ -38,21 +41,29 @@ Session.__prototype__ = function() {
     this.replicate();
   }, 4000);
 
-  this.initStores = function() {
-    var username = this.user();
+  this.getClient = function() {
     var token = this.token();
     var config = Substance.config();
-
-    this.client = new Substance.Client({
+    return new Substance.Client({
       "hub_api": config.hub_api,
       "client_id": config.client_id,
       "client_secret": config.client_secret,
       "token": token
     });
+  }
+
+  this.initStores = function() {
+    var username = this.user();
+    var token = this.token();
+    var config = Substance.config();
+    this.client = this.getClient();
 
     if (username) {
-      this.localStore = getUserStore.call(this, username);
-      this.remoteStore = this.client.store;
+      this.localStore = this.getUserStore(username);
+      this.remoteStore = this.client.getUserStore(username);
+    } else {
+      this.localStore = null;
+      this.remoteStore = null;
     }
   };
 
@@ -127,6 +138,7 @@ Session.__prototype__ = function() {
     var doc = this.localStore.get(id);
     this.document = new Session.Document(this, doc);
     this.initDoc();
+    return this.document;
   };
 
   this.deleteDocument = function(id) {
@@ -137,12 +149,7 @@ Session.__prototype__ = function() {
   this.replicate = function(cb) {
     this.pendingSync = false;
 
-    var replicator = new Substance.Replicator({
-      user: this.user(),
-      // HACK: provisionally, as remote store relies on asynchronous API
-      localStore: new Substance.AsyncStore(this.localStore),
-      remoteStore: this.remoteStore
-    });
+    var replicator = this.createReplicator();
 
     this.trigger('replication:started');
 
@@ -393,14 +400,22 @@ Session.__prototype__ = function() {
     this.client.createUser(user, cb);
   };
 
+  this.createReplicator = function() {
+    return new Substance.Replicator({
+      user: this.user(),
+      localStore: new Substance.AsyncStore(this.localStore),
+      remoteStore: this.remoteStore
+    });
+  };
+
   // only available for testing
   this.seed = function(seedData) {
     console.log("Seeding local store", seedData);
     if (this.env !== "test") return;
     // Note: usually we do not want to use this function, only for seeding
-    getUserStore.call(this).impl.clear();
+    this.getUserStore(this.user()).impl.clear();
     _.each(seedData, function(seed, user) {
-      var userStore = getUserStore.call(this, user);
+      var userStore = this.getUserStore(user);
       userStore.seed(seed);
     }, this);
   }
