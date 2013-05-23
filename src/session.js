@@ -211,15 +211,15 @@ Session.__prototype__ = function() {
 
     // Push document cover?
     if (doc.properties.cover_medium) {
-      blobs[doc.properties.cover_medium] = doc.store.blobs.get(doc.properties.cover_medium);
-      blobs[doc.properties.cover_large] = doc.store.blobs.get(doc.properties.cover_large);
+      blobs[doc.properties.cover_medium] = doc.store.getBlob(doc.properties.cover_medium);
+      blobs[doc.properties.cover_large] = doc.store.getBlob(doc.properties.cover_large);
     }
 
     // Find all images
     _.each(doc.nodes, function(node) {
       if (node.type === "image") {
-        blobs[node.medium] = doc.store.blobs.get(node.medium);
-        blobs[node.large] = doc.store.blobs.get(node.large);
+        blobs[node.medium] = doc.store.getBlob(node.medium);
+        blobs[node.large] = doc.store.getBlob(node.large);
       }
     });
 
@@ -413,6 +413,7 @@ Session.Document = function(session, document, schema) {
   Substance.Document.call(this, document, schema);
   this.store = new Session.DocumentStore(session, document.id);
 }
+
 Session.Document.__prototype__ = function() {
 
   var __super__ = util.prototype(this);
@@ -461,14 +462,9 @@ Session.DocumentStore = function(session, docId) {
   this.id = docId;
   this.session = session;
   this.store = session.localStore;
-  this.blobs = this.__blobs__();
 };
 
 Session.DocumentStore.__prototype__ = function() {
-
-  this.__blobs__ = function() {
-    return new Session.DocumentStore.Blobs(this);
-  }
 
   this.getInfo = function() {
     return this.store.getInfo(this.id);
@@ -500,29 +496,32 @@ Session.DocumentStore.__prototype__ = function() {
     return this.store.setRefs(this.id, branch, refs);
   };
 
+  // Blob API
+  // --------
+
+  this.createBlob = function(blobId, base64data) {
+    return this.store.createBlob(this.id, blobId, base64data);
+  };
+
+  this.getBlob = function(blobId) {
+    // Note: check before delegation to make this call non-failing,
+    // instead null is returned.
+    return this.store.hasBlob(this.id, blobId) ? this.store.getBlob(this.id, blobId) : null;
+  };
+
+  this.hasBlob = function(blobId) {
+    return this.store.hasBlob(this.id, blobId);
+  };
+
+  this.deleteBlob = function(blobId) {
+    return this.store.deleteBlob(this.id, blobId);
+  };
+
+  this.listBlobs = function() {
+    return this.store.listBlobs(this.id);
+  };
+
 };
-
-Session.DocumentStore.Blobs = function(self) {
-
-  var store = self.store;
-  var docId = self.id;
-
-  this.create = function(blobId, base64data) {
-    return store.blobs.create(docId, blobId, base64data);
-  };
-
-  this.get = function(blobId) {
-    return store.blobs.exists(docId, blobId) ? store.get(docId, blobId) : null;
-  };
-
-  this.delete = function(blobId) {
-    return store.blobs.delete(docId, blobId);
-  };
-
-  this.list = function() {
-    return store.blobs.list(docId);
-  };
-}
 
 Session.DocumentStore.prototype = new Session.DocumentStore.__prototype__();
 

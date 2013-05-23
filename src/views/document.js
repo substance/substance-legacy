@@ -415,8 +415,8 @@ sc.views.Document = Substance.View.extend({
     var that = this;
     var doc = that.model.document;
 
-    var coverLarge = doc.store.blobs.get(doc.properties.cover_large);
-    var coverMedium = doc.store.blobs.get(doc.properties.cover_medium);
+    var coverLarge = doc.store.getBlob(doc.properties.cover_large);
+    var coverMedium = doc.store.getBlob(doc.properties.cover_medium);
 
     that.$el.html(_.tpl('document', {
       document: that.model.document,

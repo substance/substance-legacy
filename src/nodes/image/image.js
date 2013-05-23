@@ -77,7 +77,7 @@ sc.views.Node.define('image', {
         var mediumImage = canvas.toDataURL("image/png");
         var mediumImageId = Substance.util.uuid('');
 
-        that.document.store.blobs.create(mediumImageId, mediumImage);
+        that.document.store.createBlob(mediumImageId, mediumImage);
         var change = [
           "update", {
             id: that.model.id,

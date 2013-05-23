@@ -73,14 +73,14 @@ var Replicator = function(params) {
     }
 
     function getBlobs(cb) {
-      that.localStore.blobs.list(docInfo.id, function(err, data) {
+      that.localStore.listBlobs(docInfo.id, function(err, data) {
         if (err) return cb(err);
 
         var blobIds = data;
         var options = {
           items: blobIds,
           iterator: function (blobId, cb) {
-            that.localStore.blobs.get(docInfo.id, blobId, function(err, data) {
+            that.localStore.getBlob(docInfo.id, blobId, function(err, data) {
               if (err) return cb(err);
               blobs.push(data);
               cb(null);
@@ -116,7 +116,7 @@ var Replicator = function(params) {
     var createRemoteBlobs = util.async.iterator({
       items: blobs,
       iterator: function(blob, cb) {
-        that.remoteStore.blobs.create(blob.document, blob.id, blob.data, cb);
+        that.remoteStore.createBlob(blob.document, blob.id, blob.data, cb);
       }
     });
 
@@ -163,13 +163,13 @@ var Replicator = function(params) {
 
 
   function getDiffBlobs(src, dst, docId, cb) {
-    dst.blobs.list(docId, function(err, data) {
+    dst.listBlobs(docId, function(err, data) {
       if (err) return cb(err);
 
       var dstBlobs = data;
       //console.log("replicator.getDiffBlobs: dstBlobs", dstBlobs)
 
-      src.blobs.list(docId, function(err, data) {
+      src.listBlobs(docId, function(err, data) {
         if (err) return cb(err);
 
         var srcBlobs = data;
@@ -183,7 +183,7 @@ var Replicator = function(params) {
         util.async.iterator({
           items: blobIds,
           iterator: function(blobId, cb) {
-            src.blobs.get(docId, blobId, function(err, blob) {
+            src.getBlob(docId, blobId, function(err, blob) {
               if (err) return cb(err);
               blobs.push(blob);
               cb(null);
@@ -259,7 +259,7 @@ var Replicator = function(params) {
       util.async.iterator({
         items: blobs,
         iterator: function(blob, cb) {
-          that.localStore.blobs.create(blob.document, blob.id, blob.data, cb);
+          that.localStore.createBlob(blob.document, blob.id, blob.data, cb);
         }
       })(null, cb);
     }
@@ -332,7 +332,7 @@ var Replicator = function(params) {
       util.async.iterator({
         items: blobs,
         iterator: function(blob, cb) {
-          that.remoteStore.blobs.create(blob.document, blob.id, blob.data, cb);
+          that.remoteStore.createBlob(blob.document, blob.id, blob.data, cb);
         }
       })(null, cb);
     }
