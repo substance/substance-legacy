@@ -93,16 +93,12 @@ var Replicator = function(params) {
 
     function createRemoteDoc(cb) {
       //console.log("replicator.createRemote: commits", commits);
-      that.remoteStore.create(doc.id, {}, cb);
-    }
-
-    function updateRemoteDoc(cb) {
       var options = {
         commits: commits,
         meta: doc.meta,
         refs: doc.refs
       };
-      that.remoteStore.update(doc.id, options, cb)
+      that.remoteStore.create(doc.id, options, cb);
     }
 
     function setRefs(cb) {
@@ -122,7 +118,7 @@ var Replicator = function(params) {
 
     var options = {
       functions: [getLocalDoc, extractLocalCommits, getBlobs,
-        createRemoteDoc, updateRemoteDoc, setRefs, createRemoteBlobs]
+        createRemoteDoc, setRefs, createRemoteBlobs]
     };
     util.async.sequential(options, cb);
   };

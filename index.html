@@ -146,12 +146,9 @@
     <script type="text/html" name="test-tree">
       <div id="tests_<%=item.id%>"><%=item.name%>
           <% _.each(item, function(item) { %>
-            <% console.log("Template 'test-tree'", item); %>
             <% if(item instanceof Substance.Test) { %>
-              <% console.log("... is Test"); %>
               <a href="#tests/<%= item.id %>" class="test" id="<%= item.id %>"><i></i><%= item.name %></a>
             <% } else if (_.isObject(item)) { %>
-              <% console.log("... is sub-tree"); %>
               <% print(_.tpl('test-tree', {item: item})); %>
             <% } %>
           <% }); %>
