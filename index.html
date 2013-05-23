@@ -16,7 +16,7 @@
       <div id="header">
         <div class="header-container">
           <a href="#" class="toggle-environments" title="Toggle Environments" >
-            <div class="current-env <%= session.env %>"></div>
+            <div class="current-env <%= Substance.session.env %>"></div>
           </a>
           <div class="environments">
             <% if (Object.keys(Substance.configurations).length > 1) { %>
@@ -41,7 +41,7 @@
               <a href="#" class="toggle-user-actions" title="Toggle User Actions" ><%= user %><i class="icon-caret-down"></i></a>
               <div class="user-actions">
                 <a href="<%= Substance.config().hub + '/' + user %>" class="user-action profile"><i class="icon-user"></i>User Profile</a>
-                <% if (session.env === "test") { %><a href="#tests" class="user-action testsuite"><i class="icon-tasks"></i>Test Suite</a><% } %>
+                <% if (Substance.session.env === "test") { %><a href="#tests" class="user-action testsuite"><i class="icon-tasks"></i>Test Suite</a><% } %>
                 <a href="#logout" class="user-action logout"><i class="icon-off"></i>Logout</a>
               </div>
             </div>
@@ -108,8 +108,8 @@
 
                 <!--<div class="author"><a href="#">michael</a></div>-->
                 <div class="updated-at"><span>updated </span><%= doc.updated_at ? $.timeago(doc.updated_at) : "NO_DATE" %></div>
-                <div class="sync-state<%= session.synched(doc.id) ? " synced" : "" %>">
-                  <%= session.synched(doc.id) ? "synced" : "local changes" %>
+                <div class="sync-state<%= Substance.session.synched(doc.id) ? " synced" : "" %>">
+                  <%= Substance.session.synched(doc.id) ? "synced" : "local changes" %>
                 </div>
               </div>
             <% }); %>
@@ -236,9 +236,9 @@
 
           <div class="error-message"></div>
 
-          <div class="publish-state <%= session.publishState() %>">
+          <div class="publish-state <%= Substance.session.publishState() %>">
             <div class="icon"></div>
-            <div class="state"><%= session.publishState() %></div>
+            <div class="state"><%= Substance.session.publishState() %></div>
             <div class="message">Private document</div>
 
             <a href="#" class="toggle-publish-settings"><div class="icon"></div></a>

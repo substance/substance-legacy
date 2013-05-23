@@ -12,7 +12,7 @@ sc.views.PublishSettings = Substance.View.extend({
 
   createVersion: function() {
     var that = this;
-    session.createVersion(function(err) {
+    Substance.session.createVersion(function(err) {
       that.trigger('publish_state:updated');
       that.render();
     });
@@ -21,7 +21,7 @@ sc.views.PublishSettings = Substance.View.extend({
 
   unpublish: function() {
     var that = this;
-    session.unpublish(function(err) {
+    Substance.session.unpublish(function(err) {
       that.trigger('publish_state:updated');
       that.render();
     });
@@ -31,7 +31,7 @@ sc.views.PublishSettings = Substance.View.extend({
   addPublication: function(e) {
     var network = $('#substance_networks').val();
     var that = this;
-    session.createPublication(network, function(err) {
+    Substance.session.createPublication(network, function(err) {
       that.render();
     });
     return false;
@@ -41,7 +41,7 @@ sc.views.PublishSettings = Substance.View.extend({
     var id = $(e.currentTarget).attr('data-id');
     var that = this;
     
-    session.deletePublication(id, function(err) {
+    Substance.session.deletePublication(id, function(err) {
       that.render();
     });
     return false;

@@ -102,7 +102,7 @@ sc.views.Node.define('image', {
     this.$('.content').append('<input type="file" class="files" name="files[]"/><div class="message"></div>');
 
     if (that.model.medium) {
-      var imageData = session.document.store.blobs.get(that.model.medium);
+      var imageData = Substance.session.document.store.getBlob(that.model.medium);
       that.$('.content').append(['<img class="thumb" src="', imageData.data,
                                  '" title="', escape(that.model.caption), '"/>'].join(''));
     } else {

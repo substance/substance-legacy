@@ -20,8 +20,8 @@
                       'console', 'testsuite', 'replicationStart',
                       'replicationFinish');
 
-      session.on('replication:started', this.replicationStart);
-      session.on('replication:finished', this.replicationFinish);
+      Substance.session.on('replication:started', this.replicationStart);
+      Substance.session.on('replication:finished', this.replicationFinish);
 
       this.registerKeyBindings();
     },
@@ -53,7 +53,7 @@
 
     // Synchronizing
     _sync: function() {
-      session.replicate();
+      Substance.session.replicate();
       return false;
     },
 
@@ -62,7 +62,7 @@
           username = $('#login_username').val(),
           password = $('#login_password').val();
 
-      session.authenticate(username, password, function(err, data) {
+      Substance.session.authenticate(username, password, function(err, data) {
         if (err) {
           that.$('#login .error-message').html(err);
           return;
@@ -83,7 +83,7 @@
             password: $('#signup_password').val()
           };
 
-      session.createUser(user, function(err, data) {
+      Substance.session.createUser(user, function(err, data) {
         if (err) {
           that.$('#login .error-message').html(err);
           return;
@@ -97,7 +97,7 @@
     },
 
     _logout: function() {
-      session.logout();
+      Substance.session.logout();
       this.render();
 
       // Show login screen
@@ -129,11 +129,11 @@
     // Toggle document view
     document: function(id) {
       var that = this;
-      session.loadDocument(id);
+      Substance.session.loadDocument(id);
       // Shortcuts
-      window.doc = session.document;
+      window.doc = Substance.session.document;
       if (this.view) this.view.dispose();
-      that.view = new sc.views.Editor({model: session});
+      that.view = new sc.views.Editor({model: Substance.session});
       that.render();
       that.listenForDocumentChanges();
     },
@@ -142,12 +142,12 @@
     console: function(id) {
       var that = this;
 
-      session.loadDocument(id);
+      Substance.session.loadDocument(id);
 
       // Shortcuts
-      window.doc = session.document;
+      window.doc = Substance.session.document;
       if (this.view) this.view.dispose();
-      that.view = new sc.views.Console({model: session});
+      that.view = new sc.views.Console({model: Substance.session});
       that.render();
     },
 
@@ -181,21 +181,21 @@
     // ---------------
 
     newDocument: function() {
-      session.createDocument();
+      var s = Substance.session;
+      s.createDocument();
       if (this.view) this.view.dispose();
-      this.view = new sc.views.Editor({model: session });
+      this.view = new sc.views.Editor({model: s });
       this.render();
-      router.navigate('documents/'+session.document.id, false);
+      router.navigate('documents/'+s.document.id, false);
 
       // Shortcuts
-      window.doc = session.document;
-      window.session = session;
+      window.doc = s.document;
 
       this.listenForDocumentChanges();
     },
 
     dashboard: function() {
-      if (!session.user()) return this.login();
+      if (!Substance.session.user()) return this.login();
 
       if (this.view) this.view.dispose();
       this.view = new sc.views.Dashboard();
@@ -224,7 +224,7 @@
       }
 
       this.$el.html(_.tpl('substance', {
-        user: session.user(),
+        user: Substance.session.user(),
         document: document
       }));
 

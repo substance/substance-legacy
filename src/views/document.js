@@ -130,8 +130,8 @@ sc.views.Document = Substance.View.extend({
         var largeImageId = Substance.util.uuid();
 
 
-        if (!session.localStore.blobs.create(that.model.document.id, mediumImageId, mediumImage) ||
-            !session.localStore.blobs.create(that.model.document.id, largeImageId, largeImage)) {
+        if (!Substance.session.localStore.createBlob(that.model.document.id, mediumImageId, mediumImage) ||
+            !Substance.session.localStore.createBlob(that.model.document.id, largeImageId, largeImage)) {
           throw new Substance.errors.Error('Storing images failed');
         }
 

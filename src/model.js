@@ -74,10 +74,8 @@ function published(doc) {
 // Initialization
 // -----------------
 
-var session;
-
 function initSession(env) {
-  session = new Substance.Session({env: env});
+  Substance.session = new Substance.Session({env: env});
 }
 
 // TODO: Find a better place

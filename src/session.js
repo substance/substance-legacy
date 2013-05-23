@@ -411,7 +411,7 @@ _.extend(Session.prototype, util.Events);
 
 Session.Document = function(session, document, schema) {
   Substance.Document.call(this, document, schema);
-  this.store = new Session.DocumentStore(session, document);
+  this.store = new Session.DocumentStore(session, document.id);
 }
 Session.Document.__prototype__ = function() {
 
@@ -457,8 +457,9 @@ Session.Document.__prototype__.prototype = Substance.Document.prototype;
 Session.Document.prototype = new Session.Document.__prototype__();
 
 // A facette of the localStore for a specific document
-Session.DocumentStore = function(session, document) {
-  this.id = document.id;
+Session.DocumentStore = function(session, docId) {
+  this.id = docId;
+  this.session = session;
   this.store = session.localStore;
   this.blobs = this.__blobs__();
 };
@@ -483,9 +484,10 @@ Session.DocumentStore.__prototype__ = function() {
   };
 
   this.update = function(options) {
+
     // Triggers a sync with remote store if available
-    session.pendingSync = true;
-    session.lazySync();
+    this.session.pendingSync = true;
+    this.session.lazySync();
 
     return this.store.update(this.id, options);
   }

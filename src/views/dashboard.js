@@ -9,13 +9,13 @@
 
     _deleteDocument: function(e) {
       var docId = $(e.currentTarget).attr('data-id');
-      session.deleteDocument(docId);
+      Substance.session.deleteDocument(docId);
       this.render();
       return false;
     },
 
     render: function() {
-      var documents = session.listDocuments();
+      var documents = Substance.session.listDocuments();
       this.$el.html(_.tpl('dashboard', {
         documents: documents
       }));

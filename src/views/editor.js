@@ -54,7 +54,7 @@ sc.views.Editor = Substance.View.extend({
     var documentId = this.model.document.id;
 
     // Triggers a re-render
-    session.loadPublications(function(err) {
+    Substance.session.loadPublications(function(err) {
       that.renderPublishSettings();
     });
 
@@ -69,7 +69,7 @@ sc.views.Editor = Substance.View.extend({
   toggleExport:        function (e) { this.toggleView('export'); return false; },
   toggleCollaborators: function (e) {
     var that = this;
-    session.loadCollaborators(function(err, collaborators) {
+    Substance.session.loadCollaborators(function(err, collaborators) {
       that.toggleView('collaborators');
     });
     return false;
