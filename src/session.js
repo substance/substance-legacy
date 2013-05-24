@@ -155,6 +155,7 @@ Session.__prototype__ = function() {
 
     var that = this;
     replicator.sync(function(err) {
+      if(err) console.log("Error during replication: ", err);
       that.trigger('replication:finished', err);
       if (cb) cb(err);
     });
