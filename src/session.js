@@ -402,11 +402,7 @@ Session.__prototype__ = function() {
   };
 
   this.createReplicator = function() {
-    return new Substance.Replicator({
-      user: this.user(),
-      localStore: new Substance.AsyncStore(this.localStore),
-      remoteStore: this.remoteStore
-    });
+    return new Substance.Replicator2({local: this.localStore, remote: this.remoteStore, remoteID: "substance.io"});
   };
 
   // only available for testing
