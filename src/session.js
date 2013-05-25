@@ -435,7 +435,7 @@ Session.Document.__prototype__ = function() {
     options = options || {};
     // apply the operation to the document (Substance.Document.apply)
     // without triggering events
-    var commit = __super__.apply.call(this, operation, {"silent": true});
+    var commit = __super__.apply.call(this, operation, _.extend({}, options, {"silent": true}));
 
     if (!options['no-commit']) {
       var refs = {
