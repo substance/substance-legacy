@@ -15,7 +15,7 @@ TMPDIR=$HOME/tmp/substance
 EXTERNALS=$TMPDIR
 VERBOSE=0
 
-function readopts {
+readopts() {
   while ((OPTIND<=$#)); do
     if getopts ":d:hv" opt; then
       case $opt in
