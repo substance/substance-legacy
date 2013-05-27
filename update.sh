@@ -1,5 +1,7 @@
 #!/bin/bash
 
+echo "Executing $(pwd)/update.sh"
+
 PROJECT_DIR=$(pwd)
 
 # sanity check: executed in the root folder?
