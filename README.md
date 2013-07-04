@@ -1,6 +1,6 @@
 # Substance
 
-Substance is a web-based technology stack for collaborative document manipulation. Substance releases all building blocks as Open Source under and MIT license, so you can glue them together for your usecase.
+Substance is a web-based technology stack for collaborative document manipulation. Substance releases all building blocks as Open Source under an MIT license, so you can glue them together for your usecase.
 
 Currently the following modules are available:
 
