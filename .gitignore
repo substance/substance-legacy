@@ -31,3 +31,16 @@ lib/chronicle
 /test/tests
 /lib/util
 /tests
+lib/console/
+
+lib/data/
+
+lib/library/
+
+lib/operator/
+
+lib/replicator/node_modules/substance-test
+
+lib/test/
+
+lib/view/
