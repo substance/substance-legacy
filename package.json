@@ -1,17 +1,20 @@
 {
-  "name": "substance",
-  "description": "A web-based content composition engine",
-  "version": "0.5.0",
-  "homepage": "http://substance.io/",
+  "name"          : "substance",
+  "description"   : "Towards open digital publishing.",
+  "url"           : "http://github.com/substance/substance/",
+  "keywords"      : ["digital documents", "linked-data", "online collaboration", "text editor", "browser"],
+  "author"        : "Michael Aufreiter",
+  "contributors"  : ["Oliver Buchtala"],
   "repository": {
-    "type": "git",
-    "url": "https://github.com/substance/substance"
+      "type": "git",
+      "url": "https://github.com/substance/substance.git"
+  },
+  "engines": {
+    "node": "0.8.x"
   },
   "dependencies": {
-    "ecstatic": "0.1.6",
-    "library": "0.1.0"
   },
-  "devDependencies": {
-    "coffee-script": "1.2.0"
+  "version"       : "0.5.0",
+  "scripts": {
   }
 }
