@@ -1,0 +1,10 @@
+{
+  "node": true,
+  "browser": true,
+  "jquery": true,
+  "devel": true,
+  "latedef": true,
+  "undef": true,
+  "unused": true,
+  "sub": true
+}

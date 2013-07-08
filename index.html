@@ -7,44 +7,32 @@
     <link href='styles/font-awesome.css' rel='stylesheet' type='text/css'/>
 
     <link href="styles/substance.css" media="screen" rel="stylesheet" type="text/css" />
+    <link href="styles/ken.css" media="screen" rel="stylesheet" type="text/css" />
     <link href="styles/composer.css" media="screen" rel="stylesheet" type="text/css" />
     <link href="styles/console.css" media="screen" rel="stylesheet" type="text/css" />
 
     <!-- Templates -->
     <script type="text/html" name="substance">
 
-      <div id="header">
-        <div class="header-container">
-          <a href="#" class="toggle-environments" title="Toggle Environments" >
-            <div class="current-env <%= Substance.session.env %>"></div>
-          </a>
-          <div class="environments">
-            <% if (Object.keys(Substance.configurations).length > 1) { %>
-              <% _.each(Substance.configurations, function(c, key) { %>
-                <a href="#" class="load-environment <%= key %>" data-env="<%= key %>"><div class="dot"></div><%= key %></a>
-              <% }); %>
+      <!-- Substance Main Menu -->
+      <div id="menu">
+        <div class="views">
+          <a href="#" class="toggle-view browse"><i class="icon-th-large"></i></a>
+          <% if (user()) { %>
+            <a href="#" class="toggle-view dashboard" ><i class="icon-user"></i></a>
+          <% } %>
+          <% if (document) { %>
+            <a href="#" class="toggle-view document"><i class="icon-edit"></i></a>
+          <% } %>
+        </div>
+
+        <div class="actions">
+          <% if (user()) { %>
+            <a href="#new" class="action new-document"><i class="icon-plus"></i></a>
+            <% if (env === "test") { %>
+              <a href="#tests" class="action testsuite" ><i class="icon-tasks"></i></a>
             <% } %>
-          </div>
-
-          <a href="#" class="logo">Substance</a>
-
-          <% if (user) { %>
-            <div class="menu">
-              <a href="#" class="dashboard<%= !document ? ' active' : ''%>">My Documents</a>
-              <% if (document) { %> <a href="#" class="document active"><%= document.title || 'Untitled' %></a><% } %>
-            </div>
-
-            <div class="user-status">
-              <a href="#" class="sync button disabled"><div class="icon"></div></a>
-              <a href="#new" class="new-document button"><div class="icon"></div>New Document</a>
-
-              <a href="#" class="toggle-user-actions" title="Toggle User Actions" ><%= user %><i class="icon-caret-down"></i></a>
-              <div class="user-actions">
-                <a href="<%= Substance.config().hub + '/' + user %>" class="user-action profile"><i class="icon-user"></i>User Profile</a>
-                <% if (Substance.session.env === "test") { %><a href="#tests" class="user-action testsuite"><i class="icon-tasks"></i>Test Suite</a><% } %>
-                <a href="#logout" class="user-action logout"><i class="icon-off"></i>Logout</a>
-              </div>
-            </div>
+            <a href="#logout" class="action logout"><i class="icon-off"></i></a>
           <% } %>
         </div>
       </div>
@@ -53,7 +41,7 @@
 
       </div>
 
-      <!-- Temp Canvas for image manipulation -->
+      <!-- Temporary Canvas for image manipulation -->
       <canvas id="canvas" style="display: none;"></canvas>
     </script>
 
@@ -72,63 +60,28 @@
       </div>
     </script>
 
-    <!-- Context Bar -->
-    <script type="text/html" name="context_bar">
-      <div class="context-bar">
-        <div class="title">Insert Element</div>
-        <div class="insert-commands">
-          <% _.each(node_types, function(node) { %>
-            <a href="#" class="insert <%= node.type %>" data-type="<%= node.type %>"><%= node.name %></a>
-          <% }); %>
-        </div>
-      </div>
-    </script>
-
     <!-- Dashboard -->
     <script type="text/html" name="dashboard">
       <div id="dashboard">
-      <% if (documents.length > 0) { %>
-          <div id="documents">
-            <% _.each(documents, function(doc) { %>
-              <div class="document">
-                <% if (published(doc)) { %>
-                  <div class="status published">Published</div>
-                <% } else { %>
-                  <div class="status">Private</div>
-                <% } %>
+        <div class="shelf">
+          <div class="user">
+            <div><%= session.user() %></div>
+          </div>
 
-                <a class="load-document" href="#<%= doc.file %>" document="<%= doc._id %>">
-
-                  <div class="title">
-                    <%= doc.title %>
-                  </div>
-                </a>
-
-                <a href="#" class="delete-document" data-id="<%= doc.id %>"></a>
-
-                <!--<div class="author"><a href="#">michael</a></div>-->
-                <div class="updated-at"><span>updated </span><%= doc.updated_at ? $.timeago(doc.updated_at) : "NO_DATE" %></div>
-                <div class="sync-state<%= Substance.session.synched(doc.id) ? " synced" : "" %>">
-                  <%= Substance.session.synched(doc.id) ? "synced" : "local changes" %>
-                </div>
-              </div>
+          <!-- User-specific document collections -->
+          <div class="collections">
+            <% _.each(library.listCollections(), function(c) { %>
+              <a href="#dashboard/<%= c.id %>" class="collection<%= c.id === library.collection.id ? ' active' : '' %>"><%= c.name %> <div class="count"><%= c.documents.length %></div></a>
             <% }); %>
           </div>
         </div>
-      <% } else { %>
-        <div id="documents">
-          <h2>No Documents yet ...</h2>
+
+        <div class="documents">
+
         </div>
-      <% } %>
       </div>
     </script>
 
-    <!-- Startpage -->
-    <script type="text/html" name="start">
-      <div id="help">
-        <img src="images/introduction.png"/>
-      </div>
-    </script>
 
     <!-- Testsuite -->
     <script type="text/html" name="testsuite">
@@ -143,6 +96,7 @@
       </div>
     </script>
 
+    <!-- Testtree -->
     <script type="text/html" name="test-tree">
       <div id="tests_<%=item.id%>"><%=item.name%>
           <% _.each(item, function(item) { %>
@@ -153,121 +107,6 @@
             <% } %>
           <% }); %>
       </div>
-    </script>
-
-
-    <!-- Console -->
-    <script type="text/html" name="console">
-      <div class="operations">
-        <% applied = true %>
-        <% var width = parseInt((800 / operations.length) - 1, 10); %>
-        <% width = Math.min(width, 40); %>
-        <% _.each(operations, function(op) { %>
-          <a style="width: <%= width %>px;" href="#" class="operation<%= applied ? ' applied' : '' %>" data-sha="<%= op.sha %>"></a>
-          <% if (op.sha === sha) applied = false; %>
-        <% }); %>
-      </div>
-
-      <div class="console-wrapper">
-        <div class="console">
-          <div class="scope" id="scope">
-
-          </div>
-          <div class="action">
-            <textarea id="command" class="command inactive"></textarea>
-            <div class="apply-operation">Apply</div>
-          </div>
-        </div>
-
-        <div class="output visualization">
-          <div class="select-output">
-            <a href="#" class="toggle-output active" data-output="visualization">Visualization</a>
-            <a href="#" class="toggle-output" data-output="content">Content</a>
-            <a href="#" class="toggle-output last" data-output="operations">Operations</a>
-          </div>
-
-          <div class="document">
-            <% _.each(nodes, function(node) { %>
-              <div class="node <%= node.type %>" data-id="<%= node.id %>">
-                <% _.each(node.content.split(''), function(ch) { %><span><%= ch %></span><% }); %>
-              </div>
-            <% }); %>
-          </div>
-        </div>
-      </div>
-    </script>
-
-    <script type="text/html" name="scope">
-      OPERATION:
-      <select name="examples" id="select_example">
-        <option value="">Choose Example</option>
-
-        <% _.each(["document", "annotation", "comment"], function(scope) { %>
-          <option value="">------------------</option>
-
-          <% _.each(commands[scope], function(c, index) { %>
-            <option value="<%= scope %>:<%= index %>"><%= c.name %></option>
-          <% }); %>
-        <% }); %>
-      </select>
-    </script>
-
-    <!-- Editor -->
-    <script type="text/html" name="editor">
-      <div id="document_menu">
-        <div class="document-menu-wrapper">
-          <div class="navigation">
-            <div class="actions">
-              <a class="action undo" href="#" title="Undo (CMD + Z)"><div class="icon"></div></a>
-              <a class="action redo" href="#" title="Redo (CMD + SHIFT + Z)"><div class="icon"></div></a>
-            </div>
-
-            <div class="toggles">
-              <!--<a class="toggle settings" href="#"><div class="icon"></div>Settings</a>-->
-              <a class="toggle view-online hidden" href="<%= Substance.config().hub+'/public/'+doc.id %>"><div class="icon"></div>View Online</a>
-              <a class="toggle collaborators" href="#"><div class="icon"></div>Collaborators</a>
-              <a class="toggle toggle-console" href="#"><div class="icon"></div>Console</a>
-              <!--<a class="toggle export" href="#"><div class="icon"></div>Export</a>-->
-            </div>
-          </div>
-
-          <div class="error-message"></div>
-
-          <div class="publish-state <%= Substance.session.publishState() %>">
-            <div class="icon"></div>
-            <div class="state"><%= Substance.session.publishState() %></div>
-            <div class="message">Private document</div>
-
-            <a href="#" class="toggle-publish-settings"><div class="icon"></div></a>
-            <div class="publish-settings">
-
-            </div>
-            <!--<div class="publish-actions"></div>-->
-          </div>
-        </div>
-
-        <div id="document_shelf">
-          <div class="shelf-content">
-          </div>
-        </div>
-      </div>
-
-      <div id="document_wrapper">
-
-      </div>
-      <div id="console_wrapper">
-
-      </div>
-    </script>
-
-    <!-- Document Settings -->
-    <script type="text/html" name="document_settings">
-      <h2>Document Settings</h2>
-      <form id="document_settings">
-        <div class="label">Name</div>
-        <input type="text" name="document_name" id="document_name"/>
-      </form>
-      <a href="#" class="delete-document">Delete Document</a>
     </script>
 
     <!-- User Login -->
@@ -316,341 +155,244 @@
       </div>
     </script>
 
-    <!-- Publish Settings -->
-    <script type="text/html" name="publish_settings">
-      <div class="publication-settings">
-        <div class="add-publication-wrapper">
-          <div class="network">
-            <select name="networks" id="substance_networks">
-              <% _.each(networks, function(n) { %>
-                <option value="<%= n.id %>"><%= n.name %></option>
-              <% }); %>
-            </select>
-          </div>
-          <a href="#" class="add-publication">Add</a>
-        </div>
-        <div class="publications">
-
-          <% if (publications.length === 0) { %>
-            <div class="no-publications">No publications so far</div>
-          <% } %>
-
-          <% _.each(publications, function(p) { %>
-            <div class="publication">
-              <div class="cover"><img src="<%= p.network.cover %>"/></div>
-              <div class="label"><%= p.network.name %></div>
-              <a href="#" class="delete-publication" data-id="<%= p.id %>"></a>
+    <!-- Publications -->
+    <script type="text/html" name="publications">
+      <% _.each(document.entry.get('publications'), function(pub) { %>
+        <div class="publication">
+          <div class="publication-header">
+            <i class="icon-smile"></i> <%= get(pub.network).name %>
+            <div class="actions">
+              <a href="#" class="create-version"><i class="icon-share"></i></a>
+              <a href="#" class="delete-publication" data-id="<%= pub.id %>"><i class="icon-trash"></i></a>
             </div>
-          <% }); %>
+          </div>
+          <div class="property">
+            <div class="label">Creator</div>
+            <div class="value"><%= get(pub.creator).name %></div>
+          </div>
+          <div class="property">
+            <div class="label">Status</div>
+            <div class="value">Confirmed</div>
+          </div>
         </div>
-      </div>
-
-      <% if (publications.length > 0) { %>
-        <div class="publish-actions">
-          <% if (publishState() === "unpublished") { %>
-            <a href="#" class="create-version"><div class="icon"></div>Publish</a>
-          <% } %>
-          <% if (publishState() === "dirty") { %>
-            <a href="#" class="create-version"><div class="icon"></div>Publish Changes</a>
-          <% } %>
-          <% if (publishState() !== "unpublished") { %>
-            <a href="#" class="unpublish-document"><div class="icon"></div>Unpublish</a>
-          <% } %>
-        </div>
-      <% } %>
+      <% }); %>
+      <a href="#" class="create-publication">Add Publication</a>
     </script>
+
 
     <!-- Document Collaborators -->
     <script type="text/html" name="document_collaborators">
+
       <div class="collaborators">
-        <% _.each(collaborators, function(c) { %>
-          <div class="collaborator"><%= c.collaborator %> <a href="#" class="remove-collaborator" data-id="<%= c.id %>">Remove</a></div>
+        <% _.each(document.entry.get('collaborators'), function(c) { %>
+          <div class="collaborator">
+            <%= c.name %>
+            <a href="#" class="delete-collaborator" data-id="<%= c.id %>">Remove</a>
+          </div>
         <% }); %>
       </div>
+
       <div class="add_collaborator">
-        <form id="add_collaborator_form">
-          <input type="text" name="collaborator" id="collaborator"/>
-          <input type="submit" id="add_collaborator" value="Add Collaborator"/>
-        </form>
+        <a class="add_collaborator">Add Collaborator</a>
+        <div class="add_collaborator_form">
+          <input type="text" name="collaborator" id="new_collaborator"/>
+          <a href="#" class="create-collaborator">Add</a>
+        </div>
       </div>
     </script>
 
-    <!-- Document Export -->
-    <script type="text/html" name="document_export">
-      <h1>Document Export</h1>
-      <div>Not yet ready.</div>
-    </script>
-
-    <!-- Toolbar -->
-    <script type="text/html" name="toolbar">
-      <div id="toolbar"></div>
-    </script>
-
-    <!-- Tool -->
-    <script type="text/html" name="tool">
-      <a class="tool" data-command="<%= type %>" href="#<%= type %>"><%= text %></a>
-    </script>
 
     <!-- Composer -->
     <script type="text/x-ejs-template" name="composer">
-      <div id="composer">
-        <div id="tools"></div>
-        <div id="document"></div>
-      </div>
-    </script>
 
-    <script type="text/x-ejs-template" name="document">
-      <div id="document_content">
-        <div class="cover-image-wrapper">
-          <% if (cover_medium) { %>
-            <img class="cover-image" src="<%= cover_medium %>"/>
-          <% } else { %>
-            <img class="cover-image" src="http://farm7.staticflickr.com/6235/6279776790_19e9569720_b.jpg"/>
-          <% } %>
-          <input type="file" class="cover-file" name="cover[]"/>
-
-          <div class="cover-image-placeholder">
-            Drop image here to replace cover
-          </div>
+      <div class="document-settings shelf">
+        <div class="meta">
+          <div class="title"><%= document.title %></div>
+          <div class="updated-at"><%= document.updated_at %></div>
         </div>
-        <div class="properties">
-            <div class="document-title" contenteditable="true"></div>
-            <div class="document-abstract" contenteditable="true"></div>
+
+        <div class="label">Creator</div>
+        <div class="creator">
+          <div class="value"><%= document.entry.get('creator').name %></div>
+        </div>
+
+        <div class="label">Collaborators</div>
+
+        <div class="collaborators">
 
         </div>
 
-        <div class="left-rail"></div>
-        <div class="right-rail"></div>
+        <!-- Publish Settings -->
+        <div class="label">Publications</div>
+        <div class="publications">
 
-        <div class="marker"></div>
-        <div class="nodes"></div>
-        <div id="context_bar"></div>
+        </div>
+      </div>
+
+      <div id="document_wrapper">
+        <div id="composer">
+          <div id="tools"></div>
+          <div id="document"></div>
+        </div>
+      </div>
+      <div id="console_wrapper">
+
       </div>
     </script>
 
-    <script type="text/x-ejs-template" name="comments">
-      <div class="comment-scopes">
-        <% _.each(comments.scopes, function(scope, i) { %>
-          <div id="<%= _.htmlId(scope.id) %>" class="comment-scope<%= i === 0 ? ' active' : ''%><%= scope.type ? ' '+scope.type : '' %>" data-node="<%= node() %>" data-annotation="<%= scope.annotation %>">
-          </div>
-        <% }); %>
-      </div>
+    <!-- Substance.Text Node -->
+    <script type="text/x-ejs-template" name="text">
+      <div class="content"></div>
+    </script>
 
-      <% _.each(comments.scopes, function(scope, i) { %>
-        <div id="comments_<%= _.htmlId(scope.id) %>" class="comments<%= i === 0 ? ' active' : ''%>">
-          <div class="scope-header<%= scope.type ? ' '+scope.type : '' %>">
-            <% if (!_.include(['document', 'node'], scope.type)) { %>
-              <div class="title"><%= scope.type[0].toUpperCase()+scope.type.substr(1) %></div>
-              <!--<div class="subtitle">4 days ago, by michael</div>-->
-              <a href="#" class="button close-issue" title="Close Issue">Resolve</a>
-            <% } else { %>
-              <div class="title">Discussion</div>
-            <% } %>
-          </div>
-          <div class="comments-wrapper">
-            <% if (scope.comments.length=== 0) { %>
-              <div class="comments-placeholder">Start the discussion by adding a <b>comment</b>.</div>
-            <% } %>
-            <% _.each(scope.comments, function(c) { %>
-              <div class="comment">
-                <div class="meta">
-                  <div class="author"><%= c.user %></div>
-                  <div class="date"><%= $.timeago(c.created_at) %></div>
-                </div>
-                <div class="message">
-                  <%= c.content %>
-                </div>
-                <a class="delete-comment" title="Delete comment" data-id="<%= c.id %>" href="#"></a>
-              </div>
-            <% }); %>
+    <!-- Ken.Browser  -->
+    <script type="text/x-ejs-template" name="browser">
+      <div id="facets"></div>
+      <div id="matrix" class="surface"></div>
+      <div id="details"></div>
+    </script>
 
-          </div>
-          <div class="new-comment">
-            <div class="comment-input-wrapper">
-              <textarea class="comment-content" name="comment" placeholder="Add a comment"></textarea>
+    <!-- Ken.Item  -->
+    <script type="text/x-ejs-template" name="item">
+      <a href="#<%= item.id %>" class="item" id="<%= item.id %>" data-id="<%= item.id %>">
+        <div class="inner">
+          <div class="article-type">
+            Article
+            <div class="published_at">
+              <% if (item.published_at) { %>
+                <%= new Date(item.published_at).toDateString() %>
+              <% } %>
             </div>
-            <a href="#" class="button insert-comment">Add Comment</a>
           </div>
+          <% if (matches.length > 0) { %>
+            <div class="markers">
+              <% _.each(matches, function(match) { %>
+                <div class="marker" style="background: <%= match.color %>"></div>
+              <% }); %>
+            </div>
+          <% } %>
+          <div class="name"><%= item.title.substr(0, 300) %></div>
+          <div class="authors"><%= item.creator.name %></div>
+        </div>
+      </a>
+    </script>
 
+    <!-- Ken.Facets  -->
+    <script type="text/x-ejs-template" name="facets">
+      <% var count = 0; %>
+      <% _.each(facets, function(f, key) { %>
+        <div class="filter <%= key %>">
+          <div class="filter-name"><%= f.name %></div>
+          <div class="available-values">
+            <% _.each(f.availableValues, function(val) { %>
+              <a href="#" class="value <%= val.selected ? 'remove' : 'add' %><%= val.relatedObjects.length > 0 ? " related" : "" %>" data-property="<%= key %>" data-value="<%= val.val %>" style="background: <%= val.color %>">
+                <%= val.val.toLowerCase().substr(0, 36) %>
+                <span class="frequency"><%= val.objects.length %></span>
+              </a>
+            <% }); %>
+          </div>
         </div>
       <% }); %>
     </script>
 
-    <script type="text/x-ejs-template" name="history">
-      <div class="operations">
-        <% _.each(_.clone(operations).reverse(), function(o, index) { %>
-          <a href="#" class="operation checkout-commit" data-commit="<%= o.sha %>"><%= _.opcode(o) %></a>
-        <% }); %>
-      </div>
-    </script>
 
-    <script type="text/x-ejs-template" name="outline">
-      <div class="outline">
-        Document outline. To be implemented.
-      </div>
-    </script>
-
-    <script type="text/x-ejs-template" name="patches">
-      <h2>Patches</h2>
-      <div class="patches">
-      </div>
-    </script>
-
-    <script type="text/x-ejs-template" name="tools">
-      <div class="tools">
-        <% if (selection().length === 0) { %>
-          <!--<div class="document-menu<%= selection() && selection().length > 0 ? "" : " active"%>">
-            <div class="tool-name">Document</div>
-            <div class="navigation">
-              <a class="toggle-tool comments<%= view === "comments" ? " active" : "" %>" href="#" data-view="comments">Comments</a>
-              <a class="toggle-tool history<%= view === "history" ? " active" : "" %>" href="#" data-view="history">History</a>
-            </div>
-          </div>-->
-        <% } %>
-        <% if (selection() && selection().length > 0) { %>
-          <div class="node-menu active">
-            <!--<div class="tool-name"><% if (selection().length === 1) { %>Text Element<% } else { %> Teh Selection <% } %></div>-->
-            <div class="navigation">
-              <!--<a class="toggle-tool comments" href="#" data-view="comments">CMTS</a>
-              <a class="toggle-tool edit" href="#" data-view="edit">EDIT</a>-->
-            </div>
-          </div>
-        <% } %>
-        <div class="tool">
-          Actual node tool goes here.
-        </div>
-      </div>
-    </script>
-
-    <script>
-      window.Substance = {};
-      // TODO: better check for client type
-      if(typeof redis === 'undefined') {
-        window.Substance.client_type = "browser";
-      } else {
-        window.Substance.client_type = "native";
-      }
-    </script>
+    <!-- all singletons are here -->
+    <script src="src/substance.js"></script>
 
     <script src="lib/underscore.js"></script>
     <script src="lib/jquery.min.js"></script>
     <script src="lib/keymaster.js"></script>
+    <script src="lib/handlebars.js"></script>
     <script src="lib/backbone.js"></script>
+
     <script src="lib/base64.js"></script>
     <script src="lib/async.js"></script>
+
+    <script src="src/settings.js"></script>
     <script src="lib/client/client.js"></script>
 
     <script src="lib/dmp.js"></script>
     <script src="lib/document/lib/operation.js"></script>
     <script src="lib/jquery.timeago.js"></script>
 
-    <script src="lib/surface/surface.js"></script>
-
     <script src="lib/util/util.js"></script>
     <script src="lib/util/errors.js"></script>
-    <script src="lib/util/seeds.js"></script>
+    <script src="tests/seeds.js"></script>
+
 
     <!-- Model -->
+    <script src="lib/operator/src/operation.js" type="text/javascript"></script>
+    <script src="lib/operator/src/compound.js" type="text/javascript"></script>
+    <script src="lib/operator/src/text_operation.js" type="text/javascript"></script>
+    <script src="lib/operator/src/array_operation.js" type="text/javascript"></script>
+    <script src="lib/operator/src/object_operation.js" type="text/javascript"></script>
+    <script src="lib/chronicle/lib/chronicle.js"></script>
+    <script src="lib/chronicle/lib/chronicle_impl.js"></script>
+    <script src="lib/chronicle/lib/chronicle_index_impl.js"></script>
+
+    <script src="lib/chronicle/lib/adapter/text.js" type="text/javascript"></script>
+    <script src="lib/chronicle/lib/adapter/array.js" type="text/javascript"></script>
+
+    <script src="lib/ken.js"></script>
+    <script src="lib/data/data.js"></script>
     <script src="lib/document/document.js"></script>
-    <script src="lib/document/console.js"></script>
+
 
     <!-- Stores -->
     <script src="lib/store/src/store.js"></script>
+
     <script src="lib/store/src/async_store.js"></script>
     <script src="lib/store/src/memory_store.js"></script>
     <script src="lib/store/src/local_store.js"></script>
     <script src="lib/store/src/redis_store.js"></script>
-    <script src="lib/store/src/replicator.js"></script>
-    <script src="lib/chronicle/chronicle.js"></script>
-    <script src="lib/chronicle/lib/chronicle_impl.js"></script>
-    <script src="lib/chronicle/lib/chronicle_index_impl.js"></script>
 
-    <script src="src/substance-view.js"></script>
-    <script src="src/util.js"></script>
+    <script src="lib/library/library.js"></script>
 
-    <script src="src/replicator.js"></script>
-    <script src="src/session.js"></script>
-    <script src="src/model.js"></script>
+
+    <!-- Substance.View -->
+    <script src="lib/view/view.js"></script>
+
+    <!-- Substance.Surface -->
+    <script src="lib/surface/surface.js"></script>
+    <script src="lib/surface/nodes/text/text.js"></script>
+
+    <!-- Application helpers -->
+    <script src="src/helpers.js"></script>
+
+    <script src="lib/replicator/replicator.js"></script>
+    <script src="data/library_seed.js"></script>
 
     <!-- Router -->
     <script src="src/router.js"></script>
 
+    <!-- Temporary seed -->
+    <script src="src/seed.js"></script>
+
+    <!-- Substance.Keymapper -->
+    <script src="src/keymapper.js"></script>
+
+    <!-- Controllers -->
+    <script src="src/controllers/document_controller.js"></script>
+    <script src="src/controllers/library_controller.js"></script>
+    <script src="src/controllers/session.js"></script>
+
     <!-- Views -->
     <script src="src/views/composer.js"></script>
-    <script src="src/views/editor.js"></script>
-    <script src="src/views/testsuite.js"></script>
-
-    <script src="src/views/document/settings.js"></script>
-    <script src="src/views/document/collaborators.js"></script>
-    <script src="src/views/document/export.js"></script>
-    <script src="src/views/document/publish_settings.js"></script>
-
-    <script src="src/views/document.js"></script>
-
-    <script src="src/views/tools.js"></script>
-    <script src="src/views/outline.js"></script>
-    <script src="src/views/history.js"></script>
-    <script src="src/views/patches.js"></script>
-    <script src="src/views/comments.js"></script>
 
     <script src="src/views/application.js"></script>
     <script src="src/views/dashboard.js"></script>
-    <script src="src/views/login.js"></script>
-    <script src="src/views/signup.js"></script>
 
-    <!-- Nodes -->
-    <script src="src/nodes/node.js"></script>
-    <script src="src/nodes/textish.js"></script>
-    <script src="src/nodes/text/text.js"></script>
-    <script src="src/nodes/code/code.js"></script>
-    <script src="src/nodes/image/image.js"></script>
-    <script src="src/nodes/heading/heading.js"></script>
 
     <!-- Test API -->
-    <script src="./tests/assert.js"></script>
-    <script src="./tests/test.js" type="text/javascript"></script>
+    <script src="lib/test/assert.js"></script>
+    <script src="lib/test/test.js" type="text/javascript"></script>
 
     <!-- Seed data for tests -->
-    <script src="./tests/seeds/elife-doc.js" type="text/javascript"></script>
+    <script src="tests/seeds/elife-doc.js" type="text/javascript"></script>
 
-    <!-- Load tests here -->
-    <script src="./tests/tests/document/001-document-manipulation.js" type="text/javascript"></script>
-    <script src="./tests/tests/document/002-custom-document-schema.js" type="text/javascript"></script>
-
-    <script src="./tests/tests/replicator/mock_client.js" type="text/javascript"></script>
-    <script src="./tests/tests/replicator/test_session.js" type="text/javascript"></script>
-    <script src="./tests/tests/replicator/replicator-test.js" type="text/javascript"></script>
-    <script src="./tests/tests/replicator/001-create-local.js" type="text/javascript"></script>
-    <script src="./tests/tests/replicator/002-create-remote.js" type="text/javascript"></script>
-    <script src="./tests/tests/replicator/003-delete-local.js" type="text/javascript"></script>
-    <script src="./tests/tests/replicator/004-delete-remote.js" type="text/javascript"></script>
-    <script src="./tests/tests/replicator/005-pull-changes.js" type="text/javascript"></script>
-    <script src="./tests/tests/replicator/006-push-changes.js" type="text/javascript"></script>
-    <script src="./tests/tests/replicator/007-replicate-empty-doc.js" type="text/javascript"></script>
-    <script src="./tests/tests/replicator/008-push-blob.js" type="text/javascript"></script>
-    <script src="./tests/tests/replicator/009-update-blob.js" type="text/javascript"></script>
-    <script src="./tests/tests/replicator/hubstore.js" type="text/javascript"></script>
-
-    <script src="./tests/tests/store/001-create.js" type="text/javascript"></script>
-    <script src="./tests/tests/store/002-update.js" type="text/javascript"></script>
-    <script src="./tests/tests/store/003-commits.js" type="text/javascript"></script>
-    <script src="./tests/tests/store/memorystore.js" type="text/javascript"></script>
-    <script src="./tests/tests/store/localstore.js" type="text/javascript"></script>
-    <script src="./tests/tests/store/hubstore.js" type="text/javascript"></script>
-
-    <script src="./tests/tests/001-remove-published-doc.js" type="text/javascript"></script>
-    <script src="./tests/tests/002-publish-with-blobs.js" type="text/javascript"></script>
-    <script src="./tests/tests/003-collaborative-editing.js" type="text/javascript"></script>
-
-    <script src="lib/chronicle/example.js" type="text/javascript"></script>
-    <script src="./tests/tests/chronicle/chronicle_test.js" type="text/javascript"></script>
-    <script src="./tests/tests/chronicle/001-basics.js" type="text/javascript"></script>
-    <script src="./tests/tests/chronicle/002-diff.js" type="text/javascript"></script>
-    <script src="./tests/tests/chronicle/003-merge.js" type="text/javascript"></script>
 
     <!-- Boot -->
     <script src="src/boot.js"></script>
-
   </head>
   <body>
 
