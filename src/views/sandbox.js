@@ -2,13 +2,14 @@
 
 var _ = root._;
 var Substance = root.Substance;
-var Application = Substance.Application || {};
+var View = Substance.Application.View;
+var Sandbox = Substance.Sandbox || {};
 
-// Application Constructor
+// SandboxView Constructor
 // ==========================================================================
 
-var ApplicationView = function(controller) {
-  Substance.View.call(this);
+var SandboxView = function(controller) {
+  View.call(this);
 
   this.controller = controller;
 
@@ -22,8 +23,7 @@ var ApplicationView = function(controller) {
   // this.$el.delegate(".action.logout", "click", _.bind(this.logout, this));
 };
 
-
-ApplicationView.Prototype = function() {
+SandboxView.Prototype = function() {
 
   // Session Event handlers
   // ==========================================================================
@@ -87,9 +87,10 @@ ApplicationView.Prototype = function() {
 // Export
 // --------
 
-ApplicationView.Prototype.prototype = Substance.View.prototype;
-ApplicationView.prototype = new ApplicationView.Prototype();
+SandboxView.Prototype.prototype = View.prototype;
+SandboxView.prototype = new SandboxView.Prototype();
 
-Application.View = ApplicationView;
+Sandbox.View = SandboxView;
+Substance.Sandbox = Sandbox;
 
 })(this);

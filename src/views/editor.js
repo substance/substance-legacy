@@ -2,6 +2,7 @@
 
   var _ = root._;
   var Substance = root.Substance;
+  var View = Substance.Application.View;
   var util = Substance.util;
   var Editor = Substance.Editor || {};
 
@@ -11,7 +12,7 @@
   // The Substance Document Editor
 
   var EditorView = function(controller) {
-    Substance.View.call(this);
+    View.call(this);
 
     this.controller = controller;
 
@@ -43,9 +44,8 @@
     };
   };
 
-  EditorView.Prototype.prototype = Substance.View.prototype;
+  EditorView.Prototype.prototype = View.prototype;
   EditorView.prototype = new EditorView.Prototype();
-  EditorView.prototype.constructor = EditorView;  
 
   Editor.View = EditorView;
   Substance.Editor = Editor;

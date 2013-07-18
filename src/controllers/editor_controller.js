@@ -3,6 +3,7 @@
 var Substance = root.Substance;
 var util = Substance.util;
 var _ = root._;
+var Controller = Substance.Application.Controller;
 var Data = Substance.Data;
 var Chronicle = Substance.Chronicle;
 var Document = Substance.Document;
@@ -59,8 +60,8 @@ EditorController.Prototype = function() {
 
 };
 
+EditorController.Prototype.prototype = Controller.prototype;
 EditorController.prototype = new EditorController.Prototype();
-_.extend(EditorController.prototype, util.Events);
 
 Editor.Controller = EditorController;
 Substance.Editor = Editor;

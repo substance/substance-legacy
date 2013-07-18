@@ -14,25 +14,15 @@ $(function() { "use strict";
   Substance.client_type = 'browser';
   Substance.env = 'development';
 
-  // loadConfigurations(function(err, configs) {
-  // Substance.configurations = JSON.parse(JSON.stringify(configs));
-  // delete Substance.configurations.env;
-
-  // Initially set env based on config value
-  // if (!Substance.settings.getItem('env')) {
-  //   Substance.settings.setItem('env', configs.env || 'development');
-  // }
-
-
 
   // Initialization
   // -----------------
 
   // Main Application controller
-  Substance.app = new Substance.Application.Controller(Substance.env);
+  Substance.app = new Substance.Sandbox.Controller(Substance.env);
 
   // Start the engines
-  Substance.appView = new Substance.Application.View(Substance.app);
+  Substance.appView = new Substance.Sandbox.View(Substance.app);
 
   // Render main app
   $('body').html(Substance.appView.render().el);
@@ -81,6 +71,5 @@ $(function() { "use strict";
   });
 
   Substance.keyboard = keyboard;
-  // });
 
 });

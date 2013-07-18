@@ -4,6 +4,7 @@ var Substance = root.Substance;
 var util = Substance.util;
 var _ = root._;
 var Data = Substance.Data;
+var Controller = Substance.Application.Controller;
 var Chronicle = Substance.Chronicle;
 var Document = Substance.Document;
 var Session = Substance.Session;
@@ -11,17 +12,16 @@ var Editor = Substance.Editor;
 var Operator = Substance.Operator;
 var Test = Substance.Test;
 
+// The Substance.Sandbox App
 
-// Application Module
+var Sandbox = Substance.Sandbox || {};
 
-var Application = Substance.Application || {};
-
-// Substance.Application.Controller
+// Substance.Sandbox.Controller
 // -----------------
 //
 // Main Application Controller
 
-var ApplicationController = function(env) {
+var SandboxController = function(env) {
   this.session = new Session(env);
 
   // null state
@@ -34,7 +34,7 @@ var ApplicationController = function(env) {
 };
 
 
-ApplicationController.Prototype = function() {
+SandboxController.Prototype = function() {
 
   // Transitions
   // ===================================
@@ -115,10 +115,11 @@ ApplicationController.Prototype = function() {
 // Exports
 // --------
 
-ApplicationController.prototype = new ApplicationController.Prototype();
-_.extend(ApplicationController.prototype, util.Events);
+SandboxController.Prototype.prototype = Controller.prototype;
+SandboxController.prototype = new SandboxController.Prototype();
+_.extend(SandboxController.prototype, util.Events);
 
-Application.Controller = ApplicationController;
-Substance.Application = Application;
+Sandbox.Controller = SandboxController;
+Substance.Sandbox = Sandbox;
 
 })(this);
