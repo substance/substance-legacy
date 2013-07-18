@@ -63,7 +63,7 @@ SandboxController.Prototype = function() {
   // --------
   // TODO: discuss naming
   this.getActiveControllers = function() {
-    var result = [ ["application", this] ];
+    var result = [ ["sandbox", this] ];
     // TODO: we should specify all application states via hierarchical contexts.
     // E.g., when a document is opened:
     //    ["application", "document"]
@@ -74,12 +74,11 @@ SandboxController.Prototype = function() {
     // For sake of prototyping this is implemented manually right now.
     var state = this.state;
 
-    if (state === "document") {
-      result.push(["document", this.document]);
-      result.push(["editor", this.document]);
-    } else if (state === "dashboard") {
-      result.push(["dashboard", this.library]);
-    } if (state === "test_center") {
+    console.log('getting active controllers');
+
+    if (state === "editor") {
+      result.push(["editor", this.editor]);
+    } else if (state === "test_center") {
       result.push(["test_center", this.testRunner]);
     }
 

@@ -1,12 +1,12 @@
 [
   {
-    "context": "application",
+    "context": "sandbox",
     "commands": [
-      {"command": "sayHello", "args": ["World!"], "keys": ["command+shift+i"]}
+      {"keys": ["command+shift+i"],   "command": "sayHello", "args": ["World!"]}
     ]
   },
   {
-    "context": "application.document.editor",
+    "context": "sandbox.editor.writer",
     "commands": [
       {"keys": ["backspace", "del"],  "command": "delete" },
       {"keys": ["enter", "return"],   "command": "insertNode", "args": ["text"] },
