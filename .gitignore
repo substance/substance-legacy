@@ -44,3 +44,6 @@ lib/replicator/node_modules/substance-test
 lib/test/
 
 lib/view/
+
+/lib/commander/
+/lib/regexp/
