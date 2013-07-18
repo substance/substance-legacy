@@ -45,19 +45,6 @@ EditorController.Prototype = function() {
     that.updateState('comments');
   };
 
-  // Finalize state transition
-  // -----------------
-  //
-  // Editor View listens on state-changed events:
-  //
-  // E.g. this.handle(this.controller, 'state-changed:comments', this.toggleComments);
-
-  this.updateState = function(state) {
-    var oldState = this.state;
-    this.state = state;
-    this.trigger('state-changed', this.state, oldState);
-  };
-
 };
 
 EditorController.Prototype.prototype = Controller.prototype;

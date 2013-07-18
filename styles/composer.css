@@ -1039,6 +1039,10 @@ h2 { font-size: 160%; padding-bottom: 15px; }
 }
 
 
+.content-node .content {
+  white-space: pre-wrap;
+}
+
 /* Text Node
 -------------------------------------------------------------------------------*/
 

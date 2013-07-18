@@ -15,7 +15,7 @@ var SandboxView = function(controller) {
 
   // Handle state transitions
   // --------
-  this.handle(this.controller, 'state-changed', this.onStateChanged);
+  this.listenTo(this.controller, 'state-changed', this.onStateChanged);
 
   // DOM events
   // -----------

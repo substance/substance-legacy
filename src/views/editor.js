@@ -16,7 +16,6 @@
 
     this.controller = controller;
 
-    
     // Surface
     // --------
 
@@ -31,10 +30,7 @@
     //
 
     this.render = function(id) {
-      var writer = this.controller.writer;
-
       this.$el.html(_.tpl('editor', this.controller));
-
       this.$('#document').html(this.surface.render().el);
       return this;
     };

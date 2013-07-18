@@ -24,7 +24,7 @@ var Sandbox = Substance.Sandbox || {};
 var SandboxController = function(env) {
   this.session = new Session(env);
 
-  // null state
+  // Null state
   this.state = null;
 
   // Main controls
@@ -56,20 +56,6 @@ SandboxController.Prototype = function() {
 
     // TODO: Run all suites instead of just choosing a default
     this.runSuite(suite || 'Document');
-  };
-
-
-  // Finalize state transition
-  // -----------------
-  //
-  // Application View listens on state-changed events:
-  //
-  // E.g. this.handle(this.session, 'state-changed:dashboard', this.openDashboard);
-
-  this.updateState = function(state) {
-    var oldState = this.state;
-    this.state = state;
-    this.trigger('state-changed', this.state, oldState);
   };
 
   // Provides an array of (context, controller) tuples that describe the
