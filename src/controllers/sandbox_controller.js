@@ -74,13 +74,14 @@ SandboxController.Prototype = function() {
     // For sake of prototyping this is implemented manually right now.
     var state = this.state;
 
-    console.log('getting active controllers');
-
+  
     if (state === "editor") {
-      result.push(["editor", this.editor]);
+      result = result.concat(this.editor.getActiveControllers());
     } else if (state === "test_center") {
       result.push(["test_center", this.testRunner]);
     }
+
+    console.log('getting active controllers', result);
 
     return result;
   };

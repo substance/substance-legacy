@@ -25,4 +25,5 @@
       {"keys": ["shift+alt+left"],    "command": "expand", "scope": "selection", "args": ["left", "word"] }
     ]
   }
+
 ]

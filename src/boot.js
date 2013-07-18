@@ -36,12 +36,13 @@ $(function() { "use strict";
   // e.g., could be an optional configuration for the session itself
 
   var keyboard = new Substance.Keyboard(Substance.app);
+
   Substance.app.on("state-changed", keyboard.stateChanged, keyboard);
 
   // TODO: it would be nice to add a built-in handler for handling 'typed text'
   // and use it in a declarative way e.g.:
   // {"command": "write", keys: "typed-text" }
-  keyboard.setDefaultHandler("application.document.editor", function(character, modifiers, e) {
+  keyboard.setDefaultHandler("sandbox.editor.writer", function(character, modifiers, e) {
     if (e.type === "keypress") {
       var str = null;
 
@@ -58,13 +59,13 @@ $(function() { "use strict";
         return {command: "write", args: [str]};
       }
     }
-
     return false;
   });
 
   var keymapFile = "/config/default.keymap";
   $.getJSON(keymapFile, function(data) {
     keyboard.registerBindings(data);
+    console.log('keyboard', keyboard);
   }).error(function(err) {
     console.error("Could not load keyboard mapping", err, keymapFile);
   });

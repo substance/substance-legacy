@@ -12,11 +12,6 @@ Substance.settings = null;
 Substance.templates = {};
 Substance.client_type = null;
 
-Substance.config = function() {
-  var env = Substance.settings.getItem('env');
-  return Substance.configurations[env];
-};
-
 
 // Other namespaces
 // -----------------
