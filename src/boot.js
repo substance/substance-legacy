@@ -14,7 +14,6 @@ $(function() { "use strict";
   Substance.client_type = 'browser';
   Substance.env = 'development';
 
-
   // Initialization
   // -----------------
 

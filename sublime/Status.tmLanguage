@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>fileTypes</key>
+  <array>
+    <string>Status</string>
+    <string>status</string>
+  </array>
+  <key>name</key>
+  <string>GitStatus</string>
+  <key>patterns</key>
+  <array>
+    <dict>
+      <key>captures</key>
+      <dict>
+        <key>1</key>
+        <dict>
+          <key>name</key>
+          <string>constant.other</string>
+        </dict>
+      </dict>
+      <key>comment</key>
+      <string>Custom output: name of current folder</string>
+      <key>match</key>
+      <string>^- (.+):$</string>
+    </dict>
+    <dict>
+      <key>comment</key>
+      <string>Output row of `git status -s`</string>
+      <key>match</key>
+      <string>^ D (.+)$</string>
+      <key>name</key>
+      <string>markup.deleted</string>
+    </dict>
+    <dict>
+      <key>comment</key>
+      <string>Output row of `git status -s`</string>
+      <key>match</key>
+      <string>^ M (.+)$</string>
+      <key>name</key>
+      <string>markup.changed</string>
+    </dict>
+    <dict>
+      <key>comment</key>
+      <string>Output row of `git status -s`</string>
+      <key>match</key>
+      <string>^[?][?] (.+)$</string>
+      <key>name</key>
+      <string>markup.inserted</string>
+    </dict>
+  </array>
+  <key>scopeName</key>
+  <string>text.git_status</string>
+  <key>uuid</key>
+  <string>ca03e7a1-0aef-43a0-9aab-9b9aaaeac418</string>
+</dict>
+</plist>

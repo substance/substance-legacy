@@ -1,0 +1,4 @@
+{
+  "git_command": "/usr/bin/git",
+  "git_gui_command": ["/usr/bin/git", "gui"]
+}

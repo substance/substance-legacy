@@ -1,0 +1,8 @@
+[
+  { "keys": ["ctrl+shift+s"], "command": "git_status" },
+  { "keys": ["super+r"], "command": "git_status", "context": [{"key": "git_status"}] },
+  { "keys": ["super+l"], "command": "git_toggle_status", "context": [{"key": "git_status"}] },
+  { "keys": ["super+p"], "command": "git", "args": {"command": ["push"]}, "context": [{"key": "git_status"}] },
+  { "keys": ["super+u"], "command": "git", "args": {"command": ["pull"]}, "context": [{"key": "git_status"}] },
+  { "keys": ["enter"], "command": "git_gui", "context": [{"key": "git_status"}]}
+]

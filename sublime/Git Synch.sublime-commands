@@ -1,0 +1,5 @@
+[
+   { "caption": "Git: Pull", "command": "git_exec", "args": {"cmd": ["git", "pull"]}},
+   { "caption": "Git: Push", "command": "git_exec", "args": {"cmd": ["git", "push", "--progress", "--porcelain"]} },
+   { "caption": "Git: Status", "command": "git_exec", "args": {"cmd": ["git", "status"]} }
+]

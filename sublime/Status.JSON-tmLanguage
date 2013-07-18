@@ -1,0 +1,25 @@
+{ "name": "GitStatus",
+  "scopeName": "text.git_status",
+  "fileTypes": ["Status", "status"],
+  "patterns": [
+    { "match": "^- ([a-zA-Z0-9_/.]+):$",
+      "captures": {
+        "1": { "name": "constant.other" }
+      },
+      "comment": "Custom output: name of current folder"
+    },
+    { "match": "^ D ([a-zA-Z0-9_/.- "]+)$",
+      "name": "markup.deleted",
+      "comment": "Output row of `git status -s`"
+    },
+    { "match": "^ M ([a-zA-Z0-9_/.- "]+)$",
+      "name": "markup.changed",
+      "comment": "Output row of `git status -s`"
+    },
+    { "match": "^[?][?] ([a-zA-Z0-9_/.- "]+)$",
+      "name": "markup.inserted",
+      "comment": "Output row of `git status -s`"
+    },
+  ],
+  "uuid": "ca03e7a1-0aef-43a0-9aab-9b9aaaeac418"
+}
