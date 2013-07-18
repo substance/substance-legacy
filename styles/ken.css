@@ -1,0 +1,349 @@
+/* Browser 
+   --------------------------------------- */
+
+#browser {
+  overflow: auto;
+}
+
+
+#facets .about:hover {
+  color: #fff;
+}
+
+#facets .article-count {
+  padding: 20px 33px;
+  color: #888;
+  font-family: 'Avenir LT W01 85 Heavy', 'Montserrat', 'Source Sans Pro';
+}
+
+#facets {
+  padding-right: 20px;
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
+  position: absolute;
+  right: 0px;
+  top: 0px;
+  bottom: 0px;
+  width: 440px;
+  z-index: 5;
+}
+
+#facets a {
+  text-decoration: none;
+  border: none;
+}
+
+#facets .filter {
+  margin-bottom: 20px;
+}
+
+#facets .filter .name {
+  height: 40px;
+  color: #222;
+  line-height: 40px;
+  padding-left: 20px;
+  position: relative;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+#facets .filter .filter-name {
+  color: #555;
+  border-left: 25px solid #ddd;
+  font-weight: bold;
+  font-size: 12px;
+  text-transform: uppercase;
+  padding: 0 10px;
+  line-height: 20px;
+  font-family: 'Avenir LT W01 85 Heavy', 'Montserrat', 'Source Sans Pro';
+}
+
+#facets .filter .selected-values {
+
+}
+
+#facets .filter .available-values {
+  margin-top: 20px;
+  overflow: auto;
+}
+
+#facets .filter .selected-values a.value {
+  font-weight: bold;
+  color: #222;
+}
+
+#facets .filter .available-values a.value {
+  color: #666;
+  /*text-decoration: line-through;*/
+  float: left;
+  padding-right: 30px;
+  font-size: 13px;
+  width: 190px;
+  margin-left: 20px;
+  padding-left: 10px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-family: 'Avenir LT W01 85 Heavy', 'Montserrat', 'Source Sans Pro';
+}
+
+#facets .filter.subjects .available-values a.value {
+  width: 390px;
+}
+
+#facets .filter .available-values a.value:hover {
+  background: rgba(0,0,0, 0.1);
+}
+
+#facets .filter a.value {
+  font-size: 13px;
+  line-height: 25px;
+  height: 25px;
+  margin-bottom: 1px;
+  padding-left: 10px;
+  font-weight: normal;
+  display: block;
+  position: relative;
+  text-transform: capitalize;
+}
+
+#facets .filter a.value.related {
+  background: rgba(0,0,0,0.03);
+  text-decoration: none;
+  color: #222;
+}
+
+#main #facets .filter .available-values a.value.remove {
+  color: rgba(255,255,255, 1);
+}
+
+#facets .filter a.value .frequency {
+  opacity: 0.6;
+  font-size: 11px;
+  padding-left: 5px;
+  font-weight: normal;
+}
+
+/* Matrix 
+   --------------------------------------- */
+
+#matrix {
+  position: absolute;
+  -webkit-overflow-scrolling: touch;
+  top: 0px;
+  left: 0px;
+  right: 440px;
+  bottom: 0px;
+  overflow: auto;
+  background: #fff;
+}
+
+#matrix .item {
+  position: relative;
+  display: block;
+  width: 50%;
+  height: 200px;
+  float: left;
+  cursor: pointer;
+  overflow:hidden;
+  
+  -webkit-transition-property: left, top, width, height, opacity;
+  -moz-transition-property: left, top, width, height, opacity;
+  transition-property: left, top, width, height, opacity;
+
+  -webkit-transition-duration: 0.2s;
+  -moz-transition-duration: 0.2s;
+  transition-duration: 0.2s;
+}
+
+#matrix .item .inner {
+  position: absolute;
+  top: 0px;
+  bottom: 0px;
+  right: 0px;
+  left: 0px;
+  /*background: #fff;*/
+  border-right: 1px solid #eee;
+  border-bottom: 1px solid #eee;
+
+}
+
+#matrix .item:hover .inner {
+  background: rgba(0,0,0,0.01);
+}
+
+#matrix .item:hover {
+  /*background: #fcfcfc;    */
+  /*border: 1px solid #ccc;*/
+}
+
+#matrix .item.eased {
+  opacity: 0.1;
+}
+
+#matrix .item.highlighted {
+  opacity: 1;
+}
+
+#matrix .item:hover, #matrix .item.active {
+  opacity: 1.0;
+  border-color: #ccc;
+}
+
+#matrix .item.eased:hover {
+  opacity: 0.3;
+}
+
+#matrix .item .name {
+  -webkit-transition-property: background, color;
+  -moz-transition-property: background, color;
+  transition-property: background, color;
+
+  -webkit-transition-duration: 0.2s;
+  -moz-transition-duration: 0.2s;
+  transition-duration: 0.2s;
+
+  font-family: 'Avenir LT W01 85 Heavy', 'Montserrat', 'Source Sans Pro';
+  margin-top: 40px;
+  font-size: 18px;
+  line-height: 22px;
+  text-align: left;
+  padding: 0 20px;
+}
+
+#matrix .item:hover .name {
+  color: rgba(11, 157, 217, 1);
+}
+
+#matrix .item .article-type {
+  font-family: 'Avenir LT W01 85 Heavy', 'Montserrat', 'Source Sans Pro';
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  height: 32px;
+  width: 100%;
+  /*color: #960;*/
+  color: #666;
+  font-size: 12px;
+  padding: 10px 20px;
+  /*border-bottom: 1px solid #eee;*/
+}
+
+#matrix .item .authors {
+  color: #777;
+  font-size: 14px;
+  line-height: 16px;
+  text-align: left;
+  padding: 20px 20px 0 20px;
+}
+
+#matrix .item .published_at {
+  float: right;    
+  color: #999;
+}
+
+#matrix .item img {
+  width: 90%;
+  border: none;
+}
+
+#matrix .item .markers {
+  position: absolute;
+  top: 5px;
+  left: 0px;
+  right: 110px;
+  height: 20px;
+  padding: 5px;
+}
+
+#matrix .item .markers .marker {
+  float: right;
+  margin-right: 1px;
+  width: 10px;
+  height: 10px;
+  background: #8AA70E;
+}
+
+/* Details 
+   --------------------------------------- */
+
+#details {
+  display: none;
+  z-index: 200;
+  position: absolute;
+  right: 0px;
+  top: 0px;
+  bottom: 0px;
+  overflow: auto;
+
+  background: #060606;
+  color: rgba(255,255,255, 0.7);
+
+  -webkit-transition-property: left, top, width, height, opacity;
+  -moz-transition-property: left, top, width, height, opacity;
+  transition-property: left, top, width, height, opacity;
+  -webkit-transition-duration: 0.75s;
+  -moz-transition-duration: 0.75s;
+  transition-duration: 0.75s;
+
+  width: 300px;
+}
+
+#details .details-wrapper {
+  padding: 10px;
+}
+
+#details a img {
+  border: none;
+  position: relative;
+}
+
+#details a.image .label {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  font: 700 .875em/1.5 'Open Sans Condensed', sans-serif;
+  background: rgba(0,0,0, 0.9);
+  padding: 0 5px;
+  color: rgba(255,255,255, 0.8);
+}
+
+#details a.image:hover .label {
+  color: rgba(255,255,255, 1);
+}
+
+#details .abstract {
+  font-size: 14px;
+  margin-bottom: 15px;
+}
+
+#details .property-name {
+  font: 700 .875em/1.5 'Open Sans Condensed', sans-serif;
+}
+
+#details .values {
+  margin-bottom: 10px;
+}
+
+#details .values span {
+  background: rgba(0,0,0, 0.1);
+  border-radius: 2px;
+  padding: 2px 4px;
+  font-size: 12px;
+}
+
+#details.active {
+  z-index: 200;
+  bottom: 10px;
+}
+
+#details img {
+  width: 100%;
+}
+
+#details h1 {
+  padding: 5px 0px;
+  font-size: 20px;
+}
+
+#details h3 {
+  text-transform: uppercase;
+}

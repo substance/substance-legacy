@@ -1,0 +1,59 @@
+{
+  "id": "lorem_ipsum",
+  "nodes": {
+    "document": {
+      "type": "document",
+      "id": "document",
+      "views": [
+        "content",
+        "figures",
+        "publications"
+      ],
+      "guid": "lorem_ipsum",
+      "creator": "",
+      "title": "",
+      "abstract": "",
+      "keywords": []
+    },
+    "content": {
+      "type": "view",
+      "id": "content",
+      "nodes": [
+        "text_1",
+        "text_2",
+        "text_3",
+        "text_4"
+      ]
+    },
+    "figures": {
+      "type": "view",
+      "id": "figures",
+      "nodes": []
+    },
+    "publications": {
+      "type": "view",
+      "id": "publications",
+      "nodes": []
+    },
+    "text_1": {
+      "type": "text",
+      "id": "text_1",
+      "content": "The quick brown fox jumps over the lazy dog."
+    },
+    "text_2": {
+      "type": "text",
+      "id": "text_2",
+      "content": "Pack my box with five dozen liquor jugs"
+    },
+    "text_3": {
+      "type": "text",
+      "id": "text_3",
+      "content": "Fix problem quickly with galvanized jets"
+    },
+    "text_4": {
+      "type": "text",
+      "id": "text_4",
+      "content": "Heavy boxes perform quick waltzes and jigs"
+    }
+  }
+}

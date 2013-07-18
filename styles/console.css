@@ -1,0 +1,188 @@
+/* History
+-------------------------------------------------------------------------------*/
+
+.operations {
+  margin-top: 1px;
+  background: rgba(0, 0, 0, 0.1);
+  height: 16px;
+  overflow: auto;
+}
+
+.operations .operation {
+  display: block;
+  width: 10px;
+  height: 15px;
+  float: left;
+  margin-right: 1px;
+  margin-bottom: 1px;
+  background: rgba(0,0,0, 0.2);
+  border: none;
+}
+
+.operations .operation.applied {
+  background: #69CA14;
+}
+
+/* Console
+-------------------------------------------------------------------------------*/
+
+.console-wrapper {
+  background: red; 
+}
+
+.console {
+  margin-top: 10px;
+  float: left;
+  width: 400px;
+}
+
+.console .action {
+  overflow:auto;
+}
+
+.console .scope {
+  padding-left: 5px;
+  line-height: 30px;
+  height: 30px;
+  width: 370px;
+  background: rgba(0,0,0, 0.1);
+  font-size: 11px;
+  font-weight: bold;
+}
+
+textarea {
+  background: white;
+  font-family: 'Source Code Pro';
+  font-size: 13px;
+  border: none;
+}
+
+.console textarea {
+  padding: 10px;
+  width: 370px;
+  height: 450px;
+  margin: 0;
+}
+
+.console textarea.inactive {
+  background: #DEDFDA;
+}
+
+.console .apply-operation {
+  display: block;
+  width: 370px;
+  border-radius: 3px;
+  line-height: 45px;
+  height: 45px;
+  text-align: center;
+  font-weight: bold;
+  background: rgba(0,0,0, 0.1);
+  color: #aaa;
+}
+
+.console .apply-operation.active {
+  cursor: pointer;
+  color: white;
+  background: #444;
+}
+
+.console .apply-operation.active:hover {
+  background: #333;
+}
+
+/* Select Output
+-------------------------------------------------------------------------------*/
+
+.select-output {
+  height: 30px;
+  background: rgba(0, 0, 0, 0.1);
+  overflow: auto;
+}
+
+.select-output a {
+  display: block;
+  float: left;
+  /*width: 260px;*/
+  margin-right: 1px;
+  height: 30px;
+  padding: 0 5px;
+  /*height: 50px;*/
+  font-weight: bold;
+  line-height: 30px;
+  text-align: center;
+  /*background: rgba(0,0,0, 0.1);*/
+}
+
+.select-output a:hover {
+  background: rgba(0,0,0, 0.15);
+}
+
+.select-output a.active {
+  background: rgba(0,0,0, 0.7);
+  color: white;
+}
+
+.select-output a.toggle-output.last {
+  margin-right: 0px;
+}
+
+
+/* Visualization
+-------------------------------------------------------------------------------*/
+
+.output {
+  float: left;
+  margin-top: 10px;
+  width: 400px;
+}
+
+.visualization .document {
+  -webkit-box-shadow: 0px 1px 4px rgba(0, 0, 0, 0.35), inset 0px 0px 1px rgba(255, 255, 255, 0.15);
+  -moz-box-shadow: 0px 1px 4px rgba(0, 0, 0, 0.35), inset 0px 0px 1px rgba(255, 255, 255, 0.15);
+  box-shadow: 0px 1px 4px rgba(0, 0, 0, 0.35), inset 0px 0px 1px rgba(255, 255, 255, 0.15);
+  height: 500px;
+  overflow: auto;
+  background: white;
+  padding: 10px;
+}
+
+.visualization .document .node {
+  margin-bottom: 1px;
+  padding: 2px 10px;
+  overflow: auto;
+}
+
+.visualization .document .node .idea {
+  background: rgba(171, 201, 36, 0.4);
+}
+
+.visualization .document .node .question {
+  
+  background: rgba(16, 167, 222, 0.4);
+}
+
+.visualization .document .node .error {
+  /*background: rgba(171, 201, 36, 0.4);*/
+  background-color: rgba(237, 96, 48, 0.4);
+}
+
+.visualization .document .node.heading {
+  font-weight: bold;
+}
+
+.visualization .document .node .annotation {
+  float: left;
+  width: 10px;
+  height: 10px;
+  margin-right: 5px;
+  background: rgba(0,0,0, 0.5);
+}
+
+/* Visualization
+-------------------------------------------------------------------------------*/
+
+.output textarea {
+  padding: 20px;
+  width: 800px;
+  height: 600px;
+}

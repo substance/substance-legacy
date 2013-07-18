@@ -17,23 +17,12 @@
       <!-- Substance Main Menu -->
       <div id="menu">
         <div class="views">
-          <a href="#" class="toggle-view browse"><i class="icon-th-large"></i></a>
-          <% if (user()) { %>
-            <a href="#" class="toggle-view dashboard" ><i class="icon-user"></i></a>
-          <% } %>
-          <% if (document) { %>
-            <a href="#" class="toggle-view document"><i class="icon-edit"></i></a>
-          <% } %>
+          <a href="#" class="toggle-view document"><i class="icon-edit"></i></a>
         </div>
 
         <div class="actions">
-          <% if (user()) { %>
-            <a href="#new" class="action new-document"><i class="icon-plus"></i></a>
-            <% if (env === "test") { %>
-              <a href="#tests" class="action testsuite" ><i class="icon-tasks"></i></a>
-            <% } %>
-            <a href="#logout" class="action logout"><i class="icon-off"></i></a>
-          <% } %>
+          <a href="#new" class="action new-document"><i class="icon-plus"></i></a>
+          <a href="#tests" class="action testsuite" ><i class="icon-tasks"></i></a>
         </div>
       </div>
 
@@ -82,32 +71,6 @@
       </div>
     </script>
 
-
-    <!-- Testsuite -->
-    <script type="text/html" name="testsuite">
-      <div id="testsuite">
-        <div class="tests">
-          <a href="#" class="run-all-tests">Run All</a>
-          <% print(_.tpl('test-tree', {item: testTree})); %>
-        </div>
-        <div class="test-results">
-
-        </div>
-      </div>
-    </script>
-
-    <!-- Testtree -->
-    <script type="text/html" name="test-tree">
-      <div id="tests_<%=item.id%>"><%=item.name%>
-          <% _.each(item, function(item) { %>
-            <% if(item instanceof Substance.Test) { %>
-              <a href="#tests/<%= item.id %>" class="test" id="<%= item.id %>"><i></i><%= item.name %></a>
-            <% } else if (_.isObject(item)) { %>
-              <% print(_.tpl('test-tree', {item: item})); %>
-            <% } %>
-          <% }); %>
-      </div>
-    </script>
 
     <!-- User Login -->
     <script type="text/html" name="login">
@@ -202,18 +165,18 @@
     </script>
 
 
-    <!-- Composer -->
-    <script type="text/x-ejs-template" name="composer">
+    <!-- Editor -->
+    <script type="text/x-ejs-template" name="editor">
 
       <div class="document-settings shelf">
         <div class="meta">
-          <div class="title"><%= document.title %></div>
-          <div class="updated-at"><%= document.updated_at %></div>
+          <div class="title"><%= "title" %></div>
+          <div class="updated-at"><%= "updated_at" %></div>
         </div>
 
         <div class="label">Creator</div>
         <div class="creator">
-          <div class="value"><%= document.entry.get('creator').name %></div>
+          <div class="value"><%= "creator.name" %></div>
         </div>
 
         <div class="label">Collaborators</div>
@@ -232,7 +195,9 @@
       <div id="document_wrapper">
         <div id="composer">
           <div id="tools"></div>
-          <div id="document"></div>
+          <div id="document" contenteditable="false">
+
+          </div>
         </div>
       </div>
       <div id="console_wrapper">
@@ -295,59 +260,102 @@
       <% }); %>
     </script>
 
+    <!-- Substance.TestCenter -->
+    <script type="text/text/x-handlebars-template" name="test_center">
+      <div class="test-suites">
+        {{#each test_suites}}
+          <a class="test-suite" href="#tests/{{name}}">
+            {{name}}
+          </a>
+        {{/each}}
+      </div>
+
+      <div class="test-report">
+
+      </div>
+
+      <div class="test-output">
+
+      </div>
+    </script>
+
+    <!-- Substance.TestReport -->
+    <script type="text/text/x-handlebars-template" name="test_report">
+      <h2>Subtance.{{name}}</h2>
+      <div class="tests">
+        {{#each tests}}
+          <div class="test">
+            <div class="name">{{name}}</div>
+            <div class="actions">
+              {{#each actions}}
+                <div class="action {{#ifelse error "error" "success"}}{{/ifelse}}">
+                  <div class="status">
+                    <i class="{{#ifelse error "icon-frown" "icon-smile"}}{{/ifelse}}"></i>
+                  </div>
+                   {{label}}
+                  <div class="duration">
+                     15 ms
+                  </div>
+                </div>
+              {{/each}}
+            </div>
+          </div>
+        {{/each}}
+      </div>
+    </script>
+
+    <!-- Substance.TestAction -->
+    <script type="text/text/x-handlebars-template" name="test_action">
+      <div class="label">
+
+      </div>
+    </script>
 
     <!-- all singletons are here -->
     <script src="src/substance.js"></script>
 
     <script src="lib/underscore.js"></script>
     <script src="lib/jquery.min.js"></script>
-    <script src="lib/keymaster.js"></script>
     <script src="lib/handlebars.js"></script>
     <script src="lib/backbone.js"></script>
 
     <script src="lib/base64.js"></script>
-    <script src="lib/async.js"></script>
 
-    <script src="src/settings.js"></script>
     <script src="lib/client/client.js"></script>
 
-    <script src="lib/dmp.js"></script>
-    <script src="lib/document/lib/operation.js"></script>
     <script src="lib/jquery.timeago.js"></script>
 
     <script src="lib/util/util.js"></script>
-    <script src="lib/util/errors.js"></script>
-    <script src="tests/seeds.js"></script>
 
+    <script src="lib/util/html.js"></script>
+    <script src="lib/util/errors.js"></script>
+    <script src="lib/regexp/src/regexp.js"></script>
 
     <!-- Model -->
+
     <script src="lib/operator/src/operation.js" type="text/javascript"></script>
     <script src="lib/operator/src/compound.js" type="text/javascript"></script>
     <script src="lib/operator/src/text_operation.js" type="text/javascript"></script>
     <script src="lib/operator/src/array_operation.js" type="text/javascript"></script>
     <script src="lib/operator/src/object_operation.js" type="text/javascript"></script>
-    <script src="lib/chronicle/lib/chronicle.js"></script>
-    <script src="lib/chronicle/lib/chronicle_impl.js"></script>
-    <script src="lib/chronicle/lib/chronicle_index_impl.js"></script>
+    <script src="lib/chronicle/src/chronicle.js"></script>
+    <script src="lib/chronicle/src/chronicle_impl.js"></script>
+    <script src="lib/chronicle/src/chronicle_index_impl.js"></script>
 
-    <script src="lib/chronicle/lib/adapter/text.js" type="text/javascript"></script>
-    <script src="lib/chronicle/lib/adapter/array.js" type="text/javascript"></script>
+    <script src="lib/chronicle/src/adapter/text.js" type="text/javascript"></script>
+    <script src="lib/chronicle/src/adapter/array.js" type="text/javascript"></script>
 
-    <script src="lib/ken.js"></script>
     <script src="lib/data/data.js"></script>
-    <script src="lib/document/document.js"></script>
 
+    <script src="lib/document/src/document.js"></script>
+    <script src="lib/document/src/selection.js"></script>
+    <script src="lib/document/src/writer.js"></script>
 
-    <!-- Stores -->
+    <!-- Stores -->    
     <script src="lib/store/src/store.js"></script>
-
-    <script src="lib/store/src/async_store.js"></script>
     <script src="lib/store/src/memory_store.js"></script>
-    <script src="lib/store/src/local_store.js"></script>
-    <script src="lib/store/src/redis_store.js"></script>
 
-    <script src="lib/library/library.js"></script>
-
+    <!--<script src="lib/library/library.js"></script>-->
 
     <!-- Substance.View -->
     <script src="lib/view/view.js"></script>
@@ -359,37 +367,73 @@
     <!-- Application helpers -->
     <script src="src/helpers.js"></script>
 
-    <script src="lib/replicator/replicator.js"></script>
-    <script src="data/library_seed.js"></script>
-
     <!-- Router -->
     <script src="src/router.js"></script>
 
-    <!-- Temporary seed -->
-    <script src="src/seed.js"></script>
 
     <!-- Substance.Keymapper -->
-    <script src="src/keymapper.js"></script>
-
-    <!-- Controllers -->
-    <script src="src/controllers/document_controller.js"></script>
-    <script src="src/controllers/library_controller.js"></script>
-    <script src="src/controllers/session.js"></script>
+    <script src="lib/commander/lib/mousetrap.js"></script>
+    <script src="lib/commander/src/keyboard.js"></script>
 
     <!-- Views -->
-    <script src="src/views/composer.js"></script>
+    <script src="src/views/editor.js"></script>
 
-    <script src="src/views/application.js"></script>
-    <script src="src/views/dashboard.js"></script>
+    <!--
+    <script src="src/views/document/collaborators.js"></script>
+    <script src="src/views/document/publications.js"></script>
+    !-->
+
+    
 
 
     <!-- Test API -->
     <script src="lib/test/assert.js"></script>
-    <script src="lib/test/test.js" type="text/javascript"></script>
+    <script src="lib/test/src/test.js" type="text/javascript"></script>
 
-    <!-- Seed data for tests -->
-    <script src="tests/seeds/elife-doc.js" type="text/javascript"></script>
+    <!-- Test.Runner -->
+    <script src="lib/test/src/controllers/test_runner.js" type="text/javascript"></script>
 
+
+    <!-- Models -->
+    <script src="src/models/session.js"></script>
+
+    <!-- Controllers -->
+    <script src="src/controllers/application_controller.js"></script>
+    <script src="src/controllers/editor_controller.js"></script>
+
+    <!-- Views -->
+    <script src="src/views/application.js"></script>
+
+    <!-- Test Views -->
+    <script src="lib/test/src/views/test_action.js" type="text/javascript"></script>
+    <script src="lib/test/src/views/test_report.js" type="text/javascript"></script>
+    <script src="lib/test/src/views/test_center.js" type="text/javascript"></script>
+
+
+    <!-- Load tests here -->
+    <script src="./lib/document/tests/document_manipulation.js" type="text/javascript"></script>
+
+    <script src="./lib/document/tests/document_test.js" type="text/javascript"></script>
+    <script src="./lib/document/tests/document_editing.js" type="text/javascript"></script>
+
+    <script src="./lib/data/tests/001-data-graph.js" type="text/javascript"></script>
+    <script src="./lib/data/tests/002-versioned-graph.js" type="text/javascript"></script>
+    <script src="./lib/data/tests/003-persistent-graph.js" type="text/javascript"></script>
+
+    <script src="./lib/store/tests/store-test.js" type="text/javascript"></script>
+    <script src="./lib/store/tests/001-memorystore.js" type="text/javascript"></script>
+
+    <script src="./lib/chronicle/tests/example.js" type="text/javascript"></script>
+    <script src="./lib/chronicle/tests/chronicle_test.js" type="text/javascript"></script>
+    <script src="./lib/chronicle/tests/001-basics.js" type="text/javascript"></script>
+    <script src="./lib/chronicle/tests/002-diff.js" type="text/javascript"></script>
+    <script src="./lib/chronicle/tests/003-merge.js" type="text/javascript"></script>
+    <script src="./lib/chronicle/tests/004-text.js" type="text/javascript"></script>
+    <script src="./lib/chronicle/tests/005-array.js" type="text/javascript"></script>
+    <script src="./lib/chronicle/tests/006-persistent-index.js" type="text/javascript"></script>
+
+    <script src="./lib/surface/tests/surface_test.js" type="text/javascript"></script>
+    <script src="./lib/surface/tests/basic_editing.js" type="text/javascript"></script>
 
     <!-- Boot -->
     <script src="src/boot.js"></script>

@@ -1,0 +1,28 @@
+[
+  {
+    "context": "application",
+    "commands": [
+      {"command": "sayHello", "args": ["World!"], "keys": ["command+shift+i"]}
+    ]
+  },
+  {
+    "context": "application.document.editor",
+    "commands": [
+      {"keys": ["backspace", "del"],  "command": "delete" },
+      {"keys": ["enter", "return"],   "command": "insertNode", "args": ["text"] },
+      {"keys": ["command+c"],         "command": "copy", "preventDefault": "false" },
+      {"keys": ["command+x"],         "command": "cut" },
+      {"keys": ["command+v"],         "command": "paste" },
+
+      {"keys": ["right"],             "command": "move", "scope": "selection", "args": ["right", "char"] },
+      {"keys": ["left"],              "command": "move", "scope": "selection", "args": ["left", "char"] },
+      {"keys": ["alt+right"],         "command": "move", "scope": "selection", "args": ["right", "word"] },
+      {"keys": ["alt+left"],          "command": "move", "scope": "selection", "args": ["left", "word"] },
+
+      {"keys": ["shift+right"],       "command": "expand", "scope": "selection", "args": ["right", "char"] },
+      {"keys": ["shift+left"],        "command": "expand", "scope": "selection", "args": ["left", "char"] },
+      {"keys": ["shift+alt+right"],   "command": "expand", "scope": "selection", "args": ["right", "word"] },
+      {"keys": ["shift+alt+left"],    "command": "expand", "scope": "selection", "args": ["left", "word"] }
+    ]
+  }
+]

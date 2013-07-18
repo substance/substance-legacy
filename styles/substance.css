@@ -1,0 +1,759 @@
+body {
+  overflow:hidden;
+}
+
+#container {
+  position: fixed;
+  top: 0px;
+  bottom: 0px;
+  right: 0px;
+  left: 40px;
+}
+
+#header {
+  display: none;
+}
+
+a {
+  color: #426D8B;
+  text-decoration:none;
+}
+
+a:hover {
+  color: rgba(11, 157, 217, 1);
+}
+
+/*#header {
+  display: none;
+  font-family: 'Source Sans Pro', 'Open Sans';
+  font-weight: bold;
+
+  font-size: 20px;
+  height: 40px;
+  line-height: 40px;
+  z-index: 5000;
+
+  background: #2F2B27;
+  color: rgba(255,255,255, 0.7);
+  position: fixed;
+  left: 0px;
+  right: 0px;
+  top: 0px;
+  overflow: visible;
+}
+
+#header .header-container {
+  width: 1130px;
+  margin-left: 80px;
+  overflow: visible;
+  position: relative;
+}
+
+#header .logo {
+  -webkit-transition: color 200ms linear;
+  float: left;
+  height: 40px;
+  margin-right: 40px;
+}
+
+#header .menu {
+  float: left;
+  overflow: auto;
+}
+
+#header .menu a {
+  -webkit-transition: color 200ms linear;
+  padding: 0 10px;
+  display: block;
+  float: left;
+  height: 40px;
+  font-size: 16px;
+  font-family: 'Source Sans Pro', 'Open Sans';
+  font-weight: bold;
+}
+
+#header .menu a:hover, #header .menu a.active {
+  color: #fff;
+}
+
+#header a {
+  border: none;
+  color: rgba(255,255,255, 0.5);
+}
+
+#header a:hover {
+  color: rgba(255,255,255, 0.9);
+}
+
+#header .actions {
+  font-family: 'Source Sans Pro', 'Open Sans';
+  float: right;
+  overflow: auto;
+}
+
+#header .user-status {
+  float: right;
+  display: block;
+  height: 40px;
+  font-size: 16px;
+  font-weight: bold;
+  line-height: 40px;
+  font-family: 'Source Sans Pro', 'Open Sans';
+}
+
+#header .user-status #user_login_form {
+  overflow: auto;
+  height: 40px;
+}
+
+#header .user-status #user_login_form input {
+  border-radius: 3px;
+  color: #444;
+  padding: 0 5px;
+  width: 150px;
+  margin: 5px 0;
+  margin-right: 5px;
+  height: 30px;
+  font-family: 'Source Sans Pro', 'Open Sans';
+  font-size: 14px;
+  font-weight: bold;
+  float: left;
+  background: rgba(255,255,255, 0.9);
+  border: none;
+
+  -webkit-font-smoothing: antialiased;
+}
+
+#header .user-status #user_login_form input.submit {
+  width: 80px;
+  background: #828181;
+  color: white;
+}
+
+#header .user-status #user_login_form input.submit:hover {
+  background: #999;
+}
+
+#header .user-status .username {
+  float: left;
+  height: 40px;
+}
+
+#header .user-status > a {
+  height: 40px;
+  float: left;
+  display: block;
+}
+
+#header .toggle-user-actions {
+  padding-right: 40px;
+}
+
+#header .toggle-user-actions i {
+  padding-left: 10px;
+}
+
+#header .user-status .user-actions {
+  display: none;
+  width: 200px;
+  position: absolute;
+  top: 40px;
+  right: 0px;
+  background: #2F2B27;
+  z-index: 20000;
+}
+
+#header .toggle-environments {
+  position: absolute;
+  left: -60px;
+  height: 40px;
+}
+
+#header .toggle-environments:hover {
+  background: #000;
+}
+
+#header .toggle-environments .current-env {
+  margin: 12px;
+  width: 16px;
+  height: 16px;
+  background: red;
+  border-radius: 8px;
+}
+
+#header .toggle-environments .current-env.development {
+  background: #B3FF00;
+}
+
+#header .toggle-environments .current-env.test {
+  background: #06D6FF;
+}
+
+#header .toggle-environments .current-env.production {
+  background: #FF3535;
+}
+
+#header .environments {
+  display: none;
+  background: #2F2B27;
+  position: absolute;
+  top: 40px;
+  left: -60px;
+  font-size: 16px;
+}
+
+#header .environments a {
+  padding-right: 12px;
+  height: 40px;
+  line-height: 40px;
+  display: block;
+}
+
+#header .environments a .dot {
+  float: left;
+  width: 16px;
+  height: 16px;
+  border-radius: 8px;
+  background: #fff;
+  margin: 12px;
+}
+
+#header .environments a.development .dot {
+  background: #B3FF00;
+}
+
+#header .environments a.test .dot {
+  background: #06D6FF;
+}
+
+#header .environments a.production .dot {
+  background: #FF3535;
+}
+
+#header .user-status .user-actions .user-action {
+  display: block;
+}
+
+#header .user-status .user-actions .user-action i {
+  padding: 0px 10px;
+}
+
+
+#header .user-status a.new-document {
+  position: relative;
+  -webkit-transition: background 200ms linear;
+  -webkit-transition: color 200ms linear;
+  margin: 5px 0;
+  margin-right: 20px;
+  padding: 0 15px;
+  height: 30px;
+  line-height: 30px;
+  border-radius: 3px;
+  font-weight: bold;
+  color: rgba(255,255,255,0.7);
+  background: rgba(0,0,0, 0.5);
+
+  padding-left: 35px;
+}
+
+#header .user-status a.new-document .icon {
+  width: 25px;
+  position: absolute;
+  left: 5px;
+  top: 0px;
+  bottom: 0px;
+  -webkit-transition: opacity 200ms linear;
+  background: url(../images/icons/plus-white.png) center no-repeat;
+  opacity: 0.7;
+}
+
+#header .user-status a.new-document:hover .icon {
+  opacity: 1.0;
+}
+
+#header .user-status a.new-document:hover {
+  color: rgba(255,255,255, 1);
+  background: rgba(0,0,0, 1);
+}
+
+
+
+#header .user-status a.sync {
+  position: relative;
+  -webkit-transition: background 200ms linear;
+  -webkit-transition: color 200ms linear;
+  margin: 5px 0;
+  margin-right: 20px;
+  padding: 0 15px;
+  height: 30px;
+  line-height: 30px;
+  border-radius: 3px;
+  font-weight: bold;
+  color: rgba(255,255,255,0.7);
+  background: rgba(0,0,0, 0.5);
+  padding-left: 20px;
+}
+
+#header .user-status a.sync.error {
+  background: rgba(171, 0, 0, 0.8);
+}
+
+#header .user-status a.sync.error:hover {
+  background: rgba(171, 0, 0, 1.0);
+}
+
+
+#header .user-status a.sync.disabled {
+  opacity: 0.3;
+}
+
+@-webkit-keyframes rotate {
+  from {
+    -webkit-transform: rotate(0deg);
+  }
+  to {
+    -webkit-transform: rotate(360deg);
+  }
+}
+
+#header .user-status a.sync .icon {
+  width: 25px;
+  position: absolute;
+  left: 5px;
+  top: 0px;
+  bottom: 0px;
+  -webkit-transition: opacity 200ms linear;
+
+  background: url(../images/icons/sync-white.png) center no-repeat;
+  opacity: 0.7;
+}
+
+#header .user-status a.sync.active {
+  pointer-events: none;
+  pointer-events: none;
+  cursor: default;
+}
+
+#header .user-status a.sync.active .icon {
+  -webkit-animation-name:             rotate;
+  -webkit-animation-duration:         0.9s;
+  -webkit-animation-iteration-count:  infinite;
+  -webkit-animation-timing-function: linear;
+}
+
+#header .user-status a.sync:hover .icon {
+  opacity: 1.0;
+}
+
+#header .user-status a.sync:hover {
+  color: rgba(255,255,255, 1);
+  background: rgba(0,0,0, 1);
+}*/
+
+
+/* Main Menu Bar
+-------------------------------------------------------------------------------*/
+
+#menu {
+  background: black;
+  position: fixed;
+  left: 0px;
+  top: 0px;
+  bottom: 0px;
+  width: 40px;
+  background: #4A4A4A;
+}
+
+#menu .views {
+  /*background: blue;*/
+}
+
+#menu .views a.toggle-view {
+  border: none;
+  display: block;
+  height: 40px;
+  color: rgba(255,255,255, 0.5);
+  line-height: 40px;
+  text-align: center;
+}
+
+#menu .views a.toggle-view:hover {
+  background: rgba(0,0,0, 0.3);
+  color: #fff;
+}
+
+#menu .actions {
+  position: absolute;
+  bottom: 0px;
+  width: 40px;
+}
+
+#menu .actions a.action {
+  border: none;
+  display: block;
+  height: 40px;
+  line-height: 40px;
+  color: rgba(255,255,255, 0.5);
+  text-align: center;
+}
+
+#menu .actions a.action:hover {
+  background: rgba(0,0,0, 0.3);
+  color: #fff;
+}
+
+
+#help {
+  padding-top: 50px;
+  text-align: center;
+}
+
+
+/* Login / Signup
+-------------------------------------------------------------------------------*/
+
+#login {
+  width: 380px;
+  margin: 0px auto;
+  margin-top: 100px;
+}
+
+#login .error-message {
+  text-align: center;
+  color: #CB0011;
+  height: 40px;
+}
+
+#login h1 {
+  font-family: 'Baskerville', Georgia, serif;
+  font-size: 30px;
+  margin-bottom: 40px;
+  text-align: center;
+}
+
+#login .centered-form {
+  padding: 50px;
+  background: rgba(255,255,255, 0.6);
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+#login .label {
+  text-align: center;
+  font-size: 16px;
+}
+
+#login input {
+  padding: 0 10px;
+  height: 35px;
+  margin: 15px 0;
+  display: block;
+  width: 100%;
+}
+
+#login #login_submit {
+  opacity: 0.8;
+  color: rgba(0,0,0, 0.7);
+  height: 35px;
+  background: #65BC19;
+  border-radius: 5px;
+  cursor: pointer;
+  border: none;
+}
+
+#login #login_submit:hover {
+  opacity: 1.0;
+}
+
+#login .sign-up {
+  font-size: 16px;
+  text-align: center;
+}
+
+#login .sign-up a {
+  /*border: none;*/
+  font-weight: bold;
+}
+
+
+/* Dashboard
+-------------------------------------------------------------------------------*/
+
+#dashboard {
+
+}
+
+#dashboard .shelf {
+  width: 260px;
+  padding: 20px;
+  position: absolute;
+  left: 0px;
+  top: 0px;
+  bottom: 0px;
+}
+
+/* Labels */
+#dashboard .shelf .label {
+  color: #888;
+  font-size: 10px;
+  text-transform: uppercase;
+  margin-top: 20px;
+}
+
+#dashboard .shelf .user {
+  margin-bottom: 30px;
+}
+
+#dashboard .shelf .collections a {
+  display: block;
+  height: 40px;
+  padding-left: 10px;
+  line-height: 40px;
+  border: none;
+}
+
+#dashboard .shelf .collections a:hover {
+  background: rgba(0,0,0,0.03);
+}
+
+#dashboard .shelf .collections a.active {
+  background: #333;
+  color: rgba(255,255,255,0.5);
+}
+
+#dashboard .shelf .collections a .count {
+  float: right;
+  padding-right: 10px;
+}
+
+
+#dashboard .documents {
+  position: fixed;
+  left: 300px;
+  top: 0px;
+  bottom: 0px;
+  right: 0px;
+}
+
+
+/* Editor
+-------------------------------------------------------------------------------*/
+
+#document_menu {
+  display: none;
+  background: #F0F1EB;
+  position: fixed;
+  top: 40px;
+  left: 0px;
+  right: 0px;
+  z-index: 2000;
+}
+
+
+/* Document Settings */
+
+.document-settings.shelf {
+  width: 260px;
+  padding: 20px;
+  position: absolute;
+  left: 0px;
+  top: 0px;
+  bottom: 0px;
+}
+
+.document-settings .title {
+  font-size: 20px;
+}
+
+.document-settings .label {
+  color: #888;
+  font-size: 12px;
+  text-transform: uppercase;
+  margin-top: 20px;
+  padding-bottom: 10px;
+}
+
+
+
+
+/* Publish Settings
+-------------------------------------------------------------------------------*/
+
+.publish-settings {
+}
+
+.publications {
+
+}
+
+.publications .create-publication {
+  font-size: 16px;
+}
+
+.publications .publication {
+  border-bottom: 1px solid rgba(0,0,0,0.1);
+  margin-bottom: 20px;
+}
+
+
+.publications .publication .publication-header {
+  font-family: 'Avenir LT W01 85 Heavy', 'Montserrat', 'Source Sans Pro';
+  font-size: 16px;
+  overflow: auto;
+  line-height: 40px;
+}
+
+.publications .publication .publication-header i {
+  font-size: 22px;
+  line-height: 40px;
+}
+
+.publications .publication .publication-header .actions i {
+  font-size: 16px;
+  padding: 0px 5px;
+}
+
+.publications .publication .publication-header .actions {
+  float: right;
+}
+
+.publications .publication .property {
+  overflow: auto;
+}
+
+.publications .publication .property .label {
+  font-family: inherit;
+  text-transform: none;
+  font-size: inherit;
+  margin: 0;
+  line-height: 30px;
+  float: left;
+}
+
+.publications .publication .property .value {
+  float: right;
+  line-height: 30px;
+}
+
+.publish-settings .publish-actions {
+  position: absolute;
+  top: 50px;
+}
+
+/* Test Center
+-------------------------------------------------------------------------------*/
+
+.test-center {
+  height: 100%;
+  /*background: #ccc;*/
+}
+
+.test-center .test-suites {
+  position: absolute;
+  left: 0px;
+  top: 0px;
+  bottom: 0px;
+  width: 300px;
+  /*background: #fff;*/
+}
+
+.test-center .test-suites .test-suite {
+  display: block;
+  padding: 10px;
+  background: rgba(0,0,0, 0.05);
+  margin-bottom: 1px;
+}
+
+.test-center .test-report {
+  position: absolute;
+  top: 0px;
+  bottom: 0px;
+  left: 300px;
+  width: 800px;
+  overflow: auto;
+  background: #fff;
+}
+
+.test-center .test-output {
+  display: none;
+  position: absolute;
+
+  top: 0px;
+  right: 20px;
+  left: 1120px;
+  bottom: 0px;
+  background: white;
+}
+
+.test-center .test-report h2 {
+  font-family: 'Avenir LT W01 85 Heavy', 'Montserrat', 'Source Sans Pro';
+  font-size: 40px;
+  padding: 40px 80px;
+}
+
+.test-center .test-report .test {
+
+  margin-bottom: 50px;
+}
+
+.test-center .test-report .test .name {
+  font-family: 'Avenir LT W01 85 Heavy', 'Montserrat', 'Source Sans Pro';
+  font-size: 20px;
+  padding: 10px 80px;
+}
+
+.test-center .test-report .test .actions {
+  font-size: 18px;
+}
+
+.test-center .test-report .test .actions .action {
+  padding: 0px 80px;
+  border-bottom: 1px solid #fefefe;
+  position: relative;
+  height: 60px;
+  line-height: 60px;
+}
+
+.test-center .test-report .test .actions .action .duration {
+  font-size: 12px;
+  color: rgba(0,0,0,0.3);
+  position: absolute;
+  right: 0px;
+  top: 0px;
+  bottom: 0px;
+  width: 100px;
+
+  border-top: 1px solid #f1f1f1;
+}
+
+.test-center .test-report .test .actions .action .status {
+  position: absolute;
+  left: 40px;
+  top: 0px;
+  font-size: 25px;
+  bottom: 0px;
+  padding: 0 10px;
+  /*width: 100px;  */
+}
+
+/*.test-center .test-report .test .actions .action.success .status {
+  background: rgba(145, 187, 4, 1);
+}
+
+.test-center .test-report .test .actions .action.error .status {
+  background: rgba(235, 78, 4, 1);
+}*/
+
+.test-center .test-report .test .actions .action:hover {
+  background: rgba(0,0,0,0.01 );
+}
+
+.test-center .test-report .test .actions .action.success {
+  border-right: 4px solid rgba(145, 187, 4, 1);
+  color: rgba(107, 122, 54, 1);
+}
+
+.test-center .test-report .test .actions .action.error {
+  border-right: 4px solid rgba(235, 78, 4, 1);
+  color: rgba(155, 80, 66, 1);
+}

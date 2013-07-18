@@ -10,7 +10,7 @@ class DictObject(dict):
 
   def __init__(self, d):
     self.update(d)
-      
+
   def __getattr__(self, name):
     if not self.has_key(name):
       return None
@@ -24,7 +24,7 @@ def as_object(d):
   elif type(d) is types.ListType or type(d) is types.TupleType:
     for idx,elem in enumerate(d):
       d[idx] = as_object(d[idx])
-  
+
   return d
 
 
@@ -41,25 +41,25 @@ def git_pull(root, module):
 
   if not os.path.exists(module_dir):
     print("Cloning sub-module: %s" %module.folder)
-    
+
     parent_dir, name = os.path.split(module_dir)
-    
+
     if not os.path.exists(parent_dir):
-      print("Creating folder: %s" %parent_dir)    
+      print("Creating folder: %s" %parent_dir)
       os.makedirs(parent_dir)
 
     cmd = ["git", "clone", module.repository, name]
     p = subprocess.Popen(cmd, cwd=parent_dir)
     p.communicate()
-  
+
   else:
     print("Pulling sub-module: %s" %module.folder)
-    cmd = ["git", "pull", "origin", module.branch]
+    cmd = ["git", "pull"]
     p = subprocess.Popen(cmd, cwd=module_dir)
     p.communicate()
 
 
-def npm_publish(root, module):
+def npm_publish(root, module, args):
   module_dir = os.path.join(root, module.folder)
 
   package_json = os.path.join(module_dir, "package.json")
@@ -67,7 +67,9 @@ def npm_publish(root, module):
     package = read_json(package_json)
     if not package.private:
       print("Publishing sub-module: %s" %module.folder)
-      cmd = ["npm", "publish", "--force"]
+      cmd = ["npm", "publish"]
+      if (args['force'] == True):
+        cmd.append("--force")
       p = subprocess.Popen(cmd, cwd=module_dir)
       p.communicate()
 
@@ -132,7 +134,7 @@ def pull(root, config, args=None):
 
 def publish(root, config, args=None):
   for m in config.modules:
-    npm_publish(root_dir, m)
+    npm_publish(root_dir, m, args)
 
 def build(root, config, args=None):
   for m in config.modules:
@@ -150,7 +152,7 @@ actions = {
  "pull": pull,
  "publish": publish,
  "build": build,
- "update": update  
+ "update": update
 }
 
 # Command line arguments
@@ -164,6 +166,7 @@ parser.add_argument('--status', '-s', action='store_const', dest="action", const
 parser.add_argument('--symlinks', action='store_const', dest="action", const="symlinks", help='Create symbolic links.')
 parser.add_argument('--build', action='store_const', dest="action", const="build", help='Build node-modules.')
 parser.add_argument('--publish', action='store_const', dest="action", const="publish", help='Publish node-modules.')
+parser.add_argument('--force', action='store_const', dest="force", const=True, help='Force.')
 
 # Main
 # ========
@@ -176,4 +179,8 @@ if action == None:
 config = read_config()
 root_dir = os.path.realpath(os.path.dirname(__file__))
 
-actions[action](root_dir, config)
+options = {};
+if 'force' in args:
+  options['force'] = True
+
+actions[action](root_dir, config, options)
