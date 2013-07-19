@@ -1,19 +1,22 @@
 "use strict";
 
-// Gets called when the DOM is ready
-module.exports = function() {
+var _ = require("underscore");
 
-  var Substance = require("../substance.js");
+// Creates a Substance instance
+var boot = function() {
+
+  // create a clone of the provided module as we store data into it
+  var Substance = _.clone(require("../substance.js"));
+
   var SandboxController = require("./controllers/sandbox_controller");
   var SandboxView = require("./views/sandbox");
   var Keyboard = Substance.Commander.Keyboard;
-  require("./helpers");
 
   var Backbone = require("../lib/backbone");
   var Router = require("./router");
 
-
   var html = Substance.util.html;
+
   // Compile templates
   html.compileTemplate('test_center');
   html.compileTemplate('test_report');
@@ -32,12 +35,9 @@ module.exports = function() {
   Substance.appView = new SandboxView(Substance.app);
   $('body').html(Substance.appView.render().el);
 
-
   // Setup router (talks to the main app controller)
   Substance.router = new Router({controller: Substance.app});
-
   Backbone.history.start();
-
 
   // Preliminary keyboard configuration stuff...
   // TODO: discuss where this should be placed...
@@ -78,3 +78,4 @@ module.exports = function() {
   return Substance;
 };
 
+module.exports = boot;
