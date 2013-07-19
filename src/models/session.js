@@ -1,13 +1,11 @@
-(function(root) {
+"use strict";
 
-var Substance = root.Substance;
+var _ = require("underscore");
+var Substance = require("../substance");
+
 var util = Substance.util;
-var _ = root._;
-var Data = Substance.Data;
 var Chronicle = Substance.Chronicle;
 var Document = Substance.Document;
-var Test = Substance.Test;
-
 
 // Substance.Session
 // -----------------
@@ -37,6 +35,4 @@ Session.Prototype = function() {
 Session.prototype = new Session.Prototype();
 _.extend(Session.prototype, util.Events);
 
-Substance.Session = Session;
-
-})(this);
+module.exports = Session;

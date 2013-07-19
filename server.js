@@ -1,5 +1,6 @@
 var http = require('http');
 var express = require('express');
+var path = require('path');
 
 var CommonJSServer = require("./lib/application/commonjs");
 var Handlebars = require("handlebars");
@@ -8,9 +9,14 @@ var fs = require("fs");
 var app = express();
 
 var commonJSServer = new CommonJSServer(__dirname);
-commonJSServer.update("./substance.js");
+commonJSServer.update("./src/boot.js");
 
 var index_template = Handlebars.compile(fs.readFileSync(__dirname + "/sandbox.hb").toString());
+
+var port = process.env.PORT || 3000;
+app.use(express.cookieParser());
+app.use(express.bodyParser());
+app.use(express.methodOverride());
 
 app.get("/",
   function(req, res, next) {
@@ -22,6 +28,12 @@ app.get("/",
   }
 );
 
+app.use('/lib', express.static('lib'));
+app.use('/styles', express.static('styles'));
+app.use('/src', express.static('src'));
+app.use('/data', express.static('data'));
+app.use('/config', express.static('config'));
+
 app.get(/\/?scripts\/\/?(.+)/,
   function(req, res, next) {
     var scriptPath = "/"+req.params[0];
@@ -31,10 +43,6 @@ app.get(/\/?scripts\/\/?(.+)/,
   }
 );
 
-var port = process.env.PORT || 3000;
-app.use(express.cookieParser());
-app.use(express.bodyParser());
-app.use(express.methodOverride());
 app.use(app.router);
 
 http.createServer(app).listen(port, function(){

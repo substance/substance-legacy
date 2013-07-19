@@ -1,3 +1,7 @@
+"use strict";
+
+var Backbone = require("../lib/backbone");
+
 var Router = Backbone.Router.extend({
   initialize: function(options) {
     this.controller = options.controller;
@@ -17,7 +21,7 @@ var Router = Backbone.Router.extend({
 
   // Test Center
   // --------
-  // 
+  //
 
   testCenter: function(suite) {
     this.dispatch('open:test_center', [suite]);
@@ -25,7 +29,7 @@ var Router = Backbone.Router.extend({
 
   // Editor View
   // --------
-  // 
+  //
 
   editor: function(document) {
     this.dispatch('open:editor', [document]);
@@ -34,7 +38,7 @@ var Router = Backbone.Router.extend({
 
   // Create a new document
   // --------
-  // 
+  //
 
   newDocument: function() {
     this.dispatch('create:document');
@@ -42,13 +46,15 @@ var Router = Backbone.Router.extend({
 
   // Dispatch all routes to the controller's event system
   // --------
-  // 
+  //
   // We normalize all messages in our app and thus
   // hand it over to the session event system
 
   dispatch: function(message, args) {
-    var args = [message].concat(args || []);
+    args = [message].concat(args || []);
     this.controller.trigger.apply(this.controller, args);
   }
 
 });
+
+module.exports = Router;
