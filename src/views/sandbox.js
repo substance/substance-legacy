@@ -1,6 +1,8 @@
 "use strict";
 
 var _ = require("underscore");
+var util = require('substance-util');
+var html = util.html;
 var Substance = require("../substance");
 var View = Substance.Application.View;
 var TestCenter = Substance.Test.TestCenter;
@@ -80,7 +82,7 @@ SandboxView.Prototype = function() {
   this.render = function() {
     console.log('rendering main stuff');
     // console.log('Session', Substance.session);
-    this.$el.html(_.tpl('substance', this.controller.session));
+    this.$el.html(html.tpl('substance', this.controller.session));
     return this;
   };
 };

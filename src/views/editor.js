@@ -1,6 +1,8 @@
 "use strict";
 
 var _ = require("underscore");
+var util = require('substance-util');
+var html = util.html;
 var Substance = require("../substance");
 var View = Substance.Application.View;
 
@@ -28,7 +30,7 @@ EditorView.Prototype = function() {
   //
 
   this.render = function() {
-    this.$el.html(_.tpl('editor', this.controller));
+    this.$el.html(html.tpl('editor', this.controller));
     this.$('#document').html(this.surface.render().el);
     return this;
   };
