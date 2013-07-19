@@ -21,5 +21,6 @@ require("./lib/operator/tests");
 require("./lib/chronicle/tests");
 require("./lib/data/tests");
 require("./lib/document/tests");
+require("./lib/surface/tests");
 
 module.exports = Substance;

@@ -114,8 +114,6 @@ SandboxController.Prototype = function() {
       stopOnError: false
     }, cb);
 
-    console.log('gimme some suites', funcs);
-
   };
 };
 

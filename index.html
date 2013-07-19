@@ -34,6 +34,137 @@
       <canvas id="canvas" style="display: none;"></canvas>
     </script>
 
+    <!-- Annotation Toggles -->
+    <script type="text/html" name="annotation_toggles">
+      <div class="annotation-toggles">
+        <% if (link){ %>
+          <div class="annotation-data">
+            <input type="text" class="link-url" name="link-url" data-id="<%= link.id %>" value="<%= link.url %>"></input>
+          </div>
+        <% } %>
+        <% _.each(annotations, function(a) { %>
+          <a href="#" class="toggle <%= a.type %><%= a.active ? " active" : "" %> " data-type="<%= a.type %>" title="<%= a.description %>"></a>
+        <% }) %>
+        <div class="arrow-down"></div>
+      </div>
+    </script>
+
+    <!-- Dashboard -->
+    <script type="text/html" name="dashboard">
+      <div id="dashboard">
+        <div class="shelf">
+          <div class="user">
+            <div><%= session.user() %></div>
+          </div>
+
+          <!-- User-specific document collections -->
+          <div class="collections">
+            <% _.each(library.listCollections(), function(c) { %>
+              <a href="#dashboard/<%= c.id %>" class="collection<%= c.id === library.collection.id ? ' active' : '' %>"><%= c.name %> <div class="count"><%= c.documents.length %></div></a>
+            <% }); %>
+          </div>
+        </div>
+
+        <div class="documents">
+
+        </div>
+      </div>
+    </script>
+
+
+    <!-- User Login -->
+    <script type="text/html" name="login">
+      <div id="login">
+        <h1>Substance</h1>
+        <form id="login_form" class="centered-form">
+          <div class="error-message"></div>
+          <div class="label">Username</div>
+          <input type="text" name="username" id="login_username"/>
+          <div class="label">Password</div>
+          <input type="password" name="password" id="login_password"/>
+          <input type="submit" id="login_submit" value="Login"/>
+
+          <div class="sign-up">
+            New to Substance? <a href="#signup">Signup</a>
+          </div>
+        </form>
+      </div>
+    </script>
+
+    <!-- User Signup -->
+    <script type="text/html" name="signup">
+      <div id="login">
+        <h1>Substance</h1>
+        <form id="signup_form" class="centered-form">
+          <div class="error-message"></div>
+          <div class="label">Email</div>
+          <input type="text" name="name" id="signup_email"/>
+
+          <div class="label">Username</div>
+          <input type="text" name="username" id="signup_username"/>
+
+          <div class="label">Full Name</div>
+          <input type="text" name="name" id="signup_name"/>
+
+          <div class="label">Password</div>
+          <input type="password" name="password" id="signup_password"/>
+
+          <input type="submit" id="login_submit" value="Signup"/>
+
+          <div class="sign-up">
+            Already registered? <a href="#login">Login</a>
+          </div>
+        </form>
+      </div>
+    </script>
+
+    <!-- Publications -->
+    <script type="text/html" name="publications">
+      <% _.each(document.entry.get('publications'), function(pub) { %>
+        <div class="publication">
+          <div class="publication-header">
+            <i class="icon-smile"></i> <%= get(pub.network).name %>
+            <div class="actions">
+              <a href="#" class="create-version"><i class="icon-share"></i></a>
+              <a href="#" class="delete-publication" data-id="<%= pub.id %>"><i class="icon-trash"></i></a>
+            </div>
+          </div>
+          <div class="property">
+            <div class="label">Creator</div>
+            <div class="value"><%= get(pub.creator).name %></div>
+          </div>
+          <div class="property">
+            <div class="label">Status</div>
+            <div class="value">Confirmed</div>
+          </div>
+        </div>
+      <% }); %>
+      <a href="#" class="create-publication">Add Publication</a>
+    </script>
+
+
+    <!-- Document Collaborators -->
+    <script type="text/html" name="document_collaborators">
+
+      <div class="collaborators">
+        <% _.each(document.entry.get('collaborators'), function(c) { %>
+          <div class="collaborator">
+            <%= c.name %>
+            <a href="#" class="delete-collaborator" data-id="<%= c.id %>">Remove</a>
+          </div>
+        <% }); %>
+      </div>
+
+      <div class="add_collaborator">
+        <a class="add_collaborator">Add Collaborator</a>
+        <div class="add_collaborator_form">
+          <input type="text" name="collaborator" id="new_collaborator"/>
+          <a href="#" class="create-collaborator">Add</a>
+        </div>
+      </div>
+    </script>
+
+
     <!-- Editor -->
     <script type="text/x-ejs-template" name="editor">
 
@@ -79,12 +210,61 @@
       <div class="content"></div>
     </script>
 
+    <!-- Ken.Browser  -->
+    <script type="text/x-ejs-template" name="browser">
+      <div id="facets"></div>
+      <div id="matrix" class="surface"></div>
+      <div id="details"></div>
+    </script>
+
+    <!-- Ken.Item  -->
+    <script type="text/x-ejs-template" name="item">
+      <a href="#<%= item.id %>" class="item" id="<%= item.id %>" data-id="<%= item.id %>">
+        <div class="inner">
+          <div class="article-type">
+            Article
+            <div class="published_at">
+              <% if (item.published_at) { %>
+                <%= new Date(item.published_at).toDateString() %>
+              <% } %>
+            </div>
+          </div>
+          <% if (matches.length > 0) { %>
+            <div class="markers">
+              <% _.each(matches, function(match) { %>
+                <div class="marker" style="background: <%= match.color %>"></div>
+              <% }); %>
+            </div>
+          <% } %>
+          <div class="name"><%= item.title.substr(0, 300) %></div>
+          <div class="authors"><%= item.creator.name %></div>
+        </div>
+      </a>
+    </script>
+
+    <!-- Ken.Facets  -->
+    <script type="text/x-ejs-template" name="facets">
+      <% var count = 0; %>
+      <% _.each(facets, function(f, key) { %>
+        <div class="filter <%= key %>">
+          <div class="filter-name"><%= f.name %></div>
+          <div class="available-values">
+            <% _.each(f.availableValues, function(val) { %>
+              <a href="#" class="value <%= val.selected ? 'remove' : 'add' %><%= val.relatedObjects.length > 0 ? " related" : "" %>" data-property="<%= key %>" data-value="<%= val.val %>" style="background: <%= val.color %>">
+                <%= val.val.toLowerCase().substr(0, 36) %>
+                <span class="frequency"><%= val.objects.length %></span>
+              </a>
+            <% }); %>
+          </div>
+        </div>
+      <% }); %>
+    </script>
 
     <!-- Substance.TestCenter -->
     <script type="text/text/x-handlebars-template" name="test_center">
       <div class="test-suites">
         {{#each test_suites}}
-          <a class="test-suite {{name}}{{#if active}} active{{/if}}" sbs-click='showReport({{name}})' href="#tests/{{name}}">
+          <a class="test-suite" href="#tests/{{name}}">
             {{name}}
           </a>
         {{/each}}
@@ -101,7 +281,6 @@
 
     <!-- Substance.TestReport -->
     <script type="text/text/x-handlebars-template" name="test_report">
-      <div class="border-right"></div>
       <h2>Subtance.{{name}}</h2>
       <div class="tests">
         {{#each tests}}
@@ -113,7 +292,7 @@
                   <div class="status">
                     <i class="{{#ifelse error "icon-frown" "icon-smile"}}{{/ifelse}}"></i>
                   </div>
-                    {{@index}}. {{label}}
+                   {{label}}
                   <div class="duration">
                      15 ms
                   </div>
@@ -132,132 +311,25 @@
       </div>
     </script>
 
-    <!-- all singletons are here -->
-    <script src="src/substance.js"></script>
-
     <script src="lib/underscore.js"></script>
     <script src="lib/jquery.min.js"></script>
-    <script src="lib/handlebars.js"></script>
     <script src="lib/backbone.js"></script>
-
     <script src="lib/base64.js"></script>
-
-    <script src="lib/client/client.js"></script>
-
     <script src="lib/jquery.timeago.js"></script>
 
-    <script src="lib/util/util.js"></script>
 
-    <script src="lib/util/html.js"></script>
-    <script src="lib/util/errors.js"></script>
-    <script src="lib/regexp/src/regexp.js"></script>
+    #####scripts#####
 
-    <!-- Model -->
-
-    <script src="lib/operator/src/operation.js" type="text/javascript"></script>
-    <script src="lib/operator/src/compound.js" type="text/javascript"></script>
-    <script src="lib/operator/src/text_operation.js" type="text/javascript"></script>
-    <script src="lib/operator/src/array_operation.js" type="text/javascript"></script>
-    <script src="lib/operator/src/object_operation.js" type="text/javascript"></script>
-    <script src="lib/chronicle/src/chronicle.js"></script>
-    <script src="lib/chronicle/src/chronicle_impl.js"></script>
-    <script src="lib/chronicle/src/chronicle_index_impl.js"></script>
-
-    <script src="lib/chronicle/src/adapter/text.js" type="text/javascript"></script>
-    <script src="lib/chronicle/src/adapter/array.js" type="text/javascript"></script>
-
-    <script src="lib/data/data.js"></script>
-
-    <script src="lib/document/src/document.js"></script>
-    <script src="lib/document/src/selection.js"></script>
-    <script src="lib/document/src/writer.js"></script>
-
-    <!-- Stores -->    
-    <script src="lib/store/src/store.js"></script>
-    <script src="lib/store/src/memory_store.js"></script>
-
-    <!--<script src="lib/library/library.js"></script>-->
-
-    <!-- Substance.Application -->
-    <script src="lib/application/src/application.js"></script>
-    <script src="lib/application/src/view.js"></script>
-    <script src="lib/application/src/controller.js"></script>
-
-    <!-- Substance.Surface -->
-    <script src="lib/surface/surface.js"></script>
-    <script src="lib/surface/nodes/text/text.js"></script>
-
-    <!-- Application helpers -->
-    <script src="src/helpers.js"></script>
-
-    <!-- Router -->
-    <script src="src/router.js"></script>
-
-
-    <!-- Substance.Keymapper -->
-    <script src="lib/commander/lib/mousetrap.js"></script>
-    <script src="lib/commander/src/keyboard.js"></script>
-
-    <!-- Views -->
-    <script src="src/views/editor.js"></script>
-
-    <!--
-    <script src="src/views/document/collaborators.js"></script>
-    <script src="src/views/document/publications.js"></script>
-    !-->
-
-
-    <!-- Test API -->
-    <script src="lib/test/assert.js"></script>
-    <script src="lib/test/src/test.js" type="text/javascript"></script>
-
-    <!-- Test.Runner -->
-    <script src="lib/test/src/controllers/test_runner.js" type="text/javascript"></script>
-
-
-    <!-- Models -->
-    <script src="src/models/session.js"></script>
-
-    <!-- Controllers -->
-    <script src="src/controllers/sandbox_controller.js"></script>
-    <script src="src/controllers/editor_controller.js"></script>
-
-    <!-- Views -->
-    <script src="src/views/sandbox.js"></script>
-
-    <!-- Test Views -->
-    <script src="lib/test/src/views/test_action.js" type="text/javascript"></script>
-    <script src="lib/test/src/views/test_report.js" type="text/javascript"></script>
-    <script src="lib/test/src/views/test_center.js" type="text/javascript"></script>
-
-
-    <!-- Load tests here -->
-    <script src="./lib/document/tests/document_manipulation.js" type="text/javascript"></script>
-
-    <script src="./lib/document/tests/document_test.js" type="text/javascript"></script>
-    <script src="./lib/document/tests/document_editing.js" type="text/javascript"></script>
-
-    <script src="./lib/data/tests/001-data-graph.js" type="text/javascript"></script>
-    <script src="./lib/data/tests/002-versioned-graph.js" type="text/javascript"></script>
-    <script src="./lib/data/tests/003-persistent-graph.js" type="text/javascript"></script>
-
-    <script src="./lib/store/tests/store-test.js" type="text/javascript"></script>
-    <script src="./lib/store/tests/001-memorystore.js" type="text/javascript"></script>
-
-    <script src="./lib/chronicle/tests/example.js" type="text/javascript"></script>
-    <script src="./lib/chronicle/tests/chronicle_test.js" type="text/javascript"></script>
-    <script src="./lib/chronicle/tests/001-basics.js" type="text/javascript"></script>
-    <script src="./lib/chronicle/tests/002-diff.js" type="text/javascript"></script>
-    <script src="./lib/chronicle/tests/003-merge.js" type="text/javascript"></script>
-    <script src="./lib/chronicle/tests/004-text.js" type="text/javascript"></script>
-    <script src="./lib/chronicle/tests/005-array.js" type="text/javascript"></script>
-    <script src="./lib/chronicle/tests/006-persistent-index.js" type="text/javascript"></script>
-
-    <script src="./lib/surface/tests/surface_test.js" type="text/javascript"></script>
-    <script src="./lib/surface/tests/basic_editing.js" type="text/javascript"></script>
-
-    <!-- Boot -->
-    <script src="src/boot.js"></script>
+    <script>
+      
+      // var sandbox = new Substance.Sandbox();
+      $(function() {
+        var boot = require("/src/boot.js");
+        window.Substance = boot();
+        // sandbox.run();
+      });
+      
+    </script>
   </head>
   <body>
 

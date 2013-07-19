@@ -30,11 +30,14 @@ module.exports = function() {
 
   // Start the engines
   Substance.appView = new SandboxView(Substance.app);
+  $('body').html(Substance.appView.render().el);
+
 
   // Setup router (talks to the main app controller)
   Substance.router = new Router({controller: Substance.app});
 
   Backbone.history.start();
+
 
   // Preliminary keyboard configuration stuff...
   // TODO: discuss where this should be placed...
@@ -76,11 +79,6 @@ module.exports = function() {
   });
 
   Substance.app.keyboard = keyboard;
-
-  Substance.render = function() {
-    // Render main app
-    $('body').html(Substance.appView.render().el);
-  }
 
   return Substance;
 };

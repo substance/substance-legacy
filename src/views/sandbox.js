@@ -67,7 +67,6 @@ SandboxView.Prototype = function() {
   //
 
   this.replaceMainView = function(name, view) {
-    this.render();
     $('body').removeClass().addClass('current-view '+name);
 
     if (this.mainView) {
@@ -75,10 +74,11 @@ SandboxView.Prototype = function() {
     }
 
     this.mainView = view;
-    this.$('#container').html(this.mainView.render().el);
+    this.$('#container').html(view.render().el);
   };
 
   this.render = function() {
+    console.log('rendering main stuff');
     // console.log('Session', Substance.session);
     this.$el.html(_.tpl('substance', this.controller.session));
     return this;

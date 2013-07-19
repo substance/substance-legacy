@@ -11,7 +11,7 @@ var app = express();
 var commonJSServer = new CommonJSServer(__dirname);
 commonJSServer.update("./src/boot.js");
 
-var index_template = Handlebars.compile(fs.readFileSync(__dirname + "/sandbox.hb").toString());
+
 
 var port = process.env.PORT || 3000;
 app.use(express.cookieParser());
@@ -20,10 +20,21 @@ app.use(express.methodOverride());
 
 app.get("/",
   function(req, res, next) {
-    var data = {
-      scripts: commonJSServer.list()
-    }
-    var result = index_template(data);
+
+    var template = fs.readFileSync(__dirname + "/index.html", 'utf8');
+
+    // var index_template = Handlebars.compile(fs.readFileSync(__dirname + "/sandbox.hb").toString());
+
+  
+    var scripts = commonJSServer.list();
+
+    var scriptsTags = scripts.map(function(script) {
+      return ['<script type="text/javascript" src="/scripts', script, '"></script>'].join('');
+    }).join('\n');
+
+
+    var result = template.replace('#####scripts#####', scriptsTags);
+    
     res.send(result);
   }
 );
