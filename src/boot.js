@@ -54,14 +54,9 @@ module.exports = function() {
     if (e.type === "keypress") {
       var str = null;
 
-      // TODO: we need a better technique to detect typed characters
-      // This approach assumes, that a typed character comes with a unicode interpretation
-      // However, the actual mapped key is given by the e.charCode
-      if (e.keyIdentifier.substring(0,2) === "U+") {
-        str = String.fromCharCode(e.charCode);
-      }
-
-      if (str !== null) {
+      // TODO: try to find out which is the best way to detect typed characters
+      str = String.fromCharCode(e.charCode);
+      if (str !== null && str.length > 0) {
         // TODO: consume the event
         e.preventDefault();
         return {command: "write", args: [str]};
