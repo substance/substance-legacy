@@ -48,15 +48,23 @@ def git_pull(root, module):
       print("Creating folder: %s" %parent_dir)
       os.makedirs(parent_dir)
 
-    cmd = ["git", "clone", module.repository, name]
+    cmd = ["git", "clone", "-b", module.branch, module.repository, name]
     p = subprocess.Popen(cmd, cwd=parent_dir)
     p.communicate()
 
   else:
-    print("Pulling sub-module: %s" %module.folder)
-    cmd = ["git", "pull"]
+    cmd = ["git", "pull", "origin", module.branch]
+    print("Pulling sub-module: %s, (%s)" %(module.folder, " ".join(cmd)))
     p = subprocess.Popen(cmd, cwd=module_dir)
     p.communicate()
+
+def git_push(root, module):
+  module_dir = os.path.join(root, module.folder)
+
+  print("Pushing sub-module: %s" %module.folder)
+  cmd = ["git", "push", "origin", module.branch]
+  p = subprocess.Popen(cmd, cwd=module_dir)
+  p.communicate()
 
 
 def npm_publish(root, module, args):
@@ -132,6 +140,10 @@ def pull(root, config, args=None):
   for m in config.modules:
     git_pull(root_dir, m)
 
+def push(root, config, args=None):
+  for m in config.modules:
+    git_push(root_dir, m)
+
 def publish(root, config, args=None):
   for m in config.modules:
     npm_publish(root_dir, m, args)
@@ -149,6 +161,7 @@ def update(root, config, args=None):
 actions = {
  "status": status,
  "symlinks": symlinks,
+ "push": push,
  "pull": pull,
  "publish": publish,
  "build": build,
