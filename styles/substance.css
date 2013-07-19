@@ -476,169 +476,8 @@ a:hover {
 }
 
 
-/* Dashboard
--------------------------------------------------------------------------------*/
-
-#dashboard {
-
-}
-
-#dashboard .shelf {
-  width: 260px;
-  padding: 20px;
-  position: absolute;
-  left: 0px;
-  top: 0px;
-  bottom: 0px;
-}
-
-/* Labels */
-#dashboard .shelf .label {
-  color: #888;
-  font-size: 10px;
-  text-transform: uppercase;
-  margin-top: 20px;
-}
-
-#dashboard .shelf .user {
-  margin-bottom: 30px;
-}
-
-#dashboard .shelf .collections a {
-  display: block;
-  height: 40px;
-  padding-left: 10px;
-  line-height: 40px;
-  border: none;
-}
-
-#dashboard .shelf .collections a:hover {
-  background: rgba(0,0,0,0.03);
-}
-
-#dashboard .shelf .collections a.active {
-  background: #333;
-  color: rgba(255,255,255,0.5);
-}
-
-#dashboard .shelf .collections a .count {
-  float: right;
-  padding-right: 10px;
-}
 
 
-#dashboard .documents {
-  position: fixed;
-  left: 300px;
-  top: 0px;
-  bottom: 0px;
-  right: 0px;
-}
-
-
-/* Editor
--------------------------------------------------------------------------------*/
-
-#document_menu {
-  display: none;
-  background: #F0F1EB;
-  position: fixed;
-  top: 40px;
-  left: 0px;
-  right: 0px;
-  z-index: 2000;
-}
-
-
-/* Document Settings */
-
-.document-settings.shelf {
-  width: 260px;
-  padding: 20px;
-  position: absolute;
-  left: 0px;
-  top: 0px;
-  bottom: 0px;
-}
-
-.document-settings .title {
-  font-size: 20px;
-}
-
-.document-settings .label {
-  color: #888;
-  font-size: 12px;
-  text-transform: uppercase;
-  margin-top: 20px;
-  padding-bottom: 10px;
-}
-
-
-
-
-/* Publish Settings
--------------------------------------------------------------------------------*/
-
-.publish-settings {
-}
-
-.publications {
-
-}
-
-.publications .create-publication {
-  font-size: 16px;
-}
-
-.publications .publication {
-  border-bottom: 1px solid rgba(0,0,0,0.1);
-  margin-bottom: 20px;
-}
-
-
-.publications .publication .publication-header {
-  font-family: 'Avenir LT W01 85 Heavy', 'Montserrat', 'Source Sans Pro';
-  font-size: 16px;
-  overflow: auto;
-  line-height: 40px;
-}
-
-.publications .publication .publication-header i {
-  font-size: 22px;
-  line-height: 40px;
-}
-
-.publications .publication .publication-header .actions i {
-  font-size: 16px;
-  padding: 0px 5px;
-}
-
-.publications .publication .publication-header .actions {
-  float: right;
-}
-
-.publications .publication .property {
-  overflow: auto;
-}
-
-.publications .publication .property .label {
-  font-family: inherit;
-  text-transform: none;
-  font-size: inherit;
-  margin: 0;
-  line-height: 30px;
-  float: left;
-}
-
-.publications .publication .property .value {
-  float: right;
-  line-height: 30px;
-}
-
-.publish-settings .publish-actions {
-  position: absolute;
-  top: 50px;
-}
 
 /* Test Center
 -------------------------------------------------------------------------------*/
@@ -649,6 +488,8 @@ a:hover {
 }
 
 .test-center .test-suites {
+  font-family: 'Avenir LT W01 85 Heavy', 'Montserrat', 'Source Sans Pro';
+  font-size: 16px;
   position: absolute;
   left: 0px;
   top: 0px;
@@ -659,9 +500,19 @@ a:hover {
 
 .test-center .test-suites .test-suite {
   display: block;
-  padding: 10px;
-  background: rgba(0,0,0, 0.05);
-  margin-bottom: 1px;
+  padding: 14px 20px;
+  /*background: rgba(0,0,0, 0.05);*/
+
+  border-bottom: 1px solid #ddd;
+
+}
+
+.test-center .test-suites .test-suite.active {
+  background: rgba(255,255,255,1);
+}
+
+.test-center .test-suites .test-suite:hover {
+  background: rgba(255,255,255,0.7);
 }
 
 .test-center .test-report {
@@ -672,12 +523,23 @@ a:hover {
   width: 800px;
   overflow: auto;
   background: #fff;
+  /*border-right: 2px solid #C7CAC9;*/
+}
+
+.test-center .test-report .border-right {
+  position: absolute;
+  top: 0px;
+  right: 0px;
+  bottom: 0px;
+  width: 2px;
+  background: #C7CAC9;
 }
 
 .test-center .test-output {
   display: none;
   position: absolute;
 
+  font-size: 18px;
   top: 0px;
   right: 20px;
   left: 1120px;
@@ -692,13 +554,14 @@ a:hover {
 }
 
 .test-center .test-report .test {
-
   margin-bottom: 50px;
 }
 
 .test-center .test-report .test .name {
   font-family: 'Avenir LT W01 85 Heavy', 'Montserrat', 'Source Sans Pro';
-  font-size: 20px;
+  font-size: 14px;
+  color: #888;
+  text-transform: uppercase;
   padding: 10px 80px;
 }
 
@@ -708,25 +571,36 @@ a:hover {
 
 .test-center .test-report .test .actions .action {
   padding: 0px 80px;
-  border-bottom: 1px solid #fefefe;
+  /*border-bottom: 1px solid #eee;*/
+  margin-bottom: 1px;
   position: relative;
   height: 60px;
   line-height: 60px;
 }
 
 .test-center .test-report .test .actions .action .duration {
-  font-size: 12px;
-  color: rgba(0,0,0,0.3);
+  font-size: 13px;
+  font-family: 'Avenir LT W01 85 Heavy', 'Montserrat', 'Source Sans Pro';
   position: absolute;
   right: 0px;
   top: 0px;
   bottom: 0px;
+  text-align: right;
+  padding-right: 30px;
   width: 100px;
-
-  border-top: 1px solid #f1f1f1;
 }
 
+.test-center .test-report .test .actions .action.success .duration {
+  color: #7AA017;  
+}
+
+.test-center .test-report .test .actions .action.error .duration {
+  color: #D91D1D;
+}
+
+
 .test-center .test-report .test .actions .action .status {
+  display: none;
   position: absolute;
   left: 40px;
   top: 0px;
@@ -749,11 +623,11 @@ a:hover {
 }
 
 .test-center .test-report .test .actions .action.success {
-  border-right: 4px solid rgba(145, 187, 4, 1);
-  color: rgba(107, 122, 54, 1);
+  border-right: 2px solid rgba(145, 187, 4, 1);
+  color: #7AA017;
 }
 
 .test-center .test-report .test .actions .action.error {
-  border-right: 4px solid rgba(235, 78, 4, 1);
-  color: rgba(155, 80, 66, 1);
+  border-right: 2px solid #D91D1D;
+  color: #D91D1D;
 }

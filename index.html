@@ -34,137 +34,6 @@
       <canvas id="canvas" style="display: none;"></canvas>
     </script>
 
-    <!-- Annotation Toggles -->
-    <script type="text/html" name="annotation_toggles">
-      <div class="annotation-toggles">
-        <% if (link){ %>
-          <div class="annotation-data">
-            <input type="text" class="link-url" name="link-url" data-id="<%= link.id %>" value="<%= link.url %>"></input>
-          </div>
-        <% } %>
-        <% _.each(annotations, function(a) { %>
-          <a href="#" class="toggle <%= a.type %><%= a.active ? " active" : "" %> " data-type="<%= a.type %>" title="<%= a.description %>"></a>
-        <% }) %>
-        <div class="arrow-down"></div>
-      </div>
-    </script>
-
-    <!-- Dashboard -->
-    <script type="text/html" name="dashboard">
-      <div id="dashboard">
-        <div class="shelf">
-          <div class="user">
-            <div><%= session.user() %></div>
-          </div>
-
-          <!-- User-specific document collections -->
-          <div class="collections">
-            <% _.each(library.listCollections(), function(c) { %>
-              <a href="#dashboard/<%= c.id %>" class="collection<%= c.id === library.collection.id ? ' active' : '' %>"><%= c.name %> <div class="count"><%= c.documents.length %></div></a>
-            <% }); %>
-          </div>
-        </div>
-
-        <div class="documents">
-
-        </div>
-      </div>
-    </script>
-
-
-    <!-- User Login -->
-    <script type="text/html" name="login">
-      <div id="login">
-        <h1>Substance</h1>
-        <form id="login_form" class="centered-form">
-          <div class="error-message"></div>
-          <div class="label">Username</div>
-          <input type="text" name="username" id="login_username"/>
-          <div class="label">Password</div>
-          <input type="password" name="password" id="login_password"/>
-          <input type="submit" id="login_submit" value="Login"/>
-
-          <div class="sign-up">
-            New to Substance? <a href="#signup">Signup</a>
-          </div>
-        </form>
-      </div>
-    </script>
-
-    <!-- User Signup -->
-    <script type="text/html" name="signup">
-      <div id="login">
-        <h1>Substance</h1>
-        <form id="signup_form" class="centered-form">
-          <div class="error-message"></div>
-          <div class="label">Email</div>
-          <input type="text" name="name" id="signup_email"/>
-
-          <div class="label">Username</div>
-          <input type="text" name="username" id="signup_username"/>
-
-          <div class="label">Full Name</div>
-          <input type="text" name="name" id="signup_name"/>
-
-          <div class="label">Password</div>
-          <input type="password" name="password" id="signup_password"/>
-
-          <input type="submit" id="login_submit" value="Signup"/>
-
-          <div class="sign-up">
-            Already registered? <a href="#login">Login</a>
-          </div>
-        </form>
-      </div>
-    </script>
-
-    <!-- Publications -->
-    <script type="text/html" name="publications">
-      <% _.each(document.entry.get('publications'), function(pub) { %>
-        <div class="publication">
-          <div class="publication-header">
-            <i class="icon-smile"></i> <%= get(pub.network).name %>
-            <div class="actions">
-              <a href="#" class="create-version"><i class="icon-share"></i></a>
-              <a href="#" class="delete-publication" data-id="<%= pub.id %>"><i class="icon-trash"></i></a>
-            </div>
-          </div>
-          <div class="property">
-            <div class="label">Creator</div>
-            <div class="value"><%= get(pub.creator).name %></div>
-          </div>
-          <div class="property">
-            <div class="label">Status</div>
-            <div class="value">Confirmed</div>
-          </div>
-        </div>
-      <% }); %>
-      <a href="#" class="create-publication">Add Publication</a>
-    </script>
-
-
-    <!-- Document Collaborators -->
-    <script type="text/html" name="document_collaborators">
-
-      <div class="collaborators">
-        <% _.each(document.entry.get('collaborators'), function(c) { %>
-          <div class="collaborator">
-            <%= c.name %>
-            <a href="#" class="delete-collaborator" data-id="<%= c.id %>">Remove</a>
-          </div>
-        <% }); %>
-      </div>
-
-      <div class="add_collaborator">
-        <a class="add_collaborator">Add Collaborator</a>
-        <div class="add_collaborator_form">
-          <input type="text" name="collaborator" id="new_collaborator"/>
-          <a href="#" class="create-collaborator">Add</a>
-        </div>
-      </div>
-    </script>
-
-
     <!-- Editor -->
     <script type="text/x-ejs-template" name="editor">
 
@@ -210,61 +79,12 @@
       <div class="content"></div>
     </script>
 
-    <!-- Ken.Browser  -->
-    <script type="text/x-ejs-template" name="browser">
-      <div id="facets"></div>
-      <div id="matrix" class="surface"></div>
-      <div id="details"></div>
-    </script>
-
-    <!-- Ken.Item  -->
-    <script type="text/x-ejs-template" name="item">
-      <a href="#<%= item.id %>" class="item" id="<%= item.id %>" data-id="<%= item.id %>">
-        <div class="inner">
-          <div class="article-type">
-            Article
-            <div class="published_at">
-              <% if (item.published_at) { %>
-                <%= new Date(item.published_at).toDateString() %>
-              <% } %>
-            </div>
-          </div>
-          <% if (matches.length > 0) { %>
-            <div class="markers">
-              <% _.each(matches, function(match) { %>
-                <div class="marker" style="background: <%= match.color %>"></div>
-              <% }); %>
-            </div>
-          <% } %>
-          <div class="name"><%= item.title.substr(0, 300) %></div>
-          <div class="authors"><%= item.creator.name %></div>
-        </div>
-      </a>
-    </script>
-
-    <!-- Ken.Facets  -->
-    <script type="text/x-ejs-template" name="facets">
-      <% var count = 0; %>
-      <% _.each(facets, function(f, key) { %>
-        <div class="filter <%= key %>">
-          <div class="filter-name"><%= f.name %></div>
-          <div class="available-values">
-            <% _.each(f.availableValues, function(val) { %>
-              <a href="#" class="value <%= val.selected ? 'remove' : 'add' %><%= val.relatedObjects.length > 0 ? " related" : "" %>" data-property="<%= key %>" data-value="<%= val.val %>" style="background: <%= val.color %>">
-                <%= val.val.toLowerCase().substr(0, 36) %>
-                <span class="frequency"><%= val.objects.length %></span>
-              </a>
-            <% }); %>
-          </div>
-        </div>
-      <% }); %>
-    </script>
 
     <!-- Substance.TestCenter -->
     <script type="text/text/x-handlebars-template" name="test_center">
       <div class="test-suites">
         {{#each test_suites}}
-          <a class="test-suite" href="#tests/{{name}}">
+          <a class="test-suite {{name}}{{#if active}} active{{/if}}" sbs-click='showReport({{name}})' href="#tests/{{name}}">
             {{name}}
           </a>
         {{/each}}
@@ -281,6 +101,7 @@
 
     <!-- Substance.TestReport -->
     <script type="text/text/x-handlebars-template" name="test_report">
+      <div class="border-right"></div>
       <h2>Subtance.{{name}}</h2>
       <div class="tests">
         {{#each tests}}
@@ -292,7 +113,7 @@
                   <div class="status">
                     <i class="{{#ifelse error "icon-frown" "icon-smile"}}{{/ifelse}}"></i>
                   </div>
-                   {{label}}
+                    {{@index}}. {{label}}
                   <div class="duration">
                      15 ms
                   </div>
@@ -384,7 +205,6 @@
     <script src="src/views/document/collaborators.js"></script>
     <script src="src/views/document/publications.js"></script>
     !-->
-
 
 
     <!-- Test API -->

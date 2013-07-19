@@ -49,7 +49,6 @@ EditorController.Prototype = function() {
     var result = [];
     result.push(["editor", this]);
     result.push(["writer", this.writer]);
-    // result.push(["selection", this.writer]);
     // result = result.concat(this.comments.getActiveControllers());
     return result;
   };

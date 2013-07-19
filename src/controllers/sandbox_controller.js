@@ -55,7 +55,7 @@ SandboxController.Prototype = function() {
     this.updateState('test_center');
 
     // TODO: Run all suites instead of just choosing a default
-    this.runSuite(suite || 'Document');
+    this.runSuite(suite);
   };
 
   // Provides an array of (context, controller) tuples that describe the
@@ -86,6 +86,7 @@ SandboxController.Prototype = function() {
     return result;
   };
 
+
   // Load and run testsuite
   // --------
 
@@ -93,7 +94,33 @@ SandboxController.Prototype = function() {
     cb = cb || function(err) {
       if (err) console.log('ERROR', err);
     };
+
+    if (!suite) return this.runAllSuites(cb);
     this.testRunner.runSuite(suite, cb);
+  };
+
+
+  // Load and run testsuite
+  // --------
+
+
+  this.runAllSuites = function(cb) {
+    var suites = this.testRunner.getTestSuites();
+    var testRunner = this.testRunner;
+
+    var funcs = _.map(suites, function(suite, suiteName) {
+      return function(data, cb) {
+        testRunner.runSuite(suiteName, cb);
+      };
+    });
+
+    util.async.sequential({
+      functions: funcs,
+      stopOnError: false
+    }, cb);
+
+    console.log('gimme some suites', funcs);
+
   };
 };
 
