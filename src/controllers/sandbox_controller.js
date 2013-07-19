@@ -1,20 +1,15 @@
-(function(root) {
+"use strict";
 
-var Substance = root.Substance;
+var _ = require("underscore");
+var Substance = require("../substance");
+var Session = require("../models/session");
+var EditorController = require("./editor_controller");
 var util = Substance.util;
-var _ = root._;
-var Data = Substance.Data;
 var Controller = Substance.Application.Controller;
-var Chronicle = Substance.Chronicle;
-var Document = Substance.Document;
-var Session = Substance.Session;
-var Editor = Substance.Editor;
-var Operator = Substance.Operator;
 var Test = Substance.Test;
 
-// The Substance.Sandbox App
 
-var Sandbox = Substance.Sandbox || {};
+// The Substance.Sandbox App
 
 // Substance.Sandbox.Controller
 // -----------------
@@ -44,7 +39,7 @@ SandboxController.Prototype = function() {
     this.session.loadDocument('lorem_ipsum', function(err, doc) {
       if (err) throw "Loading failed";
 
-      that.editor = new Editor.Controller(doc);
+      that.editor = new EditorController(doc);
       that.updateState('editor');
     });
   };
@@ -74,7 +69,7 @@ SandboxController.Prototype = function() {
     // For sake of prototyping this is implemented manually right now.
     var state = this.state;
 
-  
+
     if (state === "editor") {
       result = result.concat(this.editor.getActiveControllers());
     } else if (state === "test_center") {
@@ -132,7 +127,5 @@ SandboxController.Prototype.prototype = Controller.prototype;
 SandboxController.prototype = new SandboxController.Prototype();
 _.extend(SandboxController.prototype, util.Events);
 
-Sandbox.Controller = SandboxController;
-Substance.Sandbox = Sandbox;
 
-})(this);
+module.exports = SandboxController;

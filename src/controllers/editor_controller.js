@@ -1,20 +1,11 @@
-(function(root) {
+"use strict";
 
-var Substance = root.Substance;
-var util = Substance.util;
-var _ = root._;
+var Substance = require("../substance");
 var Controller = Substance.Application.Controller;
-var Data = Substance.Data;
-var Chronicle = Substance.Chronicle;
 var Document = Substance.Document;
-var Session = Substance.Session;
-var Operator = Substance.Operator;
-var Test = Substance.Test;
 
 // Substance Editor Component
 // =============================================
-
-var Editor = Substance.Editor || {};
 
 // Substance.Editor.Controller
 // -----------------
@@ -58,7 +49,4 @@ EditorController.Prototype = function() {
 EditorController.Prototype.prototype = Controller.prototype;
 EditorController.prototype = new EditorController.Prototype();
 
-Editor.Controller = EditorController;
-Substance.Editor = Editor;
-
-})(this);
+module.exports = EditorController;

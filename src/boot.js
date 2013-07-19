@@ -1,11 +1,19 @@
-// Gets called when the DOM is ready
-$(function() { "use strict";
-  var root = window;
-  var Substance = root.Substance;
-  var Backbone = root.Backbone;
-  var Router = root.Router;
-  var html = Substance.util.html;
+"use strict";
 
+// Gets called when the DOM is ready
+module.exports = function() {
+
+  var Substance = require("../substance.js");
+  var SandboxController = require("./controllers/sandbox_controller");
+  var SandboxView = require("./views/sandbox");
+  var Keyboard = Substance.Commander.Keyboard;
+  require("./helpers");
+
+  var Backbone = require("../lib/backbone");
+  var Router = require("./router");
+
+
+  var html = Substance.util.html;
   // Compile templates
   html.compileTemplate('test_center');
   html.compileTemplate('test_report');
@@ -18,13 +26,10 @@ $(function() { "use strict";
   // -----------------
 
   // Main Application controller
-  Substance.app = new Substance.Sandbox.Controller(Substance.env);
+  Substance.app = new SandboxController(Substance.env);
 
   // Start the engines
-  Substance.appView = new Substance.Sandbox.View(Substance.app);
-
-  // Render main app
-  $('body').html(Substance.appView.render().el);
+  Substance.appView = new SandboxView(Substance.app);
 
   // Setup router (talks to the main app controller)
   Substance.router = new Router({controller: Substance.app});
@@ -35,7 +40,7 @@ $(function() { "use strict";
   // TODO: discuss where this should be placed...
   // e.g., could be an optional configuration for the session itself
 
-  var keyboard = new Substance.Keyboard(Substance.app);
+  var keyboard = new Keyboard(Substance.app);
 
   Substance.app.on("state-changed", keyboard.stateChanged, keyboard);
 
@@ -70,6 +75,13 @@ $(function() { "use strict";
     console.error("Could not load keyboard mapping", err, keymapFile);
   });
 
-  Substance.keyboard = keyboard;
+  Substance.app.keyboard = keyboard;
 
-});
+  Substance.render = function() {
+    // Render main app
+    $('body').html(Substance.appView.render().el);
+  }
+
+  return Substance;
+};
+

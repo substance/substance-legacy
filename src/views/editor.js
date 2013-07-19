@@ -1,49 +1,44 @@
-(function(root) { "use strict";
+"use strict";
 
-  var _ = root._;
-  var Substance = root.Substance;
-  var View = Substance.Application.View;
-  var util = Substance.util;
-  var Editor = Substance.Editor || {};
+var _ = require("underscore");
+var Substance = require("../substance");
+var View = Substance.Application.View;
 
-  // Substance.Editor.View
-  // ==========================================================================
-  // 
-  // The Substance Document Editor
+// Substance.Editor.View
+// ==========================================================================
+//
+// The Substance Document Editor
 
-  var EditorView = function(controller) {
-    View.call(this);
+var EditorView = function(controller) {
+  View.call(this);
 
-    this.controller = controller;
+  this.controller = controller;
 
-    // Surface
-    // --------
+  // Surface
+  // --------
 
-    // A Substance.Document.Writer instance is provided by the controller
-    this.surface = new Substance.Surface(this.controller.writer);
+  // A Substance.Document.Writer instance is provided by the controller
+  this.surface = new Substance.Surface(this.controller.writer);
+};
+
+EditorView.Prototype = function() {
+
+  // Rendering
+  // --------
+  //
+
+  this.render = function() {
+    this.$el.html(_.tpl('editor', this.controller));
+    this.$('#document').html(this.surface.render().el);
+    return this;
   };
 
-  EditorView.Prototype = function() {
-
-    // Rendering
-    // --------
-    //
-
-    this.render = function(id) {
-      this.$el.html(_.tpl('editor', this.controller));
-      this.$('#document').html(this.surface.render().el);
-      return this;
-    };
-
-    this.dispose = function(id) {
-      this.surface.dispose();
-    };
+  this.dispose = function() {
+    this.surface.dispose();
   };
+};
 
-  EditorView.Prototype.prototype = View.prototype;
-  EditorView.prototype = new EditorView.Prototype();
+EditorView.Prototype.prototype = View.prototype;
+EditorView.prototype = new EditorView.Prototype();
 
-  Editor.View = EditorView;
-  Substance.Editor = Editor;
-
-})(this);
+module.exports = EditorView;

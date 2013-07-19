@@ -17,9 +17,4 @@ var Substance = {
   Surface: require("./lib/surface")
 };
 
-require("./lib/operator/tests");
-require("./lib/chronicle/tests");
-require("./lib/data/tests");
-require("./lib/document/tests");
-
 module.exports = Substance;

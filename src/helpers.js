@@ -1,8 +1,9 @@
+"use strict";
+
+var _ = require("underscore");
+
 // Helpers
 // ---------------
-
-if (typeof Substance === 'undefined') Substance = {};
-if (typeof Substance.util === 'undefined') Substance.util = {};
 
 // A fake console to calm down some browsers.
 if (!window.console) {

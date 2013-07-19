@@ -1,9 +1,11 @@
-(function(root) { "use strict";
+"use strict";
 
-var _ = root._;
-var Substance = root.Substance;
+var _ = require("underscore");
+var Substance = require("../substance");
 var View = Substance.Application.View;
-var Sandbox = Substance.Sandbox || {};
+var TestCenter = Substance.Test.TestCenter;
+var EditorView = require("./editor");
+
 
 // SandboxView Constructor
 // ==========================================================================
@@ -46,7 +48,7 @@ SandboxView.Prototype = function() {
   this.openEditor = function() {
     // Application controller has a editor controller ready
     // -> pass it to the editor view
-    var view = new Substance.Editor.View(this.controller.editor);
+    var view = new EditorView(this.controller.editor);
     this.replaceMainView('editor', view);
   };
 
@@ -55,7 +57,7 @@ SandboxView.Prototype = function() {
   //
 
   this.openTestCenter = function() {
-    var view = new Substance.TestCenter(this.controller.testRunner);
+    var view = new TestCenter(this.controller.testRunner);
     this.replaceMainView('test_center', view);
   };
 
@@ -78,7 +80,7 @@ SandboxView.Prototype = function() {
 
   this.render = function() {
     // console.log('Session', Substance.session);
-    this.$el.html(_.tpl('substance', Substance.session));
+    this.$el.html(_.tpl('substance', this.controller.session));
     return this;
   };
 };
@@ -90,7 +92,4 @@ SandboxView.Prototype = function() {
 SandboxView.Prototype.prototype = View.prototype;
 SandboxView.prototype = new SandboxView.Prototype();
 
-Sandbox.View = SandboxView;
-Substance.Sandbox = Sandbox;
-
-})(this);
+module.exports = SandboxView;
