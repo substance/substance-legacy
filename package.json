@@ -15,9 +15,13 @@
   "dependencies": {
     "underscore": "1.5.x",
     "express": "3.3.x",
-    "handlebars": "1.0.x"
+    "handlebars": "1.0.x",
+    "substance-util": "0.2.0-alpha",
+    "substance-test": "0.2.0-alpha",
+    "substance-surface": "0.2.0-alpha",
+    "substance-store": "0.2.0-alpha"
   },
-  "version"       : "0.5.0",
+  "version"       : "0.5.0-alpha",
   "scripts": {
   }
 }
