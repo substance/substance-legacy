@@ -19,7 +19,13 @@
     "substance-util": "0.2.0-alpha",
     "substance-test": "0.2.0-alpha",
     "substance-surface": "0.2.0-alpha",
-    "substance-store": "0.2.0-alpha"
+    "substance-regexp": "0.1.0-alpha",
+    "substance-operator": "0.2.0-alpha",
+    "substance-document": "0.5.0-alpha",
+    "substance-data": "0.8.0-alpha",
+    "substance-commander": "0.1.0-alpha",
+    "substance-chronicle": "0.2.0-alpha",
+    "substance-application": "0.1.0-alpha"
   },
   "version"       : "0.5.0-alpha",
   "scripts": {
