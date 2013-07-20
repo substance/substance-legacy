@@ -2,6 +2,31 @@
 
 Substance is a web-based technology stack for collaborative document manipulation. Substance releases all building blocks as Open Source under an MIT license, so you can glue them together for your usecase.
 
+# Getting started
+
+We've prepared a sandbox where you can play around with our editor and run the tests. It's meant to be a starting point for creating your very-own Substance application.
+
+Installation is easy:
+
+1. Clone the repository
+
+   ```bash
+   git@github.com:substance/substance.git
+   ```
+   
+2. Run our update script
+
+   ```bash
+   $ cd substance
+   $ ./update.py
+   ```
+   
+3. Finally start the server and point your browser to `http://localhost:3000`
+
+   ```bash
+   node server.js
+   ```
+
 Currently the following modules are available:
 
 - [Substance.Data](http://github.com/substance/data) - A uniform interface to domain data that supports versioning, persistence and replication
