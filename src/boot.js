@@ -20,7 +20,6 @@ var boot = function() {
   // Compile templates
   html.compileTemplate('test_center');
   html.compileTemplate('test_report');
-  html.compileTemplate('test_action');
 
   Substance.client_type = 'browser';
   Substance.env = 'development';
@@ -68,7 +67,6 @@ var boot = function() {
   var keymapFile = "/config/default.keymap";
   $.getJSON(keymapFile, function(data) {
     keyboard.registerBindings(data);
-    console.log('keyboard', keyboard);
   }).error(function(err) {
     console.error("Could not load keyboard mapping", err, keymapFile);
   });

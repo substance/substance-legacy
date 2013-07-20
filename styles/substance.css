@@ -504,8 +504,26 @@ a:hover {
   /*background: rgba(0,0,0, 0.05);*/
 
   border-bottom: 1px solid #ddd;
-
+  position: relative;
 }
+
+.test-center .test-suites .test-suite .status {
+  position: absolute;
+  right: 0px;
+  top: 0px;
+  bottom: 0px;
+  width: 5px;
+  /*background: #ccc;*/
+}
+
+.test-center .test-suites .test-suite .status.success {
+  background: #7AA017;  
+}
+
+.test-center .test-suites .test-suite .status.error {
+  background: #D91D1D;  
+}
+
 
 .test-center .test-suites .test-suite.active {
   background: rgba(255,255,255,1);

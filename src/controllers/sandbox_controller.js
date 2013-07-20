@@ -17,10 +17,8 @@ var Test = Substance.Test;
 // Main Application Controller
 
 var SandboxController = function(env) {
+  Controller.call(this);
   this.session = new Session(env);
-
-  // Null state
-  this.state = null;
 
   // Main controls
   this.on('open:editor', this.openEditor);
@@ -47,7 +45,7 @@ SandboxController.Prototype = function() {
   // Test control center
   this.openTestCenter = function(suite) {
     this.testRunner = new Test.Runner();
-    this.updateState('test_center');
+    this.updateState('test_center', {report: suite});
 
     // TODO: Run all suites instead of just choosing a default
     this.runSuite(suite);
@@ -56,27 +54,26 @@ SandboxController.Prototype = function() {
   // Provides an array of (context, controller) tuples that describe the
   // current state of responsibilities
   // --------
+  // 
+  // E.g., when a document is opened:
+  //    ["application", "document"]
+  // with controllers taking responisbility:
+  //    [this, this.document]
+  //
+  // The child controller (e.g., document) should itself be allowed to have sub-controllers.
+  // For sake of prototyping this is implemented manually right now.
   // TODO: discuss naming
+
   this.getActiveControllers = function() {
     var result = [ ["sandbox", this] ];
-    // TODO: we should specify all application states via hierarchical contexts.
-    // E.g., when a document is opened:
-    //    ["application", "document"]
-    // with controllers taking responisbility:
-    //    [this, this.document]
-    //
-    // The child controller (e.g., document) should itself be allowed to have sub-controllers.
-    // For sake of prototyping this is implemented manually right now.
-    var state = this.state;
 
+    var state = this.state;
 
     if (state === "editor") {
       result = result.concat(this.editor.getActiveControllers());
     } else if (state === "test_center") {
       result.push(["test_center", this.testRunner]);
     }
-
-    console.log('getting active controllers', result);
 
     return result;
   };
@@ -98,14 +95,13 @@ SandboxController.Prototype = function() {
   // Load and run testsuite
   // --------
 
-
   this.runAllSuites = function(cb) {
     var suites = this.testRunner.getTestSuites();
     var testRunner = this.testRunner;
 
     var funcs = _.map(suites, function(suite, suiteName) {
       return function(data, cb) {
-        testRunner.runSuite(suiteName, cb);
+        testRunner.runSuite(suiteName, _.delay(cb, 500));
       };
     });
 
@@ -113,7 +109,6 @@ SandboxController.Prototype = function() {
       functions: funcs,
       stopOnError: false
     }, cb);
-
   };
 };
 

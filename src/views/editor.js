@@ -6,6 +6,7 @@ var html = util.html;
 var Substance = require("../substance");
 var View = Substance.Application.View;
 
+
 // Substance.Editor.View
 // ==========================================================================
 //

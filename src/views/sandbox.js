@@ -33,11 +33,11 @@ SandboxView.Prototype = function() {
   // ==========================================================================
   //
 
-  this.onStateChanged = function(newState) {
+  this.onStateChanged = function(newState, oldState, options) {
     if (newState === "editor") {
       this.openEditor();
     } else if (newState === "test_center") {
-      this.openTestCenter();
+      this.openTestCenter(options);
     } else {
       console.log("Unknown application state: " + newState);
     }
@@ -58,8 +58,8 @@ SandboxView.Prototype = function() {
   // ----------
   //
 
-  this.openTestCenter = function() {
-    var view = new TestCenter(this.controller.testRunner);
+  this.openTestCenter = function(options) {
+    var view = new TestCenter(this.controller.testRunner, options);
     this.replaceMainView('test_center', view);
   };
 
@@ -80,8 +80,6 @@ SandboxView.Prototype = function() {
   };
 
   this.render = function() {
-    console.log('rendering main stuff');
-    // console.log('Session', Substance.session);
     this.$el.html(html.tpl('substance', this.controller.session));
     return this;
   };
