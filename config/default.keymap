@@ -9,7 +9,7 @@
     "context": "sandbox.editor.writer",
     "commands": [
       {"keys": ["backspace", "del"],  "command": "delete" },
-      {"keys": ["enter", "return"],   "command": "insertNode", "args": ["text"] },
+      {"keys": ["enter"],   "command": "insertNode", "args": ["text"] },
       {"keys": ["command+c"],         "command": "copy", "preventDefault": "false" },
       {"keys": ["command+x"],         "command": "cut" },
       {"keys": ["command+v"],         "command": "paste" },

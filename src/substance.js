@@ -11,9 +11,7 @@ var Substance = {
   Chronicle: require("./lib/chronicle"),
   Data: require("./lib/data"),
   Document: require("./lib/document"),
-  Library: require("./lib/library"),
   RegExp: require("./lib/regexp"),
-  Store: require("./lib/store"),
   Surface: require("./lib/surface")
 };
 
