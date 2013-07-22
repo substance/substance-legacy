@@ -19,6 +19,7 @@ require("substance-operator/tests");
 require("substance-chronicle/tests");
 require("substance-data/tests");
 require("substance-document/tests");
+require("substance-store/tests");
 require("substance-surface/tests");
 
 module.exports = Substance;
