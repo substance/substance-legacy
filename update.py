@@ -147,13 +147,34 @@ def status(root, config, args=None):
   for m in config.modules:
     git_status(root_dir, m)
 
-def symlinks(root, config, args=None):
+def symlinks_old(root, config, args=None):
   for symlink in config.symlinks:
     if not symlink.links == None:
       for l in symlink.links:
-        create_symlink(root_dir, symlink.source, l)
+        create_symlink(root, symlink.source, l)
     else:
-      create_symlink(root_dir, symlink.source, symlink.link)
+      create_symlink(root, symlink.source, symlink.link)
+
+def npm_symlinks(root, module):
+  module_dir = os.path.join(root, module.folder)
+  module_config_file = os.path.join(module_dir, "package.json");
+  if os.path.exists(module_config_file):
+    module_config = read_json(module_config_file)
+
+    deps = []
+
+    if ("dependencies" in module_config):
+      deps += [dep for dep in module_config.dependencies if dep.startswith("substance")]
+
+    if ("devDependencies" in module_config):
+      deps += [dep for dep in module_config.devDependencies if dep.startswith("substance")]
+
+    for dep in deps:
+      create_symlink(root, os.path.join("node_modules", dep), os.path.join(module_dir, "node_modules", dep))
+
+def symlinks(root, config, args=None):
+  for m in config.modules:
+    npm_symlinks(root, m)
 
 def pull(root, config, args=None):
   for m in config.modules:
