@@ -32,7 +32,7 @@ EditorView.Prototype = function() {
 
   this.render = function() {
     this.$el.html(html.tpl('editor', this.controller));
-    this.$('#document').html(this.surface.render().el);
+    this.$('#document .surface').replaceWith(this.surface.render().el);
     return this;
   };
 

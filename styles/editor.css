@@ -1,0 +1,99 @@
+/* Editor
+-------------------------------------------------------------------------------*/
+
+#document {
+  position: fixed;
+  left: 300px;
+  top: 0px;
+  bottom: 0px;
+  overflow: auto;
+  width: 720px;
+  background: #fff;
+  /*-webkit-font-smoothing: subpixel-antialiased;*/
+  font-size: 19px;
+  line-height: 28px;
+}
+
+#document .surface {
+  position: absolute;
+  top: 0px;
+  bottom: 0px;
+  left: 0px;
+  right: 0px;
+  overflow: auto;
+}
+
+.annotation-toggles {
+  z-index: 4000;
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  right: 20px;
+  height: 50px;
+  padding: 10px 60px;
+  background: #fff;
+  overflow: auto;
+}
+
+.annotation-toggles .styles {
+  height: 30px;
+  float: left;
+  width: 200px;
+  overflow: auto;
+}
+
+.annotation-toggles .markers {
+  height: 30px;
+  float: right;
+  width: 200px;
+  overflow: auto;
+}
+
+.annotation-toggles .annotation-toggle {
+  text-align: center;
+  float: left;
+  width: 40px;
+  height: 30px;
+  line-height: 30px;
+  background: rgba(0,0,0,0.05);
+  margin-right: 2px;
+  color: rgba(0,0,0,0.5);
+}
+
+.annotation-toggles .annotation-toggle:hover {
+  background: rgba(0,0,0,0.1);
+}
+
+.annotation-toggles .markers .annotation-toggle {
+
+  float: right;
+}
+
+.annotation-toggles .annotation-toggle.question {
+  background: rgba(11, 157, 217, 0.20);  
+}
+
+.annotation-toggles .annotation-toggle.idea {
+  background: rgba(145, 187, 4, 0.25);
+}
+
+.annotation-toggles .annotation-toggle.error {
+  background: rgba(231, 88, 46, 0.25);
+}
+
+/* Hover states */
+.annotation-toggles .annotation-toggle.question:hover {
+  background: rgba(11, 157, 217, 0.30);  
+}
+
+.annotation-toggles .annotation-toggle.idea:hover {
+  background: rgba(145, 187, 4, 0.35);
+}
+
+.annotation-toggles .annotation-toggle.error:hover {
+  background: rgba(231, 88, 46, 0.35);
+}
+
+
+
+
