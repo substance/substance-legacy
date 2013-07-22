@@ -78,6 +78,14 @@ def git_checkout(root, module, args):
   p = subprocess.Popen(cmd, cwd=module_dir)
   p.communicate()
 
+def git_command(root, module, args):
+  module_dir = os.path.join(root, module.folder)
+
+  cmd = ["git"] + args["git"]
+  print("git command: ", cmd)
+  p = subprocess.Popen(cmd, cwd=module_dir)
+  p.communicate()
+
 def npm_publish(root, module, args):
   module_dir = os.path.join(root, module.folder)
 
@@ -159,6 +167,10 @@ def checkout(root, config, args=None):
   for m in config.modules:
     git_checkout(root_dir, m, args)
 
+def git(root, config, args=None):
+  for m in config.modules:
+    git_command(root_dir, m, args)
+
 def publish(root, config, args=None):
   for m in config.modules:
     npm_publish(root_dir, m, args)
@@ -180,6 +192,7 @@ actions = {
  "pull": pull,
  "checkout": checkout,
  "publish": publish,
+ "git": git,
  "build": build,
  "update": update
 }
@@ -195,6 +208,7 @@ parser.add_argument('--status', '-s', action='store_const', dest="action", const
 parser.add_argument('--symlinks', action='store_const', dest="action", const="symlinks", help='Create symbolic links.')
 parser.add_argument('--build', action='store_const', dest="action", const="build", help='Build node-modules.')
 parser.add_argument('--checkout', nargs='?', const=True, default=False, help='Checkout a given branch or the one specified in .modules.config')
+parser.add_argument('--git', nargs='+', default=False, help='Execute a git command on all modules.')
 parser.add_argument('--publish', action='store_const', dest="action", const="publish", help='Publish node-modules.')
 parser.add_argument('--force', action='store_const', dest="force", const=True, default=False, help='Force.')
 
@@ -206,6 +220,8 @@ args = vars(parser.parse_args())
 action = args['action']
 if args['checkout']:
   action = "checkout"
+elif args['git']:
+  action = "git"
 elif action == None:
   action = "update"
 config = read_config()
