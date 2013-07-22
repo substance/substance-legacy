@@ -22,7 +22,8 @@
         "text_1",
         "text_2",
         "text_3",
-        "text_4"
+        "text_4",
+        "text_5"
       ]
     },
     "figures": {
@@ -38,22 +39,27 @@
     "text_1": {
       "type": "text",
       "id": "text_1",
-      "content": "The quick brown fox jumps over the lazy dog."
+      "content": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras vel accumsan lectus, id hendrerit magna. Donec vehicula dui quis ipsum tempor tincidunt. Quisque adipiscing, nibh at pulvinar feugiat, odio lectus eleifend felis, eu consectetur turpis ante eu magna. Praesent consequat velit nibh, eu porta nibh vulputate sed. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc nec urna at diam molestie fermentum a vitae metus. Sed ac arcu vel urna vehicula vulputate. Donec urna augue, interdum tristique pellentesque a, tincidunt id felis. Nunc in consequat augue. Nulla facilisi."
     },
     "text_2": {
       "type": "text",
       "id": "text_2",
-      "content": "Pack my box with five dozen liquor jugs"
+      "content": "Fusce ultrices mi vitae adipiscing imperdiet. In porta tincidunt arcu sed cursus. Vestibulum varius tellus id molestie ultrices. In id turpis at augue condimentum fermentum. In ut sem eget quam dapibus auctor. Vivamus tincidunt feugiat sapien, a tristique dolor rutrum id. Donec in lobortis nisl. Nunc ultrices justo interdum justo tristique pellentesque. In sollicitudin enim ut auctor elementum. Curabitur non lacus eu odio semper fringilla at nec tellus. Duis ut suscipit nunc. Suspendisse potenti. Suspendisse vitae libero a quam lacinia blandit. Nulla in rhoncus tortor."
     },
     "text_3": {
       "type": "text",
       "id": "text_3",
-      "content": "Fix problem quickly with galvanized jets"
+      "content": "In porta nisl ac elit consequat, ac imperdiet velit lobortis. Phasellus laoreet nisi at lacus imperdiet gravida. Vestibulum pretium pharetra molestie. Praesent gravida vel nulla nec pulvinar. Ut fringilla quam at congue semper. Aliquam at ultrices metus, sit amet aliquet diam. Nam est lacus, fringilla ac turpis vel, cursus dapibus elit. Nunc a arcu sit amet nulla imperdiet congue."
     },
     "text_4": {
       "type": "text",
       "id": "text_4",
-      "content": "Heavy boxes perform quick waltzes and jigs"
+      "content": "Mauris vehicula, eros sit amet adipiscing rhoncus, augue erat molestie eros, ut tristique nibh magna in elit. Fusce luctus felis vestibulum orci tincidunt, vel lobortis erat faucibus. Vestibulum sapien mi, fermentum posuere tincidunt et, rhoncus et risus. Donec at pretium nunc. Nunc eu sem convallis, porta est ornare, sodales neque. Vestibulum eget blandit urna, ac tempor enim. Donec quis dui elementum, vestibulum magna vel, commodo tortor. Sed suscipit mauris commodo, fermentum elit aliquam, eleifend magna. Interdum et malesuada fames ac ante ipsum primis in faucibus. Proin nibh ipsum, elementum eu aliquet ut, sagittis quis elit. Pellentesque eget facilisis mauris. In placerat nisi vel dolor lacinia, non ultricies lorem volutpat. Suspendisse sodales elit nec turpis rhoncus pellentesque. Morbi imperdiet eget nibh vitae consequat. Praesent et fringilla felis."
+    },
+    "text_5": {
+      "type": "text",
+      "id": "text_5",
+      "content": "Maecenas tincidunt purus quis leo posuere, eu venenatis magna placerat. Sed vestibulum eros in pulvinar ornare. Nam arcu urna, dignissim a mi id, euismod consequat mi. Nam varius metus elit, sagittis rutrum elit cursus non. Integer ut euismod ligula. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Nam a sapien vehicula, vestibulum lorem ac, condimentum elit. Donec gravida tortor sit amet molestie sollicitudin."
     }
   }
 }

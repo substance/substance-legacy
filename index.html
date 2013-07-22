@@ -7,9 +7,12 @@
     <link href='styles/font-awesome.css' rel='stylesheet' type='text/css'/>
 
     <link href="styles/substance.css" media="screen" rel="stylesheet" type="text/css" />
-    <link href="styles/ken.css" media="screen" rel="stylesheet" type="text/css" />
-    <link href="styles/composer.css" media="screen" rel="stylesheet" type="text/css" />
-    <link href="styles/console.css" media="screen" rel="stylesheet" type="text/css" />
+
+    <!-- Editor View Styles -->
+    <link href="styles/editor.css" media="screen" rel="stylesheet" type="text/css" />
+
+    <!-- Generic Surface Styles -->
+    <link href="lib/surface/styles/surface.css" media="screen" rel="stylesheet" type="text/css" />
 
     <!-- Templates -->
     <script type="text/html" name="substance">
@@ -37,6 +40,7 @@
     <!-- Editor -->
     <script type="text/x-ejs-template" name="editor">
 
+
       <div class="document-settings shelf">
         <div class="meta">
           <div class="title"><%= "title" %></div>
@@ -62,15 +66,27 @@
       </div>
 
       <div id="document_wrapper">
-        <div id="composer">
-          <div id="tools"></div>
-          <div id="document" contenteditable="false">
 
+        <div id="composer">
+
+          <div id="document" contenteditable="false">
+            <div class="annotation-toggles">
+              <div class="styles">
+                <a href="#" class="annotation-toggle emphasis"><i class="icon-circle-blank"></i></a>
+                <a href="#" class="annotation-toggle strong"><i class="icon-circle"></i></a>
+                <a href="#" class="annotation-toggle link"><i class="icon-link"></i></a>
+              </div>
+
+              <div class="markers">
+                <a href="#" class="annotation-toggle error"><i class="icon-exclamation-sign"></i></a>
+                <a href="#" class="annotation-toggle question"><i class="icon-question"></i></a>
+                <a href="#" class="annotation-toggle idea"><i class="icon-lightbulb"></i></a>
+              </div>
+            </div>
+            <div class="surface">
+            </div>
           </div>
         </div>
-      </div>
-      <div id="console_wrapper">
-
       </div>
     </script>
 
