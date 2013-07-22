@@ -66,6 +66,17 @@ def git_push(root, module):
   p = subprocess.Popen(cmd, cwd=module_dir)
   p.communicate()
 
+def git_checkout(root, module, args):
+  module_dir = os.path.join(root, module.folder)
+
+  branch = module.branch
+  if args['checkout'] != True:
+    branch = args['checkout']
+
+  print("git checkout", branch)
+  cmd = ["git", "checkout", branch]
+  p = subprocess.Popen(cmd, cwd=module_dir)
+  p.communicate()
 
 def npm_publish(root, module, args):
   module_dir = os.path.join(root, module.folder)
@@ -144,6 +155,10 @@ def push(root, config, args=None):
   for m in config.modules:
     git_push(root_dir, m)
 
+def checkout(root, config, args=None):
+  for m in config.modules:
+    git_checkout(root_dir, m, args)
+
 def publish(root, config, args=None):
   for m in config.modules:
     npm_publish(root_dir, m, args)
@@ -163,6 +178,7 @@ actions = {
  "symlinks": symlinks,
  "push": push,
  "pull": pull,
+ "checkout": checkout,
  "publish": publish,
  "build": build,
  "update": update
@@ -178,8 +194,9 @@ parser.add_argument('--push', '-p', action='store_const', dest="action", const="
 parser.add_argument('--status', '-s', action='store_const', dest="action", const="status", help='Git status for all sub-modules.')
 parser.add_argument('--symlinks', action='store_const', dest="action", const="symlinks", help='Create symbolic links.')
 parser.add_argument('--build', action='store_const', dest="action", const="build", help='Build node-modules.')
+parser.add_argument('--checkout', nargs='?', const=True, default=False, help='Checkout a given branch or the one specified in .modules.config')
 parser.add_argument('--publish', action='store_const', dest="action", const="publish", help='Publish node-modules.')
-parser.add_argument('--force', action='store_const', dest="force", const=True, help='Force.')
+parser.add_argument('--force', action='store_const', dest="force", const=True, default=False, help='Force.')
 
 # Main
 # ========
@@ -187,13 +204,11 @@ parser.add_argument('--force', action='store_const', dest="force", const=True, h
 args = vars(parser.parse_args())
 
 action = args['action']
-if action == None:
+if args['checkout']:
+  action = "checkout"
+elif action == None:
   action = "update"
 config = read_config()
 root_dir = os.path.realpath(os.path.dirname(__file__))
 
-options = {};
-if 'force' in args:
-  options['force'] = True
-
-actions[action](root_dir, config, options)
+actions[action](root_dir, config, args)
