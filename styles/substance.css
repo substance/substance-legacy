@@ -200,13 +200,10 @@ a:hover {
   color: #fff;
 }
 
-
 #help {
   padding-top: 50px;
   text-align: center;
 }
-
-
 
 
 
@@ -318,14 +315,15 @@ a:hover {
   /*border-bottom: 1px solid #eee;*/
   margin-bottom: 1px;
   position: relative;
-  height: 60px;
   line-height: 60px;
 }
 
 .test-center .test-report .test .actions .action .error-source {
   overflow: auto;
   font-family: 'Source Code Pro';
-  background: #efefef;
+  background: rgba(217, 29, 29, 0.02);
+
+  border: 1px solid rgba(217, 29, 29, 0.2);
   padding: 20px;
   font-size: 13px;
   line-height: 18px;
@@ -335,7 +333,8 @@ a:hover {
 .test-center .test-report .test .actions .action .stack-trace {
   overflow: auto;
   font-family: 'Source Code Pro';
-  background: #efefef;
+  background: rgba(217, 29, 29, 0.02);
+  border: 1px solid rgba(217, 29, 29, 0.2);
   padding: 20px;
   font-size: 13px;
   line-height: 18px;
