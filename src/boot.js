@@ -6,7 +6,7 @@ var _ = require("underscore");
 var boot = function() {
 
   // create a clone of the provided module as we store data into it
-  var Substance = _.clone(require("../substance.js"));
+  var Substance = _.clone(require("./substance.js"));
 
   var SandboxController = require("./controllers/sandbox_controller");
   var SandboxView = require("./views/sandbox");
