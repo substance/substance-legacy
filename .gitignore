@@ -41,3 +41,7 @@ lib/view/
 /lib/commander/
 /lib/regexp/
 /lib/application/
+
+*.pyc
+
+*.cache
