@@ -323,13 +323,24 @@ a:hover {
 }
 
 .test-center .test-report .test .actions .action .error-source {
+  overflow: auto;
   font-family: 'Source Code Pro';
   background: #efefef;
   padding: 20px;
-  font-size: 16px;
-  line-height: 20px;
+  font-size: 13px;
+  line-height: 18px;
+  margin-bottom: 20px;
 }
 
+.test-center .test-report .test .actions .action .stack-trace {
+  overflow: auto;
+  font-family: 'Source Code Pro';
+  background: #efefef;
+  padding: 20px;
+  font-size: 13px;
+  line-height: 18px;
+  margin-bottom: 20px;
+}
 
 .test-center .test-report .test .actions .action .duration {
   font-size: 13px;
