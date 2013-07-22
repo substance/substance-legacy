@@ -13,7 +13,6 @@ var boot = function() {
   var Keyboard = Substance.Commander.Keyboard;
 
   var Backbone = require("../lib/backbone");
-  var Router = require("./router");
 
   var html = Substance.util.html;
 
@@ -35,7 +34,6 @@ var boot = function() {
   $('body').html(Substance.appView.render().el);
 
   // Setup router (talks to the main app controller)
-  Substance.router = new Router({controller: Substance.app});
   Backbone.history.start();
 
   // Preliminary keyboard configuration stuff...

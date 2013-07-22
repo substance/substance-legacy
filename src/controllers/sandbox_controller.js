@@ -7,7 +7,7 @@ var EditorController = require("./editor_controller");
 var util = Substance.util;
 var Controller = Substance.Application.Controller;
 var Test = Substance.Test;
-
+var Router = require("../router");
 
 // The Substance.Sandbox App
 
@@ -19,6 +19,8 @@ var Test = Substance.Test;
 var SandboxController = function(env) {
   Controller.call(this);
   this.session = new Session(env);
+  // HACK: probably this can be straightened
+  this.router = new Router({controller: this});
 
   // Main controls
   this.on('open:editor', this.openEditor);

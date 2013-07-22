@@ -59,7 +59,8 @@ SandboxView.Prototype = function() {
   //
 
   this.openTestCenter = function(options) {
-    var view = new TestCenter(this.controller.testRunner, options);
+    // TODO: can this be improved? does TestCenter really need a router?
+    var view = new TestCenter(this.controller.testRunner, this.controller.router, options);
     this.replaceMainView('test_center', view);
   };
 
