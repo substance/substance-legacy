@@ -322,6 +322,15 @@ a:hover {
   line-height: 60px;
 }
 
+.test-center .test-report .test .actions .action .error-source {
+  font-family: 'Source Code Pro';
+  background: #efefef;
+  padding: 20px;
+  font-size: 16px;
+  line-height: 20px;
+}
+
+
 .test-center .test-report .test .actions .action .duration {
   font-size: 13px;
   font-family: 'Avenir LT W01 85 Heavy', 'Montserrat', 'Source Sans Pro';

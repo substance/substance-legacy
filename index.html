@@ -130,6 +130,20 @@
                     <i class="{{#ifelse error "icon-frown" "icon-smile"}}{{/ifelse}}"></i>
                   </div>
                     {{@index}}. {{label}}
+
+                  {{# if error }}
+                  <div class="error-message">ERROR_MESSAGE</div>
+                  <div class="error-source">
+                    <pre>
+var id = this.uuid("text_");
+this.__document.apply(["create", {
+  "id": id,
+  "type": "text",
+  "content": content
+}]);
+                    </pre>
+                  </div>
+                  {{/if}}
                   <div class="duration">
                      {{duration}} ms
                   </div>
