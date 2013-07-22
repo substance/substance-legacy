@@ -2,7 +2,7 @@ var http = require('http');
 var express = require('express');
 var path = require('path');
 
-var CommonJSServer = require("./lib/application/commonjs");
+var CommonJSServer = require("substance-application/commonjs");
 var Handlebars = require("handlebars");
 var fs = require("fs");
 
@@ -25,7 +25,7 @@ app.get("/",
 
     // var index_template = Handlebars.compile(fs.readFileSync(__dirname + "/sandbox.hb").toString());
 
-  
+
     var scripts = commonJSServer.list();
 
     var scriptsTags = scripts.map(function(script) {
@@ -34,7 +34,7 @@ app.get("/",
 
 
     var result = template.replace('#####scripts#####', scriptsTags);
-    
+
     res.send(result);
   }
 );
