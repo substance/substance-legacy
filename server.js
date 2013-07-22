@@ -23,15 +23,11 @@ app.get("/",
 
     var template = fs.readFileSync(__dirname + "/index.html", 'utf8');
 
-    // var index_template = Handlebars.compile(fs.readFileSync(__dirname + "/sandbox.hb").toString());
-
-
     var scripts = commonJSServer.list();
 
     var scriptsTags = scripts.map(function(script) {
       return ['<script type="text/javascript" src="/scripts', script, '"></script>'].join('');
     }).join('\n');
-
 
     var result = template.replace('#####scripts#####', scriptsTags);
 
@@ -50,9 +46,13 @@ app.use('/node_modules', express.static('node_modules'));
 app.get(/\/?scripts\/\/?(.+)/,
   function(req, res, next) {
     var scriptPath = "/"+req.params[0];
-    var script = commonJSServer.getScript(scriptPath)
     res.type('text/javascript');
-    res.send(script);
+    try {
+      var script = commonJSServer.getScript(scriptPath)
+      res.send(script);
+    } catch (err) {
+      res.send(err.stack);
+    }
   }
 );
 
