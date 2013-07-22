@@ -40,6 +40,7 @@ app.get("/",
 );
 
 app.use('/lib', express.static('lib'));
+app.use('/lib/substance', express.static('node_modules'));
 app.use('/styles', express.static('styles'));
 app.use('/src', express.static('src'));
 app.use('/data', express.static('data'));
