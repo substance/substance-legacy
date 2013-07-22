@@ -101,9 +101,7 @@ SandboxController.Prototype = function() {
 
     var funcs = _.map(suites, function(suite, suiteName) {
       return function(data, cb) {
-        testRunner.runSuite(suiteName, function(err, data) {
-          _.delay(cb, 500, err, data);
-        });
+        testRunner.runSuite(suiteName, cb);
       };
     });
 
