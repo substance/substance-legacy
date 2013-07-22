@@ -45,6 +45,7 @@ app.use('/styles', express.static('styles'));
 app.use('/src', express.static('src'));
 app.use('/data', express.static('data'));
 app.use('/config', express.static('config'));
+app.use('/node_modules', express.static('node_modules'));
 
 app.get(/\/?scripts\/\/?(.+)/,
   function(req, res, next) {
