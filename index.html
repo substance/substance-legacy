@@ -131,7 +131,7 @@
                   </div>
                     {{@index}}. {{label}}
                   <div class="duration">
-                     15 ms
+                     {{duration}} ms
                   </div>
                 </div>
               {{/each}}
@@ -151,14 +151,14 @@
     #####scripts#####
 
     <script>
-      
+
       // var sandbox = new Substance.Sandbox();
       $(function() {
         var boot = require("/src/boot.js");
         window.Substance = boot();
         // sandbox.run();
       });
-      
+
     </script>
   </head>
   <body>
