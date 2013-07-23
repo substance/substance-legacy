@@ -11,20 +11,20 @@ Installation is easy:
 1. Clone the repository
 
    ```bash
-   git@github.com:substance/substance.git
+   $ git clone https://github.com/substance/substance.git
    ```
    
 2. Run our update script
 
    ```bash
    $ cd substance
-   $ ./update.py
+   $ npm install
    ```
    
 3. Finally start the server and point your browser to `http://localhost:3000`
 
    ```bash
-   node server.js
+   $ npm start
    ```
 
 Currently the following modules are available:
