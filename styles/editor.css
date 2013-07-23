@@ -25,13 +25,14 @@
 
 .annotation-toggles {
   z-index: 4000;
+  display: none;
   position: absolute;
   top: 0px;
   left: 0px;
   right: 20px;
   height: 50px;
   padding: 10px 60px;
-  background: #fff;
+  background: rgba(255,255,255,0.9);
   overflow: auto;
 }
 

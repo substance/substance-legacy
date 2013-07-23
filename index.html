@@ -66,21 +66,19 @@
       </div>
 
       <div id="document_wrapper">
-
         <div id="composer">
-
-          <div id="document" contenteditable="false">
+          <div id="document">
             <div class="annotation-toggles">
               <div class="styles">
-                <a href="#" class="annotation-toggle emphasis"><i class="icon-circle-blank"></i></a>
-                <a href="#" class="annotation-toggle strong"><i class="icon-circle"></i></a>
+                <a href="#" class="annotation-toggle emphasis" sbs-click="annotate(emphasis)"><i class="icon-circle-blank"></i></a>
+                <a href="#" class="annotation-toggle strong" sbs-click="annotate(strong)"><i class="icon-circle"></i></a>
                 <a href="#" class="annotation-toggle link"><i class="icon-link"></i></a>
               </div>
 
               <div class="markers">
-                <a href="#" class="annotation-toggle error" sbs-click='annotate(error)'><i class="icon-exclamation-sign"></i></a>
-                <a href="#" class="annotation-toggle question" sbs-click='annotate(question)'><i class="icon-question"></i></a>
-                <a href="#" class="annotation-toggle idea" sbs-click='annotate(idea)'><i class="icon-lightbulb"></i></a>
+                <a href="#" class="annotation-toggle error" sbs-click="annotate(error)"><i class="icon-exclamation-sign"></i></a>
+                <a href="#" class="annotation-toggle question" sbs-click="annotate(question)"><i class="icon-question"></i></a>
+                <a href="#" class="annotation-toggle idea" sbs-click="annotate(idea)"><i class="icon-lightbulb"></i></a>
               </div>
             </div>
             <div class="surface">

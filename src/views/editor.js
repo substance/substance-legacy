@@ -22,6 +22,9 @@ var EditorView = function(controller) {
 
   this.writer = controller.writer;
 
+  this.listenTo(this.writer.selection, 'selection:changed', this.toggleAnnotationToggles);
+
+
   // Surface
   // --------
 
@@ -31,13 +34,26 @@ var EditorView = function(controller) {
 
 EditorView.Prototype = function() {
 
+
+  this.toggleAnnotationToggles = function() {
+    var sel = this.writer.selection;
+    if (sel.getNodes().length === 1 && !sel.isCollapsed()) {
+      console.log('toggeeling..');  
+      this.$('.annotation-toggles').show();
+    } else {
+      this.$('.annotation-toggles').hide();
+    }
+    
+  };
+
   // Annotate current selection
   // --------
   //
 
   this.annotate = function(type) {
     console.log('annotation current selection', type);
-    this.controller.writer
+
+    this.writer.annotate(type);
     return false;
   };
 
@@ -53,6 +69,7 @@ EditorView.Prototype = function() {
 
   this.dispose = function() {
     this.surface.dispose();
+    this.stopListening();
   };
 };
 
