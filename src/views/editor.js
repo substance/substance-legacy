@@ -17,6 +17,11 @@ var EditorView = function(controller) {
 
   this.controller = controller;
 
+  // Writer
+  // --------
+
+  this.writer = controller.writer;
+
   // Surface
   // --------
 
@@ -25,6 +30,16 @@ var EditorView = function(controller) {
 };
 
 EditorView.Prototype = function() {
+
+  // Annotate current selection
+  // --------
+  //
+
+  this.annotate = function(type) {
+    console.log('annotation current selection', type);
+    this.controller.writer
+    return false;
+  };
 
   // Rendering
   // --------
