@@ -21,11 +21,11 @@
       <div id="menu">
         <div class="views">
           <a href="#" class="toggle-view document"><i class="icon-edit"></i></a>
+          <a href="#tests" class="toggle-view testsuite" ><i class="icon-tasks"></i></a>
         </div>
 
         <div class="actions">
-          <a href="#new" class="action new-document"><i class="icon-plus"></i></a>
-          <a href="#tests" class="action testsuite" ><i class="icon-tasks"></i></a>
+          <!--<a href="#new" class="action new-document"><i class="icon-plus"></i></a>-->
         </div>
       </div>
 
@@ -39,30 +39,33 @@
 
     <!-- Editor -->
     <script type="text/x-ejs-template" name="editor">
-
-
       <div class="document-settings shelf">
-        <div class="meta">
-          <div class="title"><%= "title" %></div>
-          <div class="updated-at"><%= "updated_at" %></div>
-        </div>
+        <p>You are looking at a demo of the all-new <a href="http://github.com/substance/surface">Substance Surface</a>.</p>
+        <h2>Features</h2>
+        <ul>
+          <li>Simple <a href="https://github.com/substance/document/blob/master/src/writer.js">Writer</a> interface for doc manipulation</li>
+          <li>Surface is just a dumb renderer which listens to <a href="https://github.com/substance/surface/blob/master/src/surface.js#L23">model-changes</a></li>
+          <li>No <code>contenteditable</code> headache anymore!</li>
+          <li>Multi-paragraph selections using our own <a href="https://github.com/substance/document/blob/master/src/selection.js">Selection</a> interface</li>
+        </ul>
+        <h2>Limitations</h2>
+        <ul>
+          <li>Move-down/up behavior not yet implemented</li>
+          <li>Copy and paste behavior is currently disabled</li>
+          <li>Native DOM selection is still displayed for debugging purposes</li>
+          <li>Breaks for some edge cases - we are working on it!</li>
+        </ul>
 
-        <div class="label">Creator</div>
-        <div class="creator">
-          <div class="value"><%= "creator.name" %></div>
-        </div>
-
-        <div class="label">Collaborators</div>
-
-        <div class="collaborators">
-
-        </div>
-
-        <!-- Publish Settings -->
-        <div class="label">Publications</div>
-        <div class="publications">
-
-        </div>
+        <h2>Getting started</h2>
+        <p>
+          Clone Substance locally and play around with the code.
+        </p>
+        <pre><code>
+$ git clone https://github.com/substance/substance
+$ cd substance
+$ npm install
+$ npm start
+        </code></pre>
       </div>
 
       <div id="document_wrapper">
@@ -72,7 +75,7 @@
               <div class="styles">
                 <a href="#" class="annotation-toggle emphasis" sbs-click="annotate(emphasis)"><i class="icon-circle-blank"></i></a>
                 <a href="#" class="annotation-toggle strong" sbs-click="annotate(strong)"><i class="icon-circle"></i></a>
-                <a href="#" class="annotation-toggle link"><i class="icon-link"></i></a>
+                <!--<a href="#" class="annotation-toggle link"><i class="icon-link"></i></a>-->
               </div>
 
               <div class="markers">
