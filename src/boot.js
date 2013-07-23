@@ -63,6 +63,13 @@ var boot = function() {
   });
 
   var keymapFile = "/config/default.keymap";
+  if (global.navigator !== undefined) {
+    var platform = global.navigator.platform;
+    if (platform.toLowerCase().search("linux") >= 0) {
+      keymapFile = "/config/linux_default.keymap";
+    }
+  }
+
   $.getJSON(keymapFile, function(data) {
     keyboard.registerBindings(data);
   }).error(function(err) {

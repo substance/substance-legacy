@@ -1,0 +1,34 @@
+[
+  {
+    "context": "sandbox",
+    "commands": [
+      {"keys": ["ctrl+shift+i"],   "command": "sayHello", "args": ["World!"]}
+    ]
+  },
+  {
+    "context": "sandbox.editor.writer",
+    "commands": [
+      {"keys": ["backspace", "del"],  "command": "delete" },
+      {"keys": ["enter"],   "command": "insertNode", "args": ["text"] },
+      {"keys": ["ctrl+c"],         "command": "copy", "preventDefault": "false" },
+      {"keys": ["ctrl+x"],         "command": "cut" },
+      {"keys": ["ctrl+v"],         "command": "paste" },
+      {"keys": ["ctrl+i"],         "command": "annotate", "args": ["emphasis"]},
+      {"keys": ["ctrl+b"],         "command": "annotate", "args": ["strong"]},
+      {"keys": ["ctrl+1"],         "command": "annotate", "args": ["idea"]},
+      {"keys": ["ctrl+2"],         "command": "annotate", "args": ["question"]},
+      {"keys": ["ctrl+3"],         "command": "annotate", "args": ["error"]},
+
+      {"keys": ["right"],             "command": "move", "scope": "selection", "args": ["right", "char"] },
+      {"keys": ["left"],              "command": "move", "scope": "selection", "args": ["left", "char"] },
+      {"keys": ["ctrl+right"],         "command": "move", "scope": "selection", "args": ["right", "word"] },
+      {"keys": ["ctrl+left"],          "command": "move", "scope": "selection", "args": ["left", "word"] },
+
+      {"keys": ["shift+right"],       "command": "expand", "scope": "selection", "args": ["right", "char"] },
+      {"keys": ["shift+left"],        "command": "expand", "scope": "selection", "args": ["left", "char"] },
+      {"keys": ["shift+ctrl+right"],   "command": "expand", "scope": "selection", "args": ["right", "word"] },
+      {"keys": ["shift+ctrl+left"],    "command": "expand", "scope": "selection", "args": ["left", "word"] }
+    ]
+  }
+
+]
