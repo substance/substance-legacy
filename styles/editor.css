@@ -18,6 +18,7 @@
 
 .document-settings {
   position: absolute;
+  overflow: auto;
   font-size: 16px;
   left: 0px;
   top: 0px;
