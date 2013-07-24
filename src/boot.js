@@ -68,6 +68,9 @@ var boot = function() {
     if (platform.toLowerCase().search("linux") >= 0) {
       keymapFile = "/config/linux_default.keymap";
     }
+    else if (platform.toLowerCase().search("win32") >= 0) {
+      keymapFile = "/config/windows_default.keymap";
+    }
   }
 
   $.getJSON(keymapFile, function(data) {
