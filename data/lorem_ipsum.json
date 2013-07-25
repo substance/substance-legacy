@@ -20,7 +20,9 @@
       "id": "content",
       "nodes": [
         "text_1",
+        "heading_1",
         "text_2",
+        "image_1",
         "text_3",
         "text_4",
         "text_5"
@@ -40,6 +42,18 @@
       "type": "text",
       "id": "text_1",
       "content": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras vel accumsan lectus, id hendrerit magna. Donec vehicula dui quis ipsum tempor tincidunt. Quisque adipiscing, nibh at pulvinar feugiat, odio lectus eleifend felis, eu consectetur turpis ante eu magna. Praesent consequat velit nibh, eu porta nibh vulputate sed. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc nec urna at diam molestie fermentum a vitae metus. Sed ac arcu vel urna vehicula vulputate. Donec urna augue, interdum tristique pellentesque a, tincidunt id felis. Nunc in consequat augue. Nulla facilisi."
+    },
+    "heading_1": {
+      "type": "heading",
+      "id": "heading_1",
+      "level": 1,
+      "content": "Lorem ipsum"
+    },
+    "image_1": {
+      "type": "image",
+      "id": "image_1",
+      "content": " ",
+      "url": "http://i.telegraph.co.uk/multimedia/archive/02429/eleanor_scriven_2429776k.jpg"
     },
     "text_2": {
       "type": "text",
