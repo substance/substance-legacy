@@ -8,26 +8,30 @@
   {
     "context": "sandbox.editor.writer",
     "commands": [
-      {"keys": ["backspace", "del"],  "command": "delete" },
-      {"keys": ["enter"],   "command": "insertNode", "args": ["text"] },
-      {"keys": ["command+c"],         "command": "copy", "preventDefault": "false" },
-      {"keys": ["command+x"],         "command": "cut" },
-      {"keys": ["command+v"],         "command": "paste" },
-      {"keys": ["command+i"],         "command": "annotate", "args": ["emphasis"]},
-      {"keys": ["command+b"],         "command": "annotate", "args": ["strong"]},
-      {"keys": ["command+1"],         "command": "annotate", "args": ["idea"]},
-      {"keys": ["command+2"],         "command": "annotate", "args": ["question"]},
-      {"keys": ["command+3"],         "command": "annotate", "args": ["error"]},
-
-      {"keys": ["right"],             "command": "move", "scope": "selection", "args": ["right", "char"] },
-      {"keys": ["left"],              "command": "move", "scope": "selection", "args": ["left", "char"] },
-      {"keys": ["alt+right"],         "command": "move", "scope": "selection", "args": ["right", "word"] },
-      {"keys": ["alt+left"],          "command": "move", "scope": "selection", "args": ["left", "word"] },
-
-      {"keys": ["shift+right"],       "command": "expand", "scope": "selection", "args": ["right", "char"] },
-      {"keys": ["shift+left"],        "command": "expand", "scope": "selection", "args": ["left", "char"] },
-      {"keys": ["shift+alt+right"],   "command": "expand", "scope": "selection", "args": ["right", "word"] },
-      {"keys": ["shift+alt+left"],    "command": "expand", "scope": "selection", "args": ["left", "word"] }
+      {"keys": ["backspace", "del"],    "command": "delete" },
+      {"keys": ["enter"],               "command": "insertNode", "args": ["text"] },
+      {"keys": ["command+c"],           "command": "copy", "preventDefault": "false" },
+      {"keys": ["command+x"],           "command": "cut" },
+      {"keys": ["command+v"],           "command": "paste" },
+      {"keys": ["command+i"],           "command": "annotate", "args": ["emphasis"]},
+      {"keys": ["command+b"],           "command": "annotate", "args": ["strong"]},
+      {"keys": ["command+1"],           "command": "annotate", "args": ["idea"]},
+      {"keys": ["command+2"],           "command": "annotate", "args": ["question"]},
+      {"keys": ["command+3"],           "command": "annotate", "args": ["error"]},
+  
+      {"keys": ["right"],               "command": "move", "scope": "selection", "args": ["right", "char"] },
+      {"keys": ["left"],                "command": "move", "scope": "selection", "args": ["left", "char"] },
+      {"keys": ["alt+right"],           "command": "move", "scope": "selection", "args": ["right", "word"] },
+      {"keys": ["alt+left"],            "command": "move", "scope": "selection", "args": ["left", "word"] },
+      {"keys": ["command+right"],       "command": "move", "scope": "selection", "args": ["right", "node"] },
+      {"keys": ["command+left"],        "command": "move", "scope": "selection", "args": ["left", "node"] },
+  
+      {"keys": ["shift+right"],         "command": "expand", "scope": "selection", "args": ["right", "char"] },
+      {"keys": ["shift+left"],          "command": "expand", "scope": "selection", "args": ["left", "char"] },
+      {"keys": ["shift+alt+right"],     "command": "expand", "scope": "selection", "args": ["right", "word"] },
+      {"keys": ["shift+alt+left"],      "command": "expand", "scope": "selection", "args": ["left", "word"] },
+      {"keys": ["shift+command+right"], "command": "expand", "scope": "selection", "args": ["right", "node"] },
+      {"keys": ["shift+command+left"],  "command": "expand", "scope": "selection", "args": ["left", "node"] }
     ]
   }
 
