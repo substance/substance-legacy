@@ -38,7 +38,6 @@ EditorView.Prototype = function() {
   this.toggleAnnotationToggles = function() {
     var sel = this.writer.selection;
     if (sel.getNodes().length === 1 && !sel.isCollapsed()) {
-      console.log('toggeeling..');  
       this.$('.annotation-toggles').show();
     } else {
       this.$('.annotation-toggles').hide();
@@ -51,8 +50,6 @@ EditorView.Prototype = function() {
   //
 
   this.annotate = function(type) {
-    console.log('annotation current selection', type);
-
     this.writer.annotate(type);
     return false;
   };
