@@ -3,6 +3,7 @@
 var Substance = require("../substance");
 var Controller = Substance.Application.Controller;
 var Document = Substance.Document;
+var EditorView = require('../views/editor');
 
 // Substance Editor Component
 // =============================================
@@ -20,11 +21,31 @@ var EditorController = function(document) {
   // Interface to document editing
   this.writer = new Document.Writer(document);
 
+  this.view = new EditorView(this);
+
   // Main controls
   this.on('show:comments', this.showComments);
+
 };
 
 EditorController.Prototype = function() {
+
+  this.createView = function() {
+    return this.view = new EditorView(this);
+  };
+
+  this.nextLine = function() {
+    if (this.view) {
+      console.log('received command to move to next line');
+    }
+  };
+
+  this.prevLine = function() {
+    if (this.view) {
+      // console.log('received command to move to prev line');
+      this.view.surface.prevLine();
+    }
+  };
 
   // Transitions
   // ===================================

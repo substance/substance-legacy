@@ -50,8 +50,8 @@ SandboxView.Prototype = function() {
   this.openEditor = function() {
     // Application controller has a editor controller ready
     // -> pass it to the editor view
-    var view = new EditorView(this.controller.editor);
-    this.replaceMainView('editor', view);
+    // var view = new EditorView(this.controller.editor.view);
+    this.replaceMainView('editor', this.controller.editor.view);
   };
 
   // Open TestCenter
@@ -72,7 +72,8 @@ SandboxView.Prototype = function() {
   this.replaceMainView = function(name, view) {
     $('body').removeClass().addClass('current-view '+name);
 
-    if (this.mainView) {
+    if (this.mainView && this.mainView !== view) {
+      console.log('disposing it..');
       this.mainView.dispose();
     }
 

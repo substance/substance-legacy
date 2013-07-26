@@ -6,6 +6,13 @@
     ]
   },
   {
+    "context": "sandbox.editor",
+    "commands": [
+      {"keys": ["down"],                "command": "nextLine" },
+      {"keys": ["up"],                  "command": "prevLine" }
+    ]
+  },
+  {
     "context": "sandbox.editor.writer",
     "commands": [
       {"keys": ["backspace", "del"],    "command": "delete" },
@@ -21,6 +28,7 @@
   
       {"keys": ["right"],               "command": "move", "scope": "selection", "args": ["right", "char"] },
       {"keys": ["left"],                "command": "move", "scope": "selection", "args": ["left", "char"] },
+
       {"keys": ["alt+right"],           "command": "move", "scope": "selection", "args": ["right", "word"] },
       {"keys": ["alt+left"],            "command": "move", "scope": "selection", "args": ["left", "word"] },
       {"keys": ["command+right"],       "command": "move", "scope": "selection", "args": ["right", "node"] },

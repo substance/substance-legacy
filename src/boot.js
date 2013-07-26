@@ -29,8 +29,14 @@ var boot = function() {
   // Main Application controller
   Substance.app = new SandboxController(Substance.env);
 
+  Substance.appView = Substance.app.view;
+
+  // Substance.app
+
   // Start the engines
-  Substance.appView = new SandboxView(Substance.app);
+  // Substance.appView = new SandboxView(Substance.app);
+
+
   $('body').html(Substance.appView.render().el);
 
   // Setup router (talks to the main app controller)
