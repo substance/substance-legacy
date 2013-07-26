@@ -47,7 +47,7 @@ blockquote, q {
   quotes: "" "";
 }
 
-::selection { background: rgba(0,0,0,0.05); /* display: none; */ }
+::selection { background: rgba(0,0,0,0.08); /* display: none; */ }
 
 
 /* Helpers
