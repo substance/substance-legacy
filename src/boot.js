@@ -53,7 +53,8 @@ var boot = function() {
 
       // TODO: try to find out which is the best way to detect typed characters
       str = String.fromCharCode(e.charCode);
-      if (str !== null && str.length > 0) {
+
+      if (e.charCode !== 0  && !e.ctrlKey && str !== null && str.length > 0) {
         // TODO: consume the event
         e.preventDefault();
         return {command: "write", args: [str]};
