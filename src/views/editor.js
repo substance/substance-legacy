@@ -24,7 +24,6 @@ var EditorView = function(controller) {
 
   this.listenTo(this.writer.selection, 'selection:changed', this.toggleAnnotationToggles);
 
-
   // Surface
   // --------
 

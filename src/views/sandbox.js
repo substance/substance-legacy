@@ -51,7 +51,8 @@ SandboxView.Prototype = function() {
     // Application controller has a editor controller ready
     // -> pass it to the editor view
     // var view = new EditorView(this.controller.editor.view);
-    this.replaceMainView('editor', this.controller.editor.view);
+    var view = this.controller.editor.createView();
+    this.replaceMainView('editor', view);
   };
 
   // Open TestCenter
@@ -84,6 +85,11 @@ SandboxView.Prototype = function() {
   this.render = function() {
     this.$el.html(html.tpl('substance', this.controller.session));
     return this;
+  };
+
+  this.dispose = function() {
+    this.stopListening();
+    if (this.mainView) this.mainView.dispose();
   };
 };
 
