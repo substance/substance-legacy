@@ -21,11 +21,17 @@
 
       {"keys": ["right"],             "command": "move", "scope": "selection", "args": ["right", "char"] },
       {"keys": ["left"],              "command": "move", "scope": "selection", "args": ["left", "char"] },
+      {"keys": ["down"],                "command": "move", "scope": "selection", "args": ["right", "line"] },
+      {"keys": ["up"],                  "command": "move", "scope": "selection", "args": ["left", "line"] },
+
       {"keys": ["ctrl+right"],         "command": "move", "scope": "selection", "args": ["right", "word"] },
       {"keys": ["ctrl+left"],          "command": "move", "scope": "selection", "args": ["left", "word"] },
 
       {"keys": ["shift+right"],       "command": "expand", "scope": "selection", "args": ["right", "char"] },
       {"keys": ["shift+left"],        "command": "expand", "scope": "selection", "args": ["left", "char"] },
+      {"keys": ["shift+down"],          "command": "expand", "scope": "selection", "args": ["right", "line"] },
+      {"keys": ["shift+up"],            "command": "expand", "scope": "selection", "args": ["left", "line"] },
+
       {"keys": ["shift+ctrl+right"],   "command": "expand", "scope": "selection", "args": ["right", "word"] },
       {"keys": ["shift+ctrl+left"],    "command": "expand", "scope": "selection", "args": ["left", "word"] }
     ]
