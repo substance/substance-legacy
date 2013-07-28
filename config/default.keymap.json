@@ -9,7 +9,11 @@
     "context": "sandbox.editor.writer",
     "commands": [
       {"keys": ["backspace", "del"],    "command": "delete" },
-      {"keys": ["enter"],               "command": "insertNode", "args": ["text"] },
+      {"keys": ["enter"],               "command": "insertNode", "args": ["paragraph"] },
+      {"keys": ["ctrl+alt+h"],          "command": "insertNode", "args": ["heading"] },
+      {"keys": ["ctrl+alt+p"],          "command": "insertNode", "args": ["paragraph"] },
+      {"keys": ["ctrl+alt+i"],          "command": "insertNode", "args": ["image"] },
+
       {"keys": ["command+c"],           "command": "copy", "preventDefault": "false" },
       {"keys": ["command+x"],           "command": "cut" },
       {"keys": ["command+v"],           "command": "paste" },
@@ -24,7 +28,6 @@
       {"keys": ["down"],                "command": "move", "scope": "selection", "args": ["right", "line"] },
       {"keys": ["up"],                  "command": "move", "scope": "selection", "args": ["left", "line"] },
 
-
       {"keys": ["alt+right"],           "command": "move", "scope": "selection", "args": ["right", "word"] },
       {"keys": ["alt+left"],            "command": "move", "scope": "selection", "args": ["left", "word"] },
       {"keys": ["command+right"],       "command": "move", "scope": "selection", "args": ["right", "node"] },
@@ -34,7 +37,6 @@
       {"keys": ["shift+left"],          "command": "expand", "scope": "selection", "args": ["left", "char"] },
       {"keys": ["shift+down"],          "command": "expand", "scope": "selection", "args": ["right", "line"] },
       {"keys": ["shift+up"],            "command": "expand", "scope": "selection", "args": ["left", "line"] },
-
 
       {"keys": ["shift+alt+right"],     "command": "expand", "scope": "selection", "args": ["right", "word"] },
       {"keys": ["shift+alt+left"],      "command": "expand", "scope": "selection", "args": ["left", "word"] },
