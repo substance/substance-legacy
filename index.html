@@ -71,11 +71,16 @@ $ npm start
       <div id="document_wrapper">
         <div id="composer">
           <div id="document">
+            <div class="node-toggles">
+              <!--<a href="#" class="insert-node paragraph" sbs-click="insertNode(paragraph)"><i class="icon-align-left"></i> Paragraph</a>-->
+              <a href="#" class="insert-node heading" sbs-click="insertNode(heading)"><i class="icon-align-left"></i> Heading</a>
+              <a href="#" class="insert-node image" sbs-click="insertNode(image)"><i class="icon-picture"></i> Image</a>
+            </div>
             <div class="annotation-toggles">
               <div class="styles">
                 <a href="#" class="annotation-toggle emphasis" sbs-click="annotate(emphasis)"><i class="icon-circle-blank"></i></a>
                 <a href="#" class="annotation-toggle strong" sbs-click="annotate(strong)"><i class="icon-circle"></i></a>
-                <!--<a href="#" class="annotation-toggle link"><i class="icon-link"></i></a>-->
+                <a href="#" class="annotation-toggle link"><i class="icon-link"></i></a>
               </div>
 
               <div class="markers">

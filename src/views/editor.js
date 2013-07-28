@@ -53,6 +53,15 @@ EditorView.Prototype = function() {
     return false;
   };
 
+  // Annotate current selection
+  // --------
+  //
+
+  this.insertNode = function(type) {
+    this.writer.insertNode(type);
+    return false;
+  };
+
   // Rendering
   // --------
   //
