@@ -1,0 +1,1105 @@
+{
+  "nodes": {
+    "document": {
+      "type": "document",
+      "id": "document",
+      "views": [
+        "content"
+      ],
+      "guid": "elife_00311",
+      "creator": "",
+      "title": "",
+      "abstract": "",
+      "keywords": []
+    },
+    "content": {
+      "type": "view",
+      "id": "content",
+      "nodes": [
+        "abstract",
+        "paragraph_4",
+        "paragraph_8",
+        "heading_11",
+        "paragraph_12",
+        "paragraph_13",
+        "paragraph_14",
+        "paragraph_15",
+        "paragraph_16",
+        "heading_s1",
+        "paragraph_20",
+        "paragraph_24",
+        "paragraph_43",
+        "heading_s2",
+        "heading_s2-1",
+        "paragraph_48",
+        "paragraph_81",
+        "paragraph_91",
+        "image_fig1",
+        "table_tbl1",
+        "paragraph_224",
+        "paragraph_255",
+        "table_tbl2",
+        "table_tbl4",
+        "table_tbl3",
+        "image_fig2",
+        "heading_s2-2",
+        "paragraph_330",
+        "image_fig3",
+        "paragraph_396",
+        "supplement_SD2_data",
+        "image_fig6",
+        "supplement_SD1_data",
+        "image_fig5",
+        "image_fig4",
+        "paragraph_468",
+        "paragraph_472",
+        "image_fig8",
+        "image_fig7s4",
+        "image_fig7s3",
+        "image_fig7s2",
+        "image_fig7s1",
+        "image_fig7",
+        "heading_s2-3",
+        "paragraph_509",
+        "image_fig9",
+        "paragraph_528",
+        "image_fig10",
+        "paragraph_549",
+        "image_fig11",
+        "paragraph_566",
+        "image_fig12",
+        "heading_s3",
+        "paragraph_580",
+        "paragraph_581",
+        "paragraph_608",
+        "paragraph_609",
+        "heading_s4",
+        "paragraph_610",
+        "paragraph_612",
+        "heading_s4-1",
+        "heading_s4-1-1",
+        "paragraph_613",
+        "paragraph_619",
+        "paragraph_643",
+        "paragraph_648",
+        "heading_s4-1-2",
+        "paragraph_655",
+        "paragraph_717",
+        "paragraph_729",
+        "heading_s4-1-3",
+        "paragraph_741",
+        "paragraph_753",
+        "heading_s4-1-4",
+        "paragraph_766",
+        "paragraph_780",
+        "heading_s4-1-5",
+        "paragraph_781",
+        "paragraph_790",
+        "table_tbl5",
+        "heading_s4-1-6",
+        "paragraph_803",
+        "paragraph_817",
+        "image_fig13",
+        "heading_s4-1-7",
+        "paragraph_857",
+        "paragraph_876",
+        "image_fig14",
+        "heading_s4-2",
+        "heading_s4-2-1",
+        "paragraph_884",
+        "heading_s4-2-2",
+        "paragraph_898",
+        "heading_s4-2-3",
+        "paragraph_957",
+        "heading_s4-3",
+        "paragraph_958",
+        "heading_s4-4",
+        "heading_s4-4-1",
+        "paragraph_963",
+        "heading_s4-4-2",
+        "paragraph_975",
+        "heading_s4-4-3",
+        "paragraph_988",
+        "paragraph_992",
+        "sub-article",
+        "heading_1022",
+        "paragraph_1023",
+        "paragraph_1025",
+        "paragraph_1027",
+        "paragraph_1028",
+        "paragraph_1029",
+        "paragraph_1030",
+        "paragraph_1031",
+        "paragraph_1032",
+        "paragraph_1033",
+        "paragraph_1034",
+        "paragraph_1035",
+        "paragraph_1036",
+        "paragraph_1037",
+        "paragraph_1038",
+        "paragraph_1039",
+        "paragraph_1040",
+        "paragraph_1041",
+        "paragraph_1042",
+        "paragraph_1043",
+        "paragraph_1044",
+        "paragraph_1045",
+        "paragraph_1046",
+        "paragraph_1047",
+        "paragraph_1048",
+        "paragraph_1049",
+        "paragraph_1050",
+        "heading_1051",
+        "paragraph_1052",
+        "paragraph_1054",
+        "paragraph_1055",
+        "paragraph_1057",
+        "paragraph_1058",
+        "paragraph_1060",
+        "paragraph_1061",
+        "paragraph_1063",
+        "paragraph_1064",
+        "paragraph_1066",
+        "paragraph_1067",
+        "paragraph_1069",
+        "paragraph_1071",
+        "paragraph_1073",
+        "paragraph_1077",
+        "paragraph_1079",
+        "paragraph_1080",
+        "paragraph_1082",
+        "paragraph_1083",
+        "paragraph_1085",
+        "paragraph_1086",
+        "paragraph_1088",
+        "paragraph_1089",
+        "paragraph_1091",
+        "paragraph_1093",
+        "paragraph_1095",
+        "paragraph_1097",
+        "paragraph_1104",
+        "paragraph_1106"
+      ]
+    },
+    "abstract": {
+      "type": "heading",
+      "id": "abstract",
+      "content": "Abstract",
+      "level": 1
+    },
+    "paragraph_4": {
+      "type": "paragraph",
+      "id": "paragraph_4",
+      "content": "Single-structure models derived from X-ray data do not adequately account for the inherent, functionally important dynamics of protein molecules. We generated ensembles of structures by time-averaged refinement, where local molecular vibrations were sampled by molecular-dynamics (MD) simulation whilst global disorder was partitioned into an underlying overall translation–libration–screw (TLS) model. Modeling of 20 protein datasets at 1.1–3.1 Å resolution reduced cross-validated Rfree values by 0.3–4.9%, indicating that ensemble models fit the X-ray data better than single structures. The ensembles revealed that, while most proteins display a well-ordered core, some proteins exhibit a ‘molten core’ likely supporting functionally important dynamics in ligand binding, enzyme activity and protomer assembly. Order–disorder changes in HIV protease indicate a mechanism of entropy compensation for ordering the catalytic residues upon ligand binding by disordering specific core residues. Thus, ensemble refinement extracts dynamical details from the X-ray data that allow a more comprehensive understanding of structure–dynamics–function relationships."
+    },
+    "paragraph_8": {
+      "type": "paragraph",
+      "id": "paragraph_8",
+      "content": "DOI: http://dx.doi.org/10.7554/eLife.00311.001"
+    },
+    "heading_11": {
+      "type": "heading",
+      "id": "heading_11",
+      "content": "eLife digest",
+      "level": 0
+    },
+    "paragraph_12": {
+      "type": "paragraph",
+      "id": "paragraph_12",
+      "content": "It has been clear since the early days of structural biology in the late 1950s that proteins and other biomolecules are continually changing shape, and that these changes have an important influence on both the structure and function of the molecules. X-ray diffraction can provide detailed information about the structure of a protein, but only limited information about how its structure fluctuates over time. Detailed information about the dynamic behaviour of proteins is essential for a proper understanding of a variety of processes, including catalysis, ligand binding and protein–protein interactions, and could also prove useful in drug design."
+    },
+    "paragraph_13": {
+      "type": "paragraph",
+      "id": "paragraph_13",
+      "content": "Currently most of the X-ray crystal structures in the Protein Data Bank are ‘snap-shots’ with limited or no information about protein dynamics. However, X-ray diffraction patterns are affected by the dynamics of the protein, and also by distortions of the crystal lattice, so three-dimensional (3D) models of proteins ought to take these phenomena into account. Molecular-dynamics (MD) computer simulations transform 3D structures into 4D ‘molecular movies’ by predicting the movement of individual atoms."
+    },
+    "paragraph_14": {
+      "type": "paragraph",
+      "id": "paragraph_14",
+      "content": "Combining MD simulations with crystallographic data has the potential to produce more realistic ensemble models of proteins in which the atomic fluctuations are represented by multiple structures within the ensemble. Moreover, in addition to improved structural information, this process—which is called ensemble refinement—can provide dynamical information about the protein. Earlier attempts to do this ran into problems because the number of model parameters needed was greater than the number of observed data points. Burnley et al. now overcome this problem by modelling local molecular vibrations with MD simulations and, at the same time, using a course-grain model to describe global disorder of longer length scales."
+    },
+    "paragraph_15": {
+      "type": "paragraph",
+      "id": "paragraph_15",
+      "content": "Ensemble refinement of high-resolution X-ray diffraction datasets for 20 different proteins from the Protein Data Bank produced a better fit to the data than single structures for all 20 proteins. Ensemble refinement also revealed that 3 of the 20 proteins had a ‘molten core’, rather than the well-ordered residues core found in most proteins: this is likely to be important in various biological functions including ligand binding, filament formation and enzymatic function. Burnley et al. also showed that a HIV enzyme underwent an order–disorder transition that is likely to influence how this enzyme works, and that similar transitions might influence the interactions between the small-molecule drug Imatinib (also known as Gleevec) and the enzymes it targets. Ensemble refinement could be applied to the majority of crystallography data currently being collected, or collected in the past, so further insights into the properties and interactions of a variety of proteins and other biomolecules can be expected."
+    },
+    "paragraph_16": {
+      "type": "paragraph",
+      "id": "paragraph_16",
+      "content": "DOI: http://dx.doi.org/10.7554/eLife.00311.002"
+    },
+    "heading_s1": {
+      "type": "heading",
+      "id": "heading_s1",
+      "content": "Introduction",
+      "level": 1
+    },
+    "paragraph_20": {
+      "type": "paragraph",
+      "id": "paragraph_20",
+      "content": "Since the dawn of structural biology there have been experimental observations of dynamic motion in proteins and other biomolecules (Linderstrøm-Lang and Schellman, 1959). Multiple biophysical methods have firmly established that such atomic ‘wigglings and jigglings’ (Feynman et al., 1963) play an inherent role in both protein structure and function; and, in conjunction with high-resolution structures insights into dynamics aid the understanding of biomolecular functions in catalysis, ligand or drug binding and macromolecular interactions. Presently X-ray diffraction and NMR spectroscopy are the primary source of data for high-resolution protein structures. Whereas microscopy methods may provide information regarding long-range conformational changes, NMR characterizes fluctuations at atomic detail. However, due to the challenging nature of such experiments the number of dynamics studies is relatively sparse in contrast with the wealth of structural information available in the Protein Data Bank (PDB) (Berman et al., 2000). The majority of entries in the PDB derived from X-ray diffraction data are presented as static, single, structures, although there is often extensive disorder resulting from protein dynamics and crystal-lattice distortions. Extracting atomic fluctuations from these diffraction data would dramatically increase the scope for dynamics studies of biomolecules and potentially reveal atomic details of structure–function–dynamic mechanisms that have previously been obscured."
+    },
+    "paragraph_24": {
+      "type": "paragraph",
+      "id": "paragraph_24",
+      "content": "The diffraction data of proteins are affected by multiple sources of disorder, notably arising from atomic vibrations, concerted motions of protein domains and inter-molecular lattice distortions. Structural models of proteins should account for both anisotropic and anharmonic distributions around the mean atomic positions to reproduce the observed Bragg intensities accurately (Vitkup et al., 2002; Furnham et al., 2006). However, explicit modelling of such distributions in macromolecules using current methods requires extensive parameterization inappropriate for the diffraction quality of a typical protein crystal. Multi-conformer structures represent both anisotropic and anharmonic disorder, but despite numerous attempts at automating the inclusion of minor conformations (DePristo et al., 2004; Levin et al., 2007; Terwilliger et al., 2007; Korostelev et al., 2009; van den Bedem et al., 2009; Lang et al., 2010), 95% of all protein residues in the Protein Data Bank (PDB) (Berman et al., 2000) derived from diffraction data are modelled with a single conformation (Lang et al., 2010). As opposed to multiple discrete models, a MD simulation with time-averaged restraints (Gros et al., 1990) results in a population of structures in which the individual models are interrelated by a Boltzmann-weighted energy function. This method introduced by Torda et al. (1989) and implemented in macromolecular crystallography by Gros et al. (1990), showed a reduction in R-value. However, cross-validation introduced subsequently (Brünger, 1992) revealed chronically over-fitted models (Burling and Brunger, 1994; Clarage and Phillips, 1994; Schiffer et al., 1995)."
+    },
+    "paragraph_43": {
+      "type": "paragraph",
+      "id": "paragraph_43",
+      "content": "Here, we present an ensemble-refinement method that restricts the number of structures modelled and thereby prevents over-fitting of the data. We model large-scale motions, attributable to, for example, lattice distortions, by an underlying global disorder model. This approach allows MD simulations to sample local atomic fluctuations only, without the need for sampling large-scale global disorder. We show that the method yields reproducible ensembles with improved fit to the X-ray data, as validated by cross validation, Rfree (Brünger, 1992), and stereochemical analyses. Analyses of the ensembles show that detailed features are observed indicating atomic fluctuations that may be relevant for the biological function of the macromolecules."
+    },
+    "heading_s2": {
+      "type": "heading",
+      "id": "heading_s2",
+      "content": "Results and discussion",
+      "level": 1
+    },
+    "heading_s2-1": {
+      "type": "heading",
+      "id": "heading_s2-1",
+      "content": "Ensemble refinement of 20 datasets from the PDB",
+      "level": 2
+    },
+    "paragraph_48": {
+      "type": "paragraph",
+      "id": "paragraph_48",
+      "content": "We performed MD simulations, in which the model was restrained by a time-averaged X-ray (Gros et al., 1990), maximum-likelihood (Pannu and Read, 1996; Adams et al., 1997; Murshudov et al., 1997) target function (see ‘Materials and methods’). The X-ray restraint optimized 〈Fcalc(hkl)〉 against Fobs(hkl), where 〈Fcalc(hkl)〉 are computed as rolling averages from the structures in the MD trajectory, with the length of the averaging window determined by the relaxation time τx. This approach contrasts with the traditional crystallographic refinement approach, where Fcalc(hkl) are computed from a single structure and optimized against Fobs(hkl)."
+    },
+    "paragraph_81": {
+      "type": "paragraph",
+      "id": "paragraph_81",
+      "content": "Prior to the simulations we approximated the large-scale disorder by an overall TLS model derived from the atomic B-factors of the refined single structure. Using one TLS group per protein molecule or domain, we iteratively fitted TLS parameters (Schomaker and Trueblood, 1968; Winn et al., 2001) to the atomic B-factors of the protein atoms excluding atoms with large deviations in B-factor from the TLS-derived B-factor (the parameter pTLS described the percentage of atoms included in TLS-fitting; see ‘Materials and methods’). The resulting TLS model was applied to all atoms throughout the simulation. Effectively, this TLS model of the protein core excludes the effects of hyper-flexible surface loops and, hence, describes the global disorder that may be attributed to inter-molecular lattice distortions and overall intra-molecular breathing or domain shifts."
+    },
+    "paragraph_91": {
+      "type": "paragraph",
+      "id": "paragraph_91",
+      "content": "Ensemble refinement was tested using 20 diffraction datasets from the PDB and started from either the PDB or PDB_REDO (Joosten et al., 2010) structures (‘Materials and methods’). Upper resolution limits of the datasets ranged from 1.1 to 3.1 Å resolution and structures had 50 to 1,004 amino-acid residues in the asymmetric unit (Table 1). The simulations were run at an effective temperature of 300 K for the protein atoms, using a temperature bath (Tbath) slightly below 300 K to allow for heating due to the non-conservative nature of the time-averaged X-ray restraint modulated by its weight wx-ray (‘Materials and methods’). Explicitly modelled solvent atoms were added and/or removed intermittently during the simulation dependent on the corresponding electron-density and difference maps (‘Materials and methods’). Bulk solvent effects were accounted for by an averaged Flat Bulk-Solvent Model (Jiang and Brünger, 1994; Afonine et al., 2005) (‘Materials and methods’). The parameters pTLS, τx and the Tbath and wx-ray pair were optimized in a grid search resulting in a shallow optimum scored by Rfree (Figure 1A). After a period of equilibration, the trajectory of structures was acquired over an extensive period of time (40 times τx)."
+    },
+    "paragraph_224": {
+      "type": "paragraph",
+      "id": "paragraph_224",
+      "content": "Figure 1B shows the R-values as they developed over the simulation time for a structure with PDB code 1UOY (Olsen et al., 2004), for which the largest improvement in Rfree was observed among the datasets tested (possibly due to the high degree of anisotropic and anharmonic side-chain motion for this case). The R-values started at a high value and remained high (∼35%) for the individual structures, which is in agreement with the observation that the derived global TLS B-factor model is not optimal for fitting a single structure to the data. Averaging the structure factors over the relaxation time τx of 1 ps (corresponding to the rolling average structure factors used in the X-ray restraint) dropped the Rwork and Rfree to ∼11% and ∼15% respectively. The Rwork and Rfree of the collected ensemble of structures (corresponding to unweighted averaged structure factors) monotonically decreased to 10.3 and 13.7% respectively. over the acquisition period of 40 ps. The improvement in R-values from the ensemble model with respect to the single-structure model spanned the entire resolution range of the data (Figure 1C). Acquisition over 40 times τx yielded a highly redundant set of structures. We reduced the number of structures by calculating the minimum number of structures, that is 167 in the case of 1UOY, required to reproduce the R-value of the trajectory (Figure 1D and ‘Materials and methods’)."
+    },
+    "paragraph_255": {
+      "type": "paragraph",
+      "id": "paragraph_255",
+      "content": "Analysis of all 20 datasets showed that ensemble refinement improved the Rfree by between 0.3 and 4.9 percentage points compared to single structures re-refined using the same program package, that is Phenix (Afonine et al., 2012), with a mean improvement of 1.8% in Rfree values (Table 1, Figure 2A). The effect of the starting structure on ensemble refinement was assessed by using alternative refinement programs, phenix.refine, Refmac (Vagin et al., 2004), and Buster (Bricogne et al., 2009), to generate varying input models. No significant differences were observed due to the different starting models (Tables 3 and 4). The improvement in Rfree, number of structures in the final ensemble and the averaging time τx tended to increase with resolution (Figure 2A–C). The optimum values for the parameters pTLS and Tbath are not correlated with resolution (Figure 2D,E). Concomitant with the reduction in R-values, the ensemble models reduced electron-density differences, decreasing rms fluctuations in difference maps by 0 to 41% with an average of 12% improvement (Table 2). The difference electron-density maps for the single-structure and ensemble models indicated improvements throughout the asymmetric unit cell, as exemplified in Figure 1E."
+    },
+    "heading_s2-2": {
+      "type": "heading",
+      "id": "heading_s2-2",
+      "content": "Validation of ensemble refinement",
+      "level": 2
+    },
+    "paragraph_330": {
+      "type": "paragraph",
+      "id": "paragraph_330",
+      "content": "We used the high-quality experimental phases available to high resolution for 1YTT of mannose-binding protein (Burling et al., 1996) to validate the ensemble-refinement method. The overall correlation coefficient between the electron-density map from the ensemble model (obtained without experimental phases) and the experimentally phased electron-density map was 0.903, compared with 0.873 and 0.895 for the published and re-refined single structures. These seemingly small improvements in overall quality indicators allow for significant local improvements. Real-space correlation coefficients (Brändén and Jones, 1990) highlighted marked local improvements for flexible residues in particular (Figure 3A) with 11 residues improving by more than 0.1 in correlation coefficient. This observation was consistent with local improvements in electron-density differences in regions of flexible or disordered side chains (Figure 3B). Moreover, the ensemble model contained structural details previously identified in a multiple-model approach by Burling et al. (1996), as shown for the anisotropic distribution for the side chain of Phe121 (Figure 3C) and diffuse water shells around hydrophobic residues (Figure 3D). Figure 3E shows that the most occupied water sites in the ensemble correlated with low atomic B-factors for waters in the single-structure model."
+    },
+    "paragraph_396": {
+      "type": "paragraph",
+      "id": "paragraph_396",
+      "content": "Next, we analysed the stereochemistry of the computed ensemble models. The robustness of the observed atomic distributions was tested by repeating ensemble refinements 10 times using different random starting velocities. Figure 4A shows that the observed distributions are highly reproducible. With data extending to 1.5-Å resolution correlations above 0.99 were observed between residue distributions from separate runs. At lower resolutions, the majority of residues showed correlations above 0.95, with occasionally correlations dropping below 0.8 in very flexible regions (see Figure 4B,C). Clearly, the ensembles contain multiple values for each geometrical term that form a distribution, instead of a single stereochemical value obtained from a single structure; Figure 5A–D presents examples of side-chain distributions (by χ1 and χ2 angles) observed in the ensembles along with standard deviations computed from the 10 repeats. Averaged over all 20 cases, the rms deviations from idealized bond lengths, bond angles and dihedral angles for the re-refined single-structures were 0.010 Å, 1.26° and 15.2° respectively. (Figure 6—source data 1). These deviations decreased for the ensemble models by 0.002 Å, 0.26° and 6.6° respectively, when considering the centroids of the observed stereochemical distributions. Taking all fluctuations around the centroids (i.e. complete distributions) into account, these values increased by 0.002 Å, 0.33° and 4.0° respectively compared to the statistics from single structures. This indicates high stereochemical quality for the ensemble model, but that the ensemble of structures contained fluctuations exhibiting larger deviations from ideality. Figure 6A,B shows that high-energy conformations, as indicated by for example non-favourable Ramachandran φ,ψ-angle combinations, occurred transiently and were concentrated in regions of structural flexibility. Counting the most frequent Ramachandran classification for each φ,ψ-angle showed that the ensembles have a similar percentage for ‘allowed’ and an increased number of ‘outliers’ compared to the single structures (Figure 6C and Figure 6—source data 2). These analyses illustrate that in ensemble refinement conformations were sampled, rather than optimized to a single configuration as in single-structure refinement. Similar to Brünger (Brünger, 1992), we observe that lower Rfree values correlate with better quality of the Ramachandran statistics (Figure 6D)."
+    },
+    "paragraph_468": {
+      "type": "paragraph",
+      "id": "paragraph_468",
+      "content": ""
+    },
+    "paragraph_472": {
+      "type": "paragraph",
+      "id": "paragraph_472",
+      "content": "The presence of non-crystallographic symmetry (NCS) allowed for crystallographically-independent observations of atomic fluctuations in multiple copies of a protein molecule (Figure 7A–C). In some cases, the applied global TLS models differed significantly between NCS-related copies (Figure 7B). Nevertheless, we observed atomic fluctuations similar both in magnitude and location for related copies in areas not affected by crystal packing (Figure 7B,C; additional cases of NCS are presented in Figure 7—figure supplement 1–4). Apparently, variations in overall disorder arising from packing differences of NCS copies (as indicated by different B-factor distributions) were well accounted for by the applied global TLS models. Similarly, a global increase in disorder present in a dataset collected at ambient temperature vs an isomorphous dataset collected under cryo-conditions was fully accounted for by an increase in global TLS (Figure 8A). These data indicate that the derived atomic fluctuations are molecular traits and that the global TLS model accounts for overall disorder, which includes for example lattice or packing effects."
+    },
+    "heading_s2-3": {
+      "type": "heading",
+      "id": "heading_s2-3",
+      "content": "Functional dynamics revealed by ensemble refinement",
+      "level": 2
+    },
+    "paragraph_509": {
+      "type": "paragraph",
+      "id": "paragraph_509",
+      "content": "Inspection of the obtained ensembles showed that most proteins, as expected, are characterized by well-ordered residues in the protein core and flexible residue side chains and loops on the outside (an example is given in Figure 9A). However, three cases exhibited marked flexibility of residue side chains on the inside of the molecule. 1BV1 (Gajhede et al., 1996), major birch pollen allergen, has a large forked solvent channel with multiple disordered side chains and a diffuse water network (Figure 9B). The cavity is consistent with its putative role as a general plant steroid carrier (Marković-Housley et al., 2003). Presumably, the flexible internal residues play a role in binding the diverse ligands. More surprising are the disordered cores in 1X6P of PAK pilin (Dunlop et al., 2005) (Figure 9C) and 3K0N of the enzyme proline isomerase (Fraser et al., 2009) (Figure 9D); in both these cases, the datasets were recorded at ambient temperatures. Multiple (16) aliphatic and aromatic side chains are highly flexible, forming a molten core in the pilin molecule. These flexible residues, which are extremely well conserved in the type IV pilin family, create the central interface between the characteristic long α-helix and β-sheet of this protein fold (Hazes et al., 2000). We hypothesize that this monomeric pilin structure represents an intermediate molten state, which becomes stabilized upon protomer filament formation. The third case with flexible residues on the interior is 3K0N of proline isomerase (Fraser et al., 2009). As with the pilin structure, several (11) aromatic and aliphatic residues showed large side chain fluctuations, yielding a molten core of the protein structure. However, the same protein under cryogenic conditions (3K0M) (Fraser et al., 2009) showed mostly well-ordered side chains in the ensemble (Figure 9D, right-hand side), indicating that at cryogenic conditions the molten core has been annealed to its ground state configuration. As discussed in more detail in the next paragraph, the observed flexibility of the core residues at ambient temperature is likely of functional relevance for the enzyme. Thus, the computed ensemble models highlighted a hitherto unnoticed phenomenon of molten cores in folded proteins, which are likely relevant for the biological function of these molecules."
+    },
+    "paragraph_528": {
+      "type": "paragraph",
+      "id": "paragraph_528",
+      "content": "NMR spectroscopy has previously revealed specific dynamics for active-site residues of proline isomerase (Eisenmesser et al., 2005). The solvent-exposed residues Arg55 and Met61 in the active site showed disorder in 3K0M (Fraser et al., 2009), where data were collected at 100 K. For 3K0N collected at 288 K, a number of additional residues with multiple conformations were observed (Figure 8A,B). These included Ser99, Phe113, which are part of the substrate-binding pocket together with Arg55 and Met61 (Figure 10A), and Leu98, which neighbours the flexible residue Ser99 but points into the hydrophobic core (Fraser et al., 2009). Ensemble refinement of the 288 K data revealed a large number of residue side chains in the core to be flexible. This flexibility in the core appears to be linked to the dynamics of active-site residues through the intervening β-sheet. In particular, the main-chain H-bonding network (C=O·HN) of neighbouring β-strands within the sheet was flexible, as indicated by anisotropy in the C=O bonds of residues 55-62-113-98 (with the largest anisotropy observed for 55 and 62; see Figure 10B). Analysis of the side-chain conformations for the active-site residues Arg55, Met61, Ser99 and Phe113 showed a 10% minor conformation for the four active-site residues (Figure 10C), which is in good agreement with NMR relaxation data (see Figure 2 in Eisenmesser et al., 2005). Mutation of Ser99 to Thr (>14 Å away from the catalytic Arg55) affects the side-chain distributions and lowers the activity ∼300-fold, similar to an Arg55Lys mutation of the catalytic residue (Eisenmesser et al., 2005; Fraser et al., 2009). Thus, the ensemble refinement results support the notion put forward by Eisenmesser et al. and Fraser et al. that side chain dynamics play a critical role in the enzymatic function of proline isomerase and, moreover, expand upon this theme to reveal mechanistic insights arising from the underlying detailed dynamics."
+    },
+    "paragraph_549": {
+      "type": "paragraph",
+      "id": "paragraph_549",
+      "content": "Ligand binding to HIV protease is known to have marked effects on the enzyme structure (Heaslet et al., 2007). We compared HIV protease in its apo form, 2PC0 (Heaslet et al., 2007), and bound to ligand JE-2147, 1KZK (Reiling et al., 2002). As for proline isomerase, HIV protease exhibited flexible, moldable, substrate-binding pockets in the apo state. Enthalpic and entropic binding of the ligand with high affinity (KD = 41 pM) (Velazquez-Campoy et al., 2001) reduced the flexibility in the substrate binding pockets by protein–ligand H-bond interactions and van der Waals stacking (Figure 11A,B). Upon ligand binding, Asp90 became ordered through H-bonding with the ligand in P2, whereas its dimeric partner lacked a H-bonding partner in P2′ and remained flexible as in the unbound state. The canonical aspartic protease catalytic residues, Asp25 of both monomers, became ordered upon ligand binding. Concomitantly, we observed significant changes in dynamics of specific core residues (Figure 11C). Some residues, most notably Thr26, ‘froze’ (Thr26 is part of the conserved Asp25-Thr26-Gly-27 sequence). In contrast, the side chains of other residues, most notably Cys95 and Leu97 opposite of Thr26, became highly disordered in the bound state, whereas they were relatively ordered in the unbound state. This observation supports NMR data that showed that conformational variability increases upon inhibitor binding for Leu97 amongst others (Torchia and Ishima, 2003). These data suggest that the entropy lost by the catalytic aspartates upon ligand binding is compensated with an increase in disorder of specific core residue side chains. This type of dynamic modulation was also observed for Ca2+ binding to calmodulin, where this effect was dubbed entropy compensation (Lee et al., 2000). Similar to the molten core dynamics for proline isomerase, the structure ensembles generated by the ensemble refinement method revealed specific core dynamics for HIV protease, in particular a conformational exchange that is likely functionally relevant."
+    },
+    "paragraph_566": {
+      "type": "paragraph",
+      "id": "paragraph_566",
+      "content": "The development of new small molecule therapeutics is often supported by the use of macromolecular structure, typically X-ray crystallography of complexes between target proteins and drug candidates. These complexes are typically interpreted as static structures, and the impact of dynamics, if considered at all, is probed using computational methods. Our new ensemble refinement approach makes it possible to study the role of dynamics in drug–target complexes in the context of the experimental data. Therefore, we analysed two structures of Abl kinase in complex with Imatinib (also known as Gleevec), that is 1IEP, and PD173955, that is 1M52 (Nagar et al., 2002). These compounds bind the Abl kinase with high affinity, 37 nM (Schindler et al., 2000) and 100 nM respectively (Nagar et al., 2002). The ensembles provide insights into the flexibility of the protein residues and the ligand moieties in the complex. Figure 12A shows the variation in H-bonding observed in Abl kinase–Imatinib. Variable H-bonding interactions were observed for the hydrophilic N-methylpiperazine moiety with the backbone carbonyl atoms of Ile360 and His361. In contrast, the ensemble displayed a well-ordered H-bond between the anilino-NH and Thr315 ‘gatekeeper’ side-chain. Moreover, the ordered water network between Glu286, Lys271 and the pyrimidine moiety of Imatinib (Nagar et al., 2002) was reproduced in the ensemble model (Figure 12B). We observed that the Abl kinase adopts two different states in these crystal structures. In the Imatinib complex the activation loop, residues 381–402, is highly disordered (Figure 12C), which was confirmed by comparison to previously published NMR data (Vajpai et al., 2008). In general, the ensemble models indicate details of tight and highly ordered drug–target interactions on one side vs disordered interactions elsewhere, which are indicative of less tight interactions, that may suggest which sites to modify in a drug-optimization cycle."
+    },
+    "heading_s3": {
+      "type": "heading",
+      "id": "heading_s3",
+      "content": "Conclusions",
+      "level": 1
+    },
+    "paragraph_580": {
+      "type": "paragraph",
+      "id": "paragraph_580",
+      "content": "We have shown that far more structural information can be reliably extracted from protein diffraction data than is achieved to date by traditional single-structure modelling methods. Our ensemble refinement method samples distributions that reflect structural details of protein dynamics. The resulting ensemble models provide a more comprehensive description of the molecules and allow interpretation of the molecular function in terms of both the three-dimensional arrangements of the protein residues and their flexibilities. Moreover, ensemble models minimize the risk of structural over-interpretation associated with the seemingly rigid single-structure models. We found comparative analyses of protein molecules in different states to be very useful for identifying detailed changes in structural dynamics that may be mechanistically relevant for the molecular function."
+    },
+    "paragraph_581": {
+      "type": "paragraph",
+      "id": "paragraph_581",
+      "content": "Partitioning large-scale disorder into a global model separates intermolecular variations of protein packing in the crystal from the detailed intra-molecular atomic fluctuations. Effectively, the X-ray gradient dictates the MD sampling to yield featureless, (mFobs−DFmodel)exp[iφmodel], electron-density difference maps, while the global disorder model is accounted for by taking BTLS into account when computing the atomic densities. In this way, the ensemble of structures is generated to model the anisotropic and anharmonic electron-density distributions precisely, while being restrained by the bonded and non-bonded energy terms used in the MD simulation. The separation of global disorder and local atomic fluctuations contrasts the original approach by Gros et al. (1990), where the MD sampling had to account for both the large scale global disorder and local fluctuations leading to very long relaxation times τx of 16 ps. In the current work much shorter relaxation times of 0.25–2 ps can be used, thereby limiting potential over-fitting markedly. The method is applicable to data with a wide range of upper resolution limits. We see marked improvements in Rfree for datasets ranging from 1.5 to 2.6-Å upper-resolution limit. A detailed interpretation of the ensembles is allowed, supported by the very high local correlations between independent ensemble refinements. However, at lower resolution limits and for highly disordered loops the local correlation between independent runs drops and detailed interpretation is not feasible. Thus, even though the number of independent parameters in an ensemble model is not clearly defined (and therefore the parameter-to-observation ratio is unclear), the gain in Rfree and the very high local correlations between independent runs indicate a high reliability of the ensemble models. However, the method is not a panacea for highly disordered protein regions. In the absence of ordered conformations for a certain region of the protein (as implicitly defined by the diffraction data) the ensemble refinement will sample diverse conformations in order to prevent the build up of negative peaks in the electron-density difference map. In other words, if the data ‘says’ that a region is disordered, ensemble refinement will generate diverse conformations for that region. Furthermore, dataset pathologies caused, for example, by radiation damage may have confounded effects that obscure the dynamics inherent to the protein molecule. Thus, perhaps somewhat counter-intuitively, this modelling method that accounts for inherent protein dynamics does not help to resolve structural details of disordered regions, but is particularly suited to resolve dynamical fluctuations in ordered parts of the protein structure."
+    },
+    "paragraph_608": {
+      "type": "paragraph",
+      "id": "paragraph_608",
+      "content": "Ensemble refinement of 20 protein datasets highlighted global dynamics features of protein molecules. Surprisingly, in some cases the ensembles indicated the existence of folded protein structures that display molten cores. Most likely, such molten cores may indicate intermediates of protein molecules that function in larger complexes (such as PAK pilin), or alternatively these molten cores support dynamical fluctuations that are needed for ligand binding and enzyme functioning (as for birch pollen allergen and proline isomerase respectively). Furthermore, the ensembles show details of specific order–disorder transitions, or conformational exchanges, between active site and core residues (as for HIV protease in the unbound and bound state) that suggest a mechanism of entropy compensation to support the enzymatic activity. The difference in dynamics observed between the ensembles of proline isomerase at cryo and ambient temperatures indicates that flash freezing of a crystal anneals local conformational fluctuations and thereby removes protein dynamics that may be functionally relevant."
+    },
+    "paragraph_609": {
+      "type": "paragraph",
+      "id": "paragraph_609",
+      "content": "In conclusion, this new method of modelling X-ray diffraction data reveals a wealth of detailed information about the dynamics of biomolecules that complements the high-resolution structural information already available from the crystallographic experiment. In depth understanding of structure–dynamics in biomolecules will enhance our insights into the molecular mechanisms that underlie biological processes."
+    },
+    "heading_s4": {
+      "type": "heading",
+      "id": "heading_s4",
+      "content": "Materials and methods",
+      "level": 1
+    },
+    "paragraph_610": {
+      "type": "paragraph",
+      "id": "paragraph_610",
+      "content": "The method of ensemble refinement was implemented in the Phenix software (Adams et al., 2010). Adaptations and new procedures developed for ensemble refinement are given in section ‘Ensemble refinement methods’. Simulations were performed as described in section ‘Ensemble refinement protocol’. Details of the single-structure re-refinements used for comparison with the ensemble models are given in section ‘Single structure re-refinements’. Validation of the global disorder TLS model, the dependency of ensemble refinement on the starting structure and additional ensemble refinement calculations are given in ‘Additional ensemble refinement calculations’."
+    },
+    "paragraph_612": {
+      "type": "paragraph",
+      "id": "paragraph_612",
+      "content": "Ensemble refinement was performed using phenix.ensemble_refinement, as will be made available in the next release of Phenix."
+    },
+    "heading_s4-1": {
+      "type": "heading",
+      "id": "heading_s4-1",
+      "content": "Ensemble refinement methods",
+      "level": 2
+    },
+    "heading_s4-1-1": {
+      "type": "heading",
+      "id": "heading_s4-1-1",
+      "content": "Time-averaged restraints",
+      "level": 3
+    },
+    "paragraph_613": {
+      "type": "paragraph",
+      "id": "paragraph_613",
+      "content": "The overall model structure factors are calculated as (1), defined by Afonine et al. (2005), incorporating overall anisotropic scaling (Sheriff and Hendrickson, 1987) and bulk solvent contributions (Jiang and Brünger, 1994)."
+    },
+    "paragraph_619": {
+      "type": "paragraph",
+      "id": "paragraph_619",
+      "content": "where, k is the overall scale factor, h is the column vector with Miller indices, A is the orthogonalisation matrix, Bcart is the anisotropic scale matrix, Fcalc is the structure factors calculated from atomic model, ksol and Bsol are the parameters for the flat bulk solvent model and Fmask are the structure factors calculated from bulk solvent mask."
+    },
+    "paragraph_643": {
+      "type": "paragraph",
+      "id": "paragraph_643",
+      "content": "In order to restrain the instantaneous structures produced during the MD simulation with time and spatially averaged X-ray data, time-averaged restraints are used (Gros et al., 1990). This produces time-averaged (or rolling-average) structure factors such that (1) becomes (2)."
+    },
+    "paragraph_648": {
+      "type": "paragraph",
+      "id": "paragraph_648",
+      "content": "This is a time-dependent memory function, that is a ‘rolling’ average, where the size of the averaging window is controlled by the τx parameter (typically 1 ps). This averaging function is updated with the current individual structure every 10 time-steps (∆t) during the simulation and is implemented as in (3)."
+    },
+    "heading_s4-1-2": {
+      "type": "heading",
+      "id": "heading_s4-1-2",
+      "content": "Dual explicit-bulk solvent model",
+      "level": 3
+    },
+    "paragraph_655": {
+      "type": "paragraph",
+      "id": "paragraph_655",
+      "content": "Due to the stochastic behaviour of solvent molecules and the number of partially disordered or low occupancy sites, explicitly modelled solvent atoms are repositioned every 250 time-steps. Electron-density and difference density maps are generated using Fmodelt, excluding reflections in the free R set. Water oxygen atoms with an electron-density peak >1.0 σ in the 2mFobs − DFmodel map or a peak >3.0 σ in the mFobs − DFmodel map are preserved, otherwise the atom is removed. New water atoms are added for positions which have a 2mFobs − DFmodel peak >1.0 σ and a mFobs − DFmodel peak >3.0 σ, and are between 1.8–3.0 Å in distance to an existing atom. For high-resolution cases these criteria are adjusted to include mFobs − DFmodel map peaks >2.5 σ. Newly positioned atoms are assigned a random, Boltzmann-weighted, velocity. Explicitly modelled solvent atoms contribute to the atomic model (Fcalc)."
+    },
+    "paragraph_717": {
+      "type": "paragraph",
+      "id": "paragraph_717",
+      "content": "Bulk solvent is modelled using a solvent mask (Afonine et al., 2005). The mask structure factors (Fmask) are averaged in the same manner as the atomic model (Fcalc) (4)."
+    },
+    "paragraph_729": {
+      "type": "paragraph",
+      "id": "paragraph_729",
+      "content": "The ksol and Bsol bulk solvent parameters and Bcart scaling parameters used for the duration of the simulation are calculated from the starting structure as described previously (Afonine et al., 2005), they are re-optimized for the final ensemble."
+    },
+    "heading_s4-1-3": {
+      "type": "heading",
+      "id": "heading_s4-1-3",
+      "content": "Constrained target functions",
+      "level": 3
+    },
+    "paragraph_741": {
+      "type": "paragraph",
+      "id": "paragraph_741",
+      "content": "The overall scale factor, k, is constrained during the simulation. For the maximum-likelihood target function, as shown for acentric reflections, (5) during normalisation (6), the sum of the rolling-average structure factor array (2) is scaled to the sum of the structure factor array from the starting model (Fref) as shown in (7)."
+    },
+    "paragraph_753": {
+      "type": "paragraph",
+      "id": "paragraph_753",
+      "content": "where, Eobs and Emodel are the normalised structure factors, σA is the Sigma-A weighting factor, I0 is a modified Bessel function of order 0 and ε is the expected intensity factor."
+    },
+    "heading_s4-1-4": {
+      "type": "heading",
+      "id": "heading_s4-1-4",
+      "content": "Temperature bath and X-ray weight",
+      "level": 3
+    },
+    "paragraph_766": {
+      "type": "paragraph",
+      "id": "paragraph_766",
+      "content": "The simulations are performed such that the non-solvent atoms are at a target temperature (Ttarget) of 300 K, where the simulation is coupled to a velocity-scaled temperature-bath (Berendsen et al., 1984). The temperature bath is set to a value less than 300 K, typically 295–298 K. Because the X-ray restraints are computed from a time-dependent memory function, the X-ray energy term is non-conservative and thus heating occurs. During the equilibration phase the X-ray weight (wx-ray) is modulated by the temperature of the protein atoms (Tprotein) every 10 time-steps (∆t), such that the non-solvent atoms sample consistently at the target temperature (8)."
+    },
+    "paragraph_780": {
+      "type": "paragraph",
+      "id": "paragraph_780",
+      "content": "Thus, the thermostat offset controls the X-ray weight in a system independent manner whilst maintaining the target temperature. In the acquisition phase the X-ray weight is fixed to the averaged value used in the equilibration phase."
+    },
+    "heading_s4-1-5": {
+      "type": "heading",
+      "id": "heading_s4-1-5",
+      "content": "TLS approximation of the global disorder",
+      "level": 3
+    },
+    "paragraph_781": {
+      "type": "paragraph",
+      "id": "paragraph_781",
+      "content": "The partitioning of inter-molecular disorder is performed before the start of the simulation using ADPs from the traditionally refined starting structure. TLS groups are assigned per molecule or domain as appropriate to model global packing disorder. For each group, TLS parameters are fitted to the ADPs of the starting structure for all non-solvent, non-hydrogen atoms. The agreement of the isotropic equivalents for the fitted TLS ADPs (Btls) and the reference ADPs (Bref) is scored as (9) for all non-solvent, non-hydrogen atoms."
+    },
+    "paragraph_790": {
+      "type": "paragraph",
+      "id": "paragraph_790",
+      "content": "A percentile of atoms with the poorest fitting ADPs (pTLS) are excluded from the next round of TLS parameter fitting and repeated until the fitted TLS parameters converge. The converged TLS parameters are then applied to all atoms within that group for the duration of the simulation. Solvent atoms are assigned to the TLS group of the closest non-water atom, this assignment is updated every 250 time-steps. This TLS model produced lower R-values than using the ADP values from the re-refined single structure or using the one overall isotropic B-factor for all atoms in the model (Table 5)."
+    },
+    "heading_s4-1-6": {
+      "type": "heading",
+      "id": "heading_s4-1-6",
+      "content": "Generation of the final ensemble",
+      "level": 3
+    },
+    "paragraph_803": {
+      "type": "paragraph",
+      "id": "paragraph_803",
+      "content": "Structure factors for the final ensemble are calculated from the population of collected structure as in (2) where Fcalc and Fmask are defined as (10) and (11)."
+    },
+    "paragraph_817": {
+      "type": "paragraph",
+      "id": "paragraph_817",
+      "content": "The acquisition phase is split into several time blocks, in each of which 250 structures are typically stored. The R-values of all possible contiguous time blocks are calculated and the periods with the lowest Rwork are selected. This selection reduces the Rwork by 0–1.0% (mean improvement in 0.3%). For the 1YTT dataset with high quality experimental phases, the block selection for lowest Rwork corresponds well with the overall map correlation coefficient computed between the experimentally phased map and the map derived from the ensemble model (Figure 13). Next, to reduce the redundancy in the number of structures in the final ensemble (during the simulation thousands of structures are collected), we calculate the smallest number of structures that reproduce the Rfree within 0.1%. This is performed by iteratively parsing the stored structures with increasing time spacing (see Figure 1D). The overall and bulk-solvent scale factors are optimised for the final ensemble. The ensembles of structures are stored using the standard PDB format for multiple models, with B-factors listed as computed from the TLS model and overall B-factor scaling contributions."
+    },
+    "heading_s4-1-7": {
+      "type": "heading",
+      "id": "heading_s4-1-7",
+      "content": "Calculation of atomic positional probability",
+      "level": 3
+    },
+    "paragraph_857": {
+      "type": "paragraph",
+      "id": "paragraph_857",
+      "content": "All atoms comprising the ensemble are assigned a probability (Pi) based on the positional likelihood of atom i in a given model relative to the complete ensemble of models. Fcalc electron-density maps are calculated for each model in the ensemble and 〈Fcalc〉 electron-density map is calculated for the complete ensemble as (10). Pi is calculated as (12)."
+    },
+    "paragraph_876": {
+      "type": "paragraph",
+      "id": "paragraph_876",
+      "content": "Calculating from an electron-density function allows for non-Gaussian distributions unlike RMSF, which is calculated from mean atomic position. These probabilities aid the visual inspection of the ensemble models and allow the observer to control the level of detail displayed (Figure 14)."
+    },
+    "heading_s4-2": {
+      "type": "heading",
+      "id": "heading_s4-2",
+      "content": "Ensemble refinement protocol",
+      "level": 2
+    },
+    "heading_s4-2-1": {
+      "type": "heading",
+      "id": "heading_s4-2-1",
+      "content": "Preparing the starting model",
+      "level": 3
+    },
+    "paragraph_884": {
+      "type": "paragraph",
+      "id": "paragraph_884",
+      "content": "The starting structures were taken from the PDB server or from the PDB_REDO server if the Rfree was <0.25% than the equivalent PDB structure. We removed alternative positions and set corresponding occupancies to one. Overall anisotropic scale factors and solvent scale and B-factor (ksol and Bsol) were calculated based on these traditional single-structures (i.e. using the refined B-factor models). Next, the atomic B-factors were substituted by B-factors derived the global TLS disorder model (‘Materials and methods’—TLS approximation of the global disorder)."
+    },
+    "heading_s4-2-2": {
+      "type": "heading",
+      "id": "heading_s4-2-2",
+      "content": "X-ray restrained MD simulation",
+      "level": 3
+    },
+    "paragraph_898": {
+      "type": "paragraph",
+      "id": "paragraph_898",
+      "content": "At t = 0 〈Fcalc〉 and 〈Fsol〉 are set to Fcalc and Fsol. Boltzmann-weighted velocities are assigned to the atoms, corresponding to T = 300 K. The bath temperature Tbath used for velocity scaling is coupled to the X-ray weight (wx-ray) calculation, resulting in a temperature of 300 K for all non-solvent atoms. The simulation time-step used is 0.5 fs and the force-field parameterisation is as described (Grosse-Kunstleve et al., 2004). Simulations are started in parallel with varying values of pTLS (e.g. 0.2, 0.6, 0.8, 0.9, 1.0), τx (e.g. 0.25, 0.5 and 1.0 ps) and Tbath (e.g. 295 and 299 K). Water positions are picked according to electron-density criteria and updated every 250 steps. Every 10 time-steps rolling average structure factors, 〈Fcalc〉 and 〈Fsol〉, are updated for use in the time-averaged X-ray restraints. σA Values are updated if the Rfree of the rolling average model improves by >0.25%. The simulations have an equilibration phase (20τx) in which the temperature, X-ray weight and averaged structure factors stabilize. This is followed by an acquisition phase (40τx) where the values for wx-ray and σA are fixed and the structures for the final ensemble model are collected."
+    },
+    "heading_s4-2-3": {
+      "type": "heading",
+      "id": "heading_s4-2-3",
+      "content": "CPU time",
+      "level": 3
+    },
+    "paragraph_957": {
+      "type": "paragraph",
+      "id": "paragraph_957",
+      "content": "CPU time for a dataset at 2.0-Å resolution with 199 residues in the asymmetric unit is 25 hr for each simulation using a 1.9 GHz processor."
+    },
+    "heading_s4-3": {
+      "type": "heading",
+      "id": "heading_s4-3",
+      "content": "Single structure re-refinements",
+      "level": 2
+    },
+    "paragraph_958": {
+      "type": "paragraph",
+      "id": "paragraph_958",
+      "content": "The single structure re-refinements used the same starting structure as the ensemble refinements (alternative conformations were not removed) and were re-refined using phenix.refine (version 1.7.1) (Afonine et al., 2012) and Buster (version 2.10.0) (Bricogne et al., 2009). Standard parameters were used with the exception of optimizing the target weights and increasing the number of macro-cycles to 8 in phenix.refine. Explicit water refinement was performed, anisotropic ADPs were used if present in starting structure and TLS parameters were defined as used in the starting structure. PDB_REDO (Joosten et al., 2010) models were used as deposited."
+    },
+    "heading_s4-4": {
+      "type": "heading",
+      "id": "heading_s4-4",
+      "content": "Additional ensemble refinement calculations",
+      "level": 2
+    },
+    "heading_s4-4-1": {
+      "type": "heading",
+      "id": "heading_s4-4-1",
+      "content": "Testing B-factor model in ensemble refinement",
+      "level": 3
+    },
+    "paragraph_963": {
+      "type": "paragraph",
+      "id": "paragraph_963",
+      "content": "Burling et al. (Burling and Brunger, 1994) had previously shown that the choice of ADPs for ensemble refinement can affect the resultant structures. Three alternative ADP models were tested for seven datasets, as shown in Table 5. ADP model 1, ‘Global isotropic B-factor’, uses one overall isotropic B-factor applied to all atoms in the simulation. Multiple trials were performed to establish the optimum single value. For comparison the Wilson B-factor of the data is listed. ADP model 2, ‘Refined ADPs’, uses the ADPs from the refined single-structures. Best results were obtained by multiplying the refined ADPs by given scale factor. ADP model 3, ‘Basal TLS ADPs’, uses the basal TLS model with one TLS group per chain (including all non-hydrogen, non-solvent atoms) obtained as described in ‘Materials and methods’—TLS approximation of the global disorder, where pTLS is the percentage of atoms included the iterative fitting procedure. The basal TLS model returns the lowest Rfree values in all test cases."
+    },
+    "heading_s4-4-2": {
+      "type": "heading",
+      "id": "heading_s4-4-2",
+      "content": "Effect of starting model on ensemble refinement",
+      "level": 3
+    },
+    "paragraph_975": {
+      "type": "paragraph",
+      "id": "paragraph_975",
+      "content": "To test the effect of the starting structure three datasets (1UOY, 3CA7 and 1BV1) were re-refined with Buster, phenix.refine and Refmac as given by the PDB_REDO server. Each of these re-refined structures was used as the input structure for ensemble refinement, using the same run-time parameters. Each ensemble refinement was repeated three times using a different random number to generate the initial atomic velocities. The results are shown in Table 3. The mean Rfree (averaged over the random number seed repeats) of the resulting ensembles from the three different input structures are within 0.5%. The Fmodel cross correlation of ensemble pairs (best representative from each program, selected by Rfree) was calculated and is shown in Table 4. All ensemble pairs exhibit a cross correlation of greater than 0.99."
+    },
+    "heading_s4-4-3": {
+      "type": "heading",
+      "id": "heading_s4-4-3",
+      "content": "Partial occupancies",
+      "level": 3
+    },
+    "paragraph_988": {
+      "type": "paragraph",
+      "id": "paragraph_988",
+      "content": "Because occupancy and B-factor are strongly coupled in a traditional refinement, the occupancies of bound ligands and ions are typically set to unity, while the corresponding B-factors are refined in a single-structure refinement. In ensemble refinement, the B-factors are not refined, but are derived from the global TLS model and the atomic fluctuations."
+    },
+    "paragraph_992": {
+      "type": "paragraph",
+      "id": "paragraph_992",
+      "content": "All simulations were initially performed with full occupancy for bound ligands and ions. In several cases, this resulted in excessive sampling of the ligand or ion, as seen when inspecting the ensemble and reported by the kinetic energies during the simulation, which were far in excess of neighbouring protein atoms. These observations indicate that the corresponding occupancy of the bound ligand or ion is less than one. In these cases the occupancies were lowered and the simulations repeated until the kinetic energy of the ligand or ion were equivalent to the proximal protein components."
+    },
+    "sub-article": {
+      "type": "heading",
+      "id": "sub-article",
+      "content": "Article Commentary",
+      "level": 1
+    },
+    "heading_1022": {
+      "type": "heading",
+      "id": "heading_1022",
+      "content": "Decision letter",
+      "level": 2
+    },
+    "paragraph_1023": {
+      "type": "paragraph",
+      "id": "paragraph_1023",
+      "content": "eLife posts the editorial decision letter and author response on a selection of the published articles (subject to the approval of the authors). An edited version of the letter sent to the authors after peer review is shown, indicating the substantive concerns or comments; minor concerns are not usually shown. Reviewers have the opportunity to discuss the decision before the letter is sent (see review process). Similarly, the author response typically shows only responses to the major concerns raised by the reviewers."
+    },
+    "paragraph_1025": {
+      "type": "paragraph",
+      "id": "paragraph_1025",
+      "content": "Thank you for choosing to send your work entitled “Modelling dynamics in protein crystal structures by ensemble refinement” for consideration at eLife. Your article has been evaluated by a Senior Editor and 3 reviewers, one of whom is a member of our Board of Reviewing Editors. The following individuals responsible for the peer review of your submission want to reveal their identity: Phil Evans."
+    },
+    "paragraph_1027": {
+      "type": "paragraph",
+      "id": "paragraph_1027",
+      "content": "We are pleased to report that the review of the paper has been favorable, and we invite you to revise the paper by taking into consideration the points made below."
+    },
+    "paragraph_1028": {
+      "type": "paragraph",
+      "id": "paragraph_1028",
+      "content": "General assessment: This paper describes a greatly improved version of time-averaging ensemble refinement that was originally developed by Gros et al., 1990. Subsequent works suggested that over-fitting may occur and it was recognized that the choice of B-factor model is very important for the success of time-average multi-conformer refinement. The current work now dramatically improves the situation by using a B-factor model that is derived from the TLS description of the single conformer isotropic B-factors. The initial implementation was requiring the dynamics simulation to model not only the local atomic fluctuations but also the effect of large-scale lattice vibrations and crystal packing defects. Taking out the large-scale effects (by modeling them with a TLS parameterization) has been crucial, and the authors show convincingly that there is no longer a problem with over-fitting. More importantly, they show that the dynamic behavior implied by the simulation correlates with other physical evidence and provides biologically relevant insights into protein function."
+    },
+    "paragraph_1029": {
+      "type": "paragraph",
+      "id": "paragraph_1029",
+      "content": "The new improved time-averaging method has then been tested on a set of crystal structures. Significant improvements in Rfree are reported. Specific examples illustrate the power of the method to identify sidechain motion and solvent features. Since the new improved time-averaging refinement method is now more robust than the earlier implementations, it could become a routine tool for the final refinement of macromolecular crystal structures. As such, it will then raise awareness that crystal structures are not static, but rather represent time and spatial averages. In fact, in the examples there are some surprises, of internal regions that show more flexibility than would be expected, and this is likely to have functional consequences. Thus exploring dynamics by this method may indeed produce important biological insights, at least in some cases."
+    },
+    "paragraph_1030": {
+      "type": "paragraph",
+      "id": "paragraph_1030",
+      "content": "Highlights:"
+    },
+    "paragraph_1031": {
+      "type": "paragraph",
+      "id": "paragraph_1031",
+      "content": "* separation of global domain disorder from local fluctuation"
+    },
+    "paragraph_1032": {
+      "type": "paragraph",
+      "id": "paragraph_1032",
+      "content": "* validation by comparison for a case with highly accurate MAD phases"
+    },
+    "paragraph_1033": {
+      "type": "paragraph",
+      "id": "paragraph_1033",
+      "content": "* agreement with NMR relaxation studies for two cases"
+    },
+    "paragraph_1034": {
+      "type": "paragraph",
+      "id": "paragraph_1034",
+      "content": "* discovery of flexible interior residues for some proteins"
+    },
+    "paragraph_1035": {
+      "type": "paragraph",
+      "id": "paragraph_1035",
+      "content": "Points to consider in the revisions:"
+    },
+    "paragraph_1036": {
+      "type": "paragraph",
+      "id": "paragraph_1036",
+      "content": "1. The final description of the structure as an ensemble does involve many more (non-independent) parameters than a single description, and particularly needs in essence more parameters to describe poorly ordered regions, which are the least well determined from the data. This has always been the worry about ensemble methods. The approach described here is conservative and controlled, but nevertheless is open to this criticism. It would nice to have an explicit discussion on this point."
+    },
+    "paragraph_1037": {
+      "type": "paragraph",
+      "id": "paragraph_1037",
+      "content": "2. In the opinion of the authors, is this a method and structure description that should be generally used? In relation to point 1, what are the dangers if the method is used by people who are less careful than the present authors?"
+    },
+    "paragraph_1038": {
+      "type": "paragraph",
+      "id": "paragraph_1038",
+      "content": "3. It is stated that restricting “the number of structures modeled … thereby prevents over-fitting of the data”. It should be mentioned here that the 1990 work required a long relaxation time (up to 40ps) to model all the motion including that now modeled by TLS, but that the new implementation uses much smaller relaxation times (usually less than 1ps), and thus many fewer structures contribute to the running average."
+    },
+    "paragraph_1039": {
+      "type": "paragraph",
+      "id": "paragraph_1039",
+      "content": "4. A number of test cases are examined for the physical and biological relevance of the dynamics. It is probably not coincidental that the most interesting cases are biased towards the ones with higher resolution data. Although interesting features are seen with resolutions as low as 2.6 Angstrom, it might be worth pointing out that, because of the correlation between resolution and the number of structures that can be allowed in the ensemble average (Figure 1D), there is more potential for observing interesting features at higher resolution."
+    },
+    "paragraph_1040": {
+      "type": "paragraph",
+      "id": "paragraph_1040",
+      "content": "5. The discussion implies that statistics can be drawn from averaging results from several blocks each containing about 250 structures. That makes sense, since Figure 2C presents averages from more than 1,000 structures. However, a later section implies that only one acquisition period is selected for analysis. The apparent contradiction should be clarified. On this point, is there objective evidence that choosing a time block with the lowest R(work) really gives the best model? As Ian Tickle has shown, R-factors are subject to statistical error. It should not be difficult to analyze the data from the mannose-binding protein (1YTT) to see whether time blocks with low R(work) actually show the highest correlation to maps computed with experimental phases."
+    },
+    "paragraph_1041": {
+      "type": "paragraph",
+      "id": "paragraph_1041",
+      "content": "6. Figures 1C and 1D show a very clear trend, which the authors do not seem to comment on. The number of observations per parameter scales as 1/d(min)^3, and it seems reasonable to expect that the optimal number of structures in the ensemble average would scale in the same way because the number of parameters can be increased in line with the number of observations. Indeed, the data in Figure 1D would not fit badly to a curve described by something like 600/d(min)^3. In order for a proportional number of structures to be consulted during the ensemble averaging process, the relaxation time should also scale proportional to 1/d(min)^3, which is roughly what is seen in Figure 1C. So it looks like a very good guess of an optimal relaxation time and optimal number of structures to average could be made from just knowing the resolution."
+    },
+    "paragraph_1042": {
+      "type": "paragraph",
+      "id": "paragraph_1042",
+      "content": "7. Cross-validation (R_free) was used to determine the optimum relaxation time tau_x (which determines the size of the ensemble), as well as p_TLS, T_bath, and w_xray. The optimum values of tau_x are shown in Figure 1c. However, the optimum values of the other adjustable parameters should be shown as well for all cases to get a sense for the variation of these parameters for different systems."
+    },
+    "paragraph_1043": {
+      "type": "paragraph",
+      "id": "paragraph_1043",
+      "content": "8. Some representation (e.g., 2D contour plots) of the variation of R_free with adjustable parameters should be provided for one case (e.g., for the case with the largest improvement, 1UOY)."
+    },
+    "paragraph_1044": {
+      "type": "paragraph",
+      "id": "paragraph_1044",
+      "content": "9. Figure 2 (1UOY): interesting case, but why is the improvement (∼ 5% in Rfree) so good compared to some of the other cases? Can this be explained?"
+    },
+    "paragraph_1045": {
+      "type": "paragraph",
+      "id": "paragraph_1045",
+      "content": "10. For 1YTT, the improvement for the map correlation coefficient 0.895 (single conformer) to 0.903 (ensemble), and the corresponding improvement in R_free (0.014) seems small but the structures and maps (Figure 3C, D) show significant local improvements. This should be made clearer in the text, i.e., the seemingly small improvements in overall quality indicators may allow for significant local improvements. Perhaps a real space correlation plot could provide a further illustration of the improvement upon multi-conformer refinement."
+    },
+    "paragraph_1046": {
+      "type": "paragraph",
+      "id": "paragraph_1046",
+      "content": "11. “Similar to Brunger, the R_free and w_xray correlated with stereochemical quality… ”. This statement is unclear. R_free is not always correlated with w_xray. The weaker w_xray, the tighter geometry one would expect but with increasing R_free. Perhaps the correlation between R_free and model quality could be shown for the ensemble refinements performed?"
+    },
+    "paragraph_1047": {
+      "type": "paragraph",
+      "id": "paragraph_1047",
+      "content": "12. Figures 7D and 8, the proline isomerase cyclophilin A, CypA. Please provide a plot with the ensemble variability (rmsd), NMR relaxation parameters (Figure 2 in Eisenmesser et al, Science, 2002), and the ADP as a function of residue. Such a plot would be an independent validation of the method by comparison to solution data, and it would also illustrate that the method goes beyond single conformer individual ADP refinement."
+    },
+    "paragraph_1048": {
+      "type": "paragraph",
+      "id": "paragraph_1048",
+      "content": "13. Similar for case shown in Figure 9 (2PC0), detailed comparison with NMR data (if they are readily available) and comparison to single conformer ADP refinement."
+    },
+    "paragraph_1049": {
+      "type": "paragraph",
+      "id": "paragraph_1049",
+      "content": "14. Equation 5 is the likelihood function for acentric reflections, not centric reflections. Also in equations 5–7, the notation implies that the calculated structure factors are the instantaneous ones, whereas they should be the rolling averages."
+    },
+    "paragraph_1050": {
+      "type": "paragraph",
+      "id": "paragraph_1050",
+      "content": "15. In equation 4, the bulk solvent mask excludes the explicit water molecules, i.e., the explicit water molecules are considered part of the model, correct?"
+    },
+    "heading_1051": {
+      "type": "heading",
+      "id": "heading_1051",
+      "content": "Author response",
+      "level": 2
+    },
+    "paragraph_1052": {
+      "type": "paragraph",
+      "id": "paragraph_1052",
+      "content": "1. The final description of the structure as an ensemble does involve many more (non-independent) parameters than a single description, and particularly needs in essence more parameters to describe poorly ordered regions, which are the least well determined from the data. This has always been the worry about ensemble methods. The approach described here is conservative and controlled, but nevertheless is open to this criticism. It would nice to have an explicit discussion on this point."
+    },
+    "paragraph_1054": {
+      "type": "paragraph",
+      "id": "paragraph_1054",
+      "content": "We discuss that the number of independent parameters in the ensemble model is ill defined. However, the Rfree improvement and the very high local correlations between independent runs indicate that ensemble refinement yields reliable models."
+    },
+    "paragraph_1055": {
+      "type": "paragraph",
+      "id": "paragraph_1055",
+      "content": "2. In the opinion of the authors, is this a method and structure description that should be generally used? In relation to point 1, what are the dangers if the method is used by people who are less careful than the present authors?"
+    },
+    "paragraph_1057": {
+      "type": "paragraph",
+      "id": "paragraph_1057",
+      "content": "We show that the method markedly improves Rfree for a range of datasets with upper resolution limits from 1.5 to 2.6 Å resolution. It is rather difficult for us to judge what the dangers might be when used by people who are not careful. We will provide our protocols with the release of the method in the Phenix package. We find two measures very informative: the improvement in Rfree and the local correlation between independent runs. For regions with low local correlation (as for highly disordered regions), detailed structural interpretations are not valid."
+    },
+    "paragraph_1058": {
+      "type": "paragraph",
+      "id": "paragraph_1058",
+      "content": "3. It is stated that restricting “the number of structures modeled … thereby prevents over-fitting of the data”. It should be mentioned here that the 1990 work required a long relaxation time (up to 40ps) to model all the motion including that now modeled by TLS, but that the new implementation uses much smaller relaxation times (usually less than 1ps), and thus many fewer structures contribute to the running average."
+    },
+    "paragraph_1060": {
+      "type": "paragraph",
+      "id": "paragraph_1060",
+      "content": "We have included the differences between the original and current work."
+    },
+    "paragraph_1061": {
+      "type": "paragraph",
+      "id": "paragraph_1061",
+      "content": "4. A number of test cases are examined for the physical and biological relevance of the dynamics. It is probably not coincidental that the most interesting cases are biased towards the ones with higher resolution data. Although interesting features are seen with resolutions as low as 2.6 Angstrom, it might be worth pointing out that, because of the correlation between resolution and the number of structures that can be allowed in the ensemble average (Figure 1D), there is more potential for observing interesting features at higher resolution."
+    },
+    "paragraph_1063": {
+      "type": "paragraph",
+      "id": "paragraph_1063",
+      "content": "We implicitly addressed this issue by discussing the very high local correlations observed at high resolution versus the lower local correlation observed at lower resolution, and for highly disordered loops."
+    },
+    "paragraph_1064": {
+      "type": "paragraph",
+      "id": "paragraph_1064",
+      "content": "5. The discussion implies that statistics can be drawn from averaging results from several blocks each containing about 250 structures. That makes sense, since Figure 2C presents averages from more than 1,000 structures. However, a later section implies that only one acquisition period is selected for analysis. The apparent contradiction should be clarified. On this point, is there objective evidence that choosing a time block with the lowest R(work) really gives the best model? As Ian Tickle has shown, R-factors are subject to statistical error. It should not be difficult to analyze the data from the mannose-binding protein (1YTT) to see whether time blocks with low R(work) actually show the highest correlation to maps computed with experimental phases."
+    },
+    "paragraph_1066": {
+      "type": "paragraph",
+      "id": "paragraph_1066",
+      "content": "The apparent contradiction was removed. For the 1YTT dataset we show a strong correlation between the R values of the selected block and the overall map correlation coefficient (see Figure 11)."
+    },
+    "paragraph_1067": {
+      "type": "paragraph",
+      "id": "paragraph_1067",
+      "content": "6. Figures 1C and 1D show a very clear trend, which the authors do not seem to comment on. The number of observations per parameter scales as 1/d(min)^3, and it seems reasonable to expect that the optimal number of structures in the ensemble average would scale in the same way because the number of parameters can be increased in line with the number of observations. Indeed, the data in Figure 1D would not fit badly to a curve described by something like 600/d(min)^3. In order for a proportional number of structures to be consulted during the ensemble averaging process, the relaxation time should also scale proportional to 1/d(min)^3, which is roughly what is seen in Figure 1C. So it looks like a very good guess of an optimal relaxation time and optimal number of structures to average could be made from just knowing the resolution."
+    },
+    "paragraph_1069": {
+      "type": "paragraph",
+      "id": "paragraph_1069",
+      "content": "We agree that there is a trend between resolution and the relaxation time (τx). However, at this moment, given the limited number of datasets, we refrain from suggesting fixed limits in the parameterization of the relaxation time and currently still advise testing multiple parameters for optimum results. Future work may lead to a more deterministic parameterization."
+    },
+    "paragraph_1071": {
+      "type": "paragraph",
+      "id": "paragraph_1071",
+      "content": "7. Cross-validation (R_free) was used to determine the optimum relaxation time tau_x (which determines the size of the ensemble), as well as p_TLS, T_bath, and w_xray. The optimum values of tau_x are shown in Figure 1c. However, the optimum values of the other adjustable parameters should be shown as well for all cases to get a sense for the variation of these parameters for different systems."
+    },
+    "paragraph_1073": {
+      "type": "paragraph",
+      "id": "paragraph_1073",
+      "content": "As requested this information is now included in Figure 1. We note in the main text that pTLS and Tbath do not correlate with resolution, whereas τx tends to correlate with resolution."
+    },
+    "paragraph_1077": {
+      "type": "paragraph",
+      "id": "paragraph_1077",
+      "content": "8. Some representation (e.g., 2D contour plots) of the variation of R_free with adjustable parameters should be provided for one case (e.g., for the case with the largest improvement, 1UOY)."
+    },
+    "paragraph_1079": {
+      "type": "paragraph",
+      "id": "paragraph_1079",
+      "content": "These have now been provided."
+    },
+    "paragraph_1080": {
+      "type": "paragraph",
+      "id": "paragraph_1080",
+      "content": "9. Figure 2 (1UOY): interesting case, but why is the improvement (∼ 5% in Rfree) so good compared to some of the other cases? Can this be explained?"
+    },
+    "paragraph_1082": {
+      "type": "paragraph",
+      "id": "paragraph_1082",
+      "content": "1UOY exhibits a large degree of anisotropic and anharmonic side chain motion that may explain the magnitude of observed improvements. We have added a comment to the text accordingly."
+    },
+    "paragraph_1083": {
+      "type": "paragraph",
+      "id": "paragraph_1083",
+      "content": "10. For 1YTT, the improvement for the map correlation coefficient 0.895 (single conformer) to 0.903 (ensemble), and the corresponding improvement in R_free (0.014) seems small but the structures and maps (Figure 3C, D) show significant local improvements. This should be made clearer in the text, i.e., the seemingly small improvements in overall quality indicators may allow for significant local improvements. Perhaps a real space correlation plot could provide a further illustration of the improvement upon multi-conformer refinement."
+    },
+    "paragraph_1085": {
+      "type": "paragraph",
+      "id": "paragraph_1085",
+      "content": "We have amended the text as suggested. Figure 3 shows the real-space correlation plot of the ensemble model versus the experimentally phased map."
+    },
+    "paragraph_1086": {
+      "type": "paragraph",
+      "id": "paragraph_1086",
+      "content": "11. “Similar to Brunger, the R_free and w_xray correlated with stereochemical quality… ”. This statement is unclear. R_free is not always correlated with w_xray. The weaker w_xray, the tighter geometry one would expect but with increasing R_free. Perhaps the correlation between R_free and model quality could be shown for the ensemble refinements performed?"
+    },
+    "paragraph_1088": {
+      "type": "paragraph",
+      "id": "paragraph_1088",
+      "content": "A figure has been added pointing out the relationship between best R_free versus w_xray and stereochemistry."
+    },
+    "paragraph_1089": {
+      "type": "paragraph",
+      "id": "paragraph_1089",
+      "content": "12. Figures 7D and 8, the proline isomerase cyclophilin A, CypA. Please provide a plot with the ensemble variability (rmsd), NMR relaxation parameters (Figure 2 in Eisenmesser et al, Science, 2002), and the ADP as a function of residue. Such a plot would be an independent validation of the method by comparison to solution data, and it would also illustrate that the method goes beyond single conformer individual ADP refinement."
+    },
+    "paragraph_1091": {
+      "type": "paragraph",
+      "id": "paragraph_1091",
+      "content": "13. Similar for case shown in Figure 9 (2PC0), detailed comparison with NMR data (if they are readily available) and comparison to single conformer ADP refinement."
+    },
+    "paragraph_1093": {
+      "type": "paragraph",
+      "id": "paragraph_1093",
+      "content": "Re 12&13, in the 2002 manuscript by Eisenmesser et al. the NMR relaxation data is not tabulated. Unfortunately neither proteins are listed in the BMRB database (http://www.bmrb.wisc.edu/search/query_grid/kinetic_grid.html)."
+    },
+    "paragraph_1095": {
+      "type": "paragraph",
+      "id": "paragraph_1095",
+      "content": "14. Equation 5 is the likelihood function for acentric reflections, not centric reflections. Also in equations 5–7, the notation implies that the calculated structure factors are the instantaneous ones, whereas they should be the rolling averages."
+    },
+    "paragraph_1097": {
+      "type": "paragraph",
+      "id": "paragraph_1097",
+      "content": "The text has been corrected; the equation shown exemplifies the general case of acentric reflections. We define Fmodel as a function of rolling averages <Fcalc> and <Fmask>; see equation 2. This choice simplifies the nomenclature when describing map coefficients."
+    },
+    "paragraph_1104": {
+      "type": "paragraph",
+      "id": "paragraph_1104",
+      "content": "15. In equation 4, the bulk solvent mask excludes the explicit water molecules, i.e., the explicit water molecules are considered part of the model, correct?"
+    },
+    "paragraph_1106": {
+      "type": "paragraph",
+      "id": "paragraph_1106",
+      "content": "This is correct. We now state this explicitly."
+    },
+    "table_tbl1": {
+      "type": "image",
+      "id": "table_tbl1",
+      "large": "",
+      "medium": "",
+      "url": "",
+      "content": ""
+    },
+    "image_fig1": {
+      "type": "image",
+      "id": "image_fig1",
+      "large": "",
+      "medium": "",
+      "url": "http://elife.elifesciences.org/content/elife/1/e00311/F1.medium.gif",
+      "content": ""
+    },
+    "image_fig2": {
+      "type": "image",
+      "id": "image_fig2",
+      "large": "",
+      "medium": "",
+      "url": "http://elife.elifesciences.org/content/elife/1/e00311/F2.medium.gif",
+      "content": ""
+    },
+    "table_tbl3": {
+      "type": "image",
+      "id": "table_tbl3",
+      "large": "",
+      "medium": "",
+      "url": "",
+      "content": ""
+    },
+    "table_tbl4": {
+      "type": "image",
+      "id": "table_tbl4",
+      "large": "",
+      "medium": "",
+      "url": "",
+      "content": ""
+    },
+    "table_tbl2": {
+      "type": "image",
+      "id": "table_tbl2",
+      "large": "",
+      "medium": "",
+      "url": "",
+      "content": ""
+    },
+    "image_fig3": {
+      "type": "image",
+      "id": "image_fig3",
+      "large": "",
+      "medium": "",
+      "url": "http://elife.elifesciences.org/content/elife/1/e00311/F3.medium.gif",
+      "content": ""
+    },
+    "image_fig4": {
+      "type": "image",
+      "id": "image_fig4",
+      "large": "",
+      "medium": "",
+      "url": "http://elife.elifesciences.org/content/elife/1/e00311/F4.medium.gif",
+      "content": ""
+    },
+    "image_fig5": {
+      "type": "image",
+      "id": "image_fig5",
+      "large": "",
+      "medium": "",
+      "url": "http://elife.elifesciences.org/content/elife/1/e00311/F5.medium.gif",
+      "content": ""
+    },
+    "supplement_SD1_data": {
+      "type": "image",
+      "id": "supplement_SD1_data",
+      "large": "",
+      "medium": "",
+      "url": "",
+      "content": ""
+    },
+    "image_fig6": {
+      "type": "image",
+      "id": "image_fig6",
+      "large": "",
+      "medium": "",
+      "url": "http://elife.elifesciences.org/content/elife/1/e00311/F6.medium.gif",
+      "content": ""
+    },
+    "supplement_SD2_data": {
+      "type": "image",
+      "id": "supplement_SD2_data",
+      "large": "",
+      "medium": "",
+      "url": "",
+      "content": ""
+    },
+    "image_fig7": {
+      "type": "image",
+      "id": "image_fig7",
+      "large": "",
+      "medium": "",
+      "url": "http://elife.elifesciences.org/content/elife/1/e00311/F7.medium.gif",
+      "content": ""
+    },
+    "image_fig7s1": {
+      "type": "image",
+      "id": "image_fig7s1",
+      "large": "",
+      "medium": "",
+      "url": "http://elife.elifesciences.org/content/elife/1/e00311/F7/F8.medium.gif",
+      "content": ""
+    },
+    "image_fig7s2": {
+      "type": "image",
+      "id": "image_fig7s2",
+      "large": "",
+      "medium": "",
+      "url": "http://elife.elifesciences.org/content/elife/1/e00311/F7/F9.medium.gif",
+      "content": ""
+    },
+    "image_fig7s3": {
+      "type": "image",
+      "id": "image_fig7s3",
+      "large": "",
+      "medium": "",
+      "url": "http://elife.elifesciences.org/content/elife/1/e00311/F7/F10.medium.gif",
+      "content": ""
+    },
+    "image_fig7s4": {
+      "type": "image",
+      "id": "image_fig7s4",
+      "large": "",
+      "medium": "",
+      "url": "http://elife.elifesciences.org/content/elife/1/e00311/F7/F11.medium.gif",
+      "content": ""
+    },
+    "image_fig8": {
+      "type": "image",
+      "id": "image_fig8",
+      "large": "",
+      "medium": "",
+      "url": "http://elife.elifesciences.org/content/elife/1/e00311/F12.medium.gif",
+      "content": ""
+    },
+    "image_fig9": {
+      "type": "image",
+      "id": "image_fig9",
+      "large": "",
+      "medium": "",
+      "url": "http://elife.elifesciences.org/content/elife/1/e00311/F13.medium.gif",
+      "content": ""
+    },
+    "image_fig10": {
+      "type": "image",
+      "id": "image_fig10",
+      "large": "",
+      "medium": "",
+      "url": "http://elife.elifesciences.org/content/elife/1/e00311/F14.medium.gif",
+      "content": ""
+    },
+    "image_fig11": {
+      "type": "image",
+      "id": "image_fig11",
+      "large": "",
+      "medium": "",
+      "url": "http://elife.elifesciences.org/content/elife/1/e00311/F15.medium.gif",
+      "content": ""
+    },
+    "image_fig12": {
+      "type": "image",
+      "id": "image_fig12",
+      "large": "",
+      "medium": "",
+      "url": "http://elife.elifesciences.org/content/elife/1/e00311/F16.medium.gif",
+      "content": ""
+    },
+    "table_tbl5": {
+      "type": "image",
+      "id": "table_tbl5",
+      "large": "",
+      "medium": "",
+      "url": "",
+      "content": ""
+    },
+    "image_fig13": {
+      "type": "image",
+      "id": "image_fig13",
+      "large": "",
+      "medium": "",
+      "url": "http://elife.elifesciences.org/content/elife/1/e00311/F17.medium.gif",
+      "content": ""
+    },
+    "image_fig14": {
+      "type": "image",
+      "id": "image_fig14",
+      "large": "",
+      "medium": "",
+      "url": "http://elife.elifesciences.org/content/elife/1/e00311/F18.medium.gif",
+      "content": ""
+    }
+  },
+  "id": "elife_00311"
+} 
