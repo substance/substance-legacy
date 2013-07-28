@@ -29,12 +29,21 @@ var addLineBehavior = function(selection, surface) {
     return rect[0].top;
   };
 
+  var getNodeElement = function(nodePos) {
+    return surface.el.children[nodePos];
+  };
+
+  var getContent = function(nodePos) {
+    var nodeEl = getNodeElement(nodePos);
+    var content = nodeEl.children[0]; // [1] is the cursor div
+    return content;
+  };
+
   var getSpan = function(sel) {
     sel = sel || selection.getCursor();
     if (!sel) return;
 
-    var nodeEl = surface.el.children[sel[0]];
-    var content = nodeEl.children[0]; // [1] is the cursor div
+    var content = getContent(sel[0]);
     var span = content.children[sel[1]];
     return span;
   };
@@ -61,7 +70,7 @@ var addLineBehavior = function(selection, surface) {
           el = getSpan(pos);
         } else {
           // use the node element (~empty node)
-          el = surface.el.children[pos[0]];
+          el = getNodeElement(pos[0]);
         }
       }
     }
@@ -142,14 +151,37 @@ var addLineBehavior = function(selection, surface) {
         // E.g, this happens when there are shorter wrapped lines than the one we started
         // As we have proceeded to the next line already we have to put the cursor one back
         if (lineSteps > 1) {
-          pos[1]--;
+          pos = selection.prevChar(pos);
         }
         if (x >= iniX || lineSteps > 1) break;
       } else {
         // only skip one line at once.
         if (x <= iniX || lineSteps > 1) break;
       }
+    }
 
+    // As we haved stopped left to the reference position and the cursor gets rendered on the left side
+    // of the current element, we need to put the position to the next char.
+    // However, we do not do this at the begin of line and end of line (otherwise cursor gets rendered in the wrong row).
+
+    if (direction === "up") {
+
+      var content = getContent(pos[0]);
+
+      var _span = getSpan(pos);
+      var _y = getY(span);
+
+      var prevPos = selection.prevChar(pos);
+      var prevSpan = getSpan(nextPos);
+      var nextPos = selection.nextChar(pos);
+      var nextSpan = getSpan(nextPos);
+
+      var beginOfLine = (!prevSpan || (prevPos === pos) || getY(prevSpan) !== _y);
+      var endOfLine = (!nextSpan || (nextPos === pos) || getY(nextSpan) !== _y);
+
+      if (!beginOfLine && !endOfLine) {
+        pos = nextPos;
+      }
     }
 
     return pos;
