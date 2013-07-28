@@ -19,22 +19,14 @@ var addLineBehavior = function(selection, surface) {
   var verticalNav = false;
   var iniX;
 
-  var getOL = function (el) {
+  var getX = function (el) {
     var rect = el.getClientRects();
     return rect[0].left;
   };
 
-  var getOT = function (el) {
+  var getY = function (el) {
     var rect = el.getClientRects();
     return rect[0].top;
-  };
-
-  var resetCursor = function() {
-    var span = getSpan();
-    if(!span) return;
-    iniX = getOL(span);
-    console.log('span', span);
-    console.log('iniX', iniX);
   };
 
   var getSpan = function(sel) {
@@ -47,194 +39,149 @@ var addLineBehavior = function(selection, surface) {
     return span;
   };
 
-  var _hasNextChar = function(direction, nodePos, charPos) {
-    var pos;
+  // Retrieves the current cursor position
+  // --------
+  // If there is no cursor it takes the sṕan of the given position
+  var getCursorRect = function() {
+    var el = $('.cursor')[0];
+
+    // if there is no cursor we try to find other ways
+    //  - the span of the current char position
+    //  - the current node
+    if (!el) {
+      // Get the element of the current position
+      var pos = selection.getCursor();
+      el = getSpan(pos);
+
+      // this happens if we are at the end of a node or in an empty node
+      if (!el) {
+        if(pos[1] > 0) {
+          // use the element for the previous position
+          pos[1] -= 1;
+          el = getSpan(pos);
+        } else {
+          // use the node element (~empty node)
+          el = surface.el.children[pos[0]];
+        }
+      }
+    }
+
+    return el.getClientRects()[0];
+  };
+
+  var resetCursor = function() {
+    var rect = getCursorRect();
+    iniX = rect.left;
+  };
+
+  var upDown = function(pos, direction) {
+
     var newPos;
+    var initialNodePos;
+    var span;
 
-    var node = selection.getNodeAtPosition(nodePos);
-
-    if (!node) return false;
-
-    if (direction === "down") {
-      return (charPos < node.content.length-1);
-    } else {
-      return charPos > 0;
-    }
-  };
-
-  var _hasNextNode = function(direction, nodePos) {
-
-    if (direction === "down") {
-      return selection.hasSuccessor(nodePos);
-    } else {
-      return selection.hasPredecessor(nodePos);
-    }
-
-  };
-
-  var upDown = function(direction) {
-
-/*
-    var sel = selection.getCursor();
-    var node = sel[0];
-    var charOffset = sel[1];
-    var foundline = false;
-    var span = getSpan();
-    var iniY = span.offsetTop;
-
-    if (iniX === undefined) {
-      iniX = getOL(span);
-    }
-
-    var go = (direction === "down") ? span.nextSibling: span.previousSibling;
-
-    while (go) {
-
-      if (direction === "down") {
-        span = span.nextSibling;
-        charOffset ++;
-      } else {
-        span = span.previousSibling;
-        charOffset --;
-      }
-
-      if (span.offsetTop !== iniY) {
-        foundline = true;
-      }
-
-      if (direction === "down") {
-        if (foundline && getOL(span) > iniX) {
-          return [node, charOffset];
-        }
-      } else {
-        if (foundline && getOL(span) < iniX) {
-          return [node, charOffset+1];
-        }
-      }
-    }
-*/
-
-    var nodePos;
-    var charOffset;
-    var hasNextChar;
-    var hasNextNode;
-    var sel = selection.getCursor();
-
-    if (!sel) {
+    // return the first position if there is no selection yet.
+    if (!pos) {
       return [0,0];
     }
 
-    nodePos = sel[0];
-    charOffset = sel[1];
+    // we have to keep the initial node position
+    // to detect the number of skipped nodes.
+    initialNodePos = pos[0];
 
-    hasNextNode = _hasNextNode(direction, nodePos);
-    hasNextChar = _hasNextChar(direction, nodePos, charOffset);
+    // we take the absolute position of the cursor element as reference position
+    var cursorRect = getCursorRect();
 
-    var cursorRect = $('.cursor')[0].getClientRects()[0];
-    var iniY = cursorRect.top;
+    var initialY = cursorRect.top;
     if (iniX === undefined) {
       iniX = cursorRect.left;
     }
 
-    if (!hasNextChar) {
+    var lineSteps = 0;
+    var lastY = initialY;
 
-      if (hasNextNode) {
-        var pos;
-        if (direction === "down") {
-          // enter the next node and start iterating from left to right
-          pos = selection.nextChar([nodePos, charOffset]);
-        } else {
-          // enter the previous node and start iterating from right to left
-          pos = selection.prevChar([nodePos, charOffset]);
+    while (true) {
+
+      if (direction === "down") {
+        // enter the next node and start iterating from left to right
+        newPos = selection.nextChar(pos);
+      } else {
+        // enter the previous node and start iterating from right to left
+        newPos = selection.prevChar(pos);
+      }
+
+      // Stop if we reach the end of document
+      // or the end of the next node (not stepping over a whole node)
+      if (newPos === pos || newPos[0] > initialNodePos + 1) {
+        break;
+      }
+
+      pos = newPos;
+      span = getSpan(pos);
+
+      // at the end of a node we won't get a span element for the position,
+      // as the selection has an extra position after the last character
+      if (!span) {
+        continue;
+      }
+
+      var x = getX(span);
+      var y = getY(span);
+
+      if (y !== lastY) {
+        lineSteps++;
+        lastY = y;
+      }
+
+      if (lineSteps === 0) {
+        continue;
+      }
+
+      if (direction === "down") {
+        // only skip one line at once.
+        // E.g, this happens when there are shorter wrapped lines than the one we started
+        // As we have proceeded to the next line already we have to put the cursor one back
+        if (lineSteps > 1) {
+          pos[1]--;
         }
-        nodePos = pos[0];
-        charOffset = pos[1];
-
-        console.log("Jumping nodes", nodePos, charOffset);
-
-        hasNextChar = _hasNextChar(direction, nodePos, charOffset);
+        if (x >= iniX || lineSteps > 1) break;
+      } else {
+        // only skip one line at once.
+        if (x <= iniX || lineSteps > 1) break;
       }
 
     }
 
-    if (hasNextChar) {
-      var span = getSpan([nodePos, charOffset]);
-      var foundline = false;
-
-      while (hasNextChar) {
-
-        if (direction === "down") {
-          span = span.nextSibling;
-          charOffset ++;
-        } else {
-          // Hack: in the case we start at the end of a node the initial span is null
-          // in that case we take last span of the
-          if (!span) {
-            var pos = selection.prevChar([nodePos, charOffset]);
-            span = getSpan(pos);
-          } else {
-            span = span.previousSibling;
-          }
-          charOffset --;
-        }
-
-        if (direction === "down") {
-          if ((getOT(span) > iniY) && (getOL(span) > iniX)) {
-            break;
-          }
-        } else {
-          if ((getOT(span) < iniY) && (getOL(span) <= iniX)) {
-            break;
-          }
-        }
-
-        hasNextChar = _hasNextChar(direction, nodePos, charOffset);
-
-        // HACK: if we are at the boundary and moving downwards increase the position by one
-        if (!hasNextChar) {
-
-          if (direction === "down") {
-            console.log("Downward movement hack.");
-            charOffset++;
-          } else {
-            console.log("Upward movement hack.");
-            charOffset--;
-          }
-        }
-
-        //console.log("###", nodePos, charOffset, hasNextChar);
-      }
-    }
-
-    if (direction === "down") {
-      return [nodePos, charOffset];
-    } else {
-      return [nodePos, charOffset+1];
-    }
+    return pos;
   };
 
   selection.prevLine = function(pos) {
-    return upDown('up');
+    return upDown(pos, 'up');
   };
 
   selection.nextLine = function(pos) {
-    return upDown('down');
+    return upDown(pos, 'down');
   };
 
   selection.set = function(pos, direction, granularity) {
 
     __set__.call(this, pos, direction, granularity);
 
+    // resetting the c
     if(!verticalNav) {
       resetCursor();
     }
-    verticalNav = false;
 
+    verticalNav = false;
   };
 
   selection.find = function(pos, direction, granularity) {
     if (granularity === "line") {
+
+      // setting a flag that lets `selection.set` detect
+      // whether the position was set after find('line')
       verticalNav = true;
+
       if (direction === "left") {
         return this.prevLine(pos);
       } else {
