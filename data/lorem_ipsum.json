@@ -21,7 +21,7 @@
       "nodes": [
         "paragraph_1",
         "heading_1",
-        "paragraph_2",
+        "codeblock_2",
         "image_1",
         "paragraph_3",
         "paragraph_4",
@@ -55,10 +55,10 @@
       "content": " ",
       "url": "http://i.telegraph.co.uk/multimedia/archive/02429/eleanor_scriven_2429776k.jpg"
     },
-    "paragraph_2": {
-      "type": "paragraph",
-      "id": "paragraph_2",
-      "content": "Fusce ultrices mi vitae adipiscing imperdiet. In porta tincidunt arcu sed cursus. Vestibulum varius tellus id molestie ultrices. In id turpis at augue condimentum fermentum. In ut sem eget quam dapibus auctor. Vivamus tincidunt feugiat sapien, a tristique dolor rutrum id. Donec in lobortis nisl. Nunc ultrices justo interdum justo tristique pellentesque. In sollicitudin enim ut auctor elementum. Curabitur non lacus eu odio semper fringilla at nec tellus. Duis ut suscipit nunc. Suspendisse potenti. Suspendisse vitae libero a quam lacinia blandit. Nulla in rhoncus tortor."
+    "codeblock_2": {
+      "type": "codeblock",
+      "id": "codeblock_2",
+      "content": "// Pure graph manipulation\n// --------\n// Only applies the graph operation without triggering e.g., the chronicle.\n//\n\nthis.__apply__ = function(op) {\n  op.apply(this.objectAdapter);\n  this.updated_at = new Date();\n\n  // feed the built-in observer adapter\n  if (this.__propertyChangeAdapter__) {\n    this.__propertyChangeAdapter__.onGraphChange(op);\n  }\n\n  this.trigger('graph:changed', op, this);\n};"
     },
     "paragraph_3": {
       "type": "paragraph",
