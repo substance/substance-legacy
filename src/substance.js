@@ -15,6 +15,16 @@ var Substance = {
   Surface: require("substance-surface")
 };
 
+
+// Register node types
+// TODO: that should be done smarter
+Substance.Document.Transformer.nodeTypes = {
+  "paragraph": require('substance-nodes/paragraph'),
+  "heading": require('substance-nodes/heading'),
+  "image": require('substance-nodes/image')
+};
+
+
 require("substance-operator/tests");
 require("substance-chronicle/tests");
 require("substance-data/tests");
