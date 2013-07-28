@@ -121,7 +121,7 @@ var addLineBehavior = function(selection, surface) {
 
       // Stop if we reach the end of document
       // or the end of the next node (not stepping over a whole node)
-      if (newPos === pos || newPos[0] > initialNodePos + 1) {
+      if (newPos === pos || Math.abs(newPos[0]-initialNodePos) > 1) {
         break;
       }
 
@@ -166,18 +166,18 @@ var addLineBehavior = function(selection, surface) {
 
     if (direction === "up") {
 
-      var content = getContent(pos[0]);
+      //var content = getContent(pos[0]);
 
-      var _span = getSpan(pos);
-      var _y = getY(span);
+      span = getSpan(pos);
+      y = getY(span);
 
       var prevPos = selection.prevChar(pos);
-      var prevSpan = getSpan(nextPos);
+      var prevSpan = getSpan(prevPos);
       var nextPos = selection.nextChar(pos);
       var nextSpan = getSpan(nextPos);
 
-      var beginOfLine = (!prevSpan || (prevPos === pos) || getY(prevSpan) !== _y);
-      var endOfLine = (!nextSpan || (nextPos === pos) || getY(nextSpan) !== _y);
+      var beginOfLine = (!prevSpan || (prevPos === pos) || getY(prevSpan) !== y);
+      var endOfLine = ((nextPos === pos) || (nextSpan && getY(nextSpan) !== y));
 
       if (!beginOfLine && !endOfLine) {
         pos = nextPos;
