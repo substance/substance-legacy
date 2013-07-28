@@ -41,7 +41,7 @@
     "paragraph_1": {
       "type": "paragraph",
       "id": "paragraph_1",
-      "content": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras vel accumsan lectus, id hendrerit magna. Donec vehicula dui quis ipsum tempor tincidunt. Quisque adipiscing, nibh at pulvinar feugiat, odio lectus eleifend felis, eu consectetur turpis ante eu magna. Praesent consequat velit nibh, eu porta nibh vulputate sed. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc nec urna at diam molestie fermentum a vitae metus. Sed ac arcu vel urna vehicula vulputate. Donec urna augue, interdum tristique pellentesque a, tincidunt id felis. Nunc in consequat augue. Nulla facilisi."
+      "content": "Lorem ipsum dolor sit amet, consectetur adipiscing elit.\n\n\n  Cras vel accumsan lectus, id hendrerit magna. Donec vehicula dui quis ipsum tempor tincidunt. Quisque adipiscing, nibh at pulvinar feugiat, odio lectus eleifend felis, eu consectetur turpis ante eu magna. Praesent consequat velit nibh, eu porta nibh vulputate sed. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc nec urna at diam molestie fermentum a vitae metus. Sed ac arcu vel urna vehicula vulputate. Donec urna augue, interdum tristique pellentesque a, tincidunt id felis. Nunc in consequat augue. Nulla facilisi."
     },
     "heading_1": {
       "type": "heading",

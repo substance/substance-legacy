@@ -79,6 +79,7 @@ var addLineBehavior = function(selection, surface) {
   };
 
   var resetCursor = function() {
+    if (selection.isNull()) return;
     var rect = getCursorRect();
     iniX = rect.left;
   };

@@ -50,9 +50,7 @@
         </ul>
         <h2>Limitations</h2>
         <ul>
-          <li>Move-down/up behavior not yet implemented</li>
-          <li>Copy and paste behavior is currently disabled</li>
-          <li>Native DOM selection is still displayed for debugging purposes</li>
+          <li>Copy and paste behavior is a still flaky</li>
           <li>Breaks for some edge cases - we are working on it!</li>
         </ul>
 
@@ -74,7 +72,10 @@ $ npm start
             <div class="node-toggles">
               <!--<a href="#" class="insert-node paragraph" sbs-click="insertNode(paragraph)"><i class="icon-align-left"></i> Paragraph</a>-->
               <a href="#" class="insert-node heading" sbs-click="insertNode(heading)"><i class="icon-align-left"></i> Heading</a>
-              <a href="#" class="insert-node image" sbs-click="insertNode(image)"><i class="icon-picture"></i> Image</a>
+              <div class="insert-node image">
+                <i class="icon-picture"></i> Image
+                <input type="file" class="image-files" name="files[]"/>
+              </div>
             </div>
             <div class="annotation-toggles">
               <div class="styles">
@@ -105,7 +106,7 @@ $ npm start
     <script type="text/x-ejs-template" name="image">
       <div class="content">
         <div class="image-char">
-          <img src="http://i.telegraph.co.uk/multimedia/archive/02429/eleanor_scriven_2429776k.jpg"/>
+          <img src="<%= medium || url %>"/>
           <div class="overlay"></div>
         </div>
       </div>
@@ -175,7 +176,6 @@ $ npm start
     #####scripts#####
 
     <script>
-
       // var sandbox = new Substance.Sandbox();
       $(function() {
         var boot = require("/src/boot.js");
