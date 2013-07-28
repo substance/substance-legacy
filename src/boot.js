@@ -69,22 +69,18 @@ var boot = function() {
     return false;
   });
 
-  var keymapFile = "/config/default.keymap";
+  var keymap = require("../config/default.keymap.json");
   if (global.navigator !== undefined) {
     var platform = global.navigator.platform;
     if (platform.toLowerCase().search("linux") >= 0) {
-      keymapFile = "/config/linux_default.keymap";
+      keymap = require("../config/linux.keymap.json");
     }
     else if (platform.toLowerCase().search("win32") >= 0) {
-      keymapFile = "/config/windows_default.keymap";
+      keymap = require("../config/windows.keymap.json");
     }
   }
 
-  $.getJSON(keymapFile, function(data) {
-    keyboard.registerBindings(data);
-  }).error(function(err) {
-    console.error("Could not load keyboard mapping", err, keymapFile);
-  });
+  keyboard.registerBindings(keymap);
 
   Substance.app.keyboard = keyboard;
 
