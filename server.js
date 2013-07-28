@@ -9,8 +9,7 @@ var fs = require("fs");
 var app = express();
 
 var commonJSServer = new CommonJSServer(__dirname);
-commonJSServer.update("./src/boot.js");
-
+commonJSServer.boot({alias: "substance", source: "./src/boot.js"});
 
 
 var port = process.env.PORT || 3000;
@@ -43,9 +42,9 @@ app.use('/data', express.static('data'));
 app.use('/config', express.static('config'));
 app.use('/node_modules', express.static('node_modules'));
 
-app.get(/\/?scripts\/\/?(.+)/,
+app.get("/scripts*",
   function(req, res, next) {
-    var scriptPath = "/"+req.params[0];
+    var scriptPath = req.params[0];
     res.type('text/javascript');
     try {
       var script = commonJSServer.getScript(scriptPath)
