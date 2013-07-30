@@ -69,6 +69,8 @@ var boot = function() {
     return false;
   });
 
+  keyboard.set('TRIGGER_PREFIX_COMBOS', true);
+
   var keymap = require("../config/default.keymap.json");
   if (global.navigator !== undefined) {
     var platform = global.navigator.platform;
