@@ -58,30 +58,40 @@
 }
 
 .node-toggles {
+  display: none;
   z-index: 4000;
   position: absolute;
-  bottom: 0px;
-  left: 0px;
+  top: 100px;
+  left: 200px;
+  width: 200px;
   right: 20px;
-  height: 50px;
-  padding: 10px 60px;
-  background: rgba(255,255,255,1);
-  
-  overflow: auto;
+  padding: 0px;
+  background: rgba(0,0,0, 0.8);
+  font-family: 'Avenir LT W01 85 Heavy', 'Montserrat', 'Source Sans Pro';
 }
 
 .node-toggles .insert-node {
   cursor: pointer;
-  font-size: 12px;
-  text-align: center;
-  float: left;
-  padding: 0 10px;
-  height: 30px;
-  line-height: 30px;
-  background: rgba(0,0,0,0.05);
-  margin-right: 2px;
-  color: rgba(0,0,0,0.5);
+  font-size: 14px;
+  height: 40px;
+  display: block;
+  line-height: 40px;
+  /*background: rgba(0,0,0,0.05);*/
+  color: rgba(255,255,255,0.8);
+  padding: 0 20px;
   position: relative;
+}
+
+
+.node-toggles .insert-node i {
+  padding-right: 10px;
+}
+
+.node-toggles .insert-node span {
+  display: block;
+  height: 20px;
+  /*border: 1px solid #fff;*/
+  float: right;
 }
 
 .node-toggles .insert-node.image input {
@@ -95,7 +105,7 @@
 }
 
 .node-toggles .insert-node:hover {
-  background: rgba(0,0,0,0.1);
+  background: rgba(0,0,0, 1);
 }
 
 /* Annotation toggles */

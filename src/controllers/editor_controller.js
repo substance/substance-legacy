@@ -30,7 +30,7 @@ var addLineBehavior = function(selection, surface) {
   };
 
   var getNodeElement = function(nodePos) {
-    return surface.el.children[nodePos];
+    return surface.$('.nodes')[0].children[nodePos];
   };
 
   var getContent = function(nodePos) {
@@ -52,8 +52,8 @@ var addLineBehavior = function(selection, surface) {
   // --------
   // If there is no cursor it takes the sṕan of the given position
   var getCursorRect = function() {
-    var el = $('.cursor')[0];
-
+    var el = surface.$('.cursor')[0];
+    console.log('el', el);
     // if there is no cursor we try to find other ways
     //  - the span of the current char position
     //  - the current node
@@ -77,6 +77,9 @@ var addLineBehavior = function(selection, surface) {
 
     return el.getClientRects()[0];
   };
+
+  // Expose as an API
+  selection.getCursorRect = getCursorRect;
 
   var resetCursor = function() {
     if (selection.isNull()) return;
@@ -188,6 +191,8 @@ var addLineBehavior = function(selection, surface) {
     return pos;
   };
 
+  
+
   selection.prevLine = function(pos) {
     return upDown(pos, 'up');
   };
@@ -247,11 +252,20 @@ EditorController.Prototype = function() {
   this.createView = function() {
     this.writer = new Document.Writer(this.__document);
     var view = new EditorView(this);
+    this.view = view;
     var surface = view.surface;
 
     // Mixin Line behavior into selection object
     addLineBehavior(this.writer.selection, surface);
     return view;
+  };
+
+
+  // Assumes there is a view already
+  // 
+
+  this.toggleNodeInserter = function() {
+    this.view.toggleNodeInserter();
   };
 
 

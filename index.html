@@ -69,14 +69,9 @@ $ npm start
       <div id="document_wrapper">
         <div id="composer">
           <div id="document">
-            <div class="node-toggles">
-              <!--<a href="#" class="insert-node paragraph" sbs-click="insertNode(paragraph)"><i class="icon-align-left"></i> Paragraph</a>-->
-              <a href="#" class="insert-node heading" sbs-click="insertNode(heading)"><i class="icon-align-left"></i> Heading</a>
-              <div class="insert-node image">
-                <i class="icon-picture"></i> Image
-                <input type="file" class="image-files" name="files[]"/>
-              </div>
-            </div>
+
+
+
             <div class="annotation-toggles">
               <div class="styles">
                 <a href="#" class="annotation-toggle emphasis" sbs-click="annotate(emphasis)"><i class="icon-circle-blank"></i></a>
@@ -90,11 +85,33 @@ $ npm start
                 <a href="#" class="annotation-toggle idea" sbs-click="annotate(idea)"><i class="icon-lightbulb"></i></a>
               </div>
             </div>
+
             <div class="surface">
+
             </div>
           </div>
         </div>
       </div>
+    </script>
+
+    <script type="text/x-ejs-template" name="surface">
+      <div class="controls">
+        <!-- this should be app specific stuff -->
+        <!-- controls is just an empty container for the sake of adding ui elements that -->
+        <!-- should be positioned within the surface -->
+
+        <div class="node-toggles">
+          <a href="#" class="insert-node paragraph" sbs-click="insertNode(paragraph)"><i class="icon-align-left"></i> Paragraph <span class="key">[p]</span></a>
+          <a href="#" class="insert-node heading" sbs-click="insertNode(heading)"><i class="icon-h-sign"></i> Heading <span class="key">[h]</span></a>
+          <a href="#" class="insert-node codeblock" sbs-click="insertNode(codeblock)"><i class="icon-align-left"></i> Codeblock <span class="key">[c]</span></a>
+          <div class="insert-node image">
+            <i class="icon-picture"></i> Image <span class="key">[i]</span>
+            <input type="file" class="image-files" name="files[]"/>
+          </div>
+        </div>
+      </div>
+      <!-- where the content goes -->
+      <div class="nodes"></div>
     </script>
 
     <!-- Substance.Text Node -->

@@ -104,7 +104,30 @@ EditorView.Prototype = function() {
     } else {
       this.$('.annotation-toggles').hide();
     }
-    
+  };
+
+  // Insert a fresh new node
+  // --------
+  //
+
+  this.insertNode = function(type, data) {
+    this.surface.insertNode(type, data);
+  };
+
+  // Brings up the node insertion toggles
+  // --------
+  //
+
+  this.toggleNodeInserter = function() {
+    this.surface.toggleNodeInserter();
+  };
+
+  // Clear selection
+  // --------
+  //
+
+  this.clear = function() {
+
   };
 
   // Annotate current selection
@@ -116,15 +139,7 @@ EditorView.Prototype = function() {
     return false;
   };
 
-  // Annotate current selection
-  // --------
-  //
-  // insertNode('image', {medium: 'foo', large: 'bar'})
 
-  this.insertNode = function(type, options) {
-    this.writer.insertNode(type, options);
-    return false;
-  };
 
   // Rendering
   // --------
