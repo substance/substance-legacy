@@ -1,15 +1,9 @@
 [
   {
-    "context": "sandbox",
-    "commands": [
-      {"keys": ["ctrl+shift+i"],   "command": "sayHello", "args": ["World!"]}
-    ]
-  },
-  {
     "context": "sandbox.editor.writer",
     "commands": [
       {"keys": ["backspace", "del"],  "command": "delete" },
-      {"keys": ["enter"],          "command": "insertNode", "args": ["paragraph"] },
+      {"keys": ["enter"],          "command": "insertNode" },
       {"keys": ["shift+enter"],    "command": "write", "args": ["\n"] },
 
       {"keys": ["ctrl+alt+h"],          "command": "insertNode", "args": ["heading"] },
