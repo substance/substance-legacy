@@ -72,16 +72,36 @@ Session.Prototype = function() {
             doc.create({
               id: imageNode.id,
               type: "image",
-              url: imageNode.url
+              url: imageNode.url,
+              content: " "
             });
 
             var pos = doc.getPosition('content', para.id)
             doc.position("content", [imageNode.id], pos +1);
           }
         }
+
+        if (node.key === 'content' && node.type === "emphasis") {
+          console.log('creating', {
+            id: node.id.replace(':', '_'),
+            type: node.type,
+            node: node.source,
+            property: 'content',
+            range: [node.pos[0], node.pos[0] + node.pos[1]]
+          });
+          // Create idea annotation
+          doc.create({
+            id: node.id.replace(':', '_'),
+            type: node.type,
+            node: node.source,
+            property: 'content',
+            range: [node.pos[0], node.pos[0] + node.pos[1]]
+          });
+        }
+
       });
 
-      console.log(JSON.stringify(doc.toJSON(), null, '  '));
+      // console.log(JSON.stringify(doc.toJSON(), null, '  '));
       cb(null, doc);
     };
 

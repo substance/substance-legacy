@@ -40,7 +40,8 @@ SandboxController.Prototype = function() {
 
   this.openEditor = function(documentId) {
     var that = this;
-    this.session.loadDocument(documentId || 'elife_00311', function(err, doc) {
+    // 'lorem_ipsum'
+    this.session.loadDocument(documentId || 'lorem_ipsum', function(err, doc) {
       if (err) throw "Loading failed";
 
       that.editor = new EditorController(doc);

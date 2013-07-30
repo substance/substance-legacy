@@ -22,7 +22,8 @@ Substance.Document.Transformer.nodeTypes = {
   "paragraph": require('substance-nodes/paragraph'),
   "heading": require('substance-nodes/heading'),
   "image": require('substance-nodes/image'),
-  "codeblock": require('substance-nodes/codeblock')
+  "codeblock": require('substance-nodes/codeblock'),
+  "codeline": require('substance-nodes/codeline')
 };
 
 

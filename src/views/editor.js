@@ -22,7 +22,7 @@ var EditorView = function(controller) {
 
   this.writer = controller.writer;
 
-  this.listenTo(this.writer.selection, 'selection:changed', this.toggleAnnotationToggles);
+  // this.listenTo(this.writer.selection, 'selection:changed', this.toggleAnnotationToggles);
 
   // Surface
   // --------

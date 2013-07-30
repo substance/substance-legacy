@@ -41,7 +41,7 @@
     "paragraph_1": {
       "type": "paragraph",
       "id": "paragraph_1",
-      "content": "Lorem ipsum dolor sit amet, consectetur adipiscing elit.\n\n\n  Cras vel accumsan lectus, id hendrerit magna. Donec vehicula dui quis ipsum tempor tincidunt. Quisque adipiscing, nibh at pulvinar feugiat, odio lectus eleifend felis, eu consectetur turpis ante eu magna. Praesent consequat velit nibh, eu porta nibh vulputate sed. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc nec urna at diam molestie fermentum a vitae metus. Sed ac arcu vel urna vehicula vulputate. Donec urna augue, interdum tristique pellentesque a, tincidunt id felis. Nunc in consequat augue. Nulla facilisi."
+      "content": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras vel accumsan lectus, id hendrerit magna. Donec vehicula dui quis ipsum tempor tincidunt. Quisque adipiscing, nibh at pulvinar feugiat, odio lectus eleifend felis, eu consectetur turpis ante eu magna. Praesent consequat velit nibh, eu porta nibh vulputate sed. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc nec urna at diam molestie fermentum a vitae metus. Sed ac arcu vel urna vehicula vulputate. Donec urna augue, interdum tristique pellentesque a, tincidunt id felis. Nunc in consequat augue. Nulla facilisi."
     },
     "heading_1": {
       "type": "heading",
@@ -58,7 +58,7 @@
     "codeblock_2": {
       "type": "codeblock",
       "id": "codeblock_2",
-      "content": "// Pure graph manipulation\n// --------\n// Only applies the graph operation without triggering e.g., the chronicle.\n//\n\nthis.__apply__ = function(op) {\n  op.apply(this.objectAdapter);\n  this.updated_at = new Date();\n\n  // feed the built-in observer adapter\n  if (this.__propertyChangeAdapter__) {\n    this.__propertyChangeAdapter__.onGraphChange(op);\n  }\n\n  this.trigger('graph:changed', op, this);\n};"
+      "content": "var text = \"Sun\";\nvar op1 = Operator.TextOperation.Delete(2, \"n\");\ntext = op2.apply(op1.apply(text));\nconsole.log(text);"
     },
     "paragraph_3": {
       "type": "paragraph",
