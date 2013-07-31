@@ -1,18 +1,28 @@
 [
   {
+    "context": "sandbox.editor",
+    "commands": [
+      {"keys": ["ctrl+enter"],     "command": "toggleNodeInserter" }
+    ]
+  },
+  {
     "context": "sandbox.editor.writer",
     "commands": [
-      {"keys": ["backspace", "del"],  "command": "delete" },
+      {"keys": ["backspace"],      "command": "delete", "args": ["left"] },
+      {"keys": ["del"],            "command": "delete", "args": ["right"] },
+
       {"keys": ["enter"],          "command": "insertNode" },
       {"keys": ["shift+enter"],    "command": "write", "args": ["\n"] },
 
-      {"keys": ["ctrl+alt+h"],          "command": "insertNode", "args": ["heading"] },
-      {"keys": ["ctrl+alt+p"],          "command": "insertNode", "args": ["paragraph"] },
-      {"keys": ["ctrl+alt+i"],          "command": "insertNode", "args": ["image"] },
+      {"keys": ["ctrl+enter h"],   "command": "insertNode", "args": ["heading"] },
+      {"keys": ["ctrl+enter p"],   "command": "insertNode", "args": ["paragraph"] },
+      {"keys": ["ctrl+enter i"],   "command": "insertNode", "args": ["image"] },
+      {"keys": ["ctrl+enter c"],   "command": "insertNode", "args": ["codeblock"] },
 
       {"keys": ["ctrl+c"],         "command": "copy", "preventDefault": "false" },
       {"keys": ["ctrl+x"],         "command": "cut" },
       {"keys": ["ctrl+v"],         "command": "paste" },
+
       {"keys": ["ctrl+i"],         "command": "annotate", "args": ["emphasis"]},
       {"keys": ["ctrl+b"],         "command": "annotate", "args": ["strong"]},
       {"keys": ["ctrl+1"],         "command": "annotate", "args": ["idea"]},
