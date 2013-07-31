@@ -19,6 +19,7 @@ var Substance = {
 // Register node types
 // TODO: that should be done smarter
 Substance.Document.Transformer.nodeTypes = {
+  "node": require('substance-nodes/node'),
   "paragraph": require('substance-nodes/paragraph'),
   "heading": require('substance-nodes/heading'),
   "image": require('substance-nodes/image'),

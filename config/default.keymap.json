@@ -5,24 +5,31 @@
       {"keys": ["command+shift+i"],   "command": "sayHello", "args": ["World!"]}
     ]
   },
-  {
-    "context": "sandbox.editor",
-    "commands": [
-      {"keys": ["ctrl+enter"],          "command": "toggleNodeInserter" },
-    ]
-  },
+  // {
+  //   "context": "sandbox.editor",
+  //   "commands": [
+  //     {"keys": ["ctrl+enter"],          "command": "toggleNodeInserter" },
+  //   ]
+  // },
+  // {
+  //   "context": "sandbox.editor.writer.insertionMode",
+  //   "commands": [
+  //     {"keys": ["down"],          "command": "toggleNodeInserter" },
+  //   ]
+  // },
   {
     "context": "sandbox.editor.writer",
     "commands": [
       {"keys": ["backspace"],          "command": "delete", "args": ["left"] },
       {"keys": ["del"],                "command": "delete", "args": ["right"] },
-      {"keys": ["enter"],               "command": "insertNode" },
+      {"keys": ["enter"],               "command": "modifyNode" },
       {"keys": ["shift+enter"],         "command": "write", "args": ["\n"] },
 
-      {"keys": ["ctrl+enter h"],          "command": "insertNode", "args": ["heading"] },
-      {"keys": ["ctrl+enter c"],          "command": "insertNode", "args": ["codeblock"] },
-      {"keys": ["ctrl+enter p"],          "command": "insertNode", "args": ["paragraph"] },
-      {"keys": ["ctrl+enter i"],          "command": "insertNode", "args": ["image"] },
+      {"keys": ["ctrl+enter"],          "command": "insertNode", "args": ["node"] },
+      // {"keys": ["ctrl+enter h"],          "command": "insertNode", "args": ["heading"] },
+      // {"keys": ["ctrl+enter c"],          "command": "insertNode", "args": ["codeblock"] },
+      // {"keys": ["ctrl+enter p"],          "command": "insertNode", "args": ["paragraph"] },
+      // {"keys": ["ctrl+enter i"],          "command": "insertNode", "args": ["image"] },
 
       {"keys": ["command+c"],           "command": "copy", "preventDefault": "false" },
       {"keys": ["command+x"],           "command": "cut" },
