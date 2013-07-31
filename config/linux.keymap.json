@@ -9,6 +9,7 @@
       {"keys": ["ctrl+alt+h"],          "command": "insertNode", "args": ["heading"] },
       {"keys": ["ctrl+alt+p"],          "command": "insertNode", "args": ["paragraph"] },
       {"keys": ["ctrl+alt+i"],          "command": "insertNode", "args": ["image"] },
+      {"keys": ["ctrl+enter"],          "command": "insertNode", "args": ["node"] },
 
       {"keys": ["ctrl+c"],         "command": "copy", "preventDefault": "false" },
       {"keys": ["ctrl+x"],         "command": "cut" },
