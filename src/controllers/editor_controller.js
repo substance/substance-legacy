@@ -11,10 +11,10 @@ var EditorView = require('../views/editor');
 // -----------------
 //
 
-var addLineBehavior = function(selection, surface) {
+var addLineBehavior = function(surface, cursor) {
 
-  var __find__ = selection.find;
-  var __set__ = selection.set;
+  var __move__ = cursor.move;
+  var __set__ = cursor.set;
 
   var verticalNav = false;
   var iniX;
@@ -39,12 +39,9 @@ var addLineBehavior = function(selection, surface) {
     return content;
   };
 
-  var getSpan = function(sel) {
-    sel = sel || selection.getCursor();
-    if (!sel) return;
-
-    var content = getContent(sel[0]);
-    var span = content.children[sel[1]];
+  var getSpan = function(nodePos, charPos) {
+    var content = getContent(nodePos);
+    var span = content.children[charPos];
     return span;
   };
 
@@ -58,18 +55,16 @@ var addLineBehavior = function(selection, surface) {
     //  - the current node
     if (!el) {
       // Get the element of the current position
-      var pos = selection.getCursor();
-      el = getSpan(pos);
+      el = getSpan(cursor.nodePos, cursor.charPos);
 
       // this happens if we are at the end of a node or in an empty node
       if (!el) {
-        if(pos[1] > 0) {
+        if(cursor.charPos > 0) {
           // use the element for the previous position
-          pos[1] -= 1;
-          el = getSpan(pos);
+          el = getSpan(cursor.nodePos, cursor.charPos-1);
         } else {
           // use the node element (~empty node)
-          el = getNodeElement(pos[0]);
+          el = getNodeElement(cursor.nodePos);
         }
       }
     }
@@ -77,29 +72,20 @@ var addLineBehavior = function(selection, surface) {
     return el.getClientRects()[0];
   };
 
-  // Expose as an API
-  selection.getCursorRect = getCursorRect;
-
   var resetCursor = function() {
-    if (selection.isNull()) return;
+    if (!cursor.isValid()) return;
     var rect = getCursorRect();
     iniX = rect.left;
   };
 
-  var upDown = function(pos, direction) {
+  var upDown = function(direction) {
 
-    var newPos;
     var initialNodePos;
     var span;
 
-    // return the first position if there is no selection yet.
-    if (!pos) {
-      return [0,0];
-    }
-
     // we have to keep the initial node position
     // to detect the number of skipped nodes.
-    initialNodePos = pos[0];
+    initialNodePos = cursor.nodePos;
 
     // we take the absolute position of the cursor element as reference position
     var cursorRect = getCursorRect();
@@ -111,25 +97,29 @@ var addLineBehavior = function(selection, surface) {
 
     var lineSteps = 0;
     var lastY = initialY;
+    var x,y;
 
     while (true) {
 
       if (direction === "down") {
         // enter the next node and start iterating from left to right
-        newPos = selection.nextChar(pos);
+        cursor.nextChar();
+
+        if (cursor.isEndOfDocument()) break;
       } else {
         // enter the previous node and start iterating from right to left
-        newPos = selection.prevChar(pos);
+        cursor.prevChar();
+
+        if (cursor.isBeginOfDocument()) break;
       }
 
       // Stop if we reach the end of document
       // or the end of the next node (not stepping over a whole node)
-      if (newPos === pos || Math.abs(newPos[0]-initialNodePos) > 1) {
+      if (Math.abs(cursor.nodePos-initialNodePos) > 1) {
         break;
       }
 
-      pos = newPos;
-      span = getSpan(pos);
+      span = getSpan(cursor.nodePos, cursor.charPos);
 
       // at the end of a node we won't get a span element for the position,
       // as the selection has an extra position after the last character
@@ -137,8 +127,8 @@ var addLineBehavior = function(selection, surface) {
         continue;
       }
 
-      var x = getX(span);
-      var y = getY(span);
+      x = getX(span);
+      y = getY(span);
 
       if (y !== lastY) {
         lineSteps++;
@@ -150,12 +140,6 @@ var addLineBehavior = function(selection, surface) {
       }
 
       if (direction === "down") {
-        // only skip one line at once.
-        // E.g, this happens when there are shorter wrapped lines than the one we started
-        // As we have proceeded to the next line already we have to put the cursor one back
-        if (lineSteps > 1) {
-          pos = selection.prevChar(pos);
-        }
         if (x >= iniX || lineSteps > 1) break;
       } else {
         // only skip one line at once.
@@ -171,61 +155,65 @@ var addLineBehavior = function(selection, surface) {
 
       //var content = getContent(pos[0]);
 
-      span = getSpan(pos);
+      span = getSpan(cursor.nodePos, cursor.charPos);
       y = getY(span);
 
-      var prevPos = selection.prevChar(pos);
-      var prevSpan = getSpan(prevPos);
-      var nextPos = selection.nextChar(pos);
-      var nextSpan = getSpan(nextPos);
+      var prevPos = cursor.copy();
+      prevPos.prevChar();
+      var prevSpan = getSpan(prevPos.nodePos, prevPos.charPos);
 
-      var beginOfLine = (!prevSpan || (prevPos === pos) || getY(prevSpan) !== y);
-      var endOfLine = ((nextPos === pos) || (nextSpan && getY(nextSpan) !== y));
+      var nextPos = cursor.copy();
+      nextPos.nextChar();
+      var nextSpan = getSpan(nextPos.nodePos, nextPos.charPos);
+
+      var beginOfLine = (!prevSpan || cursor.isBeginOfDocument() || getY(prevSpan) !== y);
+      var endOfLine = (cursor.isEndOfDocument() || (nextSpan && getY(nextSpan) !== y));
 
       if (!beginOfLine && !endOfLine) {
-        pos = nextPos;
+        cursor.nextChar();
+      }
+    } else {
+      // only skip one line at once.
+      // E.g, this happens when there are shorter wrapped lines than the one we started
+      // As we have proceeded to the next line already we have to put the cursor one back
+      if (!cursor.isEndOfDocument()) {
+        cursor.prevChar();
       }
     }
-
-    return pos;
   };
 
-
-
-  selection.prevLine = function(pos) {
-    return upDown(pos, 'up');
+  cursor.prevLine = function() {
+    upDown('up');
   };
 
-  selection.nextLine = function(pos) {
-    return upDown(pos, 'down');
+  cursor.nextLine = function() {
+    upDown('down');
   };
 
-  selection.set = function(pos, direction, granularity) {
-
-    __set__.call(this, pos, direction, granularity);
-
-    // resetting the c
-    if(!verticalNav) {
-      resetCursor();
-    }
-
+  cursor.set = function(nodePos, charPos) {
+    __set__.call(this, nodePos, charPos);
     verticalNav = false;
   };
 
-  selection.find = function(pos, direction, granularity) {
+  cursor.move = function(direction, granularity) {
     if (granularity === "line") {
 
       // setting a flag that lets `selection.set` detect
       // whether the position was set after find('line')
-      verticalNav = true;
+      if (!verticalNav) {
+        resetCursor();
+        verticalNav = true;
+      };
 
       if (direction === "left") {
-        return this.prevLine(pos);
+        return this.prevLine();
       } else {
-        return this.nextLine(pos);
+        return this.nextLine();
       }
+
     } else {
-      return __find__.call(this, pos, direction, granularity);
+      __move__.call(this, direction, granularity);
+      verticalNav = false;
     }
   };
 };
@@ -255,10 +243,9 @@ EditorController.Prototype = function() {
     var surface = view.surface;
 
     // Mixin Line behavior into selection object
-    addLineBehavior(this.writer.selection, surface);
+    addLineBehavior(surface, this.writer.selection.__cursor);
     return view;
   };
-
 
   // Assumes there is a view already
   //
