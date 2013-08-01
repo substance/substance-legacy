@@ -3,9 +3,14 @@
 var Substance = require("../substance");
 var Controller = Substance.Application.Controller;
 var Document = Substance.Document;
+var Cursor = Document.Selection.Cursor;
 var EditorView = require('../views/editor');
 //var util = require('substance-util');
 
+
+// var addCursorLineBehavior = function() {
+
+// };
 
 // Line Behavior Mixin
 // -----------------
@@ -39,12 +44,9 @@ var addLineBehavior = function(selection, surface) {
     return content;
   };
 
-  var getSpan = function(sel) {
-    sel = sel || selection.getCursor();
-    if (!sel) return;
-
-    var content = getContent(sel[0]);
-    var span = content.children[sel[1]];
+  var getSpan = function(cursor) {
+    var content = getContent(cursor.nodePos);
+    var span = content.children[cursor.charPos];
     return span;
   };
 
@@ -58,18 +60,18 @@ var addLineBehavior = function(selection, surface) {
     //  - the current node
     if (!el) {
       // Get the element of the current position
-      var pos = selection.getCursor();
-      el = getSpan(pos);
+      var cursor = selection.getCursor();
+      el = getSpan(cursor);
 
       // this happens if we are at the end of a node or in an empty node
       if (!el) {
-        if(pos[1] > 0) {
+        if(cursor.charPos > 0) {
           // use the element for the previous position
-          pos[1] -= 1;
-          el = getSpan(pos);
+          cursor.charPos -= 1;
+          el = getSpan(cursor);
         } else {
           // use the node element (~empty node)
-          el = getNodeElement(pos[0]);
+          el = getNodeElement(cursor.nodePos);
         }
       }
     }
@@ -86,20 +88,21 @@ var addLineBehavior = function(selection, surface) {
     iniX = rect.left;
   };
 
-  var upDown = function(pos, direction) {
+  var upDown = function(cursor, direction) {
+    if (!cursor) return null;
 
-    var newPos;
+    // var newCursor;
     var initialNodePos;
     var span;
 
     // return the first position if there is no selection yet.
-    if (!pos) {
-      return [0,0];
-    }
+    // if (!cursor) {
+    //   return [0,0];
+    // }
 
     // we have to keep the initial node position
     // to detect the number of skipped nodes.
-    initialNodePos = pos[0];
+    initialNodePos = cursor.nodePos;
 
     // we take the absolute position of the cursor element as reference position
     var cursorRect = getCursorRect();
@@ -111,25 +114,29 @@ var addLineBehavior = function(selection, surface) {
 
     var lineSteps = 0;
     var lastY = initialY;
+    var y, x;
 
     while (true) {
 
       if (direction === "down") {
         // enter the next node and start iterating from left to right
-        newPos = selection.nextChar(pos);
+        selection.nextChar(cursor);
       } else {
         // enter the previous node and start iterating from right to left
-        newPos = selection.prevChar(pos);
+        selection.prevChar(cursor);
       }
 
       // Stop if we reach the end of document
       // or the end of the next node (not stepping over a whole node)
-      if (newPos === pos || Math.abs(newPos[0]-initialNodePos) > 1) {
+      if (cursor.isEndOfDocument() || Math.abs(cursor.nodePos-initialNodePos) > 1) {
         break;
       }
+      // if (newPos === pos || ) {
+      //   break;
+      // }
 
-      pos = newPos;
-      span = getSpan(pos);
+      // pos = newPos;
+      span = getSpan(cursor);
 
       // at the end of a node we won't get a span element for the position,
       // as the selection has an extra position after the last character
@@ -137,8 +144,8 @@ var addLineBehavior = function(selection, surface) {
         continue;
       }
 
-      var x = getX(span);
-      var y = getY(span);
+      x = getX(span);
+      y = getY(span);
 
       if (y !== lastY) {
         lineSteps++;
@@ -154,7 +161,7 @@ var addLineBehavior = function(selection, surface) {
         // E.g, this happens when there are shorter wrapped lines than the one we started
         // As we have proceeded to the next line already we have to put the cursor one back
         if (lineSteps > 1) {
-          pos = selection.prevChar(pos);
+          selection.prevChar(cursor);
         }
         if (x >= iniX || lineSteps > 1) break;
       } else {
@@ -171,38 +178,38 @@ var addLineBehavior = function(selection, surface) {
 
       //var content = getContent(pos[0]);
 
-      span = getSpan(pos);
+      span = getSpan(cursor);
       y = getY(span);
 
-      var prevPos = selection.prevChar(pos);
+      var prevPos = selection.prevChar(new Cursor(cursor));
       var prevSpan = getSpan(prevPos);
-      var nextPos = selection.nextChar(pos);
+      var nextPos = selection.nextChar(new Cursor(cursor));
       var nextSpan = getSpan(nextPos);
 
-      var beginOfLine = (!prevSpan || (prevPos === pos) || getY(prevSpan) !== y);
-      var endOfLine = ((nextPos === pos) || (nextSpan && getY(nextSpan) !== y));
+      var beginOfLine = (!prevSpan || (cursor.isBeginOfDocument()) || getY(prevSpan) !== y);
+      var endOfLine = ((cursor.isEndOfDocument()) || (nextSpan && getY(nextSpan) !== y));
 
       if (!beginOfLine && !endOfLine) {
-        pos = nextPos;
+        cursor = nextPos;
       }
     }
 
-    return pos;
+    return cursor;
   };
 
 
 
-  selection.prevLine = function(pos) {
-    return upDown(pos, 'up');
+  selection.prevLine = function(cursor) {
+    return upDown(cursor, 'up');
   };
 
-  selection.nextLine = function(pos) {
-    return upDown(pos, 'down');
+  selection.nextLine = function(cursor) {
+    return upDown(cursor, 'down');
   };
 
-  selection.set = function(pos, direction, granularity) {
+  selection.set = function(selection, direction, granularity) {
 
-    __set__.call(this, pos, direction, granularity);
+    __set__.call(this, selection, direction, granularity);
 
     // resetting the c
     if(!verticalNav) {
@@ -212,7 +219,7 @@ var addLineBehavior = function(selection, surface) {
     verticalNav = false;
   };
 
-  selection.find = function(pos, direction, granularity) {
+  selection.find = function(cursor, direction, granularity) {
     if (granularity === "line") {
 
       // setting a flag that lets `selection.set` detect
@@ -220,12 +227,12 @@ var addLineBehavior = function(selection, surface) {
       verticalNav = true;
 
       if (direction === "left") {
-        return this.prevLine(pos);
+        return this.prevLine(cursor);
       } else {
-        return this.nextLine(pos);
+        return this.nextLine(cursor);
       }
     } else {
-      return __find__.call(this, pos, direction, granularity);
+      return __find__.call(this, cursor, direction, granularity);
     }
   };
 };
@@ -255,7 +262,8 @@ EditorController.Prototype = function() {
     var surface = view.surface;
 
     // Mixin Line behavior into selection object
-    addLineBehavior(this.writer.selection, surface);
+    // addLineBehavior(this.writer.selection, surface);
+    
     return view;
   };
 
