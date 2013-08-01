@@ -53,7 +53,7 @@ var addLineBehavior = function(selection, surface) {
   // If there is no cursor it takes the sṕan of the given position
   var getCursorRect = function() {
     var el = surface.$('.cursor')[0];
-    console.log('el', el);
+
     // if there is no cursor we try to find other ways
     //  - the span of the current char position
     //  - the current node
@@ -191,7 +191,7 @@ var addLineBehavior = function(selection, surface) {
     return pos;
   };
 
-  
+
 
   selection.prevLine = function(pos) {
     return upDown(pos, 'up');
@@ -262,7 +262,7 @@ EditorController.Prototype = function() {
 
 
   // Assumes there is a view already
-  // 
+  //
 
   this.toggleNodeInserter = function() {
     this.view.toggleNodeInserter();
