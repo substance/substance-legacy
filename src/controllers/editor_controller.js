@@ -53,7 +53,6 @@ var addLineBehavior = function(selection, surface) {
   // If there is no cursor it takes the sṕan of the given position
   var getCursorRect = function() {
     var el = surface.$('.cursor')[0];
-    console.log('el', el);
     // if there is no cursor we try to find other ways
     //  - the span of the current char position
     //  - the current node

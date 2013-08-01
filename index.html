@@ -120,14 +120,13 @@ $ npm start
       <div class="content"></div>
     </script>
 
-    <!-- Substance.Text Node -->
+    <!-- Substance.Node Node -->
     <!-- Used for paragraphs and headings -->
     <script type="text/x-ejs-template" name="node">
       <div class="content">
-        <span>Paragraph</span>
-        <span>Heading</span>
-        <span>Image</span>
-        <span>Codeblock</span>
+        <% _.each(content, function(char) { %>
+          <span><%= char.type %></span>
+        <% }); %>
       </div>
     </script>
 
