@@ -14,6 +14,14 @@
     <!-- Generic Surface Styles -->
     <link href="lib/substance/substance-surface/styles/surface.css" media="screen" rel="stylesheet" type="text/css" />
 
+    <!-- Node specific Styles -->
+    <link href="lib/substance/substance-article/nodes/constructor/constructor.css" media="screen" rel="stylesheet" type="text/css" />
+    <link href="lib/substance/substance-article/nodes/text/text.css" media="screen" rel="stylesheet" type="text/css" />
+    <link href="lib/substance/substance-article/nodes/paragraph/paragraph.css" media="screen" rel="stylesheet" type="text/css" />
+    <link href="lib/substance/substance-article/nodes/heading/heading.css" media="screen" rel="stylesheet" type="text/css" />
+    <link href="lib/substance/substance-article/nodes/codeblock/codeblock.css" media="screen" rel="stylesheet" type="text/css" />
+    <link href="lib/substance/substance-article/nodes/image/image.css" media="screen" rel="stylesheet" type="text/css" />
+
     <!-- Templates -->
     <script type="text/html" name="substance">
 
@@ -70,8 +78,6 @@ $ npm start
         <div id="composer">
           <div id="document">
 
-
-
             <div class="annotation-toggles">
               <div class="styles">
                 <a href="#" class="annotation-toggle emphasis" sbs-click="annotate(emphasis)"><i class="icon-circle-blank"></i></a>
@@ -95,7 +101,9 @@ $ npm start
     </script>
 
     <script type="text/x-ejs-template" name="surface">
+      <input type="file" class="image-files" name="files[]"/>
       <div class="controls">
+
         <!-- this should be app specific stuff -->
         <!-- controls is just an empty container for the sake of adding ui elements that -->
         <!-- should be positioned within the surface -->
@@ -106,7 +114,7 @@ $ npm start
           <a href="#" class="insert-node codeblock" sbs-click="insertNode(codeblock)"><i class="icon-align-left"></i> Codeblock <span class="key">[c]</span></a>
           <div class="insert-node image">
             <i class="icon-picture"></i> Image <span class="key">[i]</span>
-            <input type="file" class="image-files" name="files[]"/>
+            
           </div>
         </div>
       </div>
@@ -120,15 +128,17 @@ $ npm start
       <div class="content"></div>
     </script>
 
-    <!-- Substance.Node Node -->
-    <!-- Used for paragraphs and headings -->
-    <script type="text/x-ejs-template" name="node">
+    <!-- Substance.Constructor Node -->
+    <!-- Constructs nodes -->
+    <script type="text/x-ejs-template" name="constructor">
       <div class="content">
-        <% _.each(content, function(char) { %>
-          <span><%= char.type %></span>
+        <% _.each(content, function(nodeType) { %>
+          <span><%= nodeType.name %></span>
         <% }); %>
       </div>
     </script>
+
+
 
     <script type="text/x-ejs-template" name="image">
       <div class="content">
