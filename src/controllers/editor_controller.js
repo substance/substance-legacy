@@ -190,7 +190,7 @@ var addLineBehavior = function(selection, surface) {
     return pos;
   };
 
-  
+
 
   selection.prevLine = function(pos) {
     return upDown(pos, 'up');
@@ -261,7 +261,7 @@ EditorController.Prototype = function() {
 
 
   // Assumes there is a view already
-  // 
+  //
 
   this.toggleNodeInserter = function() {
     this.view.toggleNodeInserter();

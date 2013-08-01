@@ -78,15 +78,13 @@
     "idea_1": {
       "id":"idea_1",
       "type":"idea",
-      "node":"paragraph_1",
-      "property":"content",
+      "path": ["paragraph_1", "content"],
       "range":[4,19]
     },
     "question_2": {
       "id":"question_2",
       "type":"question",
-      "node":"paragraph_1",
-      "property":"content",
+      "path": ["paragraph_1", "content"],
       "range":[150,176]
     }
   }
