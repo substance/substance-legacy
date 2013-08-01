@@ -25,7 +25,7 @@
       {"keys": ["enter"],               "command": "modifyNode" },
       {"keys": ["shift+enter"],         "command": "write", "args": ["\n"] },
 
-      {"keys": ["ctrl+enter"],          "command": "insertNode", "args": ["node"] },
+      {"keys": ["ctrl+enter"],          "command": "insertNode", "args": ["constructor"] },
       // {"keys": ["ctrl+enter h"],          "command": "insertNode", "args": ["heading"] },
       // {"keys": ["ctrl+enter c"],          "command": "insertNode", "args": ["codeblock"] },
       // {"keys": ["ctrl+enter p"],          "command": "insertNode", "args": ["paragraph"] },

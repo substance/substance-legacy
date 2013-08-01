@@ -14,6 +14,14 @@
     <!-- Generic Surface Styles -->
     <link href="lib/substance/substance-surface/styles/surface.css" media="screen" rel="stylesheet" type="text/css" />
 
+    <!-- Node specific Styles -->
+    <link href="lib/substance/substance-article/nodes/constructor/constructor.css" media="screen" rel="stylesheet" type="text/css" />
+    <link href="lib/substance/substance-article/nodes/text/text.css" media="screen" rel="stylesheet" type="text/css" />
+    <link href="lib/substance/substance-article/nodes/paragraph/paragraph.css" media="screen" rel="stylesheet" type="text/css" />
+    <link href="lib/substance/substance-article/nodes/heading/heading.css" media="screen" rel="stylesheet" type="text/css" />
+    <link href="lib/substance/substance-article/nodes/codeblock/codeblock.css" media="screen" rel="stylesheet" type="text/css" />
+    <link href="lib/substance/substance-article/nodes/image/image.css" media="screen" rel="stylesheet" type="text/css" />
+
     <!-- Templates -->
     <script type="text/html" name="substance">
 
@@ -70,8 +78,6 @@ $ npm start
         <div id="composer">
           <div id="document">
 
-
-
             <div class="annotation-toggles">
               <div class="styles">
                 <a href="#" class="annotation-toggle emphasis" sbs-click="annotate(emphasis)"><i class="icon-circle-blank"></i></a>
@@ -120,15 +126,17 @@ $ npm start
       <div class="content"></div>
     </script>
 
-    <!-- Substance.Node Node -->
-    <!-- Used for paragraphs and headings -->
-    <script type="text/x-ejs-template" name="node">
+    <!-- Substance.Constructor Node -->
+    <!-- Constructs nodes -->
+    <script type="text/x-ejs-template" name="constructor">
       <div class="content">
-        <% _.each(content, function(char) { %>
-          <span><%= char.type %></span>
+        <% _.each(content, function(nodeType) { %>
+          <span><%= nodeType.name %></span>
         <% }); %>
       </div>
     </script>
+
+
 
     <script type="text/x-ejs-template" name="image">
       <div class="content">

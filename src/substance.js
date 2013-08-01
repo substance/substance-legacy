@@ -20,6 +20,7 @@ var Substance = {
 // TODO: that should be done smarter
 Substance.Document.Transformer.nodeTypes = {
   "node": require('substance-article/nodes/node'),
+  "constructor": require('substance-article/nodes/constructor'),
   "paragraph": require('substance-article/nodes/paragraph'),
   "heading": require('substance-article/nodes/heading'),
   "image": require('substance-article/nodes/image'),
