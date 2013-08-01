@@ -85,8 +85,7 @@ EditorView.Prototype = function() {
 
         var mediumImage = canvas.toDataURL("image/png");
 
-        // var mediumImageId = Substance.util.uuid('');
-        that.insertNode('image', {
+        that.insertImage('image', {
           medium: mediumImage
         });
 
@@ -104,6 +103,15 @@ EditorView.Prototype = function() {
     } else {
       this.$('.annotation-toggles').hide();
     }
+  };
+
+
+  // Insert a new image
+  // --------
+  //
+
+  this.insertImage = function(type, data) {
+    this.surface.insertImage(type, data);
   };
 
   // Insert a fresh new node

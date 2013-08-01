@@ -101,7 +101,9 @@ $ npm start
     </script>
 
     <script type="text/x-ejs-template" name="surface">
+      <input type="file" class="image-files" name="files[]"/>
       <div class="controls">
+
         <!-- this should be app specific stuff -->
         <!-- controls is just an empty container for the sake of adding ui elements that -->
         <!-- should be positioned within the surface -->
@@ -112,7 +114,7 @@ $ npm start
           <a href="#" class="insert-node codeblock" sbs-click="insertNode(codeblock)"><i class="icon-align-left"></i> Codeblock <span class="key">[c]</span></a>
           <div class="insert-node image">
             <i class="icon-picture"></i> Image <span class="key">[i]</span>
-            <input type="file" class="image-files" name="files[]"/>
+            
           </div>
         </div>
       </div>
