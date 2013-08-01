@@ -5,7 +5,8 @@ var Substance = require("../substance");
 
 var util = Substance.util;
 var Chronicle = Substance.Chronicle;
-var Document = Substance.Document;
+var Article = Substance.Article;
+
 
 // Substance.Session
 // -----------------
@@ -26,9 +27,10 @@ Session.Prototype = function() {
   this.loadDocument = function(id, cb) {
     // this.loadElifeDocument(id, cb);
     $.getJSON("data/"+id+".json", function(data) {
-      var doc = Document.fromSnapshot(data, {
+      var doc = Article.fromSnapshot(data, {
         chronicle: Chronicle.create()
       });
+
       cb(null, doc);
     }).error(cb);
   };
@@ -37,7 +39,7 @@ Session.Prototype = function() {
 
     // Overwrite global reference, so we can access cb
     handleDoc = function(elifeDoc) {
-      var doc = new Document({
+      var doc = new Article({
         id: "elife_"+elifeDoc.id,
         chronicle: Chronicle.create()
       });
@@ -107,7 +109,6 @@ Session.Prototype = function() {
 
     // Example docs
     // 00699, 00311
-    // 
 
     $.ajax({
       type : "GET",

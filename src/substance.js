@@ -11,6 +11,7 @@ var Substance = {
   Chronicle: require("substance-chronicle"),
   Data: require("substance-data"),
   Document: require("substance-document"),
+  Article: require("substance-article"),
   RegExp: require("substance-regexp"),
   Surface: require("substance-surface")
 };
@@ -22,14 +23,13 @@ Substance.Document.Transformer.nodeTypes = {
   "paragraph": require('substance-article/nodes/paragraph'),
   "heading": require('substance-article/nodes/heading'),
   "image": require('substance-article/nodes/image'),
-  "codeblock": require('substance-article/nodes/codeblock'),
-  "codeline": require('substance-article/nodes/codeline')
+  "codeblock": require('substance-article/nodes/codeblock')
 };
 
 require("substance-operator/tests");
 require("substance-chronicle/tests");
 require("substance-data/tests");
-require("substance-document/tests");
+require("substance-article/tests");
 require("substance-store/tests");
 require("substance-surface/tests");
 
