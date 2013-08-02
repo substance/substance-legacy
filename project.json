@@ -68,7 +68,7 @@
     {
       "repository": "git@github.com:substance/substance.git",
       "folder": ".",
-      "version": "master"
+      "version": "substance_py"
     }
   ],
   "node_modules": {

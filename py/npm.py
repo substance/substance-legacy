@@ -57,3 +57,9 @@ def npm_symlinks(root, module):
 
     for dep in deps:
       create_symlink(root, os.path.join("node_modules", dep), os.path.join(module_dir, "node_modules", dep))
+
+def npm_install(root, node_modules):
+  for m, v in node_modules.iteritems():
+    cmd = ["npm", "install", "%s@%s"%(m, v)]
+    p = subprocess.Popen(cmd, cwd=root)
+    p.communicate();

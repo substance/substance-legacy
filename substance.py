@@ -3,12 +3,15 @@ import argparse
 import os
 import sys
 
+# TODO: next steps:
+#   - Add shared module versions to table for package.json generation
+
 __dirname__ = os.path.dirname(os.path.realpath(__file__));
 sys.path.append(os.path.join(__dirname__, "py"));
 
 from util import read_json, project_file, module_file
 from git import git_pull, git_push, git_checkout, git_command, git_status
-from npm import npm_publish, npm_build, npm_symlinks
+from npm import npm_publish, npm_install
 from version import increment_version, bump_version, create_package
 
 def get_module_config(root, module):
@@ -25,17 +28,27 @@ def iterate_modules(root, config):
     folder = os.path.join(root, m["folder"])
     yield [folder, conf]
 
+
+def get_configured_deps(folder, conf):
+  result = {}
+  if "dependencies" in conf:
+    for dep, version in conf["dependencies"].iteritems():
+      if version != "":
+        result[dep] = version
+
+  if "devDependencies" in conf:
+    for dep, version in conf["dependencies"].iteritems():
+      if version != "":
+        result[dep] = version
+
+  return result
+
 class Actions():
 
   @staticmethod
   def status(root, config, args=None):
     for m in config["modules"]:
       git_status(root_dir, m)
-
-  @staticmethod
-  def symlinks(root, config, args=None):
-    for m in config["modules"]:
-      npm_symlinks(root, m)
 
   @staticmethod
   def pull(root, config, args=None):
@@ -63,15 +76,17 @@ class Actions():
       npm_publish(root_dir, m, args)
 
   @staticmethod
-  def build(root, config, args=None):
-    for m in config["modules"]:
-      npm_build(root_dir, m)
-
-  @staticmethod
   def update(root, config, args=None):
+    # 1. Clone/pull all sub-modules 
     Actions.pull(root, config, args)
-    Actions.symlinks(root, config, args)
-    Actions.build(root, config, args)
+    
+    # 2. Install all shared node modules 
+    node_modules = config["node_modules"] if "node_modules" in config else {}
+    for folder, conf in iterate_modules(root, config):
+      node_module.update(get_configured_deps(folder, conf))
+
+    install_modules(node_modules)
+
 
   @staticmethod
   def increment_versions(root, config, args=None):
@@ -86,9 +101,13 @@ class Actions():
     table = {}
     for folder, conf in iterate_modules(root, config):
       table[conf["name"]] = conf
+    if "node_modules" in config:
+      table.update(config["node_modules"])
 
     for folder, conf in iterate_modules(root, config):
-      create_package(folder, conf, table, tag) 
+      if "npm" in config:
+        conf.update(config["npm"])
+      create_package(folder, conf, table, tag, defaults) 
 
   @staticmethod
   def bump(root, config, args=None):
@@ -103,8 +122,6 @@ parser = argparse.ArgumentParser(description='Update the mothership.')
 parser.add_argument('--pull', '-u', action='store_const', dest="action", const="pull", help='Pull all sub-modules.')
 parser.add_argument('--push', '-p', action='store_const', dest="action", const="push", help='Push all sub-modules.')
 parser.add_argument('--status', '-s', action='store_const', dest="action", const="status", help='Git status for all sub-modules.')
-parser.add_argument('--symlinks', action='store_const', dest="action", const="symlinks", help='Create symbolic links.')
-parser.add_argument('--build', action='store_const', dest="action", const="build", help='Build node-modules.')
 parser.add_argument('--checkout', nargs='?', const=True, default=False, help='Checkout a given branch or the one specified in .modules.config')
 parser.add_argument('--git', nargs='+', default=False, help='Execute a git command on all modules.')
 parser.add_argument('--publish', action='store_const', dest="action", const="publish", help='Publish node-modules.')
