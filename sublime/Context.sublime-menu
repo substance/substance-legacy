@@ -1,6 +1,0 @@
-[
-  { "id": "git-pull", "caption": "Git Pull", "command": "git", "args": {"command": ["pull"]}},
-  { "id": "git-push", "caption": "Git Push", "command": "git", "args": {"command": ["push"]}},
-  { "id": "git-pull", "caption": "Git Pull (All Projects)", "command": "git", "args": {"command": ["pull"], "all": true} },
-  { "id": "git-pull", "caption": "Git Push (All Projects)", "command": "git", "args": {"command": ["push"], "all": true} }
-]
