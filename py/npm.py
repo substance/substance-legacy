@@ -21,12 +21,12 @@ def create_symlink(root, source, link):
     os.symlink(source_path, link_path)
 
 def npm_publish(root, module, args):
-  module_dir = os.path.join(root, module.folder)
+  module_dir = os.path.join(root, module["folder"])
   package_json = os.path.join(module_dir, "package.json")
   if os.path.exists(package_json):
     package = read_json(package_json)
     if not package.private:
-      print("Publishing sub-module: %s" %module.folder)
+      print("Publishing sub-module: %s" %module["folder"])
       cmd = ["npm", "publish"]
       if (args['force'] == True):
         cmd.append("--force")
@@ -34,15 +34,15 @@ def npm_publish(root, module, args):
       p.communicate()
 
 def npm_build(root, module):
-  module_dir = os.path.join(root, module.folder)
+  module_dir = os.path.join(root, module["folder"])
   if os.path.exists(os.path.join(module_dir, "package.json")):
-    print("Building node-module: %s" %module.folder)
+    print("Building node-module: %s" %module["folder"])
     cmd = ["npm", "install"]
     p = subprocess.Popen(cmd, cwd=module_dir)
     p.communicate();
 
 def npm_symlinks(root, module):
-  module_dir = os.path.join(root, module.folder)
+  module_dir = os.path.join(root, module["folder"])
   module_config_file = os.path.join(module_dir, "package.json");
   if os.path.exists(module_config_file):
     module_config = read_json(module_config_file)
@@ -50,10 +50,10 @@ def npm_symlinks(root, module):
     deps = []
 
     if ("dependencies" in module_config):
-      deps += [dep for dep in module_config.dependencies if dep.startswith("substance")]
+      deps += [dep for dep in module_config["dependencies"] if dep.startswith("substance")]
 
     if ("devDependencies" in module_config):
-      deps += [dep for dep in module_config.devDependencies if dep.startswith("substance")]
+      deps += [dep for dep in module_config["devDependencies"] if dep.startswith("substance")]
 
     for dep in deps:
       create_symlink(root, os.path.join("node_modules", dep), os.path.join(module_dir, "node_modules", dep))

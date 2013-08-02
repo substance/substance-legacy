@@ -1,34 +1,29 @@
 import json
 import os
 import types
+from collections import OrderedDict
 
-# Converts a dict into a dynamic object
-class DictObject(dict):
+MODULE_CONFIG_FILE = "module.json"
 
-  def __init__(self, d):
-    self.update(d)
-
-  def __getattr__(self, name):
-    if not self.has_key(name):
-      return None
-    return self[name]
-
-def as_object(d):
-  if type(d) is types.DictType:
-    d = DictObject(d)
-    for key in d.iterkeys():
-      d[key] = as_object(d[key])
-  elif type(d) is types.ListType or type(d) is types.TupleType:
-    for idx,elem in enumerate(d):
-      d[idx] = as_object(d[idx])
-
-  return d
-
-def read_config():
-  with open("module.json", 'r') as f:
-    return as_object(json.load(f))
+def config_file(root):
+  return os.path.join(root, "module.json")
 
 def read_json(filename):
   with open(filename, 'r') as f:
-    return as_object(json.load(f))
+    data = f.read()
+    return json.JSONDecoder(object_pairs_hook=OrderedDict).decode(data)
 
+def write_json(filename, data):
+  with open(filename, 'w') as f:
+    json.dump(data, f, indent=2, separators=(',', ':'))
+
+def read_config(root=None):
+  if root == None:
+    filename = MODULE_CONFIG_FILE
+  else:
+    filename = os.path.join(root, MODULE_CONFIG_FILE)
+
+  if not os.path.exists(filename):
+    raise RuntimeError("File does not exist: %s"%filename)
+
+  return read_json(filename)
