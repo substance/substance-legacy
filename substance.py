@@ -83,9 +83,9 @@ class Actions():
     # 2. Install all shared node modules 
     node_modules = config["node_modules"] if "node_modules" in config else {}
     for folder, conf in iterate_modules(root, config):
-      node_module.update(get_configured_deps(folder, conf))
+      node_modules.update(get_configured_deps(folder, conf))
 
-    install_modules(node_modules)
+    npm_install(root, node_modules)
 
 
   @staticmethod
