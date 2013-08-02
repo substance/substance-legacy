@@ -3,7 +3,7 @@ import re
 import json
 import sys
 
-from util import config_file, read_json, write_json, MODULE_CONFIG_FILE
+from util import module_file, read_json, write_json, MODULE_CONFIG_FILE
 
 VERSION_EXPRESSION = re.compile("(\d+)\.(\d+)\.(\d+)(.*)")
 
@@ -50,7 +50,7 @@ def increment_version(folder, config, level):
   config["version"] = version.str();
 
   print ("Writing new version: %s"%(version.str()))
-  write_json(config_file(folder), config)
+  write_json(module_file(folder), config)
 
 
 def git_command(cwd, args):
@@ -65,7 +65,7 @@ def git_command(cwd, args):
 
 def bump_version(folder, config):
 
-  filename = config_file(folder)
+  filename = module_file(folder)
   if not "version" in config:
     print "Could not find version in config of %s"%(folder)
     return None

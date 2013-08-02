@@ -6,14 +6,14 @@ import sys
 __dirname__ = os.path.dirname(os.path.realpath(__file__));
 sys.path.append(os.path.join(__dirname__, "py"));
 
-from util import read_config, read_json, config_file
+from util import read_json, project_file, module_file
 from git import git_pull, git_push, git_checkout, git_command, git_status
 from npm import npm_publish, npm_build, npm_symlinks
 from version import increment_version, bump_version, create_package
 
 def get_module_config(root, module):
   folder = os.path.join(root, module["folder"])
-  filename = config_file(folder)
+  filename = module_file(folder)
   if not os.path.exists(filename):
     return None
   return read_json(filename)
@@ -69,9 +69,9 @@ class Actions():
 
   @staticmethod
   def update(root, config, args=None):
-    Action.pull(root, config, args)
-    Action.symlinks(root, config, args)
-    Action.build(root, config, args)
+    Actions.pull(root, config, args)
+    Actions.symlinks(root, config, args)
+    Actions.build(root, config, args)
 
   @staticmethod
   def increment_versions(root, config, args=None):
@@ -132,8 +132,8 @@ elif args["tag"] != False:
 elif action == None:
   action = "update"
 
-config = read_config()
 root_dir = os.path.realpath(os.path.dirname(__file__))
+project_config = read_json(project_file(root_dir))
 
 method = getattr(Actions, action)
-method(root_dir, config, args)
+method(root_dir, project_config, args)
