@@ -1,69 +1,89 @@
 {
+  "name"          : "substance",
+  "description"   : "Towards open digital publishing.",
+  "url"           : "http://github.com/substance/substance/",
+  "keywords"      : ["digital documents", "linked-data", "online collaboration", "text editor", "browser"],
+  "author"        : "Michael Aufreiter",
+  "contributors"  : ["Oliver Buchtala"],
+  "repository": {
+      "type": "git",
+      "url": "https://github.com/substance/substance.git"
+  },
+  "engines": {
+    "node": ">=0.8.x"
+  },
+  "dependencies": {
+    "underscore": "1.5.x",
+    "express": "3.3.x",
+    "handlebars": "1.0.x"
+  },
+  "devDependencies": {
+  },
   "modules": [
     {
       "repository": "git@github.com:substance/application.git",
       "folder": "node_modules/substance-application",
-      "branch": "master"
+      "version": "master"
     },
     {
       "repository": "git@github.com:substance/chronicle.git",
       "folder": "node_modules/substance-chronicle",
-      "branch": "master"
+      "version": "master"
     },
     {
       "repository": "git@github.com:substance/commander.git",
       "folder": "node_modules/substance-commander",
-      "branch": "master"
+      "version": "master"
     },
     {
       "repository": "git@github.com:michael/data.git",
       "folder": "node_modules/substance-data",
-      "branch": "master"
+      "version": "master"
     },
     {
       "repository": "git@github.com:substance/document.git",
       "folder": "node_modules/substance-document",
-      "branch": "master"
+      "version": "master"
     },
     {
       "repository": "git@github.com:substance/article.git",
       "folder": "node_modules/substance-article",
-      "branch": "master"
+      "version": "master"
     },
     {
       "repository": "git@github.com:substance/operator.git",
       "folder": "node_modules/substance-operator",
-      "branch": "master"
+      "version": "master"
     },
     {
       "repository": "git@github.com:substance/regexp.git",
       "folder": "node_modules/substance-regexp",
-      "branch": "master"
+      "version": "master"
     },
     {
       "repository": "git@github.com:substance/store.git",
       "folder": "node_modules/substance-store",
-      "branch": "master"
+      "version": "master"
     },
     {
       "repository": "git@github.com:substance/surface.git",
       "folder": "node_modules/substance-surface",
-      "branch": "master"
+      "version": "master"
     },
     {
       "repository": "git@github.com:substance/test.git",
       "folder": "node_modules/substance-test",
-      "branch": "master"
+      "version": "master"
     },
     {
       "repository": "git@github.com:substance/util.git",
       "folder": "node_modules/substance-util",
-      "branch": "master"
+      "version": "master"
     },
     {
       "repository": "git@github.com:substance/substance.git",
       "folder": ".",
-      "branch": "master"
+      "version": "master"
     }
   ]
 }

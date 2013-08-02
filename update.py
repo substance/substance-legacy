@@ -29,7 +29,7 @@ def as_object(d):
 
 
 def read_config():
-  with open(".modules.config", 'r') as f:
+  with open("module.json", 'r') as f:
     return as_object(json.load(f))
 
 def read_json(filename):
@@ -53,7 +53,7 @@ def git_pull(root, module):
     p.communicate()
 
   else:
-    cmd = ["git", "pull", "origin", module.branch]
+    cmd = ["git", "pull"]
     print("Pulling sub-module: %s, (%s)" %(module.folder, " ".join(cmd)))
     p = subprocess.Popen(cmd, cwd=module_dir)
     p.communicate()
