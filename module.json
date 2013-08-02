@@ -36,6 +36,11 @@
       "version": "master"
     },
     {
+      "repository": "git@github.com:substance/converter.git",
+      "folder": "node_modules/substance-converter",
+      "branch": "master"
+    },
+    {
       "repository": "git@github.com:michael/data.git",
       "folder": "node_modules/substance-data",
       "version": "master"
