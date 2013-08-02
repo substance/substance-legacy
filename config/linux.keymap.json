@@ -1,17 +1,17 @@
 [
-  {
-    "context": "sandbox.editor",
-    "commands": [
-      {"keys": ["ctrl+enter"],     "command": "toggleNodeInserter" }
-    ]
-  },
+  // {
+  //   "context": "sandbox.editor",
+  //   "commands": [
+  //     {"keys": ["ctrl+enter"],     "command": "toggleNodeInserter" }
+  //   ]
+  // },
   {
     "context": "sandbox.editor.writer",
     "commands": [
       {"keys": ["backspace"],      "command": "delete", "args": ["left"] },
       {"keys": ["del"],            "command": "delete", "args": ["right"] },
 
-      {"keys": ["enter"],          "command": "insertNode" },
+      {"keys": ["enter"],          "command": "modifyNode" },
       {"keys": ["shift+enter"],    "command": "write", "args": ["\n"] },
 
       {"keys": ["ctrl+enter h"],   "command": "insertNode", "args": ["heading"] },
