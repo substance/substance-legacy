@@ -23,6 +23,7 @@
     "substance-store": "git+https://github.com/substance/store.git#master",
     "substance-operator": "git+https://github.com/substance/operator.git#master",
     "substance-document": "git+https://github.com/substance/document.git#master",
+    "substance-article": "git+https://github.com/substance/article.git#master",
     "substance-data": "git+https://github.com/substance/data.git#master",
     "substance-commander": "git+https://github.com/substance/commander.git#master",
     "substance-chronicle": "git+https://github.com/substance/chronicle.git#master",
