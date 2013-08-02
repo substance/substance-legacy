@@ -31,3 +31,4 @@ def read_config():
 def read_json(filename):
   with open(filename, 'r') as f:
     return as_object(json.load(f))
+

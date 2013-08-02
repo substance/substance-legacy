@@ -9,6 +9,7 @@ sys.path.append(os.path.join(__dirname__, "py"));
 from util import as_object, read_config, read_json
 from git import git_pull, git_push, git_checkout, git_command, git_status
 from npm import npm_publish, npm_build, npm_symlinks
+from version import increment_version
 
 class Actions():
 
@@ -58,6 +59,12 @@ class Actions():
     symlinks(root, config, args)
     build(root, config, args)
 
+  @staticmethod
+  def increment_versions(root, config, args=None):
+    level = args["increment_version"]
+    for m in config.modules:
+      increment_version(root_dir, m, level)
+
 # Command line arguments
 # ========
 
@@ -72,19 +79,25 @@ parser.add_argument('--checkout', nargs='?', const=True, default=False, help='Ch
 parser.add_argument('--git', nargs='+', default=False, help='Execute a git command on all modules.')
 parser.add_argument('--publish', action='store_const', dest="action", const="publish", help='Publish node-modules.')
 parser.add_argument('--force', action='store_const', dest="force", const=True, default=False, help='Force.')
+parser.add_argument('--increment-version', nargs='?', const="patch", default="patch", help='Increment the VERSION files (default: patch level).')
 
 # Main
 # ========
 
 args = vars(parser.parse_args())
 
+print(args)
+
 action = args['action']
 if args['checkout']:
   action = "checkout"
 elif args['git']:
   action = "git"
+elif args['increment_version']:
+  action = "increment_versions"
 elif action == None:
   action = "update"
+
 config = read_config()
 root_dir = os.path.realpath(os.path.dirname(__file__))
 
