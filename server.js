@@ -3,6 +3,10 @@ var express = require('express');
 var path = require('path');
 
 var CommonJSServer = require("substance-application/commonjs");
+var Converter = require("substance-converter");
+
+
+
 var Handlebars = require("handlebars");
 var fs = require("fs");
 
@@ -54,6 +58,12 @@ app.get("/scripts*",
     }
   }
 );
+
+// Serve the Substance Converter
+// --------
+
+new Converter.Server(app).serve();
+
 
 app.use(app.router);
 

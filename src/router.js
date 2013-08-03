@@ -15,9 +15,8 @@ var Router = Backbone.Router.extend({
     this.route('tests', 'test_center', this.testCenter);
     this.route('tests/:suite', 'test_center', this.testCenter);
 
-    this.route('', 'start', this.editor);
+    this.route('', 'start', this.library);
   },
-
 
   // Test Center
   // --------
@@ -31,7 +30,18 @@ var Router = Backbone.Router.extend({
   // --------
   //
 
+  library: function() {
+    console.log('opening the library');
+    this.dispatch('open:library', [document]);
+  },
+
+
+  // Editor View
+  // --------
+  //
+
   editor: function(document) {
+    console.log('opening doc...', document);
     this.dispatch('open:editor', [document]);
   },
 

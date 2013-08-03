@@ -1,0 +1,45 @@
+.library {
+  overflow: auto;
+}
+
+.library .navigation {
+  padding: 20px;
+  
+  font-size: 14px;
+  position: absolute;
+  left: 0px;
+  top: 0px;
+  bottom: 0px;
+  width: 300px;
+}
+
+.library .navigation input {
+  font-family: 'Open Sans';
+  width: 100%;
+  display: block;
+  margin-bottom: 20px;
+}
+
+/* The import button */
+.library .navigation a {
+  font-family: 'Avenir LT W01 85 Heavy', 'Montserrat', 'Source Sans Pro';
+  font-size: 16px;
+}
+
+.library .navigation .label {
+  font-family: 'Avenir LT W01 85 Heavy', 'Montserrat', 'Source Sans Pro';
+  font-size: 16px;
+}
+
+.library .navigation .explanation {
+  padding: 20px 0;
+}
+
+.library .collection {
+   background: white;
+   position: absolute;
+   left: 300px;
+   top: 0px;
+   bottom: 0px;
+   width: 800px;
+}

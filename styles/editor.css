@@ -3,7 +3,7 @@
 
 #document {
   position: fixed;
-  left: 300px;
+  left: 340px;
   top: 0px;
   bottom: 0px;
   overflow: auto;
@@ -24,7 +24,7 @@
   top: 0px;
   bottom: 0px;
   right: 0px;
-  width: 260px;
+  width: 300px;
   padding: 20px;
 }
 

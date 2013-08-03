@@ -1,0 +1,26 @@
+.collection {
+
+}
+
+.collection a.document {
+  display: block;
+  background: white;
+  width: 400px;
+  height: 160px;
+  padding: 30px 30px;
+  border-right: 1px solid #eee;
+  border-bottom: 1px solid #eee;
+  float: left;
+}
+
+.collection a.document .title {
+  color: #1B6685;
+  font-family: 'Avenir LT W01 85 Heavy', 'Montserrat', 'Source Sans Pro';
+  font-size: 16px;
+
+}
+
+.collection a.document:hover .title {
+
+  color: rgba(11, 157, 217, 1);
+}
