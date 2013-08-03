@@ -77,10 +77,10 @@ class Actions():
 
   @staticmethod
   def update(root, config, args=None):
-    # 1. Clone/pull all sub-modules 
+    # 1. Clone/pull all sub-modules
     Actions.pull(root, config, args)
-    
-    # 2. Install all shared node modules 
+
+    # 2. Install all shared node modules
     node_modules = config["node_modules"] if "node_modules" in config else {}
     for folder, conf in iterate_modules(root, config):
       node_modules.update(get_configured_deps(folder, conf))
@@ -107,7 +107,7 @@ class Actions():
     for folder, conf in iterate_modules(root, config):
       if "npm" in config:
         conf.update(config["npm"])
-      create_package(folder, conf, table, tag, defaults) 
+      create_package(folder, conf, table, tag)
 
   @staticmethod
   def bump(root, config, args=None):

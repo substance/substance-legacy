@@ -74,7 +74,8 @@
   "node_modules": {
     "underscore": "1.5.x",
     "express": "3.3.x",
-    "handlebars": "1.0.x"
+    "handlebars": "1.0.x",
+    "mocha": "1.12.x"
   },
   "npm": {
     "engines": {

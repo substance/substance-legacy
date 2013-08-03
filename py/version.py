@@ -79,14 +79,25 @@ git_version_str = "git+%s#%s"
 def replace_deps(config, table, deps, tag=None, github=False):
   if not deps in config: return
 
-  for dep in config[deps]:
+  deps = config[deps]
+
+  for dep in deps:
     if dep in table:
-      version = tag if tag != None else table[dep]["version"]
-      if github:
-        version = git_version_str%(table[dep]["repository"]["url"], version)
+      _dep = table[dep]
+      if isinstance(_dep, basestring):
+        version = _dep
+      else:
+        version = tag if tag != None else _dep["branch"]
+        if github:
+          if not "repository" in _dep:
+            raise RuntimeError("Invalid module specification: %s"%(_dep));
+          version = git_version_str%(_dep["repository"]["url"], version)
+    else:
+      if deps[dep] == "":
+        raise RuntimeError("Incomplete specification %s in %s"%(dep, config["name"]));
 
       print("Replacing dependency: %s = %s"%(dep, version))
-      config[deps][dep] = version
+      deps[dep] = version
 
 
 def create_package(folder, config, table, tag=None, github=True):
