@@ -39,14 +39,7 @@
   text-transform: uppercase;
 }
 
-.document-settings pre {
-  padding: 10px;
-  font-family: 'Source Code Pro';  
-  font-size: 12px;
-  background: white;
-  overflow: auto;
-  border: 1px solid #ccc;
-}
+
 
 #document .surface {
   position: absolute;

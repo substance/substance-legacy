@@ -30,7 +30,7 @@
       <!-- Substance Main Menu -->
       <div id="menu">
         <div class="views">
-          <a href="#" class="toggle-view document"><i class="icon-edit"></i></a>
+          <a href="#" class="toggle-view document"><i class="icon-th"></i></a>
           <a href="#tests" class="toggle-view testsuite" ><i class="icon-tasks"></i></a>
         </div>
 
@@ -62,16 +62,15 @@
     <!-- Library -->
     <script type="text/x-ejs-template" name="library">
       <div class="navigation">
-        <p>You are looking at a demo of the new <a href="http://github.com/substance/substance">Substance</a> platform. Use <b>ctrl+enter</b> to add new elements.</p>
-
-        <div class="label">Load external document</div>
+        <p>You are looking at a demo of the new <a href="http://github.com/substance/substance">Substance</a> platform.</p>
+        <div class="label">Testdrive the editor</div>
         <div class="explanation">
-          You can import and edit any markdown-file for instance. Provide a URL and press import.
+          You can either select a document on the right or import an external document. You can import every markup supported by <a href="http://johnmacfarlane.net/pandoc/">Pandoc</a>.
         </div>
         <input type="text" name="import_url" id="import_url" value="https://raw.github.com/michael/documents/master/2012-06-30-substance.md"/>
         <a class="import-document" sbs-click="importDocument()" href="#import">Import</a>
 
-        <h2>Getting started</h2>
+        <div class="label">Install locally</div>
         <p>
           Clone Substance locally and play around with the code.
         </p>
@@ -81,7 +80,7 @@ $ cd substance
 $ npm install
 $ npm start
         </code></pre>
-        
+
       </div>
 
 

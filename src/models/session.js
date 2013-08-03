@@ -34,7 +34,11 @@ Session.Prototype = function() {
       }).error(cb);
     } else {
       // Local file load
-      // this.loadElifeDocument(name, cb);
+      // if (name.match(/elife/)) {
+      //   // this.loadElifeDocument(name, cb);
+      //   return this.loadElifeDocument(name.replace('elife_', ''), cb);
+      // }
+      
       $.getJSON("data/"+name+".json", function(data) {
         var doc = Article.fromSnapshot(data, {
           chronicle: Chronicle.create()
