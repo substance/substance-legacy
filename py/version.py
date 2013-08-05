@@ -98,17 +98,22 @@ def replace_deps(config, table, deps, tag=None, github=True):
       if isinstance(module, basestring):
         version = module
       else:
-        version = tag if tag != None else module["branch"]
 
-        # if it is a semver we add a make it 'vX.Y.Z'
-        if VERSION_EXPRESSION.match(version):
-          version = "v"+version
+        if tag != None:
+          version = tag
+        else:
+          version = module["version"]
 
         # in case we have a module specification it is possible to create
         # the dependency entry as "git+https"
         if github:
           if not "repository" in module:
             raise RuntimeError("Invalid module specification: %s"%(module));
+
+          # if it is a semver we add a make it 'vX.Y.Z'
+          if VERSION_EXPRESSION.match(version):
+            version = "v"+version
+
           version = git_version_str%(module["repository"]["url"], version)
 
       print("Replacing dependency: %s = %s"%(dep, version))
@@ -144,9 +149,6 @@ def create_tag(folder, config, table, tag=None, github=True):
   if not "version" in config:
     print "Could not find version in config of %s"%(folder)
     return None
-
-  git_command(folder, ["checkout", "-b", "release"])
-  git_command(folder, ["merge", "master"])
 
   create_package(folder, config, table, tag, github)
 
