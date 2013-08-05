@@ -1,36 +1,30 @@
 {
-  "name"          : "substance",
-  "description"   : "Towards open digital publishing.",
-  "url"           : "http://github.com/substance/substance/",
-  "keywords"      : ["digital documents", "linked-data", "online collaboration", "text editor", "browser"],
-  "author"        : "Michael Aufreiter",
-  "contributors"  : ["Oliver Buchtala"],
+  "name": "substance",
+  "description": "Towards open digital publishing.",
+  "url": "http://github.com/substance/substance/",
+  "keywords": [
+    "digital documents",
+    "linked-data",
+    "online collaboration",
+    "text editor",
+    "browser"
+  ],
+  "author": "Michael Aufreiter",
+  "contributors": [
+    "Oliver Buchtala"
+  ],
   "repository": {
-      "type": "git",
-      "url": "https://github.com/substance/substance.git"
-  },
-  "engines": {
-    "node": ">=0.8.x"
+    "type": "git",
+    "url": "https://github.com/substance/substance.git"
   },
   "dependencies": {
     "underscore": "1.5.x",
     "express": "3.3.x",
-    "handlebars": "1.0.x",
-    "substance-util": "git+https://github.com/substance/util.git#master",
-    "substance-test": "git+https://github.com/substance/test.git#master",
-    "substance-surface": "git+https://github.com/substance/surface.git#master",
-    "substance-regexp": "git+https://github.com/substance/regexp.git#master",
-    "substance-store": "git+https://github.com/substance/store.git#master",
-    "substance-operator": "git+https://github.com/substance/operator.git#master",
-    "substance-document": "git+https://github.com/substance/document.git#master",
-    "substance-article": "git+https://github.com/substance/article.git#master",
-    "substance-data": "git+https://github.com/substance/data.git#master",
-    "substance-commander": "git+https://github.com/substance/commander.git#master",
-    "substance-converter": "git+https://github.com/substance/converter.git#master",
-    "substance-chronicle": "git+https://github.com/substance/chronicle.git#master",
-    "substance-application": "git+https://github.com/substance/application.git#master"
+    "handlebars": "1.0.x"
   },
-  "version"       : "0.5.0-alpha",
-  "scripts": {
+  "version": "0.1.1",
+  "engines": {
+    "node": ">=0.8.x",
+    "npm": ">=1.1.x"
   }
 }
