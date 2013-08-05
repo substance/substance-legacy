@@ -60,9 +60,7 @@ def git_command(cwd, args):
   cmd = ["git"] + args
   print("git command: ", cmd)
   p = subprocess.Popen(cmd, stdout=subprocess.PIPE, cwd=cwd)
-
   value, err = p.communicate()
-
   return value
 
 def bump_version(folder, config):
