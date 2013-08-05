@@ -58,11 +58,6 @@ def git_command(cwd, args):
 
   cmd = ["git"] + args
   print("git command: ", cmd)
-
-  # deavtivate for purpose of development
-  if (True):
-    return
-
   p = subprocess.Popen(cmd, cwd=cwd)
   p.communicate()
 
@@ -135,7 +130,6 @@ def create_package(folder, config, table, tag=None, github=True):
   filename = os.path.join(folder, "package.json")
   print("Writing %s"%(filename))
   write_json(filename, config)
-  #print(json.dump(config, sys.stdout))
 
   tag = tag if tag != None else config["version"]
 
