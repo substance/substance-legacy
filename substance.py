@@ -12,7 +12,7 @@ sys.path.append(os.path.join(__dirname__, "py"));
 from util import read_json, project_file, module_file
 from git import git_pull, git_push, git_checkout, git_command, git_status
 from npm import npm_publish, npm_install
-from version import increment_version, bump_version, create_package, create_tag
+from version import increment_version, bump_version, create_package, create_tag, save_current_version, restore_last_version
 
 def get_module_config(root, module):
   folder = os.path.join(root, module["folder"])
@@ -130,6 +130,14 @@ class Actions():
     for folder, conf in iterate_modules(root, config):
       bump_version(folder, conf)
 
+  @staticmethod
+  def save_current(root, config, args=None):
+    save_current_version(iterate_modules(root, config))
+  
+  @staticmethod
+  def restore_last(root, config, args=None):
+    restore_last_version(iterate_modules(root, config))
+  
 # Command line arguments
 # ========
 
@@ -145,6 +153,8 @@ parser.add_argument('--increment-version', nargs='?', const="patch", default=Fal
 parser.add_argument('--package', nargs='?', const=None, default=False, help='Create package.json files (optional: tag name).')
 parser.add_argument('--tag', nargs='?', const=None, default=False, help='Create a new tag.')
 parser.add_argument('--bump', action='store_const', dest="action", const="bump", help='"Bump" the version by committing all (changed) module configurations')
+parser.add_argument('--save-current-version', action='store_const', dest="action", const="save_current", help='Save the current SHA for each sub-module.')
+parser.add_argument('--restore-last-version', action='store_const', dest="action", const="restore_last", help='Restore a previously saved version of each sub-module.')
 parser.add_argument('--git', nargs='?', const=True, default=False, help='Execute a git command on all modules.')
 parser.add_argument('args', nargs='*', help='Arguments passed to the command (e.g., git).')
 
