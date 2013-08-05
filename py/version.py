@@ -146,6 +146,9 @@ def create_tag(folder, config, table, tag=None, github=True):
     3. Creates a new tag.
   """
 
+  git_command(folder, ["checkout", "release"])
+  git_command(folder, ["merge", "-s", "recursive", "-X", "theirs"])
+
   if not "version" in config:
     print "Could not find version in config of %s"%(folder)
     return None
