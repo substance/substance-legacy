@@ -47,7 +47,7 @@ def git_command(root, module, argv):
   module_dir = os.path.join(root, module["folder"])
 
   cmd = ["git"] + argv
-  print("git command: ", cmd)
+  print("%s $ git command: %s"%(module["folder"], cmd))
   p = subprocess.Popen(cmd, cwd=module_dir)
   p.communicate()
 
