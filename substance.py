@@ -92,7 +92,7 @@ class Actions():
   def increment_versions(root, config, args=None):
     level = args["increment_version"]
     for folder, conf in iterate_modules(root, config):
-      increment_version(folder, conf, m, level)
+      increment_version(folder, conf, level)
 
   @staticmethod
   def tag(root, config, args=None):
@@ -112,7 +112,7 @@ class Actions():
   @staticmethod
   def bump(root, config, args=None):
     for folder, conf in iterate_modules(root, config):
-      bump_version(folder, conf, m)
+      bump_version(folder, conf)
 
 # Command line arguments
 # ========
