@@ -142,4 +142,4 @@ def create_package(folder, config, table, tag=None, github=True):
   # commit the change
   git_command(folder, ["add", filename])
   git_command(folder, ["commit", "-m", 'Created package.json for version %s'%(tag)])
-  git_command(folder, ["tag", "-a", tag, "-m", 'Bumped version %s'%(config["tag"])])
+  git_command(folder, ["tag", "-a", tag, "-m", 'Version %s.'%(tag)])

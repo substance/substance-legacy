@@ -46,7 +46,7 @@ def git_checkout(root, module, args):
 def git_command(root, module, args):
   module_dir = os.path.join(root, module["folder"])
 
-  cmd = ["git"] + args["git"]
+  cmd = ["git"] + " ".join(args["git"]).split()
   print("git command: ", cmd)
   p = subprocess.Popen(cmd, cwd=module_dir)
   p.communicate()
