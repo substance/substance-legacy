@@ -99,6 +99,11 @@ def replace_deps(config, table, deps, tag=None, github=True):
         version = module
       else:
         version = tag if tag != None else module["branch"]
+
+        # if it is a semver we add a make it 'vX.Y.Z'
+        if VERSION_EXPRESSION.match(version):
+          version = "v"+version
+
         # in case we have a module specification it is possible to create
         # the dependency entry as "git+https"
         if github:
@@ -146,6 +151,10 @@ def create_tag(folder, config, table, tag=None, github=True):
   create_package(folder, config, table, tag, github)
 
   tag = tag if tag != None else config["version"]
+
+  # if it is a semver we add a make it 'vX.Y.Z'
+  if VERSION_EXPRESSION.match(tag):
+    tag = "v"+tag
 
   # commit the change
   filename = os.path.join(folder, "package.json")
