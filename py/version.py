@@ -59,8 +59,11 @@ def git_command(cwd, args):
 
   cmd = ["git"] + args
   print("git command: ", cmd)
-  p = subprocess.Popen(cmd, cwd=cwd)
-  p.communicate()
+  p = subprocess.Popen(cmd, stdout=subprocess.PIPE, cwd=cwd)
+
+  value, err = p.communicate()
+
+  return value
 
 def bump_version(folder, config):
 
@@ -151,3 +154,19 @@ def create_tag(folder, config, table, tag=None, github=True):
   git_command(folder, ["add", filename])
   git_command(folder, ["commit", "-m", 'Created package.json for version %s'%(tag)])
   git_command(folder, ["tag", "-a", tag, "-m", 'Version %s.'%(tag)])
+
+
+def save_current_version(modules_iter):
+  current_version={}
+  for folder, conf in modules_iter:
+    HEAD = git_command(folder, ["rev-parse", "HEAD"])
+    HEAD = HEAD.strip()
+    current_version[conf["name"]] = HEAD
+
+  write_json(".version.snapshot.json", current_version)
+
+def restore_last_version(modules_iter):
+  last_version = read_json(".version.snapshot.json")
+  for folder, conf in modules_iter:
+    HEAD = last_version[conf["name"]]
+    git_command(folder, ["reset", "--hard", HEAD])
