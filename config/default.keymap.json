@@ -58,7 +58,7 @@
       {"keys": ["shift+alt+right"],     "command": "expand", "scope": "selection", "args": ["right", "word"] },
       {"keys": ["shift+alt+left"],      "command": "expand", "scope": "selection", "args": ["left", "word"] },
       {"keys": ["shift+command+right"], "command": "expand", "scope": "selection", "args": ["right", "node"] },
-      {"keys": ["shift+command+left"],  "command": "expand", "scope": "selection", "args": ["left", "node"] }
+      {"keys": ["shift+command+left"],  "command": "expand", "scope": "selection", "args": ["left", "node"] },
 
       {"keys": ["command+z"],       "command": "undo" },
       {"keys": ["command+shift+z"], "command": "redo" }
