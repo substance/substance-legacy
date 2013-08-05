@@ -66,9 +66,10 @@ class Actions():
       git_checkout(root_dir, m, args)
 
   @staticmethod
-  def git(root, config, args=None):
+  def git(root, config, args):
+    argv = args["args"]
     for m in config["modules"]:
-      git_command(root_dir, m, args)
+      git_command(root_dir, m, argv)
 
   @staticmethod
   def publish(root, config, args=None):
@@ -138,13 +139,14 @@ parser.add_argument('--pull', '-u', action='store_const', dest="action", const="
 parser.add_argument('--push', '-p', action='store_const', dest="action", const="push", help='Push all sub-modules.')
 parser.add_argument('--status', '-s', action='store_const', dest="action", const="status", help='Git status for all sub-modules.')
 parser.add_argument('--checkout', nargs='?', const=True, default=False, help='Checkout a given branch or the one specified in .modules.config')
-parser.add_argument('--git', nargs='+', default=False, help='Execute a git command on all modules.')
 parser.add_argument('--publish', action='store_const', dest="action", const="publish", help='Publish node-modules.')
 parser.add_argument('--force', action='store_const', dest="force", const=True, default=False, help='Force.')
 parser.add_argument('--increment-version', nargs='?', const="patch", default=False, help='Increment the VERSION files (default: patch level).')
 parser.add_argument('--package', nargs='?', const=None, default=False, help='Create package.json files (optional: tag name).')
 parser.add_argument('--tag', nargs='?', const=None, default=False, help='Create a new tag.')
 parser.add_argument('--bump', action='store_const', dest="action", const="bump", help='"Bump" the version by committing all (changed) module configurations')
+parser.add_argument('--git', nargs='?', const=True, default=False, help='Execute a git command on all modules.')
+parser.add_argument('args', nargs='*', help='Arguments passed to the command (e.g., git).')
 
 # Main
 # ========
