@@ -1,0 +1,56 @@
+.library {
+  overflow: auto;
+}
+
+.library .navigation {
+  padding: 20px;
+  
+  font-size: 14px;
+  position: absolute;
+  left: 0px;
+  top: 0px;
+  bottom: 0px;
+  width: 300px;
+}
+
+.library .navigation input {
+  font-family: 'Open Sans';
+  width: 100%;
+  display: block;
+  margin-bottom: 20px;
+}
+
+/* The import button */
+.library .navigation a.import-document {
+  font-family: 'Avenir LT W01 85 Heavy', 'Montserrat', 'Source Sans Pro';
+  font-size: 16px;
+}
+
+.library .navigation .label {
+  margin-top: 30px;
+  padding-bottom: 20px;
+  font-family: 'Avenir LT W01 85 Heavy', 'Montserrat', 'Source Sans Pro';
+  font-size: 16px;
+}
+
+.library .navigation .explanation {
+  padding-bottom: 20px;
+}
+
+.library .collection {
+   background: white;
+   position: absolute;
+   left: 300px;
+   top: 0px;
+   bottom: 0px;
+   width: 800px;
+}
+
+pre {
+  padding: 10px;
+  font-family: 'Source Code Pro';  
+  font-size: 12px;
+  background: white;
+  overflow: auto;
+  border: 1px solid #ccc;
+}

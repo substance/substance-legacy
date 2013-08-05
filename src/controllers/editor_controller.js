@@ -254,7 +254,6 @@ EditorController.Prototype = function() {
     this.view.toggleNodeInserter();
   };
 
-
   // Transitions
   // ===================================
 

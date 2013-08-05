@@ -24,15 +24,29 @@ Session.Prototype = function() {
   // Load document from data folder
   // --------
 
-  this.loadDocument = function(id, cb) {
-    // this.loadElifeDocument(id, cb);
-    $.getJSON("data/"+id+".json", function(data) {
-      var doc = Article.fromSnapshot(data, {
-        chronicle: Chronicle.create()
-      });
+  this.loadDocument = function(name, cb) {
+    if (name.match(/http/)) {
+      $.getJSON("/convert?url="+encodeURIComponent(name)+"&in=markdown&out=substance", function(data) {
+        var doc = Article.fromSnapshot(data, {
+          chronicle: Chronicle.create()
+        });
+        cb(null, doc);
+      }).error(cb);
+    } else {
+      // Local file load
+      // if (name.match(/elife/)) {
+      //   // this.loadElifeDocument(name, cb);
+      //   return this.loadElifeDocument(name.replace('elife_', ''), cb);
+      // }
+      
+      $.getJSON("data/"+name+".json", function(data) {
+        var doc = Article.fromSnapshot(data, {
+          chronicle: Chronicle.create()
+        });
+        cb(null, doc);
+      }).error(cb);      
+    }
 
-      cb(null, doc);
-    }).error(cb);
   };
 
   this.loadElifeDocument = function(url, cb) {

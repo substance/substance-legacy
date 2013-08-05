@@ -24,7 +24,7 @@ var SandboxView = function(controller) {
   // DOM events
   // -----------
 
-  // this.$el.delegate(".action.logout", "click", _.bind(this.logout, this));
+  // this.$el.delegate(".open-document", "click", _.bind(this.convertDocument, this));
 };
 
 SandboxView.Prototype = function() {
@@ -36,12 +36,31 @@ SandboxView.Prototype = function() {
   this.onStateChanged = function(newState, oldState, options) {
     if (newState === "editor") {
       this.openEditor();
+    } else if (newState === "library") {
+      this.openLibrary(options);
     } else if (newState === "test_center") {
       this.openTestCenter(options);
     } else {
       console.log("Unknown application state: " + newState);
     }
   };
+
+  this.convertDocument = function() {
+    console.log('converting..');
+  };
+
+  // Open Library
+  // ----------
+  //
+
+  this.openLibrary = function() {
+    // Application controller has a editor controller ready
+    // -> pass it to the editor view
+    // var view = new EditorView(this.controller.editor.view);
+    var view = this.controller.library.createView();
+    this.replaceMainView('library', view);
+  };
+
 
   // Open Editor
   // ----------
@@ -73,10 +92,10 @@ SandboxView.Prototype = function() {
   this.replaceMainView = function(name, view) {
     $('body').removeClass().addClass('current-view '+name);
 
-    if (this.mainView && this.mainView !== view) {
-      console.log('disposing it..');
-      this.mainView.dispose();
-    }
+    // if (this.mainView && this.mainView !== view) {
+    //   console.log('disposing it..');
+    //   this.mainView.dispose();
+    // }
 
     this.mainView = view;
     this.$('#container').html(view.render().el);

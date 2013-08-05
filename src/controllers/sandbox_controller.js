@@ -3,6 +3,7 @@
 var _ = require("underscore");
 var Substance = require("../substance");
 var Session = require("../models/session");
+var LibraryController = require("./library_controller");
 var EditorController = require("./editor_controller");
 var util = Substance.util;
 var Controller = Substance.Application.Controller;
@@ -20,6 +21,7 @@ var Router = require("../router");
 var SandboxController = function(env) {
   Controller.call(this);
   this.session = new Session(env);
+
   // HACK: probably this can be straightened
   this.router = new Router({controller: this});
 
@@ -28,6 +30,7 @@ var SandboxController = function(env) {
 
   // Main controls
   this.on('open:editor', this.openEditor);
+  this.on('open:library', this.openLibrary);
   this.on('open:login', this.openLogin);
   this.on('open:test_center', this.openTestCenter);
 };
@@ -40,13 +43,16 @@ SandboxController.Prototype = function() {
 
   this.openEditor = function(documentId) {
     var that = this;
-    // 'lorem_ipsum'
     this.session.loadDocument(documentId || 'lorem_ipsum', function(err, doc) {
       if (err) throw "Loading failed";
-
       that.editor = new EditorController(doc);
       that.updateState('editor');
     });
+  };
+
+  this.openLibrary = function() {
+    this.library = new LibraryController();
+    this.updateState('library');
   };
 
   // Test control center

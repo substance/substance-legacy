@@ -15,6 +15,8 @@ var View = Substance.Application.View;
 var EditorView = function(controller) {
   View.call(this);
 
+  this.$el.addClass('editor');
+  
   this.controller = controller;
 
   // Writer
@@ -121,6 +123,7 @@ EditorView.Prototype = function() {
   this.insertNode = function(type, data) {
     this.surface.insertNode(type, data);
   };
+
 
   // Brings up the node insertion toggles
   // --------
