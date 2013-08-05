@@ -12,7 +12,7 @@ sys.path.append(os.path.join(__dirname__, "py"));
 from util import read_json, project_file, module_file
 from git import git_pull, git_push, git_checkout, git_command, git_status
 from npm import npm_publish, npm_install
-from version import increment_version, bump_version, create_package
+from version import increment_version, bump_version, create_package, create_tag
 
 def get_module_config(root, module):
   folder = os.path.join(root, module["folder"])
@@ -95,6 +95,21 @@ class Actions():
       increment_version(folder, conf, level)
 
   @staticmethod
+  def package(root, config, args=None):
+    tag = args["package"]
+
+    table = {}
+    for folder, conf in iterate_modules(root, config):
+      table[conf["name"]] = conf
+    if "node_modules" in config:
+      table.update(config["node_modules"])
+
+    for folder, conf in iterate_modules(root, config):
+      if "npm" in config:
+        conf.update(config["npm"])
+      create_package(folder, conf, table, tag)
+
+  @staticmethod
   def tag(root, config, args=None):
     tag = args["tag"]
 
@@ -107,7 +122,7 @@ class Actions():
     for folder, conf in iterate_modules(root, config):
       if "npm" in config:
         conf.update(config["npm"])
-      create_package(folder, conf, table, tag)
+      create_tag(folder, conf, table, tag)
 
   @staticmethod
   def bump(root, config, args=None):
@@ -127,7 +142,8 @@ parser.add_argument('--git', nargs='+', default=False, help='Execute a git comma
 parser.add_argument('--publish', action='store_const', dest="action", const="publish", help='Publish node-modules.')
 parser.add_argument('--force', action='store_const', dest="force", const=True, default=False, help='Force.')
 parser.add_argument('--increment-version', nargs='?', const="patch", default=False, help='Increment the VERSION files (default: patch level).')
-parser.add_argument('--tag', nargs='?', const=None, default=False, help='Create a new branch taking the current module configurations.')
+parser.add_argument('--package', nargs='?', const=None, default=False, help='Create package.json files (optional: tag name).')
+parser.add_argument('--tag', nargs='?', const=None, default=False, help='Create a new tag.')
 parser.add_argument('--bump', action='store_const', dest="action", const="bump", help='"Bump" the version by committing all (changed) module configurations')
 
 # Main
@@ -144,6 +160,8 @@ elif args['git'] != False:
   action = "git"
 elif args['increment_version'] != False:
   action = "increment_versions"
+elif args["package"] != False:
+  action = "package"
 elif args["tag"] != False:
   action = "tag"
 elif action == None:

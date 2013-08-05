@@ -7,12 +7,13 @@ import subprocess
 from util import module_file, read_json, write_json, MODULE_CONFIG_FILE
 
 VERSION_EXPRESSION = re.compile("(\d+)\.(\d+)\.(\d+)(.*)")
+git_version_str = "git+%s#%s"
 
 class SemanticVersion():
 
-  def __init__(self, str):
+  def __init__(self, versionStr):
 
-    match = VERSION_EXPRESSION.match(str)
+    match = VERSION_EXPRESSION.match(versionStr)
 
     if (not match):
       raise RuntimeError("Could not parse version string: %s"%(str))
@@ -72,9 +73,7 @@ def bump_version(folder, config):
   git_command(folder, ["add", MODULE_CONFIG_FILE])
   git_command(folder, ["commit", "-m", 'Bumped version to %s'%version])
 
-git_version_str = "git+%s#%s"
-
-def replace_deps(config, table, deps, tag=None, github=False):
+def replace_deps(config, table, deps, tag=None, github=True):
   if not deps in config: return
 
   deps = config[deps]
@@ -116,13 +115,9 @@ def replace_deps(config, table, deps, tag=None, github=False):
         raise RuntimeError("Incomplete specification %s in %s"%(dep, config["name"]));
 
 def create_package(folder, config, table, tag=None, github=True):
-
-  if not "version" in config:
-    print "Could not find version in config of %s"%(folder)
-    return None
-
-  git_command(folder, ["checkout", "-b", "release"])
-  git_command(folder, ["merge", "master"])
+  """
+    Creates 'package.json' based on 'module.json'.
+  """
 
   replace_deps(config, table, "dependencies", tag, github)
   replace_deps(config, table, "devDependencies", tag, github)
@@ -131,9 +126,28 @@ def create_package(folder, config, table, tag=None, github=True):
   print("Writing %s"%(filename))
   write_json(filename, config)
 
+def create_tag(folder, config, table, tag=None, github=True):
+  """
+    Creates a new release tag.
+
+    1. Checksout the release branch and brings it up-to-date.
+    2. Creates package.json and commits it.
+    3. Creates a new tag.
+  """
+
+  if not "version" in config:
+    print "Could not find version in config of %s"%(folder)
+    return None
+
+  git_command(folder, ["checkout", "-b", "release"])
+  git_command(folder, ["merge", "master"])
+
+  create_package(folder, config, table, tag, github)
+
   tag = tag if tag != None else config["version"]
 
   # commit the change
+  filename = os.path.join(folder, "package.json")
   git_command(folder, ["add", filename])
   git_command(folder, ["commit", "-m", 'Created package.json for version %s'%(tag)])
   git_command(folder, ["tag", "-a", tag, "-m", 'Version %s.'%(tag)])
