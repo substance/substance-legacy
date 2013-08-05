@@ -3,17 +3,17 @@
     {
       "repository": "git@github.com:substance/application.git",
       "folder": "node_modules/substance-application",
-      "branch": "master"
+      "branch": "release"
     },
     {
       "repository": "git@github.com:substance/chronicle.git",
       "folder": "node_modules/substance-chronicle",
-      "branch": "master"
+      "branch": "release"
     },
     {
       "repository": "git@github.com:substance/commander.git",
       "folder": "node_modules/substance-commander",
-      "branch": "master"
+      "branch": "release"
     },
     {
       "repository": "git@github.com:substance/converter.git",
@@ -23,12 +23,12 @@
     {
       "repository": "git@github.com:michael/data.git",
       "folder": "node_modules/substance-data",
-      "branch": "master"
+      "branch": "release"
     },
     {
       "repository": "git@github.com:substance/document.git",
       "folder": "node_modules/substance-document",
-      "branch": "master"
+      "branch": "release"
     },
     {
       "repository": "git@github.com:substance/article.git",
@@ -38,32 +38,32 @@
     {
       "repository": "git@github.com:substance/operator.git",
       "folder": "node_modules/substance-operator",
-      "branch": "master"
+      "branch": "release"
     },
     {
       "repository": "git@github.com:substance/regexp.git",
       "folder": "node_modules/substance-regexp",
-      "branch": "master"
+      "branch": "release"
     },
     {
       "repository": "git@github.com:substance/store.git",
       "folder": "node_modules/substance-store",
-      "branch": "master"
+      "branch": "release"
     },
     {
       "repository": "git@github.com:substance/surface.git",
       "folder": "node_modules/substance-surface",
-      "branch": "master"
+      "branch": "release"
     },
     {
       "repository": "git@github.com:substance/test.git",
       "folder": "node_modules/substance-test",
-      "branch": "master"
+      "branch": "release"
     },
     {
       "repository": "git@github.com:substance/util.git",
       "folder": "node_modules/substance-util",
-      "branch": "master"
+      "branch": "release"
     },
     {
       "repository": "git@github.com:substance/substance.git",
