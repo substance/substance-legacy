@@ -7,7 +7,13 @@ import subprocess
 from util import module_file, read_json, write_json, MODULE_CONFIG_FILE
 
 VERSION_EXPRESSION = re.compile("(\d+)\.(\d+)\.(\d+)(.*)")
-git_version_str = "git+%s#%s"
+
+"https://github.com/substance/util.git"
+"git@github.com:substance/article.git"
+
+GITHUB_SSH_URL_EXPR = re.compile("git@github.com:(.+)")
+GITHUB_HTTPS_URL_EXPR = re.compile("https://github.com/(.+)")
+GIT_VERSION_STR = "git+https://github.com/%s#%s"
 
 class SemanticVersion():
 
@@ -95,6 +101,7 @@ def replace_deps(config, table, deps, tag=None, github=True):
     # if the dependency is registered globally
     if dep in table:
       module = table[dep]
+
       if isinstance(module, basestring):
         version = module
       else:
@@ -102,19 +109,20 @@ def replace_deps(config, table, deps, tag=None, github=True):
         if tag != None:
           version = tag
         else:
-          version = module["version"]
+          version = module["branch"]
 
         # in case we have a module specification it is possible to create
         # the dependency entry as "git+https"
         if github:
-          if not "repository" in module:
-            raise RuntimeError("Invalid module specification: %s"%(module));
+          repos = module["repository"]
+          match = GITHUB_SSH_URL_EXPR.match(repos)
+          if (not match):
+            match = GITHUB_HTTPS_URL_EXPR.match(repos)
+            if (not match):
+              raise RuntimeError("Could not parse repository url: %s"%(repos));
 
-          # if it is a semver we add a make it 'vX.Y.Z'
-          if VERSION_EXPRESSION.match(version):
-            version = "v"+version
-
-          version = git_version_str%(module["repository"]["url"], version)
+          repos_name = match.group(1);
+          version = GIT_VERSION_STR%(repos_name, version)
 
       print("Replacing dependency: %s = %s"%(dep, version))
       deps[dep] = version

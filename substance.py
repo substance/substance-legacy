@@ -26,7 +26,7 @@ def iterate_modules(root, config):
     conf = get_module_config(root, m)
     if conf == None: continue
     folder = os.path.join(root, m["folder"])
-    yield [folder, conf]
+    yield [m, folder, conf]
 
 
 def get_configured_deps(folder, conf):
@@ -83,7 +83,7 @@ class Actions():
 
     # 2. Install all shared node modules
     node_modules = config["node_modules"] if "node_modules" in config else {}
-    for folder, conf in iterate_modules(root, config):
+    for __, folder, conf in iterate_modules(root, config):
       node_modules.update(get_configured_deps(folder, conf))
 
     npm_install(root, node_modules)
@@ -92,7 +92,7 @@ class Actions():
   @staticmethod
   def increment_versions(root, config, args=None):
     level = args["increment_version"]
-    for folder, conf in iterate_modules(root, config):
+    for __, folder, conf in iterate_modules(root, config):
       increment_version(folder, conf, level)
 
   @staticmethod
@@ -100,12 +100,13 @@ class Actions():
     tag = args["package"]
 
     table = {}
-    for folder, conf in iterate_modules(root, config):
-      table[conf["name"]] = conf
+    for m, __, conf in iterate_modules(root, config):
+      table[conf["name"]] = m
+    
     if "node_modules" in config:
       table.update(config["node_modules"])
 
-    for folder, conf in iterate_modules(root, config):
+    for __, folder, conf in iterate_modules(root, config):
       if "npm" in config:
         conf.update(config["npm"])
       create_package(folder, conf, table, tag)
