@@ -63,3 +63,8 @@ def npm_install(root, node_modules):
     cmd = ["npm", "install", "%s@%s"%(m, v)]
     p = subprocess.Popen(cmd, cwd=root)
     p.communicate();
+
+def node_server(root):
+    cmd = ["node", "server"]
+    p = subprocess.Popen(cmd, cwd=root)
+    p.communicate();

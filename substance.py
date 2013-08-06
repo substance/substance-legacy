@@ -11,7 +11,7 @@ sys.path.append(os.path.join(__dirname__, "py"));
 
 from util import read_json, project_file, module_file
 from git import git_pull, git_push, git_checkout, git_command, git_status
-from npm import npm_publish, npm_install
+from npm import npm_publish, npm_install, node_server
 from version import increment_version, bump_version, create_package, create_tag, save_current_version, restore_last_version
 
 def get_module_config(root, module):
@@ -137,25 +137,27 @@ class Actions():
   @staticmethod
   def restore_last(root, config, args=None):
     restore_last_version(iterate_modules(root, config))
+
+  @staticmethod
+  def serve(root, config=None, args=None):
+    node_server(root)
   
 # Command line arguments
 # ========
 
 parser = argparse.ArgumentParser(description='Update the mothership.')
 
-parser.add_argument('--pull', '-u', action='store_const', dest="action", const="pull", help='Pull all sub-modules.')
-parser.add_argument('--push', '-p', action='store_const', dest="action", const="push", help='Push all sub-modules.')
+parser.add_argument('--update', '-u', action='store_const', dest="action", const="pull", help='Update the whole project (pull and build).')
+parser.add_argument('--git', nargs='?', const=True, default=False, help='Execute a git command on all modules. All arguments after "--" are passed to git.')
 parser.add_argument('--status', '-s', action='store_const', dest="action", const="status", help='Git status for all sub-modules.')
-parser.add_argument('--checkout', nargs='?', const=True, default=False, help='Checkout a given branch or the one specified in .modules.config')
 parser.add_argument('--publish', action='store_const', dest="action", const="publish", help='Publish node-modules.')
 parser.add_argument('--force', action='store_const', dest="force", const=True, default=False, help='Force.')
 parser.add_argument('--increment-version', nargs='?', const="patch", default=False, help='Increment the VERSION files (default: patch level).')
-parser.add_argument('--package', nargs='?', const=None, default=False, help='Create package.json files (optional: tag name).')
+#parser.add_argument('--package', nargs='?', const=None, default=False, help='Create package.json files (optional: tag name).')
 parser.add_argument('--tag', nargs='?', const=None, default=False, help='Create a new tag.')
 parser.add_argument('--bump', action='store_const', dest="action", const="bump", help='"Bump" the version by committing all (changed) module configurations')
 parser.add_argument('--save-current-version', action='store_const', dest="action", const="save_current", help='Save the current SHA for each sub-module.')
 parser.add_argument('--restore-last-version', action='store_const', dest="action", const="restore_last", help='Restore a previously saved version of each sub-module.')
-parser.add_argument('--git', nargs='?', const=True, default=False, help='Execute a git command on all modules.')
 parser.add_argument('args', nargs='*', help='Arguments passed to the command (e.g., git).')
 
 # Main
@@ -166,18 +168,16 @@ args = vars(parser.parse_args())
 print(args)
 
 action = args['action']
-if args['checkout'] != False:
-  action = "checkout"
-elif args['git'] != False:
+if args['git'] != False:
   action = "git"
 elif args['increment_version'] != False:
   action = "increment_versions"
-elif args["package"] != False:
-  action = "package"
+#elif args["package"] != False:
+#  action = "package"
 elif args["tag"] != False:
   action = "tag"
 elif action == None:
-  action = "update"
+  action = "serve"
 
 root_dir = os.path.realpath(os.path.dirname(__file__))
 project_config = read_json(project_file(root_dir))
