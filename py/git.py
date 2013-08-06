@@ -33,10 +33,7 @@ def git_push(root, module):
 
 def git_checkout(root, module, args):
   module_dir = os.path.join(root, module["folder"])
-
   branch = module["branch"]
-  if args['checkout'] != True:
-    branch = args['checkout']
 
   print("git checkout", branch)
   cmd = ["git", "checkout", branch]
