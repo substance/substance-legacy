@@ -149,6 +149,7 @@ parser = argparse.ArgumentParser(description='Update the mothership.')
 
 parser.add_argument('--update', '-u', action='store_const', dest="action", const="pull", help='Update the whole project (pull and build).')
 parser.add_argument('--git', nargs='?', const=True, default=False, help='Execute a git command on all modules. All arguments after "--" are passed to git.')
+parser.add_argument('--checkout', action='store_const', dest="action", const="checkout", help='Checkout the module versions as specified in project.json.')
 parser.add_argument('--status', '-s', action='store_const', dest="action", const="status", help='Git status for all sub-modules.')
 parser.add_argument('--publish', action='store_const', dest="action", const="publish", help='Publish node-modules.')
 parser.add_argument('--force', action='store_const', dest="force", const=True, default=False, help='Force.')
