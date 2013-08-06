@@ -151,14 +151,14 @@ parser.add_argument('--update', '-u', action='store_const', dest="action", const
 parser.add_argument('--git', nargs='?', const=True, default=False, help='Execute a git command on all modules. All arguments after "--" are passed to git.')
 parser.add_argument('--checkout', action='store_const', dest="action", const="checkout", help='Checkout the module versions as specified in project.json.')
 parser.add_argument('--status', '-s', action='store_const', dest="action", const="status", help='Git status for all sub-modules.')
-parser.add_argument('--publish', action='store_const', dest="action", const="publish", help='Publish node-modules.')
-parser.add_argument('--force', action='store_const', dest="force", const=True, default=False, help='Force.')
-parser.add_argument('--increment-version', nargs='?', const="patch", default=False, help='Increment the VERSION files (default: patch level).')
-#parser.add_argument('--package', nargs='?', const=None, default=False, help='Create package.json files (optional: tag name).')
-parser.add_argument('--tag', nargs='?', const=None, default=False, help='Create a new tag.')
-parser.add_argument('--bump', action='store_const', dest="action", const="bump", help='"Bump" the version by committing all (changed) module configurations')
-parser.add_argument('--save-current-version', action='store_const', dest="action", const="save_current", help='Save the current SHA for each sub-module.')
-parser.add_argument('--restore-last-version', action='store_const', dest="action", const="restore_last", help='Restore a previously saved version of each sub-module.')
+#parser.add_argument('--publish', action='store_const', dest="action", const="publish", help='Publish node-modules.')
+#parser.add_argument('--force', action='store_const', dest="force", const=True, default=False, help='Force.')
+#parser.add_argument('--increment-version', nargs='?', const="patch", default=False, help='Increment the VERSION files (default: patch level).')
+parser.add_argument('--package', nargs='?', const=None, default=False, help='Create package.json files according to project settings.')
+#parser.add_argument('--tag', nargs='?', const=None, default=False, help='Create a new tag.')
+#parser.add_argument('--bump', action='store_const', dest="action", const="bump", help='"Bump" the version by committing all (changed) module configurations')
+#parser.add_argument('--save-current-version', action='store_const', dest="action", const="save_current", help='Save the current SHA for each sub-module.')
+#parser.add_argument('--restore-last-version', action='store_const', dest="action", const="restore_last", help='Restore a previously saved version of each sub-module.')
 parser.add_argument('args', nargs='*', help='Arguments passed to the command (e.g., git).')
 
 # Main
@@ -171,12 +171,12 @@ print(args)
 action = args['action']
 if args['git'] != False:
   action = "git"
-elif args['increment_version'] != False:
-  action = "increment_versions"
-#elif args["package"] != False:
-#  action = "package"
-elif args["tag"] != False:
-  action = "tag"
+#elif args['increment_version'] != False:
+#  action = "increment_versions"
+elif args["package"] != False:
+  action = "package"
+#elif args["tag"] != False:
+#  action = "tag"
 elif action == None:
   action = "serve"
 
