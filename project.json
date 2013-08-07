@@ -26,7 +26,7 @@
       "branch": "0.1.x"
     },
     {
-      "repository": "https://github.com/michael/data.git",
+      "repository": "https://github.com/substance/data.git",
       "folder": "node_modules/substance-data",
       "branch": "0.8.x"
     },
