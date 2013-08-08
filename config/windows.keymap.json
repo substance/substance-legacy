@@ -10,9 +10,9 @@
     "commands": [
       {"keys": ["backspace"],      "command": "delete", "args": ["left"] },
       {"keys": ["del"],            "command": "delete", "args": ["right"] },
-
       {"keys": ["enter"],          "command": "insertNode" },
       {"keys": ["shift+enter"],    "command": "write", "args": ["\n"] },
+      {"keys": ["tab"], "command": "write", "args": ["  "] },
 
       {"keys": ["ctrl+enter h"],   "command": "insertNode", "args": ["heading"] },
       {"keys": ["ctrl+enter p"],   "command": "insertNode", "args": ["paragraph"] },

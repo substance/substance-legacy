@@ -24,6 +24,7 @@
       {"keys": ["del"],                "command": "delete", "args": ["right"] },
       {"keys": ["enter"],               "command": "modifyNode" },
       {"keys": ["shift+enter"],         "command": "write", "args": ["\n"] },
+      {"keys": ["tab"], "command": "write", "args": ["  "] },
 
       {"keys": ["ctrl+enter"],          "command": "insertNode", "args": ["constructor"] },
       // {"keys": ["ctrl+enter h"],          "command": "insertNode", "args": ["heading"] },
