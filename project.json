@@ -41,6 +41,11 @@
       "branch": "0.2.x"
     },
     {
+      "repository": "https://github.com/elifesciences/lens-outline.git",
+      "folder": "node_modules/lens-outline",
+      "branch": "modularize"
+    },
+    {
       "repository": "https://github.com/substance/regexp.git",
       "folder": "node_modules/substance-regexp",
       "branch": "0.1.x"
@@ -59,6 +64,11 @@
       "repository": "https://github.com/substance/test.git",
       "folder": "node_modules/substance-test",
       "branch": "0.2.x"
+    },
+    {
+      "repository": "https://github.com/substance/toc.git",
+      "folder": "node_modules/substance-toc",
+      "branch": "0.1.x"
     },
     {
       "repository": "https://github.com/substance/util.git",
