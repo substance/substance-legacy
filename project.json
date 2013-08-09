@@ -8,7 +8,7 @@
     {
       "repository": "https://github.com/substance/article.git",
       "folder": "node_modules/substance-article",
-      "branch": "0.1.x"
+      "branch": "entspannt"
     },
     {
       "repository": "https://github.com/substance/chronicle.git",
@@ -58,7 +58,7 @@
     {
       "repository": "https://github.com/substance/surface.git",
       "folder": "node_modules/substance-surface",
-      "branch": "0.3.x"
+      "branch": "entspannt"
     },
     {
       "repository": "https://github.com/substance/test.git",
@@ -78,7 +78,7 @@
     {
       "repository": "https://github.com/substance/substance.git",
       "folder": ".",
-      "branch": "0.5.x"
+      "branch": "entspannt"
     }
   ],
   "node_modules": {
