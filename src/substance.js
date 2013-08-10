@@ -18,14 +18,7 @@ var Substance = {
 
 // Register node types
 // TODO: that should be done smarter
-Substance.Document.Transformer.nodeTypes = {
-  "node": require('substance-article/nodes/node'),
-  "constructor": require('substance-article/nodes/constructor'),
-  "paragraph": require('substance-article/nodes/paragraph'),
-  "heading": require('substance-article/nodes/heading'),
-  "image": require('substance-article/nodes/image'),
-  "codeblock": require('substance-article/nodes/codeblock')
-};
+Substance.Document.Transformer.nodeTypes = require('substance-article/nodes');
 
 require("substance-operator/tests");
 require("substance-chronicle/tests");
