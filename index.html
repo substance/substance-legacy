@@ -156,24 +156,6 @@ $ npm start
       <div class="cursor">&nbsp;</div>
     </script>
 
-    <!-- Substance.Text Node -->
-    <!-- Used for paragraphs and headings -->
-    <script type="text/x-ejs-template" name="text">
-      <div class="content"></div>
-    </script>
-
-    <!-- Substance.Constructor Node -->
-    <!-- Constructs nodes -->
-    <script type="text/x-ejs-template" name="constructor">
-      <div class="content">
-        <% _.each(content, function(nodeType) { %>
-          <span><%= nodeType.name %></span>
-        <% }); %>
-      </div>
-    </script>
-
-
-
     <script type="text/x-ejs-template" name="image">
       <div class="content">
         <div class="image-char">
