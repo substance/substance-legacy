@@ -247,6 +247,10 @@ EditorController.Prototype = function() {
     return view;
   };
 
+  this.insertImage = function() {
+    this.view.insertImage();
+  };
+
   // Assumes there is a view already
   //
 

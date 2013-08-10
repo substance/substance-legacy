@@ -167,10 +167,7 @@
   width: 35px;
   height: 30px;
   line-height: 30px;
-  /*background: rgba(0,0,0,0.05);*/
   margin-right: 1px;
-/*  border: 1px solid #ccc;
-  border-right: none;*/
   color: rgba(0,0,0,0.5);
 }
 
@@ -184,34 +181,49 @@
   background: rgba(0,0,0,0.1);
 }
 
-/*.annotation-toggles .markers .annotation-toggle {
-
-  float: right;
-}*/
 
 .annotation-toggles .annotation-toggle.question {
-  /*background: rgba(11, 157, 217, 0.20);  */
+  color: rgba(11, 157, 217, 1);
 }
 
 .annotation-toggles .annotation-toggle.idea {
-  /*background: rgba(145, 187, 4, 0.25);*/
+  color: rgba(145, 187, 4, 1);
 }
 
 .annotation-toggles .annotation-toggle.error {
-  /*background: rgba(231, 88, 46, 0.25);*/
+  color: rgba(231, 88, 46, 1);
 }
+
+
 
 /* Hover states */
 .annotation-toggles .annotation-toggle.question:hover {
-  background: rgba(11, 157, 217, 0.30);  
+  background: rgba(11, 157, 217, 0.3);  
 }
 
 .annotation-toggles .annotation-toggle.idea:hover {
-  background: rgba(145, 187, 4, 0.35);
+  background: rgba(145, 187, 4, 0.3);
 }
 
 .annotation-toggles .annotation-toggle.error:hover {
-  background: rgba(231, 88, 46, 0.35);
+  background: rgba(231, 88, 46, 0.3);
+}
+
+
+/* Hover states */
+.annotation-toggles .annotation-toggle.question.active {
+  color: rgba(255,255,255, 0.7);
+  background: rgba(11, 157, 217, 1);  
+}
+
+.annotation-toggles .annotation-toggle.idea.active {
+  color: rgba(255,255,255, 0.7);
+  background: rgba(145, 187, 4, 1);
+}
+
+.annotation-toggles .annotation-toggle.error.active {
+  color: rgba(255,255,255, 0.7);
+  background: rgba(231, 88, 46, 1);
 }
 
 

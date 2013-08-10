@@ -29,6 +29,8 @@ var EditorView = function(controller) {
 
   // A Substance.Document.Writer instance is provided by the controller
   this.surface = new Substance.Surface(this.controller.writer);
+  
+  this.listenTo(this.writer.selection,  "selection:changed", this.updateAnnotationToggles);
 
   this.$el.delegate('.image-files', 'change', _.bind(this.handleFileSelect, this));
 };
@@ -83,8 +85,8 @@ EditorView.Prototype = function() {
         ctx.drawImage(img, 0, 0, width, height);
 
         var mediumImage = canvas.toDataURL("image/png");
-
-        that.insertImage('image', {
+        
+        that.writer.insertNode('image', {
           medium: mediumImage
         });
 
@@ -94,20 +96,42 @@ EditorView.Prototype = function() {
     reader.readAsDataURL(file);
   };
 
+
+  // Renders the current selection
+  // --------
+  //
+
+  this.updateAnnotationToggles = function() {
+    var annotations = this.writer.getAnnotations({
+      selection: this.writer.selection
+    });
+
+    this.$('.annotation-toggle.active').removeClass('active');
+    this.$('.annotation.active').removeClass('active');
+
+    _.each(annotations, function(a) {
+      this.$('.annotation-toggle.'+a.type).addClass('active');
+
+      // Mark annotations on the surface as active
+      this.$('#'+a.id).addClass('active');
+    }, this);
+
+  };
+
   // Insert a new image
   // --------
   //
 
   this.insertImage = function(type, data) {
-    this.surface.insertImage(type, data);
+    $('.image-files').click();
   };
 
   // Insert a fresh new node
   // --------
   //
 
-  this.insertNode = function(type, data) {
-    this.surface.insertNode(type, data);
+  this.insertNode = function(type) {
+    this.writer.insertNode(type);
   };
 
   // Clear selection
@@ -124,6 +148,7 @@ EditorView.Prototype = function() {
 
   this.annotate = function(type) {
     this.writer.annotate(type);
+    this.updateAnnotationToggles();
     return false;
   };
 
