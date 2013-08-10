@@ -13,7 +13,7 @@ Installation is easy:
    ```bash
    $ git clone https://github.com/substance/screwdriver.git
    $ cd screwdriver
-   $ python setup.py install
+   $ sudo python setup.py install
    ```
 
 2. Clone the repository
