@@ -24,8 +24,6 @@ var EditorView = function(controller) {
 
   this.writer = controller.writer;
 
-  this.listenTo(this.writer.selection, 'selection:changed', this.toggleAnnotationToggles);
-
   // Surface
   // --------
 
@@ -33,7 +31,6 @@ var EditorView = function(controller) {
   this.surface = new Substance.Surface(this.controller.writer);
 
   this.$el.delegate('.image-files', 'change', _.bind(this.handleFileSelect, this));
-
 };
 
 EditorView.Prototype = function() {
@@ -95,18 +92,7 @@ EditorView.Prototype = function() {
     };
 
     reader.readAsDataURL(file);
-
   };
-
-  this.toggleAnnotationToggles = function() {
-    var sel = this.writer.selection;
-    if (sel.getNodes().length === 1 && !sel.isCollapsed()) {
-      this.$('.annotation-toggles').show();
-    } else {
-      this.$('.annotation-toggles').hide();
-    }
-  };
-
 
   // Insert a new image
   // --------
@@ -122,15 +108,6 @@ EditorView.Prototype = function() {
 
   this.insertNode = function(type, data) {
     this.surface.insertNode(type, data);
-  };
-
-
-  // Brings up the node insertion toggles
-  // --------
-  //
-
-  this.toggleNodeInserter = function() {
-    this.surface.toggleNodeInserter();
   };
 
   // Clear selection
@@ -149,7 +126,6 @@ EditorView.Prototype = function() {
     this.writer.annotate(type);
     return false;
   };
-
 
 
   // Rendering
