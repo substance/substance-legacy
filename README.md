@@ -25,6 +25,7 @@ Installation is easy:
 2. Run the update command, which pulls in all required dependencies
 
    ```bash
+   $ cd substance
    $ substance --update
    ```
    
