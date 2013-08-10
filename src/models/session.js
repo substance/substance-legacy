@@ -31,7 +31,9 @@ Session.Prototype = function() {
           chronicle: Chronicle.create()
         });
         cb(null, doc);
-      }).error(cb);
+      }).error(function(err) {
+        cb(new Error(err.responseText));
+      });
     } else {
       // Local file load
       // if (name.match(/elife/)) {
@@ -44,7 +46,9 @@ Session.Prototype = function() {
           chronicle: Chronicle.create()
         });
         cb(null, doc);
-      }).error(cb);      
+      }).error(function(err) {
+        cb(new Error(err.responseText));
+      });
     }
 
   };

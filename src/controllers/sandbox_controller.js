@@ -44,7 +44,7 @@ SandboxController.Prototype = function() {
   this.openEditor = function(documentId) {
     var that = this;
     this.session.loadDocument(documentId || 'lorem_ipsum', function(err, doc) {
-      if (err) throw "Loading failed";
+      if (err) throw err;
       that.editor = new EditorController(doc);
       that.updateState('editor');
     });
