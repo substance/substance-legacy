@@ -33,6 +33,6 @@ require("substance-data/tests");
 require("substance-document/tests");
 //require("substance-article/tests");
 require("substance-store/tests");
-require("substance-surface/tests");
+// require("substance-surface/tests");
 
 module.exports = Substance;

@@ -30,6 +30,7 @@ Session.Prototype = function() {
         var doc = Article.fromSnapshot(data, {
           chronicle: Chronicle.create()
         });
+        console.log('THE CONVERTED DOC', doc.toJSON());
         cb(null, doc);
       }).error(function(err) {
         cb(new Error(err.responseText));
