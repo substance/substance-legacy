@@ -16,7 +16,7 @@ var EditorView = function(controller) {
   View.call(this);
 
   this.$el.addClass('editor');
-  
+
   this.controller = controller;
 
   // Writer
@@ -29,7 +29,7 @@ var EditorView = function(controller) {
 
   // A Substance.Document.Writer instance is provided by the controller
   this.surface = new Substance.Surface(this.controller.writer);
-  
+
   this.listenTo(this.writer.selection,  "selection:changed", this.updateAnnotationToggles);
 
   this.$el.delegate('.image-files', 'change', _.bind(this.handleFileSelect, this));
@@ -85,7 +85,7 @@ EditorView.Prototype = function() {
         ctx.drawImage(img, 0, 0, width, height);
 
         var mediumImage = canvas.toDataURL("image/png");
-        
+
         that.writer.insertNode('image', {
           medium: mediumImage
         });
@@ -102,6 +102,7 @@ EditorView.Prototype = function() {
   //
 
   this.updateAnnotationToggles = function() {
+
     var annotations = this.writer.getAnnotations({
       selection: this.writer.selection
     });
