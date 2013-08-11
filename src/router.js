@@ -11,7 +11,6 @@ var Router = Backbone.Router.extend({
     this.route('documents/:document', 'document', this.editor);
 
     // this.route('new', 'new_document', this.newDocument);
-
     this.route('tests', 'test_center', this.testCenter);
     this.route('tests/:suite', 'test_center', this.testCenter);
 

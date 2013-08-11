@@ -56,6 +56,39 @@
 }
 
 
+.show-data {
+  position: absolute;
+  right: 0px;
+  bottom: 30px;
+  padding: 10px;
+  background: rgba(0,0,0,0.1);
+}
+
+.show-data.active {
+  background: white;
+}
+
+#document .source {
+  display: none;
+  
+  position: absolute;
+  left: 0px;
+  right: 0px;
+  top: 0px;
+  bottom: 0px;
+  border: none;
+
+  font-family: 'Source Code Pro', 'Bitstream Vera Sans Mono', Courier, monospace !important;
+  font-weight: normal;
+  font-size: 13px;
+  color: rgba(0,0,0, 0.5);
+  background: #D7D8D3;
+  margin: 0px;
+  letter-spacing: 1px;
+  line-height: 18px;
+  padding: 30px;
+}
+
 #document .surface {
   position: absolute;
   top: 0px;

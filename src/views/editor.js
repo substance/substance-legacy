@@ -181,6 +181,14 @@ EditorView.Prototype = function() {
     this.surface.$('.cursor').hide();
   };
 
+  this.toggleSource = function() {
+    console.log('toggle it');
+    this.$('.show-data').toggleClass('active');
+    this.$('.source').val(JSON.stringify(this.writer.__document.toJSON(), null, '  '));
+    this.$('.surface').toggle();
+    this.$('.source').toggle();
+  };
+
   // Attempt to create a new link annotation
   // --------
   //

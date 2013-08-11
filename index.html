@@ -113,13 +113,14 @@ $ npm start
           <a href="#" class="insert-node image" sbs-click="insertImage()"><i class="icon-picture"></i></a>
           <a href="#" class="insert-node codeblock" sbs-click="insertNode(codeblock)"><i class="icon-code"></i></a>
           <!--<a href="#" class="insert-node blockquote" sbs-click="insertNode(blockquote)"><i class="icon-quote-left"></i></a>-->
-
         </div>
+        <a class="show-data" href="#" sbs-click="toggleSource()"><i class="icon-code"></i> Source</a>
       </div>
 
       <div id="document_wrapper">
         <div id="composer">
           <div id="document">
+            <textarea class="source"></textarea>
             <div class="surface">
 
             </div>
