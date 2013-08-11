@@ -1,10 +1,9 @@
 [
-  {
-    "context": "sandbox",
-    "commands": [
-      {"keys": ["command+shift+i"],   "command": "sayHello", "args": ["World!"]}
-    ]
-  },
+  // {
+  //   "context": "sandbox",
+  //   "commands": [
+  //   ]
+  // },
   {
     "context": "sandbox.editor",
     "commands": [
@@ -38,7 +37,7 @@
       {"keys": ["command+1"],           "command": "annotate", "args": ["idea"]},
       {"keys": ["command+2"],           "command": "annotate", "args": ["question"]},
       {"keys": ["command+3"],           "command": "annotate", "args": ["error"]},
-  
+
       {"keys": ["right"],               "command": "move", "scope": "selection", "args": ["right", "char"] },
       {"keys": ["left"],                "command": "move", "scope": "selection", "args": ["left", "char"] },
       {"keys": ["down"],                "command": "move", "scope": "selection", "args": ["right", "line"] },
@@ -48,7 +47,7 @@
       {"keys": ["alt+left"],            "command": "move", "scope": "selection", "args": ["left", "word"] },
       {"keys": ["command+right"],       "command": "move", "scope": "selection", "args": ["right", "node"] },
       {"keys": ["command+left"],        "command": "move", "scope": "selection", "args": ["left", "node"] },
-  
+
       {"keys": ["shift+right"],         "command": "expand", "scope": "selection", "args": ["right", "char"] },
       {"keys": ["shift+left"],          "command": "expand", "scope": "selection", "args": ["left", "char"] },
       {"keys": ["shift+down"],          "command": "expand", "scope": "selection", "args": ["right", "line"] },

@@ -1,10 +1,10 @@
 [
-  // {
-  //   "context": "sandbox.editor",
-  //   "commands": [
-  //     {"keys": ["ctrl+enter"],     "command": "toggleNodeInserter" }
-  //   ]
-  // },
+  {
+    "context": "sandbox.editor",
+    "commands": [
+      {"keys": ["ctrl+enter i"], "command": "insertImage" }
+    ]
+  },
   {
     "context": "sandbox.editor.writer",
     "commands": [
@@ -16,7 +16,6 @@
 
       {"keys": ["ctrl+enter h"], "command": "insertNode", "args": ["heading"] },
       {"keys": ["ctrl+enter p"], "command": "insertNode", "args": ["paragraph"] },
-      {"keys": ["ctrl+enter i"], "command": "insertNode", "args": ["image"] },
       {"keys": ["ctrl+enter c"], "command": "insertNode", "args": ["codeblock"] },
 
       {"keys": ["ctrl+c"], "command": "copy", "preventDefault": "false" },
