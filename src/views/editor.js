@@ -106,14 +106,25 @@ EditorView.Prototype = function() {
       selection: this.writer.selection
     });
 
-    this.$('.annotation-toggle.active').removeClass('active');
-    this.$('.annotation.active').removeClass('active');
+    // Note: we must use caching here, as this method is triggered
+    // very rapidly (e.g., cursor movement)
+    // Otherwise, the cursor will not run smoothly when keys are hold down.
+
+    this.$(this._activeAnnotationToggles).removeClass('active');
+    this.$(this._activeAnnotations).removeClass('active');
+
+    this._activeAnnotationToggles = [];
+    this._activeAnnotations = [];
 
     _.each(annotations, function(a) {
-      this.$('.annotation-toggle.'+a.type).addClass('active');
+      var $at = this.$('.annotation-toggle.'+a.type);
+      $at.addClass('active');
+      this._activeAnnotationToggles.push($at[0]);
 
       // Mark annotations on the surface as active
-      this.$('#'+a.id).addClass('active');
+      var $a = this.$('#'+a.id);
+      $a.addClass('active');
+      this._activeAnnotations.push($a[0]);
     }, this);
 
   };
