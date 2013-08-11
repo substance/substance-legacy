@@ -19,6 +19,8 @@ var addLineBehavior = function(surface, cursor) {
   var verticalNav = false;
   var iniX;
 
+  var _cache, _cachePos;
+
   var getX = function (el) {
     var rect = el.getClientRects();
     return rect[0].left;
@@ -29,165 +31,122 @@ var addLineBehavior = function(surface, cursor) {
     return rect[0].top;
   };
 
-  var getNodeElement = function(nodePos) {
-    return surface.$('.nodes')[0].children[nodePos];
-  };
-
-  var getContent = function(nodePos) {
-    var nodeEl = getNodeElement(nodePos);
-    var content = nodeEl.children[0]; // [1] is the cursor div
-    return content;
-  };
-
-  var getSpan = function(nodePos, charPos) {
-    var content = getContent(nodePos);
-    var span = content.children[charPos];
-    return span;
-  };
-
   // Retrieves the current cursor position
   // --------
-  // If there is no cursor it takes the sṕan of the given position
+  //
+
   var getCursorRect = function() {
     var el = surface.$('.cursor')[0];
-    // if there is no cursor we try to find other ways
-    //  - the span of the current char position
-    //  - the current node
-    if (!el) {
-      // Get the element of the current position
-      el = getSpan(cursor.nodePos, cursor.charPos);
-
-      // this happens if we are at the end of a node or in an empty node
-      if (!el) {
-        if(cursor.charPos > 0) {
-          // use the element for the previous position
-          el = getSpan(cursor.nodePos, cursor.charPos-1);
-        } else {
-          // use the node element (~empty node)
-          el = getNodeElement(cursor.nodePos);
-        }
-      }
-    }
-
+    if (!el) return null;
     return el.getClientRects()[0];
   };
 
   var resetCursor = function() {
     if (!cursor.isValid()) return;
     var rect = getCursorRect();
-    iniX = rect.left;
+    if(rect !== null) {
+      iniX = rect.left;
+    } else {
+      iniX = null;
+    }
+    _cache = [];
+    _cachePos = -1;
   };
 
-  var upDown = function(direction) {
+  var _stepVertical = function(direction) {
 
-    var initialNodePos;
-    var span;
-
-    // we have to keep the initial node position
-    // to detect the number of skipped nodes.
-    initialNodePos = cursor.nodePos;
-
-    // we take the absolute position of the cursor element as reference position
-    var cursorRect = getCursorRect();
-
-    var initialY = cursorRect.top;
-    if (iniX === undefined) {
-      iniX = cursorRect.left;
+    // try to use a previous cached position first
+    if (direction === "up" && _cache.length > _cachePos + 1) {
+      _cachePos += 1;
+      cursor.nodePos = _cache[_cachePos].nodePos;
+      cursor.charPos = _cache[_cachePos].charPos;
+      return;
+    } else if (direction === "down" && _cachePos > 0) {
+      _cachePos -= 1;
+      cursor.nodePos = _cache[_cachePos].nodePos;
+      cursor.charPos = _cache[_cachePos].charPos;
+      return;
     }
 
+    var iterator = cursor.copy();
+    var nodePos, node, nodeView, wPos;
+
+    var previousY = undefined;
     var lineSteps = 0;
-    var lastY = initialY;
-    var x,y;
 
     while (true) {
 
-      if (direction === "down") {
-        // enter the next node and start iterating from left to right
-        cursor.nextChar();
+      // TODO: iterate over ranges
 
-        if (cursor.isEndOfDocument()) break;
-      } else {
-        // enter the previous node and start iterating from right to left
-        cursor.prevChar();
-
-        if (cursor.isBeginOfDocument()) break;
+      if (node === undefined || nodePos !== iterator.nodePos) {
+        nodePos = iterator.nodePos;
+        node = surface.writer.getNodeFromPosition(iterator.nodePos);
+        nodeView = surface.nodes[node.id];
       }
 
-      // Stop if we reach the end of document
-      // or the end of the next node (not stepping over a whole node)
-      if (Math.abs(cursor.nodePos-initialNodePos) > 1) {
+      wPos = nodeView.getDOMPosition(iterator.charPos);
+      var rect = wPos.getClientRects()[0];
+
+      // console.log("cursor._stepVertical", iterator.nodePos, iterator.charPos);
+      // console.log("...", rect.left, iniX, rect.top, startY);
+
+      if (direction === "up") {
+        iterator.move("left", "char");
+      } else {
+        iterator.move("right", "char");
+      }
+
+      if (iterator.nodePos === 0 && iterator.charPos === 0) {
         break;
       }
 
-      span = getSpan(cursor.nodePos, cursor.charPos);
-
-      // at the end of a node we won't get a span element for the position,
-      // as the selection has an extra position after the last character
-      if (!span) {
+      if (rect === undefined) {
         continue;
       }
 
-      x = getX(span);
-      y = getY(span);
-
-      if (y !== lastY) {
-        lineSteps++;
-        lastY = y;
-      }
-
-      if (lineSteps === 0) {
+      if (previousY === undefined) {
+        previousY = rect.top;
         continue;
       }
 
-      if (direction === "down") {
-        if (x >= iniX || lineSteps > 1) break;
+      if (previousY !== rect.top) {
+        previousY = rect.top;
+        lineSteps += 1;
+      }
+
+      if (direction === "up") {
+        var isStart = iterator.isLeftBound();
+        if ((lineSteps > 0 && (rect.left <= iniX || isStart)) || lineSteps === 2) {
+          if (!isStart) iterator.move("right", "char");
+          break;
+        }
       } else {
-        // only skip one line at once.
-        if (x <= iniX || lineSteps > 1) break;
+        var isEnd = iterator.isRightBound();
+        if ( (lineSteps > 0 && (rect.left >= iniX || isEnd)) || lineSteps === 2) {
+          if (!isEnd) iterator.move("left", "char");
+          break;
+        }
       }
     }
-
-    // As we haved stopped left to the reference position and the cursor gets rendered on the left side
-    // of the current element, we need to put the position to the next char.
-    // However, we do not do this at the begin of line and end of line (otherwise cursor gets rendered in the wrong row).
 
     if (direction === "up") {
-
-      //var content = getContent(pos[0]);
-
-      span = getSpan(cursor.nodePos, cursor.charPos);
-      y = getY(span);
-
-      var prevPos = cursor.copy();
-      prevPos.prevChar();
-      var prevSpan = getSpan(prevPos.nodePos, prevPos.charPos);
-
-      var nextPos = cursor.copy();
-      nextPos.nextChar();
-      var nextSpan = getSpan(nextPos.nodePos, nextPos.charPos);
-
-      var beginOfLine = (!prevSpan || cursor.isBeginOfDocument() || getY(prevSpan) !== y);
-      var endOfLine = (cursor.isEndOfDocument() || (nextSpan && getY(nextSpan) !== y));
-
-      if (!beginOfLine && !endOfLine) {
-        cursor.nextChar();
-      }
+      _cache.push(iterator);
+      _cachePos = _cache.length-1;
     } else {
-      // only skip one line at once.
-      // E.g, this happens when there are shorter wrapped lines than the one we started
-      // As we have proceeded to the next line already we have to put the cursor one back
-      if (!cursor.isEndOfDocument()) {
-        cursor.prevChar();
-      }
+      _cache.unshift(iterator);
+      _cachePos = 0;
     }
+
+    cursor.nodePos = iterator.nodePos;
+    cursor.charPos = iterator.charPos;
   };
 
   cursor.prevLine = function() {
-    upDown('up');
+    _stepVertical('up');
   };
 
   cursor.nextLine = function() {
-    upDown('down');
+    _stepVertical('down');
   };
 
   cursor.set = function(nodePos, charPos) {
@@ -203,7 +162,7 @@ var addLineBehavior = function(surface, cursor) {
       if (!verticalNav) {
         resetCursor();
         verticalNav = true;
-      };
+      }
 
       if (direction === "left") {
         return this.prevLine();
@@ -218,7 +177,6 @@ var addLineBehavior = function(surface, cursor) {
   };
 };
 
-
 // Substance.Editor.Controller
 // -----------------
 //
@@ -231,7 +189,6 @@ var EditorController = function(document) {
 
   // Main controls
   this.on('show:comments', this.showComments);
-
 };
 
 EditorController.Prototype = function() {
@@ -270,7 +227,7 @@ EditorController.Prototype = function() {
 
   // Cancel current user action (e.g. link insertion)
   // --------
-  // 
+  //
   // For some reason this does not get triggered when the focus in the URL input form
 
   this.cancel = function() {
@@ -293,11 +250,11 @@ EditorController.Prototype = function() {
     // This is a hack to make the keyboard pull the new app state
     // Oliver: How can we do better?
     window.Substance.app.keyboard.stateChanged();
-    
+
   };
-  
+
   // --------
-  // 
+  //
 
   this.getActiveControllers = function() {
 
