@@ -64,7 +64,6 @@ EditorView.Prototype = function() {
 
     reader.onload = function(e) {
       img.src = e.target.result;
-      var largeImage = img.src;
 
       _.delay(function() {
         var canvas = document.getElementById('canvas');
@@ -89,7 +88,7 @@ EditorView.Prototype = function() {
         }
         canvas.width = width;
         canvas.height = height;
-        var ctx = canvas.getContext("2d");
+        ctx = canvas.getContext("2d");
         ctx.drawImage(img, 0, 0, width, height);
 
         var mediumImage = canvas.toDataURL("image/png");
@@ -138,8 +137,7 @@ EditorView.Prototype = function() {
 
   };
 
-
-  // Switches to document-tool bar
+  // Switches to the writer state
   // --------
 
   this.activateWriter = function() {
