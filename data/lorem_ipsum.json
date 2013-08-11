@@ -86,6 +86,12 @@
       "type":"question",
       "path": ["paragraph_1", "content"],
       "range":[150,176]
+    },
+    "link_1": {
+      "id":"link_1",
+      "type":"link",
+      "path": ["paragraph_1", "content"],
+      "range":[209,218]
     }
   }
 }

@@ -80,6 +80,9 @@ SandboxController.Prototype = function() {
   this.getActiveControllers = function() {
     var result = [ ["sandbox", this] ];
 
+    // debugger;
+    console.log('getting active controller...');
+
     var state = this.state;
 
     if (state === "editor") {

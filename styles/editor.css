@@ -100,7 +100,6 @@
   position: relative;
 }
 
-
 .node-toggles .insert-node i {
   
 }
@@ -108,7 +107,6 @@
 .node-toggles .insert-node span {
   display: block;
   height: 20px;
-  /*border: 1px solid #fff;*/
   float: right;
 }
 
@@ -137,6 +135,7 @@
 }
 
 .annotation-toggles input {
+  display: none;
   margin-top: 20px;
   padding: 3px;
   border: 1px solid rgba(0,0,0,0.3);
@@ -226,6 +225,54 @@
   background: rgba(231, 88, 46, 1);
 }
 
+
+/* Annotation Styles
+-------------------------------------------------------------------------------*/
+
+.content-node .idea { background-color: rgba(102, 182, 32, 0.3); }
+.content-node .question { background-color: rgba(16, 167, 222, 0.3); }
+.content-node .error { background-color: rgba(237, 96, 48, 0.3); }
+
+.content-node .idea.active { background-color: rgba(102, 182, 32, 0.5); }
+.content-node .question.active { background-color: rgba(16, 167, 222, 0.5); }
+.content-node .error.active { background-color: rgba(237, 96, 48, 0.5); }
+
+.content-node .link { color: #117CE6; font-weight: bold; }
+.content-node .link:hover, .content-node .link.active { background: rgba(0,0,0,0.05); }
+
+.content-node .code {
+/*  font-family: Menlo, Consolas, Monaco, monospace;
+  font-size: 13px;*/
+  line-height: 26px;
+  /*display: inline-block;*/
+  border: 1px solid #EAEAEA;
+  background: #f8f8f8;
+  color: #555;
+  padding: 0 2px;
+
+/*  font-family: Consolas, "Liberation Mono", Courier, monospace; background: #eee; font-size: 15px
+  -webkit-font-smoothing: subpixel-antialiased;
+*/}
+
+/* Highlighted states */
+
+.content-node .idea.highlight { background-color: rgba(102, 182, 32, 0.6); }
+.content-node .question.highlight { background-color: rgba(16, 167, 222, 0.6);}
+.content-node .error.highlight { background-color: rgba(237, 96, 48, 0.6); }
+
+/* Selected states */
+
+.content-node .content span.selected { background: rgba(0,0,0,0.08); }
+
+.content-node .content .idea.selected { background-color: rgba(102, 182, 32, 0.4); }
+.content-node .content .question.selected { background-color: rgba(16, 167, 222, 0.4);}
+.content-node .content .error.selected { background-color: rgba(237, 96, 48, 0.4); }
+
+/* Em, Strong, Link */
+
+.content-node .emphasis { font-style: italic; }
+/*.content-node .link { background-color: #00CFEA; }*/
+.content-node .strong { font-weight: bold; }
 
 
 

@@ -33,6 +33,14 @@ var EditorView = function(controller) {
   this.listenTo(this.writer.selection,  "selection:changed", this.updateAnnotationToggles);
 
   this.$el.delegate('.image-files', 'change', _.bind(this.handleFileSelect, this));
+
+  // Makes the controller switch the application state
+  this.$el.delegate('.surface', 'click', _.bind(this.activateWriter, this));
+
+  // Confirm link insertion
+  this.$el.delegate('#link_submission_form', 'submit', _.bind(this.insertLink, this));
+
+
 };
 
 EditorView.Prototype = function() {
@@ -130,11 +138,46 @@ EditorView.Prototype = function() {
 
   };
 
+
+  // Switches to document-tool bar
+  // --------
+
+  this.activateWriter = function() {
+    this.controller.changeFocus('writer');
+  };
+
+  // Switches to document-tool bar
+  // --------
+
+  this.activateTools = function() {
+    this.controller.changeFocus('tools');
+  };
+
+  // Attempt to create a new link annotation
+  // --------
+  //
+  // Shows the link input field and puts the focus there
+  // When hitting enter the acutal annotation plus payload (url) 
+
+  this.addLink = function() {
+    this.activateTools();
+    this.$('#link_url').show().focus();
+
+    // put the controller into the editor state
+  };
+
+  this.insertLink = function(e) {
+    var url = this.$('#link_url').val();
+    console.log('Now inserting the link', url);
+    this.annotate('link', {url: url});
+    return false;
+  };
+
   // Insert a new image
   // --------
   //
 
-  this.insertImage = function(type, data) {
+  this.insertImage = function(type) {
     $('.image-files').click();
   };
 
@@ -146,20 +189,12 @@ EditorView.Prototype = function() {
     this.writer.insertNode(type);
   };
 
-  // Clear selection
-  // --------
-  //
-
-  this.clear = function() {
-
-  };
-
   // Annotate current selection
   // --------
   //
 
-  this.annotate = function(type) {
-    this.writer.annotate(type);
+  this.annotate = function(type, data) {
+    this.writer.annotate(type, data);
     this.updateAnnotationToggles();
     return false;
   };

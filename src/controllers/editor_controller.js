@@ -268,10 +268,35 @@ EditorController.Prototype = function() {
     that.updateState('comments');
   };
 
+  // Blur
+  // -------
+  // Makes the editor the active controller, and thus disabled keybindings
+  // for the writer
+  //
+  // TODO: find a better name
+
+  this.changeFocus = function(view) {
+    if (view === this.currentState) return; // Nothing to do here, move along
+
+    this.currentState = view;
+    // This is a hack to make the keyboard pull the new app state
+    // Oliver: How can we do better?
+    window.Substance.app.keyboard.stateChanged();
+    
+  };
+
+  
+  // --------
+  // 
+
   this.getActiveControllers = function() {
+
     var result = [];
     result.push(["editor", this]);
-    result.push(["writer", this.writer]);
+    if (this.currentState === "writer") {
+      console.log('yo writer active..');
+      result.push(["writer", this.writer]);
+    }
     // result = result.concat(this.comments.getActiveControllers());
     return result;
   };
