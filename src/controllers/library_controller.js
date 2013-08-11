@@ -72,13 +72,17 @@ LibraryController.Prototype = function() {
     return {
       name: "Example documents",
       documents: [
+        // {
+        //   id: "lorem_ipsum",
+        //   title: "Lorem Ipsum"
+        // },
         {
-          id: "lorem_ipsum",
-          title: "Lorem Ipsum"
+          id: encodeURIComponent("https://raw.github.com/michael/documents/master/substance-intro.md"),
+          title: "Substance Introduction (Draft)"
         },
         {
-          id: encodeURIComponent("https://raw.github.com/michael/documents/master/2012-06-30-substance.md"),
-          title: "Substance"
+          id: encodeURIComponent("https://raw.github.com/michael/documents/master/substance-handbook.md"),
+          title: "Substance Handbook (Draft)"
         },
         {
           id: "elife_00311",
