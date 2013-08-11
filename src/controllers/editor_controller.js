@@ -268,6 +268,17 @@ EditorController.Prototype = function() {
     that.updateState('comments');
   };
 
+  // Cancel current user action (e.g. link insertion)
+  // --------
+  // 
+  // For some reason this does not get triggered when the focus in the URL input form
+
+  this.cancel = function() {
+    if (this.currentState === "tools") {
+      this.view.cancel();
+    }
+  };
+
   // Blur
   // -------
   // Makes the editor the active controller, and thus disabled keybindings
@@ -284,7 +295,6 @@ EditorController.Prototype = function() {
     window.Substance.app.keyboard.stateChanged();
     
   };
-
   
   // --------
   // 
@@ -294,10 +304,8 @@ EditorController.Prototype = function() {
     var result = [];
     result.push(["editor", this]);
     if (this.currentState === "writer") {
-      console.log('yo writer active..');
       result.push(["writer", this.writer]);
     }
-    // result = result.concat(this.comments.getActiveControllers());
     return result;
   };
 

@@ -91,6 +91,7 @@
       "id":"link_1",
       "type":"link",
       "path": ["paragraph_1", "content"],
+      "url": "http://lorem.com",
       "range":[209,218]
     }
   }

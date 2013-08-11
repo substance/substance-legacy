@@ -16,8 +16,11 @@ var EditorView = function(controller) {
   View.call(this);
 
   this.$el.addClass('editor');
-
   this.controller = controller;
+
+  this._activeAnnotationToggles = [];
+  this._activeAnnotations = [];
+
 
   // Writer
   // --------
@@ -37,14 +40,15 @@ var EditorView = function(controller) {
   // Makes the controller switch the application state
   this.$el.delegate('.surface', 'click', _.bind(this.activateWriter, this));
 
-  // Confirm link insertion
-  this.$el.delegate('#link_submission_form', 'submit', _.bind(this.insertLink, this));
+  this.$el.delegate('.document-settings', 'click', _.bind(this.activateTools, this));
 
-
+  // Confirm link insertion/update
+  this.$el.delegate('#link_submission_form', 'submit', _.bind(this.saveLink, this));
+  // this.$el.delegate('#link_url', 'change', _.bind(this.saveLink, this));
 };
 
-EditorView.Prototype = function() {
 
+EditorView.Prototype = function() {
 
   this.handleFileSelect = function(evt) {
 
@@ -103,7 +107,6 @@ EditorView.Prototype = function() {
     reader.readAsDataURL(file);
   };
 
-
   // Renders the current selection
   // --------
   //
@@ -120,21 +123,45 @@ EditorView.Prototype = function() {
 
     this.$(this._activeAnnotationToggles).removeClass('active');
     this.$(this._activeAnnotations).removeClass('active');
+    this.$('#link_url').hide();
 
     this._activeAnnotationToggles = [];
     this._activeAnnotations = [];
 
     _.each(annotations, function(a) {
-      var $at = this.$('.annotation-toggle.'+a.type);
-      $at.addClass('active');
-      this._activeAnnotationToggles.push($at[0]);
+      this._activateAnnotationToggle(a.type);
+
+      if(a.type === "link") {
+        this.modifyLink(a);
+      }
 
       // Mark annotations on the surface as active
       var $a = this.$('#'+a.id);
       $a.addClass('active');
       this._activeAnnotations.push($a[0]);
     }, this);
+  };
 
+
+  // Activates toggle for given annotation `type`
+  // --------
+  //
+
+  this._activateAnnotationToggle = function(type) {
+    var $at = this.$('.annotation-toggle.'+type);
+    $at.addClass('active');
+    this._activeAnnotationToggles.push($at[0]);
+  };
+
+  // Brings up the url form in order to modify an existing link
+  // Sets the annotation id as a hidden element
+  // --------
+
+  this.modifyLink = function(a) {
+    // Remember the annotation that is currently in modify context
+    this.currentAnnotation = a;
+
+    this.$('#link_url').val(a.url).show();
   };
 
   // Switches to the writer state
@@ -149,6 +176,9 @@ EditorView.Prototype = function() {
 
   this.activateTools = function() {
     this.controller.changeFocus('tools');
+
+    // Hide Surface cursor
+    this.surface.$('.cursor').hide();
   };
 
   // Attempt to create a new link annotation
@@ -159,15 +189,41 @@ EditorView.Prototype = function() {
 
   this.addLink = function() {
     this.activateTools();
-    this.$('#link_url').show().focus();
+    this.currentAnnotation = null;
 
-    // put the controller into the editor state
+    this._activateAnnotationToggle('link');
+    this.$('#link_url').val('http://').show().focus();
   };
 
-  this.insertLink = function(e) {
+  // Cancel interaction
+  // --------
+  //
+  // E.g. when 
+
+  this.cancel = function() {
+    if (!this.currentAnnotation) {
+      this.$('#link_url').hide();
+      // Give focus back to surface
+      this.activateWriter();
+    }
+  };
+
+  // Create or update link
+  // --------
+  //
+
+  this.saveLink = function(e) {
+    this.$('#link_url').blur();
+
     var url = this.$('#link_url').val();
-    console.log('Now inserting the link', url);
-    this.annotate('link', {url: url});
+    var a = this.currentAnnotation;
+    if (a) {
+      this.writer.__document.set([a.id, "url"], url);
+    } else {
+      this.annotate('link', {url: url});  
+    }
+    this.activateWriter();
+    
     return false;
   };
 
@@ -196,7 +252,6 @@ EditorView.Prototype = function() {
     this.updateAnnotationToggles();
     return false;
   };
-
 
   // Rendering
   // --------

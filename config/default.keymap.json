@@ -7,7 +7,8 @@
   {
     "context": "sandbox.editor",
     "commands": [
-      {"keys": ["alt+i"],               "command": "insertImage" }
+      {"keys": ["alt+i"],               "command": "insertImage" },
+      {"keys": ["esc"],                 "command": "cancel" }
     ]
   },
   // {
