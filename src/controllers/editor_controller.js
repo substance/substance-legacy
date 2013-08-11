@@ -124,6 +124,8 @@ var addLineBehavior = function(surface, cursor) {
         var isEnd = iterator.isRightBound();
         if ( (lineSteps > 0 && (rect.left >= iniX || isEnd)) || lineSteps === 2) {
           if (!isEnd) iterator.move("left", "char");
+          // trial error adjusted
+          if (lineSteps === 2) iterator.move("left", "char");
           break;
         }
       }
