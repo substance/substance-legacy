@@ -87,7 +87,7 @@ app.get('/docs/index.json', function(req, res) {
 app.get('/docs/:doc.json', function(req, res) {
   var docId = req.params.doc;
   
-  var inputData = fs.readFileSync(__dirname + "/node_modules/substance-docs/introduction.md", 'utf8');
+  var inputData = fs.readFileSync(__dirname + "/node_modules/substance-docs/"+docId+".md", 'utf8');
   converter.convert(inputData, 'markdown', 'substance', function(err, output) {
     if (err) return res.send(500, err);
     res.send(output);
