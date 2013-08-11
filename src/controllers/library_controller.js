@@ -72,22 +72,31 @@ LibraryController.Prototype = function() {
     return {
       name: "Example documents",
       documents: [
+        {
+          id: "introduction",
+          title: "Substance Introduction (Draft)"
+        },
+        {
+          id: "handbook",
+          title: "Substance Handbook (Draft)"
+        }
+
         // {
         //   id: "lorem_ipsum",
         //   title: "Lorem Ipsum"
         // },
-        {
-          id: encodeURIComponent("https://raw.github.com/michael/documents/master/substance-intro.md"),
-          title: "Substance Introduction (Draft)"
-        },
-        {
-          id: encodeURIComponent("https://raw.github.com/michael/documents/master/substance-handbook.md"),
-          title: "Substance Handbook (Draft)"
-        },
-        {
-          id: "elife_00311",
-          title: "Modelling dynamics in protein crystal structures by ensemble refinement"
-        },
+        // {
+        //   id: encodeURIComponent("https://raw.github.com/substance/docs/master/introduction.md"),
+        //   title: "Substance Introduction (Draft)"
+        // },
+        // {
+        //   id: encodeURIComponent("https://raw.github.com/substance/docs/master/handbook.md"),
+        //   title: "Substance Handbook (Draft)"
+        // },
+        // {
+        //   id: "elife_00311",
+        //   title: "Modelling dynamics in protein crystal structures by ensemble refinement"
+        // },
         // {
         //   id: "elife_00845",
         //   title: "Dynamin phosphorylation controls optimization of endocytosis for brief action potential bursts"

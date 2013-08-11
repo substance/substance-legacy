@@ -5,8 +5,6 @@ var path = require('path');
 var CommonJSServer = require("substance-application/commonjs");
 var Converter = require("substance-converter");
 
-
-
 var Handlebars = require("handlebars");
 var fs = require("fs");
 
@@ -62,7 +60,40 @@ app.get("/scripts*",
 // Serve the Substance Converter
 // --------
 
-new Converter.Server(app).serve();
+var converter = new Converter.Server(app);
+converter.serve();
+
+
+// Serve the docs
+// --------
+
+app.get('/docs/index.json', function(req, res) {
+  res.json([
+    {
+      id: "introduction.json",
+      title: "Substance Introduction (Draft)"
+    },
+    {
+      id: "handbook.json",
+      title: "Substance Handbook (Draft)"
+    }
+  ]);
+});
+
+
+// Serve a doc from the docs folder (powered by on the fly markdown->substance conversion)
+// --------
+
+app.get('/docs/:doc.json', function(req, res) {
+  var docId = req.params.doc;
+  
+  var inputData = fs.readFileSync(__dirname + "/node_modules/substance-docs/introduction.md", 'utf8');
+  converter.convert(inputData, 'markdown', 'substance', function(err, output) {
+    if (err) return res.send(500, err);
+    res.send(output);
+  });
+});
+
 
 
 app.use(app.router);

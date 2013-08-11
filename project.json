@@ -31,6 +31,11 @@
       "branch": "0.8.x"
     },
     {
+      "repository": "https://github.com/substance/docs.git",
+      "folder": "node_modules/substance-docs",
+      "branch": "0.1.x"
+    },
+    {
       "repository": "https://github.com/substance/document.git",
       "folder": "node_modules/substance-document",
       "branch": "0.5.x"

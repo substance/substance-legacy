@@ -42,7 +42,7 @@ Session.Prototype = function() {
       //   return this.loadElifeDocument(name.replace('elife_', ''), cb);
       // }
       
-      $.getJSON("data/"+name+".json", function(data) {
+      $.getJSON("docs/"+name+".json", function(data) {
         var doc = Article.fromSnapshot(data, {
           chronicle: Chronicle.create()
         });
