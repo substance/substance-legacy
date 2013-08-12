@@ -85,12 +85,19 @@ app.get('/docs/index.json', function(req, res) {
 
 app.get('/docs/:doc.json', function(req, res) {
   var docId = req.params.doc;
-  
-  var inputData = fs.readFileSync(__dirname + "/node_modules/substance-docs/"+docId+".md", 'utf8');
-  converter.convert(inputData, 'markdown', 'substance', function(err, output) {
-    if (err) return res.send(500, err);
-    res.send(output);
-  });
+
+  var inputData;
+  try {
+    var filename = __dirname + "/node_modules/substance-docs/"+docId+".md";
+    inputData = fs.readFileSync(filename, 'utf8');
+    converter.convert(inputData, 'markdown', 'substance', function(err, output) {
+      if (err) return res.send(500, err);
+      res.send(output);
+    });
+  } catch (err) {
+    inputData = fs.readFileSync(__dirname + "/data/"+docId+".json", 'utf8');
+    res.send(inputData);
+  }
 });
 
 
@@ -98,6 +105,6 @@ app.get('/docs/:doc.json', function(req, res) {
 app.use(app.router);
 
 http.createServer(app).listen(port, function(){
-  console.log("Substance-Box running on port " + port)
+  console.log("Substance-Box running on port " + port);
   console.log("http://127.0.0.1:"+port+"/");
 });
