@@ -1,11 +1,10 @@
 var http = require('http');
 var express = require('express');
-var path = require('path');
+// var path = require('path');
 
 var CommonJSServer = require("substance-application/commonjs");
 var Converter = require("substance-converter");
 
-var Handlebars = require("handlebars");
 var fs = require("fs");
 
 var app = express();
@@ -49,7 +48,7 @@ app.get("/scripts*",
     var scriptPath = req.params[0];
     res.type('text/javascript');
     try {
-      var script = commonJSServer.getScript(scriptPath)
+      var script = commonJSServer.getScript(scriptPath);
       res.send(script);
     } catch (err) {
       res.send(err.stack);
