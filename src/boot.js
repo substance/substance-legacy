@@ -50,25 +50,6 @@ var boot = function() {
 
   Substance.app.on("state-changed", keyboard.stateChanged, keyboard);
 
-  // TODO: it would be nice to add a built-in handler for handling 'typed text'
-  // and use it in a declarative way e.g.:
-  // {"command": "write", keys: "typed-text" }
-  keyboard.setDefaultHandler("sandbox.editor.writer", function(character, modifiers, e) {
-    if (e.type === "keypress") {
-      var str = null;
-
-      // TODO: try to find out which is the best way to detect typed characters
-      str = String.fromCharCode(e.charCode);
-
-      if (e.charCode !== 0  && !e.ctrlKey && str !== null && str.length > 0) {
-        // TODO: consume the event
-        e.preventDefault();
-        return {command: "write", args: [str]};
-      }
-    }
-    return false;
-  });
-
   keyboard.set('TRIGGER_PREFIX_COMBOS', true);
 
   var keymap = require("../config/default.keymap.json");
