@@ -63,7 +63,7 @@
     {
       "repository": "https://github.com/substance/surface.git",
       "folder": "node_modules/substance-surface",
-      "branch": "entspannt"
+      "branch": "contenteditable"
     },
     {
       "repository": "https://github.com/substance/test.git",
@@ -83,7 +83,7 @@
     {
       "repository": "https://github.com/substance/substance.git",
       "folder": ".",
-      "branch": "entspannt"
+      "branch": "contenteditable"
     }
   ],
   "node_modules": {
@@ -97,5 +97,5 @@
       "node": ">=0.8.x",
       "npm": ">=1.1.x"
     }
-  }  
+  }
 }
