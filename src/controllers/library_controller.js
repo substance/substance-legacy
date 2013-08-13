@@ -76,6 +76,10 @@ LibraryController.Prototype = function() {
         {
           id: "handbook",
           title: "Substance Handbook (Draft)"
+        },
+        {
+          id: "lorem_ipsum",
+          title: "Lorem Ipsum (Demo doc)"
         }
 
         // {

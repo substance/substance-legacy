@@ -52,7 +52,7 @@
     "image_1": {
       "type": "image",
       "id": "image_1",
-      "content": " ",
+      "caption": "caption_1",
       "url": "http://i.telegraph.co.uk/multimedia/archive/02429/eleanor_scriven_2429776k.jpg"
     },
     "codeblock_2": {
@@ -86,6 +86,17 @@
       "type":"question",
       "path": ["paragraph_1", "content"],
       "range":[150,176]
+    },
+    "caption_1": {
+      "id": "caption_1",
+      "type": "paragraph",
+      "content": "Hello I am an image caption"
+    },
+    "idea_in_caption": {
+      "id":"idea_in_caption",
+      "type":"idea",
+      "path": ["caption_1", "content"],
+      "range":[4,19]
     },
     "link_1": {
       "id":"link_1",
