@@ -1,10 +1,9 @@
 "use strict";
 
 var _ = require("underscore");
-var util = require('substance-util');
+var util = require("substance-util");
 var html = util.html;
-var Substance = require("../substance");
-var View = Substance.Application.View;
+var View = require("substance-application").View;
 var CollectionView = require("./collection");
 
 

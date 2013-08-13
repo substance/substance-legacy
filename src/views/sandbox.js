@@ -1,11 +1,10 @@
 "use strict";
 
 var _ = require("underscore");
-var util = require('substance-util');
+var util = require("substance-util");
 var html = util.html;
-var Substance = require("../substance");
-var View = Substance.Application.View;
-var TestCenter = Substance.Test.TestCenter;
+var View = require("substance-application").View;
+var TestCenter = require("substance-test").TestCenter;
 var EditorView = require("./editor");
 
 
@@ -19,12 +18,9 @@ var SandboxView = function(controller) {
 
   // Handle state transitions
   // --------
+  
   this.listenTo(this.controller, 'state-changed', this.onStateChanged);
-
-  // DOM events
-  // -----------
-
-  // this.$el.delegate(".open-document", "click", _.bind(this.convertDocument, this));
+  
 };
 
 SandboxView.Prototype = function() {
@@ -45,9 +41,6 @@ SandboxView.Prototype = function() {
     }
   };
 
-  this.convertDocument = function() {
-    console.log('converting..');
-  };
 
   // Open Library
   // ----------
@@ -80,7 +73,7 @@ SandboxView.Prototype = function() {
 
   this.openTestCenter = function(options) {
     // TODO: can this be improved? does TestCenter really need a router?
-    var view = new TestCenter(this.controller.testRunner, this.controller.router, options);
+    var view = new TestCenter(this.controller.testRunner, options);
     this.replaceMainView('test_center', view);
   };
 

@@ -1,11 +1,11 @@
 "use strict";
 
 var _ = require("underscore");
-var Substance = require("../substance");
+// var Substance = require("../substance");
 
-var util = Substance.util;
-var Chronicle = Substance.Chronicle;
-var Article = Substance.Article;
+var util = require("substance-util");
+var Chronicle = require("substance-chronicle");
+var Article = require("substance-article");
 
 
 // Substance.Session

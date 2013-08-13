@@ -1,14 +1,15 @@
 "use strict";
 
 var _ = require("underscore");
-var Substance = require("../substance");
+// var Substance = require("../substance");
 var Session = require("../models/session");
 var LibraryController = require("./library_controller");
 var EditorController = require("./editor_controller");
-var util = Substance.util;
-var Controller = Substance.Application.Controller;
+var util = require("substance-util")
+var Controller = require("substance-application").Controller;
 var SandboxView = require('../views/sandbox');
-var Test = Substance.Test;
+var Test = require("substance-test");
+
 var Router = require("../router");
 
 // The Substance.Sandbox App
@@ -22,12 +23,6 @@ var SandboxController = function(env) {
   Controller.call(this);
   this.session = new Session(env);
 
-  // HACK: probably this can be straightened
-  this.router = new Router({controller: this});
-
-  // Create main view
-  this.view = new SandboxView(this);
-
   // Main controls
   this.on('open:editor', this.openEditor);
   this.on('open:library', this.openLibrary);
@@ -37,6 +32,15 @@ var SandboxController = function(env) {
 
 
 SandboxController.Prototype = function() {
+
+ // Initial view creation
+  // ===================================
+
+  this.createView = function() {
+    var view = new SandboxView(this);
+    this.view = view;
+    return view;
+  };
 
   // Transitions
   // ===================================
@@ -93,7 +97,6 @@ SandboxController.Prototype = function() {
 
     return result;
   };
-
 
   // Load and run testsuite
   // --------

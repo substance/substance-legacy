@@ -1,13 +1,10 @@
 "use strict";
 
 var _ = require("underscore");
-var Substance = require("../substance");
 var Controller = require("substance-application").Controller;
 var LibraryView = require("../views/library");
 var util = require("substance-util")
 
-
-// The Substance.Sandbox App
 
 // Substance.Sandbox.Controller
 // -----------------

@@ -1,10 +1,8 @@
 "use strict";
 
-var Substance = require("../substance");
-var Controller = Substance.Application.Controller;
-var Document = Substance.Document;
-var EditorView = require('../views/editor');
-//var util = require('substance-util');
+var Controller = require("substance-application").Controller;
+var Document = require("substance-document");
+var EditorView = require("../views/editor");
 
 // Substance.Editor.Controller
 // -----------------
@@ -63,8 +61,7 @@ EditorController.Prototype = function() {
     }
   };
 
-  // Blur
-  // -------
+
   // Makes the editor the active controller, and thus disabled keybindings
   // for the writer
   //
@@ -76,10 +73,10 @@ EditorController.Prototype = function() {
     this.currentState = view;
     // This is a hack to make the keyboard pull the new app state
     // Oliver: How can we do better?
-    window.Substance.app.keyboard.stateChanged();
-
+    window.app.keyboard.stateChanged();
   };
 
+  // Get active controllers
   // --------
   //
 

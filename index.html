@@ -3,9 +3,8 @@
   <head>
     <title>Substance</title>
     <link href='styles/fonts/open-sans/open-sans.css' rel='stylesheet' type='text/css'/>
-    <link href='http://fonts.googleapis.com/css?family=Montserrat:400,700' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Montserrat:400,700' rel='stylesheet' type='text/css'/>
     <link href='styles/font-awesome.css' rel='stylesheet' type='text/css'/>
-
     <link href="styles/substance.css" media="screen" rel="stylesheet" type="text/css" />
 
     <!-- Custom View Styles -->
@@ -25,7 +24,6 @@
 
     <!-- Templates -->
     <script type="text/html" name="substance">
-
       <!-- Substance Main Menu -->
       <div id="menu">
         <div class="views">
@@ -135,6 +133,7 @@ $ npm start
       <div class="controls">
 
       </div>
+
       <!-- where the content goes -->
       <div class="nodes"></div>
       <div class="cursor">&nbsp;</div>
@@ -150,14 +149,15 @@ $ npm start
     </script>
 
     <!-- Substance.TestCenter -->
-    <script type="text/text/x-handlebars-template" name="test_center">
+    <!-- TODO: This must live in the substance-test repository -->
+    <script type="text/text/x-ejs-template" name="test_center">
       <div class="test-suites">
-        {{#each test_suites}}
-          <a class="test-suite {{name}}" sbs-click='showReport({{name}})' href="#tests/{{name}}">
-            {{name}}
+        <% _.each(test_suites, function(ts) { %>
+          <a class="test-suite <%= ts.name %>" sbs-click='showReport(<%= ts.name %>)' href="#tests/<%= ts.name %>">
+            <%= ts.name %>
             <div class="status"></div>
           </a>
-        {{/each}}
+        <% }); %>
       </div>
 
       <div class="test-report">
@@ -170,37 +170,40 @@ $ npm start
     </script>
 
     <!-- Substance.TestReport -->
-    <script type="text/text/x-handlebars-template" name="test_report">
+    <!-- TODO: This must live in the substance-test repository -->
+    <script type="text/text/x-ejs-template" name="test_report">
       <div class="border-right"></div>
-      <h2>Subtance.{{name}}</h2>
+      <h2><%= name %></h2>
       <div class="tests">
-        {{#each tests}}
+        <% _.each(tests, function(test) { %>
           <div class="test">
-            <div class="name">{{name}}</div>
+            <div class="name"><%= test.name %></div>
             <div class="actions">
-              {{#each actions}}
-                <div class="action {{#ifelse error "error" "success"}}{{/ifelse}}">
+              <% _.each(test.actions, function(a, index) { %>
+                <div class="action <%= a.error ? "error" : "success" %>">
                   <div class="status">
-                    <i class="{{#ifelse error "icon-frown" "icon-smile"}}{{/ifelse}}"></i>
+                    <i class="<%= a.error ? "icon-from" : "icon-smile" %>"></i>
                   </div>
-                    {{@index}}. {{label}}
-                  {{# if error }}
-                  <div class="error-message">{{error.message}}</div>
-                  <div class="error-source">
-                    <pre>{{sourcecode}}</pre>
-                  </div>
-                  <div class="stack-trace">
-                    <pre>{{error.stack}}</pre>
-                  </div>
-                  {{/if}}
+                  
+                  <%= index %> <%= a.label %>
+
+                  <% if (a.error) { %>
+                    <div class="error-message"><%= a.error.message %></div>
+                    <div class="error-source">
+                      <pre><%= a.sourcecode %></pre>
+                    </div>
+                    <div class="stack-trace">
+                      <pre><%= a.error.stack %></pre>
+                    </div>
+                  <% } %>
                   <div class="duration">
-                     {{duration}} ms
+                     <%= a.duration %> ms
                   </div>
                 </div>
-              {{/each}}
+              <% }); %>
             </div>
           </div>
-        {{/each}}
+        <% }); %>
       </div>
     </script>
 
@@ -213,11 +216,18 @@ $ npm start
     #####scripts#####
 
     <script>
-      // var sandbox = new Substance.Sandbox();
+
+      var Substance = require("/src/substance.js");
+
+      // Create a new Substance app instance
+      // --------
+      // 
+      // injects itself into body when started
+
+      var app = new Substance();
+
       $(function() {
-        var boot = require("/src/boot.js");
-        window.Substance = boot();
-        // sandbox.run();
+        app.start();
       });
 
     </script>
