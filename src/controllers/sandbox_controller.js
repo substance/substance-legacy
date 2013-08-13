@@ -10,7 +10,7 @@ var Controller = require("substance-application").Controller;
 var SandboxView = require('../views/sandbox');
 var Test = require("substance-test");
 
-var Router = require("../router");
+// var Router = require("../router");
 
 // The Substance.Sandbox App
 
@@ -33,7 +33,7 @@ var SandboxController = function(env) {
 
 SandboxController.Prototype = function() {
 
- // Initial view creation
+  // Initial view creation
   // ===================================
 
   this.createView = function() {

@@ -1,0 +1,13 @@
+// The Substance Router
+// --------
+
+[
+  // {"route": ":document/:context/:node/:resource", "name": "resource",       "command": "openArticle"},
+  // {"route": ":document/:context/:node",           "name": "node",           "command": "openArticle"},
+  // {"route": ":document/:context",                 "name": "resource",       "command": "openArticle"},
+
+  { "route": ":document",                          "name": "document",       "command": "openEditor" },
+  { "route": "tests",                              "name": "document",       "command": "openTestCenter" },
+  { "route": "tests/:suite",                       "name": "document",       "command": "openTestCenter" },
+  { "route": "",                                   "name": "library",        "command": "openLibrary" }
+]

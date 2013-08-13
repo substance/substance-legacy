@@ -10,7 +10,7 @@ var fs = require("fs");
 var app = express();
 
 var commonJSServer = new CommonJSServer(__dirname);
-commonJSServer.boot({alias: "substance", source: "./src/boot.js"});
+commonJSServer.boot({alias: "substance", source: "./src/substance.js"});
 
 
 var port = process.env.PORT || 3000;
