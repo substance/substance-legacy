@@ -46,6 +46,11 @@
       "branch": "0.2.x"
     },
     {
+      "repository": "https://github.com/elifesciences/lens-reader.git",
+      "folder": "node_modules/lens-reader",
+      "branch": "master"
+    },
+    {
       "repository": "https://github.com/elifesciences/lens-outline.git",
       "folder": "node_modules/lens-outline",
       "branch": "modularize"

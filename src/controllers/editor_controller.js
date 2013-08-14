@@ -21,7 +21,7 @@ var EditorController = function(document) {
 EditorController.Prototype = function() {
 
   this.createView = function() {
-    this.writer = new Document.Writer(this.__document);
+    this.doc = new Document.Controller(this.__document);
     var view = new EditorView(this);
     this.view = view;
     var surface = view.surface;
@@ -63,7 +63,7 @@ EditorController.Prototype = function() {
 
 
   // Makes the editor the active controller, and thus disabled keybindings
-  // for the writer
+  // for the doc
   //
   // TODO: find a better name
 
@@ -85,7 +85,7 @@ EditorController.Prototype = function() {
     var result = [];
     result.push(["editor", this]);
     if (this.currentState === "writer") {
-      result.push(["writer", this.writer]);
+      result.push(["writer", this.doc]);
     }
     return result;
   };

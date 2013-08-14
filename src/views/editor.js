@@ -25,15 +25,15 @@ var EditorView = function(controller) {
   // Writer
   // --------
 
-  this.writer = controller.writer;
+  this.doc = controller.doc;
 
   // Surface
   // --------
 
   // A Substance.Document.Writer instance is provided by the controller
-  this.surface = new Substance.Surface(this.controller.writer);
+  this.surface = new Substance.Surface(this.doc);
 
-  this.listenTo(this.writer.selection,  "selection:changed", this.updateAnnotationToggles);
+  this.listenTo(this.doc.selection,  "selection:changed", this.updateAnnotationToggles);
 
   this.$el.delegate('.image-files', 'change', _.bind(this.handleFileSelect, this));
 
@@ -97,7 +97,7 @@ EditorView.Prototype = function() {
 
         var mediumImage = canvas.toDataURL("image/png");
 
-        that.writer.insertNode('image', {
+        that.doc.insertNode('image', {
           medium: mediumImage
         });
 
@@ -113,8 +113,8 @@ EditorView.Prototype = function() {
 
   this.updateAnnotationToggles = function() {
 
-    var annotations = this.writer.getAnnotations({
-      selection: this.writer.selection
+    var annotations = this.doc.getAnnotations({
+      selection: this.doc.selection
     });
 
     // Note: we must use caching here, as this method is triggered
@@ -184,7 +184,7 @@ EditorView.Prototype = function() {
   this.toggleSource = function() {
     console.log('toggle it');
     this.$('.show-data').toggleClass('active');
-    this.$('.source').val(JSON.stringify(this.writer.__document.toJSON(), null, '  '));
+    this.$('.source').val(JSON.stringify(this.doc.__document.toJSON(), null, '  '));
     this.$('.surface').toggle();
     this.$('.source').toggle();
   };
@@ -226,7 +226,8 @@ EditorView.Prototype = function() {
     var url = this.$('#link_url').val();
     var a = this.currentAnnotation;
     if (a) {
-      this.writer.__document.set([a.id, "url"], url);
+      // TODO don't bypass the controller!
+      this.doc.__document.set([a.id, "url"], url);
     } else {
       this.annotate('link', {url: url});  
     }
@@ -248,7 +249,7 @@ EditorView.Prototype = function() {
   //
 
   this.insertNode = function(type) {
-    this.writer.insertNode(type);
+    this.doc.insertNode(type);
   };
 
   // Annotate current selection
@@ -256,7 +257,7 @@ EditorView.Prototype = function() {
   //
 
   this.annotate = function(type, data) {
-    this.writer.annotate(type, data);
+    this.doc.annotate(type, data);
     this.updateAnnotationToggles();
     return false;
   };
