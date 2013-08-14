@@ -193,7 +193,7 @@ EditorView.Prototype = function() {
   // --------
   //
   // Shows the link input field and puts the focus there
-  // When hitting enter the acutal annotation plus payload (url) 
+  // When hitting enter the acutal annotation plus payload (url)
 
   this.addLink = function() {
     this.activateTools();
@@ -206,7 +206,7 @@ EditorView.Prototype = function() {
   // Cancel interaction
   // --------
   //
-  // E.g. when 
+  // E.g. when
 
   this.cancel = function() {
     if (!this.currentAnnotation) {
@@ -229,10 +229,10 @@ EditorView.Prototype = function() {
       // TODO don't bypass the controller!
       this.doc.__document.set([a.id, "url"], url);
     } else {
-      this.annotate('link', {url: url});  
+      this.annotate('link', {url: url});
     }
     this.activateWriter();
-    
+
     return false;
   };
 
