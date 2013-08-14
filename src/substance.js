@@ -40,6 +40,7 @@ Substance.Surface      = require("substance-surface");
 // --------
 // 
 
+require("substance-application/tests");
 require("substance-operator/tests");
 require("substance-chronicle/tests");
 require("substance-data/tests");
