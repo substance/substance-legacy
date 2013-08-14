@@ -8,23 +8,31 @@ We've prepared a sandbox where you can play around with our editor and run the t
 
 Installation is easy:
 
-1. Clone the repository
+1. Install the [Substance Screwdriver](http://github.com/substance/screwdriver) command line utility.
+
+   ```bash
+   $ git clone https://github.com/substance/screwdriver.git
+   $ cd screwdriver
+   $ sudo python setup.py install
+   ```
+
+2. Clone the repository
 
    ```bash
    $ git clone https://github.com/substance/substance.git
    ```
    
-2. Run our update script
+2. Run the update command, which pulls in all required dependencies
 
    ```bash
    $ cd substance
-   $ npm install
+   $ substance --update
    ```
    
 3. Finally start the server and point your browser to `http://localhost:3000`
 
    ```bash
-   $ npm start
+   $ substance
    ```
 
 Currently the following modules are available:
