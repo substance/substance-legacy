@@ -54,7 +54,6 @@
       <% }) %>
     </script>
 
-
     <!-- Library -->
     <script type="text/x-ejs-template" name="library">
       <div class="navigation">
@@ -128,65 +127,6 @@ $ npm start
       </div>
     </script>
 
-
-    <!-- Substance.TestCenter -->
-    <!-- TODO: This must live in the substance-test repository -->
-    <script type="text/text/x-ejs-template" name="test_center">
-      <div class="test-suites">
-        <% _.each(test_suites, function(ts) { %>
-          <a class="test-suite <%= ts.name %>" sbs-click='showReport(<%= ts.name %>)' href="#tests/<%= ts.name %>">
-            <%= ts.name %>
-            <div class="status"></div>
-          </a>
-        <% }); %>
-      </div>
-
-      <div class="test-report">
-
-      </div>
-
-      <div class="test-output">
-
-      </div>
-    </script>
-
-    <!-- Substance.TestReport -->
-    <!-- TODO: This must live in the substance-test repository -->
-    <script type="text/text/x-ejs-template" name="test_report">
-      <div class="border-right"></div>
-      <h2><%= name %></h2>
-      <div class="tests">
-        <% _.each(tests, function(test) { %>
-          <div class="test">
-            <div class="name"><%= test.name %></div>
-            <div class="actions">
-              <% _.each(test.actions, function(a, index) { %>
-                <div class="action <%= a.error ? "error" : "success" %>">
-                  <div class="status">
-                    <i class="<%= a.error ? "icon-from" : "icon-smile" %>"></i>
-                  </div>
-                  
-                  <%= index %> <%= a.label %>
-
-                  <% if (a.error) { %>
-                    <div class="error-message"><%= a.error.message %></div>
-                    <div class="error-source">
-                      <pre><%= a.sourcecode %></pre>
-                    </div>
-                    <div class="stack-trace">
-                      <pre><%= a.error.stack %></pre>
-                    </div>
-                  <% } %>
-                  <div class="duration">
-                     <%= a.duration %> ms
-                  </div>
-                </div>
-              <% }); %>
-            </div>
-          </div>
-        <% }); %>
-      </div>
-    </script>
 
     <script src="lib/underscore.js"></script>
     <script src="lib/jquery-2.0.3.min.js"></script>
