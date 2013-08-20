@@ -71,7 +71,7 @@ SandboxController.Prototype = function() {
   // Provides an array of (context, controller) tuples that describe the
   // current state of responsibilities
   // --------
-  // 
+  //
   // E.g., when a document is opened:
   //    ["application", "document"]
   // with controllers taking responisbility:
@@ -103,7 +103,7 @@ SandboxController.Prototype = function() {
 
   this.runSuite = function(suite, cb) {
     cb = cb || function(err) {
-      if (err) console.log('ERROR', err);
+      if (err) console.log('ERROR', err.stack);
     };
 
     if (!suite) return this.runAllSuites(cb);
