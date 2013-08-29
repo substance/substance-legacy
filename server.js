@@ -3,7 +3,7 @@ var express = require('express');
 // var path = require('path');
 
 var CommonJSServer = require("substance-application/commonjs");
-var Converter = require("substance-converter");
+var ConverterServer = require("substance-converter/src/server");
 
 var fs = require("fs");
 
@@ -59,7 +59,7 @@ app.get("/scripts*",
 // Serve the Substance Converter
 // --------
 
-var converter = new Converter.Server(app);
+var converter = new ConverterServer(app);
 converter.serve();
 
 
