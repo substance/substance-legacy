@@ -8,7 +8,7 @@
     {
       "repository": "https://github.com/substance/article.git",
       "folder": "node_modules/substance-article",
-      "branch": "nested_nodes"
+      "branch": "0.1.x"
     },
     {
       "repository": "https://github.com/substance/chronicle.git",
@@ -23,7 +23,7 @@
     {
       "repository": "https://github.com/substance/converter.git",
       "folder": "node_modules/substance-converter",
-      "branch": "nlm_converter"
+      "branch": "0.1.x"
     },
     {
       "repository": "https://github.com/substance/data.git",
@@ -38,7 +38,7 @@
     {
       "repository": "https://github.com/substance/document.git",
       "folder": "node_modules/substance-document",
-      "branch": "nested_nodes"
+      "branch": "0.5.x"
     },
     {
       "repository": "https://github.com/substance/operator.git",
@@ -68,7 +68,7 @@
     {
       "repository": "https://github.com/substance/surface.git",
       "folder": "node_modules/substance-surface",
-      "branch": "nested_nodes"
+      "branch": "0.3.x"
     },
     {
       "repository": "https://github.com/substance/test.git",
@@ -88,7 +88,7 @@
     {
       "repository": "https://github.com/substance/substance.git",
       "folder": ".",
-      "branch": "nlm_converter"
+      "branch": "0.5.x"
     }
   ],
   "node_modules": {
