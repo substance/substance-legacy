@@ -56,6 +56,11 @@
       "branch": "modularize"
     },
     {
+      "repository": "https://github.com/substance/nodes.git",
+      "folder": "node_modules/substance-nodes",
+      "branch": "0.1.x"
+    },
+    {
       "repository": "https://github.com/substance/regexp.git",
       "folder": "node_modules/substance-regexp",
       "branch": "0.1.x"
