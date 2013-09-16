@@ -107,5 +107,14 @@
       "node": ">=0.8.x",
       "npm": ">=1.1.x"
     }
+  },
+  "bundle": {
+    "name": "substance",
+    "dist_folder": "./dist",
+    "source": "src/substance.js",
+    "assets": [
+      "index.html",
+      "styles"
+    ]
   }
 }
