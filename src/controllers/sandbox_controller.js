@@ -102,7 +102,7 @@ SandboxController.Prototype = function() {
   // --------
 
   this.runSuite = function(suite, cb) {
-    cb = cb || function(err) {
+    cb = cb || function(err) {
       if (err) console.log('ERROR', err.stack);
     };
 

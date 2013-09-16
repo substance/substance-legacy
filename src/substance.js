@@ -7,6 +7,8 @@ var Keyboard = require("substance-commander").Keyboard;
 var util = require("substance-util");
 var html = util.html;
 var Backbone = require("../lib/backbone");
+// HACK: fixing broken Backbone.$ reference
+Backbone.$ = global.$;
 
 // The Substance Sandbox application
 // ========
@@ -19,7 +21,7 @@ var Substance = function(config) {
 
 // Expose submodules
 // --------
-// 
+//
 
 Substance.Article      = require("substance-article");
 Substance.Outline      = require("lens-outline");
@@ -38,7 +40,7 @@ Substance.Surface      = require("substance-surface");
 
 // Register tests
 // --------
-// 
+//
 
 require("substance-application/tests");
 require("substance-converter/tests");
@@ -55,7 +57,7 @@ Substance.Prototype = function() {
 
   // Keyboard registration
   // --------
-  // 
+  //
   // TODO: discuss where this should be placed...
   // e.g., could be an optional configuration for the session itself
 

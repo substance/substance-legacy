@@ -2,28 +2,10 @@
 <html>
   <head>
     <title>Substance</title>
-    <link href='styles/fonts/open-sans/open-sans.css' rel='stylesheet' type='text/css'/>
+
+    #####styles#####
+
     <link href='http://fonts.googleapis.com/css?family=Montserrat:400,700' rel='stylesheet' type='text/css'/>
-    <link href='styles/font-awesome.css' rel='stylesheet' type='text/css'/>
-    <link href="styles/substance.css" media="screen" rel="stylesheet" type="text/css" />
-
-    <!-- Custom View Styles -->
-    <link href="lib/substance/substance-test/testcenter.css" media="screen" rel="stylesheet" type="text/css" />
-
-    <link href="styles/editor.css" media="screen" rel="stylesheet" type="text/css" />
-    <link href="styles/library.css" media="screen" rel="stylesheet" type="text/css" />
-    <link href="styles/collection.css" media="screen" rel="stylesheet" type="text/css" />
-
-    <!-- Generic Surface Styles -->
-    <link href="lib/substance/substance-surface/styles/surface.css" media="screen" rel="stylesheet" type="text/css" />
-
-    <!-- Node specific Styles -->
-    <link href="lib/substance/substance-article/nodes/text/text.css" media="screen" rel="stylesheet" type="text/css" />
-    <link href="lib/substance/substance-article/nodes/paragraph/paragraph.css" media="screen" rel="stylesheet" type="text/css" />
-    <link href="lib/substance/substance-article/nodes/heading/heading.css" media="screen" rel="stylesheet" type="text/css" />
-    <link href="lib/substance/substance-article/nodes/codeblock/codeblock.css" media="screen" rel="stylesheet" type="text/css" />
-    <link href="lib/substance/substance-article/nodes/image/image.css" media="screen" rel="stylesheet" type="text/css" />
-    <link href="lib/substance/substance-article/nodes/richparagraph/richparagraph.css" media="screen" rel="stylesheet" type="text/css" />
 
     <!-- Templates -->
     <script type="text/html" name="substance">
@@ -141,7 +123,9 @@ $ npm start
 
     <script>
 
-      var Substance = require("/src/substance.js");
+      if (window.Substance === undefined) {
+        window.Substance = require("/src/substance.js");
+      }
 
       // Create a new Substance app instance
       // --------
