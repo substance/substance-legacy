@@ -68,7 +68,7 @@ SandboxController.Prototype = function() {
   this.openTestCenter = function(suite) {
     this.testRunner = new Test.Runner();
 
-    that.modifyState({
+    this.modifyState({
       context: 'test_center',
       report: suite
     });
