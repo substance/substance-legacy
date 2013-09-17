@@ -25,7 +25,8 @@
         "image_1",
         "paragraph_3",
         "paragraph_4",
-        "paragraph_5"
+        "paragraph_5",
+        "richparagraph_1"
       ]
     },
     "figures": {
@@ -74,6 +75,36 @@
       "type": "paragraph",
       "id": "paragraph_5",
       "content": "Maecenas tincidunt purus quis leo posuere, eu venenatis magna placerat. Sed vestibulum eros in pulvinar ornare. Nam arcu urna, dignissim a mi id, euismod consequat mi. Nam varius metus elit, sagittis rutrum elit cursus non. Integer ut euismod ligula. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Nam a sapien vehicula, vestibulum lorem ac, condimentum elit. Donec gravida tortor sit amet molestie sollicitudin."
+    },
+    "paragraph_6": {
+      "type": "paragraph",
+      "id": "paragraph_6",
+      "content": "The quick brown "
+    },
+    "paragraph_7": {
+      "type": "paragraph",
+      "id": "paragraph_7",
+      "content": " jumps over the lazy "
+    },
+    "paragraph_8": {
+      "type": "paragraph",
+      "id": "paragraph_8",
+      "content": "."
+    },
+    "inlineimage_1": {
+      "id": "inlineimage_1",
+      "type": "image",
+      "url": "http://aux.iconpedia.net/uploads/2058825247576320107.png"
+    },
+    "inlineimage_2": {
+      "id": "inlineimage_2",
+      "type": "image",
+      "url": "http://aux3.iconpedia.net/uploads/673368904.png"
+    },
+    "richparagraph_1": {
+      "id": "richparagraph_1",
+      "type": "richparagraph",
+      "children": ["paragraph_6", "inlineimage_1", "paragraph_7", "inlineimage_2", "paragraph_8"]
     },
     "idea_1": {
       "id":"idea_1",

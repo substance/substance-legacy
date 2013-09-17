@@ -23,7 +23,7 @@
     {
       "repository": "https://github.com/substance/converter.git",
       "folder": "node_modules/substance-converter",
-      "branch": "recursive_descent"
+      "branch": "0.1.x"
     },
     {
       "repository": "https://github.com/substance/data.git",
@@ -54,6 +54,11 @@
       "repository": "https://github.com/elifesciences/lens-outline.git",
       "folder": "node_modules/lens-outline",
       "branch": "modularize"
+    },
+    {
+      "repository": "https://github.com/substance/nodes.git",
+      "folder": "node_modules/substance-nodes",
+      "branch": "0.1.x"
     },
     {
       "repository": "https://github.com/substance/regexp.git",
@@ -102,5 +107,34 @@
       "node": ">=0.8.x",
       "npm": ">=1.1.x"
     }
+  },
+  "styles": {
+    "styles/fonts/open-sans/open-sans.css": "styles/fonts/open-sans/open-sans.css",
+    "styles/font-awesome.css": "styles/font-awesome.css",
+    "styles/substance.css":  "styles/substance.css",
+    "styles/editor.css": "styles/editor.css",
+    "styles/library.css": "styles/library.css",
+    "styles/collection.css": "styles/collection.css",
+    "styles/surface.css": "node_modules/substance-surface/styles/surface.css",
+    "styles/nodes/text.css": "node_modules/substance-article/nodes/text/text.css",
+    "styles/nodes/paragraph.css": "node_modules/substance-article/nodes/paragraph/paragraph.css",
+    "styles/nodes/heading.css": "node_modules/substance-article/nodes/heading/heading.css",
+    "styles/nodes/codeblock.css": "node_modules/substance-article/nodes/codeblock/codeblock.css",
+    "styles/nodes/image.css": "node_modules/substance-article/nodes/image/image.css",
+    "styles/nodes/richparagraph.css": "node_modules/substance-article/nodes/richparagraph/richparagraph.css",
+    "styles/testcenter.css": "node_modules/substance-test/testcenter.css"
+  },
+  "assets": {
+    "lib/underscore.js": "lib/underscore.js",
+    "lib/jquery-2.0.3.min.js": "lib/jquery-2.0.3.min.js",
+    "lib/backbone.js": "lib/backbone.js",
+    "lib/base64.js": "lib/base64.js",
+    "lib/jquery.timeago.js": "lib/jquery.timeago.js"
+  },
+  "bundle": {
+    "name": "substance",
+    "folder": "./dist",
+    "source": "./app.js",
+    "index": "./index.html"
   }
 }

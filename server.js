@@ -3,9 +3,10 @@ var express = require('express');
 // var path = require('path');
 
 var CommonJSServer = require("substance-application/commonjs");
-var Converter = require("substance-converter");
+var ConverterServer = require("substance-converter/src/server");
 
 var fs = require("fs");
+var _ = require("underscore");
 
 var app = express();
 
@@ -18,6 +19,8 @@ app.use(express.cookieParser());
 app.use(express.bodyParser());
 app.use(express.methodOverride());
 
+var config = require("./project.json");
+
 app.get("/",
   function(req, res, next) {
 
@@ -29,7 +32,12 @@ app.get("/",
       return ['<script type="text/javascript" src="/scripts', script, '"></script>'].join('');
     }).join('\n');
 
+    var styleTags = _.map(config.styles, function(path, alias) {
+      return ['<link href="', path, '" rel="stylesheet" type="text/css"/>'].join('');
+    }).join("\n");
+
     var result = template.replace('#####scripts#####', scriptsTags);
+    result = result.replace('#####styles#####', styleTags);
 
     res.send(result);
   }
@@ -56,10 +64,11 @@ app.get("/scripts*",
   }
 );
 
+
 // Serve the Substance Converter
 // --------
 
-var converter = new Converter.Server(app);
+var converter = new ConverterServer(app);
 converter.serve();
 
 
@@ -99,8 +108,6 @@ app.get('/docs/:doc.json', function(req, res) {
     res.send(inputData);
   }
 });
-
-
 
 app.use(app.router);
 

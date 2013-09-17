@@ -14,16 +14,13 @@ var html = util.html;
 var Substance = function(config) {
   config = config || {};
   config.routes = require("../config/routes.json");
-  console.log(config.routes);
   Application.call(this, config);
-
   this.controller = new SandboxController();
-  // this.view = this.controller.createView();
 };
 
 // Expose submodules
 // --------
-// 
+//
 
 Substance.Article      = require("substance-article");
 Substance.Outline      = require("lens-outline");
@@ -42,7 +39,7 @@ Substance.Surface      = require("substance-surface");
 
 // Register tests
 // --------
-// 
+//
 
 require("substance-application/tests");
 require("substance-converter/tests");
@@ -59,7 +56,7 @@ Substance.Prototype = function() {
 
   // Keyboard registration
   // --------
-  // 
+  //
   // TODO: discuss where this should be placed...
   // e.g., could be an optional configuration for the session itself
 
@@ -78,7 +75,6 @@ Substance.Prototype = function() {
 
   this.render = function() {
     this.view = this.controller.createView();
-    console.log('meh', this.$el[0]);
     this.$el.html(this.view.render().el);
     this.initKeyboard();
     return this;
