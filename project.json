@@ -23,7 +23,7 @@
     {
       "repository": "https://github.com/substance/converter.git",
       "folder": "node_modules/substance-converter",
-      "branch": "0.1.x"
+      "branch": "pandoc_1_12"
     },
     {
       "repository": "https://github.com/substance/data.git",
@@ -93,7 +93,7 @@
     {
       "repository": "https://github.com/substance/substance.git",
       "folder": ".",
-      "branch": "0.5.x"
+      "branch": "pandoc_1_12"
     }
   ],
   "node_modules": {
