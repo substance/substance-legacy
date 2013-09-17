@@ -19,8 +19,7 @@ var SandboxView = function(controller) {
   // Handle state transitions
   // --------
   
-  this.listenTo(this.controller, 'state-changed', this.onStateChanged);
-  
+  this.listenTo(this.controller, 'context-changed', this.onContextChanged);
 };
 
 SandboxView.Prototype = function() {
@@ -29,15 +28,15 @@ SandboxView.Prototype = function() {
   // ==========================================================================
   //
 
-  this.onStateChanged = function(newState, oldState, options) {
-    if (newState === "editor") {
+  this.onContextChanged = function(context) {
+    if (context === "editor") {
       this.openEditor();
-    } else if (newState === "library") {
-      this.openLibrary(options);
-    } else if (newState === "test_center") {
-      this.openTestCenter(options);
+    } else if (context === "library") {
+      this.openLibrary();
+    } else if (context === "test_center") {
+      this.openTestCenter();
     } else {
-      console.log("Unknown application state: " + newState);
+      console.error("Unknown application context: " + context);
     }
   };
 
@@ -47,9 +46,6 @@ SandboxView.Prototype = function() {
   //
 
   this.openLibrary = function() {
-    // Application controller has a editor controller ready
-    // -> pass it to the editor view
-    // var view = new EditorView(this.controller.editor.view);
     var view = this.controller.library.createView();
     this.replaceMainView('library', view);
   };
@@ -60,9 +56,6 @@ SandboxView.Prototype = function() {
   //
 
   this.openEditor = function() {
-    // Application controller has a editor controller ready
-    // -> pass it to the editor view
-    // var view = new EditorView(this.controller.editor.view);
     var view = this.controller.editor.createView();
     this.replaceMainView('editor', view);
   };
@@ -85,6 +78,8 @@ SandboxView.Prototype = function() {
   this.replaceMainView = function(name, view) {
     $('body').removeClass().addClass('current-view '+name);
 
+    // HACK, since this caused weird issues
+    // Bring back at some point!
     // if (this.mainView && this.mainView !== view) {
     //   console.log('disposing it..');
     //   this.mainView.dispose();
@@ -95,6 +90,7 @@ SandboxView.Prototype = function() {
   };
 
   this.render = function() {
+
     this.$el.html(html.tpl('substance', this.controller.session));
     return this;
   };

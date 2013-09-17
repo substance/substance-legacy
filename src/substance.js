@@ -6,15 +6,19 @@ var SandboxController = require("./controllers/sandbox_controller");
 var Keyboard = require("substance-commander").Keyboard;
 var util = require("substance-util");
 var html = util.html;
-var Backbone = require("../lib/backbone");
 
 // The Substance Sandbox application
 // ========
 //
 
 var Substance = function(config) {
+  config = config || {};
+  config.routes = require("../config/routes.json");
+  console.log(config.routes);
   Application.call(this, config);
+
   this.controller = new SandboxController();
+  // this.view = this.controller.createView();
 };
 
 // Expose submodules
@@ -69,29 +73,15 @@ Substance.Prototype = function() {
     this.keyboard.registerBindings(keymap);
   };
 
-  // Start listening to routes
+  // Render main view
   // --------
 
-  this.initRouter = function() {
-    var routes = require("../config/routes.json");
-
-    this.router = new Backbone.Router();
-
-    _.each(routes, function(route) {
-      this.router.route(route.route, route.name, _.bind(this.controller[route.command], this.controller));
-    }, this);
-
-    Backbone.history.start();
-  };
-
-  this.start = function() {
-    Application.prototype.start.call(this);
-
+  this.render = function() {
     this.view = this.controller.createView();
+    console.log('meh', this.$el[0]);
     this.$el.html(this.view.render().el);
-
-    this.initRouter();
     this.initKeyboard();
+    return this;
   };
 };
 

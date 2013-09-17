@@ -50,19 +50,28 @@ SandboxController.Prototype = function() {
     this.session.loadDocument(documentId || 'lorem_ipsum', function(err, doc) {
       if (err) throw err;
       that.editor = new EditorController(doc);
-      that.updateState('editor');
+      that.modifyState({
+        context: 'editor'
+      });
     });
   };
 
   this.openLibrary = function() {
+    console.log('opening library');
     this.library = new LibraryController();
-    this.updateState('library');
+    this.modifyState({
+      context: 'library'
+    });
   };
 
   // Test control center
   this.openTestCenter = function(suite) {
     this.testRunner = new Test.Runner();
-    this.updateState('test_center', {report: suite});
+
+    that.modifyState({
+      context: 'test_center',
+      report: suite
+    });
 
     // TODO: Run all suites instead of just choosing a default
     this.runSuite(suite);
