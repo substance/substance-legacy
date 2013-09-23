@@ -15,7 +15,7 @@ var LibraryController = function(library) {
 
   this.library = library;
   Controller.call(this);
-  
+
   // Create library view
   this.view = new LibraryView(this);
 };
@@ -39,7 +39,7 @@ LibraryController.Prototype = function() {
   // Provides an array of (context, controller) tuples that describe the
   // current state of responsibilities
   // --------
-  // 
+  //
   // E.g., when a document is opened:
   //    ["application", "document"]
   // with controllers taking responisbility:
@@ -80,8 +80,11 @@ LibraryController.Prototype = function() {
         {
           id: "lorem_ipsum",
           title: "Lorem Ipsum (Demo doc)"
+        },
+        {
+          id: "scientist_example",
+          title: "Scientific Markdown Example"
         }
-
         // {
         //   id: "lorem_ipsum",
         //   title: "Lorem Ipsum"
