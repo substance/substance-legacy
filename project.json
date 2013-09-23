@@ -121,7 +121,8 @@
     "styles/nodes/heading.css": "node_modules/substance-article/nodes/heading/heading.css",
     "styles/nodes/codeblock.css": "node_modules/substance-article/nodes/codeblock/codeblock.css",
     "styles/nodes/image.css": "node_modules/substance-article/nodes/image/image.css",
-    "styles/nodes/richparagraph.css": "node_modules/substance-article/nodes/richparagraph/richparagraph.css",
+    "styles/nodes/formula.css": "node_modules/substance-article/nodes/formula/formula.css",
+    "styles/nodes/table.css": "node_modules/substance-article/nodes/table/table.css",
     "styles/testcenter.css": "node_modules/substance-test/testcenter.css"
   },
   "assets": {
