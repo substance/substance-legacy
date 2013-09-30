@@ -19,14 +19,14 @@
       "type": "view",
       "id": "content",
       "nodes": [
-        "paragraph_1",
+        "text_1",
         "heading_1",
         "codeblock_2",
         "image_1",
-        "paragraph_3",
-        "paragraph_4",
-        "paragraph_5",
-        "richparagraph_1"
+        "text_3",
+        "text_4",
+        "text_5",
+        "paragraph_1"
       ]
     },
     "figures": {
@@ -39,9 +39,9 @@
       "id": "publications",
       "nodes": []
     },
-    "paragraph_1": {
-      "type": "paragraph",
-      "id": "paragraph_1",
+    "text_1": {
+      "type": "text",
+      "id": "text_1",
       "content": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras vel accumsan lectus, id hendrerit magna. Donec vehicula dui quis ipsum tempor tincidunt. Quisque adipiscing, nibh at pulvinar feugiat, odio lectus eleifend felis, eu consectetur turpis ante eu magna. Praesent consequat velit nibh, eu porta nibh vulputate sed. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc nec urna at diam molestie fermentum a vitae metus. Sed ac arcu vel urna vehicula vulputate. Donec urna augue, interdum tristique pellentesque a, tincidunt id felis. Nunc in consequat augue. Nulla facilisi."
     },
     "heading_1": {
@@ -51,8 +51,8 @@
       "content": "Lorem ipsum"
     },
     "image_1": {
-      "type": "image",
-      "id": "image_1",
+      "type": "figure",
+      "id": "figure_1",
       "caption": "caption_1",
       "url": "http://i.telegraph.co.uk/multimedia/archive/02429/eleanor_scriven_2429776k.jpg"
     },
@@ -61,34 +61,34 @@
       "id": "codeblock_2",
       "content": "var text = \"Sun\";\nvar op1 = Operator.TextOperation.Delete(2, \"n\");\ntext = op2.apply(op1.apply(text));\nconsole.log(text);"
     },
-    "paragraph_3": {
-      "type": "paragraph",
-      "id": "paragraph_3",
+    "text_3": {
+      "type": "text",
+      "id": "text_3",
       "content": "In porta nisl ac elit consequat, ac imperdiet velit lobortis. Phasellus laoreet nisi at lacus imperdiet gravida. Vestibulum pretium pharetra molestie. Praesent gravida vel nulla nec pulvinar. Ut fringilla quam at congue semper. Aliquam at ultrices metus, sit amet aliquet diam. Nam est lacus, fringilla ac turpis vel, cursus dapibus elit. Nunc a arcu sit amet nulla imperdiet congue."
     },
-    "paragraph_4": {
-      "type": "paragraph",
-      "id": "paragraph_4",
+    "text_4": {
+      "type": "text",
+      "id": "text_4",
       "content": "Mauris vehicula, eros sit amet adipiscing rhoncus, augue erat molestie eros, ut tristique nibh magna in elit. Fusce luctus felis vestibulum orci tincidunt, vel lobortis erat faucibus. Vestibulum sapien mi, fermentum posuere tincidunt et, rhoncus et risus. Donec at pretium nunc. Nunc eu sem convallis, porta est ornare, sodales neque. Vestibulum eget blandit urna, ac tempor enim. Donec quis dui elementum, vestibulum magna vel, commodo tortor. Sed suscipit mauris commodo, fermentum elit aliquam, eleifend magna. Interdum et malesuada fames ac ante ipsum primis in faucibus. Proin nibh ipsum, elementum eu aliquet ut, sagittis quis elit. Pellentesque eget facilisis mauris. In placerat nisi vel dolor lacinia, non ultricies lorem volutpat. Suspendisse sodales elit nec turpis rhoncus pellentesque. Morbi imperdiet eget nibh vitae consequat. Praesent et fringilla felis."
     },
-    "paragraph_5": {
-      "type": "paragraph",
-      "id": "paragraph_5",
+    "text_5": {
+      "type": "text",
+      "id": "text_5",
       "content": "Maecenas tincidunt purus quis leo posuere, eu venenatis magna placerat. Sed vestibulum eros in pulvinar ornare. Nam arcu urna, dignissim a mi id, euismod consequat mi. Nam varius metus elit, sagittis rutrum elit cursus non. Integer ut euismod ligula. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Nam a sapien vehicula, vestibulum lorem ac, condimentum elit. Donec gravida tortor sit amet molestie sollicitudin."
     },
-    "paragraph_6": {
-      "type": "paragraph",
-      "id": "paragraph_6",
+    "text_6": {
+      "type": "text",
+      "id": "text_6",
       "content": "The quick brown "
     },
-    "paragraph_7": {
-      "type": "paragraph",
-      "id": "paragraph_7",
+    "text_7": {
+      "type": "text",
+      "id": "text_7",
       "content": " jumps over the lazy "
     },
-    "paragraph_8": {
-      "type": "paragraph",
-      "id": "paragraph_8",
+    "text_8": {
+      "type": "text",
+      "id": "text_8",
       "content": "."
     },
     "inlineimage_1": {
@@ -99,28 +99,28 @@
     "inlineimage_2": {
       "id": "inlineimage_2",
       "type": "image",
-      "url": "http://aux3.iconpedia.net/uploads/673368904.png"
+      "url": "http://aux.iconpedia.net/uploads/2017088449.png"
     },
-    "richparagraph_1": {
-      "id": "richparagraph_1",
-      "type": "richparagraph",
-      "children": ["paragraph_6", "inlineimage_1", "paragraph_7", "inlineimage_2", "paragraph_8"]
+    "paragraph_1": {
+      "id": "paragraph_1",
+      "type": "paragraph",
+      "children": ["text_6", "inlineimage_1", "text_7", "inlineimage_2", "text_8"]
     },
     "idea_1": {
       "id":"idea_1",
       "type":"idea",
-      "path": ["paragraph_1", "content"],
+      "path": ["text_1", "content"],
       "range":[4,19]
     },
     "question_2": {
       "id":"question_2",
       "type":"question",
-      "path": ["paragraph_1", "content"],
+      "path": ["text_1", "content"],
       "range":[150,176]
     },
     "caption_1": {
       "id": "caption_1",
-      "type": "paragraph",
+      "type": "text",
       "content": "Hello I am an image caption"
     },
     "idea_in_caption": {
@@ -132,7 +132,7 @@
     "link_1": {
       "id":"link_1",
       "type":"link",
-      "path": ["paragraph_1", "content"],
+      "path": ["text_1", "content"],
       "url": "http://lorem.com",
       "range":[209,218]
     }
