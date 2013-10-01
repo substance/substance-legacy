@@ -8,7 +8,7 @@
     {
       "repository": "https://github.com/substance/article.git",
       "folder": "node_modules/substance-article",
-      "branch": "extended_nodeset"
+      "branch": "0.1.x"
     },
     {
       "repository": "https://github.com/substance/chronicle.git",
@@ -23,7 +23,7 @@
     {
       "repository": "https://github.com/substance/converter.git",
       "folder": "node_modules/substance-converter",
-      "branch": "pandoc_1_12"
+      "branch": "0.1.x"
     },
     {
       "repository": "https://github.com/substance/data.git",
@@ -58,7 +58,7 @@
     {
       "repository": "https://github.com/substance/nodes.git",
       "folder": "node_modules/substance-nodes",
-      "branch": "extended_nodeset"
+      "branch": "0.1.x"
     },
     {
       "repository": "https://github.com/substance/regexp.git",
@@ -93,7 +93,7 @@
     {
       "repository": "https://github.com/substance/substance.git",
       "folder": ".",
-      "branch": "pandoc_1_12"
+      "branch": "0.5.x"
     }
   ],
   "node_modules": {
