@@ -53,7 +53,7 @@
     {
       "repository": "https://github.com/elifesciences/lens-outline.git",
       "folder": "node_modules/lens-outline",
-      "branch": "modularize"
+      "branch": "master"
     },
     {
       "repository": "https://github.com/substance/nodes.git",
