@@ -80,6 +80,10 @@ LibraryController.Prototype = function() {
         {
           id: "lorem_ipsum",
           title: "Lorem Ipsum (Demo doc)"
+        },
+        {
+          id: "scientist_example",
+          title: "Scientific Example (using Pandoc.Markdown features)"
         }
         // {
         //   id: "lorem_ipsum",

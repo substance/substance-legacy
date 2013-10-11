@@ -24,3 +24,15 @@ Column 1     Column 2     Column 3      Column 4
        9     10              11              12
 
 Table:  Using simple table syntax.
+
+
+Similar to Latex `description` are Pandoc's `DefinitionList`:
+
+Topic 1
+
+:    This description can contain a full fledged paragraph.
+     Lorem ipsum ....
+
+Topic 2
+
+:    Topic 2 is just another topic.

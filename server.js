@@ -96,14 +96,16 @@ app.get('/docs/:doc.json', function(req, res) {
   var docId = req.params.doc;
 
   var inputData;
-  try {
-    var filename = __dirname + "/node_modules/substance-docs/"+docId+".md";
+
+  var filename = __dirname + "/data/"+docId+".md";
+  if (fs.existsSync(filename)) {
     inputData = fs.readFileSync(filename, 'utf8');
     converter.convert(inputData, 'markdown', 'substance', function(err, output) {
       if (err) return res.send(500, err);
       res.send(output);
     });
-  } catch (err) {
+  } else {
+    filename = __dirname + "/data/"+docId+".json";
     inputData = fs.readFileSync(__dirname + "/data/"+docId+".json", 'utf8');
     res.send(inputData);
   }
