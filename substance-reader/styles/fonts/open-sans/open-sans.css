@@ -1,0 +1,37 @@
+/* @FontFace
+------------------------------------------------------- */
+@font-face {
+  font-family:'Open Sans';
+  font-style: normal;
+  font-weight: 400;
+  src:url('opensans-regular.eot');
+  src:url('opensans-regular.eot?#iefix') format('embedded-opentype'),
+      url('opensans-regular.woff') format('woff');
+}
+
+@font-face {
+  font-family:'Open Sans';
+  font-style: italic;
+  font-weight: 400;
+  src:url('opensans-italic.eot');
+  src:url('opensans-italic.eot?#iefix') format('embedded-opentype'),
+      url('opensans-italic.woff') format('woff');
+}
+
+@font-face {
+  font-family:'Open Sans';
+  font-style: normal;
+  font-weight: 600;
+  src:url('opensans-semibold.eot');
+  src:url('opensans-semibold.eot?#iefix') format('embedded-opentype'),
+     url('opensans-semibold.woff') format('woff');
+}
+
+@font-face {
+  font-family:'Open Sans Bold Italic';
+  font-weight: 600;
+  font-style: italic;
+  src:url('opensans-semibolditalic.eot');
+  src:url('opensans-semibolditalic.eot?#iefix') format('embedded-opentype'),
+      url('opensans-semibolditalic.woff') format('woff');
+}

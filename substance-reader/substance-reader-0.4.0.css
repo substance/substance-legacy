@@ -1,0 +1,1683 @@
+/*
+  Typography / Basics
+---------------------------------------------*/
+
+* {
+        margin: 0;
+}
+
+body {
+  padding: 0;
+  margin: 0;
+}
+
+html {
+  height:100%;
+  -webkit-font-smoothing: antialiased;
+}
+
+body.reader {
+  height: 100%;
+  overflow: hidden;
+  position: fixed;
+  left: 0px;
+  right: 0px;
+  top: 0px;
+  bottom: 0px;
+}
+
+/*
+General Layout 
+--------------------------------------- */
+
+#container {
+  position: relative;
+  margin: 0 auto;
+}
+
+/* In reader view */
+body.reader #container {
+  max-width: 1400px; /* 988px / 16px = 61.75em */
+  height: 100%;
+}
+
+body, textarea, p, input {
+  font-family: 'Open Sans', 'Source Sans Pro', Helvetica, Arial, Verdana, sans-serif;
+  /*color: #505050;*/
+  font-size: 15px;
+  color: rgba(0,0,0,0.75);
+}
+
+a {
+  color: #1B6685;
+  font-weight: normal;
+  text-decoration: none;
+}
+
+a:hover {
+  color: rgba(11, 157, 217, 1);
+}
+
+img {
+  border: none;
+  padding: 0;
+  margin: 0;
+}
+
+strong { font-weight: 700; }
+
+h1, h2, h3 { 
+  font-weight: 700;
+}
+
+h1 a { color: white; }
+h1 a:hover { color: white; }
+
+h2 {
+  font-size: 1.75em; 
+  padding-bottom: 20px;
+}
+  
+h3, h4, h5, h6 {
+  margin-bottom: 20px;
+  font-size: 1em;
+  font-weight: 700;
+}
+  
+p {
+  padding-bottom: 20px;
+}
+
+p:last-child { padding-bottom: 0; }
+
+.small {
+  color: #505050;
+  font-size: .75em;
+  font-weight: 400;
+}
+
+/* Use border-box box model */
+
+* {
+  box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+}
+
+
+
+
+/* Article Overrides */
+#container .article .resources .info .content-node.active .resource-header {
+  background: #4A4A4A;
+}
+
+
+
+/* main
+   --------------------------------------- */
+
+#main {
+  position: relative;
+}
+
+body.reader #main {
+  height: 100%;
+}
+
+
+
+/* Loading bar */
+
+
+.spinner-wrapper {
+  position: fixed;
+  display: none;
+  left: 50%;
+  margin-left: -75px;
+  width: 150px;
+  top: 40%;
+  z-index: 5000;
+  font-family: 'Avenir LT W01 85 Heavy', 'Montserrat', 'Source Sans Pro';
+}
+
+body.loading .spinner-wrapper {
+  display: block;
+}
+
+.spinner-wrapper .spinner {
+  width: 40px;
+  height: 40px;
+  margin: 0 auto;  
+  background: #444;
+  -webkit-animation: rotateplane 1.2s infinite ease-in-out;
+  animation: rotateplane 1.2s infinite ease-in-out;
+}
+
+.spinner-wrapper .message {
+  color: #444;
+  text-align: center;
+  font-size: 12px;
+  padding-top: 20px;
+}
+
+@-webkit-keyframes rotateplane {
+  0% { -webkit-transform: perspective(120px) }
+  50% { -webkit-transform: perspective(120px) rotateY(180deg) }
+  100% { -webkit-transform: perspective(120px) rotateY(180deg)  rotateX(180deg) }
+}
+
+@keyframes rotateplane {
+  0% {
+    transform: perspective(120px) rotateX(0deg) rotateY(0deg);
+    -webkit-transform: perspective(120px) rotateX(0deg) rotateY(0deg);
+  } 50% {
+    transform: perspective(120px) rotateX(-180.1deg) rotateY(0deg);
+    -webkit-transform: perspective(120px) rotateX(-180.1deg) rotateY(0deg);
+  } 100% {
+    transform: perspective(120px) rotateX(-180deg) rotateY(-179.9deg);
+    -webkit-transform: perspective(120px) rotateX(-180deg) rotateY(-179.9deg);
+  }
+}
+
+#MathJax_Message {
+  display: none;
+}
+/* Surface
+-------------------------------------------------------------------------------*/
+
+.surface {
+  position: relative;
+}
+
+/* Very important dude */
+/* Makes sure .nodes is used as a reference for absolute positioning */
+.surface .nodes {
+  position: relative;
+}
+
+/* Generic node styles */
+.surface .content-node {
+  position: relative;
+}
+/*
+Outline
+--------------------------------------- */
+
+.lens-outline {
+  background: #fff;
+  position: absolute;
+  left: 0px;
+  width:30px;
+  top: 0px;
+  bottom: 0px;
+}
+
+.lens-outline .node.cover {
+
+}
+
+.lens-outline .node .arrow {
+  display: none;
+  position: absolute;
+  top: -7px;
+  left: -17px;
+  
+  width: 0; 
+  height: 0; 
+  border-top: 8px solid transparent;
+  border-bottom: 8px solid transparent;
+  border-left: 8px solid black;
+}
+
+.lens-outline .node.selected .arrow {
+  display: block;
+}
+
+.lens-outline .visible-area {
+  position: absolute;
+  cursor: pointer;
+  top: 40px;
+  left: 0px;
+  right: 0px;
+  height: 80px;
+  z-index: 2000;
+  background-color: rgba(0,0,0, 0.2);
+}
+
+.lens-outline:hover .visible-area {
+  background-color: rgba(0,0,0, 0.25); 
+}
+
+.lens-outline .visible-area:hover {
+  background-color: rgba(0,0,0, 0.3); 
+}
+
+.lens-outline .node {
+  margin: 0px 4px;
+  width: 22px;
+  background: rgba(0,0,0, 0.4);
+  opacity: 0.15;
+  cursor: pointer;
+}
+
+.lens-outline .text {
+}
+
+.lens-outline .heading {
+  background: rgba(0,0,0, 0.5);
+}
+
+.lens-outline .node.selected {
+  opacity: 1.0;
+}
+
+.node.highlighted {
+  background: #5c6570;
+  opacity: 0.7;
+}
+
+/* Greenish highlighted nodes (figures) */
+
+.lens-outline.figures .node.highlighted {
+  opacity: 0.7;
+  background: rgba(145, 187, 4, 1);
+}
+
+/* Blueish highlighted nodes (citations) */
+
+.lens-outline.citations .node.highlighted {
+  opacity: 0.7;
+  background: rgba(11, 157, 217, 1);
+}
+
+.lens-outline.remarks .node.highlighted {
+  opacity: 0.7;
+  /*background: rgba(46,199,161, 1);*/
+  background: white;
+  border: 3px solid rgba(11, 157, 217, 1);
+  /*background: rgba(11, 157, 217, 1);*/
+}
+
+.lens-outline.errors .node.highlighted {
+  opacity: 0.7;
+  background: white;
+  /*border: 1px solid rgba(228, 67, 34, 1);*/
+  border: 3px solid rgba(228, 34, 34, 1);
+}
+
+
+.lens-outline.figures .node.selected {
+  opacity: 1;
+  background: rgba(145, 187, 4, 1);
+}
+
+/* Blueish highlighted nodes (citations) */
+
+.lens-outline.citations .node.selected {
+  opacity: 1;
+  background: rgba(11, 157, 217, 1);
+}
+
+
+
+/* Textish Styles
+-------------------------------------------------------------------------------*/
+
+
+.text  {
+  white-space: pre-wrap;
+  white-space: -moz-pre-wrap;
+  white-space: -pre-wrap;
+}
+/* Paragraph Node
+-------------------------------------------------------------------------------*/
+
+.content-node.paragraph {
+}
+
+.content-node.paragraph .content {
+  min-height: 28px;
+}
+
+.content-node.paragraph .content-node.text {
+  padding: 0px;
+  display:inline;
+  width: auto;
+}
+
+.content-node.paragraph .content-node.text.heading {
+  display:block;
+}
+
+.content-node.paragraph .content-node.text div {
+  display:inline;
+  width: auto;
+}
+
+.content-node.paragraph .content-node.image div img {
+  display:inline;
+  width: 100%;
+}
+
+.content-node.paragraph .content-node.formula.inline {
+  display: inline;
+  padding: 0px;
+}
+
+/* Heading Node
+-------------------------------------------------------------------------------*/
+
+.content-node.heading {
+}
+
+.content-node.heading .content {
+  /*min-height: 40px;*/
+}
+
+.content-node.heading { }
+
+.content-node.heading .content {
+  color: #1f1f1f;
+  font-weight: 600;
+  line-height: 40px;
+}
+
+.content-node.heading.level-1 .content {
+  font-size: 20px;
+}
+
+.content-node.heading.level-2 .content {
+  font-size: 18px;
+}
+
+.content-node.heading.level-3 .content {
+  font-size: 16px;
+}
+
+.content-node.heading.level-4 .content {
+  font-size: 15px;
+}
+
+/* List Node
+-------------------------------------------------------------------------------*/
+
+.content-node.list {
+  padding: 10px 0px;
+  padding-top: 0px;
+}
+
+.content-node .list-item {
+  padding: 2px 0px;
+  position: relative;
+
+  /* for the time being, classical list and list-styles... */
+  list-style-type:disc;
+}
+
+
+.content-node.list .list-item.level-1 {
+  margin-left: 20px;
+}
+
+.content-node.list .list-item.level-2 {
+  margin-left: 40px;
+}
+
+.content-node.list .list-item.level-3 {
+  margin-left: 60px;
+}
+
+.content-node.list .list-item.level-4 {
+  margin-left: 80px;
+}
+
+/* Image Node
+-------------------------------------------------------------------------------*/
+
+.content-node.image { }
+
+
+.content-node.image .content {
+  padding: 0px;
+}
+
+.content-node.image div.image-char {
+  width: 100%;
+}
+
+.content-node.image div.selected .overlay {
+  position: absolute;
+  top: 0px;
+  bottom: 0px;
+  left: 0px;
+  right: 0px;
+  background: rgba(0,169, 255, 0.25);
+}
+
+.content-node.image div img {
+  width: 100%;
+}
+/* Codeblock Node
+-------------------------------------------------------------------------------*/
+
+.content-node.codeblock > .content {
+  border: 1px dashed #ddd;
+  line-height: 20px;
+  padding: 10px 10px;
+}
+
+.content-node.codeblock > .content {
+  font-family: 'Monaco', 'Source Code Pro', 'Menlo', monospace;
+  font-size: 12px;
+  color: #777;
+  min-height: 28px;
+}
+
+.content-node.contributor {
+  
+}
+
+/* Displayed as card header */
+.content-node.contributor .name {
+  position: relative;
+}
+
+.content-node.contributor .content {
+  /*overflow: auto;*/
+}
+
+.content-node.contributor .image {
+  width: 200px;
+  padding-right: 20px;
+  float: left;
+  position: relative;
+}
+
+.content-node.contributor .label {
+  font-size: 14px;
+  padding-top: 20px;
+  color: rgba(0,0,0,0.6);
+}
+
+.content-node.contributor .organization {
+  font-size: 18px;
+}
+
+.content-node.contributor .image img {
+  width: 100%;
+}
+
+.contributor-image-file {
+  position: absolute;
+  display: block;
+  left: 0px;
+  right: 0px;
+  top: 0px;
+  bottom: 0px;
+  width: 100%;
+  opacity: 0;
+  
+  background: green;
+  cursor: pointer;
+}
+/* Table */
+
+.substance-article .content-node.table > .content {
+  padding: 20px;
+  width: 100%;
+  overflow: auto;
+  text-align: center;
+}
+
+.substance-article .content-node.table .caption {
+  padding-top: 20px;
+}
+
+.substance-article .content-node.table table {
+  position: relative;
+  border-collapse: collapse;
+  border-spacing: 0;
+  margin-bottom: 20px;
+  margin: 0 auto;
+}
+
+.substance-article .content-node.table table thead tr {
+  background: #eee;
+  border: 1px solid lightgrey;
+}
+
+.substance-article .content-node.table table thead th {
+  padding: 5px;
+  font-weight: bold;
+}
+
+.substance-article .content-node.table table tbody td {
+  padding: 5px;
+  font-size: 12px;
+  border: 1px solid lightgrey;
+}
+
+.substance-article .content-node.table .footers {
+  padding: 0 20px;
+  padding-top: 10px;
+  font-size: 12px;
+  background: #fff;
+}
+
+/* Figure Node
+-------------------------------------------------------------------------------*/
+
+.substance-article .content-node.figure { 
+}
+
+.substance-article .content-node.figure div.image-wrapper {
+  text-align: center;
+  padding-bottom: 20px;
+  position: relative;
+}
+
+.substance-article .content-node.figure div .image-wrapper img {
+  max-width: 100%;
+}
+
+.substance-article .content-node.figure .label {
+  position: relative;
+}
+
+.figure-image-file {
+  position: absolute;
+  display: block;
+  left: 0px;
+  right: 0px;
+  top: 0px;
+  bottom: 0px;
+  width: 100%;
+  opacity: 0;
+  
+  background: green;
+  cursor: pointer;
+}
+.substance-article .content-node.cover {
+}
+
+.substance-article .content-node.cover .content {
+  background: none;
+}
+
+
+.substance-article .content-node.cover .published-on {
+  
+}
+
+.substance-article .content-node.cover .title {
+  /*padding-top: 20px;*/
+  white-space: pre-wrap;
+  line-height: 1.3em;
+  margin-bottom: 20px;
+  font-size: 40px;
+  font-weight: 600;
+  color: #1F1F1F;
+}
+
+.substance-article .content-node.cover .content .authors {
+  padding-top: 30px;
+  color: #1B6685;
+  overflow: auto;
+}
+
+
+.substance-article .content-node.cover .content .authors .toggle-author {
+  display: block;
+  float: left;
+  padding: 0 2px;
+  line-height: 20px;
+  margin-right: 10px;
+  margin-bottom: 8px;
+  border: 1px solid rgba(0,0,0,0.2);
+  color: rgba(0,0,0,0.7);
+}
+
+.substance-article .content-node.cover .content .authors .toggle-author:hover {
+  border: 1px solid rgba(0,0,0,0.4);
+}
+.content-node .code {
+  font-family: Consolas, "Liberation Mono", Courier, monospace;
+  background: #f5f5f5;
+  font-size: 13px;
+  padding: 2px 3px;
+  -webkit-font-smoothing: subpixel-antialiased;
+}
+/* Cross Reference */
+
+.content-node .cross_reference {
+  background: rgba(0, 0, 0, 0.05);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.25);
+}
+
+.content-node .cross_reference:hover {
+  background-color: rgba(0, 0, 0, 0.10);
+}
+
+span.emphasis, em {
+  font-style: italic;
+}
+.content-node .figure_reference {
+  padding: 1px 0px;
+  border: 1px solid rgba(145, 187, 4, 0.8);
+  color: rgba(145, 187, 4, 1);
+}
+
+.content-node .figure_reference:hover { 
+  border-color: rgba(171, 217, 17, 1);
+  color: rgba(171, 217, 17, 1);
+}
+
+.content-node .figure_reference.active {
+  color: white;
+  background: rgba(145, 187, 4, 1);
+  border-color: transparent;
+}
+/* Issue Reference */
+.content-node .idea {
+  background: rgba(150,190,15, 0.3);
+  /*color: rgba(28,163,219, 1);*/
+}
+
+.content-node .idea:hover {
+  background: rgba(150,190,15, 0.3); 
+}
+
+.content-node .idea.active { 
+  color: white;
+  background: rgba(150,190,15, 1);
+}
+
+.content-node .remark_reference {
+  border-bottom: 3px solid rgba(11, 157, 217, 0.2);
+}
+
+.content-node .remark_reference:hover {
+  border-bottom: 3px solid rgba(11, 157, 217, 0.5);
+}
+
+.content-node .remark_reference.active { 
+  border-bottom: 3px solid rgba(11, 157, 217, 1);
+}
+.content-node .error_reference {
+  border-bottom: 3px solid rgba(228, 34, 34, 0.3);
+}
+
+.content-node .error_reference:hover {
+  border-bottom: 3px solid rgba(228, 34, 34, 0.5);
+}
+
+.content-node .error_reference.active { 
+  border-bottom: 3px solid rgba(228, 34, 34, 1);
+}
+/* Link annotation */
+.content-node .link { color: #1B6685; }
+.content-node .link:hover, .content-node .link.active { color: rgba(11, 157, 217, 1); }
+
+
+span.strong, strong {
+  font-weight: 600;
+  color: #1f1f1f;
+}
+span.subscript, sub {
+  vertical-align: baseline;
+  position: relative;
+  top: 0.4em;
+  font-size: 12px;
+}
+span.superscript, sup {
+  vertical-align: baseline;
+  position: relative;
+  top: -0.4em;
+  font-size: 12px;
+}
+
+
+/*
+TOC 
+--------------------------------------- */
+
+
+.resource-view.toc .heading-ref {
+  cursor: pointer;
+  display: block;
+  color: rgba(0,0,0,0.5);
+  font-size: 16px;
+  padding: 4px 10px;
+  line-height: 20px;
+  font-weight: 600;
+  margin-right: 10px;
+  border: 1px solid transparent;
+}
+
+.resource-view.toc .heading-ref.active {
+  color: rgba(0,0,0,0.9);
+  background: #fff;
+  border: 1px solid #eee;
+}
+
+.resource-view.toc .heading-ref.level-2 {
+  padding-left: 20px;
+  font-size: 14px;
+}
+
+.resource-view.toc .heading-ref.level-3 {
+  padding-left: 40px;
+  font-size: 14px;
+}
+
+.resource-view.toc .heading-ref.level-4 {
+  padding-left: 60px;
+  font-size: 14px;
+}
+
+.resource-view.toc .heading-ref.level-5 {
+  padding-left: 80px;
+  font-size: 14px;
+}
+
+.resource-view.toc .heading-ref:hover {
+  color: rgba(0,0,0,1.0);
+}
+
+/* Fix weird behavior
+-------------------------------------------------------------------------------*/
+
+/*
+When using event delegation if the parent element has a click handler, when
+the user touches anything inside this element, the whole region will gray 
+out (on iOS 5.1), or flicker (on iOS 6). */
+
+* {
+  -webkit-tap-highlight-color:transparent;
+}
+
+
+
+
+/* Article
+-------------------------------------------------------------------------------*/
+
+.article {
+  height: 100%;
+}
+
+/* We should try to not display those in reading mode */
+.figure-image-file {
+  display: none;
+}
+
+/* Surface specific styles */
+.content-node {
+
+}
+
+.hidden {
+  display: none;
+}
+
+.content-node .content {
+  margin: 0px;
+  background: white;
+}
+
+/* Main content panel 
+======================================================================= */
+
+.article .document {
+  line-height: 28.5px;
+  /*font-size: 16px;*/
+  position: relative;
+  float: left;
+  overflow: hidden;
+  height: 100%;
+  width: 50%;
+  border-right: 1px solid #ddd;
+}
+
+.article .document .surface.content {
+  position: absolute;
+  top: 0px;
+  bottom: 0px;
+  right: 0px;
+  left: 0px;
+  overflow-y: scroll;
+  overflow-x: hidden;
+
+  /*overflow: auto;*/
+  -webkit-overflow-scrolling: touch;
+}
+
+.article .document .surface.content .nodes {
+  min-height: 100%;
+  padding-left: 40px;
+  padding-right: 0px;
+  background: #FFFFFF;
+}
+
+
+
+
+/* Back Navigation 
+=======================================================================*/
+
+
+
+/* Context Toggles 
+=======================================================================*/
+
+/* Switcher */
+
+/*.article .medial-strip {
+  overflow: hidden;
+  width: 40px;
+  position: absolute;
+  left: 50%;
+  margin-left: -18px; 
+
+  top: 0px;
+  bottom: 0px;
+  background: #fff;
+  z-index: 3000;
+}*/
+
+.article .medial-strip {
+  width: 40px;
+  position: absolute;
+  left: -18px;
+  top: 0px;
+  bottom: 0px;
+  background: #fff;
+  z-index: 3000;
+}
+
+
+.article .back-nav {
+  display: block;
+  overflow: hidden;
+  width: 40px;
+  position: absolute;
+  top: 20px;
+  z-index: 5000;
+  font-size: 22px;
+  background: #fff;
+  color: #aaa;
+  padding: 10px 10px;
+}
+
+
+.article .back-nav:hover {
+  color: #333;
+}
+
+
+.article .medial-strip .separator-line {
+  position: absolute;
+  top: 0px;
+  bottom: 0px;
+  left: 20px;
+  width: 1px;
+  background: #ddd;
+  z-index: 4000;
+}
+
+.article .context-toggles {
+  position: absolute;
+  top: 100px;
+  left: 0px;
+  right: 0px;
+  
+  background: #fff;
+  z-index: 5000;
+}
+
+
+.article .context-toggles .context-toggle {
+  cursor: pointer;
+  display: block;
+  z-index: 5000;
+  padding: 0 10px;
+  line-height: 40px;
+  font-size: 22px;
+  color: #aaa;
+}
+
+.article .context-toggles .context-toggle i {
+
+}
+
+.article .context-toggles .context-toggle span {
+  display: none;
+}
+
+.article .context-toggles .context-toggle:hover {
+  color: #555;
+}
+
+/*Active states depend on the global reader context */
+
+/*.article .context-toggles .context-toggle.figures:hover {
+  color: rgba(145, 187, 4, 1);
+}
+
+.article .context-toggles .context-toggle.citations:hover {
+  color: rgba(11, 157, 217, 1);
+}
+*/
+
+
+.article.figures .context-toggles .context-toggle.figures {
+  color: #111; 
+}
+
+.article.citations .context-toggles .context-toggle.citations {
+  /*color: rgba(11, 157, 217, 1);*/
+  color: #111; 
+}
+
+.article.toc .context-toggles .context-toggle.toc {
+  color: #111;
+}
+
+.article.info .context-toggles .context-toggle.info {
+  color: #111;
+}
+
+
+/* Resources Panel 
+======================================================================= */
+
+
+.article .resources {
+  float: right;
+  line-height: 25px;
+  width: 50%;
+  
+  height: 100%;
+  padding-left: 50px;
+  padding-right: 50px;
+  position: relative;
+}
+
+.article .nodes {
+  padding-left: 50px;
+  padding-right: 50px;
+}
+
+.article .resources .nodes {
+  padding-left: 40px;
+  padding-right: 40px;
+}
+
+.article .resources .nodes > .content-node {
+  color: #505050;
+  position: relative;
+  background: #fff;
+
+  padding: 0px;
+  padding-top: 20px;
+  padding-bottom: 20px;
+}
+
+
+.article .resources .content-node .resource-header:hover {
+  background: rgba(0,0,0,0.15);
+}
+
+/* Clickable header */
+.article .resources .content-node .resource-header {
+  min-height: 80px;
+  position: relative;
+  background: rgba(0,0,0,0.1);
+}
+
+
+/* Shared styles for selected and mouseover states
+----------------------------------------------------------------------- */
+
+/* Active resource */
+.article .resources .content-node.active .resource-header .name {
+  color: #fff;
+}
+
+/* active figure */
+.article .resources .figures .content-node.active {
+  /*border-color: rgba(145, 187, 4, 1);*/
+}
+
+.article .resources .figures .content-node.active .resource-header {
+  background: rgba(145, 187, 4, 1);
+}
+
+.article .resources .figures .content-node.active .resource-header a {
+  /*color: rgba(145, 187, 4, 1);*/
+}
+
+
+/* active citation */
+
+.article .resources .citations .content-node.active {
+  /*border-color: rgba(11, 157, 217, 1);*/
+}
+
+.article .resources .citations .content-node.active .resource-header {
+  background: rgba(11, 157, 217, 1);
+}
+
+.article .resources .citations .content-node.active .resource-header a {
+  /*color: rgba(11, 157, 217, 1);*/
+}
+
+/* active person */
+.article .resources .info .content-node.active {
+  /*border-color: #5c6570;*/
+}
+
+.article .resources .info .content-node.active .resource-header {
+  border-color: #5c6570;
+}
+
+.article .resources .info .content-node.active .resource-header a {
+  /*color: #5c6570;*/
+}
+
+
+/* Figures View
+----------------------------------------------------------------------- */
+
+.article .resources .surface.figures {
+  display: none;
+  position: absolute;
+  top: 0px;
+  bottom: 0px;
+  left: 0px;
+  right: 0px;
+  overflow-y: scroll;
+  overflow-x: hidden;
+  font-size: 14px;
+  -webkit-overflow-scrolling: touch;
+}
+
+.article.figures .resources .resource-view.figures {
+  display: block;
+}
+
+.substance-article .content-node .toggle-resource {
+  cursor: pointer;
+}
+
+/* Citations View
+----------------------------------------------------------------------- */
+
+.article .resources .surface.citations {
+  font-size: 14px;
+
+  display: none;
+  position: absolute;
+  top: 0px;
+  bottom: 0px;
+  left: 0px;
+  right: 0px;
+  overflow-y: scroll;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+}
+
+.article.citations .resources .resource-view.citations {
+  display: block;
+}
+
+/* TOC View
+----------------------------------------------------------------------- */
+
+.resource-view.toc {
+  display: none;
+  position: absolute;
+  top: 0px;
+  bottom: 0px;
+  left: 50px;
+  right: 0px;
+
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
+  padding-top: 60px;
+}
+
+.article.toc .resources .resource-view.toc {
+  display: block;
+}
+
+
+/* Info View
+----------------------------------------------------------------------- */
+
+.article .resources .surface.info {
+  display: none;
+  position: absolute;
+  top: 0px;
+  bottom: 0px;
+  left: 0px;
+  right: 0px;
+  overflow-y: scroll;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+}
+
+.article.info .resources .resource-view.info {
+  display: block;
+}
+
+
+/* Resource Fullscreen Mode 
+======================================================================= */
+
+
+/* Styles for fullscreen toggle on resource cards */
+
+.article .resources .content-node .resource-header .toggle-fullscreen {
+  position: absolute;
+  right: 0px;
+  top: 0px;
+  font-size: 30px;
+  bottom: 0px;
+  text-align: center;
+  line-height: 81px;
+  color: rgba(0,0,0, 0.2);
+  width: 81px;
+}
+
+.article .resources .content-node .resource-header .toggle-fullscreen:hover {
+  color: rgba(0,0,0, 0.5);
+}
+
+/* Active state adjustments */
+
+.article .resources .content-node.active .resource-header .toggle-fullscreen {
+  color: rgba(255,255,255, 0.5);
+}
+
+.article .resources .content-node.active .resource-header .toggle-fullscreen:hover {
+  color: rgba(255,255,255, 1);
+}
+
+
+/* Hide resize small icon by default */
+#container .article .content-node .icon-resize-small {
+  display: none;
+}
+
+#container .article .content-node.fullscreen {
+  position: fixed;
+  top: 0px;
+  bottom: 0px;
+  left: 0px;
+  right: 0px;
+  z-index: 100000;
+  margin-bottom: 0px;
+  margin-right: 0px;
+  padding: 0px;
+}
+
+#container .article .content-node.fullscreen .icon-resize-small {
+  display: inline;
+}
+
+#container .article .content-node.fullscreen .icon-resize-full {
+  display: none;
+}
+
+#container .article .content-node.fullscreen > .content {
+  position: absolute;
+  top: 80px;
+  bottom: 0px;
+  left: 0px;
+  right: 0px;
+  overflow: auto;
+}
+
+/* Info panel overrides 
+----------------------------------------------------------------------- */
+
+
+#container .article .surface.info .content-node.caption .content {
+  padding: 20px;
+}
+
+/* Annotations 
+----------------------------------------------------------------------- */
+
+.article span.annotation {
+}
+
+/* Figure Reference */
+
+.content-node .figure_reference { 
+  padding: 0 2px;
+  cursor: pointer; 
+}
+.content-node .citation_reference { cursor: pointer; }
+.content-node .cross_reference { cursor: pointer; }
+
+/* Reader-specific overrides for content nodes
+======================================================================= */
+
+/* For the main content area 
+----------------------------------------------------------------------- */
+
+.surface.content .nodes > .content-node {
+  padding-top: 10px;
+  padding-bottom: 15px;
+  padding-left: 30px;
+  padding-right: 50px;
+  word-wrap: break-word;
+}
+
+/* Some extra cover spacing */
+.surface.content .nodes > .content-node.cover {
+  padding-top: 20px;
+}
+
+.substance-article .content-node.cover .content .authors .toggle-author.active {
+  background: rgba(0,0,0,0.7);
+  color: rgba(255,255,255, 1);
+}
+
+
+
+/* For the resources panel
+----------------------------------------------------------------------- */
+
+.content-node {
+
+}
+
+/* Wraps all resource details */
+.resources .content-node .resource-body {
+  padding: 20px;
+  overflow: auto;
+  border-left: 1px solid #eee;
+  border-right: 1px solid #eee;
+  border-bottom: 1px solid #eee;
+}
+
+/* padding for the content */
+.resources .nodes > .content-node > .content {
+  /*padding: 20px;*/
+}
+
+/* Contributor View*/
+
+.resources .content-node.contributor .name .content {
+  background: rgba(0,0,0,0.1);
+  padding: 20px;
+  font-weight: 600;
+  /*font-size: 16px;*/
+}
+
+/* Active Style */
+
+.resources .content-node.contributor.active .name .content {
+  background: rgba(0,0,0,0.7);
+  color: white;
+}
+
+/* Figure View */
+
+.resources .content-node.figure .label .content {
+  background: rgba(0,0,0,0.1);
+  padding: 20px;
+  font-weight: 600;
+  /*font-size: 16px;*/
+}
+
+.content-node.figure.active .label .content,
+.focus-panel .content-node.figure .label .content {
+  background: rgba(145, 187, 4, 1);
+  color: white;
+}
+
+
+/* For the resources panel */
+.resources .info .nodes > .content-node.paragraph > .content > .content-node {
+  padding: 20px 0;
+}
+
+.article .document .surface.content::-webkit-scrollbar {
+  width: 2px;
+  height: 2px;
+}
+
+.article .document .surface.content::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0);
+}
+
+
+/* Disable native scrollbar for resources except TOC */
+
+.article .resources .surface.figures::-webkit-scrollbar,
+.article .resources .surface.citations::-webkit-scrollbar,
+.article .resources .surface.info::-webkit-scrollbar {
+  width: 2px;
+  height: 2px; 
+}
+
+.article .resources .surface.figures::-webkit-scrollbar-thumb,
+.article .resources .surface.citations::-webkit-scrollbar-thumb,
+.article .resources .surface.info::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0);
+}
+
+
+/* Resources Outline */
+/* ---------------------------------------*/
+
+.resources .lens-outline {
+  position: absolute;
+  top: 0px;
+  right: 0px;
+  left: auto;
+  bottom: 0px;
+  width: 30px;
+}
+
+#container.touchable .resources .lens-outline {
+  right: 5px;
+}
+
+/* Responsiveness */
+/* ---------------------------------------*/
+
+
+/* Hide fullscreen toggle for small screens */
+#container.touchable .toggle-fullscreen {
+  display: none;
+}
+
+#container.touchable .article .document .surface.content {
+  right: 20px;
+}
+
+
+/* Only hide for IOS devices because of scrolling issues! */
+#container.touchable.ios .lens-outline .visible-area {
+  display: none;
+}
+
+#container.touchable .lens-outline .node:hover {
+  opacity: 0.15;
+}
+
+#container.touchable .lens-outline .arrow {
+  display: none;
+}
+
+.content-node.heading .top {
+  display: none;
+}
+
+.surface.content .nodes .content-node.heading {
+  padding-bottom: 0px;
+}
+
+.surface.content .nodes .content-node.heading.level-1 {
+  /*padding-top: 20px;*/
+}
+
+
+
+@media (max-width: 1100px) {
+  .article .content-node.cover .title {
+    font-size: 28px;
+  }
+
+  .surface.content .nodes > .content-node {
+    padding-left: 15px;
+    padding-right: 15px;
+    word-wrap: break-word;
+  }
+}
+
+
+/* Mobile (iPad Portrait) */
+@media (max-width: 850px) {
+
+
+
+  .content-node.heading .top {
+    display: block;
+    position: absolute;
+    right: 10px;
+    top: 5px;
+    padding: 10px;
+  }
+
+  html body.reader {
+    height: auto;
+    overflow: visible;
+    position: relative;
+    font-size: 18px;
+  }
+
+  /* Hide fullscreen toggle for small screens */
+  #container .toggle-fullscreen {
+    display: none;
+  }
+
+  /* Reset back */
+  #container.touchable .article .document .surface.content {
+    right: 0px;
+  }
+
+  .surface.content .nodes > .content-node {
+    padding-top: 10px;
+    padding-bottom: 15px;
+    padding-left: 20px;
+    padding-right: 20px;
+    word-wrap: break-word;
+  }
+
+  .article .document .surface.content .nodes {
+    padding-left: 40px;
+  }
+
+  .article .document {
+    width: 100%;
+    height: auto;
+    position: relative;
+    z-index: 100;
+    /*padding-top: 80px;*/
+    padding: 80px 20px;
+    padding-bottom: 40px;
+
+    border-right: none;
+  }
+
+
+  .article .document .surface.content {
+    position: absolute;
+    position: relative;
+    overflow: visible;
+  }
+
+  .article .resources .surface.resource-view {
+    position: absolute;
+    position: relative;
+    overflow: visible;
+  }
+
+  .article.toc .document {
+    z-index: 200;
+  }
+
+  #container .article .resources {
+    background: #fff;
+    position: relative;
+    width: 100%;
+    height: auto;
+
+    padding-left: 0px;
+    padding-right: 0px;
+
+    z-index: 300;
+    word-wrap: break-word;
+  }
+
+  #container .article .resources .surface {
+    /*padding-top: 80px;*/
+    padding: 80px 20px;
+  }
+
+  .resources .content-node .resource-body {
+    padding: 20px;
+    font-size: 17px;
+    /*border: none;*/
+  }
+
+  .resources .content-node.figure .label .content {
+    /*background: rgba(0,0,0,0.1);*/
+    /*background: none;*/
+    font-size: 18px;
+  }
+
+  #container .article .resources .nodes {
+    padding: 0px 20px;
+  }
+
+  .article .document .surface.content .nodes {
+    padding-left: 0;
+  }
+
+  #container .article .resources .resource-view {
+    display: none;
+  }
+
+  #container .article.figures .resources .resource-view.figures {
+    display: block;
+    z-index: 200;
+  }
+
+  /* Hide document when in resource mode */
+  #container .article.figures .document,
+  #container .article.citations .document,
+  #container .article.info .document
+  {
+    display: none;
+  }
+
+  #container .article.info .resources .resource-view.info {
+    display: block;
+    z-index: 200;
+  }
+
+  #container .article.citations .resources .resource-view.citations {
+    display: block;
+    z-index: 200;
+  }
+
+  .article .medial-strip {
+    background: #252525;
+    position: fixed;
+    top: 0px;
+    right: 0px;
+    left: 0px;
+    bottom: auto;
+    margin-left: 0px;
+    height: 60px;
+    width: auto;
+  }
+
+  .article .medial-strip .context-toggles {
+    background: #151515;
+    position: absolute;
+    padding-left: 20px;
+    left: 0px;
+    right: 0px;
+    bottom: 0px;
+    top: 0px;
+  }
+
+  .article .medial-strip .context-toggles .context-toggle {
+    float: left;
+    width: 70px;
+    padding: 0px 5px;
+    padding-top: 7px;
+    text-align: center;
+    line-height: 24px;
+    color: rgba(255,255,255, 0.3);
+  }
+
+  .article .medial-strip .context-toggles .context-toggle:hover {
+    color: rgba(255,255,255,0.8);
+  }
+
+  .article .medial-strip .context-toggles .context-toggle span {
+    display: block;
+    font-size: 13px;
+  }
+
+  .article.toc .context-toggles .context-toggle.toc {
+    color: rgba(255,255,255,1);
+  }
+
+  .article.figures .context-toggles .context-toggle.figures {
+    color: rgba(255,255,255,1);
+  }
+
+  .article.citations .context-toggles .context-toggle.citations {
+    color: rgba(255,255,255,1);
+  }
+
+  .article.info .context-toggles .context-toggle.info {
+    color: rgba(255,255,255,1);
+  }
+
+  .article .medial-strip .back-nav {
+    display: none;
+  }
+
+  .article .lens-outline {
+    display: none;
+  }
+}
+
+/* iPhone */
+
+@media (max-width: 450px) {
+
+  html body.reader {
+    height: auto;
+    overflow: visible;
+    position: relative;
+    font-size: 15px;
+  }
+
+  .article .document {
+    padding: 0;
+    padding-top: 80px;
+  }
+
+  .article .medial-strip .context-toggles {
+    padding-left: 0px;
+  }
+
+  #container .article .resources .surface {
+    padding: 0;
+    padding-top: 80px;
+  }
+
+  .resources .content-node.figure .label .content {
+    font-size: 15px;
+  }
+
+  .resources .content-node .resource-body {
+    font-size: 15px;
+    /*border: none;*/
+  }
+
+
+}
