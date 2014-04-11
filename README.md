@@ -1,12 +1,20 @@
-Substance
+Substance Composer
 ===================
 
-Substance provides an extensive, customizable content creation and annotation framework that enables user-centric interfaces and automatic data processing via your web-browser or Node.js. Thanks to its modular nature it creates an ideal environment for custom integration scenarios.
+Centrally managed proprietary systems are dominating the Internet.
 
-In this repository you find all official Substance releases. We will turn this into a developer's sandbox over the coming months.
+People are no longer in control of their content, which is resulting in privacy violations, data fraud and censorship.
 
-Destinations
-------------------
+According to the original idea of the Internet, people control their own space for expression on the web, facilitating the web as democratic medium.
 
-- [Substance Composer](http://substance.io/composer-alpha) - Create Substance documents, visually
-- [Substance Code](http://code.substance.io) - Developers resources
+We want to support that idea by contributing Substance, an open platform for modern self-publishing.
+
+We want to help people reclaim the internet as an open space.
+
+With the Substance Composer, a content-oriented editor, even technically unexperienced people can create and share documents with the public.
+
+We ensure that privacy is protected and users have full control over their content — until it's ready to be shared with the world.
+
+The Substance Composer is built using web technology and packaged as a native application for OSX, Windows and Linux.
+
+For front-end developers it is very easy to customise the look and feel of the generated publications as well as automating the publishing process.
