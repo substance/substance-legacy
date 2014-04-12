@@ -5,7 +5,7 @@ Centrally managed proprietary systems are dominating the Internet.
 
 People are no longer in control of their content, which is resulting in privacy violations, data fraud and censorship.
 
-According to the original idea of the Internet, people control their own space for expression on the web, facilitating the web as democratic medium.
+According to the original idea of the Internet, people control their own space for expression on the web, facilitating the web as a democratic medium.
 
 We want to support that idea by contributing Substance, an open platform for modern self-publishing.
 
