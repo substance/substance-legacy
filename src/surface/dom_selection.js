@@ -150,12 +150,14 @@ DomSelection.Prototype = function() {
     }
     this.nativeSelection = selection_clone(sel);
 
-    var isReverse;
-    var cmp = sel.focusNode.compareDocumentPosition(sel.anchorNode);
-    isReverse = (
-      ( (cmp & (window.document.DOCUMENT_POSITION_FOLLOWING) ) > 0 ) ||
-      (cmp === 0 && sel.focusOffset < sel.anchorOffset)
-    );
+    var isReverse = false;
+    if (sel.focusNode && sel.anchorNode) {
+      var cmp = sel.focusNode.compareDocumentPosition(sel.anchorNode);
+      isReverse = (
+        ( (cmp & (window.document.DOCUMENT_POSITION_FOLLOWING) ) > 0 ) ||
+        (cmp === 0 && sel.focusOffset < sel.anchorOffset)
+      );
+    }
     // console.log('####', isReverse, cmp);
     var rangeCount = sel.rangeCount;
     var ranges = [];

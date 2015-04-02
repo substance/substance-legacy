@@ -46,6 +46,17 @@ PropertySelection.Prototype = function() {
     }
   };
 
+  // Helper Methods
+  // ----------------------
+
+  this.getPath = function() {
+    return this.range.start.path;
+  };
+
+  this.getTextRange = function() {
+    return [this.range.start.offset, this.range.end.offset];
+  };
+
   this.toString = function() {
     return "( " + JSON.stringify(this.range.start.path) +", " + this.range.start.offset + " -> " + this.range.end.offset + (this.reverse?", reverse":"") + " )";
   };

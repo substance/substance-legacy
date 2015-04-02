@@ -297,8 +297,12 @@ Surface.Prototype = function() {
     if (!this.model.selection.equals(sel)) {
       console.log('Surface.setSelection: %s', sel.toString());
       this.model.selection = sel;
-      this.emit('selection');
+      this.emit('selection:changed', sel);
     }
+  };
+
+  this.getSelection = function() {
+    return this.model.selection;
   };
 
 };
