@@ -23,7 +23,7 @@ var forEach = require('lodash/collection/forEach');
 var filter = require('lodash/collection/filter');
 var includes = require('lodash/collection/includes');
 var map = require('lodash/collection/map');
-
+var pluck = require('lodash/collection/pluck');
 
 var Substance = {};
 
@@ -64,6 +64,7 @@ Substance.each = forEach;
 Substance.filter = filter;
 Substance.includes = includes;
 Substance.map = map;
+Substance.pluck = pluck;
 
 Substance.last = last;
 Substance.first = first;
