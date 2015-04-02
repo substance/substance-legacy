@@ -116,40 +116,23 @@ Document.Prototype = function() {
     this.notifyDocumentChangeListeners(documentChange);
   };
 
-  // doc.on('document-change', path, fn, ctxt)
-  this.on = function() {
-    if (arguments[0] === 'document-change') {
-      this.addDocumentChangeListener.apply(this, Array.prototype.slice.call(arguments, 1));
-    } else {
-      Substance.EventEmitter.prototype.on.apply(this, arguments);
-    }
-  };
-
-  // doc.off('document-change', path, fn, ctxt)
-  this.off = function() {
-    if (arguments[0] === 'document-change') {
-      this.removeDocumentChangeListener.apply(this, Array.prototype.slice.call(arguments, 1));
-    } else {
-      Substance.EventEmitter.prototype.off.apply(this, arguments);
-    }
-  };
-
-  this.addDocumentChangeListener = function(path, fn, ctx) {
+  this.addDocumentChangeListener = function(listener, path, fn) {
     var key = path.concat(['listeners']);
     var listeners = this.documentListeners.get(key);
     if (!listeners) {
       listeners = [];
       this.documentListeners.set(key, listeners);
     }
-    listeners.push({ fn: fn, ctx: ctx });
+    listeners.push({ fn: fn, listener: listener });
   };
 
-  this.removeDocumentChangeListener = function(path, fn) {
+  // TODO: it would be cool if we would just need to provide the listener instance, no path
+  this.removeDocumentChangeListener = function(listener, path) {
     var key = path.concat(['listeners']);
     var listeners = this.documentListeners.get(key);
     if (listeners) {
       for (var i = 0; i < listeners.length; i++) {
-        if (listeners[i].fn === fn) {
+        if (listeners[i].listener === listener) {
           listeners.splice(i, 1);
           return;
         }
@@ -162,7 +145,7 @@ Document.Prototype = function() {
     documentChange.traverse(function(path, ops) {
       var listeners = documentListeners.get(path);
       Substance.each(listeners, function(entry) {
-        entry.fn.call(entry.ctx, ops);
+        entry.fn.call(entry.listener, ops);
       });
     }, this);
   };
