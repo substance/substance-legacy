@@ -15,11 +15,15 @@ Index.Prototype = function() {
 
   this.reset = function() {
     this.index.clear();
-    Substance.each(graph.getNodes(), function(node) {
+    Substance.each(this.graph.getNodes(), function(node) {
       if (this.select(node)) {
         this.create(node);
       }
     }, this);
+  };
+
+  this.initialize = function() {
+    this.reset();
   };
 
   this.property = "id";

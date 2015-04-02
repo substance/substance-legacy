@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 function initClass(fn) {
   if ( fn.Prototype && !(fn.prototype instanceof fn.Prototype) ) {
@@ -17,7 +17,7 @@ function inherit(targetFn, originFn) {
   // defined as a static member 'Prototype' of the target function.
   var TargetPrototypeCtor = targetFn.Prototype;
   // Provide a shortcut to the parent constructor
-  targetFn._super = originFn;
+  targetFn.super = originFn;
   if (TargetPrototypeCtor) {
     TargetPrototypeCtor.prototype = originFn.prototype;
     targetFn.prototype = new TargetPrototypeCtor();
@@ -34,7 +34,7 @@ function inherit(targetFn, originFn) {
     } );
   }
   // provide a shortcut to the parent prototype
-  targetFn.prototype._super = originFn.prototype;
+  targetFn.prototype.super = originFn.prototype;
   // Extend static properties - always initialize both sides
   initClass( originFn );
   targetFn.static = Object.create( originFn.static );

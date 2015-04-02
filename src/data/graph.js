@@ -4,10 +4,12 @@ var Substance = require('../basics');
 var PathAdapter = Substance.PathAdapter;
 var EventEmitter = Substance.EventEmitter;
 
-function Graph(options) {
+function Graph(schema, options) {
   EventEmitter.call(this);
 
   options = options || {};
+
+  this.schema = schema;
 
   this.seed = options.seed;
   this.didCreateNode = options.didCreateNode || function() {};
@@ -36,9 +38,6 @@ Graph.Prototype = function() {
     }
     if (this.contains(node.id)) {
       throw new Error("Node already exists: " + node.id);
-    }
-    if (this.nodeFactory) {
-      node = this.nodeFactory(node);
     }
     if (!node.id || !node.type) {
       throw new Error("Node id and type are mandatory.");
@@ -118,8 +117,7 @@ Graph.Prototype = function() {
     if (this.seed) {
       var nodes = this.seed.nodes;
       Substance.each(nodes, function(nodeData) {
-        var node = this.create(nodeData);
-        this.nodes.set([node.id], node);
+        this.create(nodeData);
       }, this);
     }
   };
@@ -128,7 +126,7 @@ Graph.Prototype = function() {
     if (this.indexes[name]) {
       console.error('Index with name %s already exists.', name);
     }
-    index.setData(this);
+    index.setGraph(this);
     index.initialize();
     this.indexes[name] = index;
     return index;

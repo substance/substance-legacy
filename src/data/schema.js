@@ -9,7 +9,7 @@ function Schema(name, version) {
   this.version = version;
   this.nodeFactory = new NodeFactory();
   // add built-in node classes
-  this.nodeFactory.addNodes(this.getBuiltIns());
+  this.addNodes(this.getBuiltIns());
 }
 
 Schema.Prototype = function() {
@@ -17,7 +17,6 @@ Schema.Prototype = function() {
   this.addNodes = function(nodes) {
     if (!nodes) return;
     for (var i = 0; i < nodes.length; i++) {
-      Node.initNodeClass(nodes[i]);
       this.nodeFactory.register(nodes[i]);
     }
   };

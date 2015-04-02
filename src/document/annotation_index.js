@@ -3,7 +3,7 @@
 var Substance = require('../basics');
 var PathAdapter = Substance.PathAdapter;
 var Data = require('../data');
-var Annotation = require('./nodes/annotation');
+var Annotation = require('./annotation');
 
 var AnnotationIndex = function() {
   AnnotationIndex.super.call(this);
@@ -68,6 +68,6 @@ AnnotationIndex.Prototype = function() {
 
 };
 
-Substance.inherit(AnnotationIndex, Data.NodeIndex);
+Substance.inherit(AnnotationIndex, Data.Index);
 
 module.exports = AnnotationIndex;

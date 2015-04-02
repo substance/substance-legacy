@@ -1,6 +1,5 @@
 'use strict';
 
-var Substance = require('substance');
 var Data = require('../data');
 
 var DocumentNode = Data.Node.extend({

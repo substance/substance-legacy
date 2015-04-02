@@ -8,7 +8,7 @@ var SubstanceError = require('./error');
 var Registry = require('./registry');
 var Factory = require('./factory');
 
-var Substance = require('./basics');
+var Substance = require('./helpers');
 
 Substance.uuid = uuid;
 

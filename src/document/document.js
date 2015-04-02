@@ -5,14 +5,13 @@ var Data = require('../data');
 
 var AnnotationIndex = require('./annotation_index');
 var TransactionDocument = require('./transaction_document');
-var DocumentListeners = require('./document_listeners');
 var DocumentHistory = require('./document_history');
 
 function Document( schema, seed ) {
   Substance.EventEmitter.call(this);
 
   this.schema = schema;
-  this.data = new Data.IncrementalGraph({
+  this.data = new Data.IncrementalGraph(schema, {
     seed: seed,
     didCreateNode: Substance.bind(this._didCreateNode, this),
     didDeleteNode: Substance.bind(this._didDeleteNode, this),
@@ -95,9 +94,9 @@ Document.Prototype = function() {
     this.isTransacting = false;
     this.history.setRecoveryPoint();
 
-    transactionChanges.traverse(function(path, ops) {
-      this.emit('transaction', path, ops);
-    }, this);
+    // transactionChanges.traverse(function(path, ops) {
+    //   this.emit('transaction', path, ops);
+    // }, this);
   };
 
 };

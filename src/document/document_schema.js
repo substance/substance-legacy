@@ -21,7 +21,6 @@ DocumentSchema.Prototype = function() {
   this.getBuiltIns = function() {
     return [ Node, Annotation, ContainerNode ];
   };
-
 };
 
 Substance.inherit( DocumentSchema, Data.Schema );

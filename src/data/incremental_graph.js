@@ -8,11 +8,11 @@ var ObjectOperation = Operator.ObjectOperation;
 var ArrayOperation = Operator.ArrayOperation;
 var TextOperation = Operator.TextOperation;
 
-var IncrementalGraph = function(options) {
-  Graph.call(this, options);
+var IncrementalGraph = function(schema, options) {
+  IncrementalGraph.super.call(this, schema, options);
 };
 
-IncrementalData.Prototype = function() {
+IncrementalGraph.Prototype = function() {
 
   this.create = function(nodeData) {
     var op = ObjectOperation.Create([nodeData.id], nodeData);
@@ -48,9 +48,9 @@ IncrementalData.Prototype = function() {
     if (op.type === ObjectOperation.NOP) return;
     else if (op.type === ObjectOperation.CREATE) {
       // clone here as the operations value must not be changed
-      this._super.create.call(this, Substance.clone(op.val));
+      this.super.create.call(this, Substance.clone(op.val));
     } else if (op.type === ObjectOperation.DELETE) {
-      this._super.delete.call(this, op.val.id);
+      this.super.delete.call(this, op.val.id);
     } else if (op.type === ObjectOperation.UPDATE) {
       var oldVal = this.get(op.path);
       var diff = op.diff;
@@ -65,12 +65,12 @@ IncrementalData.Prototype = function() {
           diff = TextOperation.fromJSON(diff);
         }
         var newVal = diff.apply(oldVal);
-        this._super.set.call(this, op.path, newVal);
+        this.super.set.call(this, op.path, newVal);
       } else {
         throw new Error("Unsupported type for operational update.");
       }
     } else if (op.type === ObjectOperation.SET) {
-      this._super.set.call(this, op.path, op.val);
+      this.super.set.call(this, op.path, op.val);
     } else {
       throw new Error("Illegal state.");
     }

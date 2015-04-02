@@ -1,6 +1,6 @@
 'use strict';
 
-var Substance = require('substance');
+var oo = require('./oo');
 
 function Registry() {
   this.entries = {};
@@ -45,6 +45,6 @@ Registry.Prototype = function() {
   };
 };
 
-Substance.initClass(Registry);
+oo.initClass(Registry);
 
 module.exports = Registry;

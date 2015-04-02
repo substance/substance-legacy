@@ -1,6 +1,6 @@
-"use strict";
+'use strict';
 
-var Substance = require('./basics');
+var _ = require('./helpers');
 var oo = require('./oo');
 
 /**
@@ -36,7 +36,7 @@ PathAdapter.Prototype = function() {
   };
 
   this.get = function(path) {
-    if (Substance.isString(path)) {
+    if (_.isString(path)) {
       return this[path];
     } else if (!path || path.length === 0) {
       return this.getRoot();
@@ -47,7 +47,7 @@ PathAdapter.Prototype = function() {
   };
 
   this.set = function(path, value) {
-    if (Substance.isString(path)) {
+    if (_.isString(path)) {
       this[path] = value;
     } else {
       var key = path[path.length-1];
@@ -56,7 +56,7 @@ PathAdapter.Prototype = function() {
   };
 
   this.delete = function(path, strict) {
-    if (Substance.isString(path)) {
+    if (_.isString(path)) {
       delete this[path];
     } else {
       var key = path[path.length-1];
@@ -68,7 +68,7 @@ PathAdapter.Prototype = function() {
     }
   };
 
-  this.clean = function() {
+  this.clear = function() {
     var root = this.getRoot();
     for (var key in root) {
       if (root.hasOwnProperty(key)) {

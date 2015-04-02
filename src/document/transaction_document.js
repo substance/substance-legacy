@@ -1,6 +1,7 @@
 'use strict';
 
 var Substance = require('../basics');
+var Data = require('../data');
 var AnnotationIndex = require('./annotation_index');
 var ChangeMap = require('./change_map');
 
@@ -10,7 +11,7 @@ function TransactionDocument(document) {
   this.schema = document.schema;
 
   this.ops = [];
-  this.data = new Data.IncrementalGraph({
+  this.data = new Data.IncrementalGraph(document.schema, {
     seed: document.data.seed,
     didCreateNode: document.data.didCreateNode,
     didDeleteNode: document.data.didDeleteNode,
@@ -27,9 +28,9 @@ TransactionDocument.Prototype = function() {
     return this.data.create(nodeData);
   };
 
-  this.delete = Data.prototype.delete;
-
-  this.delete = Data.prototype.delete;
+  this.delete = function(nodeId) {
+    return this.data.delete(nodeId);
+  };
 
   this.save = function() {
     this.document._saveTransaction(this.ops);
@@ -42,7 +43,6 @@ TransactionDocument.Prototype = function() {
       this.data.apply(this.ops[i].invert());
     }
   };
-
 
 };
 

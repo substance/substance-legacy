@@ -4,9 +4,9 @@ var Document = require('./document');
 
 Document.Schema = require('./document_schema');
 
-Document.Node = require('./nodes/node');
-Document.Annotation = require('./nodes/annotation');
-Document.ContainerNode = require('./nodes/container');
+Document.Node = require('./node');
+Document.Annotation = require('./annotation');
+Document.ContainerNode = require('./container_node');
 
 Document.Selection = require('./selection');
 Document.Coordinate = require('./coordinate');
