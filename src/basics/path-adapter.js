@@ -67,6 +67,15 @@ PathAdapter.Prototype = function() {
       delete obj[key];
     }
   };
+
+  this.clean = function() {
+    var root = this.getRoot();
+    for (var key in root) {
+      if (root.hasOwnProperty(key)) {
+        delete root[key];
+      }
+    }
+  };
 };
 
 oo.initClass( PathAdapter );
