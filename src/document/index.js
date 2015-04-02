@@ -15,5 +15,6 @@ Document.NullSelection = Document.Selection.NullSelection;
 Document.nullSelection = Document.Selection.NullSelection;
 Document.PropertySelection = require('./property_selection');
 Document.ContainerSelection = require('./container_selection');
+Document.Annotator = require('./annotator');
 
 module.exports = Document;

@@ -11,6 +11,7 @@ function Node( data ) {
 }
 
 Node.Prototype = function() {
+
   this.toJSON = function() {
     return this.properties;
   };
@@ -21,7 +22,7 @@ Node.Prototype = function() {
 
   this.isInstanceOf = function(typeName) {
     var staticData = this.constructor.static;
-    while (staticData && staticData.name !== "model") {
+    while (staticData && staticData.name !== "node") {
       if (staticData && staticData.name === typeName) {
         return true;
       }
@@ -30,9 +31,16 @@ Node.Prototype = function() {
     return false;
   };
 
-  this.fromHTML = function( el ) {
-    this.properties.id = $(el).attr('id') || this.properties.id;
+  this.getClassNames = function() {
+    var classNames = [];
+    var staticData = this.constructor.static;
+    while (staticData && staticData.name !== "node") {
+      classNames.push(staticData.name);
+      staticData = Object.getPrototypeOf(staticData);
+    }
+    return classNames.join(' ');
   };
+
 };
 
 Substance.inherit( Node, Substance.EventEmitter );
@@ -40,7 +48,7 @@ Substance.inherit( Node, Substance.EventEmitter );
 /**
  * Symbolic name for this model class. Must be set to a unique string by every subclass.
  */
-Node.static.name = "model";
+Node.static.name = "node";
 
 Node.static.schema = {
   type: 'string',

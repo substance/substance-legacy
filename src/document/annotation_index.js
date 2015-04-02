@@ -47,7 +47,7 @@ AnnotationIndex.Prototype = function() {
       }, this);
     } else {
       Substance.each(annotations, function(anno) {
-        result.push(this.get(anno.id));
+        result.push(anno);
       }, this);
     }
     return result;
