@@ -83,11 +83,51 @@ Graph.Prototype = function() {
     return oldValue;
   };
 
-  this.update = function(path, diffOp) {
-    var node = this.get(path[0]);
+  // TODO: it does not make too much sense to use this incremental method
+  // on the non-incremental graph
+  // We leave it here so that the two versions are compatible API-wise
+  this.update = function(path, diff) {
     var oldValue = this.nodes.get(path);
-    var newValue = diffOp.apply(oldValue);
+    var newValue;
+    if (diff.isOperation) {
+      newValue = diff.apply(oldValue);
+    } else {
+      var start, end, pos, val;
+      if (Substance.isString(oldValue)) {
+        if (diff['delete']) {
+          // { delete: [2, 5] }
+          start = diff['delete'].start;
+          end = diff['delete'].end;
+          newValue = oldValue.split('').splice(start, end-start).join('');
+        } else if (diff['insert']) {
+          // { insert: [2, "foo"] }
+          pos = diff['insert'].offset;
+          val = diff['insert'].value;
+          newValue = [oldValue.substring(0, pos), val, oldValue.substring(pos)].join('');
+        } else {
+          throw new Error('Diff is not supported:', JSON.stringify(diff));
+        }
+      } else if (Substance.isArray(oldValue)) {
+        newValue = oldValue.slice(0);
+        if (diff['delete']) {
+          // { delete: 2 }
+          pos = diff['delete'].offset;
+          newValue.splice(pos, 1);
+        } else if (diff['insert']) {
+          // { insert: [2, "foo"] }
+          pos = diff['insert'].offset;
+          val = diff['insert'].value;
+          newValue.splice(pos, 0, val);
+        } else {
+          throw new Error('Diff is not supported:', JSON.stringify(diff));
+        }
+      } else {
+        throw new Error('Diff is not supported:', JSON.stringify(diff));
+      }
+    }
+
     this.nodes.set(path, newValue);
+    var node = this.get(path[0]);
     Substance.each(this.indexes, function(index) {
       if (index.select(node)) {
         index.update(node, path, oldValue, newValue);
@@ -135,6 +175,7 @@ Graph.Prototype = function() {
   this.getIndex = function(name) {
     return this.indexes[name];
   };
+
 
 };
 

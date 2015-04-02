@@ -9,12 +9,11 @@ var Document = require('../document');
 var DomObserver = require('./dom_observer');
 var DomSelection = require('./dom_selection');
 
-function Surface( element, model ) {
+function Surface(element, model) {
   Substance.EventEmitter.call(this);
 
   this.element = element;
   this.model = model;
-  this.selection = Document.NullSelection;
 
   this.domObserver = new DomObserver(this);
   this.domSelection = new DomSelection(element, this.model);
@@ -138,10 +137,10 @@ Surface.Prototype = function() {
   this.handleInsertion = function( e ) {
     // TODO: let contenteditable insert something and then see what it was
     console.log('TODO: handleInsertion');
-    this.insertState = {};
-    if (!this.selection.isCollapsed()) {
-      this.insertState.delete = this.selection;
-    }
+    this.insertState = {
+      selectionBefore: this.model.selection,
+      selectionAfter: null
+    };
     this.insertState.range = window.getSelection().getRangeAt(0);
   };
 
@@ -156,10 +155,11 @@ Surface.Prototype = function() {
       range.setStart(before.startContainer, before.startOffset);
       range.setEnd(after.startContainer, after.startOffset);
       var textInput = range.toString();
-      if (this.insertState.delete) {
-        console.log("Delete:", this.insertState.delete);
-      }
-      console.log("Inserted text: '%s'", textInput);
+
+      var selectionAfter = this.domSelection.get();
+      this.model.selection = this.insertState.selectionBefore;
+      this.model.insertText(textInput, selectionAfter);
+
       this.insertState = null;
     }
   };
@@ -209,7 +209,7 @@ Surface.Prototype = function() {
   this.onMouseMove = function () {
     if (this.dragging) {
       // update selection during dragging
-      this.selection = this.domSelection.get();
+      this.model.selection = this.domSelection.get();
       // TODO: maybe this is not really necessary, as the main things are not really useful (such as tools)
       // while selection is dragged
       // this.emit('selection');
@@ -294,9 +294,9 @@ Surface.Prototype = function() {
   };
 
   this.setSelection = function(sel) {
-    if (!this.selection.equals(sel)) {
+    if (!this.model.selection.equals(sel)) {
       console.log('Surface.setSelection: %s', sel.toString());
-      this.selection = sel;
+      this.model.selection = sel;
       this.emit('selection');
     }
   };

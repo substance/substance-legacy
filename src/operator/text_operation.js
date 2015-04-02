@@ -1,6 +1,7 @@
 'use strict';
 
 var Substance = require('../basics');
+var Operation = require('./operation');
 var Conflict = require('./conflict');
 
 var INS = "+";
@@ -108,7 +109,7 @@ TextOperation.Prototype = function() {
 
 };
 
-Substance.initClass(TextOperation);
+Substance.inherit(TextOperation, Operation);
 
 var hasConflict = function(a, b) {
   // Insert vs Insert:

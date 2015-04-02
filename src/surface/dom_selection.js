@@ -4,9 +4,8 @@ var Substance = require('../basics');
 var Document = require('../document');
 
 //  Helper to map selection between model and DOM
-function DomSelection(rootElement, container) {
+function DomSelection(rootElement) {
   this.rootElement = rootElement;
-  this.container = container;
 
   this.nativeSelection = null;
   this.modelSelection = null;
@@ -185,7 +184,9 @@ DomSelection.Prototype = function() {
         if (Substance.isArrayEqual(range.start.path, range.end.path)) {
           result = new Document.PropertySelection(range, isReverse);
         } else {
-          result = new Document.ContainerSelection(this.container, range, isReverse);
+          // TODO: where to get the container from?
+          var container = null;
+          result = new Document.ContainerSelection(container, range, isReverse);
         }
       } else {
         result = Document.NullSelection;

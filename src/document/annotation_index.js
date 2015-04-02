@@ -6,8 +6,6 @@ var Data = require('../data');
 var Annotation = require('./annotation');
 
 var AnnotationIndex = function() {
-  AnnotationIndex.super.call(this);
-
   this.byPath = new PathAdapter();
   this.byType = new PathAdapter();
 };
@@ -18,6 +16,12 @@ AnnotationIndex.Prototype = function() {
 
   this.select = function(node) {
     return (node instanceof Annotation);
+  };
+
+  this.reset = function() {
+    this.byPath.clear();
+    this.byType.clear();
+    this.initialize();
   };
 
   this.get = function(path, start, end) {

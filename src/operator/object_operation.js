@@ -3,6 +3,7 @@
 var Substance = require('../basics');
 var PathAdapter = Substance.PathAdapter;
 
+var Operation = require('./operation');
 var TextOperation = require('./text_operation');
 var ArrayOperation = require('./array_operation');
 
@@ -192,7 +193,7 @@ ObjectOperation.Prototype = function() {
 
 };
 
-Substance.initClass(ObjectOperation);
+Substance.inherit(ObjectOperation, Operation);
 
 /* Low level implementation */
 

@@ -32,7 +32,8 @@ IncrementalGraph.Prototype = function() {
   };
 
   this.update = function(path, diff) {
-    var op = ObjectOperation.Update(path, diff);
+    var diffOp = this._getDiffOp(path, diff);
+    var op = ObjectOperation.Update(path, diffOp);
     this.apply(op);
     return op;
   };
@@ -76,6 +77,45 @@ IncrementalGraph.Prototype = function() {
     }
     this.emit('operation:applied', op, this);
   };
+
+  this._getDiffOp = function(path, diff) {
+    var diffOp = null;
+    if (diff.isOperation) {
+      diffOp = diff;
+    } else {
+      var value = this.get(path);
+      var start, end, pos, val;
+      if (Substance.isString(value)) {
+        if (diff['delete']) {
+          // { delete: [2, 5] }
+          from = diff['delete'].start;
+          end = diff['delete'].end;
+          diffOp = TextOperation.Delete(start, value.substring(start, end));
+        } else if (diff['insert']) {
+          // { insert: [2, "foo"] }
+          pos = diff['insert'].offset;
+          val = diff['insert'].value;
+          diffOp = TextOperation.Insert(pos, val);
+        }
+      } else if (Substance.isArray(value)) {
+        if (diff['delete']) {
+          // { delete: 2 }
+          pos = diff['delete'].offset;
+          diffOp = ArrayOperation.Delete(pos, value[pos]);
+        } else if (diff['insert']) {
+          // { insert: [2, "foo"] }
+          pos = diff['insert'].offset;
+          val = diff['insert'].value;
+          diffOp = ArrayOperation.Insert(pos, val);
+        }
+      }
+    }
+    if (!diffOp) {
+      throw new Error('Unsupported diff: ' + JSON.stringify(diff));
+    }
+    return diffOp;
+  }
+
 };
 
 Substance.inherit(IncrementalGraph, Graph);

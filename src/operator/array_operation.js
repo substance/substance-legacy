@@ -1,6 +1,7 @@
 'use strict';
 
 var Substance = require('../basics');
+var Operation = require('./operation');
 var Conflict = require('./conflict');
 
 var NOP = "NOP";
@@ -114,7 +115,7 @@ ArrayOperation.Prototype = function() {
   };
 };
 
-Substance.initClass(ArrayOperation);
+Substance.inherit(ArrayOperation, Operation);
 
 var _NOP = 0;
 var _DEL = 1;

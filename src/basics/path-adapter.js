@@ -14,6 +14,19 @@ function PathAdapter(obj) {
 
 PathAdapter.Prototype = function() {
 
+  // use this to create extra scope for children ids
+  // Example: {
+  //   "foo": {
+  //      "bar": true
+  //      "children": {
+  //          "bla": {
+  //            "blupp": true
+  //          }
+  //      }
+  //   }
+  // }
+  this.childrenScope = false;
+
   this.getRoot = function() {
     return this.root || this;
   };
@@ -26,11 +39,17 @@ PathAdapter.Prototype = function() {
       if (context[key] === undefined) {
         if (create) {
           context[key] = {};
+          if (this.childrenScope) {
+            context[key].children = {};
+          }
         } else {
           return undefined;
         }
       }
       context = context[key];
+      if (this.childrenScope) {
+        context = context.children;
+      }
     }
     return context;
   };
@@ -42,7 +61,12 @@ PathAdapter.Prototype = function() {
       return this.getRoot();
     } else {
       var key = path[path.length-1];
-      return this._resolve(path)[key];
+      var context = this._resolve(path);
+      if (context) {
+        return context[key];
+      } else {
+        return undefined;
+      }
     }
   };
 

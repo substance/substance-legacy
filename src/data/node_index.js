@@ -15,15 +15,15 @@ Index.Prototype = function() {
 
   this.reset = function() {
     this.index.clear();
+    this.initialize();
+  };
+
+  this.initialize = function() {
     Substance.each(this.graph.getNodes(), function(node) {
       if (this.select(node)) {
         this.create(node);
       }
     }, this);
-  };
-
-  this.initialize = function() {
-    this.reset();
   };
 
   this.property = "id";
@@ -89,6 +89,11 @@ Index.Prototype = function() {
     Substance.each(values, function(value) {
       this.index.set([value, node.id]);
     }, this);
+  };
+
+  this.clone = function() {
+    var IndexClass = this.constructor;
+    return new IndexClass();
   };
 };
 
