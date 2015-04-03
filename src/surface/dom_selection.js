@@ -22,7 +22,7 @@ DomSelection.Prototype = function() {
   //    [el.childNodes[1].childNodes[0], 5]
   // Note: the result is always [textNode, offset]
   var findPosition = function(element, offset, mode) {
-    var text = element.textContent;
+    var text = $(element).text();
 
     // not in this element
     if (text.length < offset) {
@@ -40,7 +40,7 @@ DomSelection.Prototype = function() {
     // within the node or a child node
     } else {
       for (var child = element.firstChild; child; child = child.nextSibling) {
-        var pos = findPosition(child, offset);
+        var pos = findPosition(child, offset, mode);
         if (pos.node) {
           // if "after", try to pick the next position
           // Note: if this can't be done on this level, this may happen
@@ -64,31 +64,30 @@ DomSelection.Prototype = function() {
     var elements = [];
     var current = el;
     while(current) {
+      var $current = $(current);
       // if available extract a path fragment
-      if (current.getAttribute) {
-        var pathProperty = current.getAttribute("data-path");
-        if (pathProperty) {
-          path = pathProperty.split('.');
-          return {
-            path: path,
-            element: current
-          };
-        }
-        // if there is a path attibute we collect it
-        var propName = current.getAttribute("data-property");
-        if (propName) {
-          path.unshift(propName);
-          elements.unshift(current);
-        }
-        var nodeId = current.getAttribute("data-node-id");
-        if (nodeId) {
-          path.unshift(nodeId);
-          elements.unshift(current);
-          // STOP here
-          return { path: path, element: elements[elements.length-1] };
-        }
+      var pathProperty = $current.attr("data-path");
+      if (pathProperty) {
+        path = pathProperty.split('.');
+        return {
+          path: path,
+          element: current
+        };
       }
-      current = current.parentElement;
+      // if there is a path attibute we collect it
+      var propName = $current.attr("data-property");
+      if (propName) {
+        path.unshift(propName);
+        elements.unshift(current);
+      }
+      var nodeId = $current.attr("data-node-id");
+      if (nodeId) {
+        path.unshift(nodeId);
+        elements.unshift(current);
+        // STOP here
+        return { path: path, element: elements[elements.length-1] };
+      }
+      current = $current.parent()[0];
     }
     return null;
   };
@@ -105,9 +104,7 @@ DomSelection.Prototype = function() {
     range.setStart(element, 0);
     range.setEnd(domNode, offset);
     charPos = range.toString().length;
-    // Note: the 'after' flag of a coordinate disambiguates situations at annotation boundaries
-    console.log("after?", options.after, domNode);
-    var after = options.after && (!domNode.nextSibling || !domNode.previousSibling);
+    var after = options.after && (offset === 0 || offset === domNode.length);
     return {
       domNode: element,
       coordinate: new Document.Coordinate(path, charPos, after)
@@ -115,7 +112,7 @@ DomSelection.Prototype = function() {
   };
 
   var modelCoordinateToDomPosition = function(rootElement, coordinate) {
-    var componentElement = rootElement.querySelector('[data-path="'+coordinate.path.join('.')+'"');
+    var componentElement = rootElement.querySelector('*[data-path="'+coordinate.path.join('.')+'"');
     if (!componentElement) {
       console.error('Could not find DOM element for path', coordinate.path);
       return null;

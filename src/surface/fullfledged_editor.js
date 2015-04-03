@@ -15,21 +15,16 @@ function FullfledgedEditor(containerNode) {
 
 FullfledgedEditor.Prototype = function() {
 
-  this.insertText = function(textInput, selectionAfter, info) {
-    console.log("Inserting text: '%s'", textInput);
-
-    var selectionBefore = this.selection;
+  this.insertText = function(textInput, selectionBefore, selectionAfter, info) {
+    console.log("Inserting text: '%s' at %s, after that: %s", textInput, selectionBefore.toString(), selectionAfter.toString());
     var tx = this.document.startTransaction();
     try {
-      tx.selection = this.selection;
-
+      tx.selection = selectionBefore;
       if (!this.selection.isCollapsed()) {
         this._delete(tx);
       }
-
       var range = tx.selection.getRange();
       tx.update(range.start.path, { insert: { offset: range.start.offset, value: textInput } } );
-
       // TODO: not yet supported, but probably we will inject additional information such as selection here
       tx.save({
         before: { selection: selectionBefore },
@@ -38,6 +33,7 @@ FullfledgedEditor.Prototype = function() {
     } finally {
       tx.finish();
     }
+    this.selection = selectionAfter;
   };
 
   this._delete = function(tx) {

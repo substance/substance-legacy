@@ -36,9 +36,9 @@ function Surface(element, model) {
   this._onMouseDown = Substance.bind( this.onMouseDown, this );
   this._onMouseMove = Substance.bind( this.onMouseMove, this );
   this._onSelectionChange = Substance.bind( this.onSelectionChange, this );
-  this._delayedSelectionChange = function(options) {
+  this._delayedUpdateSelection = function(options) {
     window.setTimeout(function() {
-      self.onSelectionChange(options);
+      self.updateSelection(options);
     });
   };
   this._onKeyDown = Substance.bind( this.onKeyDown, this );
@@ -118,13 +118,22 @@ Surface.Prototype = function() {
   this.handleLeftOrRightArrowKey = function ( e ) {
     // Note: 'after' is an option for creating Document.Coordinates
     // which means that at annotation boundaries the position after is preferred
-    this._delayedSelectionChange({ after: e.keyCode === Surface.Keys.LEFT});
+    var self = this;
+    setTimeout(function() {
+      self.updateSelection({ after: (e.keyCode === Surface.Keys.LEFT)});
+      // to support the coordinate 'after' feature for annotation boundaries
+      // TODO: unfortunately this does not work as Chrome does force the selection no matter
+      // what is selected explicitely
+      if (self.model.selection.isCollapsed() && self.model.selection.range.start.after) {
+        self.domSelection.set(self.model.selection);
+      }
+    });
   };
 
   this.handleUpOrDownArrowKey = function ( /*e*/ ) {
     // TODO: let contenteditable do the move and set the new selection afterwards
     console.log('TODO: handleUpOrDownArrowKey');
-    this._delayedSelectionChange();
+    this._delayedUpdateSelection();
   };
 
   this.handleEnter = function( e ) {
@@ -163,8 +172,7 @@ Surface.Prototype = function() {
       // the property's element which is affected by this insert
       // we use it to let the view component check if it needs to rerender or trust contenteditable
       var source = this.insertState.nativeRangeBefore.start;
-      this.model.selection = selectionBefore;
-      this.model.insertText(textInput, selectionAfter, {
+      this.model.insertText(textInput, selectionBefore, selectionAfter, {
         source: source
       });
       this.domSelection.set(selectionAfter);
@@ -201,10 +209,6 @@ Surface.Prototype = function() {
     this.dragging = true;
     // Bind mouseup to the whole document in case of dragging out of the surface
     this.$document.on( 'mouseup', this._onMouseUp );
-
-    // TODO: update selection delayed
-    // Why should we need that?
-    // Substance.delay(this._onSelectionChange);
   };
 
   this.onMouseUp = function ( /*e*/ ) {
@@ -216,16 +220,19 @@ Surface.Prototype = function() {
 
   this.onMouseMove = function () {
     if (this.dragging) {
+      // TODO: do we want that?
       // update selection during dragging
-      this.model.selection = this.domSelection.get();
-      // TODO: maybe this is not really necessary, as the main things are not really useful (such as tools)
-      // while selection is dragged
+      // this.model.selection = this.domSelection.get();
       // this.emit('selection');
     }
   };
 
   // triggered by DOM itself
-  this.onSelectionChange = function (options) {
+  this.onSelectionChange = function () {
+    // this.updateSelection();
+  };
+
+  this.updateSelection = function(options) {
     this.setSelection(this.domSelection.get(options));
   };
 
