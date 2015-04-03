@@ -85,18 +85,13 @@ var defineProperty = function(prototype, property, readonly) {
 
 var defineProperties = function(NodeClass) {
   var prototype = NodeClass.prototype;
-
   if (!NodeClass.static.schema) return;
-
   var properties = Object.keys(NodeClass.static.schema);
   for (var i = 0; i < properties.length; i++) {
     var property = properties[i];
-
     if (prototype.hasOwnProperty(property)) continue;
-
     var readonly = ( NodeClass.static.readOnlyProperties &&
       NodeClass.static.readOnlyProperties.indexOf(property) > 0 );
-
     defineProperty(prototype, property, readonly);
   }
 };
@@ -114,6 +109,7 @@ var collectDefaultProperties = function( NodeClass ) {
 };
 
 var extend;
+
 var initNodeClass = function(NodeClass) {
   // add a extend method so that this class can be used to create child models.
   NodeClass.extend = Substance.bind(extend, null, NodeClass);
@@ -121,12 +117,12 @@ var initNodeClass = function(NodeClass) {
   defineProperties(NodeClass);
   collectDefaultProperties(NodeClass);
 };
+
 extend = function( parent, modelSpec ) {
   var ctor = function NodeClass() {
     parent.apply(this, arguments);
   };
   Substance.inherit(ctor, parent);
-
   for(var key in modelSpec) {
     if (modelSpec.hasOwnProperty(key)) {
       if (key === "name" || key === "properties") {
@@ -135,14 +131,12 @@ extend = function( parent, modelSpec ) {
       ctor.prototype[key] = modelSpec[key];
     }
   }
-
   ctor.static.name = modelSpec.name;
   ctor.static.schema = modelSpec.properties;
-
   initNodeClass(ctor);
-
   return ctor;
 };
+
 initNodeClass(Node);
 
 module.exports = Node;
