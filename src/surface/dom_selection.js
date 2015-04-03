@@ -9,6 +9,7 @@ function DomSelection(rootElement) {
 
   this.nativeSelection = null;
   this.modelSelection = null;
+  this.nativeRanges = [];
 }
 
 DomSelection.Prototype = function() {
@@ -30,37 +31,31 @@ DomSelection.Prototype = function() {
         offset: offset - text.length
       };
     // at the right boundary
-    } else if (text.length === offset) {
-      var lastChild = element.lastChild || element;
+    } else if (element.nodeType === document.TEXT_NODE) {
       return {
-        node: lastChild,
+        node: element,
         offset: offset,
-        boundary: true
+        boundary: (text.length === offset)
       };
     // within the node or a child node
     } else {
-      if (element.nodeType === window.document.Element.TEXT_NODE) {
-        return {
-          node: element,
-          offset: offset
-        };
-      } else {
-        for (var child = element.firstChild; child; child = child.nextSibling) {
-          var pos = findPosition(child, offset);
-          if (pos.node) {
-            // if "after", try to pick the next position
-            if (pos.boundary && mode === "after" && child.nextSibling) {
-              return findPosition(child, child.nextSibling, 0);
-            } else {
-              return pos;
-            }
-          // not found in this child; then pos.offset contains the translated offset
+      for (var child = element.firstChild; child; child = child.nextSibling) {
+        var pos = findPosition(child, offset);
+        if (pos.node) {
+          // if "after", try to pick the next position
+          // Note: if this can't be done on this level, this may happen
+          // on the parent level, when returning from recursion
+          if (pos.boundary && mode === "after" && child.nextSibling) {
+            return findPosition(child.nextSibling, 0);
           } else {
-            offset = pos.offset;
+            return pos;
           }
+        // not found in this child; then pos.offset contains the translated offset
+        } else {
+          offset = pos.offset;
         }
-        throw new Error("Illegal state: we should not have reached here!");
       }
+      throw new Error("Illegal state: we should not have reached here!");
     }
   };
 
@@ -109,24 +104,19 @@ DomSelection.Prototype = function() {
     range.setStart(element, 0);
     range.setEnd(domNode, offset);
     charPos = range.toString().length;
-    return new Document.Coordinate(path, charPos);
-  };
-
-  var getElementForPath = function(rootElement, path) {
-    var componentElement = rootElement.querySelector('[data-path="'+path.join('.')+'"');
-    if (!componentElement) {
-      console.error('Could not find DOM element for path', path);
-      return null;
-    }
-    return componentElement;
+    return {
+      domNode: element,
+      coordinate: new Document.Coordinate(path, charPos)
+    };
   };
 
   var modelCoordinateToDomPosition = function(rootElement, coordinate) {
-    var el = getElementForPath(coordinate.path);
-    if (!el) {
+    var componentElement = rootElement.querySelector('[data-path="'+coordinate.path.join('.')+'"');
+    if (!componentElement) {
+      console.error('Could not find DOM element for path', coordinate.path);
       return null;
     }
-    return findPosition(el, coordinate.offset, coordinate.after?'after':'');
+    return findPosition(componentElement, coordinate.offset, coordinate.after ? 'after' : '');
   };
 
   var selection_equals = function(s1, s2) {
@@ -148,7 +138,9 @@ DomSelection.Prototype = function() {
     if (this.nativeSelection && selection_equals(sel, this.nativeSelection)) {
       return this.modelSelection;
     }
+
     this.nativeSelection = selection_clone(sel);
+    this.nativeRanges = [];
 
     var isReverse = false;
     if (sel.focusNode && sel.anchorNode) {
@@ -175,7 +167,11 @@ DomSelection.Prototype = function() {
           end = modelCoordinateFromDomPosition(range.endContainer, range.endOffset);
         }
         if (start && end) {
-          ranges.push(new Document.Range(start, end));
+          ranges.push(new Document.Range(start.coordinate, end.coordinate));
+          this.nativeRanges.push({
+            start: start.domNode,
+            end: end.domNode
+          });
         }
       }
       if (ranges.length > 1) {
@@ -201,7 +197,9 @@ DomSelection.Prototype = function() {
   this.set = function(modelSelection) {
     var ranges = modelSelection.getRanges();
     var domRanges = [];
-    ranges.forEach(function(range) {
+    var i, range;
+    for (i = 0; i < ranges.length; i++) {
+      range = ranges[i];
       var startPosition = modelCoordinateToDomPosition(this.rootElement, range.start);
       var endPosition;
       if (range.isCollapsed()) {
@@ -210,15 +208,16 @@ DomSelection.Prototype = function() {
         endPosition = modelCoordinateToDomPosition(this.rootElement, range.end);
       }
       domRanges.push({ start: startPosition, end: endPosition });
-    });
+    }
     var sel = window.getSelection();
     sel.removeAllRanges();
-    domRanges.forEach(function(domRange) {
-      var range = window.document.createRange();
+    for (i = 0; i < domRanges.length; i++) {
+      var domRange = domRanges[i];
+      range = window.document.createRange();
       range.setStart(domRange.start.node, domRange.start.offset);
       range.setEnd(domRange.end.node, domRange.end.offset);
       sel.addRange(range);
-    });
+    }
   };
 
 };

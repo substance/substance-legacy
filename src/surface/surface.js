@@ -139,7 +139,8 @@ Surface.Prototype = function() {
     console.log('TODO: handleInsertion');
     this.insertState = {
       selectionBefore: this.model.selection,
-      selectionAfter: null
+      selectionAfter: null,
+      nativeRangeBefore: this.domSelection.nativeRanges[0]
     };
     this.insertState.range = window.getSelection().getRangeAt(0);
   };
@@ -156,10 +157,16 @@ Surface.Prototype = function() {
       range.setEnd(after.startContainer, after.startOffset);
       var textInput = range.toString();
 
+      var selectionBefore = this.insertState.selectionBefore;
       var selectionAfter = this.domSelection.get();
-      this.model.selection = this.insertState.selectionBefore;
-      this.model.insertText(textInput, selectionAfter);
-
+      // the property's element which is affected by this insert
+      // we use it to let the view component check if it needs to rerender or trust contenteditable
+      var source = this.insertState.nativeRangeBefore.start;
+      this.model.selection = selectionBefore;
+      this.model.insertText(textInput, selectionAfter, {
+        source: source
+      });
+      this.domSelection.set(selectionAfter);
       this.insertState = null;
     }
   };

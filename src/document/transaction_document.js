@@ -45,8 +45,8 @@ TransactionDocument.Prototype = function() {
     this.ops.push(op);
   };
 
-  this.save = function() {
-    this.document.finishTransaction();
+  this.save = function(data, info) {
+    this.document.finishTransaction(data, info);
     this.ops = [];
   };
 

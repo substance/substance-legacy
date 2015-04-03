@@ -3,8 +3,9 @@
 var Substance = require('../basics');
 var PathAdapter = Substance.PathAdapter;
 
-function DocumentChange(ops) {
+function DocumentChange(ops, data) {
   this.ops = ops;
+  this.data = data;
 
   this.index = new PathAdapter();
   Substance.each(ops, function(op) {

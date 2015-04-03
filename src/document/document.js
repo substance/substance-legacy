@@ -90,32 +90,36 @@ Document.Prototype = function() {
     node.detach(this);
   };
 
-  this.finishTransaction = function() {
+  this.finishTransaction = function(data, info) {
     if (!this.isTransacting) {
       throw new Error('Not in a transaction.');
     }
+    info = info || {};
+
     // TODO: notify external listeners
     this.isTransacting = false;
     var ops = this.stage.getOperations();
-    var documentChange = new DocumentChange(ops);
-
+    var documentChange = new DocumentChange(ops, data);
     this.undone = [];
-    this.apply(documentChange, 'skipStage');
+
+    info.skipStage = true;
+    this.apply(documentChange, info);
   };
 
-  this.apply = function(documentChange, skipStage) {
+  this.apply = function(documentChange, info) {
     if (this.isTransacting) {
       throw new Error('Can not replay a document change during transaction.');
     }
+    info = info || {};
     // Note: we apply everything doubled, to keep the staging clone up2date.
-    if (!skipStage) {
+    if (!info.skipStage) {
       this.stage.apply(documentChange);
     }
     Substance.each(documentChange.ops, function(op) {
       this.data.apply(op);
     }, this);
     this.done.push(documentChange);
-    this.notifyDocumentChangeListeners(documentChange);
+    this.notifyDocumentChangeListeners(documentChange, info);
   };
 
   this.addDocumentChangeListener = function(listener, path, fn) {
@@ -142,13 +146,13 @@ Document.Prototype = function() {
     }
   };
 
-  this.notifyDocumentChangeListeners = function(documentChange) {
+  this.notifyDocumentChangeListeners = function(documentChange, info) {
     var documentListeners = this.documentListeners;
     documentChange.traverse(function(path, ops) {
       var key = path.concat(['listeners']);
       var listeners = documentListeners.get(key);
       Substance.each(listeners, function(entry) {
-        entry.fn.call(entry.listener, documentChange, ops);
+        entry.fn.call(entry.listener, documentChange, ops, info);
       });
     }, this);
   };

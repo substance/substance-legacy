@@ -15,7 +15,7 @@ function FullfledgedEditor(containerNode) {
 
 FullfledgedEditor.Prototype = function() {
 
-  this.insertText = function(textInput, selectionAfter) {
+  this.insertText = function(textInput, selectionAfter, info) {
     console.log("Inserting text: '%s'", textInput);
 
     var selectionBefore = this.selection;
@@ -34,7 +34,7 @@ FullfledgedEditor.Prototype = function() {
       tx.save({
         before: { selection: selectionBefore },
         after: { selection: selectionAfter }
-      });
+      }, info);
     } finally {
       tx.finish();
     }
