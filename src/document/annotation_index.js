@@ -25,7 +25,8 @@ AnnotationIndex.Prototype = function() {
     this.initialize();
   };
 
-  this.get = function(path, start, end) {
+  // TODO: use object interface? so we can combine filters (path and type)
+  this.get = function(path, start, end, type) {
     var sStart = start;
     var sEnd = end;
     var annotations = this.byPath.get(path) || {};
@@ -36,6 +37,7 @@ AnnotationIndex.Prototype = function() {
       // Note: this treats all annotations as if they were inclusive (left+right)
       // TODO: maybe we should apply the same rules as for Transformations?
       Substance.each(annotations, function(anno) {
+        if (type && anno.type !== type) return; // skip
         var aStart = anno.range[0];
         var aEnd = anno.range[1];
         var overlap = (aEnd >= sStart);
@@ -49,6 +51,7 @@ AnnotationIndex.Prototype = function() {
       }, this);
     } else {
       Substance.each(annotations, function(anno) {
+        if (type && anno.type !== type) return; // skip
         result.push(anno);
       }, this);
     }
