@@ -18,6 +18,7 @@ var extend = require('lodash/object/extend');
 var last = require('lodash/array/last');
 var first = require('lodash/array/first');
 var compact = require('lodash/array/compact');
+var uniq = require('lodash/array/uniq');
 
 // Collection helpers
 var forEach = require('lodash/collection/forEach');
@@ -70,6 +71,7 @@ Substance.pluck = pluck;
 Substance.last = last;
 Substance.first = first;
 Substance.compact = compact;
+Substance.uniq = uniq;
 
 Substance.extend = extend;
 
