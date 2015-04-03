@@ -82,7 +82,7 @@ Index.Prototype = function() {
     Substance.each(values, function(value) {
       this.index.delete([value, node.id]);
     }, this);
-    values = value;
+    values = newValue;
     if (!Substance.isArray(values)) {
       values = [values];
     }

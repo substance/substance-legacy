@@ -100,15 +100,17 @@ Document.Prototype = function() {
     var documentChange = new DocumentChange(ops);
 
     this.undone = [];
-    this.apply(documentChange);
+    this.apply(documentChange, 'skipStage');
   };
 
-  this.apply = function(documentChange) {
+  this.apply = function(documentChange, skipStage) {
     if (this.isTransacting) {
       throw new Error('Can not replay a document change during transaction.');
     }
     // Note: we apply everything doubled, to keep the staging clone up2date.
-    this.stage.apply(documentChange);
+    if (!skipStage) {
+      this.stage.apply(documentChange);
+    }
     Substance.each(documentChange.ops, function(op) {
       this.data.apply(op);
     }, this);
@@ -143,9 +145,10 @@ Document.Prototype = function() {
   this.notifyDocumentChangeListeners = function(documentChange) {
     var documentListeners = this.documentListeners;
     documentChange.traverse(function(path, ops) {
-      var listeners = documentListeners.get(path);
+      var key = path.concat(['listeners']);
+      var listeners = documentListeners.get(key);
       Substance.each(listeners, function(entry) {
-        entry.fn.call(entry.listener, ops);
+        entry.fn.call(entry.listener, documentChange, ops);
       });
     }, this);
   };
