@@ -5,7 +5,8 @@ var PathAdapter = Substance.PathAdapter;
 var Data = require('../data');
 var Annotation = require('./annotation');
 
-var AnnotationIndex = function() {
+var AnnotationIndex = function(doc) {
+  this.doc = doc;
   this.byPath = new PathAdapter();
   this.byType = new PathAdapter();
 };
@@ -28,21 +29,22 @@ AnnotationIndex.Prototype = function() {
     var sStart = start;
     var sEnd = end;
     var annotations = this.byPath.get(path) || {};
+
     var result = [];
     // Filter the annotations by the given char range
     if (start) {
       // Note: this treats all annotations as if they were inclusive (left+right)
       // TODO: maybe we should apply the same rules as for Transformations?
-      Substance.each(annotations, function(a) {
-        var aStart = a.range[0];
-        var aEnd = a.range[1];
+      Substance.each(annotations, function(anno) {
+        var aStart = anno.range[0];
+        var aEnd = anno.range[1];
         var overlap = (aEnd >= sStart);
         // Note: it is allowed to omit the end part
         if (sEnd) {
           overlap &= (aStart <= sEnd);
         }
         if (overlap) {
-          result.push(this.get(a.id));
+          result.push(anno);
         }
       }, this);
     } else {
