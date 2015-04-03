@@ -1,11 +1,15 @@
 'use strict';
 
+var _ = require('./helpers');
+var extend;
+
 function initClass(fn) {
   if ( fn.Prototype && !(fn.prototype instanceof fn.Prototype) ) {
     fn.prototype = new fn.Prototype();
     fn.prototype.constructor = fn;
   }
   fn.static = fn.static || {};
+  fn.extend = fn.extend || _.bind(extend, null, fn);
 }
 
 function inherit(targetFn, originFn) {
@@ -64,6 +68,23 @@ function mixin(targetFn, originFn) {
     initClass( originFn );
   }
 }
+
+extend = function( parent, proto ) {
+  var ctor = function $$$() {
+    parent.apply(this, arguments);
+  };
+  inherit(ctor, parent);
+  for(var key in proto) {
+    if (proto.hasOwnProperty(key)) {
+      if (key === "name") {
+        continue;
+      }
+      ctor.prototype[key] = proto[key];
+    }
+  }
+  ctor.static.name = proto.name;
+  return ctor;
+};
 
 module.exports = {
   initClass: initClass,
