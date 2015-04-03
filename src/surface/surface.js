@@ -36,9 +36,9 @@ function Surface(element, model) {
   this._onMouseDown = Substance.bind( this.onMouseDown, this );
   this._onMouseMove = Substance.bind( this.onMouseMove, this );
   this._onSelectionChange = Substance.bind( this.onSelectionChange, this );
-  this._delayedSelectionChange = function() {
+  this._delayedSelectionChange = function(options) {
     window.setTimeout(function() {
-      self.onSelectionChange();
+      self.onSelectionChange(options);
     });
   };
   this._onKeyDown = Substance.bind( this.onKeyDown, this );
@@ -115,9 +115,10 @@ Surface.Prototype = function() {
     this.renderLocks--;
   };
 
-  this.handleLeftOrRightArrowKey = function ( /*e*/ ) {
-    // let contenteditable move and then transfer the new window selection
-    this._delayedSelectionChange();
+  this.handleLeftOrRightArrowKey = function ( e ) {
+    // Note: 'after' is an option for creating Document.Coordinates
+    // which means that at annotation boundaries the position after is preferred
+    this._delayedSelectionChange({ after: e.keyCode === Surface.Keys.LEFT});
   };
 
   this.handleUpOrDownArrowKey = function ( /*e*/ ) {
@@ -224,8 +225,8 @@ Surface.Prototype = function() {
   };
 
   // triggered by DOM itself
-  this.onSelectionChange = function () {
-    this.setSelection(this.domSelection.get());
+  this.onSelectionChange = function (options) {
+    this.setSelection(this.domSelection.get(options));
   };
 
   /**

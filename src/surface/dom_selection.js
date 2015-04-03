@@ -46,7 +46,7 @@ DomSelection.Prototype = function() {
           // Note: if this can't be done on this level, this may happen
           // on the parent level, when returning from recursion
           if (pos.boundary && mode === "after" && child.nextSibling) {
-            return findPosition(child.nextSibling, 0);
+            return findPosition(child.nextSibling, 0, mode);
           } else {
             return pos;
           }
@@ -93,7 +93,8 @@ DomSelection.Prototype = function() {
     return null;
   };
 
-  var modelCoordinateFromDomPosition = function(domNode, offset) {
+  var modelCoordinateFromDomPosition = function(domNode, offset, options) {
+    options = options || {};
     var found = getPathFromElement(domNode);
     if (!found) return null;
     var path = found.path;
@@ -104,9 +105,12 @@ DomSelection.Prototype = function() {
     range.setStart(element, 0);
     range.setEnd(domNode, offset);
     charPos = range.toString().length;
+    // Note: the 'after' flag of a coordinate disambiguates situations at annotation boundaries
+    console.log("after?", options.after, domNode);
+    var after = options.after && (!domNode.nextSibling || !domNode.previousSibling);
     return {
       domNode: element,
-      coordinate: new Document.Coordinate(path, charPos)
+      coordinate: new Document.Coordinate(path, charPos, after)
     };
   };
 
@@ -133,7 +137,7 @@ DomSelection.Prototype = function() {
     };
   };
 
-  this.get = function() {
+  this.get = function(options) {
     var sel = window.getSelection();
     if (this.nativeSelection && selection_equals(sel, this.nativeSelection)) {
       return this.modelSelection;
@@ -159,12 +163,12 @@ DomSelection.Prototype = function() {
     } else {
       for (var i = 0; i < rangeCount; i++) {
         range = sel.getRangeAt(i);
-        var start = modelCoordinateFromDomPosition(range.startContainer, range.startOffset);
+        var start = modelCoordinateFromDomPosition(range.startContainer, range.startOffset, options);
         var end = start;
         if (range.collapsed) {
           end = start;
         } else {
-          end = modelCoordinateFromDomPosition(range.endContainer, range.endOffset);
+          end = modelCoordinateFromDomPosition(range.endContainer, range.endOffset, options);
         }
         if (start && end) {
           ranges.push(new Document.Range(start.coordinate, end.coordinate));
