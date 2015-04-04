@@ -30,27 +30,15 @@ var pluck = require('lodash/collection/pluck');
 var Substance = {};
 
 Substance.bind = bind;
-
 Substance.delay = delay;
 
-Substance.delayed = function(func, wait) {
-  return function() {
-    setTimeout(func, wait);
-  };
-};
-
-Substance.isEqual = isEqual;
-
 Substance.isObject = isObject;
-
 Substance.isArray = isArray;
-
 Substance.isString = isString;
-
 Substance.isNumber = isNumber;
-
+Substance.isBoolean = isBoolean;
 Substance.isFunction = isFunction;
-
+Substance.isEqual = isEqual;
 Substance.isArrayEqual = function(a, b) {
   if (a === b) return true;
   if (a === null || b === null) return false;
@@ -62,16 +50,13 @@ Substance.isArrayEqual = function(a, b) {
 };
 
 Substance.each = forEach;
-
 Substance.filter = filter;
 Substance.includes = includes;
 Substance.map = map;
 Substance.pluck = pluck;
-
 Substance.last = last;
 Substance.first = first;
 Substance.compact = compact;
-
 Substance.extend = extend;
 
 Substance.clone = function(obj) {
@@ -83,7 +68,6 @@ Substance.clone = function(obj) {
   }
   return Substance.deepclone(obj);
 };
-
 Substance.deepclone = cloneDeep;
 
 module.exports = Substance;

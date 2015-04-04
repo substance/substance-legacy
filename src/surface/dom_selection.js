@@ -14,18 +14,12 @@ function DomSelection(rootElement) {
 
 DomSelection.Prototype = function() {
 
-  // mode: "after" - if the found position is at the right boundary of an element
-  //  then the adjacent position is returned instead
-  //  Example:
-  //    <span>the brown fox <span>jumps</span> over the lazy dog</span>
-  //    findPosition(el, 14, "after") would give [ el.childNodes[2], 0 ] instead of
-  //    [el.childNodes[1].childNodes[0], 5]
-  // Note: the result is always [textNode, offset]
-  var findPosition = function(element, offset, mode) {
+  var findPosition = function(element, offset) {
     var text = $(element).text();
 
     // not in this element
     if (text.length < offset) {
+
       return {
         node: null,
         offset: offset - text.length
@@ -40,18 +34,11 @@ DomSelection.Prototype = function() {
     // within the node or a child node
     } else {
       for (var child = element.firstChild; child; child = child.nextSibling) {
-        var pos = findPosition(child, offset, mode);
+        var pos = findPosition(child, offset);
         if (pos.node) {
-          // if "after", try to pick the next position
-          // Note: if this can't be done on this level, this may happen
-          // on the parent level, when returning from recursion
-          if (pos.boundary && mode === "after" && child.nextSibling) {
-            return findPosition(child.nextSibling, 0, mode);
-          } else {
-            return pos;
-          }
-        // not found in this child; then pos.offset contains the translated offset
+          return pos;
         } else {
+          // not found in this child; then pos.offset contains the translated offset
           offset = pos.offset;
         }
       }
@@ -104,7 +91,8 @@ DomSelection.Prototype = function() {
     range.setStart(element, 0);
     range.setEnd(domNode, offset);
     charPos = range.toString().length;
-    var after = options.after && (offset === 0 || offset === domNode.length);
+    // TODO: this needs more experiments, at the moment we do not detect these cases correctly
+    var after = (options.left && offset === domNode.length) || (options.right && offset == 0) ;
     return {
       domNode: element,
       coordinate: new Document.Coordinate(path, charPos, after)
@@ -117,7 +105,7 @@ DomSelection.Prototype = function() {
       console.error('Could not find DOM element for path', coordinate.path);
       return null;
     }
-    return findPosition(componentElement, coordinate.offset, coordinate.after ? 'after' : '');
+    return findPosition(componentElement, coordinate.offset);
   };
 
   var selection_equals = function(s1, s2) {

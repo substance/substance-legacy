@@ -2,8 +2,6 @@
 
 var Substance = require('../basics');
 var Data = require('../data');
-var AnnotationIndex = require('./annotation_index');
-var ChangeMap = require('./change_map');
 
 function TransactionDocument(document) {
 
@@ -64,6 +62,8 @@ TransactionDocument.Prototype = function() {
     }
   };
 
+  this.cleanup = this.finish;
+
   this.getOperations = function() {
     return this.ops;
   };
@@ -72,6 +72,10 @@ TransactionDocument.Prototype = function() {
     Substance.each(documentChange.ops, function(op) {
       this.data.apply(op);
     }, this);
+  };
+
+  this.getIndex = function(name) {
+    return this.data.getIndex(name);
   };
 
 };

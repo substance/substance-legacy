@@ -88,7 +88,7 @@ IncrementalGraph.Prototype = function() {
       if (Substance.isString(value)) {
         if (diff['delete']) {
           // { delete: [2, 5] }
-          from = diff['delete'].start;
+          start = diff['delete'].start;
           end = diff['delete'].end;
           diffOp = TextOperation.Delete(start, value.substring(start, end));
         } else if (diff['insert']) {

@@ -116,17 +116,12 @@ Surface.Prototype = function() {
   };
 
   this.handleLeftOrRightArrowKey = function ( e ) {
-    // Note: 'after' is an option for creating Document.Coordinates
-    // which means that at annotation boundaries the position after is preferred
     var self = this;
     setTimeout(function() {
-      self.updateSelection({ after: (e.keyCode === Surface.Keys.LEFT)});
-      // to support the coordinate 'after' feature for annotation boundaries
-      // TODO: unfortunately this does not work as Chrome does force the selection no matter
-      // what is selected explicitely
-      if (self.model.selection.isCollapsed() && self.model.selection.range.start.after) {
-        self.domSelection.set(self.model.selection);
-      }
+      self.updateSelection({
+        left: (e.keyCode === Surface.Keys.LEFT),
+        right: (e.keyCode === Surface.Keys.RIGHT)
+      });
     });
   };
 
@@ -181,7 +176,6 @@ Surface.Prototype = function() {
       var after = window.getSelection().getRangeAt(0);
       range.setStart(before.startContainer, before.startOffset);
       range.setEnd(after.startContainer, after.startOffset);
-      console.log('Hääää? ', range);
       var textInput = range.toString();
 
       var selectionBefore = insertState.selectionBefore;
@@ -203,8 +197,9 @@ Surface.Prototype = function() {
 
   this.handleDelete = function ( e ) {
     // TODO: let contenteditable delete and find out the diff afterwards
-    console.log('TODO: handleDelete');
     e.preventDefault();
+    // poll the selection here
+    this.domSelection.get();
   };
 
   /* Event handlers */

@@ -27,35 +27,20 @@ AnnotationIndex.Prototype = function() {
 
   // TODO: use object interface? so we can combine filters (path and type)
   this.get = function(path, start, end, type) {
-    var sStart = start;
-    var sEnd = end;
     var annotations = this.byPath.get(path) || {};
+    annotations = Substance.map(annotations, function(anno) {
+      return anno;
+    });
 
-    var result = [];
-    // Filter the annotations by the given char range
-    if (start) {
-      // Note: this treats all annotations as if they were inclusive (left+right)
-      // TODO: maybe we should apply the same rules as for Transformations?
-      Substance.each(annotations, function(anno) {
-        if (type && anno.type !== type) return; // skip
-        var aStart = anno.range[0];
-        var aEnd = anno.range[1];
-        var overlap = (aEnd >= sStart);
-        // Note: it is allowed to omit the end part
-        if (sEnd) {
-          overlap &= (aStart <= sEnd);
-        }
-        if (overlap) {
-          result.push(anno);
-        }
-      }, this);
-    } else {
-      Substance.each(annotations, function(anno) {
-        if (type && anno.type !== type) return; // skip
-        result.push(anno);
-      }, this);
+    /* jshint eqnull:true */
+    // null check for null or undefined
+    if (start != null) {
+      annotations = Substance.filter(annotations, AnnotationIndex.filterByRange(annotations, start, end));
     }
-    return result;
+    if (type) {
+      annotations = Substance.filter(annotations, AnnotationIndex.filterByType(annotations, type));
+    }
+    return annotations;
   };
 
   this.create = function(anno) {
@@ -78,5 +63,24 @@ AnnotationIndex.Prototype = function() {
 };
 
 Substance.inherit(AnnotationIndex, Data.Index);
+
+AnnotationIndex.filterByRange = function(start, end) {
+  return function(anno) {
+    var aStart = anno.range[0];
+    var aEnd = anno.range[1];
+    var overlap = (aEnd >= start);
+    // Note: it is allowed to omit the end part
+    if (end) {
+      overlap &= (aStart <= end);
+    }
+    return overlap;
+  };
+};
+
+AnnotationIndex.filterByType = function(annotations, type) {
+  return function(anno) {
+    return anno.instanceOf(type);
+  };
+};
 
 module.exports = AnnotationIndex;
