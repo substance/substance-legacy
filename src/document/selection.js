@@ -1,27 +1,30 @@
 'use strict';
 
 var Substance = require('../basics');
-var PropertySelection = require('./property_selection');
 
 function Selection() {
 }
 
 Selection.Prototype = function() {
 
+  this.getRanges = function() {
+    return [];
+  };
+
   this.isNull = function() {
     return true;
   };
 
-  this.getRanges = function() {
-    return []
-  };
-
   this.isMultiSeletion = function() {
-    false;
+    return false;
   };
 
   this.isPropertySelection = function() {
-    false;
+    return false;
+  };
+
+  this.isContainerSelection = function() {
+    return false;
   };
 
   this.isCollapsed = function() {
@@ -41,11 +44,13 @@ Selection.Prototype = function() {
   };
 
   this.collapse = function(direction) {
+    var coor;
     if (direction === 'left') {
-      return new PropertySelection(new Range(this.range.start, this.range.start));
+      coor = this.range.start;
     } else {
-      return new PropertySelection(new Range(this.range.end, this.range.end));
+      coor = this.range.end;
     }
+    return Selection.create(coor);
   };
 
 };
@@ -53,5 +58,9 @@ Selection.Prototype = function() {
 Substance.initClass(Selection);
 
 Selection.NullSelection = Object.freeze(new Selection());
+
+// this is set in index as it has dependencies to sub-classes
+// which can't be required here to avoid cyclic dep.
+Selection.create = null;
 
 module.exports = Selection;

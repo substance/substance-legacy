@@ -5,6 +5,7 @@ var isObject = require('lodash/lang/isObject');
 var isArray = require('lodash/lang/isArray');
 var isString = require('lodash/lang/isString');
 var isNumber = require('lodash/lang/isNumber');
+var isBoolean = require('lodash/lang/isBoolean');
 var isFunction = require('lodash/lang/isFunction');
 var cloneDeep = require('lodash/lang/cloneDeep');
 

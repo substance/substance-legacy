@@ -1,15 +1,17 @@
 'use strict';
 
 var Substance = require('../basics');
-var Range = require('./range');
-var Coordinate = require('./coordinate');
+var Selection = require('./selection');
 
 function PropertySelection(range, reverse) {
   this.range = range;
   this.reverse = reverse;
+  Object.freeze(this);
 }
 
 PropertySelection.Prototype = function() {
+
+  Substance.extend(this, Selection.prototype);
 
   this.isNull = function() {
     return false;
@@ -58,42 +60,16 @@ PropertySelection.Prototype = function() {
   };
 
   this.toString = function() {
-    return "( " + JSON.stringify(this.range.start.path) +", "
-      + this.range.start.offset + " -> " + this.range.end.offset
-      + (this.reverse?", reverse":"")
-      + (this.range.start.after?", after":"")
-      + " )";
+    return [
+      "( ", JSON.stringify(this.range.start.path), ", ",
+        this.range.start.offset, " -> ", this.range.end.offset,
+        (this.reverse?", reverse":""),
+        (this.range.start.after?", after":""),
+      " )"
+    ].join('');
   };
-
 };
 
-Substance.initClass(PropertySelection);
-
-PropertySelection.create = function(path, startOffset, endOffset) {
-  // == checks for null and undefined
-  /* jshint eqnull:true */
-  if (!path || startOffset == null) {
-    throw new Error('Illegal Argument');
-  }
-  if (endOffset == null) {
-    endOffset = startOffset;
-  }
-  var start = new Coordinate(path, startOffset);
-  var end, reverse;
-  if (endOffset === startOffset) {
-    end = start;
-  } else {
-    if (startOffset < endOffset) {
-      reverse = false;
-      end = new Coordinate(path, endOffset);
-    } else {
-      reverse = true;
-      end = start;
-      start = new Coordinate(path, endOffset);
-    }
-  }
-  var range = new Range(start, end);
-  return new PropertySelection(range, reverse);
-};
+Substance.inherit(PropertySelection, Selection);
 
 module.exports = PropertySelection;

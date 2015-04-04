@@ -11,14 +11,15 @@ var Substance = require('../basics');
 //       foo <strong>bar|</strong> ...
 //     With after=true we can describe this position:
 //       foo <strong>bar</strong>| ...
-function DocumentCoordinate(path, offset, after) {
+function Coordinate(path, offset, after) {
   this.path = path;
   this.offset = offset;
   this.after = after;
+  Object.freeze(path);
   Object.freeze(this);
 }
 
-DocumentCoordinate.Prototype = function() {
+Coordinate.Prototype = function() {
 
   this.equals = function(other) {
     return (other === this ||
@@ -26,7 +27,7 @@ DocumentCoordinate.Prototype = function() {
   };
 
   this.withCharPos = function(offset) {
-    return new DocumentCoordinate(this.path, offset);
+    return new Coordinate(this.path, offset);
   };
 
   this.getNodeId = function() {
@@ -35,6 +36,6 @@ DocumentCoordinate.Prototype = function() {
 
 };
 
-Substance.initClass( DocumentCoordinate );
+Substance.initClass( Coordinate );
 
-module.exports = DocumentCoordinate;
+module.exports = Coordinate;
