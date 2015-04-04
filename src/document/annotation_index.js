@@ -35,10 +35,10 @@ AnnotationIndex.Prototype = function() {
     /* jshint eqnull:true */
     // null check for null or undefined
     if (start != null) {
-      annotations = Substance.filter(annotations, AnnotationIndex.filterByRange(annotations, start, end));
+      annotations = Substance.filter(annotations, AnnotationIndex.filterByRange(start, end));
     }
     if (type) {
-      annotations = Substance.filter(annotations, AnnotationIndex.filterByType(annotations, type));
+      annotations = Substance.filter(annotations, AnnotationIndex.filterByType(type));
     }
     return annotations;
   };
@@ -77,9 +77,9 @@ AnnotationIndex.filterByRange = function(start, end) {
   };
 };
 
-AnnotationIndex.filterByType = function(annotations, type) {
+AnnotationIndex.filterByType = function(type) {
   return function(anno) {
-    return anno.instanceOf(type);
+    return anno.isInstanceOf(type);
   };
 };
 
