@@ -2,11 +2,12 @@
 
 var Substance = require('../basics');
 var Data = require('../data');
-var PathAdapter = Substance.PathAdapter;
 
 var AnnotationIndex = require('./annotation_index');
 var TransactionDocument = require('./transaction_document');
 var DocumentChange = require('./document_change');
+
+var NotifyByPath = require('./notify_by_path');
 
 function Document( schema, seed ) {
   Substance.EventEmitter.call(this);
@@ -29,7 +30,16 @@ function Document( schema, seed ) {
   this.done = [];
   this.undone = [];
 
-  this.documentListeners = new PathAdapter();
+  // change event proxies are triggered after a document change has been applied
+  // before the regular document:changed event is fired.
+  // They serve the purpose of making the event notification more efficient
+  // In earlier days all observers such as node views where listening on the same event 'operation:applied'.
+  // This did not scale with increasing number of nodes, as on every operation all listeners where notified.
+  // The proxies filter the document change by interest and then only notify a small set of observers.
+  // Example: NotifyByPath notifies only observers which are interested in changes to a certain path.
+  this.eventProxies = {
+    'path': new NotifyByPath()
+  };
 }
 
 Document.Prototype = function() {
@@ -119,42 +129,16 @@ Document.Prototype = function() {
       this.data.apply(op);
     }, this);
     this.done.push(documentChange);
-    this.notifyDocumentChangeListeners(documentChange, info);
+
+    Substance.each(this.eventProxies, function(proxy) {
+      proxy.onDocumentChanged(documentChange, info);
+    });
+
+    this.emit('document:changed', documentChange, info);
   };
 
-  this.addDocumentChangeListener = function(listener, path, fn) {
-    var key = path.concat(['listeners']);
-    var listeners = this.documentListeners.get(key);
-    if (!listeners) {
-      listeners = [];
-      this.documentListeners.set(key, listeners);
-    }
-    listeners.push({ fn: fn, listener: listener });
-  };
-
-  // TODO: it would be cool if we would just need to provide the listener instance, no path
-  this.removeDocumentChangeListener = function(listener, path) {
-    var key = path.concat(['listeners']);
-    var listeners = this.documentListeners.get(key);
-    if (listeners) {
-      for (var i = 0; i < listeners.length; i++) {
-        if (listeners[i].listener === listener) {
-          listeners.splice(i, 1);
-          return;
-        }
-      }
-    }
-  };
-
-  this.notifyDocumentChangeListeners = function(documentChange, info) {
-    var documentListeners = this.documentListeners;
-    documentChange.traverse(function(path, ops) {
-      var key = path.concat(['listeners']);
-      var listeners = documentListeners.get(key);
-      Substance.each(listeners, function(entry) {
-        entry.fn.call(entry.listener, documentChange, ops, info);
-      });
-    }, this);
+  this.getEventProxy = function(name) {
+    return this.eventProxies[name];
   };
 
 };

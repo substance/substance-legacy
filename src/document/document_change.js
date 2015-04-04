@@ -6,17 +6,9 @@ var PathAdapter = Substance.PathAdapter;
 function DocumentChange(ops, data) {
   this.ops = ops;
   this.data = data;
-
   this.index = new PathAdapter();
-  Substance.each(ops, function(op) {
-    var key = op.path.concat('__ops__');
-    var _ops = this.index.get(key);
-    if (!_ops) {
-      _ops = [];
-      this.index.set(key, _ops);
-    }
-    _ops.push(op);
-  }, this);
+
+  this._init();
 
   Object.freeze(this);
   Object.freeze(this.ops);
@@ -24,6 +16,35 @@ function DocumentChange(ops, data) {
 }
 
 DocumentChange.Prototype = function() {
+
+  this._init = function() {
+    var index = this.index;
+
+    function addOp(path, op) {
+      var key = path.concat('__ops__');
+      var _ops = index.get(key);
+      if (!_ops) {
+        _ops = [];
+        index.set(key, _ops);
+      }
+      _ops.push(op);
+    }
+
+    Substance.each(this.ops, function(op) {
+      // add each directly affected path
+      addOp(op.path);
+      // properties are assumed to be dirty when the op changes a 'path' property pointing to it
+      if ( (op.type === "create" || op.type === "delete") && op.val.path ) {
+        addOp(op.val.path);
+      }
+      else if (op.type === "set" && op.path[1] === 'path') {
+        // The old as well the new one is affected
+        addOp(op.original);
+        addOp(op.val);
+      }
+    }, this);
+
+  };
 
   this.isAffected = function(path) {
     var key = path.concat('__ops__');

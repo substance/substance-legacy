@@ -27,6 +27,7 @@ var filter = require('lodash/collection/filter');
 var includes = require('lodash/collection/includes');
 var map = require('lodash/collection/map');
 var pluck = require('lodash/collection/pluck');
+var indexBy = require('lodash/collection/indexBy');
 
 var Substance = {};
 
@@ -55,6 +56,8 @@ Substance.filter = filter;
 Substance.includes = includes;
 Substance.map = map;
 Substance.pluck = pluck;
+Substance.indexBy = indexBy;
+
 Substance.last = last;
 Substance.first = first;
 Substance.compact = compact;
