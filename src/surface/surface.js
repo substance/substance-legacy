@@ -1,7 +1,7 @@
 'use strict';
 
 var Substance = require('../basics');
-var Document = require('../document');
+var Selection = Substance.Document.Selection;
 
 // SurfaceObserver watches the DOM for changes that could not be detected by this class
 // For instance, it is possible to use the native context menu to cut or paste
@@ -144,39 +144,60 @@ Surface.Prototype = function() {
     e.preventDefault();
   };
 
-  this.handleInsertion = function( e ) {
-    // TODO: let contenteditable insert something and then see what it was
-    console.log('TODO: handleInsertion');
+  this.handleSpace = function( e ) {
+    e.preventDefault();
+    var selection = this.domSelection.get();
+    var start = selection.range.start;
+    var selectionAfter = Selection.create(start.path, start.offset+1);
+    var source = this.domSelection.nativeRanges[0].start;
+    this.model.insertText(" ", selection, selectionAfter, {
+      source: source
+    });
+    this.domSelection.set(selectionAfter);
+  };
+
+  this.handleInsertion = function( /*e*/ ) {
+    // keep the current selection, let contenteditable insert,
+    // and get the inserted diff afterKeyPress
     this.insertState = {
       selectionBefore: this.model.selection,
       selectionAfter: null,
-      nativeRangeBefore: this.domSelection.nativeRanges[0]
+      nativeRangeBefore: this.domSelection.nativeRanges[0],
+      range: window.getSelection().getRangeAt(0)
     };
-    this.insertState.range = window.getSelection().getRangeAt(0);
   };
 
-  this.afterKeyPress = function (e) {
+  this.afterKeyPress = function ( /*e*/ ) {
     // TODO: fetch the last change from surfaceObserver
     console.log('afterKeyPress');
     if (this.insertState) {
+      var insertState = this.insertState;
+      this.insertState = null;
+
+
       // get the text between the before insert and after insert
       var range = window.document.createRange();
-      var before = this.insertState.range;
+      var before = insertState.range;
       var after = window.getSelection().getRangeAt(0);
       range.setStart(before.startContainer, before.startOffset);
       range.setEnd(after.startContainer, after.startOffset);
+      console.log('Hääää? ', range);
       var textInput = range.toString();
 
-      var selectionBefore = this.insertState.selectionBefore;
+      var selectionBefore = insertState.selectionBefore;
       var selectionAfter = this.domSelection.get();
+      var self = this;
+      // Important: this has to be done after this call as otherwise
+      // ContentEditable somehow overwrites the selection again
+      setTimeout(function() {
+        self.domSelection.set(selectionAfter);
+      });
       // the property's element which is affected by this insert
       // we use it to let the view component check if it needs to rerender or trust contenteditable
-      var source = this.insertState.nativeRangeBefore.start;
+      var source = insertState.nativeRangeBefore.start;
       this.model.insertText(textInput, selectionBefore, selectionAfter, {
         source: source
       });
-      this.domSelection.set(selectionAfter);
-      this.insertState = null;
     }
   };
 
@@ -258,6 +279,9 @@ Surface.Prototype = function() {
       case Surface.Keys.ENTER:
         e.preventDefault();
         return this.handleEnter( e );
+      case Surface.Keys.SPACE:
+        e.preventDefault();
+        return this.handleSpace( e );
       case Surface.Keys.BACKSPACE:
       case Surface.Keys.DELETE:
         e.preventDefault();
@@ -303,7 +327,7 @@ Surface.Prototype = function() {
     console.log('TODO: onModelSelect');
   };
 
-  this.onDocumentChange = function(changes) {
+  this.onDocumentChange = function( /*changes*/ ) {
     if (!this.isRenderingLocked()) {
     }
   };
@@ -322,7 +346,7 @@ Surface.Prototype = function() {
 
 };
 
-Substance.inherit( Surface,   Substance.EventEmitter );
+Substance.inherit( Surface, Substance.EventEmitter );
 
 Surface.Keys =  {
   UNDEFINED: 0,
