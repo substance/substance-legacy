@@ -1,45 +1,38 @@
 'use strict';
 
-var isEqual = require('lodash/lang/isEqual');
-var isObject = require('lodash/lang/isObject');
-var isArray = require('lodash/lang/isArray');
-var isString = require('lodash/lang/isString');
-var isNumber = require('lodash/lang/isNumber');
-var isBoolean = require('lodash/lang/isBoolean');
-var isFunction = require('lodash/lang/isFunction');
-var cloneDeep = require('lodash/lang/cloneDeep');
-
-var bind = require('lodash/function/bind');
-var delay = require('lodash/function/delay');
-
-// Object helpers
-var extend = require('lodash/object/extend');
-
-// Array helpers
-var last = require('lodash/array/last');
-var first = require('lodash/array/first');
-var compact = require('lodash/array/compact');
-var uniq = require('lodash/array/uniq');
-
-// Collection helpers
-var forEach = require('lodash/collection/forEach');
-var filter = require('lodash/collection/filter');
-var includes = require('lodash/collection/includes');
-var map = require('lodash/collection/map');
-var pluck = require('lodash/collection/pluck');
-
 var Substance = {};
 
-Substance.bind = bind;
-Substance.delay = delay;
+// Lang helpers
+Substance.isEqual = require('lodash/lang/isEqual');
+Substance.isObject = require('lodash/lang/isObject');
+Substance.isArray = require('lodash/lang/isArray');
+Substance.isString = require('lodash/lang/isString');
+Substance.isNumber = require('lodash/lang/isNumber');
+Substance.isBoolean = require('lodash/lang/isBoolean');
+Substance.isFunction = require('lodash/lang/isFunction');
+Substance.cloneDeep = require('lodash/lang/cloneDeep');
 
-Substance.isObject = isObject;
-Substance.isArray = isArray;
-Substance.isString = isString;
-Substance.isNumber = isNumber;
-Substance.isBoolean = isBoolean;
-Substance.isFunction = isFunction;
-Substance.isEqual = isEqual;
+// Function helpers
+Substance.bind = require('lodash/function/bind');
+Substance.delay = require('lodash/function/delay');
+
+// Object helpers
+Substance.extend = require('lodash/object/extend');
+
+// Array helpers
+Substance.last = require('lodash/array/last');
+Substance.first = require('lodash/array/first');
+Substance.compact = require('lodash/array/compact');
+Substance.uniq = require('lodash/array/uniq');
+
+// Collection helpers
+Substance.each = require('lodash/collection/forEach');
+Substance.filter = require('lodash/collection/filter');
+Substance.includes = require('lodash/collection/includes');
+Substance.map = require('lodash/collection/map');
+Substance.pluck = require('lodash/collection/pluck');
+
+
 Substance.isArrayEqual = function(a, b) {
   if (a === b) return true;
   if (a === null || b === null) return false;
@@ -50,18 +43,6 @@ Substance.isArrayEqual = function(a, b) {
   return true;
 };
 
-Substance.each = forEach;
-Substance.filter = filter;
-Substance.includes = includes;
-Substance.map = map;
-Substance.pluck = pluck;
-Substance.last = last;
-Substance.first = first;
-Substance.compact = compact;
-Substance.uniq = uniq;
-
-Substance.extend = extend;
-
 Substance.clone = function(obj) {
   if (obj === null || obj === undefined) {
     return obj;
@@ -71,6 +52,7 @@ Substance.clone = function(obj) {
   }
   return Substance.deepclone(obj);
 };
-Substance.deepclone = cloneDeep;
+
+Substance.deepclone = Substance.cloneDeep;
 
 module.exports = Substance;
