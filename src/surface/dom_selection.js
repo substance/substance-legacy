@@ -112,7 +112,7 @@ DomSelection.Prototype = function() {
   };
 
   var modelCoordinateToDomPosition = function(rootElement, coordinate) {
-    var componentElement = rootElement.querySelector('*[data-path="'+coordinate.path.join('.')+'"');
+    var componentElement = rootElement.querySelector('*[data-path="'+coordinate.path.join('.')+'"]');
     if (!componentElement) {
       console.error('Could not find DOM element for path', coordinate.path);
       return null;
