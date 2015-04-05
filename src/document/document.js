@@ -88,6 +88,38 @@ Document.Prototype = function() {
     return this.stage;
   };
 
+  this.create = function(nodeData) {
+    if (this.isTransacting) {
+      this.stage.create(nodeData);
+    } else {
+      this.data.create(nodeData);
+    }
+    return this.data.get(nodeData.id);
+  };
+
+  this.delete = function(nodeId) {
+    if (this.isTransacting) {
+      this.stage.delete(nodeId);
+    } else {
+      this.data.delete(nodeId);
+    }
+  };
+
+  this.set = function(path, value) {
+    if (this.isTransacting) {
+      this.stage.set(path, value);
+    } else {
+      this.data.set(path, value);
+    }
+  };
+
+  this.update = function(path, diff) {
+    if (this.isTransacting) {
+      this.stage.update(path, diff);
+    } else {
+      this.data.update(path, diff);
+    }
+  };
 
   // Called back by Substance.Data after a node instance has been created
   this._didCreateNode = function(node) {
