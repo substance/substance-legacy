@@ -2,21 +2,20 @@
 
 var Substance = require('../basics');
 
-// SurfaceObserver watches the DOM for changes that could not be detected by this class
-// For instance, it is possible to use the native context menu to cut or paste
-// Thus, it serves as a last resort to get the model back in sync with the UI (or reset the UI)
-var DomObserver = require('./dom_observer');
+// DomSelection is used to map DOM to editor selections and vice versa
 var DomSelection = require('./dom_selection');
+// DomContainer is used to analyze the component layout, e.g., to implement container-wide editing such as break or merge
+var DomContainer = require('./dom_container');
 
-function Surface(model) {
+function Surface(editor) {
   Substance.EventEmitter.call(this);
 
   // this.element must be set via surface.attach(element)
   this.element = null;
-  this.model = model;
+  this.editor = editor;
 
-  this.domObserver = new DomObserver(this);
   this.domSelection = null;
+  this.domContainer = null;
 
   // TODO: VE make jquery injectable
   this.$ = $;
@@ -59,14 +58,27 @@ Surface.Prototype = function() {
   this.attach = function(element) {
     this.element = element;
     this.$element = $(element);
-    this.domSelection = new DomSelection(element, this.model);
+    this.domSelection = new DomSelection(element, this.editor);
+    this.domContainer = new DomContainer(element);
     this.attachKeyboardHandlers();
     this.attachMouseHandlers();
+    this.editor.setContainer(this.domContainer);
   };
 
   this.detach = function() {
     this.detachKeyboardHandlers();
     this.detachMouseHandlers();
+    this.element = null;
+    this.$element = null;
+    this.domSelection = null;
+    this.domContainer = null;
+    this.editor.setContainer(null);
+  };
+
+  this.update = function() {
+    if (this.domContainer) {
+      this.domContainer.reset();
+    }
   };
 
   this.dispose = function() {
@@ -134,28 +146,30 @@ Surface.Prototype = function() {
   };
 
   this.handleEnter = function( e ) {
-    // var tx = this.model.startTransaction();
-    // tx.break();
-    // tx.save();
-    console.log('TODO: handleEnter');
     e.preventDefault();
+    var selection = this.domSelection.get();
+    this.editor.break(selection);
+    var self = this;
+    setTimeout(function() {
+      self.domSelection.set(self.editor.selection);
+    });
   };
 
   this.handleSpace = function( e ) {
     e.preventDefault();
     var selection = this.domSelection.get();
     var source = this.domSelection.nativeRanges[0].start;
-    this.model.insertText(" ", selection, {
+    this.editor.insertText(" ", selection, {
       source: source
     });
-    this.domSelection.set(this.model.selection);
+    this.domSelection.set(this.editor.selection);
   };
 
   this.handleInsertion = function( /*e*/ ) {
     // keep the current selection, let contenteditable insert,
     // and get the inserted diff afterKeyPress
     this.insertState = {
-      selectionBefore: this.model.selection,
+      selectionBefore: this.editor.selection,
       selectionAfter: null,
       nativeRangeBefore: this.domSelection.nativeRanges[0],
       range: window.getSelection().getRangeAt(0)
@@ -183,13 +197,13 @@ Surface.Prototype = function() {
       // the property's element which is affected by this insert
       // we use it to let the view component check if it needs to rerender or trust contenteditable
       var source = insertState.nativeRangeBefore.start;
-      this.model.insertText(textInput, selectionBefore, {
+      this.editor.insertText(textInput, selectionBefore, {
         source: source
       });
       // Important: this has to be done after this call as otherwise
       // ContentEditable somehow overwrites the selection again
       setTimeout(function() {
-        self.domSelection.set(self.model.selection);
+        self.domSelection.set(self.editor.selection);
       });
     }
   };
@@ -200,24 +214,11 @@ Surface.Prototype = function() {
     // poll the selection here
     var selection = this.domSelection.get();
     var direction = (e.keyCode === Surface.Keys.BACKSPACE) ? 'left' : 'right';
-    this.model.delete(selection, direction, {});
-    this.domSelection.set(this.model.selection);
+    this.editor.delete(selection, direction, {});
+    this.domSelection.set(this.editor.selection);
   };
 
   /* Event handlers */
-
-  this.onFocus = function () {
-    this.domObserver.start();
-    this.focused = true;
-    this.emit( 'focus' );
-  };
-
-  this.onBlur = function () {
-    this.dragging = false;
-    this.model.clearSelection();
-    this.focused = false;
-    this.emit( 'blur' );
-  };
 
   this.onMouseDown = function ( e ) {
     if ( e.which !== 1 ) {
@@ -240,7 +241,7 @@ Surface.Prototype = function() {
     if (this.dragging) {
       // TODO: do we want that?
       // update selection during dragging
-      // this.model.selection = this.domSelection.get();
+      // this.editor.selection = this.domSelection.get();
       // this.emit('selection');
     }
   };
@@ -256,10 +257,6 @@ Surface.Prototype = function() {
 
   /**
    * Handle document key down events.
-   *
-   * @method
-   * @param {jQuery.Event} e Key down event
-   * @fires selectionStart
    */
   this.onKeyDown = function( e ) {
     if ( e.which === 229 ) {
@@ -294,7 +291,6 @@ Surface.Prototype = function() {
     //   example, the Home key (Firefox fires 'keypress' for it)
     // * Incorrect pawning when selection is collapsed and the user presses a key that is not handled
     //   elsewhere and doesn't produce any text, for example Escape
-    // TODO: Should be covered with Selenium tests.
     if (
       // Catches most keys that don't produce output (charCode === 0, thus no character)
       e.which === 0 || e.charCode === 0 ||
@@ -308,37 +304,16 @@ Surface.Prototype = function() {
     this.handleInsertion(e);
   };
 
-  /* Event handlers driven by dm.Document events */
-
-  this.onModelSelect = function( newRange ) {
-    if ( !newRange ) {
-      return;
-    }
-    // If there is no focused node, use native selection, but ignore the selection if
-    // changeModelSelection is currently being called with the same (object-identical)
-    // selection object (i.e. if the model is calling us back)
-    if ( !this.isRenderingLocked() ) {
-      this.showSelection( this.model.getSelection() );
-    }
-    // TODO: update selection
-    console.log('TODO: onModelSelect');
-  };
-
-  this.onDocumentChange = function( /*changes*/ ) {
-    if (!this.isRenderingLocked()) {
-    }
-  };
-
   this.setSelection = function(sel) {
-    if (!this.model.selection.equals(sel)) {
+    if (!this.editor.selection.equals(sel)) {
       console.log('Surface.setSelection: %s', sel.toString());
-      this.model.selection = sel;
+      this.editor.selection = sel;
       this.emit('selection:changed', sel);
     }
   };
 
   this.getSelection = function() {
-    return this.model.selection;
+    return this.editor.selection;
   };
 
 };

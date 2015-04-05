@@ -100,12 +100,10 @@ DomSelection.Prototype = function() {
   };
 
   var modelCoordinateToDomPosition = function(rootElement, coordinate) {
-    var componentElement = rootElement.querySelector('*[data-path="'+coordinate.path.join('.')+'"]');
-    if (!componentElement) {
-      console.error('Could not find DOM element for path', coordinate.path);
-      return null;
+    var componentElement = DomSelection.getDomNodeForPath(rootElement, coordinate.path);
+    if (componentElement) {
+      return findPosition(componentElement, coordinate.offset);
     }
-    return findPosition(componentElement, coordinate.offset);
   };
 
   var selection_equals = function(s1, s2) {
@@ -212,5 +210,14 @@ DomSelection.Prototype = function() {
 };
 
 Substance.initClass(DomSelection);
+
+DomSelection.getDomNodeForPath = function(rootElement, path) {
+  var componentElement = rootElement.querySelector('*[data-path="'+path.join('.')+'"]');
+  if (!componentElement) {
+    console.error('Could not find DOM element for path', path);
+    return null;
+  }
+  return componentElement;
+};
 
 module.exports = DomSelection;

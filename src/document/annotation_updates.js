@@ -74,7 +74,48 @@ var deletedText = function(doc, path, startOffset, endOffset) {
   });
 };
 
+// used when breaking a node to transfer annotations to the new property
+var transferAnnotations = function(doc, path, offset, newPath, newOffset) {
+  var index = doc.getIndex('annotations');
+  var annotations = index.get(path, offset);
+  Substance.each(annotations, function(a) {
+    var isInside = (offset > a.range[0] && offset < a.range[1]);
+    var newRange;
+    // 1. if the cursor is inside an annotation it gets either split or truncated
+    if (isInside) {
+      // create a new annotation if the annotation is splittable
+      if (a.canSplit()) {
+        var newAnno = Substance.clone(a.properties);
+        newAnno.id = Substance.uuid(a.type + "_");
+        newAnno.range = [newOffset, newOffset + a.range[1] - offset];
+        newAnno.path = newPath;
+        doc.create(newAnno);
+      }
+      // in either cases truncate the first part
+      newRange = Substance.clone(a.range);
+      newRange[1] = offset;
+      // if after truncate the anno is empty, delete it
+      if (newRange[1] === newRange[0]) {
+        doc.delete(a.id);
+      }
+      // ... otherwise update the range
+      else {
+        doc.set([a.id, "range"], newRange);
+      }
+    }
+    // 2. if the cursor is before an annotation then simply transfer the annotation to the new node
+    else {
+      // Note: we are preserving the annotation so that anything which is connected to the annotation
+      // remains valid.
+      newRange = [newOffset + a.range[0] - offset, newOffset + a.range[1] - offset];
+      doc.set([a.id, "path"], newPath);
+      doc.set([a.id, "range"], newRange);
+    }
+  });
+};
+
 module.exports = {
   insertedText: insertedText,
-  deletedText: deletedText
+  deletedText: deletedText,
+  transferAnnotations: transferAnnotations
 };

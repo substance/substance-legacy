@@ -5,13 +5,18 @@ var Document = Substance.Document;
 var Selection = Document.Selection;
 var Annotations = require('../document/annotation_updates');
 
-function FormEditor(node) {
-  this.node = node;
-  this.document = node.getDocument();
+function FormEditor(doc) {
+  this.document = doc;
   this.selection = Document.nullSelection;
+  // TODO: find better name. It used in container aware editors (which need the layout of components).
+  this.container = null;
 }
 
 FormEditor.Prototype = function() {
+
+  this.setContainer = function(container) {
+    this.container = container;
+  };
 
   this.insertText = function(textInput, selection, info) {
     console.log("Inserting text: '%s' at %s", textInput, selection.toString());
@@ -87,6 +92,11 @@ FormEditor.Prototype = function() {
     }
   };
 
+  // no breaking
+  this.break = function(selection, info) {
+    this.selection = selection;
+  };
+
   this._deleteSelected = function(tx) {
     if (!tx.selection.isPropertySelection()) {
       throw new Error('Not implented for ContainerSelection.');
@@ -103,13 +113,9 @@ FormEditor.Prototype = function() {
     tx.selection = tx.selection.collapse('left');
   };
 
-  // no merge, just move cursor
-  this._mergeWith = function(tx, dir) {
-    if (dir === 'previous') {
-      // move cursor to end of previous component
-    } else {
-      // move cursor to beginning of next component
-    }
+  // no merging
+  this._merge = function(tx, dir) {
+    // do nothing
   };
 
 };
