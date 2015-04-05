@@ -11,8 +11,8 @@ function TransactionDocument(document) {
 
   this.data = new Data.IncrementalGraph(document.schema, {
     seed: document.data.seed,
-    didCreateNode: document.data.didCreateNode,
-    didDeleteNode: document.data.didDeleteNode,
+    didCreateNode: Substance.bind(this._didCreateNode, this),
+    didDeleteNode: Substance.bind(this._didDeleteNode, this),
   });
 
   Substance.each(document.data.indexes, function(index, name) {
@@ -21,6 +21,10 @@ function TransactionDocument(document) {
 }
 
 TransactionDocument.Prototype = function() {
+
+  this.get = function(path) {
+    return this.data.get(path);
+  };
 
   this.create = function(nodeData) {
     var op = this.data.create(nodeData);
@@ -76,6 +80,17 @@ TransactionDocument.Prototype = function() {
 
   this.getIndex = function(name) {
     return this.data.getIndex(name);
+  };
+
+  // Called back by Substance.Data after a node instance has been created
+  this._didCreateNode = function(node) {
+    // create the node from schema
+    node.attach(this);
+  };
+
+  this._didDeleteNode = function(node) {
+    // create the node from schema
+    node.detach(this);
   };
 
 };
