@@ -42,7 +42,7 @@ var deletedText = function(doc, path, startOffset, endOffset) {
     var pos2 = endOffset;
     var start = anno.range[0];
     var end = anno.range[1];
-    if (pos2 <= end) {
+    if (pos2 <= start) {
       start -= length;
       end -= length;
       doc.set([anno.id, 'range'], [start, end]);
