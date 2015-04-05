@@ -1,7 +1,6 @@
 'use strict';
 
 var Substance = require('../basics');
-var Selection = Substance.Document.Selection;
 
 // SurfaceObserver watches the DOM for changes that could not be detected by this class
 // For instance, it is possible to use the native context menu to cut or paste
@@ -9,20 +8,20 @@ var Selection = Substance.Document.Selection;
 var DomObserver = require('./dom_observer');
 var DomSelection = require('./dom_selection');
 
-function Surface(element, model) {
+function Surface(model) {
   Substance.EventEmitter.call(this);
 
-  this.element = element;
+  // this.element must be set via surface.attach(element)
+  this.element = null;
   this.model = model;
 
   this.domObserver = new DomObserver(this);
-  this.domSelection = new DomSelection(element, this.model);
+  this.domSelection = null;
 
   // TODO: VE make jquery injectable
   this.$ = $;
   this.$window = this.$( window );
   this.$document = this.$( window.document );
-  this.$element = $(element);
 
   this.dragging = false;
   this.focused = false;
@@ -57,7 +56,10 @@ function Surface(element, model) {
 
 Surface.Prototype = function() {
 
-  this.attach = function() {
+  this.attach = function(element) {
+    this.element = element;
+    this.$element = $(element);
+    this.domSelection = new DomSelection(element, this.model);
     this.attachKeyboardHandlers();
     this.attachMouseHandlers();
   };
@@ -142,13 +144,11 @@ Surface.Prototype = function() {
   this.handleSpace = function( e ) {
     e.preventDefault();
     var selection = this.domSelection.get();
-    var start = selection.range.start;
-    var selectionAfter = Selection.create(start.path, start.offset+1);
     var source = this.domSelection.nativeRanges[0].start;
-    this.model.insertText(" ", selection, selectionAfter, {
+    this.model.insertText(" ", selection, {
       source: source
     });
-    this.domSelection.set(selectionAfter);
+    this.domSelection.set(this.model.selection);
   };
 
   this.handleInsertion = function( /*e*/ ) {
@@ -179,18 +179,17 @@ Surface.Prototype = function() {
       var textInput = range.toString();
 
       var selectionBefore = insertState.selectionBefore;
-      var selectionAfter = this.domSelection.get();
       var self = this;
-      // Important: this has to be done after this call as otherwise
-      // ContentEditable somehow overwrites the selection again
-      setTimeout(function() {
-        self.domSelection.set(selectionAfter);
-      });
       // the property's element which is affected by this insert
       // we use it to let the view component check if it needs to rerender or trust contenteditable
       var source = insertState.nativeRangeBefore.start;
-      this.model.insertText(textInput, selectionBefore, selectionAfter, {
+      this.model.insertText(textInput, selectionBefore, {
         source: source
+      });
+      // Important: this has to be done after this call as otherwise
+      // ContentEditable somehow overwrites the selection again
+      setTimeout(function() {
+        self.domSelection.set(self.model.selection);
       });
     }
   };
@@ -199,7 +198,10 @@ Surface.Prototype = function() {
     // TODO: let contenteditable delete and find out the diff afterwards
     e.preventDefault();
     // poll the selection here
-    this.domSelection.get();
+    var selection = this.domSelection.get();
+    var direction = (e.keyCode === Surface.Keys.BACKSPACE) ? 'left' : 'right';
+    this.model.delete(selection, direction, {});
+    this.domSelection.set(this.model.selection);
   };
 
   /* Event handlers */

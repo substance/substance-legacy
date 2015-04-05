@@ -2,6 +2,7 @@
 
 var Substance = require('../basics');
 var Document = Substance.Document;
+var Selection = Document.Selection;
 var Annotations = require('../document/annotation_updates');
 
 function FormEditor(node) {
@@ -12,11 +13,11 @@ function FormEditor(node) {
 
 FormEditor.Prototype = function() {
 
-  this.insertText = function(textInput, selectionBefore, selectionAfter, info) {
-    console.log("Inserting text: '%s' at %s, after that: %s", textInput, selectionBefore.toString(), selectionAfter.toString());
+  this.insertText = function(textInput, selection, info) {
+    console.log("Inserting text: '%s' at %s", textInput, selection.toString());
     var tx = this.document.startTransaction();
+    tx.selection = selection;
     try {
-      tx.selection = selectionBefore;
       if (!this.selection.isCollapsed()) {
         this._delete(tx);
       }
@@ -24,14 +25,15 @@ FormEditor.Prototype = function() {
       tx.update(range.start.path, { insert: { offset: range.start.offset, value: textInput } } );
       // TODO: not yet supported, but probably we will inject additional information such as selection here
       Annotations.insertedText(tx, range.start, textInput.length);
+      tx.selection = Selection.create(range.start.path, range.start.offset + textInput.length);
       tx.save({
-        before: { selection: selectionBefore },
-        after: { selection: selectionAfter }
+        before: { selection: selection },
+        after: { selection: tx.selection }
       }, info);
+      this.selection = tx.selection;
     } finally {
       tx.cleanup();
     }
-    this.selection = selectionAfter;
   };
 
   // implements backspace and delete
@@ -79,6 +81,7 @@ FormEditor.Prototype = function() {
         before: { selection: selection },
         after: { selection: tx.selection }
       }, info);
+      this.selection = tx.selection;
     } finally {
       tx.cleanup();
     }
