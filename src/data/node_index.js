@@ -87,7 +87,7 @@ Index.Prototype = function() {
       values = [values];
     }
     Substance.each(values, function(value) {
-      this.index.set([value, node.id]);
+      this.index.set([value, node.id], node);
     }, this);
   };
 
