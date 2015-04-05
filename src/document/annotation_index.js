@@ -70,8 +70,8 @@ AnnotationIndex.filterByRange = function(start, end) {
     var aEnd = anno.range[1];
     var overlap = (aEnd >= start);
     // Note: it is allowed to omit the end part
-    if (end) {
-      overlap &= (aStart <= end);
+    if (end != null) {
+      overlap = overlap && (aStart <= end);
     }
     return overlap;
   };
