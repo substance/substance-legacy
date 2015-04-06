@@ -66,11 +66,51 @@ FullfledgedEditor.Prototype = function() {
     tx.selection = Selection.create(newPath, 0);
   };
 
-  this._merge = function(tx, dir) {
-    if (dir === 'previous') {
-      // move cursor to end of previous component
-    } else {
-      // move cursor to beginning of next component
+  this._mergeTextNodes = function(tx, firstPath, secondPath) {
+    var firstText = tx.get(firstPath);
+    var firstLength = firstText.length;
+    var secondText = tx.get(secondPath);
+    var containerNode = tx.get(this.container.name);
+    // 1. Append the second text
+    tx.update(firstPath, { insert: { offset: firstLength, value: secondText } });
+    // 2. Transfer annotations
+    Annotations.transferAnnotations(tx, secondPath, 0, firstPath, firstLength);
+    // 3. Hide the second node
+    containerNode.hide(secondPath[0]);
+    // 4. Delete the second node
+    tx.delete(secondPath[0]);
+    // 5. set the selection to the end of the first component
+    tx.selection = Selection.create(firstPath, firstLength);
+  };
+
+  var _merge = {
+    'text': {
+      'text': this._mergeTextNodes
+    }
+  };
+
+  this._merge = function(tx, path, dir) {
+    var component = this.container.getComponent(path);
+    var node = tx.get(component.path[0]);
+    var otherNode, otherPath;
+    if (dir === 'right' && component.next) {
+      if (!_merge[node.type]) {
+        return;
+      }
+      otherPath = component.next.path;
+      otherNode = tx.get(otherPath[0]);
+      if (_merge[node.type][otherNode.type]) {
+        _merge[node.type][otherNode.type].call(this, tx, path, otherPath);
+      }
+    } else if (dir === 'left' && component.previous) {
+      otherPath = component.previous.path;
+      otherNode = tx.get(otherPath[0]);
+      if (!_merge[otherNode.type]) {
+        return;
+      }
+      if (_merge[otherNode.type][node.type]) {
+        _merge[otherNode.type][node.type].call(this, tx, otherPath, path);
+      }
     }
   };
 

@@ -52,12 +52,9 @@ FormEditor.Prototype = function() {
       // and try to merge
       if (selection.isCollapsed()) {
         var prop = this.document.get(range.start.path);
-        if (range.start.offset === 0 && direction === 'left') {
-          // TODO: try to merge into previous
-          console.log("TODO: Implement delete with merge previous");
-        } else if (range.start.offset === prop.length) {
-          // TODO: try to merge next
-          console.log("TODO: Implement delete with merge next");
+        if ((range.start.offset === 0 && direction === 'left') ||
+            (range.start.offset === prop.length && direction === 'right')) {
+          this._merge(tx, range.start.path, direction)
         } else {
           // simple delete one character
           startChar = (direction === 'left') ? range.start.offset-1 : range.start.offset;
@@ -113,9 +110,16 @@ FormEditor.Prototype = function() {
     tx.selection = tx.selection.collapse('left');
   };
 
-  // no merging
-  this._merge = function(tx, dir) {
-    // do nothing
+  // no merging, just move cursor when pressing backspace
+  this._merge = function(tx, path, dir) {
+    var component = this.container.getComponent(path);
+    if (dir === 'left') {
+      // move cursor to end of previous component
+      if (component.previous) {
+        var content = tx.get(component.previous.path);
+        tx.selection = Selection.create(component.previous.path, content.length);
+      }
+    }
   };
 
 };
