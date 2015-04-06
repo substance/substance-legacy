@@ -54,12 +54,14 @@ FullfledgedEditor.Prototype = function() {
       type: 'text',
       content: text.substring(offset)
     });
-    // 2. transfer annotations which are after offset to the new node
-    Annotations.transferAnnotations(tx, path, offset, [id, 'content'], 0);
-    // 3. truncate the original property
-    tx.update(path, {
-      delete: { start: offset, end: text.length }
-    });
+    if (offset < text.length) {
+      // 2. transfer annotations which are after offset to the new node
+      Annotations.transferAnnotations(tx, path, offset, [id, 'content'], 0);
+      // 3. truncate the original property
+      tx.update(path, {
+        delete: { start: offset, end: text.length }
+      });
+    }
     // 4. show the new node
     containerNode.show(id, nodePos+1);
     // 5. update the selection
