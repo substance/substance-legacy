@@ -298,7 +298,10 @@ Surface.Prototype = function() {
     if (change.data.selectionAfter) {
       var self = this;
       window.setTimeout(function() {
-        self.domSelection.set(change.data.selectionAfter);
+        var sel = change.data.selectionAfter;
+        self.domSelection.set(sel);
+        self.editor.selection = sel;
+        self.emit('selection:changed', sel);
       });
     }
   };
