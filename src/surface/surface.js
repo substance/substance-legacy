@@ -63,6 +63,9 @@ Surface.Prototype = function() {
     this.attachKeyboardHandlers();
     this.attachMouseHandlers();
     this.editor.setContainer(this.domContainer);
+    this.editor.getDocument().connect(this, {
+      'document:changed': this.onDocumentChange
+    });
   };
 
   this.detach = function() {
@@ -73,6 +76,7 @@ Surface.Prototype = function() {
     this.domSelection = null;
     this.domContainer = null;
     this.editor.setContainer(null);
+    this.editor.getDocument().disconnect(this);
   };
 
   this.update = function() {
@@ -137,10 +141,10 @@ Surface.Prototype = function() {
     e.preventDefault();
     var selection = this.domSelection.get();
     this.editor.break(selection);
-    var self = this;
-    window.setTimeout(function() {
-      self.domSelection.set(self.editor.selection);
-    });
+    // var self = this;
+    // window.setTimeout(function() {
+    //   self.domSelection.set(self.editor.selection);
+    // });
   };
 
   this.handleDeleteKey = function ( e ) {
@@ -150,7 +154,7 @@ Surface.Prototype = function() {
     var selection = this.domSelection.get();
     var direction = (e.keyCode === Surface.Keys.BACKSPACE) ? 'left' : 'right';
     this.editor.delete(selection, direction, {});
-    this.domSelection.set(this.editor.selection);
+    // this.domSelection.set(this.editor.selection);
   };
 
 
@@ -161,7 +165,7 @@ Surface.Prototype = function() {
     this.editor.insertText(" ", selection, {
       source: source
     });
-    this.domSelection.set(this.editor.selection);
+    // this.domSelection.set(this.editor.selection);
   };
 
   this.handleInsertion = function( /*e*/ ) {
@@ -201,9 +205,9 @@ Surface.Prototype = function() {
       });
       // Important: this has to be done after this call as otherwise
       // ContentEditable somehow overwrites the selection again
-      window.setTimeout(function() {
-        self.domSelection.set(self.editor.selection);
-      });
+      // window.setTimeout(function() {
+      //   self.domSelection.set(self.editor.selection);
+      // });
     }
   };
 
@@ -290,6 +294,14 @@ Surface.Prototype = function() {
     this.handleInsertion(e);
   };
 
+  this.onDocumentChange = function(change) {
+    if (change.data.selectionAfter) {
+      var self = this;
+      window.setTimeout(function() {
+        self.domSelection.set(change.data.selectionAfter);
+      });
+    }
+  };
 
   this.getSelection = function() {
     return this.editor.selection;

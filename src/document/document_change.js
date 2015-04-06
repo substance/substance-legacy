@@ -5,7 +5,7 @@ var PathAdapter = Substance.PathAdapter;
 
 function DocumentChange(ops, data) {
   this.ops = ops;
-  this.data = data;
+  this.data = data || {};
   this.index = new PathAdapter();
 
   this._init();
