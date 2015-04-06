@@ -31,8 +31,8 @@ FullfledgedEditor.Prototype = function() {
           this._breakTextNode(tx, node, range.start.offset);
       }
       tx.save({
-        before: { selection: selection },
-        after: { selection: tx.selection }
+        selectionBefore: selection,
+        selectionAfter: tx.selection
       }, info);
       this.selection = tx.selection;
     } finally {

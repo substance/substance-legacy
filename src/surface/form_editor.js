@@ -32,8 +32,8 @@ FormEditor.Prototype = function() {
       Annotations.insertedText(tx, range.start, textInput.length);
       tx.selection = Selection.create(range.start.path, range.start.offset + textInput.length);
       tx.save({
-        before: { selection: selection },
-        after: { selection: tx.selection }
+        selectionBefore: selection,
+        selectionAfter: tx.selection
       }, info);
       this.selection = tx.selection;
     } finally {
@@ -80,8 +80,8 @@ FormEditor.Prototype = function() {
         console.log("TODO: Implement delete for ContainerSelection");
       }
       tx.save({
-        before: { selection: selection },
-        after: { selection: tx.selection }
+        selectionBefore: selection,
+        selectionAfter: tx.selection
       }, info);
       this.selection = tx.selection;
     } finally {

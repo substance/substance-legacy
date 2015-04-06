@@ -34,9 +34,9 @@ function Surface(editor) {
   this._onMouseDown = Substance.bind( this.onMouseDown, this );
   this._onMouseMove = Substance.bind( this.onMouseMove, this );
   this._onSelectionChange = Substance.bind( this.onSelectionChange, this );
-  this._delayedUpdateSelection = function(options) {
+  this._delayedUpdateModelSelection = function(options) {
     window.setTimeout(function() {
-      self.updateSelection(options);
+      self._updateModelSelection(options);
     });
   };
   this._onKeyDown = Substance.bind( this.onKeyDown, this );
@@ -117,22 +117,10 @@ Surface.Prototype = function() {
     this.$element.off( 'mousedown', this._onMouseDown );
   };
 
-  this.isRenderingLocked = function () {
-    return this.renderLocks > 0;
-  };
-
-  this.incRenderLock = function () {
-    this.renderLocks++;
-  };
-
-  this.decRenderLock = function () {
-    this.renderLocks--;
-  };
-
   this.handleLeftOrRightArrowKey = function ( e ) {
     var self = this;
-    setTimeout(function() {
-      self.updateSelection({
+    window.setTimeout(function() {
+      self._updateModelSelection({
         left: (e.keyCode === Surface.Keys.LEFT),
         right: (e.keyCode === Surface.Keys.RIGHT)
       });
@@ -142,18 +130,29 @@ Surface.Prototype = function() {
   this.handleUpOrDownArrowKey = function ( /*e*/ ) {
     // TODO: let contenteditable do the move and set the new selection afterwards
     console.log('TODO: handleUpOrDownArrowKey');
-    this._delayedUpdateSelection();
+    this._delayedUpdateModelSelection();
   };
 
-  this.handleEnter = function( e ) {
+  this.handleEnterKey = function( e ) {
     e.preventDefault();
     var selection = this.domSelection.get();
     this.editor.break(selection);
     var self = this;
-    setTimeout(function() {
+    window.setTimeout(function() {
       self.domSelection.set(self.editor.selection);
     });
   };
+
+  this.handleDeleteKey = function ( e ) {
+    // TODO: let contenteditable delete and find out the diff afterwards
+    e.preventDefault();
+    // poll the selection here
+    var selection = this.domSelection.get();
+    var direction = (e.keyCode === Surface.Keys.BACKSPACE) ? 'left' : 'right';
+    this.editor.delete(selection, direction, {});
+    this.domSelection.set(this.editor.selection);
+  };
+
 
   this.handleSpace = function( e ) {
     e.preventDefault();
@@ -202,57 +201,40 @@ Surface.Prototype = function() {
       });
       // Important: this has to be done after this call as otherwise
       // ContentEditable somehow overwrites the selection again
-      setTimeout(function() {
+      window.setTimeout(function() {
         self.domSelection.set(self.editor.selection);
       });
     }
   };
 
-  this.handleDelete = function ( e ) {
-    // TODO: let contenteditable delete and find out the diff afterwards
-    e.preventDefault();
-    // poll the selection here
-    var selection = this.domSelection.get();
-    var direction = (e.keyCode === Surface.Keys.BACKSPACE) ? 'left' : 'right';
-    this.editor.delete(selection, direction, {});
-    this.domSelection.set(this.editor.selection);
-  };
-
   /* Event handlers */
 
-  this.onMouseDown = function ( e ) {
+  this.onMouseDown = function(e) {
     if ( e.which !== 1 ) {
       return;
     }
-    // Remember the mouse is down
-    this.dragging = true;
     // Bind mouseup to the whole document in case of dragging out of the surface
+    this.dragging = true;
     this.$document.on( 'mouseup', this._onMouseUp );
   };
 
-  this.onMouseUp = function ( /*e*/ ) {
+  this.onMouseUp = function(/*e*/) {
+    // ... and unbind the temporary handler
     this.$document.off( 'mouseup', this._onMouseUp );
-    // TODO: update selection
     this.dragging = false;
-    this.setSelection(this.domSelection.get());
+    this._setModelSelection(this.domSelection.get());
   };
 
-  this.onMouseMove = function () {
+  this.onMouseMove = function() {
     if (this.dragging) {
       // TODO: do we want that?
       // update selection during dragging
-      // this.editor.selection = this.domSelection.get();
-      // this.emit('selection');
+      // this._setModelSelection(this.domSelection.get());
     }
   };
 
-  // triggered by DOM itself
   this.onSelectionChange = function () {
-    // this.updateSelection();
-  };
-
-  this.updateSelection = function(options) {
-    this.setSelection(this.domSelection.get(options));
+    this.updateFocusState();
   };
 
   /**
@@ -266,25 +248,29 @@ Surface.Prototype = function() {
     switch ( e.keyCode ) {
       case Surface.Keys.LEFT:
       case Surface.Keys.RIGHT:
-        return this.handleLeftOrRightArrowKey( e );
+        return this.handleLeftOrRightArrowKey(e);
       case Surface.Keys.UP:
       case Surface.Keys.DOWN:
-        return this.handleUpOrDownArrowKey( e );
+        return this.handleUpOrDownArrowKey(e);
       case Surface.Keys.ENTER:
         e.preventDefault();
-        return this.handleEnter( e );
+        return this.handleEnterKey(e);
       case Surface.Keys.SPACE:
         e.preventDefault();
-        return this.handleSpace( e );
+        return this.handleSpace(e);
       case Surface.Keys.BACKSPACE:
       case Surface.Keys.DELETE:
         e.preventDefault();
-        return this.handleDelete( e );
+        return this.handleDeleteKey(e);
       default:
         break;
     }
   };
 
+  /**
+   * Handle key events not consumed by onKeyDown.
+   * Essentially this is used to handle text typing.
+   */
   this.onKeyPress = function( e ) {
     // Filter out non-character keys. Doing this prevents:
     // * Unexpected content deletion when selection is not collapsed and the user presses, for
@@ -304,16 +290,47 @@ Surface.Prototype = function() {
     this.handleInsertion(e);
   };
 
+
+  this.getSelection = function() {
+    return this.editor.selection;
+  };
+
+  /**
+   * Set the model selection and update the DOM selection accordingly
+   */
   this.setSelection = function(sel) {
+    if (this._setModelSelection(sel)) {
+      // also update the DOM selection
+      this.domSelection.set(sel);
+    }
+  };
+
+  this._updateModelSelection = function(options) {
+    this._setModelSelection(this.domSelection.get(options));
+  };
+
+  /**
+   * Set the model selection only (without DOM selection update).
+   *
+   * Used internally if we derive the model selection from the DOM selcection.
+   */
+  this._setModelSelection = function(sel) {
     if (!this.editor.selection.equals(sel)) {
       console.log('Surface.setSelection: %s', sel.toString());
       this.editor.selection = sel;
       this.emit('selection:changed', sel);
+      return true;
     }
   };
 
-  this.getSelection = function() {
-    return this.editor.selection;
+  /**
+   * Update the internal focus state.
+   *
+   * Triggered by DOM selection change events.
+   */
+  this.updateFocusState = function () {
+    var selection = this.domSelection.get();
+    this.isFocused = !selection.isNull();
   };
 
 };
