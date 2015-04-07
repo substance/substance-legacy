@@ -54,9 +54,10 @@ DocumentChange.Prototype = function() {
   };
 
   this.invert = function() {
-    var ops = this.ops.map(function(op) {
-      return op.invert();
-    });
+    var ops = [];
+    for (var i = this.ops.length - 1; i >= 0; i--) {
+      ops.push(this.ops[i].invert());
+    }
     var before = this.after;
     var after = this.before;
     return new DocumentChange(ops, before, after);
