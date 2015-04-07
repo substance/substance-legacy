@@ -89,7 +89,7 @@ Document.Prototype = function() {
     }
     this.isTransacting = true;
     // TODO: maybe we need to prepare the stage
-    this.stage.before = beforeState;
+    this.stage.before = beforeState || {};
     this.emit('transaction:started', this.stage);
     return this.stage;
   };
