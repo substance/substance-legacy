@@ -63,9 +63,9 @@ Surface.Prototype = function() {
     this.attachKeyboardHandlers();
     this.attachMouseHandlers();
     this.editor.setContainer(this.domContainer);
-    // this.editor.getDocument().connect(this, {
-    //   'document:changed': this.onDocumentChange
-    // });
+    this.editor.getDocument().connect(this, {
+      'document:changed': this.onDocumentChange
+    });
   };
 
   this.detach = function() {
@@ -141,7 +141,7 @@ Surface.Prototype = function() {
     e.preventDefault();
     var selection = this.domSelection.get();
     this.editor.break(selection);
-    this._updateDomSelection(this.editor.selection);
+    // this._updateDomSelection(this.editor.selection);
   };
 
   this.handleDeleteKey = function ( e ) {
@@ -151,7 +151,7 @@ Surface.Prototype = function() {
     var selection = this.domSelection.get();
     var direction = (e.keyCode === Surface.Keys.BACKSPACE) ? 'left' : 'right';
     this.editor.delete(selection, direction, {});
-    this._updateDomSelection(this.editor.selection);
+    // this._updateDomSelection(this.editor.selection);
   };
 
 
@@ -162,7 +162,7 @@ Surface.Prototype = function() {
     this.editor.insertText(" ", selection, {
       source: source
     });
-    this._updateDomSelection(this.editor.selection);
+    // this._updateDomSelection(this.editor.selection);
   };
 
   this.handleInsertion = function( /*e*/ ) {
@@ -200,7 +200,7 @@ Surface.Prototype = function() {
       this.editor.insertText(textInput, selectionBefore, {
         source: source
       });
-      this._updateDomSelection(this.editor.selection);
+      // this._updateDomSelection(this.editor.selection);
     }
   };
 
@@ -237,6 +237,15 @@ Surface.Prototype = function() {
         console.log('Surface.onSelectionChange: Unfocussing', this.name)
         this.isFocused = false;
       }
+    }
+  };
+
+  this.onDocumentChange = function(change, info) {
+    // TODO: we should make this configurable
+    // i.e., in other scenarios it might be desired
+    // to also update selection on 'replay'
+    if (info !== "replay") {
+      this._updateDomSelection(change.after.selection);
     }
   };
 
