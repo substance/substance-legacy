@@ -83,12 +83,14 @@ Document.Prototype = function() {
   // tx.save();
   //
   // Note: there is no direct manipulation without transaction
-  this.startTransaction = function() {
+  this.startTransaction = function(beforeState) {
     if (this.isTransacting) {
       throw new Error('Nested transactions are not supported.');
     }
     this.isTransacting = true;
     // TODO: maybe we need to prepare the stage
+    this.stage.before = beforeState;
+    this.emit('transaction:started', this.stage);
     return this.stage;
   };
 
@@ -125,13 +127,13 @@ Document.Prototype = function() {
     }
   };
 
-  this.finishTransaction = function(data, info) {
+  this._finishTransaction = function(beforeState, afterState, info) {
     if (!this.isTransacting) {
       throw new Error('Not in a transaction.');
     }
     this.isTransacting = false;
     var ops = this.stage.getOperations();
-    var documentChange = new DocumentChange(ops, data);
+    var documentChange = new DocumentChange(ops, beforeState, afterState);
     // apply the change
     this._apply(documentChange, 'skipStage');
     // push to undo queue and wipe the redo queue

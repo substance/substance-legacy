@@ -63,9 +63,9 @@ Surface.Prototype = function() {
     this.attachKeyboardHandlers();
     this.attachMouseHandlers();
     this.editor.setContainer(this.domContainer);
-    this.editor.getDocument().connect(this, {
-      'document:changed': this.onDocumentChange
-    });
+    // this.editor.getDocument().connect(this, {
+    //   'document:changed': this.onDocumentChange
+    // });
   };
 
   this.detach = function() {
@@ -76,7 +76,7 @@ Surface.Prototype = function() {
     this.domSelection = null;
     this.domContainer = null;
     this.editor.setContainer(null);
-    this.editor.getDocument().disconnect(this);
+    // this.editor.getDocument().disconnect(this);
   };
 
   this.update = function() {
@@ -141,10 +141,7 @@ Surface.Prototype = function() {
     e.preventDefault();
     var selection = this.domSelection.get();
     this.editor.break(selection);
-    // var self = this;
-    // window.setTimeout(function() {
-    //   self.domSelection.set(self.editor.selection);
-    // });
+    this._updateDomSelection(this.editor.selection);
   };
 
   this.handleDeleteKey = function ( e ) {
@@ -154,7 +151,7 @@ Surface.Prototype = function() {
     var selection = this.domSelection.get();
     var direction = (e.keyCode === Surface.Keys.BACKSPACE) ? 'left' : 'right';
     this.editor.delete(selection, direction, {});
-    // this.domSelection.set(this.editor.selection);
+    this._updateDomSelection(this.editor.selection);
   };
 
 
@@ -165,7 +162,7 @@ Surface.Prototype = function() {
     this.editor.insertText(" ", selection, {
       source: source
     });
-    // this.domSelection.set(this.editor.selection);
+    this._updateDomSelection(this.editor.selection);
   };
 
   this.handleInsertion = function( /*e*/ ) {
@@ -203,11 +200,7 @@ Surface.Prototype = function() {
       this.editor.insertText(textInput, selectionBefore, {
         source: source
       });
-      // Important: this has to be done after this call as otherwise
-      // ContentEditable somehow overwrites the selection again
-      // window.setTimeout(function() {
-      //   self.domSelection.set(self.editor.selection);
-      // });
+      this._updateDomSelection(this.editor.selection);
     }
   };
 
@@ -238,7 +231,13 @@ Surface.Prototype = function() {
   };
 
   this.onSelectionChange = function () {
-    this.updateFocusState();
+    if (this.isFocused) {
+      var sel = this.domSelection.get();
+      if(sel.isNull()) {
+        console.log('Surface.onSelectionChange: Unfocussing', this.name)
+        this.isFocused = false;
+      }
+    }
   };
 
   /**
@@ -294,21 +293,16 @@ Surface.Prototype = function() {
     this.handleInsertion(e);
   };
 
-  this.onDocumentChange = function(change) {
-    if (change.data.selectionAfter) {
-      var self = this;
-      window.setTimeout(function() {
-        var sel = change.data.selectionAfter;
-        self.domSelection.set(sel);
-        self.editor.selection = sel;
-        self.emit('selection:changed', sel);
-      });
-    }
-  };
-
   this.getSelection = function() {
     return this.editor.selection;
   };
+
+  this._updateDomSelection = function(sel) {
+    var self = this;
+    window.setTimeout(function() {
+      self.domSelection.set(sel);
+    });
+  }
 
   /**
    * Set the model selection and update the DOM selection accordingly
@@ -317,6 +311,8 @@ Surface.Prototype = function() {
     if (this._setModelSelection(sel)) {
       // also update the DOM selection
       this.domSelection.set(sel);
+      // HACK: is there a better place to update focused state?
+      this.updateFocusState(sel);
     }
   };
 
@@ -333,6 +329,7 @@ Surface.Prototype = function() {
     if (!this.editor.selection.equals(sel)) {
       console.log('Surface.setSelection: %s', sel.toString());
       this.editor.selection = sel;
+      this.updateFocusState(sel);
       this.emit('selection:changed', sel);
       return true;
     }
@@ -343,9 +340,9 @@ Surface.Prototype = function() {
    *
    * Triggered by DOM selection change events.
    */
-  this.updateFocusState = function () {
-    var selection = this.domSelection.get();
-    this.isFocused = !selection.isNull();
+  this.updateFocusState = function (sel) {
+    this.isFocused = !sel.isNull();
+    console.log('%s.isFocused: %s', this.name, this.isFocused);
   };
 
 };

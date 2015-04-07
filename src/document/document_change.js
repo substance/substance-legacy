@@ -3,16 +3,17 @@
 var Substance = require('../basics');
 var PathAdapter = Substance.PathAdapter;
 
-function DocumentChange(ops, data) {
+function DocumentChange(ops, before, after) {
   this.ops = ops;
-  this.data = data || {};
+  this.before = before;
+  this.after = after;
   this.index = new PathAdapter();
-
   this._init();
-
   Object.freeze(this);
   Object.freeze(this.ops);
   Object.freeze(this.index);
+  Object.freeze(this.before);
+  Object.freeze(this.after);
 }
 
 DocumentChange.Prototype = function() {
@@ -56,13 +57,9 @@ DocumentChange.Prototype = function() {
     var ops = this.ops.map(function(op) {
       return op.invert();
     });
-    // TODO: we should invert the data in a generalized way
-    // one approach could be to have a 'before', and 'after' section
-    // I.e., instead of { selectionBefore: sel } ->  { before: { selection: sel } }
-    var data = Substance.clone(this.data)
-    data.selectionBefore = this.data.selectionAfter;
-    data.selectionAfter = this.data.selectionBefore;
-    return new DocumentChange(ops, data);
+    var before = this.after;
+    var after = this.before;
+    return new DocumentChange(ops, before, after);
   };
 
   var __traverse = function(level, path, fn, ctx) {

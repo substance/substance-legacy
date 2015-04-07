@@ -24,7 +24,7 @@ FormEditor.Prototype = function() {
 
   this.insertText = function(textInput, selection, info) {
     console.log("Inserting text: '%s' at %s", textInput, selection.toString());
-    var tx = this.document.startTransaction();
+    var tx = this.document.startTransaction({ selection: selection });
     tx.selection = selection;
     try {
       if (!this.selection.isCollapsed()) {
@@ -35,10 +35,7 @@ FormEditor.Prototype = function() {
       // TODO: not yet supported, but probably we will inject additional information such as selection here
       Annotations.insertedText(tx, range.start, textInput.length);
       tx.selection = Selection.create(range.start.path, range.start.offset + textInput.length);
-      tx.save({
-        selectionBefore: selection,
-        selectionAfter: tx.selection
-      }, info);
+      tx.save({ selection: tx.selection }, info);
       this.selection = tx.selection;
     } finally {
       tx.cleanup();
@@ -48,7 +45,7 @@ FormEditor.Prototype = function() {
   // implements backspace and delete
   this.delete = function(selection, direction, info) {
     var range = selection.getRange();
-    var tx = this.document.startTransaction();
+    var tx = this.document.startTransaction({ selection: selection });
     tx.selection = selection;
     var startChar, endChar;
     try {
@@ -83,10 +80,7 @@ FormEditor.Prototype = function() {
         // deal with container deletes
         console.log("TODO: Implement delete for ContainerSelection");
       }
-      tx.save({
-        selectionBefore: selection,
-        selectionAfter: tx.selection
-      }, info);
+      tx.save({ selection: tx.selection }, info);
       this.selection = tx.selection;
     } finally {
       tx.cleanup();

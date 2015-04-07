@@ -8,6 +8,9 @@ function TransactionDocument(document) {
   this.document = document;
   this.schema = document.schema;
   this.ops = [];
+  // app information state information used to recover the state before the transaction
+  // when calling undo
+  this.before = {};
 
   this.data = new Data.IncrementalGraph(document.schema, {
     seed: document.data.seed,
@@ -21,6 +24,11 @@ function TransactionDocument(document) {
 }
 
 TransactionDocument.Prototype = function() {
+
+  this.reset = function() {
+    this.ops = [];
+    this.before = {};
+  };
 
   this.get = function(path) {
     return this.data.get(path);
@@ -47,9 +55,12 @@ TransactionDocument.Prototype = function() {
     this.ops.push(op);
   };
 
-  this.save = function(data, info) {
-    this.document.finishTransaction(data, info);
-    this.ops = [];
+  this.save = function(afterState, info) {
+    var before = this.before;
+    var after = Substance.extend({}, before, afterState);
+    this.document._finishTransaction(before, after, info);
+    // reset after finishing
+    this.reset();
   };
 
   this.cancel = function() {
@@ -57,7 +68,7 @@ TransactionDocument.Prototype = function() {
     for (var i = this.ops.length - 1; i >= 0; i--) {
       this.data.apply(this.ops[i].invert());
     }
-    this.ops = [];
+    this.reset();
   };
 
   this.finish = function() {
