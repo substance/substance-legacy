@@ -56,7 +56,13 @@ DocumentChange.Prototype = function() {
     var ops = this.ops.map(function(op) {
       return op.invert();
     });
-    return new DocumentChange(ops);
+    // TODO: we should invert the data in a generalized way
+    // one approach could be to have a 'before', and 'after' section
+    // I.e., instead of { selectionBefore: sel } ->  { before: { selection: sel } }
+    var data = Substance.clone(this.data)
+    data.selectionBefore = this.data.selectionAfter;
+    data.selectionAfter = this.data.selectionBefore;
+    return new DocumentChange(ops, data);
   };
 
   var __traverse = function(level, path, fn, ctx) {

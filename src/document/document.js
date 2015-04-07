@@ -64,6 +64,10 @@ Document.Prototype = function() {
     return this.data.getIndex(name);
   };
 
+  this.getEventProxy = function(name) {
+    return this.eventProxies[name];
+  };
+
   this.toJSON = function() {
     return {
       schema: [this.schema.name, this.schema.version],
@@ -121,6 +125,45 @@ Document.Prototype = function() {
     }
   };
 
+  this.finishTransaction = function(data, info) {
+    if (!this.isTransacting) {
+      throw new Error('Not in a transaction.');
+    }
+    this.isTransacting = false;
+    var ops = this.stage.getOperations();
+    var documentChange = new DocumentChange(ops, data);
+    // apply the change
+    this._apply(documentChange, 'skipStage');
+    // push to undo queue and wipe the redo queue
+    this.done.push(documentChange);
+    this.undone = [];
+    this._notifyChangeListeners(documentChange, info);
+  };
+
+  this.undo = function() {
+    var change = this.done.pop();
+    if (change) {
+      var inverted = change.invert();
+      this._apply(inverted);
+      this.undone.push(inverted);
+      this._notifyChangeListeners(inverted, { 'replay': true });
+    } else {
+      console.error('No change can be undone.');
+    }
+  };
+
+  this.redo = function(){
+    var change = this.undone.pop();
+    if (change) {
+      var inverted = change.invert();
+      this._apply(inverted);
+      this.done.push(inverted);
+      this._notifyChangeListeners(inverted, { 'replay': true });
+    } else {
+      console.error('No change can be redone.');
+    }
+  };
+
   // Called back by Substance.Data after a node instance has been created
   this._didCreateNode = function(node) {
     // create the node from schema
@@ -132,45 +175,25 @@ Document.Prototype = function() {
     node.detach(this);
   };
 
-  this.finishTransaction = function(data, info) {
-    if (!this.isTransacting) {
-      throw new Error('Not in a transaction.');
-    }
-    info = info || {};
-
-    // TODO: notify external listeners
-    this.isTransacting = false;
-    var ops = this.stage.getOperations();
-    var documentChange = new DocumentChange(ops, data);
-    this.undone = [];
-
-    info.skipStage = true;
-    this.apply(documentChange, info);
-  };
-
-  this.apply = function(documentChange, info) {
+  this._apply = function(documentChange, mode) {
     if (this.isTransacting) {
       throw new Error('Can not replay a document change during transaction.');
     }
-    info = info || {};
     // Note: we apply everything doubled, to keep the staging clone up2date.
-    if (!info.skipStage) {
+    if (mode !== 'skipStage') {
       this.stage.apply(documentChange);
     }
     Substance.each(documentChange.ops, function(op) {
       this.data.apply(op);
     }, this);
-    this.done.push(documentChange);
+  };
 
+  this._notifyChangeListeners = function(documentChange, info) {
+    info = info || {};
     Substance.each(this.eventProxies, function(proxy) {
       proxy.onDocumentChanged(documentChange, info);
     });
-
     this.emit('document:changed', documentChange, info);
-  };
-
-  this.getEventProxy = function(name) {
-    return this.eventProxies[name];
   };
 
 };
