@@ -28,7 +28,7 @@ FormEditor.Prototype = function() {
     tx.selection = selection;
     try {
       if (!this.selection.isCollapsed()) {
-        this._delete(tx);
+        this._deleteSelected(tx);
       }
       var range = tx.selection.getRange();
       tx.update(range.start.path, { insert: { offset: range.start.offset, value: textInput } } );
@@ -104,7 +104,10 @@ FormEditor.Prototype = function() {
     var sel = tx.selection;
     var range = sel.getRange();
     var path = range.start.path;
-    tx.update(path, { delete: { start: range.start.offset, end: range.end.offset } });
+    var start = range.start.offset;
+    var end = range.end.offset;
+    tx.update(path, { delete: { start: start, end: end } });
+    Annotations.deletedText(tx, path, start, end);
     tx.selection = tx.selection.collapse('left');
   };
 

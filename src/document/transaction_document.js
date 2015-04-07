@@ -58,7 +58,7 @@ TransactionDocument.Prototype = function() {
   this.save = function(afterState, info) {
     var before = this.before;
     var after = Substance.extend({}, before, afterState);
-    this.document._finishTransaction(before, after, info);
+    this.document._saveTransaction(before, after, info);
     // reset after finishing
     this.reset();
   };
@@ -68,6 +68,7 @@ TransactionDocument.Prototype = function() {
     for (var i = this.ops.length - 1; i >= 0; i--) {
       this.data.apply(this.ops[i].invert());
     }
+    this.document._cancelTransaction();
     this.reset();
   };
 

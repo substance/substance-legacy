@@ -127,7 +127,7 @@ Document.Prototype = function() {
     }
   };
 
-  this._finishTransaction = function(beforeState, afterState, info) {
+  this._saveTransaction = function(beforeState, afterState, info) {
     if (!this.isTransacting) {
       throw new Error('Not in a transaction.');
     }
@@ -140,6 +140,13 @@ Document.Prototype = function() {
     this.done.push(documentChange);
     this.undone = [];
     this._notifyChangeListeners(documentChange, info);
+  };
+
+  this._cancelTransaction = function() {
+    if (!this.isTransacting) {
+      throw new Error('Not in a transaction.');
+    }
+    this.isTransacting = false;
   };
 
   this.undo = function() {
