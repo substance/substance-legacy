@@ -182,12 +182,21 @@ DomSelection.Prototype = function() {
   };
 
   this.set = function(modelSelection) {
+    var sel = window.getSelection();
+    if (modelSelection.isNull()) {
+      sel.removeAllRanges();
+      return;
+    }
     var ranges = modelSelection.getRanges();
     var domRanges = [];
     var i, range;
     for (i = 0; i < ranges.length; i++) {
       range = ranges[i];
       var startPosition = modelCoordinateToDomPosition(this.rootElement, range.start);
+      if (!startPosition) {
+        // Not within this surface. Maybe it was in a different surface
+        continue;
+      }
       var endPosition;
       if (range.isCollapsed()) {
         endPosition = startPosition;
@@ -196,7 +205,11 @@ DomSelection.Prototype = function() {
       }
       domRanges.push({ start: startPosition, end: endPosition });
     }
-    var sel = window.getSelection();
+    // just do nothing if there is no mapping
+    if (domRanges.length === 0) {
+      return;
+    }
+    // if there is a range then set replace the window selection accordingly
     sel.removeAllRanges();
     for (i = 0; i < domRanges.length; i++) {
       var domRange = domRanges[i];
