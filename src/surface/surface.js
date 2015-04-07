@@ -244,7 +244,7 @@ Surface.Prototype = function() {
     // TODO: we should make this configurable
     // i.e., in other scenarios it might be desired
     // to also update selection on 'replay'
-    if (info !== "replay") {
+    if (!info.replay) {
       this._updateDomSelection(change.after.selection);
     }
   };
