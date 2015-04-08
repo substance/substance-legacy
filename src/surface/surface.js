@@ -23,7 +23,6 @@ function Surface(editor) {
   this.$document = this.$( window.document );
 
   this.dragging = false;
-  this.focused = false;
 
   // This is set on entering changeModel, then unset when leaving.
   // It is used to test whether a reflected change event is emitted.
@@ -33,7 +32,6 @@ function Surface(editor) {
   this._onMouseUp = Substance.bind( this.onMouseUp, this );
   this._onMouseDown = Substance.bind( this.onMouseDown, this );
   this._onMouseMove = Substance.bind( this.onMouseMove, this );
-  this._onSelectionChange = Substance.bind( this.onSelectionChange, this );
   this._delayedUpdateModelSelection = function(options) {
     window.setTimeout(function() {
       self._updateModelSelection(options);
@@ -46,8 +44,6 @@ function Surface(editor) {
       self.afterKeyPress(e);
     });
   };
-  // this._onCut = Substance.bind( this.onCut, this );
-  // this._onCopy = Substance.bind( this.onCopy, this );
 
   // state used by handleInsertion
   this.insertState = null;
@@ -69,14 +65,14 @@ Surface.Prototype = function() {
   };
 
   this.detach = function() {
-    this.detachKeyboardHandlers();
+    this.editor.getDocument().disconnect(this);
+    this.editor.setContainer(null);
     this.detachMouseHandlers();
+    this.detachKeyboardHandlers();
     this.element = null;
     this.$element = null;
     this.domSelection = null;
     this.domContainer = null;
-    this.editor.setContainer(null);
-    // this.editor.getDocument().disconnect(this);
   };
 
   this.update = function() {
@@ -102,21 +98,11 @@ Surface.Prototype = function() {
   };
 
   this.attachMouseHandlers = function() {
-    if ( this.hasSelectionChangeEvents ) {
-      this.$document.on( 'selectionchange', this._onSelectionChange );
-    } else {
-      this.$element.on( 'mousemove', this._onSelectionChange );
-    }
     this.$element.on( 'mousemove', this._onMouseMove );
     this.$element.on( 'mousedown', this._onMouseDown );
   };
 
   this.detachMouseHandlers = function() {
-    if ( this.hasSelectionChangeEvents ) {
-      this.$document.off( 'selectionchange', this._onSelectionChange );
-    } else {
-      this.$element.off( 'mousemove', this._onSelectionChange );
-    }
     this.$element.off( 'mousemove', this._onMouseMove );
     this.$element.off( 'mousedown', this._onMouseDown );
   };
@@ -183,7 +169,6 @@ Surface.Prototype = function() {
       var insertState = this.insertState;
       this.insertState = null;
 
-
       // get the text between the before insert and after insert
       var range = window.document.createRange();
       var before = insertState.range;
@@ -193,7 +178,6 @@ Surface.Prototype = function() {
       var textInput = range.toString();
 
       var selectionBefore = insertState.selectionBefore;
-      var self = this;
       // the property's element which is affected by this insert
       // we use it to let the view component check if it needs to rerender or trust contenteditable
       var source = insertState.nativeRangeBefore.start;
@@ -220,6 +204,7 @@ Surface.Prototype = function() {
     this.$document.off( 'mouseup', this._onMouseUp );
     this.dragging = false;
     this._setModelSelection(this.domSelection.get());
+    this.isFocused = true;
   };
 
   this.onMouseMove = function() {
@@ -230,22 +215,23 @@ Surface.Prototype = function() {
     }
   };
 
-  this.onSelectionChange = function () {
-    if (this.isFocused) {
-      var sel = this.domSelection.get();
-      if(sel.isNull()) {
-        console.log('Surface.onSelectionChange: Unfocussing', this.name)
-        this.isFocused = false;
-      }
-    }
-  };
-
   this.onDocumentChange = function(change, info) {
-    // TODO: we should make this configurable
-    // i.e., in other scenarios it might be desired
-    // to also update selection on 'replay'
-    if (!info.replay) {
-      this._updateDomSelection(change.after.selection);
+    if (!this.isFocused) {
+      return;
+    }
+    // update the domSelection first so that we know if we are
+    // within this surface at all
+    if (!this.domSelection.isInside()) {
+      console.log('Not inside of surface %s', this.name);
+      this.isFocused = false;
+    } else if (!info.replay) {
+      var self = this;
+      window.setTimeout(function() {
+        var sel = change.after.selection;
+        self.editor.selection = sel;
+        self.domSelection.set(sel);
+        self.emit('selection:changed', sel);
+      });
     }
   };
 
@@ -289,6 +275,7 @@ Surface.Prototype = function() {
     //   example, the Home key (Firefox fires 'keypress' for it)
     // * Incorrect pawning when selection is collapsed and the user presses a key that is not handled
     //   elsewhere and doesn't produce any text, for example Escape
+    console.log('Haaaaaaa');
     if (
       // Catches most keys that don't produce output (charCode === 0, thus no character)
       e.which === 0 || e.charCode === 0 ||
@@ -311,7 +298,7 @@ Surface.Prototype = function() {
     window.setTimeout(function() {
       self.domSelection.set(sel);
     });
-  }
+  };
 
   /**
    * Set the model selection and update the DOM selection accordingly
@@ -320,8 +307,7 @@ Surface.Prototype = function() {
     if (this._setModelSelection(sel)) {
       // also update the DOM selection
       this.domSelection.set(sel);
-      // HACK: is there a better place to update focused state?
-      this.updateFocusState(sel);
+      this.isFocused = true;
     }
   };
 
@@ -338,20 +324,9 @@ Surface.Prototype = function() {
     if (!this.editor.selection.equals(sel)) {
       console.log('Surface.setSelection: %s', sel.toString());
       this.editor.selection = sel;
-      this.updateFocusState(sel);
       this.emit('selection:changed', sel);
       return true;
     }
-  };
-
-  /**
-   * Update the internal focus state.
-   *
-   * Triggered by DOM selection change events.
-   */
-  this.updateFocusState = function (sel) {
-    this.isFocused = !sel.isNull();
-    console.log('%s.isFocused: %s', this.name, this.isFocused);
   };
 
 };

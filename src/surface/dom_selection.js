@@ -92,7 +92,8 @@ DomSelection.Prototype = function() {
     range.setEnd(domNode, offset);
     charPos = range.toString().length;
     // TODO: this needs more experiments, at the moment we do not detect these cases correctly
-    var after = (options.left && offset === domNode.length) || (options.right && offset == 0) ;
+    var after = (options.left && offset === domNode.length) ||
+      (options.right && offset === 0) ;
     return {
       domNode: element,
       coordinate: new Document.Coordinate(path, charPos, after)
@@ -218,6 +219,27 @@ DomSelection.Prototype = function() {
       range.setEnd(domRange.end.node, domRange.end.offset);
       sel.addRange(range);
     }
+  };
+
+  this.clear = function() {
+    var sel = window.getSelection();
+    sel.removeAllRanges();
+    this.nativeSelection = null;
+  };
+
+  this.isInside = function() {
+    var sel = window.getSelection();
+    if (sel.rangeCount === 0) {
+      return false;
+    }
+    var range = sel.getRangeAt(0);
+    // Note: Node.compareDocumentPosition has an inverse semantic
+    // node1.compare(node2) === CONTAINS means 'node2 contains node1'
+    var inside = (range.startContainer.compareDocumentPosition(this.rootElement)&window.Node.DOCUMENT_POSITION_CONTAINS);
+    if (inside && !range.collapsed) {
+      inside = (range.endContainer.compareDocumentPosition(this.rootElement)&window.Node.DOCUMENT_POSITION_CONTAINS);
+    }
+    return inside;
   };
 
 };
