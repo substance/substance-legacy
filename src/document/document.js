@@ -4,6 +4,8 @@ var Substance = require('../basics');
 var Data = require('../data');
 
 var AnnotationIndex = require('./annotation_index');
+var ContainerAnnotationIndex = require('./container_annotation_index');
+
 var TransactionDocument = require('./transaction_document');
 var DocumentChange = require('./document_change');
 
@@ -19,7 +21,8 @@ function Document( schema, seed ) {
     didDeleteNode: Substance.bind(this._didDeleteNode, this),
   });
 
-  this.annotationIndex = this.addIndex('annotations', new AnnotationIndex(this));
+  this.annotationIndex = this.addIndex('annotations', new AnnotationIndex());
+  this.containerAnnotationIndex = this.addIndex('container-annotations', new ContainerAnnotationIndex());
 
   // the stage is a essentially a clone of this document
   // used to apply a sequence of document operations

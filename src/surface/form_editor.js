@@ -14,6 +14,10 @@ function FormEditor(doc) {
 
 FormEditor.Prototype = function() {
 
+  this.isContainerEditor = function() {
+    return false;
+  };
+
   this.getDocument = function() {
     return this.document;
   };

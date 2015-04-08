@@ -89,6 +89,10 @@ Annotator.Prototype = function() {
     if (a.pos < b.pos) return -1;
     if (a.pos > b.pos) return 1;
 
+    if (a.id === b.id) {
+      return b.mode - a.mode;
+    }
+
     if (a.mode < b.mode) return -1;
     if (a.mode > b.mode) return 1;
 
@@ -110,8 +114,9 @@ Annotator.Prototype = function() {
     Substance.each(annotations, function(a) {
       // use a weak default level when not given
       var l = a.constructor.static.level || 1000;
-      entries.push({ pos : a.range[0], mode: ENTER, level: l, id: a.id, type: a.type });
-      entries.push({ pos : a.range[1], mode: EXIT, level: l, id: a.id, type: a.type });
+      var r = a.range;
+      entries.push({ pos : r[0], mode: ENTER, level: l, id: a.id, type: a.type, node: a });
+      entries.push({ pos : r[1], mode: EXIT, level: l, id: a.id, type: a.type, node: a });
     });
     return entries;
   };

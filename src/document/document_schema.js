@@ -6,6 +6,7 @@ var Data = require('../data');
 var Node = require('./node');
 var Annotation = require('./annotation');
 var ContainerNode = require('./container_node');
+var ContainerAnnotation = require('./container_annotation');
 
 function DocumentSchema(name, version) {
   DocumentSchema.super.call(this, name, version);
@@ -19,7 +20,7 @@ DocumentSchema.Prototype = function() {
   };
 
   this.getBuiltIns = function() {
-    return [ Node, Annotation, ContainerNode ];
+    return [ Node, Annotation, ContainerNode, ContainerAnnotation ];
   };
 };
 

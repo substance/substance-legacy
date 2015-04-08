@@ -5,8 +5,7 @@ var PathAdapter = Substance.PathAdapter;
 var Data = require('../data');
 var Annotation = require('./annotation');
 
-var AnnotationIndex = function(doc) {
-  this.doc = doc;
+var AnnotationIndex = function() {
   this.byPath = new PathAdapter();
   this.byType = new PathAdapter();
 };

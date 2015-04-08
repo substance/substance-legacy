@@ -6,11 +6,20 @@ var FormEditor = require('./form_editor');
 var Annotations = require('../document/annotation_updates');
 var Selection = Document.Selection;
 
-function FullfledgedEditor(doc) {
+function FullfledgedEditor(containerName, doc) {
   FormEditor.call(this, doc);
+  this.containerName = containerName;
 }
 
 FullfledgedEditor.Prototype = function() {
+
+  this.isContainerEditor = function() {
+    return true;
+  };
+
+  this.getContainerName = function() {
+    return this.containerName;
+  };
 
   this.break = function(selection, info) {
     console.log("Breaking at %s", selection.toString());
