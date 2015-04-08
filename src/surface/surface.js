@@ -45,6 +45,9 @@ function Surface(editor) {
     });
   };
 
+  this._onCompositionUpdate = Substance.bind( this.onCompositionUpdate, this );
+  this._onCompositionEnd = Substance.bind( this.onCompositionEnd, this );
+
   // state used by handleInsertion
   this.insertState = null;
 }
@@ -56,8 +59,13 @@ Surface.Prototype = function() {
     this.$element = $(element);
     this.domSelection = new DomSelection(element, this.editor);
     this.domContainer = new DomContainer(element);
+
     this.attachKeyboardHandlers();
     this.attachMouseHandlers();
+
+    this.element.addEventListener('compositionupdate', this._onCompositionUpdate, false);
+    this.element.addEventListener('compositionend', this._onCompositionEnd, false);
+
     this.editor.setContainer(this.domContainer);
     this.editor.getDocument().connect(this, {
       'document:changed': this.onDocumentChange
@@ -67,8 +75,13 @@ Surface.Prototype = function() {
   this.detach = function() {
     this.editor.getDocument().disconnect(this);
     this.editor.setContainer(null);
+
+    this.element.removeEventListener('compositionupdate', this._onCompositionUpdate, false);
+    this.element.removeEventListener('compositionend', this._onCompositionEnd, false);
+
     this.detachMouseHandlers();
     this.detachKeyboardHandlers();
+
     this.element = null;
     this.$element = null;
     this.domSelection = null;
@@ -127,28 +140,20 @@ Surface.Prototype = function() {
     e.preventDefault();
     var selection = this.domSelection.get();
     this.editor.break(selection);
-    // this._updateDomSelection(this.editor.selection);
   };
 
   this.handleDeleteKey = function ( e ) {
-    // TODO: let contenteditable delete and find out the diff afterwards
     e.preventDefault();
-    // poll the selection here
     var selection = this.domSelection.get();
     var direction = (e.keyCode === Surface.Keys.BACKSPACE) ? 'left' : 'right';
     this.editor.delete(selection, direction, {});
-    // this._updateDomSelection(this.editor.selection);
   };
 
 
   this.handleSpace = function( e ) {
     e.preventDefault();
     var selection = this.domSelection.get();
-    var source = this.domSelection.nativeRanges[0].start;
-    this.editor.insertText(" ", selection, {
-      source: source
-    });
-    // this._updateDomSelection(this.editor.selection);
+    this.editor.insertText(" ", selection, {});
   };
 
   this.handleInsertion = function( /*e*/ ) {
@@ -184,8 +189,28 @@ Surface.Prototype = function() {
       this.editor.insertText(textInput, selectionBefore, {
         source: source
       });
-      // this._updateDomSelection(this.editor.selection);
     }
+  };
+
+  // EXPERIMENTAL: dead-keys
+  this.onCompositionUpdate = function(e) {
+    console.log('-------------', e);
+    if (!this.insertState) {
+      var selection = this.domSelection.get();
+      this.insertState = {
+        selectionBefore: selection,
+        nativeRangeBefore: this.domSelection.nativeRanges[0]
+      };
+    }
+  };
+
+  this.onCompositionEnd = function(e) {
+    var selectionBefore = this.insertState.selectionBefore;
+    var range = this.insertState.nativeRangeBefore;
+    this.insertState = null;
+    this.editor.insertText(e.data, selectionBefore, {
+      source: range.start
+    });
   };
 
   /* Event handlers */
@@ -239,6 +264,7 @@ Surface.Prototype = function() {
    * Handle document key down events.
    */
   this.onKeyDown = function( e ) {
+    console.log('keyDown', e);
     if ( e.which === 229 ) {
       // ignore fake IME events (emitted in IE and Chromium)
       return;
