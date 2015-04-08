@@ -252,6 +252,10 @@ Surface.Prototype = function() {
     } else if (!info.replay) {
       var self = this;
       window.setTimeout(function() {
+        // GUARD: For cases where the panel/or whatever has been disposed already
+        // after changing the doc
+        if (!self.domSelection) return;
+
         var sel = change.after.selection;
         self.editor.selection = sel;
         self.domSelection.set(sel);
