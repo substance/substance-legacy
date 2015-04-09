@@ -48,10 +48,6 @@ ContainerAnnotation.Anchor.Prototype = function() {
   this.getOffset = function() {
     return (this.isStart ? this.node.startOffset : this.node.endOffset);
   };
-  this.getIndexKey = function() {
-    var key = [this.node.container].concat(this.getPath()).concat(this.node.id);
-    return key;
-  };
   this.getClassNames = function() {
     return (this.node.getClassNames()+" "+(this.isStart?"start-anchor":"end-anchor"));
   };

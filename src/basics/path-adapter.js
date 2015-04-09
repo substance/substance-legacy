@@ -100,8 +100,58 @@ PathAdapter.Prototype = function() {
       }
     }
   };
+
 };
 
 oo.initClass( PathAdapter );
+
+PathAdapter.Arrays = function() {
+  PathAdapter.apply(this, arguments);
+};
+
+PathAdapter.Arrays.Prototype = function() {
+
+  this.get = function(path) {
+    if (_.isString(path)) {
+      return this[path];
+    } else if (!path || path.length === 0) {
+      return this.getRoot();
+    } else {
+      var key = path[path.length-1];
+      var context = this._resolve(path);
+      if (context && context[key]) {
+        return context[key].__values__;
+      } else {
+        return undefined;
+      }
+    }
+  };
+
+  this.add = function(path, value) {
+    var key = path[path.length-1];
+    var context = this._resolve(path, true);
+    if (!context[key]) {
+      context[key] = {__values__: []};
+    }
+    var values = context[key].__values__;
+    values.push(value);
+  };
+
+  this.remove = function(path, value) {
+    var values = this.get(path);
+    if (values) {
+      _.deleteFromArray(values, value);
+    } else {
+      console.warn('Warning: trying to remove a value for an unknown path.', path, value);
+    }
+  };
+
+  this.set = function() {
+    throw new Error('This method is not available for PathAdapter.Arrays');
+  };
+
+};
+
+oo.inherit(PathAdapter.Arrays, PathAdapter);
 
 module.exports = PathAdapter;

@@ -45,6 +45,18 @@ Substance.isArrayEqual = function(a, b) {
   return true;
 };
 
+// Removes all occurrence of value in array using Array.splice
+// I.e., this changes the array instead of creating a new one
+// as _.without() does.
+Substance.deleteFromArray = function(array, value) {
+  for (var i = 0; i < array.length; i++) {
+    if (array[i] === value) {
+      array.splice(i, 1);
+      i--;
+    }
+  }
+};
+
 Substance.clone = function(obj) {
   if (obj === null || obj === undefined) {
     return obj;

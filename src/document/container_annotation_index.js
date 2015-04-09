@@ -7,7 +7,7 @@ var ContainerAnnotation = require('./container_annotation');
 
 var ContainerAnnotationIndex = function(doc) {
   this.doc = doc;
-  this.byPath = new PathAdapter();
+  this.byPath = new PathAdapter.Arrays();
 };
 
 ContainerAnnotationIndex.Prototype = function() {
@@ -23,37 +23,41 @@ ContainerAnnotationIndex.Prototype = function() {
 
   this.get = function(containerId, path) {
     path = [containerId].concat(path);
-    var anchors = this.byPath.get(path) || {};
-    anchors = Substance.map(anchors, function(anchor) {
-      return anchor;
-    });
-    return anchors;
+    var anchors = this.byPath.get(path);
+    if (anchors) {
+      return anchors.slice(0);
+    } else {
+      return [];
+    }
   };
 
   this.create = function(containerAnno) {
+    var containerId = containerAnno.container;
     var startAnchor = containerAnno.getStartAnchor();
     var endAnchor = containerAnno.getEndAnchor();
-    this.byPath.set(startAnchor.getIndexKey(), startAnchor);
-    this.byPath.set(endAnchor.getIndexKey(), endAnchor);
+    this.byPath.add([containerId].concat(startAnchor.getPath()), startAnchor);
+    this.byPath.add([containerId].concat(endAnchor.getPath()), endAnchor);
   };
 
   this.delete = function(containerAnno) {
+    var containerId = containerAnno.container;
     var startAnchor = containerAnno.getStartAnchor();
     var endAnchor = containerAnno.getEndAnchor();
-    this.byPath.delete(startAnchor.getIndexKey(), startAnchor);
-    this.byPath.delete(endAnchor.getIndexKey(), endAnchor);
+    this.byPath.remove([containerId].concat(startAnchor.getPath()), startAnchor);
+    this.byPath.remove([containerId].concat(endAnchor.getPath()), endAnchor);
   };
 
   this.update = function(node, path, newValue, oldValue) {
     if (this.select(node)) {
+      var containerId = node.container;
       var anchor = null;
       if (path[1] === 'startPath') {
         anchor = node.getStartAnchor();
       } else if (path[1] === 'endPath') {
         anchor = node.getEndAnchor();
       }
-      this.byPath.delete([node.container].concat(oldValue).concat([node.id]), anchor);
-      this.byPath.set(anchor.getIndexKey(), anchor);
+      this.byPath.remove([node.container].concat(oldValue), anchor);
+      this.byPath.add([containerId].concat(anchor.getPath()), anchor);
     }
   };
 
