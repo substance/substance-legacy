@@ -42,6 +42,7 @@ function inherit(targetFn, originFn) {
   // Extend static properties - always initialize both sides
   initClass( originFn );
   targetFn.static = Object.create( originFn.static );
+  targetFn.extend = _.bind(extend, null, targetFn);
 }
 
 function mixin(targetFn, originFn) {
