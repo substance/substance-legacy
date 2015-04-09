@@ -7,6 +7,7 @@ Document.Schema = require('./document_schema');
 Document.Node = require('./node');
 Document.Annotation = require('./annotation');
 Document.ContainerNode = require('./container_node');
+Document.ContainerAnnotation = require('./container_annotation');
 
 Document.Coordinate = require('./coordinate');
 Document.Range = require('./range');
