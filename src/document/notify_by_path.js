@@ -27,6 +27,9 @@ NotifyByPathProxy.Prototype = function() {
       listeners = [];
       this.listeners.set(key, listeners);
     }
+    if (!method) {
+      throw new Error('Invalid argument: expected function but got ' + method);
+    }
     listeners.push({ method: method, listener: listener });
   };
 
