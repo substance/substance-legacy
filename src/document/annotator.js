@@ -5,7 +5,7 @@ var Substance = require('../basics');
 var ENTER = 1;
 var EXIT = -1;
 // Markers are put before other opening tags
-var ENTER_EXIT = 2;
+var ENTER_EXIT = -2;
 
 // Annotator
 // --------
@@ -116,7 +116,7 @@ Annotator.Prototype = function() {
     Substance.each(annotations, function(a) {
       // special treatment for zero-width annos such as ContainerAnnotation.Anchors
       if (a.zeroWidth) {
-        entries.push({ pos: a.getOffset(), mode: ENTER_EXIT, level: Number.MAX_VALUE, type: 'anchor', node: a });
+        entries.push({ pos: a.getOffset(), mode: ENTER_EXIT, id: a.id, level: Number.MAX_VALUE, type: 'anchor', node: a });
       } else {
         // use a weak default level when not given
         var l = a.constructor.static.level || 1000;

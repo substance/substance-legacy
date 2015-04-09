@@ -365,6 +365,12 @@ Surface.Prototype = function() {
     }
   };
 
+  this.getContainer = function() {
+    if (this.editor.isContainerEditor()) {
+      return this.editor.container;
+    }
+  };
+
 };
 
 Substance.inherit( Surface, Substance.EventEmitter );

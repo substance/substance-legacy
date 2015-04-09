@@ -76,6 +76,10 @@ DomContainer.Component.Prototype = function() {
     return this.next;
   };
 
+  this.getIndex = function() {
+    return this.idx;
+  };
+
 };
 
 Substance.initClass(DomContainer.Component);
