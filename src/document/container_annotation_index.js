@@ -55,6 +55,8 @@ ContainerAnnotationIndex.Prototype = function() {
         anchor = node.getStartAnchor();
       } else if (path[1] === 'endPath') {
         anchor = node.getEndAnchor();
+      } else {
+        return;
       }
       this.byPath.remove([node.container].concat(oldValue), anchor);
       this.byPath.add([containerId].concat(anchor.getPath()), anchor);
