@@ -39,6 +39,9 @@ ContainerAnnotation.Anchor = function(node, isStart) {
 };
 
 ContainerAnnotation.Anchor.Prototype = function() {
+
+  this.zeroWidth = true;
+
   this.getPath = function() {
     return (this.isStart ? this.node.startPath : this.node.endPath);
   };
@@ -55,14 +58,5 @@ ContainerAnnotation.Anchor.Prototype = function() {
 };
 
 Substance.initClass(ContainerAnnotation.Anchor);
-
-Object.defineProperties(ContainerAnnotation.Anchor.prototype, {
-  range: {
-    get: function() {
-      var offset = this.getOffset();
-      return [offset, offset];
-    }
-  }
-});
 
 module.exports = ContainerAnnotation;

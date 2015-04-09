@@ -4,6 +4,8 @@ var Substance = require('../basics');
 
 var ENTER = 1;
 var EXIT = -1;
+// Markers are put before other opening tags
+var ENTER_EXIT = 2;
 
 // Annotator
 // --------
@@ -112,11 +114,16 @@ Annotator.Prototype = function() {
   var extractEntries = function(annotations) {
     var entries = [];
     Substance.each(annotations, function(a) {
-      // use a weak default level when not given
-      var l = a.constructor.static.level || 1000;
-      var r = a.range;
-      entries.push({ pos : r[0], mode: ENTER, level: l, id: a.id, type: a.type, node: a });
-      entries.push({ pos : r[1], mode: EXIT, level: l, id: a.id, type: a.type, node: a });
+      // special treatment for zero-width annos such as ContainerAnnotation.Anchors
+      if (a.zeroWidth) {
+        entries.push({ pos: a.getOffset(), mode: ENTER_EXIT, level: Number.MAX_VALUE, type: 'anchor', node: a });
+      } else {
+        // use a weak default level when not given
+        var l = a.constructor.static.level || 1000;
+        var r = a.range;
+        entries.push({ pos : r[0], mode: ENTER, level: l, id: a.id, type: a.type, node: a });
+        entries.push({ pos : r[1], mode: EXIT, level: l, id: a.id, type: a.type, node: a });
+      }
     });
     return entries;
   };
@@ -143,25 +150,28 @@ Annotator.Prototype = function() {
   };
 
   this.start = function(rootContext, text, annotations) {
+    var self = this;
+
     var entries = extractEntries.call(this, annotations);
     entries.sort(_compare.bind(this));
-
     var stack = [{context: rootContext, entry: null}];
-
     var pos = 0;
+
+    function _createElementsForLevel(level) {
+      // create new elements for all lower entries
+      for (idx = level; idx < stack.length; idx++) {
+        stack[idx].context = self.enter(stack[idx].entry, stack[idx-1].context);
+      }
+    }
 
     for (var i = 0; i < entries.length; i++) {
       var entry = entries[i];
-
       // in any case we add the last text to the current element
       this.createText(stack[stack.length-1].context, text.substring(pos, entry.pos));
 
       pos = entry.pos;
       var level = 1;
-
-      var idx;
-
-      if (entry.mode === ENTER) {
+      if (entry.mode === ENTER || entry.mode === ENTER_EXIT) {
         // find the correct position and insert an entry
         for (; level < stack.length; level++) {
           if (entry.level < stack[level].entry.level) {
@@ -169,23 +179,24 @@ Annotator.Prototype = function() {
           }
         }
         stack.splice(level, 0, {entry: entry});
+        // create elements which are open, and are now stacked ontop of the
+        // entered entry
+        _createElementsForLevel(level);
       }
-      else if (entry.mode === EXIT) {
+      if (entry.mode === EXIT || entry.mode === ENTER_EXIT) {
         // find the according entry and remove it from the stack
         for (; level < stack.length; level++) {
           if (stack[level].entry.id === entry.id) {
             break;
           }
         }
-        for (idx = level; idx < stack.length; idx++) {
+        for (var idx = level; idx < stack.length; idx++) {
           this.exit(stack[idx].entry, stack[idx].context, stack[idx-1].context);
         }
         stack.splice(level, 1);
-      }
-
-      // create new elements for all lower entries
-      for (idx = level; idx < stack.length; idx++) {
-        stack[idx].context = this.enter(stack[idx].entry, stack[idx-1].context);
+        // create elements which are not finished yet, but were on top of the
+        // exited entry
+        _createElementsForLevel(level);
       }
     }
 
