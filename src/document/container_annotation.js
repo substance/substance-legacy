@@ -49,7 +49,7 @@ ContainerAnnotation.Anchor.Prototype = function() {
     return (this.isStart ? this.node.startOffset : this.node.endOffset);
   };
   this.getClassNames = function() {
-    return (this.node.getClassNames()+" "+(this.isStart?"start-anchor":"end-anchor"));
+    return (this.node.getClassNames()+" anchor "+(this.isStart?"start-anchor":"end-anchor"));
   };
 };
 
