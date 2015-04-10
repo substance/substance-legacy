@@ -240,7 +240,7 @@ var TextProperty = React.createClass({
     return (this.state.activeContainerAnnotations.length > 0);
   },
 
-  propertyDidChange: function(change, ops, info) {
+  propertyDidChange: function(change, info) {
     // Note: Surface provides the source element as element
     // whenever editing is done by Contenteditable (as opposed to programmatically)
     // In that case we trust in CE and do not rerender.

@@ -15,7 +15,7 @@ NotifyByPathProxy.Prototype = function() {
       var key = path.concat(['listeners']);
       var scopedListeners = listeners.get(key);
       Substance.each(scopedListeners, function(entry) {
-        entry.method.call(entry.listener, change, ops, info);
+        entry.method.call(entry.listener, change, info);
       });
     }, this);
   };
