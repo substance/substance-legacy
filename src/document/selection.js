@@ -36,7 +36,17 @@ Selection.Prototype = function() {
   };
 
   this.equals = function(other) {
-    return this === other;
+    if (this === other) {
+      return true ;
+    } else if (!other) {
+      return false;
+    } else if (this.isNull() !== other.isNull()) {
+      return false;
+    } else if (this.isReverse() !== other.isReverse()) {
+      return false;
+    } else if (this.isPropertySelection() !== other.isPropertySelection()) {
+      return false;
+    }
   };
 
   this.toString = function() {

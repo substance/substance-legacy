@@ -42,13 +42,10 @@ PropertySelection.Prototype = function() {
   };
 
   this.equals = function(other) {
-    if (this === other) {
-      return true ;
-    } else if (!other || other.isNull()) {
-      return false;
-    } else if (this.reverse === other.reverse) {
-      return this.range.equals(other.range);
-    }
+    return (
+      Selection.prototype.equals(other) &&
+      this.range.equals(other.range)
+    );
   };
 
   // Helper Methods
