@@ -42,8 +42,11 @@ PropertySelection.Prototype = function() {
   };
 
   this.equals = function(other) {
-    if (this === other) return true;
-    else if (this.reverse === other.reverse) {
+    if (this === other) {
+      return true ;
+    } else if (other.isNull()) {
+      return false;
+    } else if (this.reverse === other.reverse) {
       return this.range.equals(other.range);
     }
   };

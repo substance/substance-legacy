@@ -39,6 +39,9 @@ function Surface(editor) {
   };
   this._onKeyDown = Substance.bind( this.onKeyDown, this );
   this._onKeyPress = Substance.bind( this.onKeyPress, this );
+  this._onBlur = Substance.bind( this.onBlur, this );
+  this._onFocus = Substance.bind( this.onFocus, this );
+
   this._afterKeyPress = function(e) {
     window.setTimeout(function() {
       self.afterKeyPress(e);
@@ -63,8 +66,12 @@ Surface.Prototype = function() {
     this.attachKeyboardHandlers();
     this.attachMouseHandlers();
 
+    // Compositions are OSX speicific
     this.element.addEventListener('compositionupdate', this._onCompositionUpdate, false);
     this.element.addEventListener('compositionend', this._onCompositionEnd, false);
+
+    this.$element.on('blur', this._onBlur);
+    this.$element.on('focus', this._onFocus);
 
     this.editor.setContainer(this.domContainer);
     this.editor.getDocument().connect(this, {
@@ -240,16 +247,23 @@ Surface.Prototype = function() {
     }
   };
 
+  this.onBlur = function(e) {
+    this.isFocused = false;
+    this.setSelection(Substance.Document.nullSelection);
+  };
+
+  this.onFocus = function(e) {
+    this.isFocused = true;
+  };
+
   this.onDocumentChange = function(change, info) {
     if (!this.isFocused) {
       return;
     }
+
     // update the domSelection first so that we know if we are
     // within this surface at all
-    if (!this.domSelection.isInside()) {
-      console.log('Not inside of surface %s', this.name);
-      this.isFocused = false;
-    } else if (!info.replay) {
+    if (!info.replay) {
       var self = this;
       window.setTimeout(function() {
         // GUARD: For cases where the panel/or whatever has been disposed already
