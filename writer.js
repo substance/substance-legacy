@@ -1,4 +1,4 @@
 "use strict";
-var helpers = require('./src/writer');
+var writer = require('./src/writer');
 
-module.exports = helpers;
+module.exports = writer;

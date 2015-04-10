@@ -10,6 +10,8 @@ var RedoTool = require("./tools/redo_tool");
 var StrongTool = require("./tools/strong_tool");
 var EmphasisTool = require("./tools/emphasis_tool");
 
+var BasicToolMixin = require("./tools/basic_tool_mixin");
+
 Writer.CoreModule = {
   name: "core",
   components: {
@@ -28,5 +30,7 @@ Writer.CoreModule = {
     EmphasisTool
   ]
 };
+
+Writer.BasicToolMixin = BasicToolMixin;
 
 module.exports = Writer;
