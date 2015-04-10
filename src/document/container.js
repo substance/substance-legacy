@@ -35,6 +35,7 @@ Container.Prototype = function() {
   this.getComponentAt = function(idx) {
     return this.components[idx];
   };
+
 };
 
 Substance.initClass(Container);

@@ -9,6 +9,7 @@ Document.Annotation = require('./annotation');
 Document.Container = require('./container');
 Document.ContainerNode = require('./container_node');
 Document.ContainerAnnotation = require('./container_annotation');
+Document.ContainerAnnotationEvents = require('./container_annotation_events');
 
 Document.Coordinate = require('./coordinate');
 Document.Range = require('./range');

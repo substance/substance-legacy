@@ -6,6 +6,7 @@ var Substance = require('../basics');
 var DomSelection = require('./dom_selection');
 // DomContainer is used to analyze the component layout, e.g., to implement container-wide editing such as break or merge
 var DomContainer = require('./dom_container');
+var Document = require('../document');
 
 function Surface(editor) {
   Substance.EventEmitter.call(this);
@@ -70,12 +71,23 @@ Surface.Prototype = function() {
     this.$element.on('focus', this._onFocus);
 
     this.editor.setContainer(this.domContainer);
-    this.editor.getDocument().connect(this, {
+    var doc = this.editor.getDocument();
+
+    // HACK: we need this proxy to efficiently react on container annotation
+    // updates.
+    this.containerAnnotationEvents = new Document.ContainerAnnotationEvents(doc, this.domContainer);
+
+    // listen to updates so that we can set the selection (only for editing
+    // not for replay)
+    doc.connect(this, {
       'document:changed': this.onDocumentChange
     });
   };
 
   this.detach = function() {
+    this.containerAnnotationEvents.detach();
+    this.containerAnnotationEvents = null;
+
     this.editor.getDocument().disconnect(this);
     this.editor.setContainer(null);
 
