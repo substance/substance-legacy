@@ -24,7 +24,7 @@ FullfledgedEditor.Prototype = function() {
   this.break = function(selection, info) {
     console.log("Breaking at %s", selection.toString());
     info = info || {};
-    var tx = this.document.startTransaction();
+    var tx = this.document.startTransaction({ seleciton: selection });
     tx.selection = selection;
     try {
       if (!this.selection.isCollapsed()) {
@@ -39,10 +39,7 @@ FullfledgedEditor.Prototype = function() {
         case "heading":
           this._breakTextNode(tx, node, range.start.offset);
       }
-      tx.save({
-        selectionBefore: selection,
-        selectionAfter: tx.selection
-      }, info);
+      tx.save({ selection: tx.selection }, info);
       this.selection = tx.selection;
     } finally {
       tx.cleanup();
@@ -52,7 +49,7 @@ FullfledgedEditor.Prototype = function() {
   this._breakTextNode = function(tx, node, offset) {
     // split the text property and create a new paragraph node with trailing text and annotations transferred
     var text = node.content;
-    var containerNode = tx.get(this.container.name);
+    var containerNode = tx.get(this.containerName);
     var path = [node.id, 'content'];
     var nodePos = containerNode.getPosition(node.id);
     var id = Substance.uuid('text_');
@@ -81,7 +78,7 @@ FullfledgedEditor.Prototype = function() {
     var firstText = tx.get(firstPath);
     var firstLength = firstText.length;
     var secondText = tx.get(secondPath);
-    var containerNode = tx.get(this.container.name);
+    var containerNode = tx.get(this.containerName);
     // 1. Append the second text
     tx.update(firstPath, { insert: { offset: firstLength, value: secondText } });
     // 2. Transfer annotations
