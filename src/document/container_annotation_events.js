@@ -9,18 +9,24 @@ var PathAdapter = Substance.PathAdapter;
 // either via a path or for any event
 // When registering by path an event is sent to all observers registered
 // for paths spanned by an annotation
-var ContainerAnnotationEvents = function(doc, container) {
+var ContainerAnnotationEvents = function(doc) {
   this.doc = doc;
-  this.container = container;
+  this.container = null;
   this.listeners = new PathAdapter.Arrays();
-  doc.connect(this, { 'document:changed': this.onDocumentChanged });
 };
 
 ContainerAnnotationEvents.Prototype = function() {
 
+  this.attach = function() {
+    this.doc.connect(this, { 'document:changed': this.onDocumentChanged });
+  }
+
   this.detach = function() {
     this.doc.disconnect(this);
-    this.doc = null;
+  };
+
+  this.setContainer = function(container) {
+    this.container = container;
   };
 
   this.add = function(path, ctx, fn) {
@@ -37,12 +43,13 @@ ContainerAnnotationEvents.Prototype = function() {
     }
   };
 
-  this.onDocumentChanged = function(change, ops, info) {
+  this.onDocumentChanged = function(change, info) {
+    if (!this.container) return;
     var updates = [];
     var doc = this.doc;
     var schema = doc.getSchema();
-    for (var i = 0; i < ops.length; i++) {
-      var op = ops[i];
+    for (var i = 0; i < change.ops.length; i++) {
+      var op = change.ops[i];
       switch (op.type) {
       case ObjectOperation.CREATE:
       case ObjectOperation.DELETE:
@@ -66,6 +73,7 @@ ContainerAnnotationEvents.Prototype = function() {
 
   this.notifyListeners = function(updates, change, ops, info) {
     for (var i = 0; i < updates.length; i++) {
+      console.log('### Notifying listeners about change...');
       var data = updates[i];
       var startComp = this.container.getComponent(data.startPath);
       var endComp = this.container.getComponent(data.endPath);

@@ -17,6 +17,7 @@ function Surface(editor) {
 
   this.domSelection = null;
   this.domContainer = null;
+  this.containerAnnotationEvents = new Document.ContainerAnnotationEvents(doc);
 
   // TODO: VE make jquery injectable
   this.$ = $;
@@ -75,7 +76,8 @@ Surface.Prototype = function() {
 
     // HACK: we need this proxy to efficiently react on container annotation
     // updates.
-    this.containerAnnotationEvents = new Document.ContainerAnnotationEvents(doc, this.domContainer);
+    this.containerAnnotationEvents.setContainer(this.domContainer);
+    this.containerAnnotationEvents.attach();
 
     // listen to updates so that we can set the selection (only for editing
     // not for replay)
@@ -86,7 +88,6 @@ Surface.Prototype = function() {
 
   this.detach = function() {
     this.containerAnnotationEvents.detach();
-    this.containerAnnotationEvents = null;
 
     this.editor.getDocument().disconnect(this);
     this.editor.setContainer(null);

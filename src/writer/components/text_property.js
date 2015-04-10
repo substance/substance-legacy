@@ -48,15 +48,17 @@ var TextProperty = React.createClass({
 
   componentDidMount: function() {
     var doc = this.props.doc;
+    var surface = this.context.surface;
     doc.getEventProxy('path').add(this.props.path, this, this.propertyDidChange);
-    doc.connect(this, { 'container-annotation-update': this.renderManually });
+    surface.containerAnnotationEvents.add(this.props.path, this, this.renderManually);
     this.renderManually();
   },
 
   componentWillUnmount: function() {
     var doc = this.props.doc;
+    var surface = this.context.surface;
     doc.getEventProxy('path').remove(this.props.path, this);
-    doc.disconnect(this);
+    surface.containerAnnotationEvents.remove(this.props.path, this);
   },
 
   renderManually: function() {

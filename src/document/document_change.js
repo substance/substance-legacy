@@ -4,7 +4,7 @@ var Substance = require('../basics');
 var PathAdapter = Substance.PathAdapter;
 
 function DocumentChange(ops, before, after) {
-  this.ops = ops;
+  this.ops = ops.slice(0);
   this.before = before;
   this.after = after;
   this.index = new PathAdapter();

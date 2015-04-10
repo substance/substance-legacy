@@ -146,7 +146,7 @@ var ContainerComponent = React.createClass({
     var doc = this.props.doc;
 
     doc.getEventProxy('path').add([this.props.node.id, 'nodes'], this, this.containerDidChange);
-    doc.connect(this, { 'container-annotation-update': this.updateBrackets });
+    surface.containerAnnotationEvents.add('any', this, this.updateBrackets );
 
     this.props.writerCtrl.registerSurface(surface, "content");
     surface.attach(this.getDOMNode());
@@ -164,7 +164,7 @@ var ContainerComponent = React.createClass({
     var doc = this.props.doc;
 
     doc.getEventProxy('path').remove([this.props.node.id, 'nodes'], this);
-    doc.disconnect(this);
+    surface.containerAnnotationEvents.remove('any', this);
 
     this.props.writerCtrl.unregisterSurface(surface);
     surface.detach();
@@ -175,7 +175,7 @@ var ContainerComponent = React.createClass({
     this.forceUpdate();
     // update the surface afterwards so that it can re-analyze the component layout
     setTimeout(function() {
-      self.state.surface.update();
+      self.surface.update();
       self.updateBrackets();
     });
   },
