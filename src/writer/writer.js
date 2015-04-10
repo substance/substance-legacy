@@ -184,7 +184,7 @@ var Writer = React.createClass({
     }
 
     if (!panelElement) {
-      throw new Error("No panel found for ", contextId);
+      return $$('div', null, "No panels are registered");
     }
     return panelElement;
   },
