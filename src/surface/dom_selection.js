@@ -28,6 +28,13 @@ var _findDomPosition = function(element, offset) {
       offset: offset,
       boundary: (text.length === offset)
     };
+  // HACK: for empty elements
+  } else if (text.length === 0) {
+    return {
+      node: element,
+      offset: offset,
+      boundary: true
+    };
   // within the node or a child node
   } else {
     for (var child = element.firstChild; child; child = child.nextSibling) {
