@@ -24,10 +24,6 @@ function Surface(editor) {
 
   this.dragging = false;
 
-  // This is set on entering changeModel, then unset when leaving.
-  // It is used to test whether a reflected change event is emitted.
-  this.hasSelectionChangeEvents = 'onselectionchange' in window.document;
-
   var self = this;
   this._onMouseUp = Substance.bind( this.onMouseUp, this );
   this._onMouseDown = Substance.bind( this.onMouseDown, this );

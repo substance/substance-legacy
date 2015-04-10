@@ -12,39 +12,39 @@ function DomSelection(rootElement) {
   this.nativeRanges = [];
 }
 
-DomSelection.Prototype = function() {
+var _findDomPosition = function(element, offset) {
+  var text = $(element).text();
 
-  var findPosition = function(element, offset) {
-    var text = $(element).text();
+  // not in this element
+  if (text.length < offset) {
 
-    // not in this element
-    if (text.length < offset) {
-
-      return {
-        node: null,
-        offset: offset - text.length
-      };
-    // at the right boundary
-    } else if (element.nodeType === document.TEXT_NODE) {
-      return {
-        node: element,
-        offset: offset,
-        boundary: (text.length === offset)
-      };
-    // within the node or a child node
-    } else {
-      for (var child = element.firstChild; child; child = child.nextSibling) {
-        var pos = findPosition(child, offset);
-        if (pos.node) {
-          return pos;
-        } else {
-          // not found in this child; then pos.offset contains the translated offset
-          offset = pos.offset;
-        }
+    return {
+      node: null,
+      offset: offset - text.length
+    };
+  // at the right boundary
+  } else if (element.nodeType === document.TEXT_NODE) {
+    return {
+      node: element,
+      offset: offset,
+      boundary: (text.length === offset)
+    };
+  // within the node or a child node
+  } else {
+    for (var child = element.firstChild; child; child = child.nextSibling) {
+      var pos = _findDomPosition(child, offset);
+      if (pos.node) {
+        return pos;
+      } else {
+        // not found in this child; then pos.offset contains the translated offset
+        offset = pos.offset;
       }
-      throw new Error("Illegal state: we should not have reached here!");
     }
-  };
+    throw new Error("Illegal state: we should not have reached here!");
+  }
+};
+
+DomSelection.Prototype = function() {
 
   var getPathFromElement = function(el) {
     var path = [];
@@ -103,7 +103,7 @@ DomSelection.Prototype = function() {
   var modelCoordinateToDomPosition = function(rootElement, coordinate) {
     var componentElement = DomSelection.getDomNodeForPath(rootElement, coordinate.path);
     if (componentElement) {
-      return findPosition(componentElement, coordinate.offset);
+      return _findDomPosition(componentElement, coordinate.offset);
     }
   };
 
@@ -253,6 +253,13 @@ DomSelection.getDomNodeForPath = function(rootElement, path) {
     return null;
   }
   return componentElement;
+};
+
+DomSelection.findDomPosition = function(rootElement, path, offset) {
+  var domNode = DomSelection.getDomNodeForPath(rootElement, path);
+  if (domNode) {
+    return _findDomPosition(domNode, offset);
+  }
 };
 
 module.exports = DomSelection;
