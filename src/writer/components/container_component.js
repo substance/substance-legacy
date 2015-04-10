@@ -22,9 +22,8 @@ var ContainerComponent = React.createClass({
   },
 
   getInitialState: function() {
-    return {
-      surface: new Surface(new Surface.FullfledgedEditor('content', this.props.doc))
-    };
+    this.surface = new Surface(new Surface.FullfledgedEditor('content', this.props.doc));
+    return {};
   },
 
   handleToggleSubjectReference: function(e) {
@@ -47,7 +46,7 @@ var ContainerComponent = React.createClass({
 
   getChildContext: function() {
     return {
-      surface: this.state.surface
+      surface: this.surface
     };
   },
 
@@ -143,7 +142,7 @@ var ContainerComponent = React.createClass({
   },
 
   componentDidMount: function() {
-    var surface = this.state.surface;
+    var surface = this.surface;
     var doc = this.props.doc;
 
     doc.getEventProxy('path').add([this.props.node.id, 'nodes'], this, this.containerDidChange);
@@ -161,7 +160,7 @@ var ContainerComponent = React.createClass({
   },
 
   componentWillUnmount: function() {
-    var surface = this.state.surface;
+    var surface = this.surface;
     var doc = this.props.doc;
 
     doc.getEventProxy('path').remove([this.props.node.id, 'nodes'], this);
