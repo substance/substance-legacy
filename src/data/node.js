@@ -29,14 +29,7 @@ Node.Prototype = function() {
   };
 
   this.isInstanceOf = function(typeName) {
-    var staticData = this.constructor.static;
-    while (staticData && staticData.name !== "node") {
-      if (staticData && staticData.name === typeName) {
-        return true;
-      }
-      staticData = Object.getPrototypeOf(staticData);
-    }
-    return false;
+    return Node.static.isInstanceOf(this.constructor, typeName);
   };
 
   this.getClassNames = function() {
@@ -68,6 +61,18 @@ Node.static.readOnlyProperties = ['type', 'id'];
 Node.static.matchFunction = function(/*el*/) {
   return false;
 };
+
+Node.static.isInstanceOf = function(NodeClass, typeName) {
+  var staticData = NodeClass.static;
+  while (staticData && staticData.name !== "node") {
+    if (staticData && staticData.name === typeName) {
+      return true;
+    }
+    staticData = Object.getPrototypeOf(staticData);
+  }
+  return false;
+};
+
 
 var defineProperty = function(prototype, property, readonly) {
   var getter, setter;

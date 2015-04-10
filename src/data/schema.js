@@ -58,6 +58,14 @@ Schema.Prototype = function() {
   this.getBuiltIns = function() {
     return [ Node ];
   };
+
+  this.isInstanceOf = function(type, parentType) {
+    var NodeClass = this.getNodeClass(type);
+    if (NodeClass) {
+      return Node.static.isInstanceOf(NodeClass, parentType);
+    }
+    return false;
+  };
 };
 
 Substance.initClass(Schema);
