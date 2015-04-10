@@ -116,7 +116,7 @@ Annotator.Prototype = function() {
     Substance.each(annotations, function(a) {
       // special treatment for zero-width annos such as ContainerAnnotation.Anchors
       if (a.zeroWidth) {
-        entries.push({ pos: a.getOffset(), mode: ENTER_EXIT, id: a.id, level: Number.MAX_VALUE, type: 'anchor', node: a });
+        entries.push({ pos: a.offset, mode: ENTER_EXIT, id: a.id, level: Number.MAX_VALUE, type: 'anchor', node: a });
       } else {
         // use a weak default level when not given
         var l = a.constructor.static.level || 1000;

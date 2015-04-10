@@ -21,8 +21,7 @@ ContainerAnnotationIndex.Prototype = function() {
     this.initialize();
   };
 
-  this.get = function(containerId, path) {
-    path = [containerId].concat(path);
+  this.get = function(path) {
     var anchors = this.byPath.get(path);
     if (anchors) {
       return anchors.slice(0);
@@ -32,24 +31,21 @@ ContainerAnnotationIndex.Prototype = function() {
   };
 
   this.create = function(containerAnno) {
-    var containerId = containerAnno.container;
     var startAnchor = containerAnno.getStartAnchor();
     var endAnchor = containerAnno.getEndAnchor();
-    this.byPath.add([containerId].concat(startAnchor.getPath()), startAnchor);
-    this.byPath.add([containerId].concat(endAnchor.getPath()), endAnchor);
+    this.byPath.add(startAnchor.path, startAnchor);
+    this.byPath.add(endAnchor.path, endAnchor);
   };
 
   this.delete = function(containerAnno) {
-    var containerId = containerAnno.container;
     var startAnchor = containerAnno.getStartAnchor();
     var endAnchor = containerAnno.getEndAnchor();
-    this.byPath.remove([containerId].concat(startAnchor.getPath()), startAnchor);
-    this.byPath.remove([containerId].concat(endAnchor.getPath()), endAnchor);
+    this.byPath.remove(startAnchor.path, startAnchor);
+    this.byPath.remove(endAnchor.path, endAnchor);
   };
 
   this.update = function(node, path, newValue, oldValue) {
     if (this.select(node)) {
-      var containerId = node.container;
       var anchor = null;
       if (path[1] === 'startPath') {
         anchor = node.getStartAnchor();
@@ -58,8 +54,8 @@ ContainerAnnotationIndex.Prototype = function() {
       } else {
         return;
       }
-      this.byPath.remove([node.container].concat(oldValue), anchor);
-      this.byPath.add([containerId].concat(anchor.getPath()), anchor);
+      this.byPath.remove(oldValue, anchor);
+      this.byPath.add(anchor.path, anchor);
     }
   };
 

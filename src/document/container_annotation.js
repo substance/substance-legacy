@@ -32,27 +32,35 @@ var ContainerAnnotation = Node.extend({
 });
 
 ContainerAnnotation.Anchor = function(node, isStart) {
-  this.id = node.id;
   this.node = node;
+  this.id = node.id;
+  this.container = node.container;
   this.isStart = !!isStart;
   Object.freeze(this);
 };
 
 ContainerAnnotation.Anchor.Prototype = function() {
-
   this.zeroWidth = true;
-
-  this.getPath = function() {
-    return (this.isStart ? this.node.startPath : this.node.endPath);
-  };
-  this.getOffset = function() {
-    return (this.isStart ? this.node.startOffset : this.node.endOffset);
-  };
   this.getClassNames = function() {
     return (this.node.getClassNames()+" anchor "+(this.isStart?"start-anchor":"end-anchor"));
   };
 };
 
 Substance.initClass(ContainerAnnotation.Anchor);
+
+Object.defineProperties(ContainerAnnotation.Anchor.prototype, {
+  path: {
+    get: function() {
+      return (this.isStart ? this.node.startPath : this.node.endPath);
+    },
+    set: function() { throw new Error('Immutable!'); }
+  },
+  offset: {
+    get: function() {
+      return (this.isStart ? this.node.startOffset : this.node.endOffset);
+    },
+    set: function() { throw new Error('Immutable!'); }
+  },
+});
 
 module.exports = ContainerAnnotation;
