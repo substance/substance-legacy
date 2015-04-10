@@ -360,9 +360,10 @@ Surface.Prototype = function() {
    * Used internally if we derive the model selection from the DOM selcection.
    */
   this._setModelSelection = function(sel) {
+    sel = sel || Substance.Document.nullSelection;
     if (!this.editor.selection.equals(sel)) {
       console.log('Surface.setSelection: %s', sel.toString());
-      this.editor.selection = sel;
+      this.editor.selection = sel ;
       this.emit('selection:changed', sel);
       return true;
     }
