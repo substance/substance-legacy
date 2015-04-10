@@ -33,15 +33,15 @@ var TextProperty = React.createClass({
     // selection
     var annos = null;
     // TODO: is there a better place to update the internal state?
-    var oldAnnos = this.state.activeContainerAnnotations;
+    // var oldAnnos = this.state.activeContainerAnnotations;
     if (this.context.getActiveContainerAnnotations) {
      annos = this.context.getActiveContainerAnnotations();
     }
     this.state.activeContainerAnnotations = annos;
 
-    if (!Substance.isEqual(oldAnnos, annos)) {
+    // if (!Substance.isEqual(oldAnnos, annos)) {
       this.renderManually();
-    }
+    // }
 
     return false;
   },
@@ -49,12 +49,14 @@ var TextProperty = React.createClass({
   componentDidMount: function() {
     var doc = this.props.doc;
     doc.getEventProxy('path').add(this.props.path, this, this.propertyDidChange);
+    doc.connect(this, { 'container-annotation-update': this.renderManually });
     this.renderManually();
   },
 
   componentWillUnmount: function() {
     var doc = this.props.doc;
     doc.getEventProxy('path').remove(this.props.path, this);
+    doc.disconnect(this);
   },
 
   renderManually: function() {

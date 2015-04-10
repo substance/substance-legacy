@@ -113,20 +113,6 @@ var ContainerComponent = React.createClass({
     );
   },
 
-  componentDidMount: function() {
-    var surface = this.state.surface;
-    this.props.doc.getEventProxy('path').add([this.props.node.id, 'nodes'], this, this.containerDidChange);
-    this.props.writerCtrl.registerSurface(surface, "content");
-    surface.attach(this.getDOMNode());
-
-    // HACK: For initial rendering because text view depends on some view-related information
-    // that gets available after the first render
-    this.forceUpdate();
-
-    $(window).resize(this.updateBrackets);
-    this.updateBrackets();
-  },
-
   updateBrackets: function() {
     var doc = this.props.doc;
     var subjectReferences = doc.subjectReferencesIndex.get();
@@ -156,9 +142,31 @@ var ContainerComponent = React.createClass({
     }, this);
   },
 
+  componentDidMount: function() {
+    var surface = this.state.surface;
+    var doc = this.props.doc;
+
+    doc.getEventProxy('path').add([this.props.node.id, 'nodes'], this, this.containerDidChange);
+    doc.connect(this, { 'container-annotation-update': this.updateBrackets });
+
+    this.props.writerCtrl.registerSurface(surface, "content");
+    surface.attach(this.getDOMNode());
+
+    // HACK: For initial rendering because text view depends on some view-related information
+    // that gets available after the first render
+    this.forceUpdate();
+
+    $(window).resize(this.updateBrackets);
+    this.updateBrackets();
+  },
+
   componentWillUnmount: function() {
     var surface = this.state.surface;
-    this.props.doc.getEventProxy('path').remove([this.props.node.id, 'nodes'], this);
+    var doc = this.props.doc;
+
+    doc.getEventProxy('path').remove([this.props.node.id, 'nodes'], this);
+    doc.disconnect(this);
+
     this.props.writerCtrl.unregisterSurface(surface);
     surface.detach();
   },

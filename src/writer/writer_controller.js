@@ -24,8 +24,6 @@ var WriterController = function(opts) {
 
 };
 
-
-
 WriterController.Prototype = function() {
 
   // API method used by writer modules to modify the writer state
