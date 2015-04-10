@@ -64,11 +64,11 @@ PropertySelection.Prototype = function() {
 
   this.toString = function() {
     return [
-      "( ", JSON.stringify(this.range.start.path), ", ",
+      "PropertySelection(", JSON.stringify(this.range.start.path), ", ",
         this.range.start.offset, " -> ", this.range.end.offset,
         (this.reverse?", reverse":""),
         (this.range.start.after?", after":""),
-      " )"
+      ")"
     ].join('');
   };
 };
