@@ -146,7 +146,9 @@ Annotator.Prototype = function() {
   };
 
   this.createText = function(context, text) {
-    this.onText(context, text);
+    if (text.length > 0) {
+      this.onText(context, text);
+    }
   };
 
   this.start = function(rootContext, text, annotations) {
@@ -157,46 +159,46 @@ Annotator.Prototype = function() {
     var stack = [{context: rootContext, entry: null}];
     var pos = 0;
 
-    function _createElementsForLevel(level) {
-      // create new elements for all lower entries
-      for (idx = level; idx < stack.length; idx++) {
-        stack[idx].context = self.enter(stack[idx].entry, stack[idx-1].context);
-      }
-    }
-
     for (var i = 0; i < entries.length; i++) {
       var entry = entries[i];
       // in any case we add the last text to the current element
       this.createText(stack[stack.length-1].context, text.substring(pos, entry.pos));
 
       pos = entry.pos;
-      var level = 1;
+      var stackLevel, idx;
       if (entry.mode === ENTER || entry.mode === ENTER_EXIT) {
         // find the correct position and insert an entry
-        for (; level < stack.length; level++) {
-          if (entry.level < stack[level].entry.level) {
+        for (stackLevel = 1; stackLevel < stack.length; stackLevel++) {
+          if (entry.level < stack[stackLevel].entry.level) {
             break;
           }
         }
-        stack.splice(level, 0, {entry: entry});
         // create elements which are open, and are now stacked ontop of the
         // entered entry
-        _createElementsForLevel(level);
+        for (idx = stackLevel; idx < stack.length; idx++) {
+          this.exit(stack[idx].entry, stack[idx].context, stack[idx-1].context);
+        }
+        stack.splice(stackLevel, 0, {entry: entry});
+        // create new elements for all lower entries
+        for (idx = stackLevel; idx < stack.length; idx++) {
+          stack[idx].context = self.enter(stack[idx].entry, stack[idx-1].context);
+        }
       }
       if (entry.mode === EXIT || entry.mode === ENTER_EXIT) {
         // find the according entry and remove it from the stack
-        for (; level < stack.length; level++) {
-          if (stack[level].entry.id === entry.id) {
+        for (stackLevel = 1; stackLevel < stack.length; stackLevel++) {
+          if (stack[stackLevel].entry.node === entry.node) {
             break;
           }
         }
-        for (var idx = level; idx < stack.length; idx++) {
+        for (idx = stackLevel; idx < stack.length; idx++) {
           this.exit(stack[idx].entry, stack[idx].context, stack[idx-1].context);
         }
-        stack.splice(level, 1);
-        // create elements which are not finished yet, but were on top of the
-        // exited entry
-        _createElementsForLevel(level);
+        stack.splice(stackLevel, 1);
+        // create new elements for all lower entries
+        for (idx = stackLevel; idx < stack.length; idx++) {
+          stack[idx].context = self.enter(stack[idx].entry, stack[idx-1].context);
+        }
       }
     }
 
