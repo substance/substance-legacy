@@ -18,12 +18,16 @@ FormEditor.Prototype = function() {
     return false;
   };
 
-  this.getDocument = function() {
-    return this.document;
+  this.getContainer = function() {
+    return this.container;
   };
 
   this.setContainer = function(container) {
     this.container = container;
+  };
+
+  this.getDocument = function() {
+    return this.document;
   };
 
   this.insertText = function(textInput, selection, info) {

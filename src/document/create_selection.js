@@ -55,10 +55,9 @@ module.exports = function createSelection(/* arguments */) {
     if (Substance.isArrayEqual(startPath, endPath)) {
       // return a PropertySelection instead if the given paths are equal
       end = new Coordinate(startPath, endOffset);
-      return new PropertySelection(new Range(start, end));
     } else {
       end = new Coordinate(endPath, endOffset);
-      return new ContainerSelection(container, new Range(start, end));
     }
+    return new ContainerSelection(container, new Range(start, end));
   }
 };

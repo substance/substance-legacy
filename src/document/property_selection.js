@@ -6,6 +6,7 @@ var Selection = require('./selection');
 function PropertySelection(range, reverse) {
   this.range = range;
   this.reverse = reverse;
+  this._internal = {};
   Object.freeze(this);
 }
 
@@ -47,6 +48,17 @@ PropertySelection.Prototype = function() {
       this.range.equals(other.range)
     );
   };
+
+  this.collapse = function(direction) {
+    var coor;
+    if (direction === 'left') {
+      coor = this.range.start;
+    } else {
+      coor = this.range.end;
+    }
+    return Selection.create(coor);
+  };
+
 
   // Helper Methods
   // ----------------------

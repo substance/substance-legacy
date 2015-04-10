@@ -24,6 +24,9 @@ function Graph(schema, options) {
 Graph.Prototype = function() {
 
   this.get = function(path) {
+    if (!path) {
+      throw new Error('Path or id required');
+    }
     return this.nodes.get(path);
   };
 

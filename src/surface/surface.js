@@ -56,8 +56,8 @@ Surface.Prototype = function() {
   this.attach = function(element) {
     this.element = element;
     this.$element = $(element);
-    this.domSelection = new DomSelection(element, this.getContainerName());
     this.domContainer = new DomContainer(element);
+    this.domSelection = new DomSelection(element, this.domContainer);
 
     this.attachKeyboardHandlers();
     this.attachMouseHandlers();

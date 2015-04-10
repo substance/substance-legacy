@@ -4,11 +4,11 @@ var Substance = require('../basics');
 var Document = require('../document');
 
 //  Helper to map selection between model and DOM
-function DomSelection(rootElement, containerName) {
+function DomSelection(rootElement, container) {
   this.rootElement = rootElement;
   this.nativeSelectionData = null;
   this.modelSelection = null;
-  this.containerName = containerName;
+  this.container = container;
 }
 
 var _findDomPosition = function(element, offset) {
@@ -121,7 +121,7 @@ DomSelection.Prototype = function() {
       range: null
     };
     if (s.rangeCount > 0) {
-      data.range = s.getRangeAt(0)
+      data.range = s.getRangeAt(0);
     }
     return data;
   };
@@ -136,11 +136,11 @@ DomSelection.Prototype = function() {
     this.nativeSelectionData = selectionData(sel);
     var rangeCount = sel.rangeCount;
     if (rangeCount === 0) {
-      result = Document.NullSelection;
+      result = Document.nullSelection;
     } else if (rangeCount > 1) {
       throw new Error('Multi-Selections not supported yet!');
     } else {
-      options.containerName = this.containerName;
+      options.container = this.container;
       result = DomSelection.getSelectionForDomSelection(sel, options);
     }
     this.modelSelection = result;
@@ -265,10 +265,10 @@ DomSelection.getSelectionForDomRange = function(wRange, isReverse, options) {
   if (Substance.isArrayEqual(range.start.path, range.end.path)) {
     return new Document.PropertySelection(range, isReverse);
   } else {
-    if (!options.containerName) {
-      throw new Error('No container name given, but selection is a container selection');
+    if (!options.container) {
+      throw new Error('No container given, but selection is a container selection');
     }
-    return new Document.ContainerSelection(options.containerName, range, isReverse);
+    return new Document.ContainerSelection(options.container, range, isReverse);
   }
 };
 

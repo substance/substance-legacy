@@ -53,21 +53,12 @@ Selection.Prototype = function() {
     return "null";
   };
 
-  this.collapse = function(direction) {
-    var coor;
-    if (direction === 'left') {
-      coor = this.range.start;
-    } else {
-      coor = this.range.end;
-    }
-    return Selection.create(coor);
-  };
-
 };
 
 Substance.initClass(Selection);
 
 Selection.NullSelection = Object.freeze(new Selection());
+Selection.nullSelection = Selection.NullSelection;
 
 // this is set in index as it has dependencies to sub-classes
 // which can't be required here to avoid cyclic dep.
