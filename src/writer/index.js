@@ -11,6 +11,7 @@ var StrongTool = require("./tools/strong_tool");
 var EmphasisTool = require("./tools/emphasis_tool");
 
 var BasicToolMixin = require("./tools/basic_tool_mixin");
+var TextProperty = require("./components/text_property");
 
 Writer.CoreModule = {
   name: "core",
@@ -32,5 +33,6 @@ Writer.CoreModule = {
 };
 
 Writer.BasicToolMixin = BasicToolMixin;
+Writer.TextProperty = TextProperty;
 
 module.exports = Writer;

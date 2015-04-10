@@ -90,6 +90,7 @@ var TextProperty = React.createClass({
 
   getContent: function() {
     var doc = this.props.doc;
+    var surface = this.context.surface;
     var path = this.props.path;
     var text = doc.get(path) || "";
 
@@ -126,6 +127,7 @@ var TextProperty = React.createClass({
       };
       if (node instanceof ContainerAnnotation.Anchor) {
         ViewClass = AnnotationHandle;
+        props.surface = surface;
         if (activeContainerAnnotations[entry.id]) {
           props.classNames.push('active');
         }
@@ -200,7 +202,7 @@ var TextProperty = React.createClass({
         } else {
           range = [0, anchor.offset];
         }
-        var anno = doc.get(id)
+        var anno = doc.get(id);
         fragments.push(new TextProperty.AnnotationFragment(anno, range));
       }
     }, this);
