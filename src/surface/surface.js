@@ -56,7 +56,7 @@ Surface.Prototype = function() {
   this.attach = function(element) {
     this.element = element;
     this.$element = $(element);
-    this.domSelection = new DomSelection(element, this.editor);
+    this.domSelection = new DomSelection(element, this.getContainerName());
     this.domContainer = new DomContainer(element);
 
     this.attachKeyboardHandlers();
@@ -165,7 +165,7 @@ Surface.Prototype = function() {
     this.insertState = {
       selectionBefore: this.editor.selection,
       selectionAfter: null,
-      nativeRangeBefore: this.domSelection.nativeRanges[0],
+      nativeRangeBefore: this.domSelection.nativeSelectionData.range,
       range: window.getSelection().getRangeAt(0)
     };
   };
@@ -189,20 +189,20 @@ Surface.Prototype = function() {
       // the property's element which is affected by this insert
       // we use it to let the view component check if it needs to rerender or trust contenteditable
       var source = insertState.nativeRangeBefore.start;
+      console.log('Surface.afterKeyPress: source = ', source);
       this.editor.insertText(textInput, selectionBefore, {
         source: source
       });
     }
   };
 
-  // EXPERIMENTAL: dead-keys
-  this.onCompositionUpdate = function(e) {
-    console.log('-------------', e);
+  // Handling Dead-keys under OSX
+  this.onCompositionUpdate = function() {
     if (!this.insertState) {
       var selection = this.domSelection.get();
       this.insertState = {
         selectionBefore: selection,
-        nativeRangeBefore: this.domSelection.nativeRanges[0]
+        nativeRangeBefore: this.domSelection.nativeSelectionData.range
       };
     }
   };
@@ -243,12 +243,12 @@ Surface.Prototype = function() {
     }
   };
 
-  this.onBlur = function(e) {
+  this.onBlur = function() {
     this.isFocused = false;
     this.setSelection(Substance.Document.nullSelection);
   };
 
-  this.onFocus = function(e) {
+  this.onFocus = function() {
     this.isFocused = true;
   };
 
@@ -315,7 +315,6 @@ Surface.Prototype = function() {
     //   example, the Home key (Firefox fires 'keypress' for it)
     // * Incorrect pawning when selection is collapsed and the user presses a key that is not handled
     //   elsewhere and doesn't produce any text, for example Escape
-    console.log('Haaaaaaa');
     if (
       // Catches most keys that don't produce output (charCode === 0, thus no character)
       e.which === 0 || e.charCode === 0 ||
