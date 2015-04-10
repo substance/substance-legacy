@@ -101,6 +101,20 @@ PathAdapter.Prototype = function() {
     }
   };
 
+  var __traverse = function(root, path, fn, ctx) {
+    for (var id in root) {
+      if (root.hasOwnProperty(id)) {
+        var childPath = path.concat([id]);
+        fn.call(ctx, childPath, root[id]);
+        __traverse(root[id], childPath, fn, ctx);
+      }
+    }
+  };
+
+  this.traverse = function(fn, ctx) {
+    __traverse(this.getRoot(), [], fn, ctx);
+  };
+
 };
 
 oo.initClass( PathAdapter );
@@ -149,7 +163,6 @@ PathAdapter.Arrays.Prototype = function() {
   this.set = function() {
     throw new Error('This method is not available for PathAdapter.Arrays');
   };
-
 };
 
 oo.inherit(PathAdapter.Arrays, PathAdapter);

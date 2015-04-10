@@ -146,7 +146,7 @@ var ContainerComponent = React.createClass({
     var doc = this.props.doc;
 
     doc.getEventProxy('path').add([this.props.node.id, 'nodes'], this, this.containerDidChange);
-    surface.containerAnnotationEvents.add('any', this, this.updateBrackets );
+    surface.containerAnnotationEvents.add(['any'], this, this.containerDidChange );
 
     this.props.writerCtrl.registerSurface(surface, "content");
     surface.attach(this.getDOMNode());

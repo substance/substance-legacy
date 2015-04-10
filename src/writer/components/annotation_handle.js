@@ -13,14 +13,14 @@ var AnnotationHandle = View.extend({
   render: function() {
     var $element = $('<span>')
       .addClass(this.props.node.getClassNames().replace(/_/g, '-'))
-      .addClass(this.props.classNames)
+      .addClass(this.props.classNames.join(' '))
       .attr('data-id', this.props.node.id);
-    var $caret = $('<span>').addClass('anchor-caret');
-    $element.append($caret);
+    // var $caret = $('<span>').addClass('anchor-caret');
+    // $element.append($caret);
 
     this.$element = $element;
     this.element = $element[0];
-    this.$caret = $caret;
+    // this.$caret = $caret;
 
     // NOTE: we deactivated the draggable handle implementation.
     return this.element;

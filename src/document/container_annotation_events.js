@@ -58,36 +58,59 @@ ContainerAnnotationEvents.Prototype = function() {
         }
         break;
       case ObjectOperation.SET:
-      case ObjectOperation.UPDATE:
         var anno = doc.get(op.path[0]);
         if (anno.isInstanceOf('container_annotation')) {
-          updates.push(anno);
+          var update = {
+            startPath: anno.startPath,
+            endPath: anno.endPath
+          }
+          if (op.path[1] === 'startPath') {
+            update.oldStartPath = op.original;
+          } else if (op.path[1] === 'endPath') {
+            update.oldEndPath = op.original;
+          }
+          updates.push(update);
         }
         break;
       }
     }
     if (updates.length === 0) return;
 
-    this.notifyListeners(updates, info);
+    this.notifyListeners(updates, change, info);
   };
 
-  this.notifyListeners = function(updates, change, ops, info) {
+  this.notifyListeners = function(updates, change, info) {
+    var uniq = new PathAdapter();
     for (var i = 0; i < updates.length; i++) {
-      console.log('### Notifying listeners about change...');
       var data = updates[i];
       var startComp = this.container.getComponent(data.startPath);
       var endComp = this.container.getComponent(data.endPath);
       var startIdx = startComp.getIndex();
       var endIdx = endComp.getIndex();
+      if (data.oldStartPath) {
+        startComp = this.container.getComponent(data.oldStartPath);
+        startIdx = Math.min(startIdx, startComp.getIndex());
+      }
+      if (data.oldEndPath) {
+        endComp = this.container.getComponent(data.oldEndPath);
+        endIdx = Math.max(endIdx, endComp.getIndex());
+      }
       for (var j = startIdx; j <= endIdx; j++) {
         var comp = this.container.getComponentAt(j);
-        var l = this.listeners.get(comp.path);
-        for (var k = 0; k < l.length; k++) {
-          l[k].fn.call(l[k].ctx, change, ops, info);
-        }
+        uniq.set(comp.path, true);
       }
     }
-    Substance.each(this.listeners.get('any'), function(l) {
+    var listeners = this.listeners;
+    uniq.traverse(function(path, entry) {
+      console.log('### Notifying listeners about change:', path);
+      if (entry !== true) return;
+      var l = listeners.get(path);
+      for (var i = 0; i < l.length; i++) {
+        l[i].fn.call(l[i].ctx, change, info);
+      }
+    });
+    Substance.each(listeners.get(['any']), function(l) {
+      console.log('### Notifying "any" listeners');
       l.fn.call(l.ctx);
     });
   };

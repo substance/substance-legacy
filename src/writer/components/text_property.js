@@ -217,6 +217,11 @@ var TextProperty = React.createClass({
       var pos = comp.getIndex();
       Substance.each(this.state.activeContainerAnnotations, function(id) {
         var anno = doc.get(id);
+        // FIXME: ATM, when we are undoing a delete of a container
+        // annotation, it is still in the list of activeContainerAnnotations
+        if (!anno) {
+          return;
+        }
         var comp = container.getComponent(anno.startPath);
         var startPos = comp.getIndex();
         if (pos<=startPos) {
