@@ -113,13 +113,17 @@ DomSelection.Prototype = function() {
   };
 
   var selectionData = function(s) {
-    return {
+    var data = {
       anchorNode: s.anchorNode,
       anchorOffset: s.anchorOffset,
       focusNode: s.focusNode,
       focusOffset: s.focusOffset,
-      range: s.getRangeAt(0)
+      range: null
     };
+    if (s.rangeCount > 0) {
+      data.range = s.getRangeAt(0)
+    }
+    return data;
   };
 
   this.get = function(options) {
