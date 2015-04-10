@@ -30,6 +30,23 @@ var insertedText = function(doc, coordinate, length) {
       doc.set([anno.id, 'range'], [start, end]);
     }
   });
+  // same for container annotation anchors
+  index = doc.getIndex('container-annotations');
+  var anchors = index.get(coordinate.path);
+  Substance.each(anchors, function(anchor) {
+    var pos = coordinate.offset;
+    var start = anchor.offset;
+    var changed = false;
+    if ( (pos < start) ||
+         (pos === start && coordinate.after) ) {
+      start += length;
+      changed = true;
+    }
+    if (changed) {
+      var property = (anchor.isStart?'startOffset':'endOffset');
+      doc.set([anchor.id, property], start);
+    }
+  });
 };
 
 var deletedText = function(doc, path, startOffset, endOffset) {
@@ -72,6 +89,31 @@ var deletedText = function(doc, path, startOffset, endOffset) {
       }
     }
   });
+  // same for container annotation anchors
+  index = doc.getIndex('container-annotations');
+  var anchors = index.get(path);
+  Substance.each(anchors, function(anchor) {
+    var pos1 = startOffset;
+    var pos2 = endOffset;
+    var start = anchor.offset;
+    var changed = false;
+    if (pos2 <= start) {
+      start -= length;
+      changed = true;
+    } else {
+      if (pos1 <= start) {
+        var newStart = start - Math.min(pos2-pos1, start-pos1);
+        if (start !== newStart) {
+          start = newStart;
+          changed = true;
+        }
+      }
+    }
+    if (changed) {
+      var property = (anchor.isStart?'startOffset':'endOffset');
+      doc.set([anchor.id, property], start);
+    }
+  });
 };
 
 // used when breaking a node to transfer annotations to the new property
@@ -110,6 +152,18 @@ var transferAnnotations = function(doc, path, offset, newPath, newOffset) {
       newRange = [newOffset + a.range[0] - offset, newOffset + a.range[1] - offset];
       doc.set([a.id, "path"], newPath);
       doc.set([a.id, "range"], newRange);
+    }
+  });
+  // same for container annotation anchors
+  index = doc.getIndex('container-annotations');
+  var anchors = index.get(path);
+  Substance.each(anchors, function(anchor) {
+    var start = anchor.offset;
+    if (offset <= start) {
+      var pathProperty = (anchor.isStart?'startPath':'endPath');
+      var offsetProperty = (anchor.isStart?'startOffset':'endOffset');
+      doc.set([anchor.id, pathProperty], newPath);
+      doc.set([anchor.id, offsetProperty], newOffset + anchor.offset - offset);
     }
   });
 };
