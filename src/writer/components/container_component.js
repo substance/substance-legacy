@@ -58,7 +58,7 @@ var ContainerComponent = React.createClass({
     // Prepare subject reference components
     // ---------
 
-    var subjectReferences = doc.getIndex('by-type').get('subject_reference');
+    var subjectReferences = doc.getIndex('type').get('subject_reference');
     var subjectRefComponents = [];
     var activeContainerAnnotations = writerCtrl.getActiveContainerAnnotations();
 
@@ -114,7 +114,7 @@ var ContainerComponent = React.createClass({
 
   updateBrackets: function() {
     var doc = this.props.doc;
-    var subjectReferences = doc.getIndex('by-type').get('subject_reference');
+    var subjectReferences = doc.getIndex('type').get('subject_reference');
 
     _.each(subjectReferences, function(subjRef) {
       var anchors = $(this.getDOMNode()).find('.nodes .anchor[data-id='+subjRef.id+']');

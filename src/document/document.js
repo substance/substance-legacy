@@ -22,7 +22,7 @@ function Document( schema, seed ) {
   });
 
   // all by type
-  this.nodeIndex = this.addIndex('by-type', Substance.Data.Index.create({
+  this.nodeIndex = this.addIndex('type', Substance.Data.Index.create({
     property: "type"
   }));
   // special index for (property-scoped) annotations
