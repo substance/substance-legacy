@@ -17,7 +17,7 @@ function Surface(editor) {
 
   this.domSelection = null;
   this.domContainer = null;
-  this.containerAnnotationEvents = new Document.ContainerAnnotationEvents(doc);
+  this.containerAnnotationEvents = new Document.ContainerAnnotationEvents(editor.getDocument());
 
   // TODO: VE make jquery injectable
   this.$ = $;
@@ -46,7 +46,6 @@ function Surface(editor) {
     });
   };
 
-  this._onCompositionUpdate = Substance.bind( this.onCompositionUpdate, this );
   this._onCompositionEnd = Substance.bind( this.onCompositionEnd, this );
 
   // state used by handleInsertion
@@ -64,9 +63,10 @@ Surface.Prototype = function() {
     this.attachKeyboardHandlers();
     this.attachMouseHandlers();
 
-    // Compositions are OSX speicific
-    this.element.addEventListener('compositionupdate', this._onCompositionUpdate, false);
-    this.element.addEventListener('compositionend', this._onCompositionEnd, false);
+    // OSX specific handling of dead-keys
+    if (this.element.addEventListener) {
+      this.element.addEventListener('compositionend', this._onCompositionEnd, false);
+    }
 
     this.$element.on('blur', this._onBlur);
     this.$element.on('focus', this._onFocus);
@@ -92,8 +92,9 @@ Surface.Prototype = function() {
     this.editor.getDocument().disconnect(this);
     this.editor.setContainer(null);
 
-    this.element.removeEventListener('compositionupdate', this._onCompositionUpdate, false);
-    this.element.removeEventListener('compositionend', this._onCompositionEnd, false);
+    if (this.element.addEventListener) {
+      this.element.removeEventListener('compositionend', this._onCompositionEnd, false);
+    }
 
     this.detachMouseHandlers();
     this.detachKeyboardHandlers();
@@ -173,60 +174,36 @@ Surface.Prototype = function() {
   };
 
   this.handleInsertion = function( /*e*/ ) {
-    // keep the current selection, let contenteditable insert,
-    // and get the inserted diff afterKeyPress
-    this.insertState = {
-      selectionBefore: this.editor.selection,
-      selectionAfter: null,
-      nativeRangeBefore: this.domSelection.nativeSelectionData.range,
-      range: window.getSelection().getRangeAt(0)
-    };
+    this.handlingInsertion = true;
   };
 
   this.afterKeyPress = function ( /*e*/ ) {
-    // TODO: fetch the last change from surfaceObserver
-    console.log('afterKeyPress');
-    if (this.insertState) {
-      var insertState = this.insertState;
-      this.insertState = null;
-
+    if (this.handlingInsertion) {
+      this.handlingInsertion = false;
       // get the text between the before insert and after insert
-      var range = window.document.createRange();
-      var before = insertState.range;
-      var after = window.getSelection().getRangeAt(0);
-      range.setStart(before.startContainer, before.startOffset);
-      range.setEnd(after.startContainer, after.startOffset);
-      var textInput = range.toString();
-
-      var selectionBefore = insertState.selectionBefore;
+      var range = this.editor.selection.getRange();
+      var el = DomSelection.getDomNodeForPath(this.element, range.start.path);
+      var text = el.textContent;
+      var textInput = text.substring(range.start.offset, range.start.offset+1);
       // the property's element which is affected by this insert
       // we use it to let the view component check if it needs to rerender or trust contenteditable
-      var source = insertState.nativeRangeBefore.start;
+      var source = this.domSelection.nativeSelectionData.range.start;
       console.log('Surface.afterKeyPress: source = ', source);
-      this.editor.insertText(textInput, selectionBefore, {
+      this.editor.insertText(textInput, this.editor.selection, {
         source: source
       });
     }
   };
 
   // Handling Dead-keys under OSX
-  this.onCompositionUpdate = function() {
-    if (!this.insertState) {
-      var selection = this.domSelection.get();
-      this.insertState = {
-        selectionBefore: selection,
-        nativeRangeBefore: this.domSelection.nativeSelectionData.range
-      };
-    }
-  };
-
   this.onCompositionEnd = function(e) {
-    var selectionBefore = this.insertState.selectionBefore;
-    var range = this.insertState.nativeRangeBefore;
-    this.insertState = null;
-    this.editor.insertText(e.data, selectionBefore, {
-      source: range.start
-    });
+    try {
+      var sel = this.editor.selection;
+      var source = DomSelection.getDomNodeForPath(this.element, sel.getRange().start.path);
+      this.editor.insertText(e.data, this.editor.selection, { source: source });
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   /* Event handlers */
