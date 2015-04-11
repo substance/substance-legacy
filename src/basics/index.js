@@ -2,8 +2,8 @@
 
 var uuid = require('./uuid');
 var oo = require('./oo');
-var PathAdapter = require('./path-adapter');
-var EventEmitter = require('./event-emitter');
+var PathAdapter = require('./path_adapter');
+var EventEmitter = require('./event_emitter');
 var SubstanceError = require('./error');
 var Registry = require('./registry');
 var Factory = require('./factory');
