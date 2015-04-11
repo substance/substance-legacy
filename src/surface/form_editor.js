@@ -8,7 +8,17 @@ var Annotations = require('../document/annotation_updates');
 function FormEditor(doc) {
   this.document = doc;
   this.selection = Document.nullSelection;
-  // TODO: find better name. It used in container aware editors (which need the layout of components).
+  // TODO:
+  // 1. maybe a better name. Container as opposed to ContainerNode is
+  // a component container, ie., describing the structure of a surface.
+  // 2. Try to get rid of containers in form-editors. Cursor navigation is possible
+  // without that structure, as it is done by ContentEditable.
+  // This affects some places in the code, for instance, Surface.DomSelection should not
+  // map a spanning selection to a ContainerSelection, but instead should create
+  // a single or later multiple PropertySelections.
+  // Preventing such selections in the browser is probably not possible.
+  // Another affected place, is where components (ContainerComponent and TextProperties)
+  // register to the containers event proxy.
   this.container = null;
 }
 
