@@ -59,7 +59,6 @@ PropertySelection.Prototype = function() {
     return Selection.create(coor);
   };
 
-
   // Helper Methods
   // ----------------------
 
