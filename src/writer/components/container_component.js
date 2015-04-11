@@ -58,7 +58,7 @@ var ContainerComponent = React.createClass({
     // Prepare subject reference components
     // ---------
 
-    var subjectReferences = doc.subjectReferencesIndex.get();
+    var subjectReferences = doc.getIndex('by-type').get('subject_reference');
     var subjectRefComponents = [];
     var activeContainerAnnotations = writerCtrl.getActiveContainerAnnotations();
 
@@ -100,7 +100,7 @@ var ContainerComponent = React.createClass({
     // Top level structure
     // ---------
 
-    return $$("div", {className: "interview-content", contentEditable: true},
+    return $$("div", {className: "interview-content", contentEditable: true, "data-id": "content"},
       $$("div", {
           className: "container-node " + this.props.node.id,
           spellCheck: false,
@@ -114,7 +114,7 @@ var ContainerComponent = React.createClass({
 
   updateBrackets: function() {
     var doc = this.props.doc;
-    var subjectReferences = doc.subjectReferencesIndex.get();
+    var subjectReferences = doc.getIndex('by-type').get('subject_reference');
 
     _.each(subjectReferences, function(subjRef) {
       var anchors = $(this.getDOMNode()).find('.nodes .anchor[data-id='+subjRef.id+']');
@@ -126,6 +126,11 @@ var ContainerComponent = React.createClass({
       } else {
         startAnchorEl = anchors[1];
         endAnchorEl = anchors[0];
+      }
+
+      if (!startAnchorEl || !endAnchorEl) {
+        console.warn("FIXME: Could not find anchors for subject reference ", subjRef.id);
+        return;
       }
 
       var startTop = $(startAnchorEl).position().top;

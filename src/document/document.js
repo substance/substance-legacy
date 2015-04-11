@@ -21,7 +21,13 @@ function Document( schema, seed ) {
     didDeleteNode: Substance.bind(this._didDeleteNode, this),
   });
 
+  // all by type
+  this.nodeIndex = this.addIndex('by-type', Substance.Data.Index.create({
+    property: "type"
+  }));
+  // special index for (property-scoped) annotations
   this.annotationIndex = this.addIndex('annotations', new AnnotationIndex());
+  // special index for (contaoiner-scoped) annotations
   this.containerAnnotationIndex = this.addIndex('container-annotations', new ContainerAnnotationIndex());
 
   // the stage is a essentially a clone of this document
