@@ -317,11 +317,13 @@ Surface.Prototype = function() {
       e.which === 0 || e.charCode === 0 ||
       // Opera 12 doesn't always adhere to that convention
       e.keyCode === Surface.Keys.TAB || e.keyCode === Surface.Keys.ESCAPE ||
-      // Ignore all keypresses with Ctrl / Cmd modifier keys
-      !!( e.ctrlKey || e.metaKey )
+      // prevent combinations with meta keys, but not alt-graph which is represented as ctrl+alt
+      !!(e.metaKey) || (!!e.ctrlKey^!!e.altKey)
     ) {
+      console.log("Skipping...");
       return;
     }
+    // TODO: we need to make sure that there actually was content
     this.handleInsertion(e);
   };
 
