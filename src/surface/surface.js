@@ -58,7 +58,43 @@ function Surface(editor) {
 
 Surface.Prototype = function() {
 
+  this.getContainerName = function() {
+    if (this.editor.isContainerEditor()) {
+      return this.editor.getContainerName();
+    }
+  };
+
+  this.getContainer = function() {
+    if (this.editor.isContainerEditor()) {
+      return this.editor.container;
+    }
+  };
+
+  // Call this whenever the content of the root element changes so
+  // that the structure should be re-analyzed
+  // TODO: think about a different way. For example, a node component could trigger
+  // something on this surface whenever the structure has been changed.
+  // Examples:
+  //   - container component: container nodes have changed
+  //   - list node: list item removed or added
+  //   - table node: table cell added or removed
+  // In most other cases this is not necessary, as the component structure stays the same
+  // only the content changes
+  this.forceUpdate = function(cb) {
+    if (this.domContainer) {
+      this.domContainer.reset();
+    }
+    if (cb) cb();
+  };
+
+  this.dispose = function() {
+    this.detach();
+  };
+
   this.attach = function(element) {
+    var doc = this.editor.getDocument();
+
+    // Initialization
     this.element = element;
     this.$element = $(element);
     this.$element.prop('contentEditable', 'true');
@@ -68,209 +104,71 @@ Surface.Prototype = function() {
     }
     this.domContainer = new DomContainer(containerId, element);
     this.domSelection = new DomSelection(element, this.domContainer);
+    this.editor.setContainer(this.domContainer);
 
-    this.attachKeyboardHandlers();
-    this.attachMouseHandlers();
-
+    // Keyboard Events
+    //
+    this.$element.on('keydown', this._onKeyDown);
+    this.$element.on('keypress', this._onKeyPress);
+    this.$element.on('keypress', this._afterKeyPress);
     // OSX specific handling of dead-keys
     if (this.element.addEventListener) {
       this.element.addEventListener('compositionend', this._onCompositionEnd, false);
     }
 
+    // Mouse Events
+    //
+    this.$element.on( 'mousemove', this._onMouseMove );
+    this.$element.on( 'mousedown', this._onMouseDown );
     this.$element.on('blur', this._onBlur);
     this.$element.on('focus', this._onFocus);
 
-    this.editor.setContainer(this.domContainer);
-    var doc = this.editor.getDocument();
-
-    // HACK: we need this proxy to efficiently react on container annotation
-    // updates.
+    // Document Change Events
+    //
+    // Note: this event proxy provides a means to efficiently detect
+    // changes to container annotations
     this.containerAnnotationEvents.setContainer(this.domContainer);
     this.containerAnnotationEvents.attach();
-
-    // listen to updates so that we can set the selection (only for editing
-    // not for replay)
-    doc.connect(this, {
-      'document:changed': this.onDocumentChange
-    });
+    // listen to updates so that we can set the selection (only for editing not for replay)
+    doc.connect(this, { 'document:changed': this.onDocumentChange });
   };
 
   this.detach = function() {
+    var doc = this.editor.getDocument();
+
+    // Document Change Events
+    //
+    doc.disconnect(this);
     this.containerAnnotationEvents.detach();
 
-    this.editor.getDocument().disconnect(this);
-    this.editor.setContainer(null);
+    // Mouse Events
+    //
+    this.$element.off( 'mousemove', this._onMouseMove );
+    this.$element.off( 'mousedown', this._onMouseDown );
+    this.$element.off('blur', this._onBlur);
+    this.$element.off('focus', this._onFocus);
 
+    // Keyboard Events
+    //
+    this.$element.off('keydown', this._onKeyDown);
+    this.$element.off('keypress', this._onKeyPress);
+    this.$element.off('keypress', this._afterKeyPress);
     if (this.element.addEventListener) {
       this.element.removeEventListener('compositionend', this._onCompositionEnd, false);
     }
 
-    this.detachMouseHandlers();
-    this.detachKeyboardHandlers();
-
+    // Clean-up
+    //
+    this.editor.setContainer(null);
     this.element = null;
     this.$element = null;
     this.domSelection = null;
     this.domContainer = null;
   };
 
-  this.update = function() {
-    if (this.domContainer) {
-      this.domContainer.reset();
-    }
-  };
-
-  this.dispose = function() {
-    this.detach();
-  };
-
-  this.attachKeyboardHandlers = function() {
-    this.$element.on('keydown', this._onKeyDown);
-    this.$element.on('keypress', this._onKeyPress);
-    this.$element.on('keypress', this._afterKeyPress);
-  };
-
-  this.detachKeyboardHandlers = function() {
-    this.$element.off('keydown', this._onKeyDown);
-    this.$element.off('keypress', this._onKeyPress);
-    this.$element.off('keypress', this._afterKeyPress);
-  };
-
-  this.attachMouseHandlers = function() {
-    this.$element.on( 'mousemove', this._onMouseMove );
-    this.$element.on( 'mousedown', this._onMouseDown );
-  };
-
-  this.detachMouseHandlers = function() {
-    this.$element.off( 'mousemove', this._onMouseMove );
-    this.$element.off( 'mousedown', this._onMouseDown );
-  };
-
-  this.handleLeftOrRightArrowKey = function ( e ) {
-    var self = this;
-    window.setTimeout(function() {
-      self._updateModelSelection({
-        left: (e.keyCode === Surface.Keys.LEFT),
-        right: (e.keyCode === Surface.Keys.RIGHT)
-      });
-    });
-  };
-
-  this.handleUpOrDownArrowKey = function ( /*e*/ ) {
-    // TODO: let contenteditable do the move and set the new selection afterwards
-    this._delayedUpdateModelSelection();
-  };
-
-  this.handleEnterKey = function( e ) {
-    e.preventDefault();
-    var selection = this.domSelection.get();
-    this.editor.break(selection);
-  };
-
-  this.handleDeleteKey = function ( e ) {
-    e.preventDefault();
-    var selection = this.domSelection.get();
-    var direction = (e.keyCode === Surface.Keys.BACKSPACE) ? 'left' : 'right';
-    this.editor.delete(selection, direction, {});
-  };
-
-
-  this.handleSpace = function( e ) {
-    e.preventDefault();
-    var selection = this.domSelection.get();
-    this.editor.insertText(" ", selection, {});
-  };
-
-  this.handleInsertion = function( /*e*/ ) {
-    this.handlingInsertion = true;
-  };
-
-  this.afterKeyPress = function ( /*e*/ ) {
-    if (this.handlingInsertion) {
-      this.handlingInsertion = false;
-      // get the text between the before insert and after insert
-      var range = this.editor.selection.getRange();
-      var el = DomSelection.getDomNodeForPath(this.element, range.start.path);
-      var text = el.textContent;
-      var textInput = text.substring(range.start.offset, range.start.offset+1);
-      // the property's element which is affected by this insert
-      // we use it to let the view component check if it needs to rerender or trust contenteditable
-      var source = this.domSelection.nativeSelectionData.range.start;
-      this.editor.insertText(textInput, this.editor.selection, {
-        source: source
-      });
-    }
-  };
-
-  // Handling Dead-keys under OSX
-  this.onCompositionEnd = function(e) {
-    try {
-      var sel = this.editor.selection;
-      var source = DomSelection.getDomNodeForPath(this.element, sel.getRange().start.path);
-      this.editor.insertText(e.data, this.editor.selection, { source: source });
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  /* Event handlers */
-
-  this.onMouseDown = function(e) {
-    if ( e.which !== 1 ) {
-      return;
-    }
-    // Bind mouseup to the whole document in case of dragging out of the surface
-    this.dragging = true;
-    this.$document.on( 'mouseup', this._onMouseUp );
-  };
-
-  this.onMouseUp = function(/*e*/) {
-    // ... and unbind the temporary handler
-    this.$document.off( 'mouseup', this._onMouseUp );
-    this.dragging = false;
-    this._setModelSelection(this.domSelection.get());
-  };
-
-  this.onMouseMove = function() {
-    if (this.dragging) {
-      // TODO: do we want that?
-      // update selection during dragging
-      // this._setModelSelection(this.domSelection.get());
-    }
-  };
-
-  this.onBlur = function() {
-    // console.log('Blurring surface', this.name, this.__id__);
-    this.isFocused = false;
-    this.setSelection(Substance.Document.nullSelection);
-  };
-
-  this.onFocus = function() {
-    // console.log('Focusing surface', this.name, this.__id__);
-    this.isFocused = true;
-  };
-
-  this.onDocumentChange = function(change, info) {
-    if (!this.isFocused) {
-      return;
-    }
-
-    // update the domSelection first so that we know if we are
-    // within this surface at all
-    if (!info.replay) {
-      var self = this;
-      window.setTimeout(function() {
-        // GUARD: For cases where the panel/or whatever has been disposed already
-        // after changing the doc
-        if (!self.domSelection) return;
-
-        var sel = change.after.selection;
-        self.editor.selection = sel;
-        self.domSelection.set(sel);
-        self.emit('selection:changed', sel);
-      });
-    }
-  };
+  // ###########################################
+  // Keyboard Handling
+  //
 
   /**
    * Handle document key down events.
@@ -320,22 +218,145 @@ Surface.Prototype = function() {
       // prevent combinations with meta keys, but not alt-graph which is represented as ctrl+alt
       !!(e.metaKey) || (!!e.ctrlKey^!!e.altKey)
     ) {
-      console.log("Skipping...");
       return;
     }
     // TODO: we need to make sure that there actually was content
     this.handleInsertion(e);
   };
 
-  this.getSelection = function() {
-    return this.editor.selection;
+  this.afterKeyPress = function ( /*e*/ ) {
+    if (this.handlingInsertion) {
+      this.handlingInsertion = false;
+      // get the text between the before insert and after insert
+      var range = this.editor.selection.getRange();
+      var el = DomSelection.getDomNodeForPath(this.element, range.start.path);
+      var text = el.textContent;
+      var textInput = text.substring(range.start.offset, range.start.offset+1);
+      // the property's element which is affected by this insert
+      // we use it to let the view component check if it needs to rerender or trust contenteditable
+      var source = this.domSelection.nativeSelectionData.range.start;
+      this.editor.insertText(textInput, this.editor.selection, {
+        source: source
+      });
+    }
   };
 
-  this._updateDomSelection = function(sel) {
+  // Handling Dead-keys under OSX
+  this.onCompositionEnd = function(e) {
+    try {
+      var sel = this.editor.selection;
+      var source = DomSelection.getDomNodeForPath(this.element, sel.getRange().start.path);
+      this.editor.insertText(e.data, this.editor.selection, { source: source });
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  this.handleInsertion = function( /*e*/ ) {
+    this.handlingInsertion = true;
+  };
+
+  this.handleLeftOrRightArrowKey = function ( e ) {
     var self = this;
     window.setTimeout(function() {
-      self.domSelection.set(sel);
+      self._updateModelSelection({
+        left: (e.keyCode === Surface.Keys.LEFT),
+        right: (e.keyCode === Surface.Keys.RIGHT)
+      });
     });
+  };
+
+  this.handleUpOrDownArrowKey = function ( /*e*/ ) {
+    // TODO: let contenteditable do the move and set the new selection afterwards
+    this._delayedUpdateModelSelection();
+  };
+
+  this.handleEnterKey = function( e ) {
+    e.preventDefault();
+    var selection = this.domSelection.get();
+    this.editor.break(selection);
+  };
+
+  this.handleDeleteKey = function ( e ) {
+    e.preventDefault();
+    var selection = this.domSelection.get();
+    var direction = (e.keyCode === Surface.Keys.BACKSPACE) ? 'left' : 'right';
+    this.editor.delete(selection, direction, {});
+  };
+
+
+  this.handleSpace = function( e ) {
+    e.preventDefault();
+    var selection = this.domSelection.get();
+    this.editor.insertText(" ", selection, {});
+  };
+
+  // ###########################################
+  // Mouse Handling
+  //
+
+  this.onMouseDown = function(e) {
+    if ( e.which !== 1 ) {
+      return;
+    }
+    // Bind mouseup to the whole document in case of dragging out of the surface
+    this.dragging = true;
+    this.$document.on( 'mouseup', this._onMouseUp );
+  };
+
+  this.onMouseUp = function(/*e*/) {
+    // ... and unbind the temporary handler
+    this.$document.off( 'mouseup', this._onMouseUp );
+    this.dragging = false;
+    this._setModelSelection(this.domSelection.get());
+  };
+
+  this.onMouseMove = function() {
+    if (this.dragging) {
+      // TODO: do we want that?
+      // update selection during dragging
+      // this._setModelSelection(this.domSelection.get());
+    }
+  };
+
+  this.onBlur = function() {
+    // console.log('Blurring surface', this.name, this.__id__);
+    this.isFocused = false;
+    this.setSelection(Substance.Document.nullSelection);
+  };
+
+  this.onFocus = function() {
+    // console.log('Focusing surface', this.name, this.__id__);
+    this.isFocused = true;
+  };
+
+  // ###########################################
+  // Document and Selection Changes
+  //
+
+  this.onDocumentChange = function(change, info) {
+    if (!this.isFocused) {
+      return;
+    }
+    // update the domSelection first so that we know if we are
+    // within this surface at all
+    if (!info.replay) {
+      var self = this;
+      window.setTimeout(function() {
+        // GUARD: For cases where the panel/or whatever has been disposed already
+        // after changing the doc
+        if (!self.domSelection) return;
+
+        var sel = change.after.selection;
+        self.editor.selection = sel;
+        self.domSelection.set(sel);
+        self.emit('selection:changed', sel);
+      });
+    }
+  };
+
+  this.getSelection = function() {
+    return this.editor.selection;
   };
 
   /**
@@ -348,6 +369,13 @@ Surface.Prototype = function() {
         this.domSelection.set(sel);
       }
     }
+  };
+
+  this._updateDomSelection = function(sel) {
+    var self = this;
+    window.setTimeout(function() {
+      self.domSelection.set(sel);
+    });
   };
 
   this._updateModelSelection = function(options) {
@@ -366,18 +394,6 @@ Surface.Prototype = function() {
       this.editor.selection = sel ;
       this.emit('selection:changed', sel);
       return true;
-    }
-  };
-
-  this.getContainerName = function() {
-    if (this.editor.isContainerEditor()) {
-      return this.editor.getContainerName();
-    }
-  };
-
-  this.getContainer = function() {
-    if (this.editor.isContainerEditor()) {
-      return this.editor.container;
     }
   };
 

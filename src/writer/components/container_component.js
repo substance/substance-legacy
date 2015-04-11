@@ -177,11 +177,10 @@ var ContainerComponent = React.createClass({
 
   containerDidChange: function() {
     var self = this;
-    this.forceUpdate();
-    // update the surface afterwards so that it can re-analyze the component layout
-    setTimeout(function() {
-      self.surface.update();
-      self.updateBrackets();
+    this.forceUpdate(function() {
+      self.surface.forceUpdate(function() {
+        self.updateBrackets();
+      });
     });
   },
 
