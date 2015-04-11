@@ -192,7 +192,7 @@ var Writer = React.createClass({
   render: function() {
     return $$('div', {className: 'writer-component'},
       $$('div', {className: "main-container"},
-        $$(ContentTools, { // will be reused
+        $$(ContentTools, {
           writerCtrl: this.writerCtrl
         }),
         $$(ContentPanel, {
