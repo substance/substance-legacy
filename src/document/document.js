@@ -11,6 +11,8 @@ var DocumentChange = require('./document_change');
 
 var NotifyByPath = require('./notify_by_path');
 
+
+
 function Document( schema, seed ) {
   Substance.EventEmitter.call(this);
 

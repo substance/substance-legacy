@@ -3,6 +3,15 @@
 var Substance = require('../basics');
 var PathAdapter = Substance.PathAdapter;
 
+// Container
+// --------
+//
+// Holds a sequence of document nodes (see ContainerNode). Well not really. 
+// since each node can consist of multiple components (e.g. a figure has a
+// title and a caption) they need to be flattened to a list of components. 
+// This flat structure is modelled by this class.
+
+
 function Container(id) {
   if (!id) {
     throw new Error('Contract: a container must have an id be able to associate container annotations.')

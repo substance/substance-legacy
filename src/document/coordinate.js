@@ -2,6 +2,8 @@
 
 var Substance = require('../basics');
 
+
+
 // path: the address of a property, such as ['text_1', 'content']
 // offset: the position in the property
 // after: an internal flag indicating if the address should be associated to the left or right side

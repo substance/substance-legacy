@@ -3,6 +3,26 @@
 var Substance = require('../basics');
 var Node = require('./node');
 
+
+// Container Annotation
+// ----------------
+//
+// Describes an annotation sticking on a container that can span over multiple
+// nodes.
+// 
+// Here's an example:
+// 
+// {
+//   "id": "subject_reference_1",
+//   "type": "subject_reference",
+//   "container": "content",
+//   "startPath": ["text_2", "content"],
+//   "startOffset": 100,
+//   "endPath": ["text_4", "content"],
+//   "endOffset": 40
+// }
+
+
 var ContainerAnnotation = Node.extend({
   name: "container_annotation",
 
