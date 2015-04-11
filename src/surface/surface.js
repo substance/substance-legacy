@@ -154,7 +154,6 @@ Surface.Prototype = function() {
 
   this.handleUpOrDownArrowKey = function ( /*e*/ ) {
     // TODO: let contenteditable do the move and set the new selection afterwards
-    console.log('TODO: handleUpOrDownArrowKey');
     this._delayedUpdateModelSelection();
   };
 
@@ -193,7 +192,6 @@ Surface.Prototype = function() {
       // the property's element which is affected by this insert
       // we use it to let the view component check if it needs to rerender or trust contenteditable
       var source = this.domSelection.nativeSelectionData.range.start;
-      console.log('Surface.afterKeyPress: source = ', source);
       this.editor.insertText(textInput, this.editor.selection, {
         source: source
       });
@@ -238,13 +236,13 @@ Surface.Prototype = function() {
   };
 
   this.onBlur = function() {
-    console.log('Blurring surface', this.name, this.__id__);
+    // console.log('Blurring surface', this.name, this.__id__);
     this.isFocused = false;
     this.setSelection(Substance.Document.nullSelection);
   };
 
   this.onFocus = function() {
-    console.log('Focusing surface', this.name, this.__id__);
+    // console.log('Focusing surface', this.name, this.__id__);
     this.isFocused = true;
   };
 
@@ -274,7 +272,6 @@ Surface.Prototype = function() {
    * Handle document key down events.
    */
   this.onKeyDown = function( e ) {
-    console.log('keyDown', e);
     if ( e.which === 229 ) {
       // ignore fake IME events (emitted in IE and Chromium)
       return;
@@ -340,8 +337,10 @@ Surface.Prototype = function() {
    */
   this.setSelection = function(sel) {
     if (this._setModelSelection(sel)) {
-      // also update the DOM selection
-      this.domSelection.set(sel);
+      if (this.domSelection) {
+        // also update the DOM selection
+        this.domSelection.set(sel);
+      }
     }
   };
 
@@ -357,7 +356,7 @@ Surface.Prototype = function() {
   this._setModelSelection = function(sel) {
     sel = sel || Substance.Document.nullSelection;
     if (!this.editor.selection.equals(sel)) {
-      console.log('Surface.setSelection: %s', sel.toString());
+      // console.log('Surface.setSelection: %s', sel.toString());
       this.editor.selection = sel ;
       this.emit('selection:changed', sel);
       return true;

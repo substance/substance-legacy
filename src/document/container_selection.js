@@ -29,7 +29,7 @@ ContainerSelection.Prototype = function() {
   };
 
   this.toString = function() {
-    return "ContainerSelection("+ this.container + ", (" + JSON.stringify(this.range.start.path) + ":" + this.range.start.offset + " -> " +  JSON.stringify(this.range.end.path) + ":" + this.range.end.offset + ")" + (this.reverse ? ", reverse" : "") + ")";
+    return "ContainerSelection("+ JSON.stringify(this.range.start.path) + ":" + this.range.start.offset + " -> " +  JSON.stringify(this.range.end.path) + ":" + this.range.end.offset + (this.reverse ? ", reverse" : "") + ")";
   };
 
   var _coordinates = function(container, sel) {
