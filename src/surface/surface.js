@@ -8,8 +8,12 @@ var DomSelection = require('./dom_selection');
 var DomContainer = require('./dom_container');
 var Document = require('../document');
 
+var __id__ = 0;
+
 function Surface(editor) {
   Substance.EventEmitter.call(this);
+
+  this.__id__ = __id__++;
 
   // this.element must be set via surface.attach(element)
   this.element = null;
@@ -57,6 +61,7 @@ Surface.Prototype = function() {
   this.attach = function(element) {
     this.element = element;
     this.$element = $(element);
+    this.$element.prop('contentEditable', 'true');
     this.domContainer = new DomContainer(element);
     this.domSelection = new DomSelection(element, this.domContainer);
 
@@ -222,7 +227,6 @@ Surface.Prototype = function() {
     this.$document.off( 'mouseup', this._onMouseUp );
     this.dragging = false;
     this._setModelSelection(this.domSelection.get());
-    this.isFocused = true;
   };
 
   this.onMouseMove = function() {
@@ -234,11 +238,13 @@ Surface.Prototype = function() {
   };
 
   this.onBlur = function() {
+    console.log('Blurring surface', this.name, this.__id__);
     this.isFocused = false;
     this.setSelection(Substance.Document.nullSelection);
   };
 
   this.onFocus = function() {
+    console.log('Focusing surface', this.name, this.__id__);
     this.isFocused = true;
   };
 
@@ -336,7 +342,6 @@ Surface.Prototype = function() {
     if (this._setModelSelection(sel)) {
       // also update the DOM selection
       this.domSelection.set(sel);
-      this.isFocused = true;
     }
   };
 
