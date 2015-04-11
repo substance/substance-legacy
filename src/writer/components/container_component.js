@@ -27,10 +27,12 @@ var ContainerComponent = React.createClass({
   },
 
   handleToggleSubjectReference: function(e) {
+    e.preventDefault();
     var subjectReferenceId = e.currentTarget.dataset.id;
     var writerCtrl = this.props.writerCtrl;
+    var state = writerCtrl.state;
 
-    if (writerCtrl.state.contextId === "editSubjectReference") {
+    if (state.contextId === "editSubjectReference" && state.subjectReferenceId === subjectReferenceId) {
       writerCtrl.replaceState({
         contextId: "subjects"
       });
@@ -40,8 +42,6 @@ var ContainerComponent = React.createClass({
         subjectReferenceId: subjectReferenceId
       });
     }
-
-    // e.preventDefault();
   },
 
   getChildContext: function() {
