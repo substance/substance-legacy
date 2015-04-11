@@ -62,7 +62,11 @@ Surface.Prototype = function() {
     this.element = element;
     this.$element = $(element);
     this.$element.prop('contentEditable', 'true');
-    this.domContainer = new DomContainer(element);
+    var containerId = this.$element.attr('data-id');
+    if (!containerId) {
+      throw new Error('Contract: a Surface root element must have a "data-id" property to identify its container.');
+    }
+    this.domContainer = new DomContainer(containerId, element);
     this.domSelection = new DomSelection(element, this.domContainer);
 
     this.attachKeyboardHandlers();

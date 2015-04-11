@@ -85,6 +85,10 @@ ContainerAnnotationEvents.Prototype = function() {
       var data = updates[i];
       var startComp = this.container.getComponent(data.startPath);
       var endComp = this.container.getComponent(data.endPath);
+      if (!startComp || !endComp) {
+        console.warn("Could not lookup components for", data);
+        continue;
+      }
       var startIdx = startComp.getIndex();
       var endIdx = endComp.getIndex();
       if (data.oldStartPath) {
@@ -102,15 +106,15 @@ ContainerAnnotationEvents.Prototype = function() {
     }
     var listeners = this.listeners;
     uniq.traverse(function(path, entry) {
-      console.log('### Notifying listeners about change:', path);
       if (entry !== true) return;
       var l = listeners.get(path);
       for (var i = 0; i < l.length; i++) {
+        // console.log('### Notifying listener for path', path, l[i].ctx);
         l[i].fn.call(l[i].ctx, change, info);
       }
     });
     Substance.each(listeners.get(['any']), function(l) {
-      console.log('### Notifying "any" listeners');
+      // console.log('### Notifying "any" listeners');
       l.fn.call(l.ctx);
     });
   };

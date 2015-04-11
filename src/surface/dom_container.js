@@ -7,8 +7,8 @@ var Container = Document.Container;
 // A simple as possible implementation of a container working on a rendered container.
 // This implementation takes just the root element and analyzes the structure on demand and locally.
 // The container interface is used to get knowledge about the structure to do container-wide editing, such as break or merge of nodes
-function DomContainer(element) {
-  Container.call(this);
+function DomContainer(containerId, element) {
+  Container.call(this, containerId);
   this.element = element;
   this.reset();
 }

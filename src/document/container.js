@@ -3,7 +3,11 @@
 var Substance = require('../basics');
 var PathAdapter = Substance.PathAdapter;
 
-function Container() {
+function Container(id) {
+  if (!id) {
+    throw new Error('Contract: a container must have an id be able to associate container annotations.')
+  }
+  this.id = id;
   this.components = [];
   this.byPath = new PathAdapter({});
 }
@@ -26,9 +30,6 @@ Container.Prototype = function() {
 
   this.getComponent = function(path) {
     var comp = this.byPath.get(path);
-    if (!comp) {
-      throw new Error('No component found for path ' + JSON.stringify(path));
-    }
     return comp;
   };
 
