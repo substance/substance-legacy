@@ -162,6 +162,11 @@ var ContainerComponent = React.createClass({
 
     $(window).resize(this.updateBrackets);
     this.updateBrackets();
+    this.surface.rerenderDomSelection();
+  },
+
+  componentDidUpdate: function() {
+    this.surface.rerenderDomSelection();
   },
 
   componentWillUnmount: function() {

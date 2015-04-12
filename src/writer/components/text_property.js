@@ -22,28 +22,24 @@ var TextProperty = React.createClass({
   },
 
   getInitialState: function() {
-    return { activeContainerAnnotations: [] };
+    return { highlights: [] };
   },
 
+  // Only necessary when
   shouldComponentUpdate: function() {
     // Highlights are treated incrementally because this is triggered by cursor
     // movement and it would be bad to loose the cursor due to rerender.
-    this.updateHighlights();
-    // For container annotation changes this is different, as we can loose the
-    // selection
-    // var annos = null;
-    // // TODO: is there a better place to update the internal state?
-    // var oldAnnos = this.state.activeContainerAnnotations;
-    // if (this.context.getActiveContainerAnnotations) {
-    //  annos = this.context.getActiveContainerAnnotations();
-    // }
-    // this.state.activeContainerAnnotations = annos;
-    // // container annotatins have changed
-    // if (!Substance.isEqual(oldAnnos, annos)) {
+    var oldHighlights = this.state.highlights;
+    this.computeHighlights();
+    if (JSON.stringify(oldHighlights) !== JSON.stringify(this.state.highlights)) {
       this.renderManually();
-    // }
-
+    }
+    this.updateHighlights();
     return false;
+  },
+
+  computeHighlights: function() {
+    this.state.highlights = this.context.getHighlightsForTextProperty(this);
   },
 
   componentDidMount: function() {
@@ -112,7 +108,7 @@ var TextProperty = React.createClass({
       annotations = annotations.concat(anchors);
     }
 
-    var highlights = this.context.getHighlightsForTextProperty(this);
+    var highlights = this.state.highlights;
     annotations = annotations.concat(highlights);
     
     var annotator = new Annotator();
