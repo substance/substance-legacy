@@ -227,12 +227,7 @@ Surface.Prototype = function() {
       var el = DomSelection.getDomNodeForPath(this.element, range.start.path);
       var text = el.textContent;
       var textInput = text.substring(range.start.offset, range.start.offset+1);
-      // the property's element which is affected by this insert
-      // we use it to let the view component check if it needs to rerender or trust contenteditable
-      var source = this.domSelection.nativeSelectionData.range.start;
-      this.editor.insertText(textInput, this.editor.selection, {
-        source: source
-      });
+      this.editor.insertText(textInput, this.editor.selection);
     }
   };
 
@@ -240,8 +235,7 @@ Surface.Prototype = function() {
   this.onCompositionEnd = function(e) {
     try {
       var sel = this.editor.selection;
-      var source = DomSelection.getDomNodeForPath(this.element, sel.getRange().start.path);
-      this.editor.insertText(e.data, this.editor.selection, { source: source });
+      this.editor.insertText(e.data, this.editor.selection);
     } catch (error) {
       console.error(error);
     }
@@ -262,17 +256,19 @@ Surface.Prototype = function() {
   };
 
   this.handleUpOrDownArrowKey = function ( /*e*/ ) {
-    // TODO: let contenteditable do the move and set the new selection afterwards
-    this._delayedUpdateModelSelection();
+    var self = this;
+    window.setTimeout(function() {
+      self._updateModelSelection();
+    });
   };
 
   this.handleEnterKey = function( e ) {
     e.preventDefault();
     var selection = this.domSelection.get();
     if (e.shiftKey) {
-      this.editor.softBreak(selection, {});
+      this.editor.softBreak(selection);
     } else {
-      this.editor.break(selection, {});
+      this.editor.break(selection);
     }
   };
 
@@ -280,14 +276,14 @@ Surface.Prototype = function() {
     e.preventDefault();
     var selection = this.domSelection.get();
     var direction = (e.keyCode === Surface.Keys.BACKSPACE) ? 'left' : 'right';
-    this.editor.delete(selection, direction, {});
+    this.editor.delete(selection, direction);
   };
 
 
   this.handleSpace = function( e ) {
     e.preventDefault();
     var selection = this.domSelection.get();
-    this.editor.insertText(" ", selection, {});
+    this.editor.insertText(" ", selection);
   };
 
   // ###########################################
