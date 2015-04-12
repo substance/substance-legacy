@@ -159,7 +159,7 @@ var ContainerComponent = React.createClass({
     doc.connect(this, {
       'container-annotation-update': this.handleContainerAnnotationUpdate
     });
-    
+
     var self = this;
 
     // HACK: For initial rendering because text view depends on some view-related information
@@ -171,9 +171,9 @@ var ContainerComponent = React.createClass({
         self.surface.__prerendering__ = false;
         self.forceUpdate(function() {
           self.updateBrackets();
-          self.surface.rerenderDomSelection(); 
+          self.surface.rerenderDomSelection();
         });
-      });        
+      });
     });
 
     $(window).resize(this.updateBrackets);
@@ -182,13 +182,16 @@ var ContainerComponent = React.createClass({
   handleContainerAnnotationUpdate: function() {
     var self = this;
     this.forceUpdate(function() {
-      self.updateBrackets();  
+      self.updateBrackets();
     });
   },
 
   componentDidUpdate: function() {
     if (!this.surface.__prerendering__) {
-      this.surface.rerenderDomSelection();  
+      var self = this;
+      setTimeout(function() {
+        self.surface.rerenderDomSelection();
+      });
     }
   },
 
@@ -213,7 +216,7 @@ var ContainerComponent = React.createClass({
         self.forceUpdate(function() {
           self.updateBrackets();
         });
-      });        
+      });
     });
   }
 
