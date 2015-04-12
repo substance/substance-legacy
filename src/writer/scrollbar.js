@@ -87,7 +87,7 @@ var Scrollbar = React.createClass({
 
      var highlights = [];
      // Compute highlights
-     this.props.highlights.forEach(function(nodeId) {
+     this.props.highlights().forEach(function(nodeId) {
        var nodeEl = $(self.panelContentEl).find('*[data-id='+nodeId+']');
        if (!nodeEl.length) return;
 

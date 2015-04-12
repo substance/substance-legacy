@@ -35,7 +35,7 @@ var Writer = React.createClass({
   },
 
   getInitialState: function() {
-    return {"contextId": "editSubjectReference", "subjectReferenceId": "subject_reference_1"};
+    return {"contextId": "entities"};
   },
 
   // Events
