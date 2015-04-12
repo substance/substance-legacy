@@ -193,6 +193,7 @@ WriterController.Prototype = function() {
 
       _.each(activeContainerAnnotations, function(annoId) {
         var anno = doc.get(annoId);
+        if (!anno) return;
         var fragments = container.getAnnotationFragments(anno);
         _.each(fragments, function(frag) {
           highlightsIndex.add(frag.path, new Highlight(frag.range, {
@@ -201,7 +202,6 @@ WriterController.Prototype = function() {
         });
       });
 
-      console.log(highlightsIndex);
       return highlightsIndex.get(textProperty.props.path) || [];
     } else {
       return [];
