@@ -103,7 +103,7 @@ PathAdapter.Prototype = function() {
 
   var __traverse = function(root, path, fn, ctx) {
     for (var id in root) {
-      if (root.hasOwnProperty(id)) {
+      if (root.hasOwnProperty(id) && id !== '__values__') {
         var childPath = path.concat([id]);
         fn.call(ctx, childPath, root[id]);
         __traverse(root[id], childPath, fn, ctx);
