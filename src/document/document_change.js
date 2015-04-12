@@ -7,49 +7,30 @@ function DocumentChange(ops, before, after) {
   this.ops = ops.slice(0);
   this.before = before;
   this.after = after;
-  this.index = new PathAdapter();
+  this.updated = new PathAdapter.Arrays();
   this._init();
   Object.freeze(this);
   Object.freeze(this.ops);
-  Object.freeze(this.index);
   Object.freeze(this.before);
   Object.freeze(this.after);
+  Object.freeze(this.updated);
 }
 
 DocumentChange.Prototype = function() {
 
   this._init = function() {
-    var index = this.index;
-
-    function addOp(path, op) {
-      var key = path.concat('__ops__');
-      var _ops = index.get(key);
-      if (!_ops) {
-        _ops = [];
-        index.set(key, _ops);
-      }
-      _ops.push(op);
-    }
-
-    Substance.each(this.ops, function(op) {
-      // add each directly affected path
-      addOp(op.path);
-      // properties are assumed to be dirty when the op changes a 'path' property pointing to it
-      if ( (op.type === "create" || op.type === "delete") && op.val.path ) {
-        addOp(op.val.path);
-      }
-      else if (op.type === "set" && op.path[1] === 'path') {
+    var ops = this.ops;
+    for (var i = 0; i < ops.length; i++) {
+      var op = ops[i];
+      if (op.type === "set" || op.type === "update") {
         // The old as well the new one is affected
-        addOp(op.original);
-        addOp(op.val);
+        this.updated.add(op.path, op);
       }
-    }, this);
-
+    }
   };
 
   this.isAffected = function(path) {
-    var key = path.concat('__ops__');
-    var ops = this.index.get(key);
+    var ops = this.updated.get(path);
     return ops && ops.length > 0;
   };
 
@@ -63,19 +44,11 @@ DocumentChange.Prototype = function() {
     return new DocumentChange(ops, before, after);
   };
 
-  var __traverse = function(level, path, fn, ctx) {
-    if (level.__ops__) {
-      fn.call(ctx, path, level.__ops__);
-    }
-    for (var id in level) {
-      if (id !== "__ops__" && level.hasOwnProperty(id)) {
-        __traverse(level[id], path.concat([id]), fn, ctx);
-      }
-    }
-  };
-
   this.traverse = function(fn, ctx) {
-    __traverse(this.index.getRoot(), [], fn, ctx);
+    this.updated.traverse(function() {
+      console.log('########')
+      fn.apply(ctx, arguments);
+    });
   };
 
 };
