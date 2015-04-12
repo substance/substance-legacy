@@ -26,6 +26,14 @@ DocumentChange.Prototype = function() {
         // The old as well the new one is affected
         this.updated.add(op.path, op);
       }
+      // HACK: also register changes to 'path' so that a TextProperty reacts
+      // to changes where an annotation is attached
+      else if ((op.type === "create" || op.type === "delete") && op.val.path) {
+        this.updated.add(op.val.path, op);
+      } else if (op.type === "set" && op.path[1] === "path") {
+        this.updated.add(op.val, op);
+        this.updated.add(op.original, op);
+      }
     }
   };
 
