@@ -151,7 +151,9 @@ var ContainerComponent = React.createClass({
     var surface = this.surface;
     var doc = this.props.doc;
 
-    doc.getEventProxy('path').add([this.props.node.id, 'nodes'], this, this.onDocumentChange);
+    doc.connect(this, {
+      'document:changed': this.onDocumentChange
+    });
 
     this.props.writerCtrl.registerSurface(surface, "content");
     surface.attach(this.getDOMNode());
@@ -204,25 +206,28 @@ var ContainerComponent = React.createClass({
     var surface = this.surface;
     var doc = this.props.doc;
     doc.disconnect(this);
-
-    doc.getEventProxy('path').remove([this.props.node.id, 'nodes'], this);
-
     this.props.writerCtrl.unregisterSurface(surface);
     surface.detach();
   },
 
-  onDocumentChange: function() {
-    var self = this;
-    self.surface.__prerendering__ = true;
-    this.forceUpdate(function() {
-      // self.surface.__prerendering__ = true;
-      self.surface.forceUpdate(function() {
-        self.surface.__prerendering__ = false;
-        self.forceUpdate(function() {
-          self.updateBrackets();
+  onDocumentChange: function(change) {
+    if (change.isAffected([this.props.node.id, 'nodes'])) {
+      var self = this;
+      self.surface.__prerendering__ = true;
+      this.forceUpdate(function() {
+        // self.surface.__prerendering__ = true;
+        self.surface.forceUpdate(function() {
+          self.surface.__prerendering__ = false;
+          self.forceUpdate(function() {
+            self.updateBrackets();
+          });
         });
       });
-    });
+    }
+    // eagerly update brackets on every change
+    else {
+      this.updateBrackets();
+    }
   }
 
 });
