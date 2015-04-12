@@ -13,10 +13,8 @@ function DomSelection(rootElement, container) {
 
 var _findDomPosition = function(element, offset) {
   var text = $(element).text();
-
   // not in this element
   if (text.length < offset) {
-
     return {
       node: null,
       offset: offset - text.length
@@ -107,7 +105,12 @@ var _modelCoordinateFromDomPosition = function(domNode, offset, options) {
 var _modelCoordinateToDomPosition = function(rootElement, coordinate) {
   var componentElement = DomSelection.getDomNodeForPath(rootElement, coordinate.path);
   if (componentElement) {
-    return _findDomPosition(componentElement, coordinate.offset);
+    var pos = _findDomPosition(componentElement, coordinate.offset);
+    if (pos.node) {
+      return pos;
+    } else {
+      return null;
+    }
   }
 };
 
@@ -230,7 +233,12 @@ DomSelection.getDomNodeForPath = function(rootElement, path) {
 DomSelection.findDomPosition = function(rootElement, path, offset) {
   var domNode = DomSelection.getDomNodeForPath(rootElement, path);
   if (domNode) {
-    return _findDomPosition(domNode, offset);
+    var pos = _findDomPosition(domNode, offset);
+    if (pos.node) {
+      return pos;
+    } else {
+      return null;
+    }
   }
 };
 
