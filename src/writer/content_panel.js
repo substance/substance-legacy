@@ -9,7 +9,23 @@ var ContentPanel = React.createClass({
   // the scrollbar and reattach the scroll event
   componentDidMount: function() {
     this.updateScrollbar();
-    $(window).resize(this.updateScrollbar);
+    $(window).on('resize', this.updateScrollbar);
+
+    var doc = this.props.writerCtrl.doc;
+    doc.connect(this, {
+      'document:changed': this.onDocumentChange
+    });
+  },
+
+  componentWillUnmount: function() {
+    doc.disconnect(this);
+    $(window).off('resize');
+  },
+
+  onDocumentChange: function() {
+    setTimeout(function() {
+      this.updateScrollbar();
+    }.bind(this), 0);
   },
 
   componentDidUpdate: function() {
@@ -58,7 +74,7 @@ var ContentPanel = React.createClass({
       $$(Scrollbar, {
         id: "content-scrollbar",
         contextId: writerCtrl.getState().contextId,
-        highlights: writerCtrl.getHighlightedNodes(),
+        highlights: writerCtrl.getHighlightedNodes.bind(writerCtrl),
         ref: "scrollbar"
       }),
 
