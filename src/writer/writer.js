@@ -88,7 +88,7 @@ var Writer = React.createClass({
             type: "error",
             message: err.message || err.toString()
           });
-          console.err('saving of document failed');
+          console.error('saving of document failed');
         } else {
           doc.emit('document:saved');
           notifications.addMessage({
@@ -172,7 +172,6 @@ var Writer = React.createClass({
 
   // Create a new panel based on current writer state (contextId)
   createContextPanel: function() {
-    var contextId = this.state.contextId;
     var panelElement = null;
     var modules = this.writerCtrl.getModules();
 
@@ -190,7 +189,7 @@ var Writer = React.createClass({
   },
 
   render: function() {
-    return $$('div', {className: 'writer-component'},
+    return $$('div', { className: 'writer-component', onKeyDown: this.handleApplicationKeyCombos},
       $$('div', {className: "main-container"},
         $$(ContentTools, {
           writerCtrl: this.writerCtrl
@@ -215,7 +214,32 @@ var Writer = React.createClass({
 
   getHighlightsForTextProperty: function() {
     return this.writerCtrl.getHighlightsForTextProperty.apply(this.writerCtrl, arguments);
-  }
+  },
+
+  // return true when you handled a key combo
+  handleApplicationKeyCombos: function(e) {
+    var handled = false;
+    // TODO: we could make this configurable via extensions
+    console.log('####', e.keyCode, e.metaKey, e.ctrlKey, e.shiftKey);
+    // Undo/Redo: cmd+z, cmd+shift+z
+    if (e.keyCode === 90 && (e.metaKey||e.ctrlKey)) {
+      if (e.shiftKey) {
+        this.writerCtrl.redo();
+      } else {
+        this.writerCtrl.undo();
+      }
+      handled = true;
+    }
+    // Save: cmd+s
+    else if (e.keyCode === 83 && (e.metaKey||e.ctrlKey)) {
+      this.requestAutoSave();
+      handled = true;
+    }
+    if (handled) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+  },
 
 });
 

@@ -187,7 +187,7 @@ WriterController.Prototype = function() {
     var highlights = [];
 
     var highlightsIndex = new Substance.PathAdapter.Arrays();
-    
+
     if (container) {
       var activeContainerAnnotations = this.getActiveContainerAnnotations();
 
@@ -252,6 +252,18 @@ WriterController.Prototype = function() {
     tx.save({ selection: Selection.create(path, range[0], range[1]) });
 
     return annotation;
+  };
+
+  this.undo = function() {
+    if (this.doc.done.length>0) {
+      this.doc.undo();
+    }
+  };
+
+  this.redo = function() {
+    if (this.doc.undone.length>0) {
+      this.doc.redo();
+    }
   };
 
 };
