@@ -146,7 +146,7 @@ var transferAnnotations = function(doc, path, offset, newPath, newOffset) {
       }
     }
     // 2. if the cursor is before an annotation then simply transfer the annotation to the new node
-    else {
+    else if (a.range[0] >= offset) {
       // Note: we are preserving the annotation so that anything which is connected to the annotation
       // remains valid.
       newRange = [newOffset + a.range[0] - offset, newOffset + a.range[1] - offset];
