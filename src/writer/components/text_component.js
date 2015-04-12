@@ -8,7 +8,6 @@ var TextProperty = require('./text_property')
 var TextComponent = React.createClass({
 
   displayName: "TextComponent",
-
   render: function() {
     return $$("div", { className: "content-node text", "data-id": this.props.node.id },
       $$(TextProperty, {

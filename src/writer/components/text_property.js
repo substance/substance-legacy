@@ -32,24 +32,24 @@ var TextProperty = React.createClass({
     return false;
   },
 
-  
-
   componentDidMount: function() {
     var doc = this.props.doc;
     var surface = this.context.surface;
     doc.getEventProxy('path').add(this.props.path, this, this.propertyDidChange);
-    surface.containerAnnotationEvents.add(this.props.path, this, this.renderManually);
-    this.renderManually();
+
+    // Note: Now we don't call renderManually because need to render twice anyways. 
+    // container_component triggers those double renders
+    // this.renderManually()
   },
 
   componentWillUnmount: function() {
     var doc = this.props.doc;
     var surface = this.context.surface;
     doc.getEventProxy('path').remove(this.props.path, this);
-    surface.containerAnnotationEvents.remove(this.props.path, this);
   },
 
   renderManually: function() {
+    if (this.context.surface.__prerendering__) return;
     var contentView = new TextProperty.ContentView({
       doc: this.props.doc,
       node: this.props.node,
@@ -150,7 +150,6 @@ var TextProperty = React.createClass({
     return root.children;
   },
 
-
   propertyDidChange: function(change, info) {
     // Note: Surface provides the source element as element
     // whenever editing is done by Contenteditable (as opposed to programmatically)
@@ -159,9 +158,14 @@ var TextProperty = React.createClass({
       // console.log('Skipping update...');
       return;
     }
-    // TODO: maybe we want to find an incremental solution
-    // However, this is surprisingly fast so that almost no flickering can be observed.
-    this.renderManually();
+
+    // HACK: container is out of sync and rerender only works when it's updated
+    // So we wait a bit... 
+    setTimeout(function() {
+      // TODO: maybe we want to find an incremental solution
+      // However, this is surprisingly fast so that almost no flickering can be observed.
+      this.renderManually();
+    }.bind(this));
   },
 
   render: function() {

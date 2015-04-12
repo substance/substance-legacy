@@ -100,7 +100,7 @@ var ContainerComponent = React.createClass({
     // Top level structure
     // ---------
 
-    return $$("div", {className: "interview-content", contentEditable: true, "data-id": "content"},
+    var virtualDOM = $$("div", {className: "interview-content", contentEditable: true, "data-id": "content"},
       $$("div", {
           className: "container-node " + this.props.node.id,
           spellCheck: false,
@@ -110,6 +110,7 @@ var ContainerComponent = React.createClass({
         $$('div', {className: "subject-references", contentEditable: false}, subjectRefComponents)
       )
     );
+    return virtualDOM;
   },
 
   updateBrackets: function() {
@@ -150,44 +151,71 @@ var ContainerComponent = React.createClass({
     var surface = this.surface;
     var doc = this.props.doc;
 
-    doc.getEventProxy('path').add([this.props.node.id, 'nodes'], this, this.containerDidChange);
-    surface.containerAnnotationEvents.add(['any'], this, this.containerDidChange );
+    doc.getEventProxy('path').add([this.props.node.id, 'nodes'], this, this.onDocumentChange);
 
     this.props.writerCtrl.registerSurface(surface, "content");
     surface.attach(this.getDOMNode());
 
+    doc.connect(this, {
+      'container-annotation-update': this.handleContainerAnnotationUpdate
+    });
+    
+    var self = this;
+
     // HACK: For initial rendering because text view depends on some view-related information
     // that gets available after the first render
-    this.forceUpdate();
+    // this.forceUpdate();
+    this.forceUpdate(function() {
+      self.surface.__prerendering__ = true;
+      self.surface.forceUpdate(function() {
+        self.surface.__prerendering__ = false;
+        self.forceUpdate(function() {
+          self.updateBrackets();
+          self.surface.rerenderDomSelection(); 
+        });
+      });        
+    });
 
     $(window).resize(this.updateBrackets);
-    this.updateBrackets();
-    this.surface.rerenderDomSelection();
+  },
+
+  handleContainerAnnotationUpdate: function() {
+    var self = this;
+    this.forceUpdate(function() {
+      self.updateBrackets();  
+    });
   },
 
   componentDidUpdate: function() {
-    this.surface.rerenderDomSelection();
+    if (!this.surface.__prerendering__) {
+      this.surface.rerenderDomSelection();  
+    }
   },
 
   componentWillUnmount: function() {
     var surface = this.surface;
     var doc = this.props.doc;
+    doc.disconnect(this);
 
     doc.getEventProxy('path').remove([this.props.node.id, 'nodes'], this);
-    surface.containerAnnotationEvents.remove('any', this);
 
     this.props.writerCtrl.unregisterSurface(surface);
     surface.detach();
   },
 
-  containerDidChange: function() {
+  onDocumentChange: function() {
     var self = this;
+    self.surface.__prerendering__ = true;
     this.forceUpdate(function() {
+      // self.surface.__prerendering__ = true;
       self.surface.forceUpdate(function() {
-        self.updateBrackets();
-      });
+        self.surface.__prerendering__ = false;
+        self.forceUpdate(function() {
+          self.updateBrackets();
+        });
+      });        
     });
-  },
+  }
 
 });
 

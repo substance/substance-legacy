@@ -221,7 +221,7 @@ Substance.initClass(DomSelection);
 DomSelection.getDomNodeForPath = function(rootElement, path) {
   var componentElement = rootElement.querySelector('*[data-path="'+path.join('.')+'"]');
   if (!componentElement) {
-    console.error('Could not find DOM element for path', path);
+    console.warn('Could not find DOM element for path', path);
     return null;
   }
   return componentElement;

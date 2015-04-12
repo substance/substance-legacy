@@ -21,7 +21,7 @@ function Surface(editor) {
 
   this.domSelection = null;
   this.domContainer = null;
-  this.containerAnnotationEvents = new Document.ContainerAnnotationEvents(editor.getDocument());
+  
 
   // TODO: VE make jquery injectable
   this.$ = $;
@@ -125,10 +125,6 @@ Surface.Prototype = function() {
 
     // Document Change Events
     //
-    // Note: this event proxy provides a means to efficiently detect
-    // changes to container annotations
-    this.containerAnnotationEvents.setContainer(this.domContainer);
-    this.containerAnnotationEvents.attach();
     // listen to updates so that we can set the selection (only for editing not for replay)
     doc.connect(this, { 'document:changed': this.onDocumentChange });
   };
