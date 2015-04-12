@@ -160,6 +160,11 @@ PathAdapter.Arrays.Prototype = function() {
     }
   };
 
+  this.removeAll = function(path) {
+    var values = this.get(path);
+    values.splice(0, values.length);
+  };
+
   this.set = function() {
     throw new Error('This method is not available for PathAdapter.Arrays');
   };

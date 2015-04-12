@@ -37,6 +37,9 @@ var TextProperty = React.createClass({
     var surface = this.context.surface;
     doc.getEventProxy('path').add(this.props.path, this, this.textPropertyDidChange);
 
+    // HACK: a guard so that we do not render manually when this is unmounted
+    this.__mounted__ = true;
+
     // Note: even if we don't need to render in surfaces with container (~two-pass rendering)
     // we still need to render this in the context of fornm-editors.
     this.renderManually()
@@ -46,10 +49,21 @@ var TextProperty = React.createClass({
     var doc = this.props.doc;
     var surface = this.context.surface;
     doc.getEventProxy('path').remove(this.props.path, this);
+    this.__mounted__ = false;
   },
 
   renderManually: function() {
+    // HACK: to achieve two-pass rendering for container backed surfaces
+    // we store a state variable and skip 'deep' rendering here.
     if (this.context.surface.__prerendering__) return;
+    // HACK: it happened that this is called even after this component had been mounted.
+    // We need to track these situations and fix them in the right place.
+    // However, we leave it here for a while to increase stability,
+    // as these occasions are not critical for the overall functionality.
+    if(!this.__mounted__) {
+      console.warn('Tried to render an unmounted TextProperty');
+      return;
+    }
     var contentView = new TextProperty.ContentView({
       doc: this.props.doc,
       node: this.props.node,
