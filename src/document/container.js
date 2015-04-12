@@ -71,6 +71,7 @@ Container.Prototype = function() {
         throw new Error('Could not find components of ContainerAnnotation');
       }
       fragments.push({
+        path: startAnchor.path,
         id: anno.id,
         range: [startAnchor.offset, text.length],
       });
@@ -78,11 +79,13 @@ Container.Prototype = function() {
         var comp = this.getComponentAt(idx);
         text = doc.get(comp.path);
         fragments.push({
+          path: comp.path,
           id: anno.id,
           range: [0, text.length],
         });
       }
       fragments.push({
+        path: endAnchor.path,
         id: anno.id,
         range: [0, endAnchor.offset],
       });

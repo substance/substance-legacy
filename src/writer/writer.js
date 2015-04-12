@@ -24,18 +24,18 @@ var Writer = React.createClass({
     // For active container annotations annotation fragments are inserted
     // which can be used to highlight the associated range
     getHighlightedNodes: React.PropTypes.func,
-    getActiveContainerAnnotations: React.PropTypes.func
+    getHighlightsForTextProperty: React.PropTypes.func
   },
 
   getChildContext: function() {
     return {
       getHighlightedNodes: this.getHighlightedNodes,
-      getActiveContainerAnnotations: this.getActiveContainerAnnotations,
+      getHighlightsForTextProperty: this.getHighlightsForTextProperty,
     };
   },
 
   getInitialState: function() {
-    return {"contextId": "entities"};
+    return {"contextId": "editSubjectReference", "subjectReferenceId": "subject_reference_1"};
   },
 
   // Events
@@ -213,8 +213,8 @@ var Writer = React.createClass({
     return this.writerCtrl.getHighlightedNodes();
   },
 
-  getActiveContainerAnnotations: function() {
-    return this.writerCtrl.getActiveContainerAnnotations();
+  getHighlightsForTextProperty: function() {
+    return this.writerCtrl.getHighlightsForTextProperty.apply(this.writerCtrl, arguments);
   }
 
 });

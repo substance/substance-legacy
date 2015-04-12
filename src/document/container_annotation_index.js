@@ -23,9 +23,13 @@ ContainerAnnotationIndex.Prototype = function() {
 
   this.get = function(path, containerName) {
     var anchors = this.byPath.get(path);
-    anchors = Substance.filter(anchors, function(anchor) {
-      return (anchor.container === containerName);
-    });
+
+    if (containerName) {
+      anchors = Substance.filter(anchors, function(anchor) {
+        return (anchor.container === containerName);
+      });      
+    }
+    return anchors;
   };
 
   this.create = function(containerAnno) {

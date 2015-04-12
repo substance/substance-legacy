@@ -3,6 +3,10 @@
 var Substance = require('substance');
 var Document = Substance.Document;
 var Selection = Document.Selection;
+var _ = require("substance/helpers");
+
+var Highlight = require("./components/text_property").Highlight;
+
 
 // Writer Controller
 // ----------------
@@ -21,7 +25,6 @@ var WriterController = function(opts) {
     'transaction:started': this.transactionStarted,
     'document:changed': this.onDocumentChanged
   });
-
 };
 
 WriterController.Prototype = function() {
@@ -176,6 +179,33 @@ WriterController.Prototype = function() {
       }
     }
     return highlightedNodes || [];
+  };
+
+  this.getHighlightsForTextProperty = function(textProperty) {
+    var doc = this.doc;
+    var container = textProperty.getContainer();
+    var highlights = [];
+
+    var highlightsIndex = new Substance.PathAdapter.Arrays();
+    
+    if (container) {
+      var activeContainerAnnotations = this.getActiveContainerAnnotations();
+
+      _.each(activeContainerAnnotations, function(annoId) {
+        var anno = doc.get(annoId);
+        var fragments = container.getAnnotationFragments(anno);
+        _.each(fragments, function(frag) {
+          highlightsIndex.add(frag.path, new Highlight(frag.range, {
+            id: anno.id, classNames: anno.getClassNames().replace(/_/g, "-")+" annotation-fragment"
+          }));
+        });
+      });
+
+      console.log(highlightsIndex);
+      return highlightsIndex.get(textProperty.props.path) || [];
+    } else {
+      return [];
+    }
   };
 
   this.getActiveContainerAnnotations = function() {
