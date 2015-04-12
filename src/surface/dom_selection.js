@@ -63,18 +63,18 @@ var _getPathFromElement = function(el) {
         element: current
       };
     }
-    // if there is a path attibute we collect it
-    var propName = $current.attr("data-property");
-    if (propName) {
-      path.unshift(propName);
-      elements.unshift(current);
-    }
-    var nodeId = $current.attr("data-node-id");
+    var nodeId = $current.attr("data-id");
     if (nodeId) {
-      path.unshift(nodeId);
-      elements.unshift(current);
-      // STOP here
-      return { path: path, element: elements[elements.length-1] };
+      // try to take the first property
+      var $properties = $current.find('*[data-path]');
+      if ($properties.length>0) {
+        pathProperty = $($properties[0]).attr("data-path");
+        path = pathProperty.split('.');
+        return {
+          path: path,
+          element: $properties[0]
+        };
+      }
     }
     current = $current.parent()[0];
   }
