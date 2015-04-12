@@ -31,19 +31,18 @@ var TextProperty = React.createClass({
     this.updateHighlights();
     // For container annotation changes this is different, as we can loose the
     // selection
-    var annos = null;
+/*    var annos = null;
     // TODO: is there a better place to update the internal state?
-    // var oldAnnos = this.state.activeContainerAnnotations;
+    var oldAnnos = this.state.activeContainerAnnotations;
     if (this.context.getActiveContainerAnnotations) {
      annos = this.context.getActiveContainerAnnotations();
     }
     this.state.activeContainerAnnotations = annos;
-
-    // if (!Substance.isEqual(oldAnnos, annos)) {
+    // container annotatins have changed
+    if (!Substance.isEqual(oldAnnos, annos)) {
       this.renderManually();
-    // }
-
-    return false;
+    }
+*/    return false;
   },
 
   componentDidMount: function() {
@@ -135,7 +134,7 @@ var TextProperty = React.createClass({
         if (activeContainerAnnotations[entry.id]) {
           props.classNames.push('active');
         }
-      } else if (node instanceof TextProperty.AnnotationFragment) {
+      } else if (node instanceof TextProperty.ContainerAnnotationFragment) {
         var fragment = node;
         ViewClass = View;
         var classNames = fragment.node.getClassNames().replace(/_/g, '-');
@@ -170,7 +169,6 @@ var TextProperty = React.createClass({
     var fragments = [];
     var doc = this.props.doc;
     var path = this.props.path;
-    var text = doc.get(path) || "";
     if (!this.context.surface) {
       return fragments;
     }
@@ -185,57 +183,12 @@ var TextProperty = React.createClass({
     var containerNode = doc.get(containerName);
     var anchors = null;
     if (containerNode && (containerNode instanceof Substance.Document.ContainerNode)) {
-      anchors = doc.getIndex('container-annotations').get(path);
+      anchors = doc.getIndex('container-annotations').get(path) ;
       anchors = Substance.filter(anchors, function(anchor) {
         return (anchor.container === containerName);
       });
       fragments = fragments.concat(anchors);
     }
-
-    // 2. Then create fragments for if the associated container annotation is active
-    var container = surface.getContainer();
-    if (!container) {
-      return fragments;
-    }
-    Substance.each(anchors, function(anchor) {
-      var id = anchor.id;
-      if (this.isContainerAnnotationActive(id)) {
-        var range;
-        if (anchor.isStart) {
-          range = [anchor.offset, text.length];
-        } else {
-          range = [0, anchor.offset];
-        }
-        var anno = doc.get(id);
-        fragments.push(new TextProperty.AnnotationFragment(anno, range));
-      }
-    }, this);
-    // Create fragments when an active container annotations spans over
-    // this property
-    if (this.hasActiveContainerAnnotation()) {
-      var comp = container.getComponent(this.props.path);
-      var pos = comp.getIndex();
-      Substance.each(this.state.activeContainerAnnotations, function(id) {
-        var anno = doc.get(id);
-        // FIXME: ATM, when we are undoing a delete of a container
-        // annotation, it is still in the list of activeContainerAnnotations
-        if (!anno) {
-          return;
-        }
-        var comp = container.getComponent(anno.startPath);
-        var startPos = comp.getIndex();
-        if (pos<=startPos) {
-          return;
-        }
-        comp = container.getComponent(anno.endPath);
-        var endPos = comp.getIndex();
-        if (pos>=endPos) {
-          return;
-        }
-        fragments.push(new TextProperty.AnnotationFragment(anno, [0, text.length]));
-      }, this);
-    }
-
     return fragments;
   },
 
@@ -279,15 +232,15 @@ TextProperty.ContentView = NodeView.extend({
   }
 });
 
-TextProperty.AnnotationFragment = function(node, range) {
-  this.node = node;
-  this.id = node.id;
+TextProperty.Highlight = function(range, options) {
+  options = options || {};
   this.range = range;
+  this.id = options.id;
+  this.classNames = options.classNames;
 };
 
-Substance.initClass(TextProperty.AnnotationFragment);
+Substance.initClass(TextProperty.Highlight);
 
-TextProperty.AnnotationFragment.static.level = Number.MAX_VALUE;
-
+TextProperty.Highlight.static.level = Number.MAX_VALUE;
 
 module.exports = TextProperty;
