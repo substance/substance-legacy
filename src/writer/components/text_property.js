@@ -18,7 +18,7 @@ var TextProperty = React.createClass({
   contextTypes: {
     surface: React.PropTypes.object.isRequired,
     getHighlightedNodes: React.PropTypes.func.isRequired,
-    getActiveContainerAnnotations: React.PropTypes.func.isRequired,
+    getHighlightsForTextProperty: React.PropTypes.func.isRequired,
   },
 
   getInitialState: function() {
@@ -31,18 +31,19 @@ var TextProperty = React.createClass({
     this.updateHighlights();
     // For container annotation changes this is different, as we can loose the
     // selection
-/*    var annos = null;
-    // TODO: is there a better place to update the internal state?
-    var oldAnnos = this.state.activeContainerAnnotations;
-    if (this.context.getActiveContainerAnnotations) {
-     annos = this.context.getActiveContainerAnnotations();
-    }
-    this.state.activeContainerAnnotations = annos;
-    // container annotatins have changed
-    if (!Substance.isEqual(oldAnnos, annos)) {
+    // var annos = null;
+    // // TODO: is there a better place to update the internal state?
+    // var oldAnnos = this.state.activeContainerAnnotations;
+    // if (this.context.getActiveContainerAnnotations) {
+    //  annos = this.context.getActiveContainerAnnotations();
+    // }
+    // this.state.activeContainerAnnotations = annos;
+    // // container annotatins have changed
+    // if (!Substance.isEqual(oldAnnos, annos)) {
       this.renderManually();
-    }
-*/    return false;
+    // }
+
+    return false;
   },
 
   componentDidMount: function() {
@@ -98,22 +99,22 @@ var TextProperty = React.createClass({
     var text = doc.get(path) || "";
 
     var annotations = doc.getIndex('annotations').get(path);
-    // get container annotation anchors if available
-    annotations = annotations.concat(this.getContainerAnnotationFragments());
 
     var highlightedAnnotations = [];
     if (this.context.getHighlightedNodes) {
       highlightedAnnotations = this.context.getHighlightedNodes();
     }
 
-    var activeContainerAnnotations = {};
-    var _ids = this.state.activeContainerAnnotations;
-    if (_ids && _ids.length && annotations.length > 0) {
-      Substance.each(_ids, function(id) {
-        activeContainerAnnotations[id] = true;
-      });
+    var containerName = surface.getContainerName();
+
+    if (containerName) {
+      var anchors = doc.getIndex('container-annotations').get(path, containerName);
+      annotations = annotations.concat(anchors);
     }
 
+    var highlights = this.context.getHighlightsForTextProperty(this);
+    annotations = annotations.concat(highlights);
+    
     var annotator = new Annotator();
     annotator.onText = function(context, text) {
       context.children.push(text);
@@ -131,17 +132,13 @@ var TextProperty = React.createClass({
       if (node instanceof ContainerAnnotation.Anchor) {
         ViewClass = AnnotationHandle;
         props.surface = surface;
-        if (activeContainerAnnotations[entry.id]) {
-          props.classNames.push('active');
-        }
-      } else if (node instanceof TextProperty.ContainerAnnotationFragment) {
-        var fragment = node;
+      } else if (node instanceof TextProperty.Highlight) {
+        var highlight = node;
         ViewClass = View;
-        var classNames = fragment.node.getClassNames().replace(/_/g, '-');
+        var classNames = highlight.classNames || "";
         props.classNames.push(classNames);
-        props.classNames.push('annotation-fragment');
         props.tagName = 'span';
-        props['data-id'] = fragment.node.id;
+        props['data-id'] = highlight.id;
       }
       if (highlightedAnnotations.indexOf(entry.id) >= 0) {
         props.classNames.push('active');
@@ -165,40 +162,6 @@ var TextProperty = React.createClass({
     return root.children;
   },
 
-  getContainerAnnotationFragments: function() {
-    var fragments = [];
-    var doc = this.props.doc;
-    var path = this.props.path;
-    if (!this.context.surface) {
-      return fragments;
-    }
-    var surface = this.context.surface;
-    var containerName = surface.getContainerName();
-    if (!containerName) {
-      return fragments;
-    }
-
-    // 1. Get container annotation anchors that lie on this property
-    // Note: Anchors are always rendered as they are used to compute the area to display the annotaiton bracket
-    var containerNode = doc.get(containerName);
-    var anchors = null;
-    if (containerNode && (containerNode instanceof Substance.Document.ContainerNode)) {
-      anchors = doc.getIndex('container-annotations').get(path) ;
-      anchors = Substance.filter(anchors, function(anchor) {
-        return (anchor.container === containerName);
-      });
-      fragments = fragments.concat(anchors);
-    }
-    return fragments;
-  },
-
-  isContainerAnnotationActive: function(anchorId) {
-    return (this.state.activeContainerAnnotations.indexOf(anchorId)>=0);
-  },
-
-  hasActiveContainerAnnotation: function() {
-    return (this.state.activeContainerAnnotations.length > 0);
-  },
 
   propertyDidChange: function(change, info) {
     // Note: Surface provides the source element as element
@@ -223,6 +186,10 @@ var TextProperty = React.createClass({
       },
       "data-path": this.props.path.join('.')
     });
+  },
+
+  getContainer: function() {
+    return this.context.surface.getContainer();
   }
 });
 
