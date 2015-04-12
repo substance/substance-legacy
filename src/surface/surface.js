@@ -232,7 +232,7 @@ Surface.Prototype = function() {
       var text = el.textContent;
       var textInput = text.substring(range.start.offset, range.start.offset+1);
       // Note: providing the source element, so that the TextProperty can decide not to render
-      self.editor.insertText(textInput, sel, {source: el});
+      self.editor.insertText(textInput, sel, {source: el, typing: true});
     });
   };
 
@@ -326,7 +326,7 @@ Surface.Prototype = function() {
     }
     // update the domSelection first so that we know if we are
     // within this surface at all
-    if (!info.replay) {
+    if (!info.replay && !info.typing) {
       var self = this;
       window.setTimeout(function() {
         // GUARD: For cases where the panel/or whatever has been disposed already
