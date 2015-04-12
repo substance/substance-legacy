@@ -135,7 +135,7 @@ var ContainerComponent = React.createClass({
       }
 
       var startTop = $(startAnchorEl).position().top;
-      var endTop = $(endAnchorEl).position().top;
+      var endTop = $(endAnchorEl).position().top + $(endAnchorEl).height();
       var height = endTop - startTop;
 
       var subjectRefEl = $(this.getDOMNode()).find('.subject-references .subject-reference[data-id='+subjRef.id+']');
