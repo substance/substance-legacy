@@ -6,15 +6,15 @@ var PathAdapter = Substance.PathAdapter;
 // Container
 // --------
 //
-// Holds a sequence of document nodes (see ContainerNode). Well not really. 
+// Holds a sequence of document nodes (see ContainerNode). Well not really.
 // since each node can consist of multiple components (e.g. a figure has a
-// title and a caption) they need to be flattened to a list of components. 
+// title and a caption) they need to be flattened to a list of components.
 // This flat structure is modelled by this class.
 
 
 function Container(id) {
   if (!id) {
-    throw new Error('Contract: a container must have an id be able to associate container annotations.')
+    throw new Error('Contract: a container must have an id be able to associate container annotations.');
   }
   this.id = id;
   this.components = [];
@@ -44,6 +44,50 @@ Container.Prototype = function() {
 
   this.getComponentAt = function(idx) {
     return this.components[idx];
+  };
+
+  this.getAnnotationFragments = function(containerAnnotation) {
+    var fragments = [];
+    var doc = containerAnnotation.getDocument();
+    var anno = containerAnnotation;
+    var startAnchor = anno.getStartAnchor();
+    var endAnchor = anno.getEndAnchor();
+    // if start and end anchors are on the same property, then there is only one fragment
+    if (Substance.isEqual(startAnchor.path, endAnchor.path)) {
+      fragments.push({
+        path: startAnchor.path,
+        id: anno.id,
+        range: [startAnchor.offset, endAnchor.offset],
+      });
+    }
+    // otherwise create a trailing fragment for the property of the start anchor,
+    // full-spanning fragments for inner properties,
+    // and one for the property containing the end anchor.
+    else {
+      var text = doc.get(startAnchor.path);
+      var startComp = this.getComponent(startAnchor.path);
+      var endComp = this.getComponent(endAnchor.path);
+      if (!startComp || !endComp) {
+        throw new Error('Could not find components of ContainerAnnotation');
+      }
+      fragments.push({
+        id: anno.id,
+        range: [startAnchor.offset, text.length],
+      });
+      for (var idx = startComp.idx + 1; idx < endComp.idx; idx++) {
+        var comp = this.getComponentAt(idx);
+        text = doc.get(comp.path);
+        fragments.push({
+          id: anno.id,
+          range: [0, text.length],
+        });
+      }
+      fragments.push({
+        id: anno.id,
+        range: [0, endAnchor.offset],
+      });
+    }
+    return fragments;
   };
 
 };
