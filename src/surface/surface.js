@@ -21,7 +21,7 @@ function Surface(editor) {
 
   this.domSelection = null;
   this.domContainer = null;
-  
+
 
   // TODO: VE make jquery injectable
   this.$ = $;
@@ -270,7 +270,11 @@ Surface.Prototype = function() {
   this.handleEnterKey = function( e ) {
     e.preventDefault();
     var selection = this.domSelection.get();
-    this.editor.break(selection);
+    if (e.shiftKey) {
+      this.editor.softBreak(selection, {});
+    } else {
+      this.editor.break(selection, {});
+    }
   };
 
   this.handleDeleteKey = function ( e ) {
@@ -369,7 +373,7 @@ Surface.Prototype = function() {
 
   this.rerenderDomSelection = function() {
     if (this.isFocused) {
-      this.domSelection.set(this.getSelection());  
+      this.domSelection.set(this.getSelection());
     }
   };
 

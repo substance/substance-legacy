@@ -110,8 +110,13 @@ FormEditor.Prototype = function() {
   };
 
   // no breaking
-  this.break = function(selection) {
+  this.break = function(selection, info) {
+    // just update the selection
     this.selection = selection;
+  };
+
+  this.softBreak = function(selection, info) {
+    this.insertText('\n', selection, info);
   };
 
   // no merging, just move cursor when pressing backspace
