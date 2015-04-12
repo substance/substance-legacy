@@ -372,7 +372,9 @@ Surface.Prototype = function() {
   };
 
   this.rerenderDomSelection = function() {
-    this.domSelection.set(this.getSelection());
+    if (this.isFocused) {
+      this.domSelection.set(this.getSelection());  
+    }
   };
 
   this._updateModelSelection = function(options) {

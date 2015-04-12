@@ -27,20 +27,12 @@ var TextProperty = React.createClass({
 
   // Only necessary when
   shouldComponentUpdate: function() {
-    // Highlights are treated incrementally because this is triggered by cursor
-    // movement and it would be bad to loose the cursor due to rerender.
-    var oldHighlights = this.state.highlights;
-    this.computeHighlights();
-    if (JSON.stringify(oldHighlights) !== JSON.stringify(this.state.highlights)) {
-      this.renderManually();
-    }
+    this.renderManually();
     this.updateHighlights();
     return false;
   },
 
-  computeHighlights: function() {
-    this.state.highlights = this.context.getHighlightsForTextProperty(this);
-  },
+  
 
   componentDidMount: function() {
     var doc = this.props.doc;
@@ -108,7 +100,7 @@ var TextProperty = React.createClass({
       annotations = annotations.concat(anchors);
     }
 
-    var highlights = this.state.highlights;
+    var highlights = this.context.getHighlightsForTextProperty(this);
     annotations = annotations.concat(highlights);
     
     var annotator = new Annotator();
