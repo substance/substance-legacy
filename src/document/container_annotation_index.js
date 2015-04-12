@@ -21,13 +21,11 @@ ContainerAnnotationIndex.Prototype = function() {
     this.initialize();
   };
 
-  this.get = function(path) {
+  this.get = function(path, containerName) {
     var anchors = this.byPath.get(path);
-    if (anchors) {
-      return anchors.slice(0);
-    } else {
-      return [];
-    }
+    anchors = Substance.filter(anchors, function(anchor) {
+      return (anchor.container === containerName);
+    });
   };
 
   this.create = function(containerAnno) {
