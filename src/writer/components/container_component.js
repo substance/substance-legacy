@@ -187,6 +187,11 @@ var ContainerComponent = React.createClass({
   },
 
   componentDidUpdate: function() {
+    // HACK: when the state is changed this and particularly TextProperties
+    // get rerendered (e.g., as the highlights might have changed)
+    // Unfortunately we loose the DOM selection then.
+    // Thus, we are resetting it here, but(!) delayed as otherwise the surface itself
+    // might not have finished setting the selection to the desired and a proper state.
     if (!this.surface.__prerendering__) {
       var self = this;
       setTimeout(function() {
