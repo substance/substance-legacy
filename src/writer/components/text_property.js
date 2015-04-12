@@ -164,7 +164,28 @@ var TextProperty = React.createClass({
     return root.children;
   },
 
+  _rerenderAndRecoverSelection: function() {
+    this.renderManually();
+    this.context.surface.rerenderDomSelection();
+  },
+
   textPropertyDidChange: function(change, info) {
+    // HACK: currently without incremental rendering we need to reset the selection after changes.
+    // With high rapid incoming keyboard events the CE acts on temporarily invalid selections
+    // making the surface fail to detect the correct text input.
+    // Using the source element given by surface when handling inserts, we can skip rendering,
+    // as this is done by CE already.
+    // However can't skip it completely as we need to fixup rendered annotations.
+    // The trick here is to debounce the rerendering, so that we stay out of the way of CE during
+    // the rapid input phase, and fixup the rendering a bit delayed.
+    if (info.source === this.getDOMNode()) {
+      if (!this._debouncedRerender) {
+        this._debouncedRerender = Substance.debounce(Substance.bind(this._rerenderAndRecoverSelection, this),
+          50);
+      }
+      this._debouncedRerender();
+      return;
+    }
     // This is called whenever the associated property has been updated or set
     // HACK: container might be out of sync and rerender only works when it's updated
     // So we wait a bit...

@@ -15,6 +15,7 @@ Substance.cloneDeep = require('lodash/lang/cloneDeep');
 // Function helpers
 Substance.bind = require('lodash/function/bind');
 Substance.delay = require('lodash/function/delay');
+Substance.debounce = require('lodash/function/debounce');
 
 // Object helpers
 Substance.extend = require('lodash/object/extend');

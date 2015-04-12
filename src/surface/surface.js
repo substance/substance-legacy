@@ -44,12 +44,6 @@ function Surface(editor) {
   this._onBlur = Substance.bind( this.onBlur, this );
   this._onFocus = Substance.bind( this.onFocus, this );
 
-  this._afterKeyPress = function(e) {
-    window.setTimeout(function() {
-      self.afterKeyPress(e);
-    });
-  };
-
   this._onCompositionEnd = Substance.bind( this.onCompositionEnd, this );
 
   // state used by handleInsertion
@@ -110,7 +104,6 @@ Surface.Prototype = function() {
     //
     this.$element.on('keydown', this._onKeyDown);
     this.$element.on('keypress', this._onKeyPress);
-    this.$element.on('keypress', this._afterKeyPress);
     // OSX specific handling of dead-keys
     if (this.element.addEventListener) {
       this.element.addEventListener('compositionend', this._onCompositionEnd, false);
@@ -147,7 +140,6 @@ Surface.Prototype = function() {
     //
     this.$element.off('keydown', this._onKeyDown);
     this.$element.off('keypress', this._onKeyPress);
-    this.$element.off('keypress', this._afterKeyPress);
     if (this.element.addEventListener) {
       this.element.removeEventListener('compositionend', this._onCompositionEnd, false);
     }
@@ -219,18 +211,6 @@ Surface.Prototype = function() {
     this.handleInsertion(e);
   };
 
-  this.afterKeyPress = function ( /*e*/ ) {
-    if (this.handlingInsertion) {
-      this.handlingInsertion = false;
-      // get the text between the before insert and after insert
-      var range = this.editor.selection.getRange();
-      var el = DomSelection.getDomNodeForPath(this.element, range.start.path);
-      var text = el.textContent;
-      var textInput = text.substring(range.start.offset, range.start.offset+1);
-      this.editor.insertText(textInput, this.editor.selection);
-    }
-  };
-
   // Handling Dead-keys under OSX
   this.onCompositionEnd = function(e) {
     try {
@@ -242,7 +222,18 @@ Surface.Prototype = function() {
   };
 
   this.handleInsertion = function( /*e*/ ) {
-    this.handlingInsertion = true;
+    // this.handlingInsertion = true;
+    // get the text between the position before insert and after insert
+    var sel = this.editor.selection;
+    var range = sel.getRange();
+    var el = DomSelection.getDomNodeForPath(this.element, range.start.path);
+    var self = this;
+    setTimeout(function() {
+      var text = el.textContent;
+      var textInput = text.substring(range.start.offset, range.start.offset+1);
+      // Note: providing the source element, so that the TextProperty can decide not to render
+      self.editor.insertText(textInput, sel, {source: el});
+    });
   };
 
   this.handleLeftOrRightArrowKey = function ( e ) {
@@ -341,7 +332,6 @@ Surface.Prototype = function() {
         // GUARD: For cases where the panel/or whatever has been disposed already
         // after changing the doc
         if (!self.domSelection) return;
-
         var sel = change.after.selection;
         self.editor.selection = sel;
         self.domSelection.set(sel);
