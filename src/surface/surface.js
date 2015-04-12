@@ -371,11 +371,8 @@ Surface.Prototype = function() {
     }
   };
 
-  this._updateDomSelection = function(sel) {
-    var self = this;
-    window.setTimeout(function() {
-      self.domSelection.set(sel);
-    });
+  this.rerenderDomSelection = function() {
+    this.domSelection.set(this.getSelection());
   };
 
   this._updateModelSelection = function(options) {
