@@ -37,9 +37,9 @@ var TextProperty = React.createClass({
     var surface = this.context.surface;
     doc.getEventProxy('path').add(this.props.path, this, this.textPropertyDidChange);
 
-    // Note: Now we don't call renderManually because need to render twice anyways.
-    // container_component triggers those double renders
-    // this.renderManually()
+    // Note: even if we don't need to render in surfaces with container (~two-pass rendering)
+    // we still need to render this in the context of fornm-editors.
+    this.renderManually()
   },
 
   componentWillUnmount: function() {
