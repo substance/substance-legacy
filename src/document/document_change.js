@@ -46,7 +46,6 @@ DocumentChange.Prototype = function() {
 
   this.traverse = function(fn, ctx) {
     this.updated.traverse(function() {
-      console.log('########')
       fn.apply(ctx, arguments);
     });
   };
