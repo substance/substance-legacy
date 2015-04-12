@@ -218,9 +218,9 @@ var Writer = React.createClass({
 
   // return true when you handled a key combo
   handleApplicationKeyCombos: function(e) {
+    // console.log('####', e.keyCode, e.metaKey, e.ctrlKey, e.shiftKey);
     var handled = false;
     // TODO: we could make this configurable via extensions
-    console.log('####', e.keyCode, e.metaKey, e.ctrlKey, e.shiftKey);
     // Undo/Redo: cmd+z, cmd+shift+z
     if (e.keyCode === 90 && (e.metaKey||e.ctrlKey)) {
       if (e.shiftKey) {
