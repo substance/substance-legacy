@@ -22,12 +22,14 @@ ContainerAnnotationIndex.Prototype = function() {
   };
 
   this.get = function(path, containerName) {
-    var anchors = this.byPath.get(path);
-
+    var anchors = this.byPath.get(path) || [];
     if (containerName) {
-      anchors = Substance.filter(anchors, function(anchor) {
+      return Substance.filter(anchors, function(anchor) {
         return (anchor.container === containerName);
-      });      
+      });
+    } else {
+      // return a copy of the array
+      return anchors.slice(0);
     }
     return anchors;
   };
