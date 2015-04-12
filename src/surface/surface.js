@@ -135,7 +135,6 @@ Surface.Prototype = function() {
     // Document Change Events
     //
     doc.disconnect(this);
-    this.containerAnnotationEvents.detach();
 
     // Mouse Events
     //
