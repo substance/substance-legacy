@@ -35,9 +35,9 @@ var TextProperty = React.createClass({
   componentDidMount: function() {
     var doc = this.props.doc;
     var surface = this.context.surface;
-    doc.getEventProxy('path').add(this.props.path, this, this.propertyDidChange);
+    doc.getEventProxy('path').add(this.props.path, this, this.textPropertyDidChange);
 
-    // Note: Now we don't call renderManually because need to render twice anyways. 
+    // Note: Now we don't call renderManually because need to render twice anyways.
     // container_component triggers those double renders
     // this.renderManually()
   },
@@ -102,7 +102,7 @@ var TextProperty = React.createClass({
 
     var highlights = this.context.getHighlightsForTextProperty(this);
     annotations = annotations.concat(highlights);
-    
+
     var annotator = new Annotator();
     annotator.onText = function(context, text) {
       context.children.push(text);
@@ -150,17 +150,10 @@ var TextProperty = React.createClass({
     return root.children;
   },
 
-  propertyDidChange: function(change, info) {
-    // Note: Surface provides the source element as element
-    // whenever editing is done by Contenteditable (as opposed to programmatically)
-    // In that case we trust in CE and do not rerender.
-    if (info.source === this.getDOMNode()) {
-      // console.log('Skipping update...');
-      return;
-    }
-
-    // HACK: container is out of sync and rerender only works when it's updated
-    // So we wait a bit... 
+  textPropertyDidChange: function(change, info) {
+    // This is called whenever the associated property has been updated or set
+    // HACK: container might be out of sync and rerender only works when it's updated
+    // So we wait a bit...
     setTimeout(function() {
       // TODO: maybe we want to find an incremental solution
       // However, this is surprisingly fast so that almost no flickering can be observed.
