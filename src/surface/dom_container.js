@@ -14,7 +14,6 @@ function DomContainer(containerId, element) {
 }
 
 DomContainer.Prototype = function() {
-
   this.reset = function() {
     var $componentElements = DomContainer.getEditableElements(this.element);
     var components = Substance.map($componentElements, function(el, idx) {
@@ -22,13 +21,13 @@ DomContainer.Prototype = function() {
     });
     this._setComponents(components);
   };
-
 };
 
 Substance.inherit(DomContainer, Container);
 
-DomContainer.Component = function(element, idx) {
+DomContainer.Component = function(element, idx, parentNode) {
   Container.Component.call(this, DomContainer.getPathFromElement(element), idx);
+  this.parentNode = parentNode;
   this.element = element;
 };
 

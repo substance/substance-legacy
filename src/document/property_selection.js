@@ -83,4 +83,19 @@ PropertySelection.Prototype = function() {
 
 Substance.inherit(PropertySelection, Selection);
 
+Object.defineProperties(PropertySelection.prototype, {
+  start: {
+    get: function() {
+      return this.range.start;
+    },
+    set: function() { throw new Error('immutable.'); }
+  },
+  end: {
+    get: function() {
+      return this.range.end;
+    },
+    set: function() { throw new Error('immutable.'); }
+  },
+});
+
 module.exports = PropertySelection;

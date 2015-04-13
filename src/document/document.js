@@ -11,12 +11,12 @@ var DocumentChange = require('./document_change');
 
 var NotifyByPath = require('./notify_by_path');
 
-
-
 function Document( schema, seed ) {
   Substance.EventEmitter.call(this);
 
   this.schema = schema;
+  this.seed = seed;
+
   this.data = new Data.IncrementalGraph(schema, {
     seed: seed,
     didCreateNode: Substance.bind(this._didCreateNode, this),
@@ -54,6 +54,14 @@ function Document( schema, seed ) {
 }
 
 Document.Prototype = function() {
+
+  this.newInstance = function() {
+    return new Document(this.schema);
+  };
+
+  this.fromSnapshot = function(data) {
+    return new Document(this.schema, data);
+  };
 
   this.getSchema = function() {
     return this.schema;

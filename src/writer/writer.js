@@ -16,7 +16,9 @@ var Writer = React.createClass({
 
   contextTypes: {
     backend: React.PropTypes.object.isRequired,
-    notifications: React.PropTypes.object.isRequired
+    notifications: React.PropTypes.object.isRequired,
+    htmlImporter: React.PropTypes.object.isRequired,
+    htmlExporter: React.PropTypes.object.isRequired
   },
 
   childContextTypes: {
@@ -51,6 +53,10 @@ var Writer = React.createClass({
     });
   },
 
+  componentWillUnmount: function() {
+    this.clipboard.detach(this.getDOMNode());
+  },
+
   shouldComponentUpdate: function(nextProps, nextState) {
     var sprevState = JSON.stringify(this.state);
     var snextState = JSON.stringify(nextState);
@@ -66,6 +72,11 @@ var Writer = React.createClass({
         this.requestAutoSave();
       }.bind(this), 10000);
     }
+    var rootElement = this.getDOMNode();
+    var $clipboard = $(rootElement).find('.clipboard');
+    this.clipboard = new Substance.Surface.Clipboard(this.writerCtrl, $clipboard[0],
+      this.context.htmlImporter, this.context.htmlExporter);
+    this.clipboard.attach(rootElement);
   },
 
   requestAutoSave: function() {
@@ -204,7 +215,8 @@ var Writer = React.createClass({
       ),
       $$(StatusBar, {
         doc: this.props.doc
-      })
+      }),
+      $$('div', {className: "clipboard"})
     );
   },
 

@@ -10,18 +10,22 @@ var Document = require('../document');
 
 var __id__ = 0;
 
-function Surface(editor) {
+function Surface(editor, options) {
   Substance.EventEmitter.call(this);
+
+  options = options || {};
 
   this.__id__ = __id__++;
 
   // this.element must be set via surface.attach(element)
   this.element = null;
+  this.$element = null;
   this.editor = editor;
 
   this.domSelection = null;
   this.domContainer = null;
 
+  this.logger = options.logger || window.console;
 
   // TODO: VE make jquery injectable
   this.$ = $;
@@ -34,11 +38,6 @@ function Surface(editor) {
   this._onMouseUp = Substance.bind( this.onMouseUp, this );
   this._onMouseDown = Substance.bind( this.onMouseDown, this );
   this._onMouseMove = Substance.bind( this.onMouseMove, this );
-  this._delayedUpdateModelSelection = function(options) {
-    window.setTimeout(function() {
-      self._updateModelSelection(options);
-    });
-  };
   this._onKeyDown = Substance.bind( this.onKeyDown, this );
   this._onKeyPress = Substance.bind( this.onKeyPress, this );
   this._onBlur = Substance.bind( this.onBlur, this );
@@ -62,6 +61,10 @@ Surface.Prototype = function() {
     if (this.editor.isContainerEditor()) {
       return this.editor.container;
     }
+  };
+
+  this.getEditor = function() {
+    return this.editor;
   };
 
   // Call this whenever the content of the root element changes so
@@ -379,6 +382,10 @@ Surface.Prototype = function() {
       this.emit('selection:changed', sel);
       return true;
     }
+  };
+
+  this.getLogger = function() {
+    return this.logger;
   };
 
 };

@@ -9,14 +9,14 @@ var Annotation = require('./annotation');
 // ----------------
 //
 // Lets us look up existing annotations by path and type
-// 
+//
 // To get all annotations for the content of a text node
-// 
+//
 //    var aIndex = doc.annotationIndex;
 //    aIndex.get(["text_1", "content"]);
-// 
+//
 // You can also scope for a specific range
-// 
+//
 //    aIndex.get(["text_1", "content"], 23, 45);
 
 var AnnotationIndex = function() {
@@ -41,10 +41,20 @@ AnnotationIndex.Prototype = function() {
   // TODO: use object interface? so we can combine filters (path and type)
   this.get = function(path, start, end, type) {
     var annotations = this.byPath.get(path) || {};
-    annotations = Substance.map(annotations, function(anno) {
-      return anno;
-    });
-
+    if (Substance.isString(path) || path.length === 1) {
+      // flatten annotations if this is called via node id
+      var _annos = annotations;
+      annotations = [];
+      Substance.each(_annos, function(level) {
+        annotations = annotations.concat(Substance.map(level, function(anno) {
+          return anno;
+        }));
+      });
+    } else {
+      annotations = Substance.map(annotations, function(anno) {
+        return anno;
+      });
+    }
     /* jshint eqnull:true */
     // null check for null or undefined
     if (start != null) {

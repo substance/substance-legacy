@@ -21,4 +21,7 @@ Document.ContainerSelection = require('./container_selection');
 
 Document.Annotator = require('./annotator');
 
+Document.HtmlImporter = require('./html_importer');
+Document.HtmlExporter = require('./html_exporter');
+
 module.exports = Document;

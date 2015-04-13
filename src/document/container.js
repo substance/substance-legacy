@@ -18,6 +18,7 @@ function Container(id) {
   }
   this.id = id;
   this.components = [];
+  this.nodes = {};
   this.byPath = new PathAdapter({});
 }
 
@@ -25,8 +26,20 @@ Container.Prototype = function() {
 
   this._setComponents = function(components) {
     var byPath = new PathAdapter({});
+    var nodes = {};
     for (var i = 0; i < components.length; i++) {
       var comp = components[i];
+      if (comp.path.length !== 2) {
+        throw new Error("Contract: every property path must have 2 elements");
+      }
+      var nodeId = comp.path[0];
+      var node = nodes[nodeId];
+      if (!node) {
+        node = new Container.Node(nodeId);
+        nodes[nodeId] = node;
+      }
+      comp.parentNode = node;
+      node.components.push(comp);
       if (i > 0) {
         components[i-1].next = comp;
         comp.previous = components[i-1];
@@ -34,6 +47,7 @@ Container.Prototype = function() {
       byPath.set(comp.path, comp);
     }
     this.components = components;
+    this.nodes = nodes;
     this.byPath = byPath;
   };
 
@@ -100,6 +114,7 @@ Substance.initClass(Container);
 Container.Component = function Component(path, idx) {
   this.path = path;
   this.idx = idx;
+  this.parentNode = null;
   this.previous = null;
   this.next = null;
 };
@@ -126,8 +141,18 @@ Container.Component.Prototype = function() {
     return this.idx;
   };
 
+  this.getParentNode = function() {
+    return this.parentNode;
+  };
 };
 
 Substance.initClass(Container.Component);
+
+Container.Node = function Node(id) {
+  this.id = id;
+  this.components = [];
+};
+
+Substance.initClass(Container.Node);
 
 module.exports = Container;

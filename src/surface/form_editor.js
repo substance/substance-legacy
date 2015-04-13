@@ -119,6 +119,12 @@ FormEditor.Prototype = function() {
     this.insertText('\n', selection, info);
   };
 
+  this.paste = function(selection, content) {
+    if (content.text) {
+      this.insertedText(content.text, selection);
+    }
+  };
+
   // no merging, just move cursor when pressing backspace
   this._merge = function(tx, path, dir) {
     var component = this.container.getComponent(path);

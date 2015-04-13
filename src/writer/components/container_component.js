@@ -13,7 +13,8 @@ var ContainerComponent = React.createClass({
   displayName: "ContainerComponent",
 
   contextTypes: {
-    componentFactory: React.PropTypes.object.isRequired
+    componentFactory: React.PropTypes.object.isRequired,
+    notifications: React.PropTypes.object.isRequired
   },
 
   childContextTypes: {
@@ -22,7 +23,9 @@ var ContainerComponent = React.createClass({
   },
 
   getInitialState: function() {
-    this.surface = new Surface(new Surface.ContainerEditor('content', this.props.doc));
+    this.surface = new Surface(new Surface.ContainerEditor('content', this.props.doc), {
+      logger: this.context.notifications
+    });
     return {};
   },
 
