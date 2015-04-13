@@ -243,6 +243,11 @@ var Writer = React.createClass({
       }
       handled = true;
     }
+    // Reset to default state
+    else if (e.keyCode === 27) {
+      this.replaceState(this.getInitialState());
+      handled = true;
+    }
     // Save: cmd+s
     else if (e.keyCode === 83 && (e.metaKey||e.ctrlKey)) {
       this.requestAutoSave();
