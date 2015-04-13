@@ -57,7 +57,7 @@ ContainerEditor.Prototype = function() {
     containerNode.show('text');
     var annotations = this.document.getIndex('annotations').get(path, offset, endOffset);
     Substance.each(annotations, function(anno) {
-      var data = anno.toJSON();
+      var data = Substance.deepclone(anno.toJSON());
       data.path = ['text', 'content'];
       data.range = [ Math.max(offset, anno.range[0])-offset, Math.min(endOffset, anno.range[1])-offset];
       copy.create(data);
@@ -92,7 +92,7 @@ ContainerEditor.Prototype = function() {
       }
       var annotations = annotationIndex.get(comp.path);
       for (var j = 0; j < annotations.length; j++) {
-        copy.create(annotations[j].toJSON());
+        copy.create(Substance.clone(annotations[j].toJSON()));
       }
     }
     // 2. Truncate properties according to the selection.
@@ -194,7 +194,8 @@ ContainerEditor.Prototype = function() {
     // copy annotations
     Substance.each(annotations, function(anno) {
       var data = anno.toJSON();
-      data.path = path;
+      data.path = path.slice(0);
+      data.range = data.range.slice(0);
       data.range[0] += offset;
       data.range[1] += offset;
       if (tx.get(data.id)) {
