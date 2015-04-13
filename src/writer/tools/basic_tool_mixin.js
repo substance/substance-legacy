@@ -29,6 +29,10 @@ var BasicToolMixin = {
     }
   },
 
+  handleClick: function(e) {
+    e.preventDefault(e);
+  },
+
   handleMouseDown: function(e) {
     e.preventDefault();
     // e.stopPropagation();
@@ -72,6 +76,7 @@ var BasicToolMixin = {
       href: "#",
       title: 'Emphasis',
       onMouseDown: this.handleMouseDown,
+      onClick: this.handleClick,
       dangerouslySetInnerHTML: {__html: '<i class="fa '+this.toolIcon+'"></i>'}
     });
   }
