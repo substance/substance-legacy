@@ -74,7 +74,6 @@ var Writer = React.createClass({
     var notifications = this.context.notifications;
 
     if (doc.__dirty && !doc.__isSaving) {
-
       notifications.addMessage({
         type: "info",
         message: "Autosaving ..."
@@ -108,7 +107,8 @@ var Writer = React.createClass({
     });
   },
 
-  handleCloseDialog: function() {
+  handleCloseDialog: function(e) {
+    e.preventDefault();
     console.log('handling close');
     this.replaceState(this.getInitialState());
   },
@@ -130,7 +130,7 @@ var Writer = React.createClass({
     var self = this;
 
     var panelComps = panels.map(function(panelClass) {
-      // We don't show inactive here
+      // We don't show inactive stuff here
       if (panelClass.isDialog && panelClass.contextId !== contextId) return null;
 
       var className = ["toggle-context"];
@@ -139,20 +139,21 @@ var Writer = React.createClass({
       }
 
       if (panelClass.isDialog) {
-        return $$('div', {
-          className: 'dialog '+ contextId,
-          href: "#",
-          key: panelClass.contextId,
-          "data-id": panelClass.contextId
-        },
-          panelClass.displayName,
-          $$('a', {
-            href: "#",
-            onClick: this.handleCloseDialog,
-            className: "close-dialog",
-            dangerouslySetInnerHTML: {__html: '<i class="fa fa-close"></i> '}
-          })
-        );
+        // return $$('div', {
+        //   className: 'dialog '+ contextId,
+        //   href: "#",
+        //   key: panelClass.contextId,
+        //   "data-id": panelClass.contextId
+        // },
+        //   panelClass.displayName,
+        //   $$('a', {
+        //     href: "#",
+        //     onClick: this.handleCloseDialog,
+        //     className: "close-dialog",
+        //     dangerouslySetInnerHTML: {__html: '<i class="fa fa-close"></i> '}
+        //   })
+        // );
+        return $$('div');
       } else {
         return $$('a', {
           className: className.join(" "),
