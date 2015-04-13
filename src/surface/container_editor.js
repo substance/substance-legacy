@@ -6,12 +6,12 @@ var FormEditor = require('./form_editor');
 var Annotations = require('../document/annotation_updates');
 var Selection = Document.Selection;
 
-function FullfledgedEditor(containerName, doc) {
+function ContainerEditor(containerName, doc) {
   FormEditor.call(this, doc);
   this.containerName = containerName;
 }
 
-FullfledgedEditor.Prototype = function() {
+ContainerEditor.Prototype = function() {
 
   this.isContainerEditor = function() {
     return true;
@@ -124,6 +124,6 @@ FullfledgedEditor.Prototype = function() {
 
 };
 
-Substance.inherit(FullfledgedEditor, FormEditor);
+Substance.inherit(ContainerEditor, FormEditor);
 
-module.exports = FullfledgedEditor;
+module.exports = ContainerEditor;
