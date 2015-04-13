@@ -22,7 +22,7 @@ FullfledgedEditor.Prototype = function() {
   };
 
   this.break = function(selection, info) {
-    console.log("Breaking at %s", selection.toString());
+    // console.log("Breaking at %s", selection.toString());
     info = info || {};
     var tx = this.document.startTransaction({ seleciton: selection });
     tx.selection = selection;

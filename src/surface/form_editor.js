@@ -41,7 +41,7 @@ FormEditor.Prototype = function() {
   };
 
   this.insertText = function(textInput, selection, info) {
-    console.log("Inserting text: '%s' at %s", textInput, selection.toString());
+    // console.log("Inserting text: '%s' at %s", textInput, selection.toString());
     var tx = this.document.startTransaction({ selection: selection });
     tx.selection = selection;
     try {
