@@ -1,45 +1,44 @@
-"use strict";
-
 var Substance = require('../basics');
 
 function HtmlImporter( config ) {
   this.config = config || {};
+
+  this._blockTypes = [];
+
+  this._inlineTypes = [];
+
+  // register converters defined in schema
+  if (config.schema) {
+    config.schema.each(function(NodeClass) {
+      // ATM Node.matchElement is required
+      if (!NodeClass.static.matchElement) {
+        return;
+      }
+      if (NodeClass.static.blockType) {
+        this._blockTypes.push(NodeClass);
+      } else {
+        this._inlineTypes.push(NodeClass);
+      }
+    }, this);
+  }
 }
 
 HtmlImporter.Prototype = function HtmlImporterPrototype() {
 
-  // TODO: make this extensible
-  var _blockElements = ['p', 'h1', 'h2', 'h3', 'h4', 'h5'];
-
-  var _annotationTypes = {
-    "b": "strong",
-    "i": "emphasis",
-  };
-
-  this.isBlockElement = function(type) {
-    return _blockElements.indexOf(type) >= 0;
-  };
-
-  this.isAnnotation = function(type) {
-    return !!_annotationTypes[type];
-  };
-
-  this.createState = function(doc, htmlDoc) {
+  this.initialize = function(doc, rootEl) {
     var state = {
       doc: doc,
-      htmlDoc: htmlDoc,
-      annotations: [],
+      rootEl: rootEl,
+      inlineNodes: [],
       trimWhitespaces: !!this.config.trimWhitespaces,
+      // properties
       contexts: [],
+      // state for reentrant calls
+      reentrant: null,
       lastChar: "",
       skipTypes: {},
       ignoreAnnotations: false,
     };
-    return state;
-  };
-
-  this.convertDocument = function(htmlDoc, doc) {
-    var state = this.createState(doc, htmlDoc);
     if (!doc.get('content')) {
       doc.create({
         'type': 'container',
@@ -48,71 +47,125 @@ HtmlImporter.Prototype = function HtmlImporterPrototype() {
       });
     }
     state.containerNode = doc.get('content');
-    var body = htmlDoc.getElementsByTagName( 'body' )[0];
-    body = this.sanitizeHtmlDoc(body);
-    console.log('Sanitized html:', body.innerHTML);
-
-    this.body(state, body);
-    // create annotations afterwards so that the targeted nodes
-    // exist for sure
-    for (var i = 0; i < state.annotations.length; i++) {
-      doc.create(state.annotations[i]);
-    }
+    this.state = state;
   };
 
   this.sanitizeHtmlDoc = function(body) {
     var newRoot = body;
     // Look for paragraphs in <b> which is served by GDocs.
-    var gdocs = body.querySelector('b > p')
+    var gdocs = body.querySelector('b > p');
     if (gdocs) {
-      newRoot = gdocs.parentNode;
+      return gdocs.parentNode;
     }
     return newRoot;
   };
 
-  this.body = function(state, body) {
+  this.convertDocument = function(htmlDoc, doc) {
+    var body = htmlDoc.getElementsByTagName( 'body' )[0];
+    body = this.sanitizeHtmlDoc(body);
+    console.log('Sanitized html:', body.innerHTML);
+
+    this.initialize(doc, rootEl);
+    this.bodyWithCatchbin(rootEl);
+    // create annotations afterwards so that the targeted nodes
+    // exist for sure
+    for (var i = 0; i < this.state.inlineNodes.length; i++) {
+      doc.create(this.state.inlineNodes[i]);
+    }
+  };
+
+  this.convert = function(rootEl, doc) {
+    this.initialize(doc, rootEl);
+    this.body(rootEl);
+    // create annotations afterwards so that the targeted nodes
+    // exist for sure
+    for (var i = 0; i < this.state.inlineNodes.length; i++) {
+      doc.create(this.state.inlineNodes[i]);
+    }
+  };
+
+  this.body = function(body) {
+    var state = this.state;
+    var doc = state.doc;
+    var containerNode = state.containerNode;
+    var childIterator = new HtmlImporter.ChildNodeIterator(body);
+    while(childIterator.hasNext()) {
+      var el = childIterator.next();
+      var type = this._getDomNodeType(el);
+      var blockType = this._getBlockTypeForElement(el);
+      if (blockType) {
+        var node = blockType.static.fromHtml(el, this);
+        if (!node) {
+          throw new Error("Contract: a Node's fromHtml() method must return a node");
+        } else {
+          node.type = blockType.static.name;
+          node.id = node.id || Substance.uuid(node.type);
+          doc.create(node);
+          containerNode.show(node.id);
+        }
+      } else {
+        // TODO: maybe we put that thing just here into a paragraph
+        // and then continue?
+        console.warn("Skipping inline node on block level", el);
+      }
+    }
+  };
+
+  this.bodyWithCatchbin = function(body) {
+    var state = this.state;
+    var doc = state.doc;
+    var containerNode = state.containerNode;
     // HACK: this is not a general solution just adapted to the
     // content provided by pasting from Microsoft Word: when pasting
     // only some words of a paragraph then there is no wrapping p element
     var catchBin = null;
-    var handlers = {
-      'p': this.paragraph,
-      'h1': this.heading,
-      'h2': this.heading,
-      'h3': this.heading,
-      'h4': this.heading,
-      'h5': this.heading,
-    };
     var childIterator = new HtmlImporter.ChildNodeIterator(body);
+
+    // Note: this is rather complicated as it tries to fix
+    // problems in the context of pasting from clipboard
+    // where incredibly bad HTML is transfered by some applications.
+    // TODO: we should push this craziness into a method that is only
+    // used for the Pasting Business.
     while(childIterator.hasNext()) {
       var child = childIterator.next();
-      var type = this.getNodeType(child);
-      if (handlers[type]) {
+      var type = this._getDomNodeType(child);
+      var blockType = this._getBlockTypeForElement(child);
+      if (blockType) {
         // if there is an open catch bin node add it to document and reset
         if (catchBin && catchBin.content.length > 0) {
-          state.doc.create(catchBin);
-          state.containerNode.show(catchBin.id);
+          doc.create(catchBin);
+          containerNode.show(catchBin.id);
           catchBin = null;
         }
-        var node = handlers[type].call(this, state, child);
-        if (node) {
-          state.containerNode.show(node.id);
+        var node = blockType.static.fromHtml(child, this);
+        if (!node) {
+          throw new Error("Contract: a Node's fromHtml() method must return a node");
+        } else {
+          node.type = blockType.static.name;
+          node.id = node.id || Substance.uuid(node.type);
+          doc.create(node);
+          containerNode.show(node.id);
         }
       } else {
         childIterator.back();
         // Wrap all other stuff into a paragraph
         if (!catchBin) {
           catchBin = {
-            type: 'text',
-            id: Substance.uuid('text'),
+            type: 'paragraph',
+            id: Substance.uuid('paragraph'),
             content: ''
           };
         }
         state.contexts.push({
           path: [catchBin.id, 'content']
         });
-        catchBin.content += this._annotatedText(state, childIterator, catchBin.content.length);
+        state.reentrant = {
+          offset:catchBin.content.length,
+          text: ""
+        };
+        catchBin.content += this._annotatedText(childIterator);
         state.contexts.pop();
+        state.reentrant = null;
       }
     }
     if (catchBin && catchBin.content.length > 0) {
@@ -122,94 +175,130 @@ HtmlImporter.Prototype = function HtmlImporterPrototype() {
     }
   };
 
-  this.paragraph = function(state, el) {
-    var textNode = {
-      type: 'text',
-      id: el.id || Substance.uuid('text'),
-      content: null,
-    };
-    textNode.content = this.annotatedText(state, el, [textNode.id, 'content']);
-    state.doc.create(textNode);
-    return textNode;
-  };
-
-  this.heading = function(state, el) {
-    var headingNode = {
-      type: 'heading',
-      id: el.id || Substance.uuid('heading'),
-      content: null,
-      level: -1
-    };
-    var type = this.getNodeType(el);
-    headingNode.level = parseInt(type.substring(1));
-    headingNode.content = this.annotatedText(state, el, [headingNode.id, 'content']);
-    state.doc.create(headingNode);
-    return headingNode;
-  };
-
   /**
    * Parse annotated text
    *
    * Make sure you call this method only for elements where `this.isParagraphish(elements) === true`
    */
-  this.annotatedText = function(state, el, path, options) {
+  this.annotatedText = function(el, path, options) {
     options = options || {};
-    state.contexts.push({
-      path: path
-    });
-    var childIterator = new HtmlImporter.ChildNodeIterator(el);
-    var text = this._annotatedText(state, childIterator, options.offset || 0);
-    state.contexts.pop();
+    var state = this.state;
+    if (path) {
+      if (state.reentrant) {
+        throw new Error('Contract: it is not allowed to bind a new call annotatedText to a path while the previous has not been completed.');
+      }
+      state.contexts.push({
+        path: path
+      });
+      state.reentrant = {
+        offset:options.offset || 0,
+        text: ""
+      };
+    } else {
+      console.log('Re-entering', state.reentrant.offset);
+    }
+    var iterator = new HtmlImporter.ChildNodeIterator(el);
+    var text = this._annotatedText(iterator);
+    if (!path) {
+      console.log('...left', state.reentrant.offset);
+    }
+    // append the text of the last reentrant call
+    // state.reentrant.text = state.reentrant.text.concat(text);
+    if (path) {
+      state.contexts.pop();
+      state.reentrant = null;
+    }
     return text;
   };
 
   // Internal function for parsing annotated text
   // --------------------------------------------
   //
-  this._annotatedText = function(state, iterator, charPos) {
-    var plainText = "";
-    if (charPos === undefined) {
-      charPos = 0;
+  this._annotatedText = function(iterator) {
+    var state = this.state;
+    var context = state.contexts[state.contexts.length-1];
+    var reentrant = state.reentrant;
+    var text = "";
+    if (!reentrant) {
+      throw new Error('Illegal state: state.reentrant is null.');
     }
     while(iterator.hasNext()) {
       var el = iterator.next();
-      var type = this.getNodeType(el);
+      var type = this._getDomNodeType(el);
       // Plain text nodes...
       if (el.nodeType === window.Document.TEXT_NODE) {
-        var text = this._prepareText(state, el.textContent);
-        if (text.length) {
-          plainText = plainText.concat(text);
-          charPos += text.length;
+        var _text = this._prepareText(state, el.textContent);
+        if (_text.length) {
+          // Note: text is not merged into the reentrant state
+          // so that we are able to return for this reentrant call
+          text = text.concat(_text);
+          reentrant.offset += text.length;
         }
       } else if (el.nodeType === window.Document.COMMENT_NODE) {
         // skip comment nodes
         continue;
-      } else if (this.isBlockElement(type)) {
-        iterator.back();
-        break;
-      }
-      // Other...
-      else {
-        if ( !state.skipTypes[type] ) {
-          var start = charPos;
-          // recurse into the annotation element to collect nested annotations
-          // and the contained plain text
-          var childIterator = new HtmlImporter.ChildNodeIterator(el);
-          var annotatedText = this._annotatedText(state, childIterator, charPos, "nested");
-
-          plainText = plainText.concat(annotatedText);
-          charPos += annotatedText.length;
-
-          if (this.isAnnotation(type) && !state.ignoreAnnotations) {
-            this.createAnnotation(state, el, start, charPos);
+      } else {
+        var inlineType = this._getInlineTypeForElement(el);
+        if (!inlineType) {
+          var blockType = this._getInlineTypeForElement(el);
+          if (blockType) {
+            throw new Error('Expected inline element. Found block element:', el);
           }
+          console.warn('Unsupported inline element. Skipping.', el);
+          continue;
         }
+        // reentrant: we delegate the conversion to the inline node class
+        // it will either call us back (this.annotatedText) or give us a finished
+        // node instantly (self-managed)
+        var startOffset = reentrant.offset;
+        var inlineNode;
+        if (inlineType.static.fromHtml) {
+          inlineNode = inlineType.static.fromHtml(el, this);
+          if (!inlineNode) {
+            throw new Error("Contract: a Node's fromHtml() method must return a node");
+          }
+        } else {
+          inlineNode = {};
+          text = text.concat(this.annotatedText(el));
+        }
+        // in the mean time the offset will probably have changed to reentrant calls
+        var endOffset = reentrant.offset;
+        inlineNode.type = inlineType.static.name;
+        inlineNode.id = inlineType.id || Substance.uuid(inlineNode.type);
+        inlineNode.range = [startOffset, endOffset];
+        inlineNode.path = context.path.slice(0);
+        state.inlineNodes.push(inlineNode);
       }
     }
-    return plainText;
+    // return the plain text collected during this reentrant call
+    // state.reentrant.text = state.reentrant.text.concat(text);
+    return text;
   };
 
-  this.getNodeType = function(el) {
+  this.getCurrentPath = function() {
+    var currentContext = this.state.contexts[this.state.contexts.length-1];
+    return currentContext.path;
+  };
+
+  this._getBlockTypeForElement = function(el) {
+    // HACK: tagName does not exist for prmitive nodes such as DOM TextNode.
+    if (!el.tagName) return null;
+    for (var i = 0; i < this._blockTypes.length; i++) {
+      if (this._blockTypes[i].static.matchElement(el)) {
+        return this._blockTypes[i];
+      }
+    }
+  };
+
+  this._getInlineTypeForElement = function(el) {
+    for (var i = 0; i < this._inlineTypes.length; i++) {
+      if (this._inlineTypes[i].static.matchElement(el)) {
+        return this._inlineTypes[i];
+      }
+    }
+  };
+
+  this._getDomNodeType = function(el) {
     if (el.nodeType === window.Document.TEXT_NODE) {
       return "text";
     } else if (el.nodeType === window.Document.COMMENT_NODE) {
@@ -219,21 +308,6 @@ HtmlImporter.Prototype = function HtmlImporterPrototype() {
     } else {
       throw new Error("Unknown node type");
     }
-  };
-
-  this.createAnnotation = function(state, el, start, end) {
-    var context = Substance.last(state.contexts);
-    if (!context || !context.path) {
-      throw new Error('Illegal state: context for annotation is required.');
-    }
-    var type = _annotationTypes[this.getNodeType(el)];
-    var data = {
-      id: Substance.uuid(type),
-      type: type,
-      path: Substance.clone(context.path),
-      range: [start, end],
-    };
-    state.annotations.push(data);
   };
 
   var WS_LEFT = /^\s+/g;
