@@ -38,7 +38,7 @@ DomContainer.getPathFromElement = function(element) {
 };
 
 DomContainer.getEditableElements = function(element) {
-  return $(element).find('*[data-path][contenteditable=true]');
+  return $(element).find('*[data-path]');
 };
 
 module.exports = DomContainer;

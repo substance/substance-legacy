@@ -66,6 +66,10 @@ Schema.Prototype = function() {
     }
     return false;
   };
+
+  this.each = function() {
+    this.nodeFactory.each.apply(this.nodeFactory, arguments);
+  };
 };
 
 Substance.initClass(Schema);
