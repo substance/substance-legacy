@@ -117,6 +117,7 @@ Document.Prototype = function() {
     if (this.isTransacting) {
       this.stage.create(nodeData);
     } else {
+      this.stage.create(nodeData);
       this.data.create(nodeData);
     }
     return this.data.get(nodeData.id);
@@ -126,6 +127,7 @@ Document.Prototype = function() {
     if (this.isTransacting) {
       this.stage.delete(nodeId);
     } else {
+      this.stage.delete(nodeId);
       this.data.delete(nodeId);
     }
   };
@@ -134,6 +136,7 @@ Document.Prototype = function() {
     if (this.isTransacting) {
       this.stage.set(path, value);
     } else {
+      this.stage.set(path, value);
       this.data.set(path, value);
     }
   };
@@ -142,6 +145,7 @@ Document.Prototype = function() {
     if (this.isTransacting) {
       this.stage.update(path, diff);
     } else {
+      this.stage.update(path, diff);
       this.data.update(path, diff);
     }
   };

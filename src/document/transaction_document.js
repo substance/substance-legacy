@@ -21,6 +21,7 @@ function TransactionDocument(document) {
   Substance.each(document.data.indexes, function(index, name) {
     this.data.addIndex(name, index.clone());
   }, this);
+
 }
 
 TransactionDocument.Prototype = function() {
@@ -36,23 +37,31 @@ TransactionDocument.Prototype = function() {
 
   this.create = function(nodeData) {
     var op = this.data.create(nodeData);
-    this.ops.push(op);
+    if (this.document.isTransacting) {
+      this.ops.push(op);
+    }
     return this.data.get(nodeData.id);
   };
 
   this.delete = function(nodeId) {
     var op = this.data.delete(nodeId);
-    this.ops.push(op);
+    if (this.document.isTransacting) {
+      this.ops.push(op);
+    }
   };
 
   this.set = function(path, value) {
     var op = this.data.set(path, value);
-    this.ops.push(op);
+    if (this.document.isTransacting) {
+      this.ops.push(op);
+    }
   };
 
   this.update = function(path, diffOp) {
     var op = this.data.update(path, diffOp);
-    this.ops.push(op);
+    if (this.document.isTransacting) {
+      this.ops.push(op);
+    }
   };
 
   this.save = function(afterState, info) {
