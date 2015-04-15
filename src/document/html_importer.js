@@ -50,30 +50,6 @@ HtmlImporter.Prototype = function HtmlImporterPrototype() {
     this.state = state;
   };
 
-  this.sanitizeHtmlDoc = function(body) {
-    var newRoot = body;
-    // Look for paragraphs in <b> which is served by GDocs.
-    var gdocs = body.querySelector('b > p');
-    if (gdocs) {
-      return gdocs.parentNode;
-    }
-    return newRoot;
-  };
-
-  this.convertDocument = function(htmlDoc, doc) {
-    var body = htmlDoc.getElementsByTagName( 'body' )[0];
-    body = this.sanitizeHtmlDoc(body);
-    console.log('Sanitized html:', body.innerHTML);
-
-    this.initialize(doc, rootEl);
-    this.bodyWithCatchbin(rootEl);
-    // create annotations afterwards so that the targeted nodes
-    // exist for sure
-    for (var i = 0; i < this.state.inlineNodes.length; i++) {
-      doc.create(this.state.inlineNodes[i]);
-    }
-  };
-
   this.convert = function(rootEl, doc) {
     this.initialize(doc, rootEl);
     this.body(rootEl);
@@ -91,7 +67,6 @@ HtmlImporter.Prototype = function HtmlImporterPrototype() {
     var childIterator = new HtmlImporter.ChildNodeIterator(body);
     while(childIterator.hasNext()) {
       var el = childIterator.next();
-      var type = this._getDomNodeType(el);
       var blockType = this._getBlockTypeForElement(el);
       if (blockType) {
         var node = blockType.static.fromHtml(el, this);
@@ -108,70 +83,6 @@ HtmlImporter.Prototype = function HtmlImporterPrototype() {
         // and then continue?
         console.warn("Skipping inline node on block level", el);
       }
-    }
-  };
-
-  this.bodyWithCatchbin = function(body) {
-    var state = this.state;
-    var doc = state.doc;
-    var containerNode = state.containerNode;
-    // HACK: this is not a general solution just adapted to the
-    // content provided by pasting from Microsoft Word: when pasting
-    // only some words of a paragraph then there is no wrapping p element
-    var catchBin = null;
-    var childIterator = new HtmlImporter.ChildNodeIterator(body);
-
-    // Note: this is rather complicated as it tries to fix
-    // problems in the context of pasting from clipboard
-    // where incredibly bad HTML is transfered by some applications.
-    // TODO: we should push this craziness into a method that is only
-    // used for the Pasting Business.
-    while(childIterator.hasNext()) {
-      var child = childIterator.next();
-      var type = this._getDomNodeType(child);
-      var blockType = this._getBlockTypeForElement(child);
-      if (blockType) {
-        // if there is an open catch bin node add it to document and reset
-        if (catchBin && catchBin.content.length > 0) {
-          doc.create(catchBin);
-          containerNode.show(catchBin.id);
-          catchBin = null;
-        }
-        var node = blockType.static.fromHtml(child, this);
-        if (!node) {
-          throw new Error("Contract: a Node's fromHtml() method must return a node");
-        } else {
-          node.type = blockType.static.name;
-          node.id = node.id || Substance.uuid(node.type);
-          doc.create(node);
-          containerNode.show(node.id);
-        }
-      } else {
-        childIterator.back();
-        // Wrap all other stuff into a paragraph
-        if (!catchBin) {
-          catchBin = {
-            type: 'paragraph',
-            id: Substance.uuid('paragraph'),
-            content: ''
-          };
-        }
-        state.contexts.push({
-          path: [catchBin.id, 'content']
-        });
-        state.reentrant = {
-          offset:catchBin.content.length,
-          text: ""
-        };
-        catchBin.content += this._annotatedText(childIterator);
-        state.contexts.pop();
-        state.reentrant = null;
-      }
-    }
-    if (catchBin && catchBin.content.length > 0) {
-      state.doc.create(catchBin);
-      state.doc.get('content').show(catchBin.id);
-      catchBin = null;
     }
   };
 
@@ -218,20 +129,19 @@ HtmlImporter.Prototype = function HtmlImporterPrototype() {
     var state = this.state;
     var context = state.contexts[state.contexts.length-1];
     var reentrant = state.reentrant;
-    var text = "";
+    var plainText = "";
     if (!reentrant) {
       throw new Error('Illegal state: state.reentrant is null.');
     }
     while(iterator.hasNext()) {
       var el = iterator.next();
-      var type = this._getDomNodeType(el);
       // Plain text nodes...
       if (el.nodeType === window.Document.TEXT_NODE) {
-        var _text = this._prepareText(state, el.textContent);
-        if (_text.length) {
+        var text = this._prepareText(state, el.textContent);
+        if (text.length) {
           // Note: text is not merged into the reentrant state
           // so that we are able to return for this reentrant call
-          text = text.concat(_text);
+          plainText = plainText.concat(text);
           reentrant.offset += text.length;
         }
       } else if (el.nodeType === window.Document.COMMENT_NODE) {
@@ -259,7 +169,7 @@ HtmlImporter.Prototype = function HtmlImporterPrototype() {
           }
         } else {
           inlineNode = {};
-          text = text.concat(this.annotatedText(el));
+          plainText = plainText.concat(this.annotatedText(el));
         }
         // in the mean time the offset will probably have changed to reentrant calls
         var endOffset = reentrant.offset;
@@ -271,8 +181,7 @@ HtmlImporter.Prototype = function HtmlImporterPrototype() {
       }
     }
     // return the plain text collected during this reentrant call
-    // state.reentrant.text = state.reentrant.text.concat(text);
-    return text;
+    return plainText;
   };
 
   this.getCurrentPath = function() {
@@ -342,6 +251,97 @@ HtmlImporter.Prototype = function HtmlImporterPrototype() {
     return text;
   };
 
+
+  // The following is EXPERIMENTAL code that
+  // is dealing with specialties of HTML from the clipboard.
+  // TODO: needs to be engineered
+
+  this.sanitizeHtmlDoc = function(body) {
+    var newRoot = body;
+    // Look for paragraphs in <b> which is served by GDocs.
+    var gdocs = body.querySelector('b > p');
+    if (gdocs) {
+      return gdocs.parentNode;
+    }
+    return newRoot;
+  };
+
+  this.convertDocument = function(htmlDoc, doc) {
+    var body = htmlDoc.getElementsByTagName( 'body' )[0];
+    body = this.sanitizeHtmlDoc(body);
+    console.log('Sanitized html:', body.innerHTML);
+
+    this.initialize(doc, body);
+    this.bodyWithCatchbin(body);
+    // create annotations afterwards so that the targeted nodes
+    // exist for sure
+    for (var i = 0; i < this.state.inlineNodes.length; i++) {
+      doc.create(this.state.inlineNodes[i]);
+    }
+  };
+
+  this.bodyWithCatchbin = function(body) {
+    var state = this.state;
+    var doc = state.doc;
+    var containerNode = state.containerNode;
+    // HACK: this is not a general solution just adapted to the
+    // content provided by pasting from Microsoft Word: when pasting
+    // only some words of a paragraph then there is no wrapping p element
+    var catchBin = null;
+    var childIterator = new HtmlImporter.ChildNodeIterator(body);
+
+    // Note: this is rather complicated as it tries to fix
+    // problems in the context of pasting from clipboard
+    // where incredibly bad HTML is transfered by some applications.
+    // TODO: we should push this craziness into a method that is only
+    // used for the Pasting Business.
+    while(childIterator.hasNext()) {
+      var child = childIterator.next();
+      var blockType = this._getBlockTypeForElement(child);
+      if (blockType) {
+        // if there is an open catch bin node add it to document and reset
+        if (catchBin && catchBin.content.length > 0) {
+          doc.create(catchBin);
+          containerNode.show(catchBin.id);
+          catchBin = null;
+        }
+        var node = blockType.static.fromHtml(child, this);
+        if (!node) {
+          throw new Error("Contract: a Node's fromHtml() method must return a node");
+        } else {
+          node.type = blockType.static.name;
+          node.id = node.id || Substance.uuid(node.type);
+          doc.create(node);
+          containerNode.show(node.id);
+        }
+      } else {
+        childIterator.back();
+        // Wrap all other stuff into a paragraph
+        if (!catchBin) {
+          catchBin = {
+            type: 'paragraph',
+            id: Substance.uuid('paragraph'),
+            content: ''
+          };
+        }
+        state.contexts.push({
+          path: [catchBin.id, 'content']
+        });
+        state.reentrant = {
+          offset:catchBin.content.length,
+          text: ""
+        };
+        catchBin.content += this._annotatedText(childIterator);
+        state.contexts.pop();
+        state.reentrant = null;
+      }
+    }
+    if (catchBin && catchBin.content.length > 0) {
+      state.doc.create(catchBin);
+      state.doc.get('content').show(catchBin.id);
+      catchBin = null;
+    }
+  };
 };
 HtmlImporter.prototype = new HtmlImporter.Prototype();
 
