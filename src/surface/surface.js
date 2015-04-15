@@ -78,11 +78,17 @@ Surface.Prototype = function() {
   // In most other cases this is not necessary, as the component structure stays the same
   // only the content changes
   this.forceUpdate = function(cb) {
+    console.warn("DEPRICATED: use this.update() instead (which is synchronous).");
     if (this.domContainer) {
       this.domContainer.reset();
     }
     if (cb) cb();
   };
+  this.update = function() {
+    if (this.domContainer) {
+      this.domContainer.reset();
+    }
+  }
 
   this.dispose = function() {
     this.detach();
