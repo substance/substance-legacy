@@ -4,9 +4,22 @@ var Substance = require('../basics');
 var Document = require('../document');
 var Container = Document.Container;
 
-// A simple as possible implementation of a container working on a rendered container.
-// This implementation takes just the root element and analyzes the structure on demand and locally.
-// The container interface is used to get knowledge about the structure to do container-wide editing, such as break or merge of nodes
+// DomContainer
+// ------------
+//
+// A Container implementation that extracts the structure information
+// from a rendered DOM node.
+//
+// In an earlier version of Substance we had a Container
+// which required the implementation of so called NodeSurfaces which
+// expressed the node's layout. This made the implementation of nodes
+// more complex.
+//
+// Using this as approach has the drawback that container related
+// things, such as ContainerAnnotations and ContainerEditors can not
+// be used without a rendered view, and this Container must be
+// updated whenever the view is rerendered.
+//
 function DomContainer(containerId, element) {
   Container.call(this, containerId);
   this.element = element;
@@ -16,6 +29,7 @@ function DomContainer(containerId, element) {
 DomContainer.Prototype = function() {
   this.reset = function() {
     var $componentElements = DomContainer.getEditableElements(this.element);
+    console.log('DomContainer: found %s editable components.', $componentElements.length);
     var components = Substance.map($componentElements, function(el, idx) {
       return new DomContainer.Component(el, idx);
     });
