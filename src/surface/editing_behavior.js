@@ -1,4 +1,6 @@
 var Substance = require('../basics');
+var Annotations = require('../document/annotation_updates');
+var Selection = Substance.Document.Selection;
 
 var EditingBehavior = function() {
   this.merge = {};

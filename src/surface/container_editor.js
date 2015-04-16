@@ -307,13 +307,18 @@ ContainerEditor.Prototype = function() {
       otherPath = component.next.path;
       otherNode = tx.get(otherPath[0]);
       mergeBehavior = this._getMergeBehavior(node, otherNode);
+      if (mergeBehavior) {
+        mergeBehavior.call(this, tx, path, otherPath);
+      }
     } else if (dir === 'left' && component.previous) {
       otherPath = component.previous.path;
       otherNode = tx.get(otherPath[0]);
       mergeBehavior = this._getMergeBehavior(otherNode, node);
-    }
-    if (mergeBehavior) {
-      mergeBehavior.call(this, tx, path, otherPath);
+      if (mergeBehavior) {
+        mergeBehavior.call(this, tx, otherPath, path);
+      }
+    } else {
+      // No behavior defined for this merge
     }
   };
 
