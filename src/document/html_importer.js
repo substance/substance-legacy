@@ -3,9 +3,11 @@ var Substance = require('../basics');
 function HtmlImporter( config ) {
   this.config = config || {};
 
-  this._blockTypes = [];
+  this.nodeTypes = [];
 
-  this._inlineTypes = [];
+  this.blockTypes = [];
+
+  this.inlineTypes = [];
 
   // register converters defined in schema
   if (config.schema) {
@@ -14,10 +16,11 @@ function HtmlImporter( config ) {
       if (!NodeClass.static.matchElement) {
         return;
       }
+      this.nodeTypes.push(NodeClass);
       if (NodeClass.static.blockType) {
-        this._blockTypes.push(NodeClass);
+        this.blockTypes.push(NodeClass);
       } else {
-        this._inlineTypes.push(NodeClass);
+        this.inlineTypes.push(NodeClass);
       }
     }, this);
   }
@@ -58,6 +61,20 @@ HtmlImporter.Prototype = function HtmlImporterPrototype() {
     for (var i = 0; i < this.state.inlineNodes.length; i++) {
       doc.create(this.state.inlineNodes[i]);
     }
+  };
+
+  this.convertElement = function(el) {
+    var doc = this.state.doc;
+    var nodeType = this._getNodeTypeForElement(el);
+    if (!nodeType) {
+      console.error("Could not find a node class associated to element", el);
+      throw new Error("Could not find a node class associated to element");
+    }
+    var node = nodeType.static.fromHtml(el, this);
+    node.type = nodeType.static.name;
+    node.id = node.id || Substance.uuid(node.type);
+    doc.create(node);
+    return node;
   };
 
   this.body = function(body) {
@@ -105,14 +122,9 @@ HtmlImporter.Prototype = function HtmlImporterPrototype() {
         offset:options.offset || 0,
         text: ""
       };
-    } else {
-      console.log('Re-entering', state.reentrant.offset);
     }
     var iterator = new HtmlImporter.ChildNodeIterator(el);
     var text = this._annotatedText(iterator);
-    if (!path) {
-      console.log('...left', state.reentrant.offset);
-    }
     // append the text of the last reentrant call
     // state.reentrant.text = state.reentrant.text.concat(text);
     if (path) {
@@ -192,17 +204,25 @@ HtmlImporter.Prototype = function HtmlImporterPrototype() {
   this._getBlockTypeForElement = function(el) {
     // HACK: tagName does not exist for prmitive nodes such as DOM TextNode.
     if (!el.tagName) return null;
-    for (var i = 0; i < this._blockTypes.length; i++) {
-      if (this._blockTypes[i].static.matchElement(el)) {
-        return this._blockTypes[i];
+    for (var i = 0; i < this.blockTypes.length; i++) {
+      if (this.blockTypes[i].static.matchElement(el)) {
+        return this.blockTypes[i];
       }
     }
   };
 
   this._getInlineTypeForElement = function(el) {
-    for (var i = 0; i < this._inlineTypes.length; i++) {
-      if (this._inlineTypes[i].static.matchElement(el)) {
-        return this._inlineTypes[i];
+    for (var i = 0; i < this.inlineTypes.length; i++) {
+      if (this.inlineTypes[i].static.matchElement(el)) {
+        return this.inlineTypes[i];
+      }
+    }
+  };
+
+  this._getNodeTypeForElement = function(el) {
+    for (var i = 0; i < this.nodeTypes.length; i++) {
+      if (this.nodeTypes[i].static.matchElement(el)) {
+        return this.nodeTypes[i];
       }
     }
   };
