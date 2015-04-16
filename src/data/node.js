@@ -129,6 +129,7 @@ var initNodeClass = function(NodeClass) {
   // define properties and so on
   defineProperties(NodeClass);
   collectDefaultProperties(NodeClass);
+  NodeClass.type = NodeClass.static.name;
 };
 
 extend = function( parent, modelSpec ) {
