@@ -1,20 +1,23 @@
 'use strict';
 
 var Substance = require('../basics');
-var Document = require('../document');
 var FormEditor = require('./form_editor');
 var Annotations = require('../document/annotation_updates');
-var Selection = Document.Selection;
 
-function ContainerEditor(containerName, doc) {
+function ContainerEditor(containerName, doc, editingBehavior) {
   FormEditor.call(this, doc);
   this.containerName = containerName;
+  this.editingBehavior = editingBehavior;
 }
 
 ContainerEditor.Prototype = function() {
 
   this.isContainerEditor = function() {
     return true;
+  };
+
+  this.setContainer = function(container) {
+    this.container = container;
   };
 
   this.getContainerName = function() {
@@ -181,14 +184,15 @@ ContainerEditor.Prototype = function() {
   };
 
   this._pasteAnnotatedText = function(tx, copy) {
-    var selection = tx.selection;
+    // extract text from the copy
     var nodes = copy.get('content').nodes;
-    var path = [nodes[0], 'content'];
-    var text = copy.get(path);
-    var annotations = copy.getIndex('annotations').get(path);
+    var textPath = [nodes[0], 'content'];
+    var text = copy.get(textPath);
+    var annotations = copy.getIndex('annotations').get(textPath);
+    // insert plain text
+    var selection = tx.selection;
     var path = selection.start.path;
     var offset = selection.start.offset;
-    // insert plain text
     tx.update(path, { insert: { offset: offset, value: text } } );
     Annotations.insertedText(tx, selection.start, text.length);
     // copy annotations
@@ -260,91 +264,56 @@ ContainerEditor.Prototype = function() {
     }
   };
 
+  this._getBreakBehavior = function(node) {
+    if (this.editingBehavior.break[node.type]) {
+      return this.editingBehavior.break[node.type];
+    } else if (node.isInstanceOf('text')) {
+      return this.editingBehavior.breakTextNode;
+    }
+  };
+
   this._break = function(tx) {
     var range = tx.selection.getRange();
     var component = this.container.getComponent(range.start.path);
     var node = tx.get(component.path[0]);
-    switch (node.type) {
-      case "paragraph":
-      case "text":
-      case "heading":
-        this._breakTextNode(tx, node, range.start.offset);
+    var offset = range.start.offset;
+    var breakBehavior = this._getBreakBehavior(node);
+    if (breakBehavior) {
+      breakBehavior.call(this, tx, node, offset);
     }
   };
 
-  this._breakTextNode = function(tx, node, offset) {
-    // split the text property and create a new paragraph node with trailing text and annotations transferred
-    var text = node.content;
-    var containerNode = tx.get(this.containerName);
-    var path = [node.id, 'content'];
-    var nodePos = containerNode.getPosition(node.id);
-    var id = Substance.uuid('text_');
-    var newPath = [id, 'content'];
-    // 1. create a new node
-    tx.create({
-      id: id,
-      type: 'text',
-      content: text.substring(offset)
-    });
-    if (offset < text.length) {
-      // 2. transfer annotations which are after offset to the new node
-      Annotations.transferAnnotations(tx, path, offset, [id, 'content'], 0);
-      // 3. truncate the original property
-      tx.update(path, {
-        delete: { start: offset, end: text.length }
-      });
+  this._getMergeBehavior = function(node, otherNode) {
+    if (this.editingBehavior.merge[node.type]) {
+      return this.editingBehavior.merge[node.type][otherNode.type];
     }
-    // 4. show the new node
-    containerNode.show(id, nodePos+1);
-    // 5. update the selection
-    tx.selection = Selection.create(newPath, 0);
-  };
-
-  this._mergeTextNodes = function(tx, firstPath, secondPath) {
-    var firstText = tx.get(firstPath);
-    var firstLength = firstText.length;
-    var secondText = tx.get(secondPath);
-    var containerNode = tx.get(this.containerName);
-    // 1. Append the second text
-    tx.update(firstPath, { insert: { offset: firstLength, value: secondText } });
-    // 2. Transfer annotations
-    Annotations.transferAnnotations(tx, secondPath, 0, firstPath, firstLength);
-    // 3. Hide the second node
-    containerNode.hide(secondPath[0]);
-    // 4. Delete the second node
-    tx.delete(secondPath[0]);
-    // 5. set the selection to the end of the first component
-    tx.selection = Selection.create(firstPath, firstLength);
-  };
-
-  this._mergeTable = {
-    'text': {
-      'text': this._mergeTextNodes
+    // special convenience to define behaviors when text nodes are involved
+    // E.g., you might want to define how to merge a text node into a figure
+    else if (node.isInstanceOf('text') && otherNode.isInstanceOf('text')) {
+      return this.editingBehavior.mergeTextNodes;
+    } else if (node.isInstanceOf('text') && this.editingBehavior.merge['text']) {
+      return this.editingBehavior.merge['text'][otherNode.type];
+    } else if (otherNode.isInstanceOf('text') && this.editingBehavior.merge[node.type]) {
+      return this.editingBehavior.merge[node.type]['text'];
     }
   };
 
+  // low-level merge implementation
   this._merge = function(tx, path, dir) {
     var component = this.container.getComponent(path);
     var node = tx.get(component.path[0]);
-    var otherNode, otherPath;
+    var otherNode, otherPath, mergeBehavior;
     if (dir === 'right' && component.next) {
-      if (!this._mergeTable[node.type]) {
-        return;
-      }
       otherPath = component.next.path;
       otherNode = tx.get(otherPath[0]);
-      if (this._mergeTable[node.type][otherNode.type]) {
-        this._mergeTable[node.type][otherNode.type].call(this, tx, path, otherPath);
-      }
+      mergeBehavior = this._getMergeBehavior(node, otherNode);
     } else if (dir === 'left' && component.previous) {
       otherPath = component.previous.path;
       otherNode = tx.get(otherPath[0]);
-      if (!this._mergeTable[otherNode.type]) {
-        return;
-      }
-      if (this._mergeTable[otherNode.type][node.type]) {
-        this._mergeTable[otherNode.type][node.type].call(this, tx, otherPath, path);
-      }
+      mergeBehavior = this._getMergeBehavior(otherNode, node);
+    }
+    if (mergeBehavior) {
+      mergeBehavior.call(this, tx, path, otherPath);
     }
   };
 
