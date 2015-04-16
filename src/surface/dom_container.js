@@ -29,7 +29,7 @@ function DomContainer(containerId, element) {
 DomContainer.Prototype = function() {
   this.reset = function() {
     var $componentElements = DomContainer.getEditableElements(this.element);
-    console.log('DomContainer: found %s editable components.', $componentElements.length);
+    // console.log('DomContainer: found %s editable components.', $componentElements.length);
     var components = Substance.map($componentElements, function(el, idx) {
       return new DomContainer.Component(el, idx);
     });
