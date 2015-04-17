@@ -9,9 +9,9 @@ var Node = require('./node');
 //
 // Describes an annotation sticking on a container that can span over multiple
 // nodes.
-// 
+//
 // Here's an example:
-// 
+//
 // {
 //   "id": "subject_reference_1",
 //   "type": "subject_reference",

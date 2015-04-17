@@ -63,6 +63,30 @@ HtmlImporter.Prototype = function HtmlImporterPrototype() {
     }
   };
 
+  this.convertDocument = function(htmlDoc, doc) {
+    var body = htmlDoc.getElementsByTagName( 'body' )[0];
+    body = this.sanitizeHtmlDoc(body);
+    console.log('Sanitized html:', body.innerHTML);
+
+    this.initialize(doc, body);
+    this.body(body);
+    // create annotations afterwards so that the targeted nodes
+    // exist for sure
+    for (var i = 0; i < this.state.inlineNodes.length; i++) {
+      doc.create(this.state.inlineNodes[i]);
+    }
+  };
+
+  this.sanitizeHtmlDoc = function(body) {
+    var newRoot = body;
+    // Look for paragraphs in <b> which is served by GDocs.
+    var gdocs = body.querySelector('b > p');
+    if (gdocs) {
+      return gdocs.parentNode;
+    }
+    return newRoot;
+  };
+
   this.convertElement = function(el) {
     var doc = this.state.doc;
     var nodeType = this._getNodeTypeForElement(el);
@@ -98,7 +122,7 @@ HtmlImporter.Prototype = function HtmlImporterPrototype() {
       } else {
         // TODO: maybe we put that thing just here into a paragraph
         // and then continue?
-        console.warn("Skipping inline node on block level", el);
+        console.warn("Skipping node on block level", el);
       }
     }
   };
@@ -166,7 +190,8 @@ HtmlImporter.Prototype = function HtmlImporterPrototype() {
           if (blockType) {
             throw new Error('Expected inline element. Found block element:', el);
           }
-          console.warn('Unsupported inline element. Skipping.', el);
+          console.warn('Unsupported inline element. We will not create an annotation for it, but process its children to extract annotated text.', el);
+          plainText = plainText.concat(this.annotatedText(el));
           continue;
         }
         // reentrant: we delegate the conversion to the inline node class
@@ -276,92 +301,6 @@ HtmlImporter.Prototype = function HtmlImporterPrototype() {
   // is dealing with specialties of HTML from the clipboard.
   // TODO: needs to be engineered
 
-  this.sanitizeHtmlDoc = function(body) {
-    var newRoot = body;
-    // Look for paragraphs in <b> which is served by GDocs.
-    var gdocs = body.querySelector('b > p');
-    if (gdocs) {
-      return gdocs.parentNode;
-    }
-    return newRoot;
-  };
-
-  this.convertDocument = function(htmlDoc, doc) {
-    var body = htmlDoc.getElementsByTagName( 'body' )[0];
-    body = this.sanitizeHtmlDoc(body);
-    console.log('Sanitized html:', body.innerHTML);
-
-    this.initialize(doc, body);
-    this.bodyWithCatchbin(body);
-    // create annotations afterwards so that the targeted nodes
-    // exist for sure
-    for (var i = 0; i < this.state.inlineNodes.length; i++) {
-      doc.create(this.state.inlineNodes[i]);
-    }
-  };
-
-  this.bodyWithCatchbin = function(body) {
-    var state = this.state;
-    var doc = state.doc;
-    var containerNode = state.containerNode;
-    // HACK: this is not a general solution just adapted to the
-    // content provided by pasting from Microsoft Word: when pasting
-    // only some words of a paragraph then there is no wrapping p element
-    var catchBin = null;
-    var childIterator = new HtmlImporter.ChildNodeIterator(body);
-
-    // Note: this is rather complicated as it tries to fix
-    // problems in the context of pasting from clipboard
-    // where incredibly bad HTML is transfered by some applications.
-    // TODO: we should push this craziness into a method that is only
-    // used for the Pasting Business.
-    while(childIterator.hasNext()) {
-      var child = childIterator.next();
-      var blockType = this._getBlockTypeForElement(child);
-      if (blockType) {
-        // if there is an open catch bin node add it to document and reset
-        if (catchBin && catchBin.content.length > 0) {
-          doc.create(catchBin);
-          containerNode.show(catchBin.id);
-          catchBin = null;
-        }
-        var node = blockType.static.fromHtml(child, this);
-        if (!node) {
-          throw new Error("Contract: a Node's fromHtml() method must return a node");
-        } else {
-          node.type = blockType.static.name;
-          node.id = node.id || Substance.uuid(node.type);
-          doc.create(node);
-          containerNode.show(node.id);
-        }
-      } else {
-        childIterator.back();
-        // Wrap all other stuff into a paragraph
-        if (!catchBin) {
-          catchBin = {
-            type: 'paragraph',
-            id: Substance.uuid('paragraph'),
-            content: ''
-          };
-        }
-        state.contexts.push({
-          path: [catchBin.id, 'content']
-        });
-        state.reentrant = {
-          offset:catchBin.content.length,
-          text: ""
-        };
-        catchBin.content += this._annotatedText(childIterator);
-        state.contexts.pop();
-        state.reentrant = null;
-      }
-    }
-    if (catchBin && catchBin.content.length > 0) {
-      state.doc.create(catchBin);
-      state.doc.get('content').show(catchBin.id);
-      catchBin = null;
-    }
-  };
 };
 HtmlImporter.prototype = new HtmlImporter.Prototype();
 

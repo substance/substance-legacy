@@ -1,6 +1,6 @@
-var Substance = require('substance');
+var Document = require('../../document');
 
-var Reference = Substance.Document.Annotation.extend({
+var Reference = Document.Annotation.extend({
   name: "reference"
 });
 

@@ -127,10 +127,6 @@ Clipboard.Prototype = function() {
           // console.log("Received HTML via Clipboard", data);
           try {
             var content = doc.newInstance();
-            // var htmlConverter = new HtmlConverter({
-            //   trimWhitespaces: true,
-            //   REMOVE_INNER_WS: true
-            // });
             var htmlDoc = new window.DOMParser().parseFromString(data, "text/html");
             self.htmlImporter.convertDocument(htmlDoc, content);
             editor.paste(editor.selection, {

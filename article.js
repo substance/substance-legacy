@@ -1,4 +1,1 @@
-"use strict";
-var article = require('./src/article');
-
-module.exports = article;
+module.exports = require('./src/article');

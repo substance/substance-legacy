@@ -1,7 +1,15 @@
-var Substance = require('substance');
+var Document = require('../../document');
 
-var Emphasis = Substance.Document.Annotation.extend({
+var Emphasis = Document.Annotation.extend({
   name: "emphasis"
 });
+
+// Html import
+// -----------
+
+Emphasis.static.matchElement = function(el) {
+  var tagName = el.tagName.toLowerCase();
+  return (tagName === 'i' || tagName === 'em');
+};
 
 module.exports = Emphasis;

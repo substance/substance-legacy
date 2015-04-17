@@ -28,6 +28,14 @@ TextProperty.Prototype = function() {
     throw new Error('This is abstract');
   };
 
+  // Override this if you want to add app-specific annotations, such as highlights
+  this.getAnnotations = function() {
+    var doc = this.getDocument();
+    var path = this.getPath();
+    return doc.getIndex('annotations').get(path);
+  };
+
+
   this.attach = function() {
     var doc = this.getDocument();
     var path = this.getPath();
@@ -39,7 +47,6 @@ TextProperty.Prototype = function() {
     var path = this.getPath();
     doc.getEventProxy('path').remove(path, this);
   };
-
 
   this.renderContent = function() {
     var doc = this.getDocument();
@@ -91,13 +98,6 @@ TextProperty.Prototype = function() {
     var root = { children: [] };
     annotator.start(root, text, annotations);
     return root.children;
-  };
-
-  // Override this if you want to add app-specific annotations, such as highlights
-  this.getAnnotations = function() {
-    var doc = this.getDocument();
-    var path = this.getPath();
-    return doc.getIndex('annotations').get(path);
   };
 
   this.propertyDidChange = function(change, info) {

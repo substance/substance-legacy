@@ -9,6 +9,12 @@ var TextProperty = require('./text_property');
 //
 // Represents a flat collection of nodes
 
+
+// TODO: this is not Substance.Writer but should be in Archivist
+// Plan: make this implementation an abstract mixin
+// and let the application configure a componentFactory
+// that provides a customized version.
+
 var ContainerComponent = React.createClass({
   displayName: "ContainerComponent",
 
@@ -23,9 +29,13 @@ var ContainerComponent = React.createClass({
   },
 
   getInitialState: function() {
-    this.surface = new Surface(new Surface.ContainerEditor('content', this.props.doc), {
+    var editor = new Surface.ContainerEditor('content', this.props.doc);
+    // HACK: this is also Archivist specific
+    editor.defaultTextType = 'text';
+    var options = {
       logger: this.context.notifications
-    });
+    };
+    this.surface = new Surface(editor, options);
     return {};
   },
 
@@ -172,12 +182,11 @@ var ContainerComponent = React.createClass({
     // this.forceUpdate();
     this.forceUpdate(function() {
       self.surface.__prerendering__ = true;
-      self.surface.forceUpdate(function() {
-        self.surface.__prerendering__ = false;
-        self.forceUpdate(function() {
-          self.updateBrackets();
-          self.surface.rerenderDomSelection();
-        });
+      self.surface.update();
+      self.surface.__prerendering__ = false;
+      self.forceUpdate(function() {
+        self.updateBrackets();
+        self.surface.rerenderDomSelection();
       });
     });
 
@@ -219,11 +228,10 @@ var ContainerComponent = React.createClass({
       self.surface.__prerendering__ = true;
       this.forceUpdate(function() {
         // self.surface.__prerendering__ = true;
-        self.surface.forceUpdate(function() {
-          self.surface.__prerendering__ = false;
-          self.forceUpdate(function() {
-            self.updateBrackets();
-          });
+        self.surface.update();
+        self.surface.__prerendering__ = false;
+        self.forceUpdate(function() {
+          self.updateBrackets();
         });
       });
     }

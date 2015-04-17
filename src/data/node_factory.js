@@ -20,6 +20,20 @@ NodeFactory.Prototype = function() {
     }
     this.add(name, constructor);
   };
+
+  this.getClassForHtmlElement = function(el) {
+    for (var i = 0; i < this.names.length; i++) {
+      var name = this.names[i];
+      var NodeClass = this.get(name);
+      if (NodeClass.matchElement) {
+        var match = NodeClass.matchElement(el);
+        if (match) {
+          return match;
+        }
+      }
+    }
+    return null;
+  }
 };
 
 Substance.inherit(NodeFactory, Factory);

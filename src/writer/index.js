@@ -17,7 +17,7 @@ Writer.CoreModule = {
   name: "core",
   components: {
     "container": ContainerComponent,
-    "text": TextComponent
+    "text": TextComponent,
   },
   panels: [
     // TODO: TOCPanel

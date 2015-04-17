@@ -17,7 +17,9 @@ function ContainerEditor(containerName, doc) {
 
 ContainerEditor.Prototype = function() {
 
-  this.defaultTextType = 'text';
+  // TODO: we should make paragraph the default type
+  // as this seems to be a more natural choice
+  this.defaultTextType = 'paragraph';
 
   // Define custom editing behavior
   //

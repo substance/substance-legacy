@@ -1,4 +1,3 @@
-'use strict';
 
 var Substance = require('./src/basics');
 
