@@ -110,6 +110,14 @@ ArrayOperation.Prototype = function() {
     return this.type === DEL;
   };
 
+  this.getOffset = function() {
+    return this.pos;
+  };
+
+  this.getValue = function() {
+    return this.val;
+  };
+
   this.isNOP = function() {
     return this.type === NOP;
   };
