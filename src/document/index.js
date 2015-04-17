@@ -21,6 +21,7 @@ Document.PropertySelection = require('./property_selection');
 Document.ContainerSelection = require('./container_selection');
 
 Document.Annotator = require('./annotator');
+Document.AnnotationUpdates = require('./annotation_updates');
 
 Document.HtmlImporter = require('./html_importer');
 Document.HtmlExporter = require('./html_exporter');

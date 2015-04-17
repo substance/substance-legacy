@@ -73,8 +73,8 @@ function mixin(targetFn, originFn) {
 extend = function( parent, proto ) {
   var ctor = function $$$() {
     parent.apply(this, arguments);
-    if (this._init) {
-      this._init();
+    if (this.init) {
+      this.init();
     }
   };
   inherit(ctor, parent);

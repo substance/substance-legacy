@@ -5,7 +5,6 @@ Surface.DomSelection = require('./dom_selection');
 
 Surface.FormEditor = require('./form_editor');
 Surface.ContainerEditor = require('./container_editor');
-Surface.EditingBehavior = require('./editing_behavior');
 Surface.Clipboard = require('./clipboard');
 
 Surface.NodeView = require('./node_view');

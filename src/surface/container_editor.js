@@ -1,16 +1,36 @@
 'use strict';
 
 var Substance = require('../basics');
+var Document = require('../document');
 var FormEditor = require('./form_editor');
-var Annotations = require('../document/annotation_updates');
+var Annotations = Document.AnnotationUpdates;
+var Selection = Document.Selection;
 
-function ContainerEditor(containerName, doc, editingBehavior) {
+function ContainerEditor(containerName, doc) {
   FormEditor.call(this, doc);
   this.containerName = containerName;
-  this.editingBehavior = editingBehavior;
+
+  this.mergeBehavior = {};
+  this.breakBehavior = {};
+  this.defineBehavior();
 }
 
 ContainerEditor.Prototype = function() {
+
+  this.defaultTextType = 'text';
+
+  // Define custom editing behavior
+  //
+  // Register custom handlers for merge and break.
+  // Example:
+  //
+  //  To support text nodes being merged into a figure node:
+  //    this.mergeBehavior.figure = { 'text': function() {...} }
+  //
+  //  To support breaking a figure's caption:
+  //    this.breakBehavior.figure = function(doc, node, path, offset) {...}
+  //
+  this.defineBehavior = function() {};
 
   this.isContainerEditor = function() {
     return true;
@@ -265,11 +285,16 @@ ContainerEditor.Prototype = function() {
   };
 
   this._getBreakBehavior = function(node) {
-    if (this.editingBehavior.break[node.type]) {
-      return this.editingBehavior.break[node.type];
+    var behavior = null;
+    if (this.breakBehavior[node.type]) {
+      behavior = this.breakBehavior[node.type];
     } else if (node.isInstanceOf('text')) {
-      return this.editingBehavior.breakTextNode;
+      behavior = this._breakTextNode;
     }
+    if (!behavior) {
+      console.info("No breaking behavior defined for %s", node.type);
+    }
+    return behavior;
   };
 
   this._break = function(tx) {
@@ -279,23 +304,69 @@ ContainerEditor.Prototype = function() {
     var offset = range.start.offset;
     var breakBehavior = this._getBreakBehavior(node);
     if (breakBehavior) {
-      breakBehavior.call(this, tx, node, offset);
+      breakBehavior.call(this, tx, node, component.path, offset);
+    }
+  };
+
+  this._breakTextNode = function(tx, node, path, offset) {
+    // split the text property and create a new paragraph node with trailing text and annotations transferred
+    var text = node.content;
+    var containerNode = tx.get(this.containerName);
+    var nodePos = containerNode.getPosition(node.id);
+    var id = Substance.uuid(node.type);
+    var newPath = [id, 'content'];
+    // when breaking at the first position, a new node of the same
+    // type will be inserted.
+    if (offset === 0) {
+      tx.create({
+        id: id,
+        type: node.type,
+        content: ""
+      });
+      // show the new node
+      containerNode.show(id, nodePos);
+      tx.selection = Selection.create(path, 0);
+    } else {
+      // create a new node
+      tx.create({
+        id: id,
+        type: this.defaultTextType,
+        content: text.substring(offset)
+      });
+      if (offset < text.length) {
+        // transfer annotations which are after offset to the new node
+        Annotations.transferAnnotations(tx, path, offset, [id, 'content'], 0);
+        // truncate the original property
+        tx.update(path, {
+          delete: { start: offset, end: text.length }
+        });
+      }
+      // show the new node
+      containerNode.show(id, nodePos+1);
+      // update the selection
+      tx.selection = Selection.create(newPath, 0);
     }
   };
 
   this._getMergeBehavior = function(node, otherNode) {
-    if (this.editingBehavior.merge[node.type]) {
-      return this.editingBehavior.merge[node.type][otherNode.type];
+    var merge = this.mergeBehavior;
+    var behavior = null;
+    if (merge[node.type] && merge[node.type][otherNode.type]) {
+      behavior = merge[node.type][otherNode.type];
     }
     // special convenience to define behaviors when text nodes are involved
     // E.g., you might want to define how to merge a text node into a figure
     else if (node.isInstanceOf('text') && otherNode.isInstanceOf('text')) {
-      return this.editingBehavior.mergeTextNodes;
-    } else if (node.isInstanceOf('text') && this.editingBehavior.merge['text']) {
-      return this.editingBehavior.merge['text'][otherNode.type];
-    } else if (otherNode.isInstanceOf('text') && this.editingBehavior.merge[node.type]) {
-      return this.editingBehavior.merge[node.type]['text'];
+      behavior = this._mergeTextNodes;
+    } else if (node.isInstanceOf('text') && merge['text']) {
+      behavior = merge['text'][otherNode.type];
+    } else if (otherNode.isInstanceOf('text') && merge[node.type]) {
+      behavior = merge[node.type]['text'];
     }
+    if (!behavior) {
+      console.info("No merge behavior defined for %s <- %s", node.type, otherNode.type);
+    }
+    return behavior;
   };
 
   // low-level merge implementation
@@ -320,6 +391,23 @@ ContainerEditor.Prototype = function() {
     } else {
       // No behavior defined for this merge
     }
+  };
+
+  this._mergeTextNodes = function(tx, firstPath, secondPath) {
+    var firstText = tx.get(firstPath);
+    var firstLength = firstText.length;
+    var secondText = tx.get(secondPath);
+    var containerNode = tx.get(this.containerName);
+    // append the second text
+    tx.update(firstPath, { insert: { offset: firstLength, value: secondText } });
+    // transfer annotations
+    Annotations.transferAnnotations(tx, secondPath, 0, firstPath, firstLength);
+    // hide the second node
+    containerNode.hide(secondPath[0]);
+    // delete the second node
+    tx.delete(secondPath[0]);
+    // set the selection to the end of the first component
+    tx.selection = Selection.create(firstPath, firstLength);
   };
 
 };
