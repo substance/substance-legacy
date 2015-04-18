@@ -281,9 +281,9 @@ HtmlImporter.Prototype = function HtmlImporterPrototype() {
     // (instead of doing so only at the left and right end)
     //text = text.replace(ALL_WS_NOTSPACE_LEFT, "");
     //text = text.replace(ALL_WS_NOTSPACE_RIGHT, "");
-    text = text.replace(TABS_OR_NL, "");
+    text = text.replace(TABS_OR_NL, SPACE);
     if (state.lastChar === SPACE) {
-      text = text.replace(WS_LEFT_ALL, "");
+      text = text.replace(WS_LEFT_ALL, SPACE);
     } else {
       text = text.replace(WS_LEFT, SPACE);
     }
@@ -295,11 +295,6 @@ HtmlImporter.Prototype = function HtmlImporterPrototype() {
     state.lastChar = text[text.length-1] || state.lastChar;
     return text;
   };
-
-
-  // The following is EXPERIMENTAL code that
-  // is dealing with specialties of HTML from the clipboard.
-  // TODO: needs to be engineered
 
 };
 HtmlImporter.prototype = new HtmlImporter.Prototype();
