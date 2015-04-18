@@ -13,9 +13,6 @@ var Container = Node.extend({
 
   getPosition: function(nodeId) {
     var pos = this.nodes.indexOf(nodeId);
-    if (pos === -1) {
-      throw new Error('Could not find node with id ' + nodeId);
-    }
     return pos;
   },
 

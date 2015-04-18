@@ -94,23 +94,30 @@ FormEditor.Prototype = function() {
         tx.selection = Document.Selection.create(range.start.path, startChar);
       }
     } else if (selection.isPropertySelection()) {
-      // if a property selection but not collapsed
-      // simply delete the selected area
-      startChar = range.start.offset;
-      endChar = range.end.offset;
-      tx.update(range.start.path, {
-        delete: { start: startChar, end: endChar }
-      });
-      Annotations.deletedText(tx, range.start.path, startChar, endChar);
+      this._deleteProperty(tx, range.start.path, range.start.offset, range.end.offset);
       tx.selection = Document.Selection.create(range.start);
     } else {
       // deal with container deletes
-      console.log("TODO: Implement delete for ContainerSelection");
+      this._deleteContainerSelection(tx, direction);
+      tx.selection = Document.Selection.create(range.start);
     }
   };
 
+  this._deleteProperty = function(tx, path, startOffset, endOffset) {
+    // if a property selection but not collapsed
+    // simply delete the selected area
+    tx.update(path, {
+      delete: { start: startOffset, end: endOffset }
+    });
+    Annotations.deletedText(tx, path, startOffset, endOffset);
+  };
+
+  this._deleteContainerSelection = function(/*tx, direction*/) {
+    console.info('Deleting ContainerSelections in form-editor is not supported.');
+  };
+
   // no breaking
-  this.break = function(selection, info) {
+  this.break = function(selection/*, info*/) {
     // just update the selection
     this.selection = selection;
   };

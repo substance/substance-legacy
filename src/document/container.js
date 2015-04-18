@@ -56,6 +56,19 @@ Container.Prototype = function() {
     return comp;
   };
 
+  this.getComponentsForRange = function(range) {
+    var comps = [];
+    var startComp = this.byPath.get(range.start.path);
+    var endComp = this.byPath.get(range.end.path);
+    var startIdx = startComp.getIndex();
+    var endIdx = endComp.getIndex();
+    comps.push(startComp);
+    for (var idx = startIdx+1; idx <= endIdx; idx++) {
+      comps.push(this.getComponentAt(idx));
+    }
+    return comps;
+  };
+
   this.getComponentAt = function(idx) {
     return this.components[idx];
   };

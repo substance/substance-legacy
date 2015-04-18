@@ -12,6 +12,7 @@ function ContainerEditor(containerName, doc) {
 
   this.mergeBehavior = {};
   this.breakBehavior = {};
+  this.deleteBehavior = {};
   this.defineBehavior();
 }
 
@@ -90,7 +91,7 @@ ContainerEditor.Prototype = function() {
     return copy;
   };
 
-  this.copyContainerSelection = function(selection) {
+  this._copyContainerSelection = function(selection) {
     var doc = this.document;
     var copy = this.document.newInstance();
     var annotationIndex = doc.getIndex('annotations');
@@ -169,7 +170,7 @@ ContainerEditor.Prototype = function() {
       return this.copyPropertySelection(selection);
     }
     else if (selection.isContainerSelection()) {
-      return this.copyContainerSelection(selection);
+      return this._copyContainerSelection(selection);
     }
   };
 
@@ -374,30 +375,31 @@ ContainerEditor.Prototype = function() {
   // low-level merge implementation
   this._merge = function(tx, path, dir) {
     var component = this.container.getComponent(path);
-    var node = tx.get(component.path[0]);
-    var otherNode, otherPath, mergeBehavior;
+    var otherPath, mergeBehavior;
     if (dir === 'right' && component.next) {
-      otherPath = component.next.path;
-      otherNode = tx.get(otherPath[0]);
-      mergeBehavior = this._getMergeBehavior(node, otherNode);
-      if (mergeBehavior) {
-        mergeBehavior.call(this, tx, path, otherPath);
-      }
+      this._mergeComponents(tx, component, component.next);
     } else if (dir === 'left' && component.previous) {
-      otherPath = component.previous.path;
-      otherNode = tx.get(otherPath[0]);
-      mergeBehavior = this._getMergeBehavior(otherNode, node);
-      if (mergeBehavior) {
-        mergeBehavior.call(this, tx, otherPath, path);
-      }
+      this._mergeComponents(tx, component.previous, component);
     } else {
       // No behavior defined for this merge
     }
   };
 
-  this._mergeTextNodes = function(tx, firstPath, secondPath) {
+  this._mergeComponents = function(tx, firstComp, secondComp) {
+    var firstNode = tx.get(firstComp.parentNode.id);
+    var secondNode = tx.get(secondComp.parentNode.id);
+    var mergeBehavior = this._getMergeBehavior(firstNode, secondNode);
+    if (mergeBehavior) {
+      mergeBehavior.call(this, tx, firstComp, secondComp);
+    }
+  };
+
+
+  this._mergeTextNodes = function(tx, firstComp, secondComp) {
+    var firstPath = firstComp.path;
     var firstText = tx.get(firstPath);
     var firstLength = firstText.length;
+    var secondPath = secondComp.path;
     var secondText = tx.get(secondPath);
     var containerNode = tx.get(this.containerName);
     // append the second text
@@ -410,6 +412,153 @@ ContainerEditor.Prototype = function() {
     tx.delete(secondPath[0]);
     // set the selection to the end of the first component
     tx.selection = Selection.create(firstPath, firstLength);
+  };
+
+  this._getDeleteBehavior = function(node) {
+    var behavior = null;
+    if (this.deleteBehavior[node.type]) {
+      behavior = this.deleteBehavior[node.type];
+    }
+    return behavior;
+  };
+
+  this._deleteContainerSelection = function(tx) {
+    var sel = tx.selection.getRange();
+    var nodeSels = this._getNodeSelection(tx, sel);
+    // apply deletion backwards so that we do not to recompute array positions
+    for (var idx = nodeSels.length - 1; idx >= 0; idx--) {
+      var nodeSel = nodeSels[idx];
+      if (nodeSel.isFully && !nodeSel.node.isResilient()) {
+        this._deleteNode(tx, nodeSel.node);
+      } else {
+        this._deleteNodePartially(tx, nodeSel);
+      }
+    }
+    // do a merge
+    if (nodeSels.length>1) {
+      var firstSel = nodeSels[0];
+      var lastSel = nodeSels[nodeSels.length-1];
+      if (firstSel.isFully || lastSel.isFully) {
+        // TODO: think about if we want to merge in those cases
+      } else {
+        var firstComp = firstSel.components[0];
+        var secondComp = Substance.last(lastSel.components);
+        this._mergeComponents(tx, firstComp, secondComp);
+      }
+    }
+  };
+
+  this._deleteNode = function(tx, nodeSel) {
+    var deleteBehavior = this._getDeleteBehavior(nodeSel.node);
+    if (deleteBehavior) {
+      deleteBehavior.call(this, tx, nodeSel);
+    } else if (nodeSel.isNested) {
+      throw new Error('Contract: you must provide a deleteBehavior for nested node types.');
+    } else {
+      // otherwise we can just delete the node
+      var nodeId = nodeSel.node.id;
+      var containerNode = tx.get(this.containerName);
+      // remove from view first
+      containerNode.hide(nodeId);
+      // remove all associated annotations
+      var annos = tx.getIndex('annotations').get(nodeId);
+      var i;
+      for (i = 0; i < annos.length; i++) {
+        tx.delete(annos[i].id);
+      }
+      annos = tx.getIndex('container-annotations').get(nodeId);
+      for (i = 0; i < annos.length; i++) {
+        tx.delete(annos[i].id);
+      }
+      // and then permanently delete
+      tx.delete(nodeSel.node.id);
+    }
+  };
+
+  this._deleteNodePartially = function(tx, nodeSel) {
+    var deleteBehavior = this._getDeleteBehavior(nodeSel.node);
+    if (deleteBehavior) {
+      deleteBehavior.call(this, tx, nodeSel);
+    } else if (nodeSel.isNested) {
+      throw new Error('Contract: you must provide a deleteBehavior for nested node types.');
+    } else {
+      // Just go through all components and apply a property deletion
+      var components = nodeSel.components;
+      var length = components.length;
+      for (var i = 0; i < length; i++) {
+        var comp = components[i];
+        var startOffset = 0;
+        var endOffset = tx.get(comp.path).length;
+        if (i === 0) {
+          startOffset = nodeSel.startOffset;
+        }
+        if (i === length-1) {
+          endOffset = nodeSel.endOffset;
+        }
+        this._deleteProperty(tx, comp.path, startOffset, endOffset);
+      }
+    }
+  };
+
+  this._getNodeSelection = function(doc, range) {
+    var result = [];
+    var groups = {};
+    var container = this.container;
+    var components = container.getComponentsForRange(range);
+    var isNested;
+    function _getRoot(comp) {
+      isNested = false;
+      var node = doc.get(comp.parentNode.id);
+      while (node.hasParent()) {
+        isNested = true;
+        node = node.getParentNode();
+      }
+      return node;
+    }
+    for (var i = 0; i < components.length; i++) {
+      var comp = components[i];
+      var node = _getRoot(comp);
+      var nodeId = node.id;
+      var nodeGroup;
+      if (!groups[nodeId]) {
+        nodeGroup = {
+          node: node,
+          isFully: true,
+          components: []
+        };
+        groups[nodeId] = nodeGroup;
+        result.push(nodeGroup);
+      }
+      nodeGroup = groups[nodeId];
+      nodeGroup.components.push(comp);
+      if (isNested) {
+        nodeGroup.isNested = true;
+      }
+    }
+    // finally we analyze the first and last node-selection
+    // if these
+    var startComp = components[0];
+    var endComp = components[components.length-1];
+    var startNodeSel = result[0];
+    var endNodeSel = result[result.length-1];
+    var startLen = doc.get(startComp.path).length;
+    var endLen = doc.get(endComp.path).length;
+    if (range.start.offset > 0 ||
+      (startComp.hasPrevious() && _getRoot(startComp.getPrevious()) !== startNodeSel.node))
+    {
+      startNodeSel.isFully = false;
+      startNodeSel.startOffset = range.start.offset;
+      startNodeSel.endOffset = startLen;
+    }
+    if (result.length > 1 &&
+        (range.end.offset < endLen ||
+          (endComp.hasNext() && _getRoot(endComp.getNext()) !== endNodeSel.node))
+       ) {
+      endNodeSel.isFully = false;
+      endNodeSel.startOffset = 0;
+      endNodeSel.endOffset = range.end.offset;
+    }
+    return result;
   };
 
 };

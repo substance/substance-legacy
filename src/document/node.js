@@ -2,7 +2,7 @@
 
 var Data = require('../data');
 
-var DocumentNode = Data.Node.extend({
+var Node = Data.Node.extend({
 
   name: "node",
 
@@ -22,6 +22,18 @@ var DocumentNode = Data.Node.extend({
     return this.document;
   },
 
+  hasParent: function() {
+    return false;
+  },
+
+  getParentNode: function() {
+    return this.document.get(this.parentId);
+  },
+
+  isResilient: function() {
+    return false;
+  },
+
 });
 
-module.exports = DocumentNode;
+module.exports = Node;
