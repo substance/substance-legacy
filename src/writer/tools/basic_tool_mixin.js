@@ -1,4 +1,9 @@
 var $$ = React.createElement;
+var Substance = require("substance");
+
+
+// Invariant: basic annotations can not overlap like there can not be two
+// strong annotations for a particular range
 
 var BasicToolMixin = {
   componentDidMount: function() {
@@ -8,25 +13,76 @@ var BasicToolMixin = {
     });
   },
 
+  // When there's no existing annotation overlapping, we create a new one.
+  canCreate: function(annoSels) {
+    return (annoSels.length === 0);
+  },
+
+  // When more than one annotation overlaps with the current selection
+  canFusion: function(annoSels) {
+    return (annoSels.length >= 2);
+  },
+
+  // When the cursor or selection is inside an existing annotation
+  canRemove: function(annoSels, sel) {
+    if (annoSels.length !== 1) return false;
+    var annoSel = annoSels[0];
+    return sel.isInside(annoSel);
+  },
+
+  // When there's some overlap with only a single annotation we do an expand
+  canExpand: function(annoSels, sel) {
+    if (annoSels.length !== 1) return false;
+    var annoSel = annoSels[0];
+    return sel.overlaps(annoSel);
+  },
+
+  canTruncate: function(annoSels, sel) {
+    if (annoSels.length !== 1) return false;
+    var annoSel = annoSels[0];
+    return (sel.leftAligned(annoSel) || sel.rightAligned(annoSel)) && !sel.equals(annoSel);
+  },
+
   handleSelectionChange: function(sel) {
     var writerCtrl = this.props.writerCtrl;
 
-    if (sel.isNull() || !sel.isPropertySelection()) {
-      this.setState({
+    // Note: toggling of a subject reference is only possible when
+    // the subject reference is selected and the
+    if (sel.isNull() || sel.isCollapsed() || !sel.isPropertySelection()) {
+      return this.setState({
         active: false,
         selected: false
       });
-    } else {
-      var range = sel.getTextRange();
-      var annotations = writerCtrl.doc.annotationIndex.get(sel.getPath(), range[0], range[1], this.annotationType);
-      var selected = annotations.length > 0;
-      var active = !sel.isCollapsed();
-
-      this.setState({
-        active: active,
-        selected: selected
-      });
     }
+
+    var newState = {
+      active: true,
+      selected: false,
+      mode: undefined
+    };
+
+    // Extract range and matching annos of current selection
+    var range = sel.getTextRange();
+    var annos = writerCtrl.doc.annotationIndex.get(sel.getPath(), range[0], range[1], this.annotationType);
+
+    var annoSels = annos.map(function(anno) {
+      var range = range;
+      return Substance.Document.Selection.create(anno.path, anno.range[0], anno.range[1]);
+    });
+
+    if (this.canCreate(annoSels, sel)) {
+      newState.mode = "create";
+    } else if (this.canFusion(annoSels, sel)) {
+      newState.mode = "fusion";
+    } else if (this.canRemove(annoSels, sel)) {
+      newState.mode = "remove";
+    } else if (this.canTruncate(annoSels, sel)) {
+      newState.mode = "truncate";
+    } else if (this.canExpand(annoSels, sel)) {
+      newState.mode = "expand";
+    }
+
+    this.setState(newState);
   },
 
   handleClick: function(e) {
@@ -35,27 +91,29 @@ var BasicToolMixin = {
 
   handleMouseDown: function(e) {
     e.preventDefault();
-    // e.stopPropagation();
 
-    // toggle annotation
+    // Toggle annotation
     var writerCtrl = this.props.writerCtrl;
     var sel = writerCtrl.getSelection();
 
     if (sel.isNull() || !sel.isPropertySelection()) return;
 
     var range = sel.getTextRange();
-    var annotations = writerCtrl.doc.annotationIndex.get(sel.getPath(), range[0], range[1], this.annotationType);
 
-    if (annotations.length > 0) {
-      writerCtrl.deleteAnnotation(annotations[0].id);
-    } else {
-      // Do nothing if selection is collapsed
-      if (sel.isCollapsed()) return;
+    // var annotations = writerCtrl.doc.annotationIndex.get(sel.getPath(), range[0], range[1], this.annotationType);
 
-      // Create new subject reference
+    if (this.state.mode === "create") {
       writerCtrl.annotate({
         type: this.annotationType
       });
+    } else if (this.state.mode === "fusion") {
+      console.log('TODO: fusion dance');
+    } else if (this.state.mode === "remove") {
+      console.log('TODO: remove');
+    } else if (this.state.mode === "truncate") {
+      console.log('TODO: truncate');
+    } else if (this.state.mode === "expand") {
+      console.log('TODO: expand');
     }
   },
 
