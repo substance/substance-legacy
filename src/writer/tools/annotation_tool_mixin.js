@@ -5,7 +5,12 @@ var Substance = require("substance");
 // Invariant: basic annotations can not overlap like there can not be two
 // strong annotations for a particular range
 
-var BasicToolMixin = {
+var AnnotationTool = Substance.Surface.AnnotationTool.extend({
+
+  getDocument: function() {
+    return this.props.writerCtrl.doc;
+  },
+
   componentDidMount: function() {
     var writerCtrl = this.props.writerCtrl;
     writerCtrl.connect(this, {
@@ -40,12 +45,11 @@ var BasicToolMixin = {
   canTruncate: function(annoSels, sel) {
     if (annoSels.length !== 1) return false;
     var annoSel = annoSels[0];
-    return (sel.leftAligned(annoSel) || sel.rightAligned(annoSel)) && !sel.equals(annoSel);
+    return (sel.isLeftAligned(annoSel) || sel.isRightAligned(annoSel)) && !sel.equals(annoSel);
   },
 
   handleSelectionChange: function(sel) {
     var writerCtrl = this.props.writerCtrl;
-
     // Note: toggling of a subject reference is only possible when
     // the subject reference is selected and the
     if (sel.isNull() || sel.isCollapsed() || !sel.isPropertySelection()) {
@@ -54,20 +58,16 @@ var BasicToolMixin = {
         selected: false
       });
     }
-
     var newState = {
       active: true,
       selected: false,
       mode: undefined
     };
-
     // Extract range and matching annos of current selection
     var annos = writerCtrl.doc.annotationIndex.get(sel.getPath(), sel.getStartOffset(), sel.getEndOffset(), this.annotationType);
-
     var annoSels = annos.map(function(anno) {
       return Substance.Document.Selection.create(anno.path, anno.startOffset, anno.endOffset);
     });
-
     if (this.canCreate(annoSels, sel)) {
       newState.mode = "create";
     } else if (this.canFusion(annoSels, sel)) {
@@ -79,7 +79,6 @@ var BasicToolMixin = {
     } else if (this.canExpand(annoSels, sel)) {
       newState.mode = "expand";
     }
-
     this.setState(newState);
   },
 
@@ -93,22 +92,46 @@ var BasicToolMixin = {
     // Toggle annotation
     var writerCtrl = this.props.writerCtrl;
     var sel = writerCtrl.getSelection();
+    var doc = writerCtrl.doc;
 
     if (sel.isNull() || !sel.isPropertySelection()) return;
 
-    if (this.state.mode === "create") {
-      writerCtrl.annotate({
-        type: this.annotationType
-      });
-    } else if (this.state.mode === "fusion") {
-      console.log('TODO: fusion dance');
-    } else if (this.state.mode === "remove") {
-      console.log('TODO: remove');
-    } else if (this.state.mode === "truncate") {
-      console.log('TODO: truncate');
-    } else if (this.state.mode === "expand") {
-      console.log('TODO: expand');
+    switch (this.state.mode) {
+      case "create":
+        return this.handleCreate();
+      case "fusion":
+        return this.handleFusion();
+      case "remove":
+        return this.handleRemove();
+      case "truncate":
+        return this.handleTruncate();
+      case "expand":
+        return this.handleExpand();
+      default:
+        console.error('Unknown mode: %s', this.state.mode);
     }
+  },
+
+  handleCreate: function() {
+    var tx = doc.startTransaction();
+    try {
+
+  },
+
+  handleFusion: function() {
+
+  },
+
+  handleRemove: function() {
+
+  },
+
+  handleTruncate: function() {
+
+  },
+
+  handleExpand: function() {
+
   },
 
   getInitialState: function() {

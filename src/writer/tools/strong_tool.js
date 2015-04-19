@@ -1,7 +1,7 @@
-var BasicToolMixin = require("./basic_tool_mixin");
+var AnnotationToolMixin = require("./annotation_tool_mixin");
 
 var StrongTool = React.createClass({
-  mixins: [BasicToolMixin],
+  mixins: [AnnotationToolMixin],
   displayName: "StrongTool",
   annotationType: "strong",
   toolIcon: "fa-bold",

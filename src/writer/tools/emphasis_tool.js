@@ -1,7 +1,7 @@
-var BasicToolMixin = require("./basic_tool_mixin");
+var AnnotationToolMixin = require("./annotation_tool_mixin");
 
 var EmphasisTool = React.createClass({
-  mixins: [BasicToolMixin],
+  mixins: [AnnotationToolMixin],
   displayName: "EmphasisTool",
   annotationType: "emphasis",
   toolIcon: "fa-italic",

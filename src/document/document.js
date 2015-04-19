@@ -196,6 +196,37 @@ Document.Prototype = function() {
     }
   };
 
+  // sel: PropertySelection
+  // options: container
+  this.getAnnotationsForSelection = function(sel, options) {
+    options = options || {};
+    var annotations;
+    var path, startOffset, endOffset;
+    if (sel.isContainerSelection()) {
+      throw new Error('Not yet implemented');
+    }
+    if (sel.isPropertySelection()) {
+      path = sel.getPath();
+      startOffset = sel.getStartOffset();
+      endOffset = sel.getEndOffset();
+    }
+    annotations = this.annotationIndex.get(path, startOffset, endOffset);
+    // Also look for container annotations if a Container instance is given
+    if (options.container) {
+      // Attention: looking for container annotations is not as efficient
+      // as property selections, as we do not have an index that has
+      // notion of the spatial extend of an annotation.
+      // Anyways, from our experience it is more common retrieve annotations for a given type.
+      // TODO: maybe
+      if (options.type) {
+      } else {
+      }
+    }
+    if (options.type) {
+      annotations = Substance.filter(annotations, AnnotationIndex.filterByType(options.type));
+    }
+  };
+
   // Called back by Substance.Data after a node instance has been created
   this._didCreateNode = function(node) {
     // create the node from schema
