@@ -29,7 +29,7 @@ function Document( schema, seed ) {
   }));
   // special index for (property-scoped) annotations
   this.annotationIndex = this.addIndex('annotations', new AnnotationIndex());
-  // special index for (contaoiner-scoped) annotations
+  // special index for (container-scoped) annotations
   this.containerAnnotationIndex = this.addIndex('container-annotations', new ContainerAnnotationIndex());
 
   // the stage is a essentially a clone of this document
