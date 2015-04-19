@@ -82,9 +82,10 @@ Container.Prototype = function() {
     // if start and end anchors are on the same property, then there is only one fragment
     if (Substance.isEqual(startAnchor.path, endAnchor.path)) {
       fragments.push({
-        path: startAnchor.path,
         id: anno.id,
-        range: [startAnchor.offset, endAnchor.offset],
+        path: startAnchor.path,
+        startOffset: startAnchor.offset,
+        endOffset: endAnchor.offset,
       });
     }
     // otherwise create a trailing fragment for the property of the start anchor,
@@ -100,7 +101,8 @@ Container.Prototype = function() {
       fragments.push({
         path: startAnchor.path,
         id: anno.id,
-        range: [startAnchor.offset, text.length],
+        startOffset: startAnchor.offset,
+        endOffset: text.length,
       });
       for (var idx = startComp.idx + 1; idx < endComp.idx; idx++) {
         var comp = this.getComponentAt(idx);
@@ -108,13 +110,15 @@ Container.Prototype = function() {
         fragments.push({
           path: comp.path,
           id: anno.id,
-          range: [0, text.length],
+          startOffset: 0,
+          endOffset: text.length,
         });
       }
       fragments.push({
         path: endAnchor.path,
         id: anno.id,
-        range: [0, endAnchor.offset],
+        startOffset: 0,
+        endOffset: endAnchor.offset,
       });
     }
     return fragments;

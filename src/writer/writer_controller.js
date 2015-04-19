@@ -184,10 +184,8 @@ WriterController.Prototype = function() {
   this.getHighlightsForTextProperty = function(textProperty) {
     var doc = this.doc;
     var container = textProperty.getContainer();
-    var highlights = [];
 
     var highlightsIndex = new Substance.PathAdapter.Arrays();
-
     if (container) {
       var activeContainerAnnotations = this.getActiveContainerAnnotations();
 
@@ -196,7 +194,7 @@ WriterController.Prototype = function() {
         if (!anno) return;
         var fragments = container.getAnnotationFragments(anno);
         _.each(fragments, function(frag) {
-          highlightsIndex.add(frag.path, new Highlight(frag.range, {
+          highlightsIndex.add(frag.path, new Highlight(frag.path, frag.startOffset, frag.endOffset, {
             id: anno.id, classNames: anno.getClassNames().replace(/_/g, "-")+" annotation-fragment"
           }));
         });
@@ -224,32 +222,35 @@ WriterController.Prototype = function() {
     var anno = this.doc.get(annotationId);
     var tx = this.doc.startTransaction({ selection: this.getSelection() });
     tx.delete(annotationId);
-    tx.save({ selection: Selection.create(anno.path, anno.range[0], anno.range[1]) });
+    tx.save({ selection: Selection.create(anno.path, anno.startOffset, anno.endOffset) });
   };
 
   this.annotate = function(annoSpec) {
     var sel = this.getSelection();
 
-    var range = annoSpec.range;
     var path = annoSpec.path;
+    var startOffset = annoSpec.startOffset;
+    var endOffset = annoSpec.endOffset;
 
     // Use active selection for retrieving path and range
-    if (!path || !range) {
+    if (!path) {
       if (sel.isNull()) throw new Error("Selection is null");
       if (!sel.isPropertySelection()) throw new Error("Selection is not a PropertySelection");
       path = sel.getPath();
-      range = sel.getTextRange();
+      startOffset = sel.getStartOffset();
+      endOffset = sel.getEndOffset();
     }
 
     var annotation = Substance.extend({}, annoSpec);
     annotation.id = annoSpec.id || annoSpec.type+"_" + Substance.uuid();
     annotation.path = path;
-    annotation.range = range;
+    annotation.startOffset = startOffset;
+    annotation.endOffset = endOffset;
 
     // start the transaction with an initial selection
     var tx = this.doc.startTransaction({ selection: this.getSelection() });
     annotation = tx.create(annotation);
-    tx.save({ selection: Selection.create(path, range[0], range[1]) });
+    tx.save({ selection: sel });
 
     return annotation;
   };

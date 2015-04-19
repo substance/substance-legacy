@@ -62,12 +62,10 @@ var BasicToolMixin = {
     };
 
     // Extract range and matching annos of current selection
-    var range = sel.getTextRange();
-    var annos = writerCtrl.doc.annotationIndex.get(sel.getPath(), range[0], range[1], this.annotationType);
+    var annos = writerCtrl.doc.annotationIndex.get(sel.getPath(), sel.getStartOffset(), sel.getEndOffset(), this.annotationType);
 
     var annoSels = annos.map(function(anno) {
-      var range = range;
-      return Substance.Document.Selection.create(anno.path, anno.range[0], anno.range[1]);
+      return Substance.Document.Selection.create(anno.path, anno.startOffset, anno.endOffset);
     });
 
     if (this.canCreate(annoSels, sel)) {
@@ -97,10 +95,6 @@ var BasicToolMixin = {
     var sel = writerCtrl.getSelection();
 
     if (sel.isNull() || !sel.isPropertySelection()) return;
-
-    var range = sel.getTextRange();
-
-    // var annotations = writerCtrl.doc.annotationIndex.get(sel.getPath(), range[0], range[1], this.annotationType);
 
     if (this.state.mode === "create") {
       writerCtrl.annotate({

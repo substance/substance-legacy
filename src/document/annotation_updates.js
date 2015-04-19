@@ -13,21 +13,23 @@ var insertedText = function(doc, coordinate, length) {
   var annotations = index.get(coordinate.path);
   Substance.each(annotations, function(anno) {
     var pos = coordinate.offset;
-    var start = anno.range[0];
-    var end = anno.range[1];
-    var changed = false;
+    var start = anno.startOffset;
+    var end = anno.endOffset;
+    var newStart = start;
+    var newEnd = end;
     if ( (pos < start) ||
          (pos === start && coordinate.after) ) {
-      start += length;
-      changed = true;
+      newStart += length;
     }
     if ( (pos < end) ||
          (pos === end && !coordinate.after) ) {
-      end += length;
-      changed = true;
+      newEnd += length;
     }
-    if (changed) {
-      doc.set([anno.id, 'range'], [start, end]);
+    if (newStart !== start) {
+      doc.set([anno.id, 'startOffset'], newStart);
+    }
+    if (newEnd !== end) {
+      doc.set([anno.id, 'endOffset'], newEnd);
     }
   });
   // same for container annotation anchors
@@ -57,34 +59,31 @@ var deletedText = function(doc, path, startOffset, endOffset) {
   Substance.each(annotations, function(anno) {
     var pos1 = startOffset;
     var pos2 = endOffset;
-    var start = anno.range[0];
-    var end = anno.range[1];
+    var start = anno.startOffset;
+    var end = anno.endOffset;
+    var newStart = start;
+    var newEnd = end;
     if (pos2 <= start) {
-      start -= length;
-      end -= length;
-      doc.set([anno.id, 'range'], [start, end]);
+      newStart -= length;
+      newEnd -= length;
+      doc.set([anno.id, 'startOffset'], newStart);
+      doc.set([anno.id, 'endOffset'], newEnd);
     } else {
-      var changed = false;
       if (pos1 <= start) {
-        var newStart = start - Math.min(pos2-pos1, start-pos1);
-        if (start !== newStart) {
-          start = newStart;
-          changed = true;
-        }
+        newStart = start - Math.min(pos2-pos1, start-pos1);
       }
       if (pos1 <= end) {
-        var newEnd = end - Math.min(pos2-pos1, end-pos1);
-        if (end !== newEnd) {
-          end = newEnd;
-          changed = true;
-        }
+        newEnd = end - Math.min(pos2-pos1, end-pos1);
       }
-      if (changed) {
-        // delete the annotation if it has collapsed by this delete
-        if (start === end) {
-          doc.delete(anno.id);
-        } else {
-          doc.set([anno.id, 'range'], [start, end]);
+      // delete the annotation if it has collapsed by this delete
+      if (start !== end && newStart === newEnd) {
+        doc.delete(anno.id);
+      } else {
+        if (start !== newStart) {
+          doc.set([anno.id, 'startOffset'], newStart);
+        }
+        if (end !== newEnd) {
+          doc.set([anno.id, 'endOffset'], newEnd);
         }
       }
     }
@@ -121,37 +120,47 @@ var transferAnnotations = function(doc, path, offset, newPath, newOffset) {
   var index = doc.getIndex('annotations');
   var annotations = index.get(path, offset);
   Substance.each(annotations, function(a) {
-    var isInside = (offset > a.range[0] && offset < a.range[1]);
-    var newRange;
+    var isInside = (offset > a.startOffset && offset < a.endOffset);
+    var start = a.startOffset;
+    var end = a.endOffset;
+    var newStart, newEnd;
     // 1. if the cursor is inside an annotation it gets either split or truncated
     if (isInside) {
       // create a new annotation if the annotation is splittable
       if (a.canSplit()) {
         var newAnno = Substance.clone(a.properties);
         newAnno.id = Substance.uuid(a.type + "_");
-        newAnno.range = [newOffset, newOffset + a.range[1] - offset];
+        newAnno.startOffset = newOffset;
+        newAnno.endOffset = newOffset + a.endOffset[1] - offset;
         newAnno.path = newPath;
         doc.create(newAnno);
       }
       // in either cases truncate the first part
-      newRange = Substance.clone(a.range);
-      newRange[1] = offset;
+      newStart = a.startOffset;
+      newEnd = offset;
       // if after truncate the anno is empty, delete it
-      if (newRange[1] === newRange[0]) {
+      if (newEnd === newStart) {
         doc.delete(a.id);
       }
       // ... otherwise update the range
       else {
-        doc.set([a.id, "range"], newRange);
+        if (newStart !== start) {
+          doc.set([a.id, "startOffset"], newStart);
+        }
+        if (newEnd !== end) {
+          doc.set([a.id, "endOffset"], newEnd);
+        }
       }
     }
     // 2. if the cursor is before an annotation then simply transfer the annotation to the new node
-    else if (a.range[0] >= offset) {
+    else if (a.startOffset >= offset) {
       // Note: we are preserving the annotation so that anything which is connected to the annotation
       // remains valid.
-      newRange = [newOffset + a.range[0] - offset, newOffset + a.range[1] - offset];
+      newStart = newOffset + a.startOffset - offset;
+      newEnd = newOffset + a.endOffset - offset;
       doc.set([a.id, "path"], newPath);
-      doc.set([a.id, "range"], newRange);
+      doc.set([a.id, "startOffset"], newStart);
+      doc.set([a.id, "endOffset"], newEnd);
     }
   });
   // same for container annotation anchors

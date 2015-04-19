@@ -66,8 +66,12 @@ PropertySelection.Prototype = function() {
     return this.range.start.path;
   };
 
-  this.getTextRange = function() {
-    return [this.range.start.offset, this.range.end.offset];
+  this.getStartOffset = function() {
+    return this.range.start.offset;
+  };
+
+  this.getEndOffset = function() {
+    return this.range.end.offset;
   };
 
   this.toString = function() {
@@ -79,6 +83,23 @@ PropertySelection.Prototype = function() {
       ")"
     ].join('');
   };
+
+  this.isInside = function(other) {
+
+  };
+
+  this.overlaps = function(other) {
+
+  };
+
+  this.isRightAligned = function(other) {
+
+  };
+
+  this.isLeftAligned = function(other) {
+
+  };
+
 };
 
 Substance.inherit(PropertySelection, Selection);

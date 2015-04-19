@@ -89,8 +89,8 @@ Substance.inherit(AnnotationIndex, Data.Index);
 
 AnnotationIndex.filterByRange = function(start, end) {
   return function(anno) {
-    var aStart = anno.range[0];
-    var aEnd = anno.range[1];
+    var aStart = anno.startOffset;
+    var aEnd = anno.endOffset;
     var overlap = (aEnd >= start);
     // Note: it is allowed to omit the end part
     if (end != null) {

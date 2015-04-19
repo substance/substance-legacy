@@ -75,13 +75,6 @@ ContainerSelection.Prototype = function() {
     return (c1.pos === c2.pos && c1.offset === c2.offset);
   };
 
-  this.overlaps = function(other) {
-    var c1 = _coordinates(this.container, this);
-    var c2 = _coordinates(this.container, other);
-    // it overlaps if they are not disjunct
-    return !(_isBefore(c1.end, c2.start) && _isBefore(c2.end, c1.start));
-  };
-
   this.includes = function(other) {
     var c1 = _coordinates(this.container, this);
     var c2 = _coordinates(this.container, other);
@@ -155,6 +148,29 @@ ContainerSelection.Prototype = function() {
       newCoors.end = c2.start;
     }
     return _createNewSelection(this.container, newCoors);
+  };
+
+  this.isInside = function(other) {
+
+  };
+
+  this.overlaps = function(other) {
+    var c1 = _coordinates(this.container, this);
+    var c2 = _coordinates(this.container, other);
+    // it overlaps if they are not disjunct
+    return !(_isBefore(c1.end, c2.start) && _isBefore(c2.end, c1.start));
+  };
+
+  this.overlaps = function(other) {
+
+  };
+
+  this.isRightAligned = function(other) {
+
+  };
+
+  this.isLeftAligned = function(other) {
+
   };
 
 };

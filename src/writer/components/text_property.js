@@ -155,10 +155,12 @@ var TextPropertyComponent = React.createClass(Substance.extend({}, TextProperty.
 
 }));
 
-TextPropertyComponent.Highlight = function(range, options) {
+TextPropertyComponent.Highlight = function(path, startOffset, endOffset, options) {
   options = options || {};
-  this.range = range;
   this.id = options.id;
+  this.path = path;
+  this.startOffset = startOffset;
+  this.endOffset = endOffset;
   this.classNames = options.classNames;
 };
 

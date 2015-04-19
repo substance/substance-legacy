@@ -85,7 +85,8 @@ ContainerEditor.Prototype = function() {
     Substance.each(annotations, function(anno) {
       var data = Substance.deepclone(anno.toJSON());
       data.path = ['text', 'content'];
-      data.range = [ Math.max(offset, anno.range[0])-offset, Math.min(endOffset, anno.range[1])-offset];
+      data.startOffset = Math.max(offset, anno.startOffset)-offset;
+      data.endOffset = Math.min(endOffset, anno.endOffset)-offset;
       copy.create(data);
     });
     return copy;
@@ -222,9 +223,8 @@ ContainerEditor.Prototype = function() {
     Substance.each(annotations, function(anno) {
       var data = anno.toJSON();
       data.path = path.slice(0);
-      data.range = data.range.slice(0);
-      data.range[0] += offset;
-      data.range[1] += offset;
+      data.startOffset += offset;
+      data.endOffset += offset;
       if (tx.get(data.id)) {
         data.id = Substance.uuid(data.type);
       }
