@@ -31,6 +31,7 @@ WriterController.Prototype = function() {
 
   // API method used by writer modules to modify the writer state
   this.replaceState = function(newState) {
+    console.info('state switch to', newState);
     this.writerComponent.replaceState(newState);
   };
 
