@@ -57,8 +57,14 @@ Selection.Prototype = function() {
 
 Substance.initClass(Selection);
 
-Selection.NullSelection = Object.freeze(new Selection());
-Selection.nullSelection = Selection.NullSelection;
+var NullSelection = function() {};
+NullSelection.Prototype = function() {
+  this.isNull = function() {
+    return true;
+  };
+};
+Substance.inherit(NullSelection, Selection);
+Selection.nullSelection = Object.freeze(new NullSelection());
 
 // this is set in index as it has dependencies to sub-classes
 // which can't be required here to avoid cyclic dep.

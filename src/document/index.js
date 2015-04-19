@@ -15,8 +15,7 @@ Document.Coordinate = require('./coordinate');
 Document.Range = require('./range');
 Document.Selection = require('./selection');
 Document.Selection.create = require('./create_selection');
-Document.NullSelection = Document.Selection.NullSelection;
-Document.nullSelection = Document.Selection.NullSelection;
+Document.nullSelection = Document.Selection.nullSelection;
 Document.PropertySelection = require('./property_selection');
 Document.ContainerSelection = require('./container_selection');
 

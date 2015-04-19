@@ -32,73 +32,6 @@ ContainerSelection.Prototype = function() {
     return "ContainerSelection("+ JSON.stringify(this.range.start.path) + ":" + this.range.start.offset + " -> " +  JSON.stringify(this.range.end.path) + ":" + this.range.end.offset + (this.reverse ? ", reverse" : "") + ")";
   };
 
-  var _coordinates = function(container, sel) {
-    if (sel._internal.coor) {
-      return sel._internal.coor;
-    }
-    var range = sel.getRange();
-    var startPos = container.getComponent(range.start.path).getIndex();
-    var endPos;
-    if (sel.isCollapsed()) {
-      endPos = startPos;
-    } else {
-      endPos = container.getComponent(range.end.path).getIndex();
-    }
-    var result = {
-      start: {
-        pos: startPos,
-        offset: range.start.offset,
-      },
-      end: {
-        pos: endPos,
-        offset: range.end.offset
-      },
-      collapsed: sel.isCollapsed()
-    };
-    sel._internal.coor = result;
-    return result;
-  };
-
-  var _isBefore = function(c1, c2) {
-    if (c1.pos > c2.pos) return false;
-    if (c1.pos == c2.pos && c1.offset > c2.offset) return false;
-    return true;
-  };
-
-  var _isStrictBefore = function(c1, c2) {
-    if (c1.pos >= c2.pos) return false;
-    if (c1.pos == c2.pos && c1.offset >= c2.offset) return false;
-    return true;
-  };
-
-  var _isEqual = function(c1, c2) {
-    return (c1.pos === c2.pos && c1.offset === c2.offset);
-  };
-
-  this.includes = function(other) {
-    var c1 = _coordinates(this.container, this);
-    var c2 = _coordinates(this.container, other);
-    return (_isBefore(c1.start, c2.start) && _isBefore(c2.end, c1.end));
-  };
-
-  // includes and at least one boundary
-  this.includesWithOneBoundary = function(other) {
-    var c1 = _coordinates(this.container, this);
-    var c2 = _coordinates(this.container, other);
-    return (
-      (_isEqual(c1.start, c2.start) && _isBefore(c2.end, c1.end)) ||
-      (_isEqual(c1.end, c2.end) && _isBefore(c1.start, c2.start))
-    );
-  };
-
-  var _createNewSelection = function(container, newCoors) {
-    newCoors.start.path = container.getComponentAt(newCoors.start.pos).path;
-    newCoors.end.path = container.getComponentAt(newCoors.end.pos).path;
-    return Selection.create(container,
-      newCoors.start.path, newCoors.start.offset,
-      newCoors.end.path, newCoors.end.offset);
-  };
-
   this.expand = function(other) {
     var c1 = _coordinates(this.container, this);
     var c2 = _coordinates(this.container, other);
@@ -130,10 +63,10 @@ ContainerSelection.Prototype = function() {
     var c1 = _coordinates(this.container, this);
     var c2 = _coordinates(this.container, other);
     var newCoors = {};
-    if (_isStrictBefore(c2.start, c1.start)) {
+    if (_isBefore(c2.start, c1.start, 'strict')) {
       newCoors.start = c1.start;
       newCoors.end = c2.end;
-    } else if (_isStrictBefore(c1.end, c2.end)) {
+    } else if (_isBefore(c1.end, c2.end, 'strict')) {
       newCoors.start = c2.start;
       newCoors.end = c1.end;
     } else if (_isEqual(c1.start, c2.start)) {
@@ -150,31 +83,122 @@ ContainerSelection.Prototype = function() {
     return _createNewSelection(this.container, newCoors);
   };
 
-  this.isInside = function(other) {
+  this.isInside = function(other, strict) {
+    if (other.isNull()) return false;
+    var c1 = _coordinates(this.container, this);
+    var c2 = _coordinates(this.container, other);
+    return (_isBefore(c2.start, c1.start, strict) && _isBefore(c1.end, c2.end, strict));
+  };
 
+  this.includes = function(other) {
+    var c1 = _coordinates(this.container, this);
+    var c2 = _coordinates(this.container, other);
+    return (_isBefore(c1.start, c2.start) && _isBefore(c2.end, c1.end));
+  };
+
+  // includes and at least one boundary
+  this.includesWithOneBoundary = function(other) {
+    var c1 = _coordinates(this.container, this);
+    var c2 = _coordinates(this.container, other);
+    return (
+      (_isEqual(c1.start, c2.start) && _isBefore(c2.end, c1.end)) ||
+      (_isEqual(c1.end, c2.end) && _isBefore(c1.start, c2.start))
+    );
   };
 
   this.overlaps = function(other) {
     var c1 = _coordinates(this.container, this);
     var c2 = _coordinates(this.container, other);
     // it overlaps if they are not disjunct
-    return !(_isBefore(c1.end, c2.start) && _isBefore(c2.end, c1.start));
-  };
-
-  this.overlaps = function(other) {
-
-  };
-
-  this.isRightAligned = function(other) {
-
+    return !(_isBefore(c1.end, c2.start) || _isBefore(c2.end, c1.start));
   };
 
   this.isLeftAligned = function(other) {
-
+    var c1 = _coordinates(this.container, this);
+    var c2 = _coordinates(this.container, other);
+    return _isEqual(c1.start, c2.start);
   };
 
+  this.isRightAligned = function(other) {
+    var c1 = _coordinates(this.container, this);
+    var c2 = _coordinates(this.container, other);
+    return _isEqual(c1.end, c2.end);
+  };
+
+
+  var _coordinates = function(container, sel) {
+    if (sel._internal.coor) {
+      return sel._internal.coor;
+    }
+    var range = sel.getRange();
+    var startPos = container.getComponent(range.start.path).getIndex();
+    var endPos;
+    if (sel.isCollapsed()) {
+      endPos = startPos;
+    } else {
+      endPos = container.getComponent(range.end.path).getIndex();
+    }
+    var result = {
+      start: {
+        pos: startPos,
+        offset: range.start.offset,
+      },
+      end: {
+        pos: endPos,
+        offset: range.end.offset
+      },
+      collapsed: sel.isCollapsed()
+    };
+    sel._internal.coor = result;
+    return result;
+  };
+
+  var _isBefore = function(c1, c2, strict) {
+    if (strict) {
+      if (c1.pos >= c2.pos) return false;
+      if (c1.pos == c2.pos && c1.offset >= c2.offset) return false;
+      return true;
+    } else {
+      if (c1.pos > c2.pos) return false;
+      if (c1.pos == c2.pos && c1.offset > c2.offset) return false;
+      return true;
+    }
+  };
+
+  var _isEqual = function(c1, c2) {
+    return (c1.pos === c2.pos && c1.offset === c2.offset);
+  };
+
+  var _createNewSelection = function(container, newCoors) {
+    newCoors.start.path = container.getComponentAt(newCoors.start.pos).path;
+    newCoors.end.path = container.getComponentAt(newCoors.end.pos).path;
+    return Selection.create(container,
+      newCoors.start.path, newCoors.start.offset,
+      newCoors.end.path, newCoors.end.offset);
+  };
 };
 
 Substance.inherit(ContainerSelection, PropertySelection);
+
+Object.defineProperties(ContainerSelection.prototype, {
+  path: {
+    get: function() {
+      throw new Error('ContainerSelection has not path property. Use startPath and endPath instead');
+    },
+    set: function() { throw new Error('immutable.'); }
+  },
+  startPath: {
+    get: function() {
+      return this.range.start.path;
+    },
+    set: function() { throw new Error('immutable.'); }
+  },
+  endPath: {
+    get: function() {
+      return this.range.end.path;
+    },
+    set: function() { throw new Error('immutable.'); }
+  }
+});
 
 module.exports = ContainerSelection;

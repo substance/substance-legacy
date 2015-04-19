@@ -84,22 +84,44 @@ PropertySelection.Prototype = function() {
     ].join('');
   };
 
-  this.isInside = function(other) {
-
+  this.isInside = function(other, strict) {
+    if (other.isNull()) return false;
+    if (other.isContainerSelection()) return other.includes(this);
+    if (strict) {
+      return (Substance.isEqual(this.path, other.path) &&
+        this.start.offset > other.start.offset &&
+        this.end.offset < other.end.offset);
+    } else {
+      return (Substance.isEqual(this.path, other.path) &&
+        this.start.offset >= other.start.offset &&
+        this.end.offset <= other.end.offset);
+    }
   };
 
-  this.overlaps = function(other) {
-
+  this.overlaps = function(other, strict) {
+    if (other.isNull()) return false;
+    if (other.isContainerSelection()) return other.overlaps(this);
+    if (!Substance.isEqual(this.getPath(), other.getPath())) return false;
+    if (strict) {
+      return (! (this.startOffset>=other.endOffset||this.endOffset<=other.startOffset) );
+    } else {
+      return (! (this.startOffset>other.endOffset||this.endOffset<other.startOffset) );
+    }
   };
 
   this.isRightAligned = function(other) {
-
+    if (other.isNull()) return false;
+    if (other.isContainerSelection()) return other.isRightAligned(this);
+    return (Substance.isEqual(this.getPath(), other.getPath()) &&
+      this.getEndOffset() === other.getEndOffset());
   };
 
   this.isLeftAligned = function(other) {
-
+    if (other.isNull()) return false;
+    if (other.isContainerSelection()) return other.isRightAligned(this);
+    return (Substance.isEqual(this.getPath(), other.getPath()) &&
+      this.getStartOffset() === other.getStartOffset());
   };
-
 };
 
 Substance.inherit(PropertySelection, Selection);
@@ -117,6 +139,24 @@ Object.defineProperties(PropertySelection.prototype, {
     },
     set: function() { throw new Error('immutable.'); }
   },
+  path: {
+    get: function() {
+      return this.range.start.path;
+    },
+    set: function() { throw new Error('immutable.'); }
+  },
+  startOffset: {
+    get: function() {
+      return this.range.start.offset;
+    },
+    set: function() { throw new Error('immutable.'); }
+  },
+  endOffset: {
+    get: function() {
+      return this.range.end.offset;
+    },
+    set: function() { throw new Error('immutable.'); }
+  }
 });
 
 module.exports = PropertySelection;
