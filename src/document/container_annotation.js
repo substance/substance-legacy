@@ -2,7 +2,7 @@
 
 var Substance = require('../basics');
 var Node = require('./node');
-var Selection = require('./selection')
+var Selection = require('./selection');
 
 
 // Container Annotation
