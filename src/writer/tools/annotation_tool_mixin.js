@@ -39,6 +39,11 @@ var AnnotationToolMixin = Substance.extend({}, Substance.Surface.AnnotationTool.
     return this.props.writerCtrl.doc;
   },
 
+  getContainer: function() {
+    var surface = this.props.writerCtrl.getSurface();
+    return surface.getContainer();
+  },
+
   getToolState: function() {
     return this.state;
   },

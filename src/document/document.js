@@ -218,22 +218,19 @@ Document.Prototype = function() {
   // options:
   //   container: container instance
   //   type: string (annotation type filter)
+  // 
+  // WARNING: Returns an empty array when selection is a container selection
   this.getAnnotationsForSelection = function(sel, options) {
     options = options || {};
     var annotations;
     var path, startOffset, endOffset;
-    if (sel.isContainerSelection()) {
-      if (options.container) {
-        return this.getContainerAnnotationsForSelection(sel, options.container, options);
-      } else {
-        console.error('You did not sepcify a container');
-        return [];
-      }
-    }
+
     if (sel.isPropertySelection()) {
       path = sel.getPath();
       startOffset = sel.getStartOffset();
       endOffset = sel.getEndOffset();
+    } else {
+      return [];
     }
     annotations = this.annotationIndex.get(path, startOffset, endOffset);
     if (options.type) {

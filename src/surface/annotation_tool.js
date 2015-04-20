@@ -11,6 +11,10 @@ AnnotationTool.Prototype = function() {
     throw new Error('Contract: an AnnotationTool must implement getDocument()');
   };
 
+  this.getContainer = function() {
+    throw new Error('Contract: an AnnotationTool must implement getContainer()');
+  };
+
   this.getToolState = function() {
     throw new Error('Contract: an AnnotationTool must implement getToolState()');
   };
@@ -63,7 +67,15 @@ AnnotationTool.Prototype = function() {
       });
     }
     // Extract range and matching annos of current selection
-    var annos = this.getDocument().getAnnotationsForSelection(sel, { type: this.annotationType });
+    var annos;
+    if (this.isContainerAnno()) {
+      annos = this.getDocument().getContainerAnnotationsForSelection(sel, this.getContainer(), {
+        type: this.annotationType
+      });
+    } else {
+      annos = this.getDocument().getAnnotationsForSelection(sel, { type: this.annotationType });  
+    }
+    
     var annoSels = annos.map(function(anno) { return anno.getSelection(); });
     var newState = {
       active: true,
@@ -73,16 +85,21 @@ AnnotationTool.Prototype = function() {
       annos: annos,
       annoSels: annoSels
     };
+
+    if (this.annotationType === "remark") {
+      console.log('remark annos', annos);
+    }
+
     if (this.canCreate(annoSels, sel)) {
       newState.mode = "create";
     } else if (this.canFusion(annoSels, sel)) {
       newState.mode = "fusion";
-    } else if (this.canRemove(annoSels, sel)) {
-      newState.selected = true;
-      newState.mode = "remove";
     } else if (this.canTruncate(annoSels, sel)) {
       newState.selected = true;
       newState.mode = "truncate";
+    } else if (this.canRemove(annoSels, sel)) {
+      newState.selected = true;
+      newState.mode = "remove";
     } else if (this.canExpand(annoSels, sel)) {
       newState.mode = "expand";
     } else {
@@ -126,17 +143,25 @@ AnnotationTool.Prototype = function() {
     }
   };
 
+  this.isContainerAnno = function() {
+    var doc = this.getDocument();
+    var schema = doc.getSchema();
+    return schema.isInstanceOf(this.getAnnotationType(), "container_annotation");
+  };
+
   this.createAnnotationForSelection = function(tx, sel) {
     var annotationType = this.getAnnotationType();
-    var annotation = {
+    var annotation = Substance.extend({
       id: Substance.uuid(annotationType),
       type: annotationType,
-    };
-    if (sel.isPropertySelection()) {
-      annotation.path = sel.getPath();
-    } else {
+    }, this.getAnnotationData());
+
+    if (this.isContainerAnno()) {
       annotation.startPath = sel.start.path;
-      annotation.endPath = sel.end.path;
+      annotation.endPath = sel.end.path;   
+      annotation.container = "content";   
+    } else {
+      annotation.path = sel.getPath();
     }
     annotation.startOffset = sel.getStartOffset();
     annotation.endOffset = sel.getEndOffset();

@@ -86,7 +86,7 @@ PropertySelection.Prototype = function() {
 
   this.isInsideOf = function(other, strict) {
     if (other.isNull()) return false;
-    if (other.isContainerSelection()) return other.includes(this);
+    if (other.isContainerSelection()) return other.contains(this);
     if (strict) {
       return (Substance.isEqual(this.path, other.path) &&
         this.start.offset > other.start.offset &&
