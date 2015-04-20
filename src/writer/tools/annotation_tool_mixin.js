@@ -58,7 +58,7 @@ var AnnotationToolMixin = Substance.extend({}, Substance.Surface.AnnotationTool.
   handleMouseDown: function(e) {
     e.preventDefault();
     this.performAction();
-  },
+  }
 
 });
 

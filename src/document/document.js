@@ -86,7 +86,7 @@ Document.Prototype = function() {
   };
 
   this.getContainer = function(id) {
-    return this.container[id];
+    return this.containers[id];
   };
 
   this.addIndex = function(name, index) {
@@ -198,7 +198,7 @@ Document.Prototype = function() {
     }
   };
 
-  this.redo = function(){
+  this.redo = function() {
     var change = this.undone.pop();
     if (change) {
       var inverted = change.invert();
@@ -211,7 +211,9 @@ Document.Prototype = function() {
   };
 
   // sel: PropertySelection
-  // options: container
+  // options:
+  //   container: container instance
+  //   type: string (annotation type filter)
   this.getAnnotationsForSelection = function(sel, options) {
     options = options || {};
     var annotations;
@@ -252,11 +254,9 @@ Document.Prototype = function() {
     } else {
       annotations = this.getIndex('container-annotations').byId;
     }
-    annotations = Substance.map(annotations, function(anno) {
+    annotations = Substance.filter(annotations, function(anno) {
       var annoSel = anno.getSelection();
-      if (sel.overlaps(annoSel)) {
-        return anno;
-      }
+      return sel.overlaps(annoSel);
     });
     return annotations;
   };

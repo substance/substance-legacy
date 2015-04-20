@@ -20,6 +20,11 @@ function Container(doc, id) {
   this.components = [];
   this.nodes = {};
   this.byPath = new PathAdapter({});
+
+  // TODO: not beautiful to do this here
+  if (id) {
+    this.doc.addContainer(id, this);
+  }
 }
 
 Container.Prototype = function() {
