@@ -73,9 +73,9 @@ AnnotationTool.Prototype = function() {
         type: this.annotationType
       });
     } else {
-      annos = this.getDocument().getAnnotationsForSelection(sel, { type: this.annotationType });  
+      annos = this.getDocument().getAnnotationsForSelection(sel, { type: this.annotationType });
     }
-    
+
     var annoSels = annos.map(function(anno) { return anno.getSelection(); });
     var newState = {
       active: true,
@@ -113,7 +113,9 @@ AnnotationTool.Prototype = function() {
 
   this.performAction = function() {
     var state = this.getToolState();
-    if (state.sel.isNull() || !state.sel.isPropertySelection()) return;
+    // TODO: is this really necessary? better just check if the toolstate does not have a proper mode
+    if (state.sel.isNull()) return;
+    if (!state.mode) return;
     switch (state.mode) {
       case "create":
         return this.handleCreate(state);
@@ -158,8 +160,8 @@ AnnotationTool.Prototype = function() {
 
     if (this.isContainerAnno()) {
       annotation.startPath = sel.start.path;
-      annotation.endPath = sel.end.path;   
-      annotation.container = "content";   
+      annotation.endPath = sel.end.path;
+      annotation.container = "content";
     } else {
       annotation.path = sel.getPath();
     }

@@ -113,13 +113,13 @@ ContainerSelection.Prototype = function() {
     return !(_isBefore(c1.end, c2.start) || _isBefore(c2.end, c1.start));
   };
 
-  this.isLeftAligned = function(other) {
+  this.isLeftAlignedWith = function(other) {
     var c1 = _coordinates(this.container, this);
     var c2 = _coordinates(this.container, other);
     return _isEqual(c1.start, c2.start);
   };
 
-  this.isRightAligned = function(other) {
+  this.isRightAlignedWith = function(other) {
     var c1 = _coordinates(this.container, this);
     var c2 = _coordinates(this.container, other);
     return _isEqual(c1.end, c2.end);

@@ -86,7 +86,10 @@ PropertySelection.Prototype = function() {
 
   this.isInsideOf = function(other, strict) {
     if (other.isNull()) return false;
-    if (other.isContainerSelection()) return other.contains(this);
+    if (other.isContainerSelection()) {
+      // console.log('PropertySelection.isInsideOf: delegating to ContainerSelection.contains...');
+      return other.contains(this);
+    }
     if (strict) {
       return (Substance.isEqual(this.path, other.path) &&
         this.start.offset > other.start.offset &&
@@ -100,7 +103,10 @@ PropertySelection.Prototype = function() {
 
   this.contains = function(other, strict) {
     if (other.isNull()) return false;
-    if (other.isContainerSelection()) return other.isInsideOf(this);
+    if (other.isContainerSelection()) {
+      // console.log('PropertySelection.contains: delegating to ContainerSelection.isInsideOf...');
+      return other.isInsideOf(this);
+    }
     if (strict) {
       return (Substance.isEqual(this.path, other.path) &&
         this.start.offset < other.start.offset &&
@@ -114,7 +120,10 @@ PropertySelection.Prototype = function() {
 
   this.overlaps = function(other, strict) {
     if (other.isNull()) return false;
-    if (other.isContainerSelection()) return other.overlaps(this);
+    if (other.isContainerSelection()) {
+      // console.log('PropertySelection.overlaps: delegating to ContainerSelection.overlaps...');
+      return other.overlaps(this);
+    }
     if (!Substance.isEqual(this.getPath(), other.getPath())) return false;
     if (strict) {
       return (! (this.startOffset>=other.endOffset||this.endOffset<=other.startOffset) );
@@ -125,21 +134,30 @@ PropertySelection.Prototype = function() {
 
   this.isRightAlignedWith = function(other) {
     if (other.isNull()) return false;
-    if (other.isContainerSelection()) return other.isRightAlignedWith(this);
+    if (other.isContainerSelection()) {
+      // console.log('PropertySelection.isRightAlignedWith: delegating to ContainerSelection.isRightAlignedWith...');
+      return other.isRightAlignedWith(this);
+    }
     return (Substance.isEqual(this.getPath(), other.getPath()) &&
       this.getEndOffset() === other.getEndOffset());
   };
 
   this.isLeftAlignedWith = function(other) {
     if (other.isNull()) return false;
-    if (other.isContainerSelection()) return other.isLeftAlignedWith(this);
+    if (other.isContainerSelection()) {
+      // console.log('PropertySelection.isLeftAlignedWith: delegating to ContainerSelection.isLeftAlignedWith...');
+      return other.isLeftAlignedWith(this);
+    }
     return (Substance.isEqual(this.getPath(), other.getPath()) &&
       this.getStartOffset() === other.getStartOffset());
   };
 
   this.expand = function(other) {
     if (other.isNull()) return this;
-    if (other.isContainerSelection()) return other.expand(this);
+    if (other.isContainerSelection()) {
+      // console.log('PropertySelection.expand: delegating to ContainerSelection.expand...');
+      return other.expand(this);
+    }
     if (!Substance.isEqual(this.path, other.path)) {
       throw new Error('Can not expand PropertySelection to a different property.');
     }
@@ -150,7 +168,10 @@ PropertySelection.Prototype = function() {
 
   this.truncate = function(other) {
     if (other.isNull()) return this;
-    if (!Substance.isEqual(this.path, other.path)) {
+    // Checking that paths are ok
+    // doing that in a generalized manner so that other can even be a ContainerSelection
+    if (!Substance.isEqual(this.start.path, other.start.path) ||
+      !Substance.isEqual(this.end.path, other.end.path)) {
       throw new Error('Can not expand PropertySelection to a different property.');
     }
     var newStartOffset;
