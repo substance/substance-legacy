@@ -49,7 +49,7 @@ var AnnotationToolMixin = Substance.extend({}, Substance.Surface.AnnotationTool.
   },
 
   setToolState: function(newState) {
-    return this.setState(newState);
+    return this.replaceState(newState);
   },
 
   getAnnotationType: function() {

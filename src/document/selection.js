@@ -42,10 +42,8 @@ Selection.Prototype = function() {
       return false;
     } else if (this.isNull() !== other.isNull()) {
       return false;
-    } else if (this.isReverse() !== other.isReverse()) {
-      return false;
-    } else if (this.isPropertySelection() !== other.isPropertySelection()) {
-      return false;
+    } else {
+      return true;
     }
   };
 

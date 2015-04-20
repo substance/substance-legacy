@@ -6,6 +6,7 @@ function AnnotationTool() {
 }
 
 AnnotationTool.Prototype = function() {
+  this.disabledModes = [];
 
   this.getDocument = function() {
     throw new Error('Contract: an AnnotationTool must implement getDocument()');
@@ -25,6 +26,26 @@ AnnotationTool.Prototype = function() {
 
   this.getAnnotationType = function() {
     throw new Error('Contract: an AnnotationTool must implement getAnnotationType()');
+  };
+
+  this.afterCreate = function() {
+
+  };
+
+  this.afterFusion = function() {
+    
+  };
+
+  this.afterRemove = function() {
+    
+  };
+
+  this.afterTruncate = function() {
+    
+  };
+
+  this.afterExpand = function() {
+    
   };
 
   // When there's no existing annotation overlapping, we create a new one.
@@ -102,20 +123,24 @@ AnnotationTool.Prototype = function() {
       newState.mode = "remove";
     } else if (this.canExpand(annoSels, sel)) {
       newState.mode = "expand";
-    } else {
+    } 
+
+    // Verifies if the detected mode has been disabled by the concrete implementation
+    if (!newState.mode || Substance.includes(this.disabledModes, newState.mode)) {
       return this.setToolState({
         active: false,
         selected: false
       });
     }
+
     this.setToolState(newState);
   };
 
   this.performAction = function() {
     var state = this.getToolState();
     // TODO: is this really necessary? better just check if the toolstate does not have a proper mode
-    if (state.sel.isNull()) return;
-    if (!state.mode) return;
+    if (!state.sel || !state.mode || state.sel.isNull()) return;
+    
     switch (state.mode) {
       case "create":
         return this.handleCreate(state);
@@ -138,11 +163,17 @@ AnnotationTool.Prototype = function() {
     var doc = this.getDocument();
     var tx = doc.startTransaction({ selection: sel });
     try {
-      this.createAnnotationForSelection(tx, sel);
+      var anno = this.createAnnotationForSelection(tx, sel);
       tx.save({ selection: sel });
     } finally {
       tx.cleanup();
     }
+
+    this.afterCreate(anno);
+  };
+
+  this.getAnnotationData = function() {
+    return {};
   };
 
   this.isContainerAnno = function() {
@@ -187,6 +218,7 @@ AnnotationTool.Prototype = function() {
     } finally {
       tx.cleanup();
     }
+    this.afterFusion();
   };
 
   this.handleRemove = function(state) {
@@ -196,10 +228,11 @@ AnnotationTool.Prototype = function() {
     try {
       var annoId = state.annos[0].id;
       tx.delete(annoId);
-      tx.save({ selection: Selection.create(sel.start) });
+      tx.save({ selection: sel });
     } finally {
       tx.cleanup();
     }
+    this.afterRemove();
   };
 
   this.handleTruncate = function(state) {
@@ -215,6 +248,7 @@ AnnotationTool.Prototype = function() {
     } finally {
       tx.cleanup();
     }
+    this.afterTruncate();
   };
 
   this.handleExpand = function(state) {
@@ -230,6 +264,7 @@ AnnotationTool.Prototype = function() {
     } finally {
       tx.cleanup();
     }
+    this.afterExpand();
   };
 };
 

@@ -44,7 +44,7 @@ PropertySelection.Prototype = function() {
 
   this.equals = function(other) {
     return (
-      Selection.prototype.equals(other) &&
+      Selection.prototype.equals.call(this, other) &&
       this.range.equals(other.range)
     );
   };
