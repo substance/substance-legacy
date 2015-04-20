@@ -1,6 +1,7 @@
 'use strict';
 
 var Node = require('./node');
+var Selection = require('./selection');
 
 // Annotation
 // --------
@@ -26,7 +27,26 @@ var Annotation = Node.extend({
 
   canSplit: function() {
     return true;
-  }
+  },
+
+  getSelection: function() {
+    return Selection.create(this.path, this.startOffset, this.endOffset);
+  },
+
+  updateSelection: function(tx, sel) {
+    if (!sel.isPropertySelection()) {
+      throw new Error('Cannot change to ContainerAnnotation.')
+    }
+    if (!Substance.isEqual(this.startPath, sel.start.path)) {
+      tx.set([this.id, 'path'], sel.start.path);
+    }
+    if (this.startOffset !== sel.start.offset) {
+      tx.set([this.id, 'startOffset'], sel.start.offset);
+    }
+    if (this.endOffset !== sel.end.offset) {
+      tx.set([this.id, 'endOffset'], sel.start.offset);
+    }
+  },
 
 });
 

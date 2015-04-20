@@ -29,6 +29,9 @@ function Document( schema, seed ) {
   }));
   // special index for (property-scoped) annotations
   this.annotationIndex = this.addIndex('annotations', new AnnotationIndex());
+
+  // registry for containers
+  this.containers = {};
   // special index for (contaoiner-scoped) annotations
   this.containerAnnotationIndex = this.addIndex('container-annotations', new ContainerAnnotationIndex());
 
@@ -73,6 +76,17 @@ Document.Prototype = function() {
 
   this.getNodes = function() {
     return this.data.getNodes();
+  };
+
+  this.addContainer = function(id, container) {
+    if (this.containers[id]) {
+      throw new Error('Container with id ' + id + ' already exists.');
+    }
+    this.containers[id] = container;
+  };
+
+  this.getContainer = function(id) {
+    return this.container[id];
   };
 
   this.addIndex = function(name, index) {
@@ -203,7 +217,7 @@ Document.Prototype = function() {
     var annotations;
     var path, startOffset, endOffset;
     if (sel.isContainerSelection()) {
-      throw new Error('Not yet implemented');
+      return this.getContainerAnnotationsForSelection(sel, options.container, options);
     }
     if (sel.isPropertySelection()) {
       path = sel.getPath();
@@ -211,20 +225,34 @@ Document.Prototype = function() {
       endOffset = sel.getEndOffset();
     }
     annotations = this.annotationIndex.get(path, startOffset, endOffset);
-    // Also look for container annotations if a Container instance is given
-    if (options.container) {
-      // Attention: looking for container annotations is not as efficient
-      // as property selections, as we do not have an index that has
-      // notion of the spatial extend of an annotation.
-      // Anyways, from our experience it is more common retrieve annotations for a given type.
-      // TODO: maybe
-      if (options.type) {
-      } else {
-      }
-    }
     if (options.type) {
       annotations = Substance.filter(annotations, AnnotationIndex.filterByType(options.type));
     }
+  };
+
+  // Attention: looking for container annotations is not as efficient
+  // as property selections, as we do not have an index that has
+  // notion of the spatial extend of an annotation
+  // (which would depend on a model-side implementation of Container).
+  // Opposed to that, common annotations are bound to properties which make it easy to lookup.
+  this.getContainerAnnotationsForSelection = function(sel, container, options) {
+    if (!container) {
+      throw new Error('Container required.');
+    }
+    var annotations;
+    // Also look for container annotations if a Container instance is given
+    if (options.type) {
+      annotations = this.getIndex('type').get(options.type);
+    } else {
+      annotations = this.getIndex('container-annotations').byId;
+    }
+    annotations = Substance.map(annotations, function(anno) {
+      var annoSel = anno.getSelection();
+      if (annoSel.overlaps(sel)) {
+        return anno;
+      }
+    });
+    return annotations;
   };
 
   // Called back by Substance.Data after a node instance has been created

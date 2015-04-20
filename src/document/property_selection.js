@@ -122,6 +122,34 @@ PropertySelection.Prototype = function() {
     return (Substance.isEqual(this.getPath(), other.getPath()) &&
       this.getStartOffset() === other.getStartOffset());
   };
+
+  this.expand = function(other) {
+    if (other.isNull()) return this;
+    if (other.isContainerSelection()) return other.expand(this);
+    if (!Substance.isEqual(this.path, other.path)) {
+      throw new Error('Can not expand PropertySelection to a different property.');
+    }
+    var newStartOffset = Math.min(this.startOffset, other.startOffset);
+    var newEndOffset = Math.max(this.startOffset, other.startOffset);
+    return Selection.create(this.getPath(), newStartOffset, newEndOffset);
+  };
+
+  this.truncate = function(other) {
+    if (other.isNull()) return this;
+    if (!Substance.isEqual(this.path, other.path)) {
+      throw new Error('Can not expand PropertySelection to a different property.');
+    }
+    var newStartOffset;
+    var newEndOffset;
+    if (this.startOffset === other.startOffset) {
+      newStartOffset = other.endOffset;
+      newEndOffset = this.endOffset;
+    } else if (this.endOffset === other.endOffset) {
+      newStartOffset = this.startOffset;
+      newEndOffset = other.startOffset;
+    }
+    return Selection.create(this.getPath(), newStartOffset, newEndOffset);
+  };
 };
 
 Substance.inherit(PropertySelection, Selection);

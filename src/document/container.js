@@ -11,11 +11,11 @@ var PathAdapter = Substance.PathAdapter;
 // title and a caption) they need to be flattened to a list of components.
 // This flat structure is modelled by this class.
 
-
-function Container(id) {
+function Container(doc, id) {
   if (!id) {
     throw new Error('Contract: a container must have an id be able to associate container annotations.');
   }
+  this.doc = doc;
   this.id = id;
   this.components = [];
   this.nodes = {};
@@ -23,6 +23,10 @@ function Container(id) {
 }
 
 Container.Prototype = function() {
+
+  this.getDocument = function() {
+    return this.doc;
+  };
 
   this._setComponents = function(components) {
     var byPath = new PathAdapter({});
@@ -123,7 +127,6 @@ Container.Prototype = function() {
     }
     return fragments;
   };
-
 };
 
 Substance.initClass(Container);

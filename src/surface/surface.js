@@ -105,7 +105,7 @@ Surface.Prototype = function() {
     if (!containerId) {
       throw new Error('Contract: a Surface root element must have a "data-id" property to identify its container.');
     }
-    this.domContainer = new DomContainer(containerId, element);
+    this.domContainer = new DomContainer(doc, containerId, element);
     this.domSelection = new DomSelection(element, this.domContainer);
     this.editor.setContainer(this.domContainer);
 

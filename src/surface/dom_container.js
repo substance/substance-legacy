@@ -20,8 +20,8 @@ var Container = Document.Container;
 // be used without a rendered view, and this Container must be
 // updated whenever the view is rerendered.
 //
-function DomContainer(containerId, element) {
-  Container.call(this, containerId);
+function DomContainer(doc, containerId, element) {
+  Container.call(this, doc, containerId);
   this.element = element;
   this.reset();
 }

@@ -125,7 +125,6 @@ ContainerSelection.Prototype = function() {
     return _isEqual(c1.end, c2.end);
   };
 
-
   var _coordinates = function(container, sel) {
     if (sel._internal.coor) {
       return sel._internal.coor;

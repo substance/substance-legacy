@@ -8,6 +8,7 @@ var ContainerAnnotation = require('./container_annotation');
 var ContainerAnnotationIndex = function(doc) {
   this.doc = doc;
   this.byPath = new PathAdapter.Arrays();
+  this.byId = {};
 };
 
 ContainerAnnotationIndex.Prototype = function() {
@@ -18,6 +19,7 @@ ContainerAnnotationIndex.Prototype = function() {
 
   this.reset = function() {
     this.byPath.clear();
+    this.byId = {};
     this.initialize();
   };
 
@@ -39,6 +41,7 @@ ContainerAnnotationIndex.Prototype = function() {
     var endAnchor = containerAnno.getEndAnchor();
     this.byPath.add(startAnchor.path, startAnchor);
     this.byPath.add(endAnchor.path, endAnchor);
+    this.byId[containerAnno.id] = containerAnno;
   };
 
   this.delete = function(containerAnno) {
@@ -46,6 +49,7 @@ ContainerAnnotationIndex.Prototype = function() {
     var endAnchor = containerAnno.getEndAnchor();
     this.byPath.remove(startAnchor.path, startAnchor);
     this.byPath.remove(endAnchor.path, endAnchor);
+    delete this.byId[containerAnno.id];
   };
 
   this.update = function(node, path, newValue, oldValue) {

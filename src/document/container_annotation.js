@@ -2,6 +2,7 @@
 
 var Substance = require('../basics');
 var Node = require('./node');
+var Selection = require('./selection')
 
 
 // Container Annotation
@@ -47,6 +48,30 @@ var ContainerAnnotation = Node.extend({
       this._endAnchor = new ContainerAnnotation.Anchor(this);
     }
     return this._endAnchor;
+  },
+
+  // Provide a selection which has the same range as this annotation.
+  getSelection: function() {
+    var container = this.getDocument().getContainer(this.container);
+    return Selection.create(container, this.startPath, this.startOffset, this.endPath, this.endOffset);
+  },
+
+  updateSelection: function(tx, sel) {
+    if (!sel.isContainerSelection()) {
+      throw new Error('Cannot change to ContainerAnnotation.')
+    }
+    if (!Substance.isEqual(this.startPath, sel.start.path)) {
+      tx.set([this.id, 'startPath'], sel.start.path);
+    }
+    if (this.startOffset !== sel.start.offset) {
+      tx.set([this.id, 'startOffset'], sel.start.offset);
+    }
+    if (!Substance.isEqual(this.endPath, sel.end.path)) {
+      tx.set([this.id, 'endPath'], sel.end.path);
+    }
+    if (this.endOffset !== sel.end.offset) {
+      tx.set([this.id, 'endOffset'], sel.end.offset);
+    }
   },
 
 });
