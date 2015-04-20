@@ -24,6 +24,10 @@ function Container(doc, id) {
 
 Container.Prototype = function() {
 
+  this.dispose = function() {
+    this.doc.removeContainer(this.id);
+  };
+
   this.getDocument = function() {
     return this.doc;
   };

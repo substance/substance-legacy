@@ -86,7 +86,11 @@ Document.Prototype = function() {
   };
 
   this.getContainer = function(id) {
-    return this.container[id];
+    return this.containers[id];
+  };
+
+  this.removeContainer = function(id) {
+    delete this.containers[id];
   };
 
   this.addIndex = function(name, index) {

@@ -153,6 +153,8 @@ Surface.Prototype = function() {
       this.element.removeEventListener('compositionend', this._onCompositionEnd, false);
     }
 
+    this.domContainer.dispose();
+
     // Clean-up
     //
     this.editor.setContainer(null);
