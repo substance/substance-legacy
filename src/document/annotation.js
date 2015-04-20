@@ -1,5 +1,6 @@
 'use strict';
 
+var Substance = require('../basics');
 var Node = require('./node');
 var Selection = require('./selection');
 
@@ -33,7 +34,7 @@ var Annotation = Node.extend({
     return Selection.create(this.path, this.startOffset, this.endOffset);
   },
 
-  updateSelection: function(tx, sel) {
+  updateRange: function(tx, sel) {
     if (!sel.isPropertySelection()) {
       throw new Error('Cannot change to ContainerAnnotation.')
     }
@@ -44,7 +45,7 @@ var Annotation = Node.extend({
       tx.set([this.id, 'startOffset'], sel.start.offset);
     }
     if (this.endOffset !== sel.end.offset) {
-      tx.set([this.id, 'endOffset'], sel.start.offset);
+      tx.set([this.id, 'endOffset'], sel.end.offset);
     }
   },
 

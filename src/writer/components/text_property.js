@@ -111,6 +111,8 @@ var TextPropertyComponent = React.createClass(Substance.extend({}, TextProperty.
   },
 
   textPropertyDidChange: function(change, info) {
+    // HACK: avaoiding that this is gets updated multiple times
+    if (this.lastChange === change.id) return;
     // HACK: currently without incremental rendering we need to reset the selection after changes.
     // With high rapid incoming keyboard events the CE acts on temporarily invalid selections
     // making the surface fail to detect the correct text input.
@@ -135,6 +137,7 @@ var TextPropertyComponent = React.createClass(Substance.extend({}, TextProperty.
       // However, this is surprisingly fast so that almost no flickering can be observed.
       this.renderManually();
     }.bind(this));
+    this.lastChange = change.id;
   },
 
   getContainer: function() {

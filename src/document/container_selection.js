@@ -83,14 +83,14 @@ ContainerSelection.Prototype = function() {
     return _createNewSelection(this.container, newCoors);
   };
 
-  this.isInside = function(other, strict) {
+  this.isInsideOf = function(other, strict) {
     if (other.isNull()) return false;
     var c1 = _coordinates(this.container, this);
     var c2 = _coordinates(this.container, other);
     return (_isBefore(c2.start, c1.start, strict) && _isBefore(c1.end, c2.end, strict));
   };
 
-  this.includes = function(other) {
+  this.contains = function(other) {
     var c1 = _coordinates(this.container, this);
     var c2 = _coordinates(this.container, other);
     return (_isBefore(c1.start, c2.start) && _isBefore(c2.end, c1.end));

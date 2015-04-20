@@ -2,22 +2,25 @@ var Substance = require("../basics");
 var Selection = Substance.Document.Selection;
 
 // Mixin with helpers to implement an AnnotationTool
-function AnnotationTool() {}
+function AnnotationTool() {
+}
 
 AnnotationTool.Prototype = function() {
 
-  this.annotationType = "annotation";
-
   this.getDocument = function() {
-    throw new Error('Contract: an AnnotationTool must implement AnnotationTool.getDocument()');
+    throw new Error('Contract: an AnnotationTool must implement getDocument()');
   };
 
   this.getToolState = function() {
-    throw new Error('Contract: an AnnotationTool must implement AnnotationTool.getToolState()');
+    throw new Error('Contract: an AnnotationTool must implement getToolState()');
   };
 
   this.setToolState = function(/*newState*/) {
-    throw new Error('Contract: an AnnotationTool must implement AnnotationTool.setToolState()');
+    throw new Error('Contract: an AnnotationTool must implement setToolState()');
+  };
+
+  this.getAnnotationType = function() {
+    throw new Error('Contract: an AnnotationTool must implement getAnnotationType()');
   };
 
   // When there's no existing annotation overlapping, we create a new one.
@@ -34,7 +37,7 @@ AnnotationTool.Prototype = function() {
   this.canRemove = function(annoSels, sel) {
     if (annoSels.length !== 1) return false;
     var annoSel = annoSels[0];
-    return sel.isInside(annoSel);
+    return sel.isInsideOf(annoSel);
   };
 
   // When there's some overlap with only a single annotation we do an expand
@@ -47,13 +50,13 @@ AnnotationTool.Prototype = function() {
   this.canTruncate = function(annoSels, sel) {
     if (annoSels.length !== 1) return false;
     var annoSel = annoSels[0];
-    return (sel.isLeftAligned(annoSel) || sel.isRightAligned(annoSel)) && !sel.equals(annoSel);
+    return (sel.isLeftAlignedWith(annoSel) || sel.isRightAlignedWith(annoSel)) && !sel.equals(annoSel);
   };
 
   this.updateToolState = function(sel) {
     // Note: toggling of a subject reference is only possible when
     // the subject reference is selected and the
-    if (sel.isNull() || sel.isCollapsed() || !sel.isPropertySelection()) {
+    if (sel.isNull()) {
       return this.setToolState({
         active: false,
         selected: false
@@ -62,26 +65,32 @@ AnnotationTool.Prototype = function() {
     // Extract range and matching annos of current selection
     var annos = this.getDocument().getAnnotationsForSelection(sel, { type: this.annotationType });
     var annoSels = annos.map(function(anno) { return anno.getSelection(); });
-    var mode;
-    if (this.canCreate(annoSels, sel)) {
-      mode = "create";
-    } else if (this.canFusion(annoSels, sel)) {
-      mode = "fusion";
-    } else if (this.canRemove(annoSels, sel)) {
-      mode = "remove";
-    } else if (this.canTruncate(annoSels, sel)) {
-      mode = "truncate";
-    } else if (this.canExpand(annoSels, sel)) {
-      mode = "expand";
-    }
     var newState = {
       active: true,
       selected: false,
-      mode: mode,
+      mode: null,
       sel: sel,
       annos: annos,
       annoSels: annoSels
     };
+    if (this.canCreate(annoSels, sel)) {
+      newState.mode = "create";
+    } else if (this.canFusion(annoSels, sel)) {
+      newState.mode = "fusion";
+    } else if (this.canRemove(annoSels, sel)) {
+      newState.selected = true;
+      newState.mode = "remove";
+    } else if (this.canTruncate(annoSels, sel)) {
+      newState.selected = true;
+      newState.mode = "truncate";
+    } else if (this.canExpand(annoSels, sel)) {
+      newState.mode = "expand";
+    } else {
+      return this.setToolState({
+        active: false,
+        selected: false
+      });
+    }
     this.setToolState(newState);
   };
 
@@ -118,8 +127,10 @@ AnnotationTool.Prototype = function() {
   };
 
   this.createAnnotationForSelection = function(tx, sel) {
+    var annotationType = this.getAnnotationType();
     var annotation = {
-      id: Substance.uuid(this.annotation.type),
+      id: Substance.uuid(annotationType),
+      type: annotationType,
     };
     if (sel.isPropertySelection()) {
       annotation.path = sel.getPath();
@@ -164,30 +175,30 @@ AnnotationTool.Prototype = function() {
     }
   };
 
-  this.handleTruncate = function(annoSels, sel) {
+  this.handleTruncate = function(state) {
     var doc = this.getDocument();
+    var sel = state.sel;
     var tx = doc.startTransaction({ selection: sel });
     try {
-      var annoSel = annoSels[0];
-      var nodeId = annoSel.path[0];
-      var anno = doc.get(nodeId);
+      var anno = state.annos[0];
+      var annoSel = state.annoSels[0];
       var newAnnoSel = annoSel.truncate(sel);
-      anno.updateSelection(tx, newAnnoSel);
+      anno.updateRange(tx, newAnnoSel);
       tx.save({ selection: sel });
     } finally {
       tx.cleanup();
     }
   };
 
-  this.handleExpand = function(annoSels, sel) {
+  this.handleExpand = function(state) {
     var doc = this.getDocument();
+    var sel = state.sel;
     var tx = doc.startTransaction({ selection: sel });
     try {
-      var annoSel = annoSels[0];
+      var anno = state.annos[0];
+      var annoSel = state.annoSels[0];
       var newAnnoSel = annoSel.expand(sel);
-      var nodeId = annoSel.path[0];
-      var anno = doc.get(nodeId);
-      anno.updateSelection(tx, newAnnoSel);
+      anno.updateRange(tx, newAnnoSel);
       tx.save({ selection: sel });
     } finally {
       tx.cleanup();

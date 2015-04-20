@@ -5,7 +5,7 @@ var Substance = require("substance");
 // Invariant: basic annotations can not overlap like there can not be two
 // strong annotations for a particular range
 
-var AnnotationToolMixin = Substance.Surface.AnnotationTool.extend({
+var AnnotationToolMixin = Substance.extend({}, Substance.Surface.AnnotationTool.prototype, {
 
   getInitialState: function() {
     return {
@@ -45,6 +45,10 @@ var AnnotationToolMixin = Substance.Surface.AnnotationTool.extend({
 
   setToolState: function(newState) {
     return this.setState(newState);
+  },
+
+  getAnnotationType: function() {
+    return this.annotationType;
   },
 
   handleClick: function(e) {

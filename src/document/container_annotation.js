@@ -56,7 +56,7 @@ var ContainerAnnotation = Node.extend({
     return Selection.create(container, this.startPath, this.startOffset, this.endPath, this.endOffset);
   },
 
-  updateSelection: function(tx, sel) {
+  updateRange: function(tx, sel) {
     if (!sel.isContainerSelection()) {
       throw new Error('Cannot change to ContainerAnnotation.')
     }

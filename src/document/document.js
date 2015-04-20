@@ -9,7 +9,7 @@ var ContainerAnnotationIndex = require('./container_annotation_index');
 var TransactionDocument = require('./transaction_document');
 var DocumentChange = require('./document_change');
 
-var NotifyByPath = require('./notify_by_path');
+var NotifyPropertyChange = require('./notify_property_change');
 
 function Document( schema, seed ) {
   Substance.EventEmitter.call(this);
@@ -52,7 +52,7 @@ function Document( schema, seed ) {
   // The proxies filter the document change by interest and then only notify a small set of observers.
   // Example: NotifyByPath notifies only observers which are interested in changes to a certain path.
   this.eventProxies = {
-    'path': new NotifyByPath()
+    'path': new NotifyPropertyChange(this),
   };
 }
 
@@ -217,7 +217,12 @@ Document.Prototype = function() {
     var annotations;
     var path, startOffset, endOffset;
     if (sel.isContainerSelection()) {
-      return this.getContainerAnnotationsForSelection(sel, options.container, options);
+      if (options.container) {
+        return this.getContainerAnnotationsForSelection(sel, options.container, options);
+      } else {
+        console.error('You did not sepcify a container');
+        return [];
+      }
     }
     if (sel.isPropertySelection()) {
       path = sel.getPath();
@@ -228,6 +233,7 @@ Document.Prototype = function() {
     if (options.type) {
       annotations = Substance.filter(annotations, AnnotationIndex.filterByType(options.type));
     }
+    return annotations;
   };
 
   // Attention: looking for container annotations is not as efficient

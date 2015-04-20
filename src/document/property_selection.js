@@ -84,7 +84,7 @@ PropertySelection.Prototype = function() {
     ].join('');
   };
 
-  this.isInside = function(other, strict) {
+  this.isInsideOf = function(other, strict) {
     if (other.isNull()) return false;
     if (other.isContainerSelection()) return other.includes(this);
     if (strict) {
@@ -95,6 +95,20 @@ PropertySelection.Prototype = function() {
       return (Substance.isEqual(this.path, other.path) &&
         this.start.offset >= other.start.offset &&
         this.end.offset <= other.end.offset);
+    }
+  };
+
+  this.contains = function(other, strict) {
+    if (other.isNull()) return false;
+    if (other.isContainerSelection()) return other.isInsideOf(this);
+    if (strict) {
+      return (Substance.isEqual(this.path, other.path) &&
+        this.start.offset < other.start.offset &&
+        this.end.offset > other.end.offset);
+    } else {
+      return (Substance.isEqual(this.path, other.path) &&
+        this.start.offset <= other.start.offset &&
+        this.end.offset >= other.end.offset);
     }
   };
 
@@ -109,16 +123,16 @@ PropertySelection.Prototype = function() {
     }
   };
 
-  this.isRightAligned = function(other) {
+  this.isRightAlignedWith = function(other) {
     if (other.isNull()) return false;
-    if (other.isContainerSelection()) return other.isRightAligned(this);
+    if (other.isContainerSelection()) return other.isRightAlignedWith(this);
     return (Substance.isEqual(this.getPath(), other.getPath()) &&
       this.getEndOffset() === other.getEndOffset());
   };
 
-  this.isLeftAligned = function(other) {
+  this.isLeftAlignedWith = function(other) {
     if (other.isNull()) return false;
-    if (other.isContainerSelection()) return other.isRightAligned(this);
+    if (other.isContainerSelection()) return other.isLeftAlignedWith(this);
     return (Substance.isEqual(this.getPath(), other.getPath()) &&
       this.getStartOffset() === other.getStartOffset());
   };
@@ -130,7 +144,7 @@ PropertySelection.Prototype = function() {
       throw new Error('Can not expand PropertySelection to a different property.');
     }
     var newStartOffset = Math.min(this.startOffset, other.startOffset);
-    var newEndOffset = Math.max(this.startOffset, other.startOffset);
+    var newEndOffset = Math.max(this.endOffset, other.endOffset);
     return Selection.create(this.getPath(), newStartOffset, newEndOffset);
   };
 
