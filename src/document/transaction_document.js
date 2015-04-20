@@ -23,8 +23,8 @@ function TransactionDocument(document) {
   }, this);
 
   // reset containers initially
-  var containers = this.getIndex('type').get('container');
-  Substance.each(containers, function(container) {
+  this.containers = this.getIndex('type').get('container');
+  Substance.each(this.containers, function(container) {
     container.reset();
   });
 }
@@ -34,6 +34,10 @@ TransactionDocument.Prototype = function() {
   this.reset = function() {
     this.ops = [];
     this.before = {};
+    // reset containers initially
+    Substance.each(this.containers, function(container) {
+      container.reset();
+    });
   };
 
   this.get = function(path) {
@@ -57,6 +61,7 @@ TransactionDocument.Prototype = function() {
 
   this.set = function(path, value) {
     var op = this.data.set(path, value);
+    this._updateContainers(op);
     if (this.document.isTransacting) {
       this.ops.push(op);
     }
@@ -64,9 +69,17 @@ TransactionDocument.Prototype = function() {
 
   this.update = function(path, diffOp) {
     var op = this.data.update(path, diffOp);
+    this._updateContainers(op);
     if (this.document.isTransacting) {
       this.ops.push(op);
     }
+  };
+
+  this._updateContainers = function(op) {
+    var containers = this.containers;
+    Substance.each(containers, function(container) {
+      container.update(op);
+    });
   };
 
   this.save = function(afterState, info) {
@@ -101,13 +114,8 @@ TransactionDocument.Prototype = function() {
   this.apply = function(documentChange) {
     Substance.each(documentChange.ops, function(op) {
       this.data.apply(op);
+      this._updateContainers(op);
     }, this);
-    var containers = this.getIndex('type').get('container');
-    Substance.each(documentChange.ops, function(op) {
-      Substance.each(containers, function(container) {
-        container.update(op);
-      });
-    });
   };
 
   this.getIndex = function(name) {

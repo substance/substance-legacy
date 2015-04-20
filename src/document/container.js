@@ -241,8 +241,8 @@ Container.Prototype = function() {
     var nodeComponents = this.nodeComponents;
     var nodeComponent = nodeComponents[nodeId];
     var start = nodeComponent.components[0].getIndex();
-    var end = Substance.last(nodeComponents.components).getIndex();
-    this.components.splice(start, end-start);
+    var end = Substance.last(nodeComponent.components).getIndex();
+    this.components.splice(start, end-start+1);
     this.components[start].previous = this.components[start-1];
     if (start>0) {
       this.components[start-1].next = this.components[start];

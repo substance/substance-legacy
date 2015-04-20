@@ -216,8 +216,10 @@ var ContainerComponent = React.createClass({
   },
 
   onDocumentChange: function(change) {
+    console.log('##### ContainerComponent.onDocumentChange', change);
     if (change.isAffected([this.props.node.id, 'nodes'])) {
       var self = this;
+      console.log('##### calling forceUpdate after document change');
       this.forceUpdate(function() {
         self.updateBrackets();
       });
