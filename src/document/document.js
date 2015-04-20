@@ -254,7 +254,7 @@ Document.Prototype = function() {
     }
     annotations = Substance.map(annotations, function(anno) {
       var annoSel = anno.getSelection();
-      if (annoSel.overlaps(sel)) {
+      if (sel.overlaps(annoSel)) {
         return anno;
       }
     });
