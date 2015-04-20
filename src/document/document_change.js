@@ -47,8 +47,7 @@ DocumentChange.Prototype = function() {
   };
 
   this.isAffected = function(path) {
-    var ops = this.updated.get(path);
-    return ops && ops.length > 0;
+    return !!this.updated.get(path);
   };
 
   this.invert = function() {
