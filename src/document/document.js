@@ -235,7 +235,9 @@ Document.Prototype = function() {
   // Opposed to that, common annotations are bound to properties which make it easy to lookup.
   this.getContainerAnnotationsForSelection = function(sel, container, options) {
     if (!container) {
-      throw new Error('Container required.');
+      // Fail more silently
+      return [];
+      // throw new Error('Container required.');
     }
     var annotations;
     // Also look for container annotations if a Container instance is given

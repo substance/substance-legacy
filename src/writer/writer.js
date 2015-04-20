@@ -37,7 +37,7 @@ var Writer = React.createClass({
   },
 
   getInitialState: function() {
-    return {"contextId": "entities"};
+    return {"contextId": "metadata"};
   },
 
   // Events
