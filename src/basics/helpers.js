@@ -27,6 +27,7 @@ Substance.compact = require('lodash/array/compact');
 Substance.uniq = require('lodash/array/uniq');
 Substance.intersection = require('lodash/array/intersection');
 Substance.union = require('lodash/array/union');
+Substance.without = require('lodash/array/without');
 
 // Collection helpers
 Substance.each = require('lodash/collection/forEach');
