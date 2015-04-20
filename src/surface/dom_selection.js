@@ -3,7 +3,10 @@
 var Substance = require('../basics');
 var Document = require('../document');
 
-//  Helper to map selection between model and DOM
+// Helper to map selection between model and DOM
+// @params:
+//    rootElement: typically the Surface root element
+//    container: instance of Substance.Document.Container; optional
 function DomSelection(rootElement, container) {
   this.rootElement = rootElement;
   this.nativeSelectionData = null;

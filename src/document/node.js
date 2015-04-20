@@ -34,6 +34,12 @@ var Node = Data.Node.extend({
     return false;
   },
 
+  getComponents: function() {
+    return this.constructor.static.components;
+  },
+
 });
+
+Node.initNodeClass = Data.Node.initNodeClass;
 
 module.exports = Node;

@@ -57,9 +57,6 @@ var TextPropertyComponent = React.createClass(Substance.extend({}, TextProperty.
   },
 
   renderManually: function() {
-    // HACK: to achieve two-pass rendering for container backed surfaces
-    // we store a state variable and skip 'deep' rendering here.
-    if (this.context.surface.__prerendering__) return;
     // HACK: it happened that this is called even after this component had been mounted.
     // We need to track these situations and fix them in the right place.
     // However, we leave it here for a while to increase stability,
@@ -111,8 +108,6 @@ var TextPropertyComponent = React.createClass(Substance.extend({}, TextProperty.
   },
 
   textPropertyDidChange: function(change, info) {
-    // HACK: avaoiding that this is gets updated multiple times
-    if (this.lastChange === change.id) return;
     // HACK: currently without incremental rendering we need to reset the selection after changes.
     // With high rapid incoming keyboard events the CE acts on temporarily invalid selections
     // making the surface fail to detect the correct text input.
@@ -129,15 +124,9 @@ var TextPropertyComponent = React.createClass(Substance.extend({}, TextProperty.
       this._debouncedRerender();
       return;
     }
-    // This is called whenever the associated property has been updated or set
-    // HACK: container might be out of sync and rerender only works when it's updated
-    // So we wait a bit...
-    setTimeout(function() {
-      // TODO: maybe we want to find an incremental solution
-      // However, this is surprisingly fast so that almost no flickering can be observed.
-      this.renderManually();
-    }.bind(this));
-    this.lastChange = change.id;
+    // TODO: maybe we want to find an incremental solution
+    // However, this is surprisingly fast so that almost no flickering can be observed.
+    this.renderManually();
   },
 
   getContainer: function() {

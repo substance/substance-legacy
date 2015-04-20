@@ -93,14 +93,19 @@ Index.Prototype = function() {
 
   this.clone = function() {
     var IndexClass = this.constructor;
-    return new IndexClass();
+    var clone = new IndexClass();
+    return clone;
   };
 };
 
 Substance.initClass( Index );
 
 Index.create = function(prototype) {
-  return Substance.extend(new Index(), prototype);
+  var index = Substance.extend(new Index(), prototype);
+  index.clone = function() {
+    return Index.create(prototype);
+  };
+  return index;
 };
 
 module.exports = Index;

@@ -6,10 +6,9 @@ var FormEditor = require('./form_editor');
 var Annotations = Document.AnnotationUpdates;
 var Selection = Document.Selection;
 
-function ContainerEditor(containerName, doc) {
-  FormEditor.call(this, doc);
-  this.containerName = containerName;
-
+function ContainerEditor(container) {
+  FormEditor.call(this, container.getDocument());
+  this.container = container;
   this.mergeBehavior = {};
   this.breakBehavior = {};
   this.deleteBehavior = {};
@@ -39,12 +38,8 @@ ContainerEditor.Prototype = function() {
     return true;
   };
 
-  this.setContainer = function(container) {
-    this.container = container;
-  };
-
   this.getContainerName = function() {
-    return this.containerName;
+    return this.container.id;
   };
 
   this.break = function(selection, info) {
@@ -235,21 +230,21 @@ ContainerEditor.Prototype = function() {
   this._pasteDocument = function(tx, doc) {
     var pasteDoc = doc;
 
-    var containerNode = tx.get(this.containerName);
+    var container = tx.get(this.container.id);
 
     // Break, unless we are at the last character of a node,
     // then we can simply insert after the node
-    var startComp = this.container.getComponent(tx.selection.start.path);
+    var startComp = container.getComponent(tx.selection.start.path);
     var startNodeComp = startComp.parentNode;
     var insertPos;
     if ( startComp === Substance.last(startNodeComp.components) &&
       tx.get(startComp.path).length === tx.selection.start.offset )
     {
-      insertPos = containerNode.getPosition(tx.selection.start.path[0]) + 1;
+      insertPos = container.getPosition(tx.selection.start.path[0]) + 1;
     } else {
       this._break(tx);
       // _break() sets a new selection
-      insertPos = containerNode.getPosition(tx.selection.start.path[0]);
+      insertPos = container.getPosition(tx.selection.start.path[0]);
     }
     if (insertPos < 0) {
       console.error('Could not find insertion position in ContainerNode.');
@@ -267,7 +262,7 @@ ContainerEditor.Prototype = function() {
         node.id = Substance.uuid(node.type);
       }
       tx.create(node);
-      containerNode.show(node.id, insertPos++);
+      container.show(node.id, insertPos++);
       insertedNodes.push(node);
 
       // EXPERIMENTAL also transfer annotations
@@ -302,7 +297,8 @@ ContainerEditor.Prototype = function() {
 
   this._break = function(tx) {
     var range = tx.selection.getRange();
-    var component = this.container.getComponent(range.start.path);
+    var container = tx.get(this.container.id);
+    var component = container.getComponent(range.start.path);
     var node = tx.get(component.path[0]);
     var offset = range.start.offset;
     var breakBehavior = this._getBreakBehavior(node);
@@ -314,8 +310,8 @@ ContainerEditor.Prototype = function() {
   this._breakTextNode = function(tx, node, path, offset) {
     // split the text property and create a new paragraph node with trailing text and annotations transferred
     var text = node.content;
-    var containerNode = tx.get(this.containerName);
-    var nodePos = containerNode.getPosition(node.id);
+    var container = tx.get(this.container.id);
+    var nodePos = container.getPosition(node.id);
     var id = Substance.uuid(node.type);
     var newPath = [id, 'content'];
     // when breaking at the first position, a new node of the same
@@ -327,7 +323,7 @@ ContainerEditor.Prototype = function() {
         content: ""
       });
       // show the new node
-      containerNode.show(id, nodePos);
+      container.show(id, nodePos);
       tx.selection = Selection.create(path, 0);
     } else {
       // create a new node
@@ -345,7 +341,7 @@ ContainerEditor.Prototype = function() {
         });
       }
       // show the new node
-      containerNode.show(id, nodePos+1);
+      container.show(id, nodePos+1);
       // update the selection
       tx.selection = Selection.create(newPath, 0);
     }
@@ -374,7 +370,8 @@ ContainerEditor.Prototype = function() {
 
   // low-level merge implementation
   this._merge = function(tx, path, dir) {
-    var component = this.container.getComponent(path);
+    var container = tx.get(this.container.id);
+    var component = container.getComponent(path);
     var otherPath, mergeBehavior;
     if (dir === 'right' && component.next) {
       this._mergeComponents(tx, component, component.next);
@@ -401,13 +398,13 @@ ContainerEditor.Prototype = function() {
     var firstLength = firstText.length;
     var secondPath = secondComp.path;
     var secondText = tx.get(secondPath);
-    var containerNode = tx.get(this.containerName);
+    var container = tx.get(this.container.id);
     // append the second text
     tx.update(firstPath, { insert: { offset: firstLength, value: secondText } });
     // transfer annotations
     Annotations.transferAnnotations(tx, secondPath, 0, firstPath, firstLength);
     // hide the second node
-    containerNode.hide(secondPath[0]);
+    container.hide(secondPath[0]);
     // delete the second node
     tx.delete(secondPath[0]);
     // set the selection to the end of the first component
@@ -457,9 +454,9 @@ ContainerEditor.Prototype = function() {
     } else {
       // otherwise we can just delete the node
       var nodeId = nodeSel.node.id;
-      var containerNode = tx.get(this.containerName);
+      var container = tx.get(this.container.id);
       // remove from view first
-      containerNode.hide(nodeId);
+      container.hide(nodeId);
       // remove all associated annotations
       var annos = tx.getIndex('annotations').get(nodeId);
       var i;
@@ -503,7 +500,7 @@ ContainerEditor.Prototype = function() {
   this._getNodeSelection = function(doc, range) {
     var result = [];
     var groups = {};
-    var container = this.container;
+    var container = doc.get(this.container.id);
     var components = container.getComponentsForRange(range);
     var isNested;
     function _getRoot(comp) {

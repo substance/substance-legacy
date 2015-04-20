@@ -15,4 +15,6 @@ var TextNode = Node.extend({
   },
 });
 
+TextNode.static.components = ['content'];
+
 module.exports = TextNode;

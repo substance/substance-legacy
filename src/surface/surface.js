@@ -4,8 +4,6 @@ var Substance = require('../basics');
 
 // DomSelection is used to map DOM to editor selections and vice versa
 var DomSelection = require('./dom_selection');
-// DomContainer is used to analyze the component layout, e.g., to implement container-wide editing such as break or merge
-var DomContainer = require('./dom_container');
 var Document = require('../document');
 
 var __id__ = 0;
@@ -23,7 +21,6 @@ function Surface(editor, options) {
   this.editor = editor;
 
   this.domSelection = null;
-  this.domContainer = null;
 
   this.logger = options.logger || window.console;
 
@@ -58,37 +55,12 @@ Surface.Prototype = function() {
   };
 
   this.getContainer = function() {
-    if (this.editor.isContainerEditor()) {
-      return this.editor.container;
-    }
+    return this.editor.getContainer();
   };
 
   this.getEditor = function() {
     return this.editor;
   };
-
-  // Call this whenever the content of the root element changes so
-  // that the structure should be re-analyzed
-  // TODO: think about a different way. For example, a node component could trigger
-  // something on this surface whenever the structure has been changed.
-  // Examples:
-  //   - container component: container nodes have changed
-  //   - list node: list item removed or added
-  //   - table node: table cell added or removed
-  // In most other cases this is not necessary, as the component structure stays the same
-  // only the content changes
-  this.forceUpdate = function(cb) {
-    console.warn("DEPRICATED: use this.update() instead (which is synchronous).");
-    if (this.domContainer) {
-      this.domContainer.reset();
-    }
-    if (cb) cb();
-  };
-  this.update = function() {
-    if (this.domContainer) {
-      this.domContainer.reset();
-    }
-  }
 
   this.dispose = function() {
     this.detach();
@@ -101,13 +73,7 @@ Surface.Prototype = function() {
     this.element = element;
     this.$element = $(element);
     this.$element.prop('contentEditable', 'true');
-    var containerId = this.$element.attr('data-id');
-    if (!containerId) {
-      throw new Error('Contract: a Surface root element must have a "data-id" property to identify its container.');
-    }
-    this.domContainer = new DomContainer(doc, containerId, element);
-    this.domSelection = new DomSelection(element, this.domContainer);
-    this.editor.setContainer(this.domContainer);
+    this.domSelection = new DomSelection(element, this.editor.getContainer());
 
     // Keyboard Events
     //
@@ -153,15 +119,12 @@ Surface.Prototype = function() {
       this.element.removeEventListener('compositionend', this._onCompositionEnd, false);
     }
 
-    this.domContainer.dispose();
-
     // Clean-up
     //
     this.editor.setContainer(null);
     this.element = null;
     this.$element = null;
     this.domSelection = null;
-    this.domContainer = null;
   };
 
   // ###########################################

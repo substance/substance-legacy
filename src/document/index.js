@@ -7,7 +7,6 @@ Document.Schema = require('./document_schema');
 Document.Node = require('./node');
 Document.Annotation = require('./annotation');
 Document.Container = require('./container');
-Document.ContainerNode = require('./container_node');
 Document.ContainerAnnotation = require('./container_annotation');
 Document.TextNode = require('./text_node');
 

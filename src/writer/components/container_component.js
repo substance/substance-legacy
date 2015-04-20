@@ -29,7 +29,7 @@ var ContainerComponent = React.createClass({
   },
 
   getInitialState: function() {
-    var editor = new Surface.ContainerEditor('content', this.props.doc);
+    var editor = new Surface.ContainerEditor(this.props.doc.get('content'));
     // HACK: this is also Archivist specific
     editor.defaultTextType = 'text';
     var options = {
@@ -177,17 +177,10 @@ var ContainerComponent = React.createClass({
 
     var self = this;
 
-    // HACK: For initial rendering because text view depends on some view-related information
-    // that gets available after the first render
-    // this.forceUpdate();
+    // TODO: we need a way so that the brackets get updated properly
     this.forceUpdate(function() {
-      self.surface.__prerendering__ = true;
-      self.surface.update();
-      self.surface.__prerendering__ = false;
-      self.forceUpdate(function() {
-        self.updateBrackets();
-        self.surface.rerenderDomSelection();
-      });
+      self.updateBrackets();
+      self.surface.rerenderDomSelection();
     });
 
     $(window).resize(this.updateBrackets);
@@ -225,14 +218,8 @@ var ContainerComponent = React.createClass({
   onDocumentChange: function(change) {
     if (change.isAffected([this.props.node.id, 'nodes'])) {
       var self = this;
-      self.surface.__prerendering__ = true;
       this.forceUpdate(function() {
-        // self.surface.__prerendering__ = true;
-        self.surface.update();
-        self.surface.__prerendering__ = false;
-        self.forceUpdate(function() {
-          self.updateBrackets();
-        });
+        self.updateBrackets();
       });
     }
     // eagerly update brackets on every change

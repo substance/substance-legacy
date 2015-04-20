@@ -4,7 +4,6 @@ var Substance = require('../basics');
 
 function Node( data ) {
   Substance.EventEmitter.call(this);
-
   this.properties = Substance.extend({}, this.getDefaultProperties(), data);
   this.properties.type = this.constructor.static.name;
   this.properties.id = this.properties.id || Substance.uuid(this.properties.type);
@@ -152,5 +151,7 @@ extend = function( parent, modelSpec ) {
 };
 
 initNodeClass(Node);
+
+Node.initNodeClass = initNodeClass;
 
 module.exports = Node;

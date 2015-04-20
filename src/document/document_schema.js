@@ -5,7 +5,7 @@ var Data = require('../data');
 
 var Node = require('./node');
 var Annotation = require('./annotation');
-var ContainerNode = require('./container_node');
+var Container = require('./container');
 var ContainerAnnotation = require('./container_annotation');
 var TextNode = require('./text_node');
 
@@ -21,7 +21,7 @@ DocumentSchema.Prototype = function() {
   };
 
   this.getBuiltIns = function() {
-    return [ Node, Annotation, ContainerNode, ContainerAnnotation, TextNode ];
+    return [ Node, Annotation, Container, ContainerAnnotation, TextNode ];
   };
 };
 

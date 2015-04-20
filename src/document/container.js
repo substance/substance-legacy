@@ -2,66 +2,65 @@
 
 var Substance = require('../basics');
 var PathAdapter = Substance.PathAdapter;
+var Node = require('./node');
 
 // Container
 // --------
 //
-// Holds a sequence of document nodes (see ContainerNode). Well not really.
-// since each node can consist of multiple components (e.g. a figure has a
-// title and a caption) they need to be flattened to a list of components.
-// This flat structure is modelled by this class.
-
-function Container(doc, id) {
-  if (!id) {
-    throw new Error('Contract: a container must have an id be able to associate container annotations.');
-  }
-  this.doc = doc;
-  this.id = id;
+// A Container in first place represents a list of node ids.
+// At the same time it bookkeeps a sequence of components which are the editable properties of
+// the nodes within this container.
+// While most editing occurs on a property level (such as editing text), other things
+// happen on a node level, e.g., breaking or mergin nodes, or spanning annotations or so called
+// ContainerAnnotations. A Container provides a bridge between those two worlds: nodes and properties.
+//
+// Example:
+// A figure node might consist of a title, an image, and a caption.
+// As the image is not editable via conventional editing, we can say, the figure consists of
+// two editable properties 'title' and 'caption'.
+//
+// In our data model we can describe selections by a start coordinate and an end
+// coordinate, such as
+//      start: { path: ['paragraph_1', 'content'],   offset: 10 } },
+//      end:   { path: ['figure_10',   'caption'],   offset: 5  } }
+// I.e. such a selection starts in a component of a paragraph, and ends in the caption of a figure.
+// If you want to use that selection for deleting, you need to derive somehow what exactly
+// lies between those coordinates. For example, there could be some paragraphs, which would
+// get deleted completely and the paragraph and the figure where the selection started and ended
+// would only be updated.
+//
+function Container() {
+  Node.apply(this, arguments);
   this.components = [];
-  this.nodes = {};
+  this.nodeComponents = {};
   this.byPath = new PathAdapter({});
-
-  // TODO: not beautiful to do this here
-  if (id) {
-    this.doc.addContainer(id, this);
-  }
 }
 
 Container.Prototype = function() {
 
-  this.dispose = function() {
-    this.doc.removeContainer(this.id);
+  this.getPosition = function(nodeId) {
+    var pos = this.nodes.indexOf(nodeId);
+    return pos;
   };
 
-  this.getDocument = function() {
-    return this.doc;
+  this.show = function(nodeId, pos) {
+    var doc = this.getDocument();
+    pos = pos || this.nodes.length;
+    doc.update([this.id, 'nodes'], {
+      insert: { offset: pos, value: nodeId }
+    });
   };
 
-  this._setComponents = function(components) {
-    var byPath = new PathAdapter({});
-    var nodes = {};
-    for (var i = 0; i < components.length; i++) {
-      var comp = components[i];
-      if (comp.path.length !== 2) {
-        throw new Error("Contract: every property path must have 2 elements");
-      }
-      var nodeId = comp.path[0];
-      var node = nodes[nodeId];
-      if (!node) {
-        node = new Container.Node(nodeId);
-        nodes[nodeId] = node;
-      }
-      comp.parentNode = node;
-      node.components.push(comp);
-      if (i > 0) {
-        components[i-1].next = comp;
-        comp.previous = components[i-1];
-      }
-      byPath.set(comp.path, comp);
+  this.hide = function(nodeId) {
+    var doc = this.getDocument();
+    var pos = this.nodes.indexOf(nodeId);
+    if (pos >= 0) {
+      doc.update([this.id, 'nodes'], {
+        delete: { offset: pos }
+      });
+    } else {
+      console.error('Could not find node with id %s.', nodeId);
     }
-    this.components = components;
-    this.nodes = nodes;
-    this.byPath = byPath;
   };
 
   this.getComponent = function(path) {
@@ -109,7 +108,7 @@ Container.Prototype = function() {
       var startComp = this.getComponent(startAnchor.path);
       var endComp = this.getComponent(endAnchor.path);
       if (!startComp || !endComp) {
-        throw new Error('Could not find components of ContainerAnnotation');
+        throw new Error('Could not find components of AbstractContainerAnnotation');
       }
       fragments.push({
         path: startAnchor.path,
@@ -136,13 +135,153 @@ Container.Prototype = function() {
     }
     return fragments;
   };
+
+  this.reset = function() {
+    this.byPath = new Substance.PathAdapter();
+    var doc = this.getDocument();
+    var components = [];
+    Substance.each(this.nodes, function(id) {
+      var node = doc.get(id);
+      components = components.concat(_getNodeComponents(node));
+    }, this);
+    this.components = [];
+    this.nodeComponents = {};
+    this._insertComponentsAt(0, components);
+    this._updateComponentPositions(0);
+  };
+
+  // Incrementally updates the container based on a given operation.
+  // Gets called by Substance.Document for every applied operation.
+  this.update = function(op) {
+    if (op.path[0] === this.id && op.path[1] === 'nodes') {
+      if (op.type === 'set') {
+        this.reset();
+      } else {
+        var diff = op.diff;
+        if (diff.isInsert()) {
+          var insertPos = this._handleInsert(diff.getValue(), diff.getOffset());
+          this._updateComponentPositions(insertPos);
+        } else if (diff.isDelete()) {
+          var deletePos = this._handleDelete(diff.getValue());
+          this._updateComponentPositions(deletePos);
+        } else {
+          throw new Error('Illegal state');
+        }
+      }
+    }
+  };
+
+  // TODO: nested structures such as tables and lists should
+  // call this whenever they change
+  this.updateNode = function(nodeId) {
+    var node = this.getDocument().get(nodeId);
+    var deletePos = this._handleDelete(nodeId);
+    var components = _getNodeComponents(node);
+    this._insertComponentsAt(deletePos, components);
+    this._updateComponentPositions(deletePos);
+  };
+
+  this._insertComponentsAt = function(pos, components) {
+    var before = this.components[pos-1];
+    var after = this.components[pos];
+    var nodeComponents = this.nodeComponents;
+    var byPath = this.byPath;
+    for (var i = 0; i < components.length; i++) {
+      var comp = components[i];
+      var nodeId = comp.rootId;
+      var nodeComponent = nodeComponents[nodeId];
+      if (!nodeComponent) {
+        nodeComponent = new Container.NodeComponent(nodeId);
+        nodeComponents[nodeId] = nodeComponent;
+      }
+      comp.parentNode = nodeComponent;
+      if (i === 0 && before) {
+        before.next = comp;
+        comp.previous = before;
+      } else if (i > 0) {
+        comp.previous = components[i-1];
+        components[i-1].next = comp;
+      }
+      nodeComponent.components.push(comp);
+      byPath.set(comp.path, comp);
+    }
+    if (after) {
+      components[components.length-1].next = after;
+      after.previous = components[components.length-1];
+    }
+    this.components.splice.apply(this.components, [pos, 0].concat(components));
+  };
+
+  this._updateComponentPositions = function(startPos) {
+    for (var i = startPos; i < this.components.length; i++) {
+      this.components[i].idx = i;
+    }
+  };
+
+  // if something has been inserted, we need to get the next id
+  // and insert before its first component.
+  this._handleInsert = function(nodeId, nodePos) {
+    var doc = this.getDocument();
+    var node = doc.get(nodeId);
+    var length = this.nodes.length;
+    var componentPos;
+    if (nodePos === length) {
+      componentPos = this.components.length;
+    } else {
+      var afterId = this.nodes[nodePos+1];
+      var after = this.nodeComponents[afterId].components[0];
+      componentPos = after.getIndex();
+    }
+    var components = _getNodeComponents(node);
+    this._insertComponentsAt(componentPos, components);
+    return componentPos;
+  };
+
+  this._handleDelete = function(nodeId) {
+    var nodeComponents = this.nodeComponents;
+    var nodeComponent = nodeComponents[nodeId];
+    var start = nodeComponent.components[0].getIndex();
+    var end = Substance.last(nodeComponents.components).getIndex();
+    this.components.splice(start, end-start);
+    this.components[start].previous = this.components[start-1];
+    if (start>0) {
+      this.components[start-1].next = this.components[start];
+    }
+    return start;
+  };
+
+  var _getNodeComponents = function(node) {
+    var components = [];
+    var componentSpec = node.getComponents();
+    for (var i = 0; i < componentSpec.length; i++) {
+      var spec = componentSpec[i];
+      if (Substance.isString(spec)) {
+        var path = [node.id, spec];
+        components.push(new Container.Component(path, node.id));
+      } else {
+        throw new Error('Not yet implemented.');
+      }
+    }
+    return components;
+  };
 };
 
-Substance.initClass(Container);
+Substance.inherit(Container, Node);
 
-Container.Component = function Component(path, idx) {
+Container.static.name = "container";
+
+Container.static.schema = {
+  nodes: ["array", "string"]
+};
+
+// HACK: ATM we do a lot of Node initialization, but we only do it using Node.extend(..)
+Node.initNodeClass(Container);
+
+Container.Component = function Component(path, rootId) {
   this.path = path;
-  this.idx = idx;
+  this.rootId = rootId;
+  // computed dynamically
+  this.idx = -1;
   this.parentNode = null;
   this.previous = null;
   this.next = null;
@@ -177,11 +316,11 @@ Container.Component.Prototype = function() {
 
 Substance.initClass(Container.Component);
 
-Container.Node = function Node(id) {
+Container.NodeComponent = function NodeComponent(id) {
   this.id = id;
   this.components = [];
 };
 
-Substance.initClass(Container.Node);
+Substance.initClass(Container.NodeComponent);
 
 module.exports = Container;

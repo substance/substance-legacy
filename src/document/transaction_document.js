@@ -22,6 +22,11 @@ function TransactionDocument(document) {
     this.data.addIndex(name, index.clone());
   }, this);
 
+  // reset containers initially
+  var containers = this.getIndex('type').get('container');
+  Substance.each(containers, function(container) {
+    container.reset();
+  });
 }
 
 TransactionDocument.Prototype = function() {
@@ -97,6 +102,12 @@ TransactionDocument.Prototype = function() {
     Substance.each(documentChange.ops, function(op) {
       this.data.apply(op);
     }, this);
+    var containers = this.getIndex('type').get('container');
+    Substance.each(documentChange.ops, function(op) {
+      Substance.each(containers, function(container) {
+        container.update(op);
+      });
+    });
   };
 
   this.getIndex = function(name) {

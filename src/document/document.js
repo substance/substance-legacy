@@ -30,8 +30,6 @@ function Document( schema, seed ) {
   // special index for (property-scoped) annotations
   this.annotationIndex = this.addIndex('annotations', new AnnotationIndex());
 
-  // registry for containers
-  this.containers = {};
   // special index for (contaoiner-scoped) annotations
   this.containerAnnotationIndex = this.addIndex('container-annotations', new ContainerAnnotationIndex());
 
@@ -54,6 +52,12 @@ function Document( schema, seed ) {
   this.eventProxies = {
     'path': new NotifyPropertyChange(this),
   };
+
+  // reset containers initially
+  var containers = this.getIndex('type').get('container');
+  Substance.each(containers, function(container) {
+    container.reset();
+  });
 }
 
 Document.Prototype = function() {
@@ -76,21 +80,6 @@ Document.Prototype = function() {
 
   this.getNodes = function() {
     return this.data.getNodes();
-  };
-
-  this.addContainer = function(id, container) {
-    if (this.containers[id]) {
-      throw new Error('Container with id ' + id + ' already exists.');
-    }
-    this.containers[id] = container;
-  };
-
-  this.getContainer = function(id) {
-    return this.containers[id];
-  };
-
-  this.removeContainer = function(id) {
-    delete this.containers[id];
   };
 
   this.addIndex = function(name, index) {
@@ -218,7 +207,7 @@ Document.Prototype = function() {
   // options:
   //   container: container instance
   //   type: string (annotation type filter)
-  // 
+  //
   // WARNING: Returns an empty array when selection is a container selection
   this.getAnnotationsForSelection = function(sel, options) {
     options = options || {};
@@ -284,6 +273,13 @@ Document.Prototype = function() {
     Substance.each(documentChange.ops, function(op) {
       this.data.apply(op);
     }, this);
+    // update containers next
+    var containers = this.getIndex('type').get('container');
+    Substance.each(documentChange.ops, function(op) {
+      Substance.each(containers, function(container) {
+        container.update(op);
+      });
+    });
   };
 
   this._notifyChangeListeners = function(documentChange, info) {
