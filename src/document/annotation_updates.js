@@ -91,7 +91,9 @@ var deletedText = function(doc, path, startOffset, endOffset) {
   // same for container annotation anchors
   index = doc.getIndex('container-annotations');
   var anchors = index.get(path);
+  var containerAnnoIds = [];
   Substance.each(anchors, function(anchor) {
+    containerAnnoIds.push(anchor.id);
     var pos1 = startOffset;
     var pos2 = endOffset;
     var start = anchor.offset;
@@ -111,6 +113,15 @@ var deletedText = function(doc, path, startOffset, endOffset) {
     if (changed) {
       var property = (anchor.isStart?'startOffset':'endOffset');
       doc.set([anchor.id, property], start);
+    }
+  });
+  // check all anchors after that if they have collapsed and remove the annotation in that case
+  Substance.each(Substance.uniq(containerAnnoIds), function(id) {
+    var anno = doc.get(id);
+    var annoSel = anno.getSelection();
+    if(annoSel.isCollapsed()) {
+      console.log("...deleting container annotation because it has collapsed" + id);
+      doc.delete(id);
     }
   });
 };
