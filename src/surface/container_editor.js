@@ -426,7 +426,7 @@ ContainerEditor.Prototype = function() {
     for (var idx = nodeSels.length - 1; idx >= 0; idx--) {
       var nodeSel = nodeSels[idx];
       if (nodeSel.isFully && !nodeSel.node.isResilient()) {
-        this._deleteNode(tx, nodeSel.node);
+        this._deleteNode(tx, nodeSel);
       } else {
         this._deleteNodePartially(tx, nodeSel);
       }
@@ -449,8 +449,6 @@ ContainerEditor.Prototype = function() {
     var deleteBehavior = this._getDeleteBehavior(nodeSel.node);
     if (deleteBehavior) {
       deleteBehavior.call(this, tx, nodeSel);
-    } else if (nodeSel.isNested) {
-      throw new Error('Contract: you must provide a deleteBehavior for nested node types.');
     } else {
       // otherwise we can just delete the node
       var nodeId = nodeSel.node.id;
@@ -476,8 +474,6 @@ ContainerEditor.Prototype = function() {
     var deleteBehavior = this._getDeleteBehavior(nodeSel.node);
     if (deleteBehavior) {
       deleteBehavior.call(this, tx, nodeSel);
-    } else if (nodeSel.isNested) {
-      throw new Error('Contract: you must provide a deleteBehavior for nested node types.');
     } else {
       // Just go through all components and apply a property deletion
       var components = nodeSel.components;
@@ -502,19 +498,12 @@ ContainerEditor.Prototype = function() {
     var groups = {};
     var container = doc.get(this.container.id);
     var components = container.getComponentsForRange(range);
-    var isNested;
-    function _getRoot(comp) {
-      isNested = false;
-      var node = doc.get(comp.parentNode.id);
-      while (node.hasParent()) {
-        isNested = true;
-        node = node.getParentNode();
-      }
-      return node;
-    }
     for (var i = 0; i < components.length; i++) {
       var comp = components[i];
-      var node = _getRoot(comp);
+      var node = doc.get(comp.rootId);
+      if (!node) {
+        throw new Error('Illegal state: expecting a component to have a proper root node id set.')
+      }
       var nodeId = node.id;
       var nodeGroup;
       if (!groups[nodeId]) {
@@ -528,9 +517,6 @@ ContainerEditor.Prototype = function() {
       }
       nodeGroup = groups[nodeId];
       nodeGroup.components.push(comp);
-      if (isNested) {
-        nodeGroup.isNested = true;
-      }
     }
     // finally we analyze the first and last node-selection
     // if these
@@ -541,7 +527,7 @@ ContainerEditor.Prototype = function() {
     var startLen = doc.get(startComp.path).length;
     var endLen = doc.get(endComp.path).length;
     if (range.start.offset > 0 ||
-      (startComp.hasPrevious() && _getRoot(startComp.getPrevious()) !== startNodeSel.node))
+      (startComp.hasPrevious() && doc.get(startComp.getPrevious().rootId) !== startNodeSel.node))
     {
       startNodeSel.isFully = false;
       startNodeSel.startOffset = range.start.offset;
@@ -549,7 +535,7 @@ ContainerEditor.Prototype = function() {
     }
     if (result.length > 1 &&
         (range.end.offset < endLen ||
-          (endComp.hasNext() && _getRoot(endComp.getNext()) !== endNodeSel.node))
+          (endComp.hasNext() && doc.get(endComp.getNext().rootId) !== endNodeSel.node))
        ) {
       endNodeSel.isFully = false;
       endNodeSel.startOffset = 0;

@@ -101,18 +101,18 @@ PathAdapter.Prototype = function() {
     }
   };
 
-  var __traverse = function(root, path, fn, ctx) {
+  this._traverse = function(root, path, fn, ctx) {
     for (var id in root) {
       if (root.hasOwnProperty(id) && id !== '__values__') {
         var childPath = path.concat([id]);
         fn.call(ctx, childPath, root[id]);
-        __traverse(root[id], childPath, fn, ctx);
+        this._traverse(root[id], childPath, fn, ctx);
       }
     }
   };
 
   this.traverse = function(fn, ctx) {
-    __traverse(this.getRoot(), [], fn, ctx);
+    this._traverse(this.getRoot(), [], fn, ctx);
   };
 
 };
@@ -168,6 +168,18 @@ PathAdapter.Arrays.Prototype = function() {
   this.set = function() {
     throw new Error('This method is not available for PathAdapter.Arrays');
   };
+
+  this._traverse = function(root, path, fn, ctx) {
+    for (var id in root) {
+      if (id === '__values__') {
+        fn.call(ctx, root.__values__);
+      } else {
+        var childPath = path.concat([id]);
+        this._traverse(root[id], childPath, fn, ctx);
+      }
+    }
+  };
+
 };
 
 oo.inherit(PathAdapter.Arrays, PathAdapter);

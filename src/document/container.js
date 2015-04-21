@@ -225,7 +225,10 @@ Container.Prototype = function() {
     var node = doc.get(nodeId);
     var length = this.nodes.length;
     var componentPos;
-    if (nodePos === length) {
+    // NOTE: the original length of the nodes was one less
+    // Thus, we detect an 'append' situation by comparing the insertPosition with
+    // the previous length
+    if (nodePos === length-1) {
       componentPos = this.components.length;
     } else {
       var afterId = this.nodes[nodePos+1];
@@ -243,7 +246,9 @@ Container.Prototype = function() {
     var start = nodeComponent.components[0].getIndex();
     var end = Substance.last(nodeComponent.components).getIndex();
     this.components.splice(start, end-start+1);
-    this.components[start].previous = this.components[start-1];
+    if (this.components.length > start) {
+      this.components[start].previous = this.components[start-1];
+    }
     if (start>0) {
       this.components[start-1].next = this.components[start];
     }
