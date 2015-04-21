@@ -372,7 +372,6 @@ ContainerEditor.Prototype = function() {
   this._merge = function(tx, path, dir) {
     var container = tx.get(this.container.id);
     var component = container.getComponent(path);
-    var otherPath, mergeBehavior;
     if (dir === 'right' && component.next) {
       this._mergeComponents(tx, component, component.next);
     } else if (dir === 'left' && component.previous) {
@@ -417,6 +416,21 @@ ContainerEditor.Prototype = function() {
       behavior = this.deleteBehavior[node.type];
     }
     return behavior;
+  };
+
+  this._delete = function(tx, direction) {
+    FormEditor.prototype._delete.call(this, tx, direction);
+    var container = tx.get(this.container.id);
+    if (container.nodes.length === 0) {
+      var empty = {
+        type: this.defaultTextType,
+        id: Substance.uuid(this.defaultTextType),
+        content: ""
+      };
+      tx.create(empty);
+      container.show(empty.id, 0);
+      tx.selection = Selection.create([empty.id, 'content'], 0);
+    }
   };
 
   this._deleteContainerSelection = function(tx) {
@@ -502,7 +516,7 @@ ContainerEditor.Prototype = function() {
       var comp = components[i];
       var node = doc.get(comp.rootId);
       if (!node) {
-        throw new Error('Illegal state: expecting a component to have a proper root node id set.')
+        throw new Error('Illegal state: expecting a component to have a proper root node id set.');
       }
       var nodeId = node.id;
       var nodeGroup;
