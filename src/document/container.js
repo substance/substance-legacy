@@ -45,7 +45,9 @@ Container.Prototype = function() {
 
   this.show = function(nodeId, pos) {
     var doc = this.getDocument();
-    pos = pos || this.nodes.length;
+    if (pos == null) {
+      pos = this.nodes.length;
+    }
     doc.update([this.id, 'nodes'], {
       insert: { offset: pos, value: nodeId }
     });
