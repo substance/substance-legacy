@@ -23,9 +23,7 @@ Node.Prototype = function() {
     return this.properties;
   };
 
-  this.getDefaultProperties = function() {
-    return Substance.deepclone(this.constructor.__defaultProperties__);
-  };
+  this.getDefaultProperties = function() {};
 
   this.isInstanceOf = function(typeName) {
     return Node.static.isInstanceOf(this.constructor, typeName);
@@ -39,6 +37,11 @@ Node.Prototype = function() {
       staticData = Object.getPrototypeOf(staticData);
     }
     return classNames.join(' ');
+  };
+
+  this.getPropertyType = function(propertyName) {
+    var schema = this.constructor.static.schema;
+    return schema[propertyName];
   };
 
 };
@@ -56,6 +59,11 @@ Node.static.schema = {
 };
 
 Node.static.readOnlyProperties = ['type', 'id'];
+
+Node.static.getPropertyType = function(propertyName) {
+  // TODO: is this bound to Node.static?
+  return this.schema[propertyName];
+};
 
 Node.static.matchFunction = function(/*el*/) {
   return false;
@@ -108,26 +116,23 @@ var defineProperties = function(NodeClass) {
   }
 };
 
-var collectDefaultProperties = function( NodeClass ) {
-  var staticData = NodeClass.static;
-  var props = [{}];
-  while(staticData) {
-    if (staticData.hasOwnProperty('defaultProperties')) {
-      props.push(staticData.defaultProperties);
-    }
-    staticData = Object.getPrototypeOf(staticData);
-  }
-  NodeClass.__defaultProperties__ = Substance.extend.apply(null, props);
-};
-
 var extend;
+
+var prepareSchema = function(NodeClass) {
+  var schema = NodeClass.static.schema;
+  var parentStatic = Object.getPrototypeOf(NodeClass.static);
+  var parentSchema = parentStatic.schema;
+  if (parentSchema) {
+    NodeClass.static.schema = Substance.extend(Object.create(parentSchema), schema);
+  }
+}
 
 var initNodeClass = function(NodeClass) {
   // add a extend method so that this class can be used to create child models.
   NodeClass.extend = Substance.bind(extend, null, NodeClass);
   // define properties and so on
   defineProperties(NodeClass);
-  collectDefaultProperties(NodeClass);
+  prepareSchema(NodeClass);
   NodeClass.type = NodeClass.static.name;
 };
 
