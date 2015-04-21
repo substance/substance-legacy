@@ -4,7 +4,6 @@ var Substance = require('../basics');
 
 // DomSelection is used to map DOM to editor selections and vice versa
 var DomSelection = require('./dom_selection');
-var Document = require('../document');
 
 var __id__ = 0;
 
@@ -31,7 +30,6 @@ function Surface(editor, options) {
 
   this.dragging = false;
 
-  var self = this;
   this._onMouseUp = Substance.bind( this.onMouseUp, this );
   this._onMouseDown = Substance.bind( this.onMouseDown, this );
   this._onMouseMove = Substance.bind( this.onMouseMove, this );
@@ -162,6 +160,26 @@ Surface.Prototype = function() {
       default:
         break;
     }
+
+    // Built-in key combos
+
+    // console.log('####', e.keyCode, e.metaKey, e.ctrlKey, e.shiftKey);
+
+    // Ctrl+A: select all
+    var handled = false;
+    if ( (e.ctrlKey||e.metaKey) && e.keyCode === 65 ) {
+      console.log('Selecting all...');
+      this.editor.selectAll();
+      var sel = this.editor.selection;
+      this.setSelection(sel);
+      this.domSelection.set(sel)
+      this.emit('selection:changed', sel);
+      handled = true;
+    }
+    if (handled) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
   };
 
   /**
@@ -191,7 +209,6 @@ Surface.Prototype = function() {
   // Handling Dead-keys under OSX
   this.onCompositionEnd = function(e) {
     try {
-      var sel = this.editor.selection;
       this.editor.insertText(e.data, this.editor.selection);
     } catch (error) {
       console.error(error);

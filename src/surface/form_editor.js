@@ -72,6 +72,17 @@ FormEditor.Prototype = function() {
     }
   };
 
+  // Selecting all in FormEditor selects the current property.
+  this.selectAll = function() {
+    var sel = this.selection;
+    if (sel.isNull()) return;
+    if (sel.isPropertySelection()) {
+      var path = sel.start.path;
+      var text = this.document.get(path);
+      this.selection = Selection.create(path, 0, text.length);
+    }
+  };
+
   this._delete = function(tx, direction) {
     var selection = tx.selection;
     var range = selection.getRange();

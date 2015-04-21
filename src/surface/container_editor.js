@@ -59,6 +59,14 @@ ContainerEditor.Prototype = function() {
     }
   };
 
+  this.selectAll = function() {
+    var container = this.container;
+    var first = container.getFirstComponent();
+    var last = container.getLastComponent();
+    var lastText = this.document.get(last.path);
+    this.selection = Selection.create(this.container, first.path, 0, last.path, lastText.length);
+  };
+
   this.copyPropertySelection = function(selection) {
     var copy = this.document.newInstance();
     var path = selection.start.path;

@@ -87,6 +87,14 @@ Container.Prototype = function() {
     return this.components[idx];
   };
 
+  this.getFirstComponent = function() {
+    return this.components[0];
+  };
+
+  this.getLastComponent = function() {
+    return Substance.last(this.components);
+  };
+
   this.getAnnotationFragments = function(containerAnnotation) {
     var fragments = [];
     var doc = containerAnnotation.getDocument();
