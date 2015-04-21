@@ -6,6 +6,7 @@ function AnnotationTool() {
 }
 
 AnnotationTool.Prototype = function() {
+
   this.disabledModes = [];
 
   this.getDocument = function() {
@@ -33,19 +34,19 @@ AnnotationTool.Prototype = function() {
   };
 
   this.afterFusion = function() {
-    
+
   };
 
   this.afterRemove = function() {
-    
+
   };
 
   this.afterTruncate = function() {
-    
+
   };
 
   this.afterExpand = function() {
-    
+
   };
 
   // When there's no existing annotation overlapping, we create a new one.
@@ -87,14 +88,28 @@ AnnotationTool.Prototype = function() {
         selected: false
       });
     }
+    var doc = this.getDocument();
+    var annotationType = this.getAnnotationType();
+    var isContainerAnno = this.isContainerAnno();
+
     // Extract range and matching annos of current selection
     var annos;
-    if (this.isContainerAnno()) {
-      annos = this.getDocument().getContainerAnnotationsForSelection(sel, this.getContainer(), {
-        type: this.annotationType
+    if (isContainerAnno) {
+      annos = doc.getContainerAnnotationsForSelection(sel, this.getContainer(), {
+        type: annotationType
       });
     } else {
-      annos = this.getDocument().getAnnotationsForSelection(sel, { type: this.annotationType });
+      // Don't react on container selections if the associated annotation type
+      // is a property annotation.
+      // In future we could introduce a multi-annotation (multiple property selections)
+      // and create multiple annotations at once.
+      if (sel.isContainerSelection()) {
+        return this.setToolState({
+          active: false,
+          selected: false
+        });
+      }
+      annos = doc.getAnnotationsForSelection(sel, { type: annotationType });
     }
 
     var annoSels = annos.map(function(anno) { return anno.getSelection(); });
@@ -106,10 +121,6 @@ AnnotationTool.Prototype = function() {
       annos: annos,
       annoSels: annoSels
     };
-
-    if (this.annotationType === "remark") {
-      console.log('remark annos', annos);
-    }
 
     if (this.canCreate(annoSels, sel)) {
       newState.mode = "create";
@@ -123,7 +134,8 @@ AnnotationTool.Prototype = function() {
       newState.mode = "remove";
     } else if (this.canExpand(annoSels, sel)) {
       newState.mode = "expand";
-    } 
+    }
+
 
     // Verifies if the detected mode has been disabled by the concrete implementation
     if (!newState.mode || Substance.includes(this.disabledModes, newState.mode)) {
@@ -140,7 +152,7 @@ AnnotationTool.Prototype = function() {
     var state = this.getToolState();
     // TODO: is this really necessary? better just check if the toolstate does not have a proper mode
     if (!state.sel || !state.mode || state.sel.isNull()) return;
-    
+
     switch (state.mode) {
       case "create":
         return this.handleCreate(state);
