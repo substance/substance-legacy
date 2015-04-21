@@ -28,6 +28,9 @@ var ContainerComponent = React.createClass({
     surface: React.PropTypes.object,
   },
 
+
+
+
   getInitialState: function() {
     var editor = new Surface.ContainerEditor(this.props.doc.get('content'));
     // HACK: this is also Archivist specific
@@ -36,6 +39,8 @@ var ContainerComponent = React.createClass({
       logger: this.context.notifications
     };
     this.surface = new Surface(editor, options);
+    this.titleSurface = new Surface(new Surface.FormEditor(this.props.writerCtrl.doc));
+
     return {};
   },
 
@@ -87,14 +92,10 @@ var ContainerComponent = React.createClass({
     // Prepare container components (aka nodes)
     // ---------
 
+
+
     var componentFactory = this.context.componentFactory;
-    var components = [$$(TextProperty, {
-      doc: this.props.writerCtrl.doc,
-      tagName: "div",
-      className: "title",
-      path: [ "document", "title"],
-      writerCtrl: this.props.writerCtrl,
-    })];
+    var components = [];
     components = components.concat(containerNode.nodes.map(function(nodeId) {
       var node = doc.get(nodeId);
       var ComponentClass = componentFactory.get(node.type);
@@ -113,17 +114,30 @@ var ContainerComponent = React.createClass({
     // Top level structure
     // ---------
 
-    var virtualDOM = $$("div", {className: "interview-content", contentEditable: true, "data-id": "content"},
-      $$("div", {
-          className: "container-node " + this.props.node.id,
-          spellCheck: false,
-          "data-id": this.props.node.id
-        },
-        $$('div', {className: "nodes"}, components),
-        $$('div', {className: "subject-references", contentEditable: false}, subjectRefComponents)
+    return $$('div', {className: 'content-wrapper'},
+      // The title editor (just a little FormEditor)
+      $$("div", {ref: "interviewTitle", className: "interview-title", contentEditable: true, "data-id": "title-editor"},
+        $$(TextProperty, {
+          doc: this.props.writerCtrl.doc,
+          tagName: "div",
+          className: "title",
+          path: ["document", "title"],
+          writerCtrl: this.props.writerCtrl
+        })
+      ),
+      // The full fledged interview (ContainerEditor)
+      $$("div", {ref: "interviewContent", className: "interview-content", contentEditable: true, "data-id": "content"},
+        $$("div", {
+            className: "container-node " + this.props.node.id,
+            spellCheck: false,
+            "data-id": this.props.node.id
+          },
+          $$('div', {className: "nodes"}, components),
+          $$('div', {className: "subject-references", contentEditable: false}, subjectRefComponents)
+        )
       )
     );
-    return virtualDOM;
+
   },
 
   updateBrackets: function() {
@@ -160,8 +174,11 @@ var ContainerComponent = React.createClass({
     }, this);
   },
 
+
   componentDidMount: function() {
     var surface = this.surface;
+    var titleSurface = this.titleSurface;
+
     var doc = this.props.doc;
 
     doc.connect(this, {
@@ -169,7 +186,12 @@ var ContainerComponent = React.createClass({
     });
 
     this.props.writerCtrl.registerSurface(surface, "content");
-    surface.attach(this.getDOMNode());
+
+
+    surface.attach(this.refs.interviewContent.getDOMNode());
+
+    this.props.writerCtrl.registerSurface(titleSurface, "title-editor");
+    titleSurface.attach(this.refs.interviewTitle.getDOMNode());
 
     doc.connect(this, {
       'container-annotation-update': this.handleContainerAnnotationUpdate
@@ -213,10 +235,13 @@ var ContainerComponent = React.createClass({
 
   componentWillUnmount: function() {
     var surface = this.surface;
+    var titleSurface = this.titleSurface;
     var doc = this.props.doc;
     doc.disconnect(this);
     this.props.writerCtrl.unregisterSurface(surface);
     surface.detach();
+    this.props.writerCtrl.unregisterSurface(titleSurface);
+    titleSurface.detach();
   },
 
   onDocumentChange: function(change) {
