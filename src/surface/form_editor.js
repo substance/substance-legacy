@@ -110,7 +110,6 @@ FormEditor.Prototype = function() {
     } else {
       // deal with container deletes
       this._deleteContainerSelection(tx, direction);
-      tx.selection = Document.Selection.create(range.start);
     }
   };
 

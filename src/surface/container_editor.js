@@ -444,15 +444,31 @@ ContainerEditor.Prototype = function() {
   this._deleteContainerSelection = function(tx) {
     var sel = tx.selection.getRange();
     var nodeSels = this._getNodeSelection(tx, sel);
+    var nodeSel;
     // apply deletion backwards so that we do not to recompute array positions
     for (var idx = nodeSels.length - 1; idx >= 0; idx--) {
-      var nodeSel = nodeSels[idx];
+      nodeSel = nodeSels[idx];
       if (nodeSel.isFully && !nodeSel.node.isResilient()) {
         this._deleteNode(tx, nodeSel);
       } else {
         this._deleteNodePartially(tx, nodeSel);
       }
     }
+
+    // update the selection; take the first component which is not fully deleted
+    if (!nodeSels[0].isFully) {
+      tx.selection = Selection.create(sel.start);
+    } else {
+      tx.selection = Substance.Document.Selection.nullSelection;
+      for (var i = 1; i < nodeSels.length; i++) {
+        nodeSel = nodeSels[i];
+        if (!nodeSel.isFully || nodeSel.node.isResilient()) {
+          tx.selection = Substance.Document.Selection.create(nodeSel.components[0].path, 0);
+          break;
+        }
+      }
+    }
+
     // do a merge
     if (nodeSels.length>1) {
       var firstSel = nodeSels[0];

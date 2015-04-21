@@ -28,6 +28,17 @@ function Surface(editor, options) {
   this.$window = this.$( window );
   this.$document = this.$( window.document );
 
+  // we use this element to redirect ContentEditable actions to prevent
+  // spoiling the DOM. E.g. this is done when typing over a ContainerSelection.
+  // The element must be visible having a size > 0. We position on a very low z-index
+  // and make it transparent.
+  this.ce = window.document.createElement('div');
+  this.$ce = $(this.ce)
+    .css({
+      position: 'fixed', top: 0, "z-index": -1000,
+      opacity: 0, width: 1, height: 1
+    });
+
   this.dragging = false;
 
   this._onMouseUp = Substance.bind( this.onMouseUp, this );
@@ -42,6 +53,10 @@ function Surface(editor, options) {
 
   // state used by handleInsertion
   this.insertState = null;
+
+  this._onDomMutations = Substance.bind(this.onDomMutations, this);
+  this.domObserver = new window.MutationObserver(this._onDomMutations);
+  this.domObserverConfig = { subtree: true, characterData: true };
 }
 
 Surface.Prototype = function() {
@@ -96,10 +111,17 @@ Surface.Prototype = function() {
     //
     // listen to updates so that we can set the selection (only for editing not for replay)
     doc.connect(this, { 'document:changed': this.onDocumentChange });
+
+    this.element.appendChild(this.ce);
+
+    this.domObserver.observe(element, this.domObserverConfig);
   };
 
   this.detach = function() {
     var doc = this.editor.getDocument();
+
+    this.domObserver.disconnect();
+    this.$ce.remove();
 
     // Document Change Events
     //
@@ -172,13 +194,21 @@ Surface.Prototype = function() {
       this.editor.selectAll();
       var sel = this.editor.selection;
       this.setSelection(sel);
-      this.domSelection.set(sel)
+      this.domSelection.set(sel);
       this.emit('selection:changed', sel);
       handled = true;
     }
+
     if (handled) {
       e.preventDefault();
       e.stopPropagation();
+    } else if (this.editor.selection.isContainerSelection()) {
+      this.$ce.empty();
+      var wsel = window.getSelection();
+      var wrange = window.document.createRange();
+      wrange.setStart(this.ce,0);
+      wsel.removeAllRanges();
+      wsel.addRange(wrange);
     }
   };
 
@@ -216,18 +246,25 @@ Surface.Prototype = function() {
   };
 
   this.handleInsertion = function( /*e*/ ) {
-    // this.handlingInsertion = true;
     // get the text between the position before insert and after insert
     var sel = this.editor.selection;
     var range = sel.getRange();
-    var el = DomSelection.getDomNodeForPath(this.element, range.start.path);
+    var el;
     var self = this;
-    setTimeout(function() {
-      var text = el.textContent;
-      var textInput = text.substring(range.start.offset, range.start.offset+1);
-      // Note: providing the source element, so that the TextProperty can decide not to render
-      self.editor.insertText(textInput, sel, {source: el, typing: true});
-    });
+    if (sel.isContainerSelection()) {
+      setTimeout(function() {
+        var textInput = self.ce.textContent;
+        self.editor.insertText(textInput, sel);
+      });
+    } else {
+      el = DomSelection.getDomNodeForPath(this.element, range.start.path);
+      setTimeout(function() {
+        var text = el.textContent;
+        var textInput = text.substring(range.start.offset, range.start.offset+1);
+        // Note: providing the source element, so that the TextProperty can decide not to render
+        self.editor.insertText(textInput, sel, {source: el, typing: true});
+      });
+    }
   };
 
   this.handleLeftOrRightArrowKey = function ( e ) {
@@ -312,6 +349,10 @@ Surface.Prototype = function() {
   this.onFocus = function() {
     // console.log('Focusing surface', this.name, this.__id__);
     this.isFocused = true;
+  };
+
+  this.onDomMutations = function() {
+    console.log("Surface.onDomMutations():", arguments);
   };
 
   // ###########################################
