@@ -235,7 +235,8 @@ HtmlImporter.Prototype = function HtmlImporterPrototype() {
         var endOffset = reentrant.offset;
         inlineNode.type = inlineType.static.name;
         inlineNode.id = inlineType.id || Substance.uuid(inlineNode.type);
-        inlineNode.range = [startOffset, endOffset];
+        inlineNode.startOffset = startOffset;
+        inlineNode.endOffset = endOffset;
         inlineNode.path = context.path.slice(0);
         state.inlineNodes.push(inlineNode);
       }
