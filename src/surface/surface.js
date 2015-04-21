@@ -67,6 +67,9 @@ Surface.Prototype = function() {
   };
 
   this.attach = function(element) {
+    if (!element) {
+      throw new Error('Illegal argument: Surface element is required. was ' + element);
+    }
     var doc = this.editor.getDocument();
 
     // Initialization

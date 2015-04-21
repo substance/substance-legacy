@@ -2,11 +2,11 @@ var Substance = require("../basics");
 var Selection = Substance.Document.Selection;
 
 // Mixin with helpers to implement an AnnotationTool
-function AnnotationTool() {
-}
+function AnnotationTool() {}
 
 AnnotationTool.Prototype = function() {
 
+  // blacklist of modes; one of 'create', 'remove', 'truncate', 'expand', 'fusion'
   this.disabledModes = [];
 
   this.getDocument = function() {
@@ -29,25 +29,15 @@ AnnotationTool.Prototype = function() {
     throw new Error('Contract: an AnnotationTool must implement getAnnotationType()');
   };
 
-  this.afterCreate = function() {
+  this.afterCreate = function() {};
 
-  };
+  this.afterFusion = function() {};
 
-  this.afterFusion = function() {
+  this.afterRemove = function() {};
 
-  };
+  this.afterTruncate = function() {};
 
-  this.afterRemove = function() {
-
-  };
-
-  this.afterTruncate = function() {
-
-  };
-
-  this.afterExpand = function() {
-
-  };
+  this.afterExpand = function() {};
 
   // When there's no existing annotation overlapping, we create a new one.
   this.canCreate = function(annoSels) {
@@ -227,10 +217,10 @@ AnnotationTool.Prototype = function() {
       });
       this.createAnnotationForSelection(tx, sel);
       tx.save({ selection: sel });
+      this.afterFusion();
     } finally {
       tx.cleanup();
     }
-    this.afterFusion();
   };
 
   this.handleRemove = function(state) {
@@ -241,10 +231,10 @@ AnnotationTool.Prototype = function() {
       var annoId = state.annos[0].id;
       tx.delete(annoId);
       tx.save({ selection: sel });
+      this.afterRemove();
     } finally {
       tx.cleanup();
     }
-    this.afterRemove();
   };
 
   this.handleTruncate = function(state) {
@@ -257,10 +247,10 @@ AnnotationTool.Prototype = function() {
       var newAnnoSel = annoSel.truncate(sel);
       anno.updateRange(tx, newAnnoSel);
       tx.save({ selection: sel });
+      this.afterTruncate();
     } finally {
       tx.cleanup();
     }
-    this.afterTruncate();
   };
 
   this.handleExpand = function(state) {
@@ -273,10 +263,10 @@ AnnotationTool.Prototype = function() {
       var newAnnoSel = annoSel.expand(sel);
       anno.updateRange(tx, newAnnoSel);
       tx.save({ selection: sel });
+      this.afterExpand();
     } finally {
       tx.cleanup();
     }
-    this.afterExpand();
   };
 };
 
