@@ -11,7 +11,7 @@ var Range = function(start, end) {
 Range.Prototype = function() {
 
   this.isCollapsed = function() {
-    return this.start === this.end;
+    return this.start.equals(this.end);
   };
 
   this.equals = function(other) {
