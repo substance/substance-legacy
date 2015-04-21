@@ -46,6 +46,7 @@ TransactionDocument.Prototype = function() {
 
   this.create = function(nodeData) {
     var op = this.data.create(nodeData);
+    if (!op) return;
     if (this.document.isTransacting) {
       this.ops.push(op);
     }
@@ -54,6 +55,7 @@ TransactionDocument.Prototype = function() {
 
   this.delete = function(nodeId) {
     var op = this.data.delete(nodeId);
+    if (!op) return;
     if (this.document.isTransacting) {
       this.ops.push(op);
     }
@@ -61,6 +63,7 @@ TransactionDocument.Prototype = function() {
 
   this.set = function(path, value) {
     var op = this.data.set(path, value);
+    if (!op) return;
     this._updateContainers(op);
     if (this.document.isTransacting) {
       this.ops.push(op);
@@ -69,6 +72,7 @@ TransactionDocument.Prototype = function() {
 
   this.update = function(path, diffOp) {
     var op = this.data.update(path, diffOp);
+    if (!op) return;
     this._updateContainers(op);
     if (this.document.isTransacting) {
       this.ops.push(op);
