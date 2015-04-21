@@ -180,6 +180,10 @@ var ContainerComponent = React.createClass({
     // TODO: we need a way so that the brackets get updated properly
     this.forceUpdate(function() {
       self.updateBrackets();
+      _.delay(function() {
+        self.updateBrackets();
+      }, 100);
+
       self.surface.rerenderDomSelection();
     });
 
