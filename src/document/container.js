@@ -250,14 +250,32 @@ Container.Prototype = function() {
     return start;
   };
 
-  var _getNodeComponents = function(node) {
+  var _getNodeComponents = function(node, rootNode) {
+    rootNode = rootNode || node;
     var components = [];
-    var componentSpec = node.getComponents();
-    for (var i = 0; i < componentSpec.length; i++) {
-      var spec = componentSpec[i];
-      if (Substance.isString(spec)) {
-        var path = [node.id, spec];
-        components.push(new Container.Component(path, node.id));
+    var componentNames = node.getComponents();
+    var childNode;
+    for (var i = 0; i < componentNames.length; i++) {
+      var name = componentNames[i];
+      var propertyType = node.getPropertyType(name);
+      // text property
+      if ( propertyType === "string" ) {
+        var path = [node.id, name];
+        components.push(new Container.Component(path, rootNode.id));
+      }
+      // child node
+      else if (propertyType === "id") {
+        var childId = node[name];
+        childNode = node.getDocument().get(childId);
+        components = components.concat(_getNodeComponents(childNode, rootNode));
+      }
+      // array of children
+      else if (Substance.isEqual(propertyType, ['array', 'id'])) {
+        var ids = node[name];
+        for (var j = 0; j < ids.length; j++) {
+          childNode = node.getDocument().get(ids[j]);
+          components = components.concat(_getNodeComponents(childNode, rootNode));
+        }
       } else {
         throw new Error('Not yet implemented.');
       }
