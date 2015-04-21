@@ -1,6 +1,7 @@
 var Substance = require('../basics');
 
 function HtmlImporter( config ) {
+
   this.config = config || {};
 
   this.nodeTypes = [];
@@ -27,6 +28,10 @@ function HtmlImporter( config ) {
 }
 
 HtmlImporter.Prototype = function HtmlImporterPrototype() {
+
+  this.defaultConverter = function(el, converter) {
+    console.warn('This element is not handled by the converters you provided. This is the default implementation which just skips conversion. Override HtmlImporter.defaultConverter(el, converter) to change this behavior.');
+  };
 
   this.initialize = function(doc, rootEl) {
     var state = {
@@ -120,6 +125,21 @@ HtmlImporter.Prototype = function HtmlImporterPrototype() {
           containerNode.show(node.id);
         }
       } else {
+        if (el.nodeType === window.Document.COMMENT_NODE) {
+          // skip comment nodes on block level
+        } else if (el.nodeType === window.Document.TEXT_NODE) {
+          console.warn("Skipping text-node on block level with content:", el.textContent);
+        } else if (el.nodeType === window.Document.ELEMENT_NODE) {
+          var node = this.defaultConverter(el, this);
+          if (node) {
+            if (!node.type) {
+              throw new Error('Contract: Html.defaultConverter() must return a node with type.');
+            }
+            node.id = node.id || Substance.uuid(node.type);
+            doc.create(node);
+            containerNode.show(node.id);
+          }
+        }
         // TODO: maybe we put that thing just here into a paragraph
         // and then continue?
         console.warn("Skipping node on block level", el);

@@ -54,8 +54,8 @@ function Document( schema, seed ) {
   };
 
   // reset containers initially
-  var containers = this.getIndex('type').get('container');
-  Substance.each(containers, function(container) {
+  this.containers = this.getIndex('type').get('container');
+  Substance.each(this.containers, function(container) {
     container.reset();
   });
 }
@@ -124,8 +124,9 @@ Document.Prototype = function() {
     if (this.isTransacting) {
       this.stage.create(nodeData);
     } else {
-      this.stage.create(nodeData);
+      var op = this.stage.create(nodeData);
       this.data.create(nodeData);
+      this._updateContainers(op);
     }
     return this.data.get(nodeData.id);
   };
@@ -134,8 +135,9 @@ Document.Prototype = function() {
     if (this.isTransacting) {
       this.stage.delete(nodeId);
     } else {
-      this.stage.delete(nodeId);
+      var op = this.stage.delete(nodeId);
       this.data.delete(nodeId);
+      this._updateContainers(op);
     }
   };
 
@@ -143,8 +145,9 @@ Document.Prototype = function() {
     if (this.isTransacting) {
       this.stage.set(path, value);
     } else {
-      this.stage.set(path, value);
+      var op = this.stage.set(path, value);
       this.data.set(path, value);
+      this._updateContainers(op);
     }
   };
 
@@ -152,8 +155,9 @@ Document.Prototype = function() {
     if (this.isTransacting) {
       this.stage.update(path, diff);
     } else {
-      this.stage.update(path, diff);
+      var op = this.stage.update(path, diff);
       this.data.update(path, diff);
+      this._updateContainers(op);
     }
   };
 
@@ -264,6 +268,14 @@ Document.Prototype = function() {
     node.detach(this);
   };
 
+  this._updateContainers = function(op) {
+    var containers = this.containers;
+    Substance.each(containers, function(container) {
+      container.update(op);
+    });
+  };
+
+
   this._apply = function(documentChange, mode) {
     if (this.isTransacting) {
       throw new Error('Can not replay a document change during transaction.');
@@ -274,14 +286,8 @@ Document.Prototype = function() {
     }
     Substance.each(documentChange.ops, function(op) {
       this.data.apply(op);
+      this._updateContainers(op);
     }, this);
-    // update containers next
-    var containers = this.getIndex('type').get('container');
-    Substance.each(documentChange.ops, function(op) {
-      Substance.each(containers, function(container) {
-        container.update(op);
-      });
-    });
   };
 
   this._notifyChangeListeners = function(documentChange, info) {
