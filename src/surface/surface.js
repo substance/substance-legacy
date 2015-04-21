@@ -271,7 +271,11 @@ Surface.Prototype = function() {
     // ... and unbind the temporary handler
     this.$document.off( 'mouseup', this._onMouseUp );
     this.dragging = false;
-    this._setModelSelection(this.domSelection.get());
+    // HACK: somehow the DOM selection is not ready yet
+    var self = this;
+    setTimeout(function() {
+      self._setModelSelection(self.domSelection.get());
+    });
   };
 
   this.onMouseMove = function() {
