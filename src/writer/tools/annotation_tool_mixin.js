@@ -1,7 +1,6 @@
 var $$ = React.createElement;
 var Substance = require("substance");
 
-
 // Invariant: basic annotations can not overlap like there can not be two
 // strong annotations for a particular range
 
@@ -28,11 +27,14 @@ var AnnotationToolMixin = Substance.extend({}, Substance.Surface.AnnotationTool.
     });
   },
 
-  componentDidMount: function() {
-    var writerCtrl = this.props.writerCtrl;
-    writerCtrl.connect(this, {
-      'selection:changed': this.updateToolState
-    });
+  componentWillMount: function() {
+    var toolManager = this.props.writerCtrl.toolManager;
+    toolManager.registerTool(this, this.annotationType);
+  },
+
+  componentWillUnmount: function() {
+    var toolManager = this.props.writerCtrl.toolManager;
+    toolManager.unregisterTool(this);
   },
 
   getDocument: function() {

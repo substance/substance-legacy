@@ -4,6 +4,7 @@ var Substance = require('substance');
 var Document = Substance.Document;
 var Selection = Document.Selection;
 var _ = require("substance/helpers");
+var ToolManager = require("substance").Surface.ToolManager;
 
 var Highlight = require("./components/text_property").Highlight;
 
@@ -25,6 +26,10 @@ var WriterController = function(opts) {
     'transaction:started': this.transactionStarted,
     'document:changed': this.onDocumentChanged
   });
+
+  this.toolManager = new ToolManager(this.doc, {
+    isToolEnabled: this.isToolEnabled.bind(this)
+  });
 };
 
 WriterController.Prototype = function() {
@@ -43,14 +48,28 @@ WriterController.Prototype = function() {
     }
   };
 
-  this.registerSurface = function(surface, name) {
+  // Checks based on the surface registry if a certain tool is enabled
+  this.isToolEnabled = function(toolName) {
+    var activeSurface = this.getSurface();
+    var enabledTools = activeSurface.enabledTools;
+    return _.includes(enabledTools, toolName);
+  };
+
+  this.registerSurface = function(surface, name, options) {
     name = name || Substance.uuid();
+    options = options || {};
     this.surfaces[name] = surface;
     if (surface.name) {
       throw new Error("Surface has already been attached");
     }
-    // HACK! we store a name on the surface for later decision making
+    // HACK: we store a name on the surface for later decision making
     surface.name = name;
+
+    // HACK: we store enabled tools on the surface instance for later lookup
+    surface.enabledTools = options.enabledTools || [];
+
+    console.log('enabledTools', surface.name, surface.enabledTools);
+
     surface.connect(this, {
       'selection:changed': function(sel) {
         this.updateSurface(surface);
@@ -69,6 +88,9 @@ WriterController.Prototype = function() {
         handled = stateHandlers.handleSelectionChange(this, sel);
       }
     }
+
+    // Notify all registered tools about the selection change (if enabled)
+    this.toolManager.updateTools(sel);
   };
 
   this.onDocumentChanged = function(change, info) {
@@ -266,9 +288,7 @@ WriterController.Prototype = function() {
       this.doc.redo();
     }
   };
-
 };
-
 
 Substance.inherit(WriterController, Substance.EventEmitter);
 
