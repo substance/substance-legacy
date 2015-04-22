@@ -36,7 +36,7 @@ var Annotation = Node.extend({
 
   updateRange: function(tx, sel) {
     if (!sel.isPropertySelection()) {
-      throw new Error('Cannot change to ContainerAnnotation.')
+      throw new Error('Cannot change to ContainerAnnotation.');
     }
     if (!Substance.isEqual(this.startPath, sel.start.path)) {
       tx.set([this.id, 'path'], sel.start.path);
@@ -47,6 +47,12 @@ var Annotation = Node.extend({
     if (this.endOffset !== sel.end.offset) {
       tx.set([this.id, 'endOffset'], sel.end.offset);
     }
+  },
+
+  getText: function() {
+    var doc = this.getDocument();
+    var text = doc.get(this.path);
+    return text.substring(this.startOffset, this.endOffset);
   },
 
 });

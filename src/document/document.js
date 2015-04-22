@@ -94,6 +94,34 @@ Document.Prototype = function() {
     return this.eventProxies[name];
   };
 
+  this.getTextForSelection = function(sel) {
+    var result = [];
+    var text;
+    if (!sel || sel.isNull()) {
+      return "";
+    } else if (sel.isPropertySelection()) {
+      text = this.get(sel.start.path);
+      result.push(text.substring(sel.start.offset, sel.end.offset));
+    } else if (sel.isContainerSelection()) {
+      var container = this.get(sel.container.id);
+      var components = container.getComponentsForRange(sel.range);
+      for (var i = 0; i < components.length; i++) {
+        var comp = components[i];
+        text = this.get(comp.path);
+        if (components.length === 1) {
+          result.push(text.substring(sel.start.offset, sel.end.offset));
+        } else if (i===0) {
+          result.push(text.substring(sel.start.offset));
+        } else if (i===components.length-1) {
+          result.push(text.substring(0, sel.end.offset));
+        } else {
+          result.push(text);
+        }
+      }
+    }
+    return result.join('');
+  };
+
   this.toJSON = function() {
     return {
       schema: [this.schema.name, this.schema.version],
@@ -159,28 +187,6 @@ Document.Prototype = function() {
       this.data.update(path, diff);
       this._updateContainers(op);
     }
-  };
-
-  this._saveTransaction = function(beforeState, afterState, info) {
-    if (!this.isTransacting) {
-      throw new Error('Not in a transaction.');
-    }
-    this.isTransacting = false;
-    var ops = this.stage.getOperations();
-    var documentChange = new DocumentChange(ops, beforeState, afterState);
-    // apply the change
-    this._apply(documentChange, 'skipStage');
-    // push to undo queue and wipe the redo queue
-    this.done.push(documentChange);
-    this.undone = [];
-    this._notifyChangeListeners(documentChange, info);
-  };
-
-  this._cancelTransaction = function() {
-    if (!this.isTransacting) {
-      throw new Error('Not in a transaction.');
-    }
-    this.isTransacting = false;
   };
 
   this.undo = function() {
@@ -266,6 +272,28 @@ Document.Prototype = function() {
   this._didDeleteNode = function(node) {
     // create the node from schema
     node.detach(this);
+  };
+
+  this._saveTransaction = function(beforeState, afterState, info) {
+    if (!this.isTransacting) {
+      throw new Error('Not in a transaction.');
+    }
+    this.isTransacting = false;
+    var ops = this.stage.getOperations();
+    var documentChange = new DocumentChange(ops, beforeState, afterState);
+    // apply the change
+    this._apply(documentChange, 'skipStage');
+    // push to undo queue and wipe the redo queue
+    this.done.push(documentChange);
+    this.undone = [];
+    this._notifyChangeListeners(documentChange, info);
+  };
+
+  this._cancelTransaction = function() {
+    if (!this.isTransacting) {
+      throw new Error('Not in a transaction.');
+    }
+    this.isTransacting = false;
   };
 
   this._updateContainers = function(op) {
