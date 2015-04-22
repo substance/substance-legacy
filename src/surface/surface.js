@@ -170,8 +170,6 @@ Surface.Prototype = function() {
         return this.handleUpOrDownArrowKey(e);
       case Surface.Keys.ENTER:
         return this.handleEnterKey(e);
-      case Surface.Keys.SPACE:
-        return this.handleSpace(e);
       case Surface.Keys.BACKSPACE:
       case Surface.Keys.DELETE:
         e.preventDefault();
@@ -241,44 +239,23 @@ Surface.Prototype = function() {
     ) {
       return;
     }
-    console.log("TextInputShim:", e);
-    // get the text between the position before insert and after insert
-    var self = this;
-    var sel;
+    var character = String.fromCharCode(e.which);
+    var sel, range, el;
     this.skipNextObservation=true;
     sel = this.editor.selection;
-    if (sel.isContainerSelection()) {
-      // By now, we do not have a good way to deal with this situation:
-      // without textInput events we use the CE to extract the typed character.
-      // Within a TextProperty this is all fine, but when typing over a ContainerSelection
-      // we can't CE let go, as it destroys the DOM and we can not find out the actually typed
-      // character easily.
-      // We drop this character for now and just delete.
-      // TODO: we could at least detect simple characters
-      this.editor.delete(sel, 'left');
-      e.stopPropagation();
-      e.preventDefault();
-      return;
+    if (!e.shiftKey) {
+      character = character.toLowerCase();
     }
-    var range = sel.getRange();
-    var el = DomSelection.getDomNodeForPath(this.element, range.start.path);
-    setTimeout(function() {
-      var wsel = window.getSelection();
-      if (wsel.rangeCount === 0) {
-        console.warn('There is no window selection. Fishy.');
-        return;
-      }
-      // HACK: assuming that one character has been typed by CE
-      // so we take the current window caret position, and look back
-      // by one character.
-      var wrange = wsel.getRangeAt(0);
-      var inputRange = window.document.createRange();
-      inputRange.setStart(wrange.startContainer, wrange.startOffset-1);
-      inputRange.setEnd(wrange.startContainer, wrange.startOffset);
-      var textInput = inputRange.toString();
-      // providing the source element, so that the TextProperty can decide not to render
-      self.editor.insertText(textInput, sel, {source: el, typing: true});
-    });
+    if (character.length>0) {
+      sel = this.editor.selection;
+      range = sel.getRange();
+      el = DomSelection.getDomNodeForPath(this.element, range.start.path);
+      this.editor.insertText(character, sel, {source: el, typing: true});
+      return;
+    } else {
+      e.preventDefault();
+      e.stopPropagation();
+    }
   };
 
   this.handleLeftOrRightArrowKey = function ( e ) {
@@ -313,13 +290,6 @@ Surface.Prototype = function() {
     var selection = this.domSelection.get();
     var direction = (e.keyCode === Surface.Keys.BACKSPACE) ? 'left' : 'right';
     this.editor.delete(selection, direction);
-  };
-
-  this.handleSpace = function( e ) {
-    // e.preventDefault();
-    // var range = this.editor.selection.getRange();
-    // var el = DomSelection.getDomNodeForPath(this.element, range.start.path);
-    // this.editor.insertText(" ", this.editor.selection);
   };
 
   // ###########################################
