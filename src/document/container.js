@@ -95,6 +95,13 @@ Container.Prototype = function() {
     return Substance.last(this.components);
   };
 
+  this.getComponentsForNode = function(nodeId) {
+    var nodeComponent = this.nodeComponents[nodeId];
+    if (nodeComponent) {
+      return nodeComponent.components.slice(0);
+    }
+  };
+
   this.getAnnotationFragments = function(containerAnnotation) {
     var fragments = [];
     var doc = containerAnnotation.getDocument();

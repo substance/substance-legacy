@@ -273,9 +273,8 @@ ContainerEditor.Prototype = function() {
       container.show(node.id, insertPos++);
       insertedNodes.push(node);
 
-      // EXPERIMENTAL also transfer annotations
+      // transfer annotations
       // what about nodes that are referenced by annotations?
-      // Solve this properly, and test driven
       var annos = annoIndex.get(nodeId);
       for (var j = 0; j < annos.length; j++) {
         var data = annos[j].toJSON();
@@ -288,6 +287,13 @@ ContainerEditor.Prototype = function() {
         tx.create(data);
       }
     }
+    // set a new selection
+    var firstId = nodeIds[0];
+    var lastId = Substance.last(nodeIds);
+    var firstComp = container.getComponentsForNode(firstId)[0];
+    var lastComp = Substance.last(container.getComponentsForNode(lastId));
+    var lastLength = tx.get(lastComp.path).length;
+    tx.selection = Selection.create(container, firstComp.path, 0, lastComp.path, lastLength);
   };
 
   this._getBreakBehavior = function(node) {
