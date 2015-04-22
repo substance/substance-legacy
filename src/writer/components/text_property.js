@@ -124,7 +124,7 @@ var TextPropertyComponent = React.createClass(Substance.extend({}, TextProperty.
       // consider the annotations. When the input storm is over, we take the
       // time to render the element properly.
       if (!this._debouncedRerender) {
-        var INTERVAL = 50; //ms
+        var INTERVAL = 200; //ms
         this._debouncedRerender = Substance.debounce(Substance.bind(this._rerenderAndRecoverSelection, this), INTERVAL);
       }
       this._debouncedRerender();
