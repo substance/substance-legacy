@@ -222,6 +222,7 @@ ContainerEditor.Prototype = function() {
     var offset = selection.start.offset;
     tx.update(path, { insert: { offset: offset, value: text } } );
     Annotations.insertedText(tx, selection.start, text.length);
+    tx.selection = Selection.create(selection.start.path, selection.start.offset, selection.start.offset+text.length);
     // copy annotations
     Substance.each(annotations, function(anno) {
       var data = anno.toJSON();
