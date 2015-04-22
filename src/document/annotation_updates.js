@@ -177,13 +177,24 @@ var transferAnnotations = function(doc, path, offset, newPath, newOffset) {
   // same for container annotation anchors
   index = doc.getIndex('container-annotations');
   var anchors = index.get(path);
+  var containerAnnoIds = [];
   Substance.each(anchors, function(anchor) {
+    containerAnnoIds.push(anchor.id);
     var start = anchor.offset;
     if (offset <= start) {
       var pathProperty = (anchor.isStart?'startPath':'endPath');
       var offsetProperty = (anchor.isStart?'startOffset':'endOffset');
       doc.set([anchor.id, pathProperty], newPath);
       doc.set([anchor.id, offsetProperty], newOffset + anchor.offset - offset);
+    }
+  });
+  // check all anchors after that if they have collapsed and remove the annotation in that case
+  Substance.each(Substance.uniq(containerAnnoIds), function(id) {
+    var anno = doc.get(id);
+    var annoSel = anno.getSelection();
+    if(annoSel.isCollapsed()) {
+      console.log("...deleting container annotation because it has collapsed" + id);
+      doc.delete(id);
     }
   });
 };
