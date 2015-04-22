@@ -6,6 +6,7 @@ var _ = require("substance/helpers");
 // A rich scrollbar implementation that supports highlights
 // ----------------
 
+var THUMB_MIN_HEIGHT = 7;
 
 var Scrollbar = React.createClass({
   displayName: "Scrollbar",
@@ -137,7 +138,7 @@ var Scrollbar = React.createClass({
       className: "thumb",
       style: {
       top: this.state.thumb.top,
-      height: this.state.thumb.height
+      height: Math.max(this.state.thumb.height, THUMB_MIN_HEIGHT)
      }
     });
 
