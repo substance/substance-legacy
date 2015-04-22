@@ -40,8 +40,8 @@ AnnotationTool.Prototype = function() {
   this.afterExpand = function() {};
 
   // When there's no existing annotation overlapping, we create a new one.
-  this.canCreate = function(annoSels) {
-    return (annoSels.length === 0);
+  this.canCreate = function(annoSels, sel) {
+    return (annoSels.length === 0 && !sel.isCollapsed());
   };
 
   // When more than one annotation overlaps with the current selection
@@ -129,13 +129,17 @@ AnnotationTool.Prototype = function() {
 
     // Verifies if the detected mode has been disabled by the concrete implementation
     if (!newState.mode || Substance.includes(this.disabledModes, newState.mode)) {
-      return this.setToolState({
-        active: false,
-        selected: false
-      });
+      return this.disableTool();
     }
 
     this.setToolState(newState);
+  };
+
+  this.disableTool = function() {
+    this.setToolState({
+      active: false,
+      selected: false
+    });
   };
 
   this.performAction = function() {
