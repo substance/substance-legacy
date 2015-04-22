@@ -101,7 +101,10 @@ var _modelCoordinateFromDomPosition = function(domNode, offset, options) {
     (options.right && offset === 0) ;
   return {
     domNode: element,
-    coordinate: new Document.Coordinate(path, charPos, after)
+    // Note: deactivated 'after' feature which is basically an interesting concept
+    // but ATM with the delayed rerender this looks strange.
+    // leaving it here for later discussion
+    coordinate: new Document.Coordinate(path, charPos/*, after*/)
   };
 };
 

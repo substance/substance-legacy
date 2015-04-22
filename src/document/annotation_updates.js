@@ -18,7 +18,7 @@ var insertedText = function(doc, coordinate, length) {
     var newStart = start;
     var newEnd = end;
     if ( (pos < start) ||
-         (pos === start && coordinate.after) ) {
+         (pos === start && !coordinate.after) ) {
       newStart += length;
     }
     if ( (pos < end) ||
@@ -40,7 +40,7 @@ var insertedText = function(doc, coordinate, length) {
     var start = anchor.offset;
     var changed = false;
     if ( (pos < start) ||
-         (pos === start && coordinate.after) ) {
+         (pos === start && !coordinate.after) ) {
       start += length;
       changed = true;
     }
