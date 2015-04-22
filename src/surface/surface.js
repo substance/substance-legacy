@@ -169,10 +169,8 @@ Surface.Prototype = function() {
       case Surface.Keys.DOWN:
         return this.handleUpOrDownArrowKey(e);
       case Surface.Keys.ENTER:
-        e.preventDefault();
         return this.handleEnterKey(e);
       case Surface.Keys.SPACE:
-        e.preventDefault();
         return this.handleSpace(e);
       case Surface.Keys.BACKSPACE:
       case Surface.Keys.DELETE:
@@ -317,11 +315,11 @@ Surface.Prototype = function() {
     this.editor.delete(selection, direction);
   };
 
-
   this.handleSpace = function( e ) {
-    e.preventDefault();
-    var selection = this.domSelection.get();
-    this.editor.insertText(" ", selection);
+    // e.preventDefault();
+    // var range = this.editor.selection.getRange();
+    // var el = DomSelection.getDomNodeForPath(this.element, range.start.path);
+    // this.editor.insertText(" ", this.editor.selection);
   };
 
   // ###########################################
