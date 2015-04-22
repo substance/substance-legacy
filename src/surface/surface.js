@@ -172,7 +172,6 @@ Surface.Prototype = function() {
         return this.handleEnterKey(e);
       case Surface.Keys.BACKSPACE:
       case Surface.Keys.DELETE:
-        e.preventDefault();
         return this.handleDeleteKey(e);
       default:
         break;
@@ -291,10 +290,17 @@ Surface.Prototype = function() {
   };
 
   this.handleDeleteKey = function ( e ) {
-    e.preventDefault();
-    var selection = this.domSelection.get();
     var direction = (e.keyCode === Surface.Keys.BACKSPACE) ? 'left' : 'right';
-    this.editor.delete(selection, direction);
+    var sel = this.editor.selection;
+    var range = sel.getRange();
+    // minor optimization: in simple cases we can let CE do the delete
+    if (range.isCollapsed() && direction === 'left' && range.start.offset !== 0) {
+      var el = DomSelection.getDomNodeForPath(this.element, range.start.path);
+      this.editor.delete(sel, direction, {source: el, typing: true});
+    } else {
+      e.preventDefault()
+      this.editor.delete(sel, direction);
+    }
   };
 
   // ###########################################
