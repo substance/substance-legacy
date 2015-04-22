@@ -35,8 +35,8 @@ function Surface(editor, options) {
   this.ce = window.document.createElement('div');
   this.$ce = $(this.ce)
     .css({
-      position: 'fixed', top: 0, "z-index": -1000,
-      opacity: 0, width: 1, height: 1
+      position: 'fixed', top: 20, "z-index": 1000,
+      opacity: 1, width: 50, height: 50
     });
 
   this.dragging = false;
@@ -203,7 +203,11 @@ Surface.Prototype = function() {
       e.preventDefault();
       e.stopPropagation();
     } else if (this.editor.selection.isContainerSelection()) {
+      // TODO: unfortunately this trick is not working in IE, i.e. it will not write into
+      // this.ce; we need to find another solution.
+      // DOM selection should basically provide enough information.
       this.$ce.empty();
+      this._insertSelection = this.editor.selection;
       var wsel = window.getSelection();
       var wrange = window.document.createRange();
       wrange.setStart(this.ce,0);
@@ -247,16 +251,19 @@ Surface.Prototype = function() {
 
   this.handleInsertion = function( /*e*/ ) {
     // get the text between the position before insert and after insert
-    var sel = this.editor.selection;
-    var range = sel.getRange();
-    var el;
     var self = this;
-    if (sel.isContainerSelection()) {
+    var el, sel;
+    if (this._insertSelection && this._insertSelection.isContainerSelection()) {
+      sel = this._insertSelection;
+      this._insertSelection = null;
       setTimeout(function() {
         var textInput = self.ce.textContent;
+        console.log('## textInput', textInput);
         self.editor.insertText(textInput, sel);
       });
     } else {
+      sel = this.editor.selection;
+      var range = sel.getRange();
       el = DomSelection.getDomNodeForPath(this.element, range.start.path);
       setTimeout(function() {
         var text = el.textContent;

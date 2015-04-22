@@ -65,7 +65,10 @@ Clipboard.Prototype = function() {
   // nothing special for cut.
   this.onCut = function(e) {
     console.log("Clipboard.onCut", arguments);
-    this.onCopy();
+    this.onCopy(e);
+    var surface = this.getSurface();
+    var editor = surface.getEditor();
+    editor.delete(editor.selection, 'left');
     e.preventDefault();
   };
 
