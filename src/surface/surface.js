@@ -35,8 +35,8 @@ function Surface(editor, options) {
   this.ce = window.document.createElement('div');
   this.$ce = $(this.ce)
     .css({
-      position: 'fixed', top: 20, "z-index": 1000,
-      opacity: 1, width: 50, height: 50
+      position: 'fixed', top: 20, "z-index": -1000,
+      opacity: 0, width: 50, height: 50
     });
 
   this.dragging = false;
@@ -57,6 +57,7 @@ function Surface(editor, options) {
   this._onDomMutations = Substance.bind(this.onDomMutations, this);
   this.domObserver = new window.MutationObserver(this._onDomMutations);
   this.domObserverConfig = { subtree: true, characterData: true };
+  this.skipNextObservation = false;
 }
 
 Surface.Prototype = function() {
@@ -202,10 +203,15 @@ Surface.Prototype = function() {
     if (handled) {
       e.preventDefault();
       e.stopPropagation();
-    } else if (this.editor.selection.isContainerSelection()) {
-      // TODO: unfortunately this trick is not working in IE, i.e. it will not write into
-      // this.ce; we need to find another solution.
-      // DOM selection should basically provide enough information.
+    }
+    // HACK: for typing text we let ContentEditable go as opposed to implement
+    // a full-fledged keyboard input handler. For ContainerSelections this
+    // leads to a hazard, as CE destroys our container node content
+    // This approach redirects the input into a hidden contenteditable field.
+    // Pitfalls are, that we need to detect properly when to do this (otherwise selection gets lost)
+    // *plus* it is not working in IE.
+    else if (this.editor.selection.isContainerSelection() && e.keyCode >= 65) {
+      // console.log('####', e.keyCode, e.metaKey, e.ctrlKey, e.shiftKey);
       this.$ce.empty();
       this._insertSelection = this.editor.selection;
       var wsel = window.getSelection();
@@ -253,12 +259,12 @@ Surface.Prototype = function() {
     // get the text between the position before insert and after insert
     var self = this;
     var el, sel;
+    this.skipNextObservation=true;
     if (this._insertSelection && this._insertSelection.isContainerSelection()) {
       sel = this._insertSelection;
       this._insertSelection = null;
       setTimeout(function() {
         var textInput = self.ce.textContent;
-        console.log('## textInput', textInput);
         self.editor.insertText(textInput, sel);
       });
     } else {
@@ -359,7 +365,15 @@ Surface.Prototype = function() {
   };
 
   this.onDomMutations = function() {
-    console.log("Surface.onDomMutations():", arguments);
+    if (this.skipNextObservation) {
+      this.skipNextObservation = false;
+      return;
+    }
+    // Known use-cases:
+    //  - Context-menu:
+    //      - Delete
+    //      - Note: copy, cut, paste work just fine
+    console.info("We want to enable a DOM MutationObserver which catches all changes made by native interfaces (such as spell corrections, etc). Lookout for this message and try to set Surface.skipNextObservation=true when you know that you will mutate the DOM.");
   };
 
   // ###########################################
