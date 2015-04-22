@@ -40,32 +40,32 @@ AnnotationTool.Prototype = function() {
   this.afterExpand = function() {};
 
   // When there's no existing annotation overlapping, we create a new one.
-  this.canCreate = function(annoSels, sel) {
-    return (annoSels.length === 0 && !sel.isCollapsed());
+  this.canCreate = function(annos, sel) {
+    return (annos.length === 0 && !sel.isCollapsed());
   };
 
   // When more than one annotation overlaps with the current selection
-  this.canFusion = function(annoSels) {
-    return (annoSels.length >= 2);
+  this.canFusion = function(annos) {
+    return (annos.length >= 2);
   };
 
   // When the cursor or selection is inside an existing annotation
-  this.canRemove = function(annoSels, sel) {
-    if (annoSels.length !== 1) return false;
-    var annoSel = annoSels[0];
+  this.canRemove = function(annos, sel) {
+    if (annos.length !== 1) return false;
+    var annoSel = annos[0].getSelection();
     return sel.isInsideOf(annoSel);
   };
 
   // When there's some overlap with only a single annotation we do an expand
-  this.canExpand = function(annoSels, sel) {
-    if (annoSels.length !== 1) return false;
-    var annoSel = annoSels[0];
+  this.canExpand = function(annos, sel) {
+    if (annos.length !== 1) return false;
+    var annoSel = annos[0].getSelection(); // annoSels[0];
     return sel.overlaps(annoSel);
   };
 
-  this.canTruncate = function(annoSels, sel) {
-    if (annoSels.length !== 1) return false;
-    var annoSel = annoSels[0];
+  this.canTruncate = function(annos, sel) {
+    if (annos.length !== 1) return false;
+    var annoSel = annos[0].getSelection();// annoSels[0];
     return (sel.isLeftAlignedWith(annoSel) || sel.isRightAlignedWith(annoSel)) && !sel.equals(annoSel);
   };
 
@@ -102,30 +102,30 @@ AnnotationTool.Prototype = function() {
       annos = doc.getAnnotationsForSelection(sel, { type: annotationType });
     }
 
-    var annoSels = annos.map(function(anno) { return anno.getSelection(); });
+    // var annoSels = annos.map(function(anno) { return anno.getSelection(); });
+
     var newState = {
       active: true,
       selected: false,
       mode: null,
       sel: sel,
-      annos: annos,
-      annoSels: annoSels
+      annos: annos
+      // annoSels: annoSels
     };
 
-    if (this.canCreate(annoSels, sel)) {
+    if (this.canCreate(annos, sel)) {
       newState.mode = "create";
-    } else if (this.canFusion(annoSels, sel)) {
+    } else if (this.canFusion(annos, sel)) {
       newState.mode = "fusion";
-    } else if (this.canTruncate(annoSels, sel)) {
+    } else if (this.canTruncate(annos, sel)) {
       newState.selected = true;
       newState.mode = "truncate";
-    } else if (this.canRemove(annoSels, sel)) {
+    } else if (this.canRemove(annos, sel)) {
       newState.selected = true;
       newState.mode = "remove";
-    } else if (this.canExpand(annoSels, sel)) {
+    } else if (this.canExpand(annos, sel)) {
       newState.mode = "expand";
     }
-
 
     // Verifies if the detected mode has been disabled by the concrete implementation
     if (!newState.mode || Substance.includes(this.disabledModes, newState.mode)) {
@@ -213,12 +213,13 @@ AnnotationTool.Prototype = function() {
     var sel = state.sel;
     var tx = doc.startTransaction({ selection: sel });
     try {
-      Substance.each(state.annoSels, function(annoSel) {
-        sel = sel.expand(annoSel);
+      Substance.each(state.annos, function(anno) {
+        sel = sel.expand(anno.getSelection());
       });
       Substance.each(state.annos, function(anno) {
         tx.delete(anno.id);
       });
+
       this.createAnnotationForSelection(tx, sel);
       tx.save({ selection: sel });
       this.afterFusion();
@@ -247,7 +248,7 @@ AnnotationTool.Prototype = function() {
     var tx = doc.startTransaction({ selection: sel });
     try {
       var anno = state.annos[0];
-      var annoSel = state.annoSels[0];
+      var annoSel = anno.getSelection(); // state.annoSels[0];
       var newAnnoSel = annoSel.truncate(sel);
       anno.updateRange(tx, newAnnoSel);
       tx.save({ selection: sel });
@@ -263,7 +264,7 @@ AnnotationTool.Prototype = function() {
     var tx = doc.startTransaction({ selection: sel });
     try {
       var anno = state.annos[0];
-      var annoSel = state.annoSels[0];
+      var annoSel = anno.getSelection(); // state.annoSels[0];
       var newAnnoSel = annoSel.expand(sel);
       anno.updateRange(tx, newAnnoSel);
       tx.save({ selection: sel });

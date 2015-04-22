@@ -68,8 +68,6 @@ WriterController.Prototype = function() {
     // HACK: we store enabled tools on the surface instance for later lookup
     surface.enabledTools = options.enabledTools || [];
 
-    console.log('enabledTools', surface.name, surface.enabledTools);
-
     surface.connect(this, {
       'selection:changed': function(sel) {
         this.updateSurface(surface);
