@@ -80,10 +80,17 @@ var TextPropertyComponent = React.createClass(Substance.extend({}, TextProperty.
       var anchors = doc.getIndex('container-annotations').get(path, containerName);
       annotations = annotations.concat(anchors);
     }
+
     var highlights = this.context.getHighlightsForTextProperty(this);
     annotations = annotations.concat(highlights);
 
     return annotations;
+  },
+
+  // Annotations that are active (not just visible)
+  // The ones that have will get an .active class
+  getHighlights: function() {
+    return this.context.getHighlightedNodes();
   },
 
   updateHighlights: function() {

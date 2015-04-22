@@ -199,7 +199,7 @@ Surface.Prototype = function() {
   };
 
   this.onTextInput = function(e) {
-    console.log("TextInput:", e);
+    // console.log("TextInput:", e);
     this.skipNextObservation=true;
     var sel = this.editor.selection;
     var range = sel.getRange();
