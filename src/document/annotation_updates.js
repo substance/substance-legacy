@@ -142,7 +142,7 @@ var transferAnnotations = function(doc, path, offset, newPath, newOffset) {
         var newAnno = Substance.clone(a.properties);
         newAnno.id = Substance.uuid(a.type + "_");
         newAnno.startOffset = newOffset;
-        newAnno.endOffset = newOffset + a.endOffset[1] - offset;
+        newAnno.endOffset = newOffset + a.endOffset - offset;
         newAnno.path = newPath;
         doc.create(newAnno);
       }
