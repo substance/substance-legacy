@@ -259,8 +259,9 @@ Surface.Prototype = function() {
   this.handleInsertion = function( /*e*/ ) {
     // get the text between the position before insert and after insert
     var self = this;
-    var el, sel;
+    var sel;
     this.skipNextObservation=true;
+
     if (this._insertSelection && this._insertSelection.isContainerSelection()) {
       sel = this._insertSelection;
       this._insertSelection = null;
@@ -271,11 +272,23 @@ Surface.Prototype = function() {
     } else {
       sel = this.editor.selection;
       var range = sel.getRange();
-      el = DomSelection.getDomNodeForPath(this.element, range.start.path);
+      var el = DomSelection.getDomNodeForPath(this.element, range.start.path);
       setTimeout(function() {
-        var text = el.textContent;
-        var textInput = text.substring(range.start.offset, range.start.offset+1);
-        // Note: providing the source element, so that the TextProperty can decide not to render
+        var wsel = window.getSelection();
+        if (wsel.rangeCount === 0) {
+          console.warn('There is no window selection. Fishy.');
+          return;
+        }
+        // HACK: assuming that one character has been typed by CE
+        // so we take the current window caret position, and look back
+        // by one character.
+        var wrange = wsel.getRangeAt(0);
+        var inputRange = window.document.createRange();
+        inputRange.setStart(wrange.startContainer, wrange.startOffset-1);
+        inputRange.setEnd(wrange.startContainer, wrange.startOffset);
+        var textInput = inputRange.toString();
+
+        // providing the source element, so that the TextProperty can decide not to render
         self.editor.insertText(textInput, sel, {source: el, typing: true});
       });
     }

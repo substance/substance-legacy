@@ -117,6 +117,12 @@ var TextPropertyComponent = React.createClass(Substance.extend({}, TextProperty.
     // The trick here is to debounce the rerendering, so that we stay out of the way of CE during
     // the rapid input phase, and fixup the rendering a bit delayed.
     if (info.source === this.getDOMNode()) {
+      // Note: to see the effect of this you can for example edit a paragraph
+      // which is spanned by a container annotation. With this deactivated
+      // the text will not be renders as annotated text.
+      // Reason is, we just let CE update the element. Of course, it does not
+      // consider the annotations. When the input storm is over, we take the
+      // time to render the element properly.
       if (!this._debouncedRerender) {
         var INTERVAL = 50; //ms
         this._debouncedRerender = Substance.debounce(Substance.bind(this._rerenderAndRecoverSelection, this), INTERVAL);
