@@ -28,36 +28,27 @@ function Surface(editor, options) {
   this.$window = this.$( window );
   this.$document = this.$( window.document );
 
-  // we use this element to redirect ContentEditable actions to prevent
-  // spoiling the DOM. E.g. this is done when typing over a ContainerSelection.
-  // The element must be visible having a size > 0. We position on a very low z-index
-  // and make it transparent.
-  this.ce = window.document.createElement('div');
-  this.$ce = $(this.ce)
-    .css({
-      position: 'fixed', top: -100, "z-index": -1000,
-      opacity: 0, width: 50, height: 50
-    });
-
   this.dragging = false;
 
   this._onMouseUp = Substance.bind( this.onMouseUp, this );
   this._onMouseDown = Substance.bind( this.onMouseDown, this );
   this._onMouseMove = Substance.bind( this.onMouseMove, this );
-  this._onKeyDown = Substance.bind( this.onKeyDown, this );
-  this._onKeyPress = Substance.bind( this.onKeyPress, this );
-  this._onBlur = Substance.bind( this.onBlur, this );
-  this._onFocus = Substance.bind( this.onFocus, this );
 
+  this._onKeyDown = Substance.bind(this.onKeyDown, this);
+  this._onTextInput = Substance.bind(this.onTextInput, this);
+  this._onTextInputShim = Substance.bind( this.onTextInputShim, this );
   this._onCompositionEnd = Substance.bind( this.onCompositionEnd, this );
 
-  // state used by handleInsertion
-  this.insertState = null;
+  this._onBlur = Substance.bind( this.onBlur, this );
+  this._onFocus = Substance.bind( this.onFocus, this );
 
   this._onDomMutations = Substance.bind(this.onDomMutations, this);
   this.domObserver = new window.MutationObserver(this._onDomMutations);
   this.domObserverConfig = { subtree: true, characterData: true };
   this.skipNextObservation = false;
+
+  this.isIE = Surface.detectIE();
+  this.isFF = window.navigator.userAgent.toLowerCase().indexOf('firefox') > -1;
 }
 
 Surface.Prototype = function() {
@@ -95,10 +86,16 @@ Surface.Prototype = function() {
     // Keyboard Events
     //
     this.$element.on('keydown', this._onKeyDown);
-    this.$element.on('keypress', this._onKeyPress);
+
     // OSX specific handling of dead-keys
     if (this.element.addEventListener) {
       this.element.addEventListener('compositionend', this._onCompositionEnd, false);
+    }
+
+    if (window.TextEvent && !this.isIE) {
+      this.element.addEventListener('textInput', this._onTextInput, false);
+    } else {
+      this.$element.on('keypress', this._onTextInputShim);
     }
 
     // Mouse Events
@@ -120,7 +117,6 @@ Surface.Prototype = function() {
     var doc = this.editor.getDocument();
 
     this.domObserver.disconnect();
-    this.$ce.remove();
 
     // Document Change Events
     //
@@ -136,9 +132,13 @@ Surface.Prototype = function() {
     // Keyboard Events
     //
     this.$element.off('keydown', this._onKeyDown);
-    this.$element.off('keypress', this._onKeyPress);
     if (this.element.addEventListener) {
       this.element.removeEventListener('compositionend', this._onCompositionEnd, false);
+    }
+    if (window.TextEvent && !this.isIE) {
+      this.element.removeEventListener('textInput', this._onTextInput, false);
+    } else {
+      this.$element.off('keypress', this._onTextInputShim);
     }
 
     // Clean-up
@@ -183,9 +183,7 @@ Surface.Prototype = function() {
     }
 
     // Built-in key combos
-
     // console.log('####', e.keyCode, e.metaKey, e.ctrlKey, e.shiftKey);
-
     // Ctrl+A: select all
     var handled = false;
     if ( (e.ctrlKey||e.metaKey) && e.keyCode === 65 ) {
@@ -202,30 +200,34 @@ Surface.Prototype = function() {
       e.preventDefault();
       e.stopPropagation();
     }
-    // HACK: for typing text we let ContentEditable go as opposed to implement
-    // a full-fledged keyboard input handler. For ContainerSelections this
-    // leads to a hazard, as CE destroys our container node content
-    // This approach redirects the input into a hidden contenteditable field.
-    // Pitfalls are, that we need to detect properly when to do this (otherwise selection gets lost)
-    // *plus* it is not working in IE.
-    else if (this.editor.selection.isContainerSelection() && e.keyCode >= 65) {
-      // console.log('####', e.keyCode, e.metaKey, e.ctrlKey, e.shiftKey);
-      this.$ce.empty();
-      this.$element.append(this.$ce);
-      this._insertSelection = this.editor.selection;
-      var wsel = window.getSelection();
-      var wrange = window.document.createRange();
-      wrange.setStart(this.ce,0);
-      wsel.removeAllRanges();
-      wsel.addRange(wrange);
+  };
+
+  this.onTextInput = function(e) {
+    console.log("TextInput:", e);
+    this.skipNextObservation=true;
+    var sel = this.editor.selection;
+    var range = sel.getRange();
+    var el = DomSelection.getDomNodeForPath(this.element, range.start.path);
+    this.editor.insertText(e.data, sel, {source: el, typing: true});
+    if (sel.isContainerSelection()) {
+      e.preventDefault();
+      e.stopPropagation();
     }
   };
 
-  /**
-   * Handle key events not consumed by onKeyDown.
-   * Essentially this is used to handle text typing.
-   */
-  this.onKeyPress = function( e ) {
+  // Handling Dead-keys under OSX
+  this.onCompositionEnd = function(e) {
+    try {
+      var range = this.editor.selection.getRange();
+      var el = DomSelection.getDomNodeForPath(this.element, range.start.path);
+      this.editor.insertText(e.data, this.editor.selection, {source: el, mode: 'typing'});
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  // a shim for textInput events based on keyPress and a horribly dangerous dance with the CE
+  this.onTextInputShim = function( e ) {
     // Filter out non-character keys. Doing this prevents:
     // * Unexpected content deletion when selection is not collapsed and the user presses, for
     //   example, the Home key (Firefox fires 'keypress' for it)
@@ -241,57 +243,44 @@ Surface.Prototype = function() {
     ) {
       return;
     }
-    // TODO: we need to make sure that there actually was content
-    this.handleInsertion(e);
-  };
-
-  // Handling Dead-keys under OSX
-  this.onCompositionEnd = function(e) {
-    try {
-      var range = this.editor.selection.getRange();
-      var el = DomSelection.getDomNodeForPath(this.element, range.start.path);
-      this.editor.insertText(e.data, this.editor.selection, {source: el, mode: 'typing'});
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  this.handleInsertion = function( /*e*/ ) {
+    console.log("TextInputShim:", e);
     // get the text between the position before insert and after insert
     var self = this;
     var sel;
     this.skipNextObservation=true;
-
-    if (this._insertSelection && this._insertSelection.isContainerSelection()) {
-      sel = this._insertSelection;
-      this._insertSelection = null;
-      setTimeout(function() {
-        var textInput = self.ce.textContent;
-        self.editor.insertText(textInput, sel);
-      });
-    } else {
-      sel = this.editor.selection;
-      var range = sel.getRange();
-      var el = DomSelection.getDomNodeForPath(this.element, range.start.path);
-      setTimeout(function() {
-        var wsel = window.getSelection();
-        if (wsel.rangeCount === 0) {
-          console.warn('There is no window selection. Fishy.');
-          return;
-        }
-        // HACK: assuming that one character has been typed by CE
-        // so we take the current window caret position, and look back
-        // by one character.
-        var wrange = wsel.getRangeAt(0);
-        var inputRange = window.document.createRange();
-        inputRange.setStart(wrange.startContainer, wrange.startOffset-1);
-        inputRange.setEnd(wrange.startContainer, wrange.startOffset);
-        var textInput = inputRange.toString();
-
-        // providing the source element, so that the TextProperty can decide not to render
-        self.editor.insertText(textInput, sel, {source: el, typing: true});
-      });
+    sel = this.editor.selection;
+    if (sel.isContainerSelection()) {
+      // By now, we do not have a good way to deal with this situation:
+      // without textInput events we use the CE to extract the typed character.
+      // Within a TextProperty this is all fine, but when typing over a ContainerSelection
+      // we can't CE let go, as it destroys the DOM and we can not find out the actually typed
+      // character easily.
+      // We drop this character for now and just delete.
+      // TODO: we could at least detect simple characters
+      this.editor.delete(sel, 'left');
+      e.stopPropagation();
+      e.preventDefault();
+      return;
     }
+    var range = sel.getRange();
+    var el = DomSelection.getDomNodeForPath(this.element, range.start.path);
+    setTimeout(function() {
+      var wsel = window.getSelection();
+      if (wsel.rangeCount === 0) {
+        console.warn('There is no window selection. Fishy.');
+        return;
+      }
+      // HACK: assuming that one character has been typed by CE
+      // so we take the current window caret position, and look back
+      // by one character.
+      var wrange = wsel.getRangeAt(0);
+      var inputRange = window.document.createRange();
+      inputRange.setStart(wrange.startContainer, wrange.startOffset-1);
+      inputRange.setEnd(wrange.startContainer, wrange.startOffset);
+      var textInput = inputRange.toString();
+      // providing the source element, so that the TextProperty can decide not to render
+      self.editor.insertText(textInput, sel, {source: el, typing: true});
+    });
   };
 
   this.handleLeftOrRightArrowKey = function ( e ) {
@@ -480,6 +469,28 @@ Surface.Keys =  {
   ESCAPE: 27,
   SHIFT: 16,
   SPACE: 32
+};
+
+Surface.detectIE = function() {
+  var ua = window.navigator.userAgent;
+  var msie = ua.indexOf('MSIE ');
+  if (msie > 0) {
+      // IE 10 or older => return version number
+      return parseInt(ua.substring(msie + 5, ua.indexOf('.', msie)), 10);
+  }
+  var trident = ua.indexOf('Trident/');
+  if (trident > 0) {
+      // IE 11 => return version number
+      var rv = ua.indexOf('rv:');
+      return parseInt(ua.substring(rv + 3, ua.indexOf('.', rv)), 10);
+  }
+  var edge = ua.indexOf('Edge/');
+  if (edge > 0) {
+     // IE 12 => return version number
+     return parseInt(ua.substring(edge + 5, ua.indexOf('.', edge)), 10);
+  }
+  // other browser
+  return false;
 };
 
 module.exports = Surface;
