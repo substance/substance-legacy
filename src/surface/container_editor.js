@@ -511,13 +511,15 @@ ContainerEditor.Prototype = function() {
       var anchors = tx.getIndex('container-annotations').get(nodeId);
       for (i = 0; i < anchors.length; i++) {
         var anchor = anchors[i];
+        // Note: during the course of this loop we might have deleted the node already
+        // so, do not do it again
+        if (!tx.get(anchor.id)) continue;
         var comp = container.getComponent(anchor.path);
         if (anchor.isStart) {
           if (comp.hasNext()) {
             tx.set([anchor.id, 'startPath'], comp.next.path);
             tx.set([anchor.id, 'startOffset'], 0);
           } else {
-            // if we can't shift
             tx.delete(anchor.id);
           }
         } else {
