@@ -20,6 +20,8 @@ FormEditor.Prototype = function() {
     return null;
   };
 
+  this.setContainer = function() {};
+
   this.getDocument = function() {
     return this.document;
   };
