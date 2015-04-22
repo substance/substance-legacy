@@ -506,9 +506,29 @@ ContainerEditor.Prototype = function() {
       for (i = 0; i < annos.length; i++) {
         tx.delete(annos[i].id);
       }
-      annos = tx.getIndex('container-annotations').get(nodeId);
-      for (i = 0; i < annos.length; i++) {
-        tx.delete(annos[i].id);
+      // We need to transfer anchors of ContainerAnnotations
+      // to previous or next node
+      var anchors = tx.getIndex('container-annotations').get(nodeId);
+      for (i = 0; i < anchors.length; i++) {
+        var anchor = anchors[i];
+        var comp = container.getComponent(anchor.path);
+        if (anchor.isStart) {
+          if (comp.hasNext()) {
+            tx.set([anchor.id, 'startPath'], comp.next.path);
+            tx.set([anchor.id, 'startOffset'], 0);
+          } else {
+            // if we can't shift
+            tx.delete(anchor.id);
+          }
+        } else {
+          if (comp.hasPrevious()) {
+            var prevLength = tx.get(comp.previous.path).length;
+            tx.set([anchor.id, 'endPath'], comp.previous.path);
+            tx.set([anchor.id, 'endOffset'], prevLength);
+          } else {
+            tx.delete(anchor.id);
+          }
+        }
       }
       // and then permanently delete
       tx.delete(nodeSel.node.id);
