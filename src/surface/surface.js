@@ -35,7 +35,7 @@ function Surface(editor, options) {
   this.ce = window.document.createElement('div');
   this.$ce = $(this.ce)
     .css({
-      position: 'fixed', top: 20, "z-index": -1000,
+      position: 'fixed', top: -100, "z-index": -1000,
       opacity: 0, width: 50, height: 50
     });
 
@@ -112,8 +112,6 @@ Surface.Prototype = function() {
     //
     // listen to updates so that we can set the selection (only for editing not for replay)
     doc.connect(this, { 'document:changed': this.onDocumentChange });
-
-    this.element.appendChild(this.ce);
 
     this.domObserver.observe(element, this.domObserverConfig);
   };
@@ -213,6 +211,7 @@ Surface.Prototype = function() {
     else if (this.editor.selection.isContainerSelection() && e.keyCode >= 65) {
       // console.log('####', e.keyCode, e.metaKey, e.ctrlKey, e.shiftKey);
       this.$ce.empty();
+      this.$element.append(this.$ce);
       this._insertSelection = this.editor.selection;
       var wsel = window.getSelection();
       var wrange = window.document.createRange();
@@ -249,7 +248,9 @@ Surface.Prototype = function() {
   // Handling Dead-keys under OSX
   this.onCompositionEnd = function(e) {
     try {
-      this.editor.insertText(e.data, this.editor.selection);
+      var range = this.editor.selection.getRange();
+      var el = DomSelection.getDomNodeForPath(this.element, range.start.path);
+      this.editor.insertText(e.data, this.editor.selection, {source: el, mode: 'typing'});
     } catch (error) {
       console.error(error);
     }
