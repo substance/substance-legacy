@@ -126,16 +126,16 @@ HtmlImporter.Prototype = function HtmlImporterPrototype() {
           containerNode.show(node.id);
         }
       } else {
-        if (el.nodeType === window.Document.COMMENT_NODE) {
+        if (el.nodeType === window.Node.COMMENT_NODE) {
           // skip comment nodes on block level
-        } else if (el.nodeType === window.Document.TEXT_NODE) {
+        } else if (el.nodeType === window.Node.TEXT_NODE) {
           var text = el.textContent;
           if (/\s*/.exec(text)) {
             // only whitespace, then skipping is fine
           } else {
             console.warn("Skipping text-node on block level with content:", text);
           }
-        } else if (el.nodeType === window.Document.ELEMENT_NODE) {
+        } else if (el.nodeType === window.Node.ELEMENT_NODE) {
           node = this.defaultConverter(el, this);
           if (node) {
             if (!node.type) {
@@ -195,7 +195,7 @@ HtmlImporter.Prototype = function HtmlImporterPrototype() {
     while(iterator.hasNext()) {
       var el = iterator.next();
       // Plain text nodes...
-      if (el.nodeType === window.Document.TEXT_NODE) {
+      if (el.nodeType === window.Node.TEXT_NODE) {
         var text = this._prepareText(state, el.textContent);
         if (text.length) {
           // Note: text is not merged into the reentrant state
@@ -203,10 +203,10 @@ HtmlImporter.Prototype = function HtmlImporterPrototype() {
           plainText = plainText.concat(text);
           reentrant.offset += text.length;
         }
-      } else if (el.nodeType === window.Document.COMMENT_NODE) {
+      } else if (el.nodeType === window.Node.COMMENT_NODE) {
         // skip comment nodes
         continue;
-      } else {
+      } else if (el.nodeType === window.Node.ELEMENT_NODE) {
         var inlineType = this._getInlineTypeForElement(el);
         if (!inlineType) {
           var blockType = this._getInlineTypeForElement(el);
@@ -239,6 +239,10 @@ HtmlImporter.Prototype = function HtmlImporterPrototype() {
         inlineNode.endOffset = endOffset;
         inlineNode.path = context.path.slice(0);
         state.inlineNodes.push(inlineNode);
+      } else {
+        console.warn('Unknown element type. Taking plain text. NodeTyp=%s', el.nodeType, el);
+        var text = this._prepareText(state, el.textContent);
+        plainText = plainText.concat(text);
       }
     }
     // return the plain text collected during this reentrant call
@@ -277,9 +281,9 @@ HtmlImporter.Prototype = function HtmlImporterPrototype() {
   };
 
   this._getDomNodeType = function(el) {
-    if (el.nodeType === window.Document.TEXT_NODE) {
+    if (el.nodeType === window.Node.TEXT_NODE) {
       return "text";
-    } else if (el.nodeType === window.Document.COMMENT_NODE) {
+    } else if (el.nodeType === window.Node.COMMENT_NODE) {
       return "comment";
     } else if (el.tagName) {
       return el.tagName.toLowerCase();
