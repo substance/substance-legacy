@@ -251,6 +251,10 @@ Surface.Prototype = function() {
       range = sel.getRange();
       el = DomSelection.getDomNodeForPath(this.element, range.start.path);
       this.editor.insertText(character, sel, {source: el, typing: true});
+      if (sel.isContainerSelection()) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
       return;
     } else {
       e.preventDefault();
