@@ -9,6 +9,7 @@ var Selection = Document.Selection;
 function ContainerEditor(container) {
   FormEditor.call(this, container.getDocument());
   this.container = container;
+
   this.mergeBehavior = {};
   this.breakBehavior = {};
   this.deleteBehavior = {};
@@ -36,6 +37,14 @@ ContainerEditor.Prototype = function() {
 
   this.isContainerEditor = function() {
     return true;
+  };
+
+  this.getContainer = function() {
+    return this.container;
+  };
+
+  this.setContainer = function(container) {
+    this.container = container;
   };
 
   this.getContainerName = function() {
@@ -67,7 +76,53 @@ ContainerEditor.Prototype = function() {
     this.selection = Selection.create(this.container, first.path, 0, last.path, lastText.length);
   };
 
-  this.copyPropertySelection = function(selection) {
+  // create a document instance containing only the selected content
+  this.copy = function(selection) {
+    if (selection.isNull()) {
+      return null;
+    }
+    // return a simplified version if only a piece of text is selected
+    if (selection.isPropertySelection() || Substance.isEqual(selection.start.path, selection.end.path)) {
+      return this._copyPropertySelection(selection);
+    }
+    else if (selection.isContainerSelection()) {
+      return this._copyContainerSelection(selection);
+    }
+  };
+
+  this.paste = function(selection, data) {
+    if (selection.isNull()) {
+      console.error("Can not paste, without selection.");
+      return;
+    }
+    // plain text paste is simple
+    if (!data.content) {
+      return this.insertText(data.text, selection);
+    }
+    var pasteDoc = data.content;
+    var tx = this.document.startTransaction({ selection: selection });
+    tx.selection = selection;
+    try {
+      if (!selection.isCollapsed()) {
+        this._delete(tx);
+      }
+      var nodes = pasteDoc.get('content').nodes;
+      if (nodes.length > 0) {
+        var first = pasteDoc.get(nodes[0]);
+        if (nodes.length === 1 && first.type === "text") {
+          this._pasteAnnotatedText(tx, pasteDoc);
+        } else {
+          this._pasteDocument(tx, pasteDoc);
+        }
+      }
+      tx.save({selection: tx.selection});
+      this.selection = tx.selection;
+    } finally {
+      tx.cleanup();
+    }
+  };
+
+  this._copyPropertySelection = function(selection) {
     var copy = this.document.newInstance();
     var path = selection.start.path;
     var offset = selection.start.offset;
@@ -162,52 +217,6 @@ ContainerEditor.Prototype = function() {
       }
     }
     return copy;
-  };
-
-  // create a document instance containing only the selected content
-  this.copy = function(selection) {
-    if (selection.isNull()) {
-      return null;
-    }
-    // return a simplified version if only a piece of text is selected
-    if (selection.isPropertySelection() || Substance.isEqual(selection.start.path, selection.end.path)) {
-      return this.copyPropertySelection(selection);
-    }
-    else if (selection.isContainerSelection()) {
-      return this._copyContainerSelection(selection);
-    }
-  };
-
-  this.paste = function(selection, data) {
-    if (selection.isNull()) {
-      console.error("Can not paste, without selection.");
-      return;
-    }
-    // plain text paste is simple
-    if (!data.content) {
-      return this.insertText(data.text, selection);
-    }
-    var pasteDoc = data.content;
-    var tx = this.document.startTransaction({ selection: selection });
-    tx.selection = selection;
-    try {
-      if (!selection.isCollapsed()) {
-        this._delete(tx);
-      }
-      var nodes = pasteDoc.get('content').nodes;
-      if (nodes.length > 0) {
-        var first = pasteDoc.get(nodes[0]);
-        if (nodes.length === 1 && first.type === "text") {
-          this._pasteAnnotatedText(tx, pasteDoc);
-        } else {
-          this._pasteDocument(tx, pasteDoc);
-        }
-      }
-      tx.save({selection: tx.selection});
-      this.selection = tx.selection;
-    } finally {
-      tx.cleanup();
-    }
   };
 
   this._pasteAnnotatedText = function(tx, copy) {

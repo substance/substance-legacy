@@ -287,7 +287,9 @@ DomSelection.getSelectionForDomRange = function(wRange, isReverse, options) {
     return new Document.PropertySelection(range, isReverse);
   } else {
     if (!options.container) {
-      throw new Error('No container given, but selection is a container selection');
+      console.warn('No container given, but selection is a container selection');
+      window.getSelection().removeAllRanges();
+      return Document.Selection.nullSelection;
     }
     return new Document.ContainerSelection(options.container, range, isReverse);
   }
