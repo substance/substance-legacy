@@ -2,9 +2,6 @@
 
 var Substance = require('../basics');
 
-var isIe = (window.navigator.userAgent.toLowerCase().indexOf("msie") != -1 || window.navigator.userAgent.toLowerCase().indexOf("trident") != -1);
-var isFF = window.navigator.userAgent.toLowerCase().indexOf('firefox') > -1;
-
 // context must have a getSurface() method.
 var Clipboard = function(surfaceProvider, element, htmlImporter, htmlExporter) {
 
@@ -23,12 +20,16 @@ var Clipboard = function(surfaceProvider, element, htmlImporter, htmlExporter) {
   this._onCopy = Substance.bind(this.onCopy, this);
   this._onCut = Substance.bind(this.onCut, this);
 
-  if (isIe) {
+  this.isIe = (window.navigator.userAgent.toLowerCase().indexOf("msie") != -1 || window.navigator.userAgent.toLowerCase().indexOf("trident") != -1);
+  this.isFF = window.navigator.userAgent.toLowerCase().indexOf('firefox') > -1;
+
+  if (this.isIe) {
     this._beforePasteShim = Substance.bind(this.beforePasteShim, this);
     this._pasteShim = Substance.bind(this.pasteShim, this);
   } else {
     this._onPaste = Substance.bind(this.onPaste, this);
   }
+
 };
 
 Clipboard.Prototype = function() {
@@ -39,7 +40,7 @@ Clipboard.Prototype = function() {
     rootElement.addEventListener('copy', this._onCopy, false);
     rootElement.addEventListener('cut', this._onCut, false);
 
-    if (isIe) {
+    if (this.isIe) {
       rootElement.addEventListener('beforepaste', this._beforePasteShim, false);
       rootElement.addEventListener('paste', this._pasteShim, false);
     } else {
@@ -51,7 +52,7 @@ Clipboard.Prototype = function() {
     rootElement.removeEventListener('keydown', this._onKeyDown, false);
     rootElement.removeEventListener('copy', this._onCopy, false);
     rootElement.removeEventListener('cut', this._onCut, false);
-    if (isIe) {
+    if (this.isIe) {
       rootElement.removeEventListener('beforepaste', this._beforePasteShim, false);
       rootElement.removeEventListener('paste', this._pasteShim, false);
     } else {
@@ -138,7 +139,7 @@ Clipboard.Prototype = function() {
 
     // HACK: FF does not provide HTML coming in from other applications
     // so fall back to the paste shim
-    if (isFF && !types['application/substance'] && !types['text/html']) {
+    if (this.isFF && !types['application/substance'] && !types['text/html']) {
       var sel = editor.selection;
       this.beforePasteShim();
       // restore selection which might got lost via Surface.onblur().
