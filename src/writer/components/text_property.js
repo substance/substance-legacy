@@ -47,7 +47,7 @@ var TextPropertyComponent = React.createClass(Substance.extend({}, TextProperty.
   render: function() {
     return $$((this.props.tagName || 'span'), {
       className: "text-property " + (this.props.className || ""),
-      contentEditable: true,
+      // contentEditable: true,
       spellCheck: false,
       style: {
         whiteSpace: "pre-wrap"
