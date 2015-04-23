@@ -62,12 +62,12 @@ AnnotationTool.Prototype = function() {
   this.canExpand = function(annos, sel) {
     if (annos.length !== 1) return false;
     var annoSel = annos[0].getSelection(); // annoSels[0];
-    return sel.overlaps(annoSel);
+    return sel.overlaps(annoSel) && !sel.isInsideOf(annoSel);
   };
 
   this.canTruncate = function(annos, sel) {
     if (annos.length !== 1) return false;
-    var annoSel = annos[0].getSelection();// annoSels[0];
+    var annoSel = annos[0].getSelection(); // annoSels[0];
     return (sel.isLeftAlignedWith(annoSel) || sel.isRightAlignedWith(annoSel)) && !sel.equals(annoSel);
   };
 

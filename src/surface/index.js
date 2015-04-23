@@ -13,5 +13,6 @@ Surface.TextProperty = require('./text_property');
 
 Surface.AnnotationTool = require('./annotation_tool');
 Surface.ToolManager = require('./tool_manager');
+Surface.Panel = require('./panel');
 
 module.exports = Surface;

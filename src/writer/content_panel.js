@@ -1,9 +1,10 @@
 var $$ = React.createElement;
 var Substance = require("substance");
 var Scrollbar = require("./scrollbar");
+var _ = require("substance/helpers");
+var PanelMixin = require("./panel_mixin");
 
-var ContentPanel = React.createClass({
-  displayName: "ContentPanel",
+var ContentPanelMixin = _.extend({}, PanelMixin, {
 
   // Since component gets rendered multiple times we need to update
   // the scrollbar and reattach the scroll event
@@ -83,6 +84,11 @@ var ContentPanel = React.createClass({
       )
     );
   }
+});
+
+var ContentPanel = React.createClass({
+  mixins: [ContentPanelMixin],
+  displayName: "ContentPanel",
 });
 
 module.exports = ContentPanel;

@@ -100,6 +100,7 @@ WriterController.Prototype = function() {
       message: "Unsaved changes"
     });
 
+    // This is the undo/redo case
     if (info.replay) {
       this.replaceState(change.after.state);
       var self = this;

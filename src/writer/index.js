@@ -10,7 +10,9 @@ var RedoTool = require("./tools/redo_tool");
 var StrongTool = require("./tools/strong_tool");
 var EmphasisTool = require("./tools/emphasis_tool");
 
+var PanelMixin = require("./panel_mixin");
 var AnnotationToolMixin = require("./tools/annotation_tool_mixin");
+
 var TextProperty = require("./components/text_property");
 
 Writer.CoreModule = {
@@ -33,6 +35,7 @@ Writer.CoreModule = {
 };
 
 Writer.AnnotationToolMixin = AnnotationToolMixin;
+Writer.PanelMixin = PanelMixin;
 Writer.TextProperty = TextProperty;
 
 module.exports = Writer;
