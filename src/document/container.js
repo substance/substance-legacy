@@ -269,6 +269,7 @@ Container.Prototype = function() {
     if (start>0) {
       this.components[start-1].next = this.components[start];
     }
+    delete this.nodeComponents[nodeId];
     return start;
   };
 
