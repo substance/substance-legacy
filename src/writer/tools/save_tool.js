@@ -86,7 +86,7 @@ var SaveTool = React.createClass({
       className: classNames.join(' '),
       href: "#",
       dangerouslySetInnerHTML: {__html: '<i class="fa fa-save"></i>'},
-      title: 'Save document',
+      title: 'Save',
       onMouseDown: this.handleMouseDown
     });
   }

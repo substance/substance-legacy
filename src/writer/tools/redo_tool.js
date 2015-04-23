@@ -59,7 +59,7 @@ var RedoTool = React.createClass({
       className: classNames.join(' '),
       href: "#",
       dangerouslySetInnerHTML: {__html: '<i class="fa fa-rotate-right"></i>'},
-      title: 'Undo',
+      title: 'Redo',
       onMouseDown: this.handleMouseDown,
       onClick: this.handleClick
     });

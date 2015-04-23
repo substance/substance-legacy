@@ -20,7 +20,7 @@ var AnnotationToolMixin = Substance.extend({}, Substance.Surface.AnnotationTool.
     return $$("a", {
       className: classNames.join(' '),
       href: "#",
-      title: this.annotationType,
+      title: this.title,
       onMouseDown: this.handleMouseDown,
       onClick: this.handleClick,
       dangerouslySetInnerHTML: {__html: '<i class="fa '+this.toolIcon+'"></i>'}
