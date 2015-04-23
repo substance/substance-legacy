@@ -507,8 +507,6 @@ ContainerEditor.Prototype = function() {
       // otherwise we can just delete the node
       var nodeId = nodeSel.node.id;
       var container = tx.get(this.container.id);
-      // remove from view first
-      container.hide(nodeId);
       // remove all associated annotations
       var annos = tx.getIndex('annotations').get(nodeId);
       var i;
@@ -541,6 +539,8 @@ ContainerEditor.Prototype = function() {
           }
         }
       }
+      // remove from view first
+      container.hide(nodeId);
       // and then permanently delete
       tx.delete(nodeSel.node.id);
     }

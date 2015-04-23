@@ -45,6 +45,7 @@ Container.Prototype = function() {
 
   this.show = function(nodeId, pos) {
     var doc = this.getDocument();
+    // Note: checking with ==  is what we want here
     if (pos == null) {
       pos = this.nodes.length;
     }
@@ -258,10 +259,19 @@ Container.Prototype = function() {
   };
 
   this._handleDelete = function(nodeId) {
-    var nodeComponents = this.nodeComponents;
-    var nodeComponent = nodeComponents[nodeId];
+    var nodeComponent = this.nodeComponents[nodeId];
+    var components = nodeComponent.components;
     var start = nodeComponent.components[0].getIndex();
-    var end = Substance.last(nodeComponent.components).getIndex();
+    var end = Substance.last(components).getIndex();
+
+    // remove the components from the tree
+    for (var i = 0; i < components.length; i++) {
+      var comp = components[i];
+      this.byPath.delete(comp.path);
+    }
+    // and delete the nodeComponent
+    delete this.nodeComponents[nodeId];
+
     this.components.splice(start, end-start+1);
     if (this.components.length > start) {
       this.components[start].previous = this.components[start-1];
@@ -269,7 +279,6 @@ Container.Prototype = function() {
     if (start>0) {
       this.components[start-1].next = this.components[start];
     }
-    delete this.nodeComponents[nodeId];
     return start;
   };
 
