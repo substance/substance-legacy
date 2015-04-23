@@ -51,6 +51,9 @@ var Annotation = Node.extend({
 
   getText: function() {
     var doc = this.getDocument();
+    if (!doc) {
+      return "";
+    }
     var text = doc.get(this.path);
     return text.substring(this.startOffset, this.endOffset);
   },

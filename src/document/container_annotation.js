@@ -52,12 +52,21 @@ var ContainerAnnotation = Node.extend({
 
   // Provide a selection which has the same range as this annotation.
   getSelection: function() {
-    var container = this.getDocument().get(this.container);
+    var doc = this.getDocument();
+    // Guard: when this is called while this node has been detached already.
+    if (!doc) {
+      return Selection.nullSelection();
+    }
+    var container = doc.get(this.container);
     return Selection.create(container, this.startPath, this.startOffset, this.endPath, this.endOffset);
   },
 
   getText: function() {
-    return this.getDocument().getTextForSelection(this.getSelection());
+    var doc = this.getDocument();
+    if (!doc) {
+      return "";
+    }
+    return doc.getTextForSelection(this.getSelection());
   },
 
   updateRange: function(tx, sel) {
