@@ -131,24 +131,55 @@ HtmlImporter.Prototype = function HtmlImporterPrototype() {
           // skip comment nodes on block level
         } else if (el.nodeType === window.Node.TEXT_NODE) {
           var text = el.textContent;
-          if (/\s*/.exec(text)) {
-            // only whitespace, then skipping is fine
-          } else {
-            console.warn("Skipping text-node on block level with content:", text);
-          }
+          if (/^\s*$/.exec(text)) continue;
+          // If we find text nodes on the block level we wrap
+          // it into a paragraph element (or what is configured as default block level element)
+          childIterator.back();
+          this.wrapInlineElementsIntoBlockElement(childIterator);
         } else if (el.nodeType === window.Node.ELEMENT_NODE) {
-          node = this.defaultConverter(el, this);
-          if (node) {
-            if (!node.type) {
-              throw new Error('Contract: Html.defaultConverter() must return a node with type.');
-            }
-            node.id = node.id || Substance.uuid(node.type);
-            doc.create(node);
-            containerNode.show(node.id);
+          // NOTE: hard to tell if unsupported nodes on this level
+          // should be treated as inline or not.
+          // ATM we only support spans as entry to the catch-all implementation
+          // that collects inline elements and wraps into a paragraph.
+          // TODO: maybe this should be the default?
+          if (el.tagName.toLowerCase() === "span") {
+            childIterator.back();
+            this.wrapInlineElementsIntoBlockElement(childIterator);
+          } else {
+            this.createDefaultBlockElement(el);
           }
         }
       }
     }
+  };
+
+  this.wrapInlineElementsIntoBlockElement = function(childIterator) {
+    var state = this.state;
+    var doc = state.doc;
+    var containerNode = state.containerNode;
+    var wrapper = window.document.createElement('div');
+    while(childIterator.hasNext()) {
+      var el = childIterator.next();
+      var blockType = this._getBlockTypeForElement(el);
+      if (blockType) {
+        childIterator.back();
+        break;
+      }
+      wrapper.appendChild(el.cloneNode(true));
+    }
+    var node = this.defaultConverter(wrapper, this);
+    if (node) {
+      if (!node.type) {
+        throw new Error('Contract: Html.defaultConverter() must return a node with type.');
+      }
+      node.id = node.id || Substance.uuid(node.type);
+      doc.create(node);
+      containerNode.show(node.id);
+    }
+  };
+
+  this.createDefaultBlockElement = function(el) {
+
   };
 
   /**
@@ -195,9 +226,10 @@ HtmlImporter.Prototype = function HtmlImporterPrototype() {
     }
     while(iterator.hasNext()) {
       var el = iterator.next();
+      var text = "";
       // Plain text nodes...
       if (el.nodeType === window.Node.TEXT_NODE) {
-        var text = this._prepareText(state, el.textContent);
+        text = this._prepareText(state, el.textContent);
         if (text.length) {
           // Note: text is not merged into the reentrant state
           // so that we are able to return for this reentrant call
@@ -242,7 +274,7 @@ HtmlImporter.Prototype = function HtmlImporterPrototype() {
         state.inlineNodes.push(inlineNode);
       } else {
         console.warn('Unknown element type. Taking plain text. NodeTyp=%s', el.nodeType, el);
-        var text = this._prepareText(state, el.textContent);
+        text = this._prepareText(state, el.textContent);
         plainText = plainText.concat(text);
       }
     }
