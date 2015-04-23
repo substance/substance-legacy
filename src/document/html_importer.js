@@ -89,6 +89,7 @@ HtmlImporter.Prototype = function HtmlImporterPrototype() {
     if (gdocs) {
       return gdocs.parentNode;
     }
+    $(body).find('*[style]').removeAttr('style');
     return newRoot;
   };
 
