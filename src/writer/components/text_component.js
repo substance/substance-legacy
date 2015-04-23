@@ -23,7 +23,7 @@ var TextComponent = React.createClass({
         // console.log('skipping rerender of ', this.props.node.id);
         shouldUpdate = false;
       } else {
-        console.log('rerender of ', this.props.node.id);
+        // console.log('rerender of ', this.props.node.id);
         // console.log('annos', this.props.node.id, textAnnotations);
         // console.log('highlights', this.props.node.id, textHighlights);
         // console.log('---------------');
