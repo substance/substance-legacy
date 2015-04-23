@@ -35,8 +35,8 @@ var WriterController = function(opts) {
 WriterController.Prototype = function() {
 
   // API method used by writer modules to modify the writer state
-  this.replaceState = function(newState) {
-    this.writerComponent.replaceState(newState);
+  this.replaceState = function(newState, cb) {
+    this.writerComponent.replaceState(newState, cb);
   };
 
   this.transactionStarted = function(tx) {
