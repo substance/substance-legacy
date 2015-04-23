@@ -37,7 +37,7 @@ function Surface(editor, options) {
   this._onKeyDown = Substance.bind(this.onKeyDown, this);
   this._onTextInput = Substance.bind(this.onTextInput, this);
   this._onTextInputShim = Substance.bind( this.onTextInputShim, this );
-  this._onCompositionEnd = Substance.bind( this.onCompositionEnd, this );
+  this._onCompositionStart = Substance.bind( this.onCompositionStart, this );
 
   this._onBlur = Substance.bind( this.onBlur, this );
   this._onFocus = Substance.bind( this.onFocus, this );
@@ -89,7 +89,7 @@ Surface.Prototype = function() {
 
     // OSX specific handling of dead-keys
     if (this.element.addEventListener) {
-      this.element.addEventListener('compositionend', this._onCompositionEnd, false);
+      this.element.addEventListener('compositionstart', this._onCompositionStart, false);
     }
 
     if (window.TextEvent && !this.isIE) {
@@ -133,7 +133,7 @@ Surface.Prototype = function() {
     //
     this.$element.off('keydown', this._onKeyDown);
     if (this.element.addEventListener) {
-      this.element.removeEventListener('compositionend', this._onCompositionEnd, false);
+      this.element.removeEventListener('compositionstart', this._onCompositionStart, false);
     }
     if (window.TextEvent && !this.isIE) {
       this.element.removeEventListener('textInput', this._onTextInput, false);
@@ -212,14 +212,9 @@ Surface.Prototype = function() {
   };
 
   // Handling Dead-keys under OSX
-  this.onCompositionEnd = function(e) {
-    try {
-      var range = this.editor.selection.getRange();
-      var el = DomSelection.getDomNodeForPath(this.element, range.start.path);
-      this.editor.insertText(e.data, this.editor.selection, {source: el, mode: 'typing'});
-    } catch (error) {
-      console.error(error);
-    }
+  this.onCompositionStart = function(e) {
+    // just tell DOM observer that we have everything under control
+    this.skipNextObservation = true
   };
 
   // a shim for textInput events based on keyPress and a horribly dangerous dance with the CE
