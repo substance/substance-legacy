@@ -52,6 +52,7 @@ var Annotation = Node.extend({
   getText: function() {
     var doc = this.getDocument();
     if (!doc) {
+      console.warn('Trying to use an Annotation which is not attached to the document.');
       return "";
     }
     var text = doc.get(this.path);

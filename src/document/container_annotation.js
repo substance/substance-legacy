@@ -55,6 +55,7 @@ var ContainerAnnotation = Node.extend({
     var doc = this.getDocument();
     // Guard: when this is called while this node has been detached already.
     if (!doc) {
+      console.warn('Trying to use a ContainerAnnotation which is not attached to the document.');
       return Selection.nullSelection();
     }
     var container = doc.get(this.container);
@@ -64,6 +65,7 @@ var ContainerAnnotation = Node.extend({
   getText: function() {
     var doc = this.getDocument();
     if (!doc) {
+      console.warn('Trying to use a ContainerAnnotation which is not attached to the document.');
       return "";
     }
     return doc.getTextForSelection(this.getSelection());
@@ -71,7 +73,7 @@ var ContainerAnnotation = Node.extend({
 
   updateRange: function(tx, sel) {
     if (!sel.isContainerSelection()) {
-      throw new Error('Cannot change to ContainerAnnotation.')
+      throw new Error('Cannot change to ContainerAnnotation.');
     }
     if (!Substance.isEqual(this.startPath, sel.start.path)) {
       tx.set([this.id, 'startPath'], sel.start.path);
