@@ -25,6 +25,8 @@ function HtmlImporter( config ) {
       }
     }, this);
   }
+
+  this.$ = window.$;
 }
 
 HtmlImporter.Prototype = function HtmlImporterPrototype() {
@@ -33,7 +35,7 @@ HtmlImporter.Prototype = function HtmlImporterPrototype() {
     console.warn('This element is not handled by the converters you provided. This is the default implementation which just skips conversion. Override HtmlImporter.defaultConverter(el, converter) to change this behavior.');
   };
 
-  this.initialize = function(doc, rootEl) {
+  this.initialize = function(doc, rootEl, containerId) {
     var state = {
       doc: doc,
       rootEl: rootEl,
@@ -47,19 +49,19 @@ HtmlImporter.Prototype = function HtmlImporterPrototype() {
       skipTypes: {},
       ignoreAnnotations: false,
     };
-    if (!doc.get('content')) {
-      doc.create({
-        'type': 'container',
-        'id': 'content',
-        nodes: []
-      });
+    var containerNode = doc.get(containerId);
+    if (!containerNode) {
+      throw new Error('Illegal argument: could not find container with id' + containerId);
     }
-    state.containerNode = doc.get('content');
+    state.containerNode = containerNode;
     this.state = state;
   };
 
-  this.convert = function(rootEl, doc) {
-    this.initialize(doc, rootEl);
+  this.convert = function(rootEl, doc, containerId) {
+    if (!containerId) {
+      throw new Error('Missing argument: containerId is required.');
+    }
+    this.initialize(doc, rootEl, containerId);
     this.body(rootEl);
     // create annotations afterwards so that the targeted nodes
     // exist for sure
@@ -68,12 +70,12 @@ HtmlImporter.Prototype = function HtmlImporterPrototype() {
     }
   };
 
-  this.convertDocument = function(htmlDoc, doc) {
+  this.convertDocument = function(htmlDoc, doc, containerId) {
     var body = htmlDoc.getElementsByTagName( 'body' )[0];
     body = this.sanitizeHtmlDoc(body);
     console.log('Sanitized html:', body.innerHTML);
 
-    this.initialize(doc, body);
+    this.initialize(doc, body, containerId);
     this.body(body);
     // create annotations afterwards so that the targeted nodes
     // exist for sure

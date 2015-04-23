@@ -68,7 +68,7 @@ Clipboard.Prototype = function() {
     console.log("Clipboard.onCopy", arguments);
     this._copySelection();
     if (event.clipboardData && this._contentDoc) {
-      var html = this.htmlExporter.toHtml(this._contentDoc, { containers: ['content'] });
+      var html = this.htmlExporter.toHtml(this._contentDoc, 'content');
       console.log('Stored HTML in clipboard', html);
       this._contentDoc.__id__ = Substance.uuid();
       var data = this._contentDoc.toJSON();
@@ -114,8 +114,15 @@ Clipboard.Prototype = function() {
     var doc = editor.getDocument();
     try {
       var content = doc.newInstance();
+      if (!content.get('content')) {
+        content.create({
+          id: 'content',
+          type: 'container',
+          nodes: []
+        });
+      }
       var htmlDoc = new window.DOMParser().parseFromString(html, "text/html");
-      this.htmlImporter.convertDocument(htmlDoc, content);
+      this.htmlImporter.convertDocument(htmlDoc, content, 'content');
       editor.paste(editor.selection, {
         content: content,
         text: htmlDoc.body.textContent

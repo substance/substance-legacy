@@ -5,108 +5,76 @@ var Annotator = require('./annotator');
 
 function HtmlExporter(config) {
   this.config = config || {};
+  this.state = null;
+
+  this.$ = window.$;
 }
 
 HtmlExporter.Prototype = function() {
 
-  this.toHtml = function(document, options) {
-    options = {} || options;
-    var containers = options.containers || ['content'];
-
-    var state =  {
-      document: document,
-      options: options,
-      output: []
-    };
-
-    for (var i = 0; i < containers.length; i++) {
-      var container = document.get(containers[i]);
-      this.container(state, container);
-    }
-    return state.output.join('');
+  this.createElement = function(tagName) {
+    return window.document.createElement(tagName);
   };
 
-  this.container = function(state, containerNode) {
+  this.toHtml = function(doc, containerId, options) {
+    options = {} || options;
+    this.state =  {
+      doc: doc,
+      rootElement: window.document.createElement('div'),
+      options: options
+    };
+    var container = doc.get(containerId);
+    this.container(container);
+    return this.state.rootElement;
+  };
+
+  this.container = function(containerNode) {
+    var state = this.state;
     var nodeIds = containerNode.nodes;
     for (var i = 0; i < nodeIds.length; i++) {
-      var node = state.document.get(nodeIds[i]);
-      switch(node.type) {
-        case "heading":
-          return this.heading(state, node);
-        case "text":
-          return this.text(state, node);
-        default:
-          console.error('Not yet implemented: ', node.type, node);
+      var node = state.doc.get(nodeIds[i]);
+      var el = node.toHtml(this);
+      if (!el || (el.nodeType !== window.Node.ELEMENT_NODE)) {
+        throw new Error('Contract: Node.toHtml() must return a DOM element. NodeType: '+node.type);
       }
+      el.dataset.id = node.id;
+      state.rootElement.appendChild(el);
     }
   };
 
-  this.heading = function(state, node) {
-    var tag = 'h' + node.level;
-    state.output.push('<'+tag+'>');
-    this.annotatedText(state, [node.id, 'content']);
-    state.output.push('</'+tag+'>');
-  };
-
-  this.text = function(state, node) {
-    state.output.push('<p>');
-    this.annotatedText(state, [node.id, 'content']);
-    state.output.push('</p>');
-  };
-
-  this.annotatedText = function(state, path) {
-    var doc = state.document;
+  this.annotatedText = function(path) {
+    var self = this;
+    var doc = this.state.doc;
+    var fragment = window.document.createDocumentFragment();
+    var annotations = doc.getIndex('annotations').get(path);
     var text = doc.get(path);
 
-    var annotations = doc.getIndex('annotations').get(path);
-
-    // this splits the text and annotations into smaller pieces
-    // which is necessary to generate proper HTML.
     var annotator = new Annotator();
-    var stack = [];
-
     annotator.onText = function(context, text) {
-      state.output.push(text);
+      context.children.push(window.document.createTextNode(text));
     };
-
     annotator.onEnter = function(entry) {
-      var anno = doc.get(entry.id);
-      switch (anno.type) {
-        case 'strong':
-          state.output.push('<b>');
-          break;
-        case 'emphasis':
-          state.output.push('<i>');
-          break;
-        case 'entity_reference':
-          state.output.push('<span class="'+ anno.type + '" data-target="'+ anno.target +'">');
-          break;
-        case 'subject_reference':
-          state.output.push('<span class="'+ anno.type + '" data-target="'+ anno.target.join(',') +'">');
-          break;
-        default:
-          state.output.push('<span class="'+anno.type);
-          console.error('Not yet supported:', anno.type, anno);
-      }
-      stack.push(anno);
-      return anno;
+      var anno = entry.node;
+      return {
+        annotation: anno,
+        children: []
+      };
     };
-
-    annotator.onExit = function() {
-      var anno = stack.pop();
-      switch (anno.type) {
-        case 'strong':
-          state.output.push('</b>');
-          break;
-        case 'emphasis':
-          break;
-        default:
-          console.error('Not yet supported:', anno.type, anno);
+    annotator.onExit = function(entry, context, parentContext) {
+      var anno = context.annotation;
+      var el = anno.toHtml(context.children, self);
+      if (!el || el.nodeType !== window.Node.ELEMENT_NODE) {
+        throw new Error('Contract: Annotation.toHtml() must return a DOM element.');
       }
+      el.dataset.id = anno.id;
+      parentContext.children.push(el);
     };
-
-    // this calls onText and onEnter in turns...
-    annotator.start(null, text, annotations);
+    var root = { children: [] };
+    annotator.start(root, text, annotations);
+    for (var i = 0; i < root.children.length; i++) {
+      fragment.appendChild(root.children[i]);
+    }
+    return fragment;
   };
 
 };
