@@ -179,7 +179,18 @@ HtmlImporter.Prototype = function HtmlImporterPrototype() {
   };
 
   this.createDefaultBlockElement = function(el) {
-
+    var state = this.state;
+    var doc = state.doc;
+    var containerNode = state.containerNode;
+    var node = this.defaultConverter(el, this);
+    if (node) {
+      if (!node.type) {
+        throw new Error('Contract: Html.defaultConverter() must return a node with type.');
+      }
+      node.id = node.id || Substance.uuid(node.type);
+      doc.create(node);
+      containerNode.show(node.id);
+    }
   };
 
   /**
