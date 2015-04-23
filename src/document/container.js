@@ -171,6 +171,9 @@ Container.Prototype = function() {
   // Incrementally updates the container based on a given operation.
   // Gets called by Substance.Document for every applied operation.
   this.update = function(op) {
+    if (op.type === "create" || op.type === "delete") {
+      return;
+    }
     if (op.path[0] === this.id && op.path[1] === 'nodes') {
       if (op.type === 'set') {
         this.reset();
