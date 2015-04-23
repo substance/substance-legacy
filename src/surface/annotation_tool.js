@@ -9,6 +9,8 @@ AnnotationTool.Prototype = function() {
   // blacklist of modes; one of 'create', 'remove', 'truncate', 'expand', 'fusion'
   this.disabledModes = [];
 
+  this.splitContainerSelections = false;
+
   this.getDocument = function() {
     throw new Error('Contract: an AnnotationTool must implement getDocument()');
   };
@@ -93,7 +95,7 @@ AnnotationTool.Prototype = function() {
       // is a property annotation.
       // In future we could introduce a multi-annotation (multiple property selections)
       // and create multiple annotations at once.
-      if (sel.isContainerSelection()) {
+      if (sel.isContainerSelection() && !this.splitContainerSelections) {
         return this.setToolState({
           active: false,
           selected: false
@@ -188,24 +190,51 @@ AnnotationTool.Prototype = function() {
     return schema.isInstanceOf(this.getAnnotationType(), "container_annotation");
   };
 
-  this.createAnnotationForSelection = function(tx, sel) {
+  this._createPropertyAnnotations = function(tx, sel) {
+    var sels;
     var annotationType = this.getAnnotationType();
-    var annotation = Substance.extend({
+    if (sel.isPropertySelection()) {
+      sels = [];
+    } else if (sel.isContainerSelection()) {
+      sels = sel.splitIntoPropertySelections();
+    }
+    for (var i = 0; i < sels.length; i++) {
+      var anno = {
+        id: Substance.uuid(annotationType),
+        type: annotationType
+      };
+      Substance.extend(anno, this.getAnnotationData());
+      anno.path = sels[i].getPath();
+      anno.startOffset = sels[i].getStartOffset();
+      anno.endOffset = sels[i].getEndOffset();
+      tx.create(anno)
+    }
+  };
+
+  this.createAnnotationForSelection = function(tx, sel) {
+    if (this.splitContainerSelections && sel.isContainerSelection()) {
+      return this._createPropertyAnnotations(tx, sel);
+    }
+    var annotationType = this.getAnnotationType();
+    var anno = {
       id: Substance.uuid(annotationType),
       type: annotationType,
-    }, this.getAnnotationData());
-
+    };
+    Substance.extend(anno, this.getAnnotationData());
     if (this.isContainerAnno()) {
-      annotation.startPath = sel.start.path;
-      annotation.endPath = sel.end.path;
-      annotation.container = "content";
+      anno.startPath = sel.start.path;
+      anno.endPath = sel.end.path;
+      // HACK: where to get the container id from when sel is a property selection
+      anno.container = "content";
+    } else if (sel.isPropertySelection()) {
+      anno.path = sel.getPath();
     } else {
-      annotation.path = sel.getPath();
+      throw new Error('Illegal state: can not apply ContainerSelection');
     }
-    annotation.startOffset = sel.getStartOffset();
-    annotation.endOffset = sel.getEndOffset();
+    anno.startOffset = sel.getStartOffset();
+    anno.endOffset = sel.getEndOffset();
     // start the transaction with an initial selection
-    return tx.create(annotation);
+    return tx.create(anno);
   };
 
   this.handleFusion = function(state) {

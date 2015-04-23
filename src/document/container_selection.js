@@ -125,6 +125,28 @@ ContainerSelection.Prototype = function() {
     return _isEqual(c1.end, c2.end);
   };
 
+  this.splitIntoPropertySelections = function() {
+    var sels = [];
+    var comps = this.container.getComponentsForRange(this.range);
+    var doc = this.container.getDocument();
+    for (var i = 0; i < comps.length; i++) {
+      var comp = comps[i];
+      var startOffset, endOffset;
+      if (i===0) {
+        startOffset = this.startOffset;
+      } else {
+        startOffset = 0;
+      }
+      if (i===comps.length-1) {
+        endOffset = this.endOffset;
+      } else {
+        endOffset = doc.get(comp.path).length;
+      }
+      sels.push(Selection.create(comp.path, startOffset, endOffset));
+    }
+    return sels;
+  };
+
   var _coordinates = function(container, sel) {
     if (sel._internal.coor) {
       return sel._internal.coor;
