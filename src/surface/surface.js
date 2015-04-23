@@ -290,6 +290,7 @@ Surface.Prototype = function() {
     var range = sel.getRange();
     // minor optimization: in simple cases we can let CE do the delete
     if (range.isCollapsed() && direction === 'left' && range.start.offset !== 0) {
+      this.skipNextObservation = true;
       var el = DomSelection.getDomNodeForPath(this.element, range.start.path);
       this.editor.delete(sel, direction, {source: el, typing: true});
     } else {
