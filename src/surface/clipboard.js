@@ -97,9 +97,18 @@ Clipboard.Prototype = function() {
     var doc = editor.getDocument();
     try {
       var content = doc.fromSnapshot(JSON.parse(data));
+      var plainText = "";
+      var pasteContent = content.get('content');
+      if (pasteContent.nodes.length > 0) {
+        var first = pasteContent.getFirstComponent();
+        var last = pasteContent.getLastComponent();
+        var lastLength = content.get(last.path).length;
+        var sel = Substance.Document.Selection.create(pasteContent, first.path, 0, last.path, lastLength);
+        plainText = content.getTextForSelection(sel);
+      }
       editor.paste(editor.selection, {
         content: content,
-        text: "" // TODO: doc.toPlainText()
+        text: plainText
       });
     } catch (error) {
       console.error(error);
