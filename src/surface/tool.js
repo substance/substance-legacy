@@ -47,27 +47,43 @@ Tool.Prototype = function() {
   this.setToolState = function(newState) {
     var oldState = this.state;
     this.state = newState;
-    this.emit('tool-state:changed', newState, oldState, this);
+    this.emit('toolstate:changed', newState, this, oldState);
   };
 
   this.getToolState = function() {
     return this.state;
   };
 
-  this.disableTool = function() {
+  this.setEnabled = function() {
+    this.setToolState({
+      enabled: true,
+      selected: false
+    });
+  };
+
+  this.setDisabled = function() {
     this.setToolState({
       enabled: false,
       selected: false
     });
   };
 
+  this.disableTool = function() {
+    console.error('DEPRICATED: use tool.setDisabled()');
+    this.setDisabled();
+  };
+
+  this.setSelected = function() {
+    this.setToolState({
+      enabled: true,
+      selected: true
+    });
+  };
+
   /* jshint unused:false */
   this.update = function(surface, sel) {
     if (this.needsEnabledSurface && !surface.isEnabled()) {
-      return this.setToolState({
-        active: false,
-        selected: false
-      });
+      return this.setEnabled(false);
     }
   };
 };
