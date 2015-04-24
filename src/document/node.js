@@ -39,8 +39,9 @@ var Node = Data.Node.extend({
     return this.constructor.static.components;
   },
 
-  toHtml: function(converter) {
-    return this.constructor.static.toHtml(this, converter);
+  // Note: children are provided for inline nodes only.
+  toHtml: function(converter, children) {
+    return this.constructor.static.toHtml(this, converter, children);
   },
 
 });
@@ -54,7 +55,7 @@ Node.static.toHtml = function(node, converter) {
     .attr('data-id', node.id)
     .attr('data-type', node.type);
   _.each(node.properties, function(value, name) {
-    var $prop = $('<div').attr('itemprop', name)
+    var $prop = $('<div').attr('itemprop', name);
     if (node.getPropertyType === 'string') {
       $prop[0].appendChild(converter.annotatedText([node.id, name]));
     } else {

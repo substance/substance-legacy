@@ -57,24 +57,24 @@ var Annotation = Node.extend({
     }
     var text = doc.get(this.path);
     return text.substring(this.startOffset, this.endOffset);
-  },
-
-  // default implementation for inline elements
-  // Attention: there is a difference between the implementation
-  // of toHtml for annotations and general nodes.
-  // Annotations are modeled as overlays, so they do not 'own' their content.
-  // Thus, during conversion HtmlExporter serves the content as a prepared
-  // array of children element which just need to be wrapped (or can be manipulated).
-  toHtml: function(children, converter) {
-    var tagName = this.constructor.static.tagName || 'span';
-    var el = converter.createElement(tagName);
-    for (var i = 0; i < children.length; i++) {
-      el.appendChild(children[i]);
-    }
-    return el;
-  },
+  }
 
 });
+
+// default implementation for inline elements
+// Attention: there is a difference between the implementation
+// of toHtml for annotations and general nodes.
+// Annotations are modeled as overlays, so they do not 'own' their content.
+// Thus, during conversion HtmlExporter serves the content as a prepared
+// array of children element which just need to be wrapped (or can be manipulated).
+Annotation.static.toHtml = function(anno, converter, children) {
+  var tagName = anno.constructor.static.tagName || 'span';
+  var el = converter.createElement(tagName);
+  for (var i = 0; i < children.length; i++) {
+    el.appendChild(children[i]);
+  }
+  return el;
+};
 
 Object.defineProperties(Annotation.prototype, {
   startPath: {

@@ -11,11 +11,15 @@ NodeView.Prototype = function() {
   this.tagName = 'div';
 
   this.createElement = function() {
-    var element = document.createElement(this.tagName);
+    var element = document.createElement(this.getTagName());
     var classNames = this.getClassNames();
     $(element).addClass(classNames);
     element.dataset.id = this.node.id;
     return element;
+  };
+
+  this.getTagName = function() {
+    return this.node.constructor.static.tagName || this.tagName;
   };
 
   this.getClassNames = function() {

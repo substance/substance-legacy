@@ -105,21 +105,33 @@ TextProperty.Prototype = function() {
     // In that case we trust in CE and do not rerender.
     if (info.source === this.getElement()) {
       // console.log('Skipping update...');
+      // NOTE: this hack triggers a rerender of the text-property
+      // after a burst of changes. Atm, we let CE do incremental rendering,
+      // which is important for a good UX. However CE sometimes does undesired
+      // things which can lead to a slight diversion of model and view.
+      // Using this hack we can stick to the trivial rerender based implementation
+      // of TextProperty as opposed to an incremental version.
       if (info.surface) {
         if (!this._debouncedRerender) {
           var INTERVAL = 200; //ms
           var self = this;
           this._debouncedRerender = Substance.debounce(function() {
-            self.renderContent();
-            info.surface.rerenderDomSelection();
+            var doc = this.getDocument();
+            // as this get called delayed it can happen
+            // that this element has been deleted in the mean time
+            if (doc) {
+              self.renderContent();
+              info.surface.rerenderDomSelection();
+            }
           }, INTERVAL);
         }
         this._debouncedRerender();
       }
       return;
     }
-    // TODO: maybe we want to find an incremental solution
-    // However, this is surprisingly fast so that almost no flickering can be observed.
+    // For now, we stick to rerendering as opposed to incremental rendering.
+    // As long the user is not editing this property this strategy is sufficient.
+    // For the editing the above strategy is applied.
     this.renderContent();
   };
 };

@@ -62,7 +62,7 @@ HtmlExporter.Prototype = function() {
     };
     annotator.onExit = function(entry, context, parentContext) {
       var anno = context.annotation;
-      var el = anno.toHtml(context.children, self);
+      var el = anno.toHtml(self, context.children);
       if (!el || el.nodeType !== window.Node.ELEMENT_NODE) {
         throw new Error('Contract: Annotation.toHtml() must return a DOM element.');
       }
