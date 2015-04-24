@@ -51,6 +51,11 @@ function Surface(editor, options) {
 
   this.isIE = Surface.detectIE();
   this.isFF = window.navigator.userAgent.toLowerCase().indexOf('firefox') > -1;
+
+  this.undoEnabled = true;
+  if (options.undoEnabled != null) {
+    this.undoEnabled = options.undoEnabled;
+  }
 }
 
 Surface.Prototype = function() {
@@ -217,12 +222,36 @@ Surface.Prototype = function() {
       this.emit('selection:changed', sel, this);
       handled = true;
     }
+    // Undo/Redo: cmd+z, cmd+shift+z
+    else if (this.undoEnabled && e.keyCode === 90 && (e.metaKey||e.ctrlKey)) {
+      if (e.shiftKey) {
+        this.redo();
+      } else {
+        this.undo();
+      }
+      handled = true;
+    }
 
     if (handled) {
       e.preventDefault();
       e.stopPropagation();
     }
   };
+
+  this.undo = function() {
+    var doc = this.getDocument();
+    if (doc.done.length>0) {
+      doc.undo();
+    }
+  };
+
+  this.redo = function() {
+    var doc = this.getDocument();
+    if (doc.undone.length>0) {
+      doc.redo();
+    }
+  };
+
 
   this.onTextInput = function(e) {
     if (!e.data) return;
@@ -401,7 +430,7 @@ Surface.Prototype = function() {
     if (!this.isFocused) {
       return;
     }
-    if (!info.replay && !info.typing) {
+    if ( (this.undoEnabled|| !info.replay) && !info.typing) {
       var self = this;
       window.setTimeout(function() {
         // GUARD: For cases where the panel/or whatever has been disposed already
