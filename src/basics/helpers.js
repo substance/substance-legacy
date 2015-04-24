@@ -36,6 +36,7 @@ Substance.includes = require('lodash/collection/includes');
 Substance.map = require('lodash/collection/map');
 Substance.pluck = require('lodash/collection/pluck');
 Substance.indexBy = require('lodash/collection/indexBy');
+Substance.sortBy = require('lodash/collection/sortBy');
 
 Substance.isArrayEqual = function(a, b) {
   if (a === b) return true;
