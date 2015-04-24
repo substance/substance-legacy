@@ -35,7 +35,6 @@ TextProperty.Prototype = function() {
     return doc.getIndex('annotations').get(path);
   };
 
-
   this.attach = function() {
     var doc = this.getDocument();
     var path = this.getPath();
@@ -106,6 +105,17 @@ TextProperty.Prototype = function() {
     // In that case we trust in CE and do not rerender.
     if (info.source === this.getElement()) {
       // console.log('Skipping update...');
+      if (info.surface) {
+        if (!this._debouncedRerender) {
+          var INTERVAL = 200; //ms
+          var self = this;
+          this._debouncedRerender = Substance.debounce(function() {
+            self.renderContent();
+            info.surface.rerenderDomSelection();
+          }, INTERVAL);
+        }
+        this._debouncedRerender();
+      }
       return;
     }
     // TODO: maybe we want to find an incremental solution

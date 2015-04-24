@@ -264,13 +264,13 @@ Surface.Prototype = function() {
     // and let CE do the incremental update.
     // This increases speed while typing as we do not rerender so eagerly
     if (sel.isCollapsed()) {
-      this.editor.insertText(e.data, sel, {source: el, typing: true});
+      this.editor.insertText(e.data, sel, {surface: this, source: el, typing: true});
     }
     // In case of typing-over we do not trust CE, thus
     // we do not store the source info, and stop the default event behavior.
     else {
       var self = this;
-      this.editor.insertText(e.data, sel);
+      this.editor.insertText(e.data, sel, {surface: this});
       setTimeout(function() {
         self.rerenderDomSelection();
       });
@@ -313,7 +313,7 @@ Surface.Prototype = function() {
       sel = this.editor.selection;
       range = sel.getRange();
       el = DomSelection.getDomNodeForPath(this.element, range.start.path);
-      this.editor.insertText(character, sel, {source: el, typing: true});
+      this.editor.insertText(character, sel, {surface: this, source: el, typing: true});
       if (sel.isContainerSelection()) {
         e.preventDefault();
         e.stopPropagation();
@@ -346,9 +346,9 @@ Surface.Prototype = function() {
     e.preventDefault();
     var selection = this.domSelection.get();
     if (e.shiftKey) {
-      this.editor.softBreak(selection);
+      this.editor.softBreak(selection, {surface: this});
     } else {
-      this.editor.break(selection);
+      this.editor.break(selection, {surface: this});
     }
   };
 
@@ -360,10 +360,10 @@ Surface.Prototype = function() {
     if (range.isCollapsed() && direction === 'left' && range.start.offset !== 0) {
       this.skipNextObservation = true;
       var el = DomSelection.getDomNodeForPath(this.element, range.start.path);
-      this.editor.delete(sel, direction, {source: el, typing: true});
+      this.editor.delete(sel, direction, {surface: this, source: el, typing: true});
     } else {
       e.preventDefault()
-      this.editor.delete(sel, direction);
+      this.editor.delete(sel, direction, {surface: this});
     }
   };
 
