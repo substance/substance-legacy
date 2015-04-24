@@ -249,7 +249,7 @@ ContainerEditor.Prototype = function() {
     var offset = selection.start.offset;
     tx.update(path, { insert: { offset: offset, value: text } } );
     Annotations.insertedText(tx, selection.start, text.length);
-    tx.selection = Selection.create(selection.start.path, selection.start.offset, selection.start.offset+text.length);
+    tx.selection = Selection.create(selection.start.path, selection.start.offset+text.length);
     // copy annotations
     Substance.each(annotations, function(anno) {
       var data = anno.toJSON();
@@ -315,13 +315,23 @@ ContainerEditor.Prototype = function() {
         tx.create(data);
       }
     }
+
+    if (insertedNodes.length === 0) return;
+
     // set a new selection
-    var firstId = nodeIds[0];
-    var lastId = Substance.last(nodeIds);
-    var firstComp = container.getComponentsForNode(firstId)[0];
+    var lastId = Substance.last(insertedNodes).id;
     var lastComp = Substance.last(container.getComponentsForNode(lastId));
     var lastLength = tx.get(lastComp.path).length;
-    tx.selection = Selection.create(container, firstComp.path, 0, lastComp.path, lastLength);
+    // This version turned out to be useful in some situations
+    // as it hightlights the pasted content
+    // we leave it here for debugging
+    if (false) {
+      var firstId = insertedNodes[0].id;
+      var firstComp = container.getComponentsForNode(firstId)[0];
+      tx.selection = Selection.create(container, firstComp.path, 0, lastComp.path, lastLength);
+    } else {
+      tx.selection = Selection.create(lastComp.path, lastLength);
+    }
   };
 
   this._getBreakBehavior = function(node) {

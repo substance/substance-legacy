@@ -122,9 +122,12 @@ FormEditor.Prototype = function() {
     this.insertText('\n', selection, info);
   };
 
-  this.paste = function(selection, content) {
-    if (content.text) {
-      this.insertedText(content.text, selection);
+  this.paste = function(selection, data) {
+    // TODO: for now only plain text is inserted
+    // We could do some stitching however, preserving the annotations
+    // received in the document
+    if (data.text) {
+      this.insertText(data.text, selection);
     }
   };
 
