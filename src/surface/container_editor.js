@@ -43,10 +43,6 @@ ContainerEditor.Prototype = function() {
     return this.container;
   };
 
-  this.setContainer = function(container) {
-    this.container = container;
-  };
-
   this.getContainerName = function() {
     return this.container.id;
   };

@@ -1,8 +1,9 @@
 var Substance = require("../basics");
-var Selection = Substance.Document.Selection;
+var Tool = require('./tool');
 
-// Mixin with helpers to implement an AnnotationTool
-function AnnotationTool() {}
+function AnnotationTool() {
+  Tool.call(this);
+}
 
 AnnotationTool.Prototype = function() {
 
@@ -11,24 +12,15 @@ AnnotationTool.Prototype = function() {
 
   this.splitContainerSelections = false;
 
-  this.getDocument = function() {
-    throw new Error('Contract: an AnnotationTool must implement getDocument()');
-  };
-
-  this.getContainer = function() {
-    throw new Error('Contract: an AnnotationTool must implement getContainer()');
-  };
-
-  this.getToolState = function() {
-    throw new Error('Contract: an AnnotationTool must implement getToolState()');
-  };
-
-  this.setToolState = function(/*newState*/) {
-    throw new Error('Contract: an AnnotationTool must implement setToolState()');
-  };
-
+  // Provides the type of the associated annotation node.
+  // The default implementation uses the Tool's static name.
+  // Override this method to customize.
   this.getAnnotationType = function() {
-    throw new Error('Contract: an AnnotationTool must implement getAnnotationType()');
+    if (this.constructor.static.name) {
+      return this.constructor.static.name;
+    } else {
+      throw new Error('Contract: AnnotationTool.static.name should be associated to a document annotation type.');
+    }
   };
 
   this.afterCreate = function() {};
@@ -71,7 +63,13 @@ AnnotationTool.Prototype = function() {
     return (sel.isLeftAlignedWith(annoSel) || sel.isRightAlignedWith(annoSel)) && !sel.equals(annoSel);
   };
 
-  this.updateToolState = function(sel) {
+  this.update = function(surface, sel) {
+    if (this.needsEnabledSurface && !surface.isEnabled()) {
+      return this.setToolState({
+        active: false,
+        selected: false
+      });
+    }
     // Note: toggling of a subject reference is only possible when
     // the subject reference is selected and the
     if (sel.isNull()) {
@@ -173,11 +171,10 @@ AnnotationTool.Prototype = function() {
     try {
       var anno = this.createAnnotationForSelection(tx, sel);
       tx.save({ selection: sel });
+      this.afterCreate(anno);
     } finally {
       tx.cleanup();
     }
-
-    this.afterCreate(anno);
   };
 
   this.getAnnotationData = function() {
@@ -207,7 +204,7 @@ AnnotationTool.Prototype = function() {
       anno.path = sels[i].getPath();
       anno.startOffset = sels[i].getStartOffset();
       anno.endOffset = sels[i].getEndOffset();
-      tx.create(anno)
+      tx.create(anno);
     }
   };
 
@@ -304,6 +301,6 @@ AnnotationTool.Prototype = function() {
   };
 };
 
-Substance.initClass(AnnotationTool);
+Substance.inherit(AnnotationTool, Tool);
 
 module.exports = AnnotationTool;

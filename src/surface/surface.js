@@ -47,6 +47,8 @@ function Surface(editor, options) {
   this.domObserverConfig = { subtree: true, characterData: true };
   this.skipNextObservation = false;
 
+  this.enabled = false;
+
   this.isIE = Surface.detectIE();
   this.isFF = window.navigator.userAgent.toLowerCase().indexOf('firefox') > -1;
 }
@@ -65,6 +67,10 @@ Surface.Prototype = function() {
 
   this.getEditor = function() {
     return this.editor;
+  };
+
+  this.getDocument = function() {
+    return this.editor.getDocument();
   };
 
   this.dispose = function() {
@@ -111,6 +117,8 @@ Surface.Prototype = function() {
     doc.connect(this, { 'document:changed': this.onDocumentChange });
 
     this.domObserver.observe(element, this.domObserverConfig);
+
+    this.attached = true;
   };
 
   this.detach = function() {
@@ -143,10 +151,29 @@ Surface.Prototype = function() {
 
     // Clean-up
     //
-    this.editor.setContainer(null);
     this.element = null;
     this.$element = null;
     this.domSelection = null;
+
+    this.attached = false;
+  };
+
+  this.isAttached = function() {
+    return this.attached;
+  };
+
+  this.enable = function() {
+    this.$element.prop('contentEditable', 'true');
+    this.enabled = true;
+  };
+
+  this.isEnabled = function() {
+    return this.enabled;
+  };
+
+  this.disable = function() {
+    this.$element.prop('contentEditable', 'false');
+    this.enabled = false;
   };
 
   // ###########################################
@@ -187,7 +214,7 @@ Surface.Prototype = function() {
       var sel = this.editor.selection;
       this.setSelection(sel);
       this.domSelection.set(sel);
-      this.emit('selection:changed', sel);
+      this.emit('selection:changed', sel, this);
       handled = true;
     }
 
@@ -204,8 +231,20 @@ Surface.Prototype = function() {
     var sel = this.editor.selection;
     var range = sel.getRange();
     var el = DomSelection.getDomNodeForPath(this.element, range.start.path);
-    this.editor.insertText(e.data, sel, {source: el, typing: true});
-    if (sel.isContainerSelection()) {
+    // When the cursor is collapsed we can be brave
+    // and let CE do the incremental update.
+    // This increases speed while typing as we do not rerender so eagerly
+    if (sel.isCollapsed()) {
+      this.editor.insertText(e.data, sel, {source: el, typing: true});
+    }
+    // In case of typing-over we do not trust CE, thus
+    // we do not store the source info, and stop the default event behavior.
+    else {
+      var self = this;
+      this.editor.insertText(e.data, sel);
+      setTimeout(function() {
+        self.rerenderDomSelection();
+      });
       e.preventDefault();
       e.stopPropagation();
     }
@@ -362,8 +401,6 @@ Surface.Prototype = function() {
     if (!this.isFocused) {
       return;
     }
-    // update the domSelection first so that we know if we are
-    // within this surface at all
     if (!info.replay && !info.typing) {
       var self = this;
       window.setTimeout(function() {
@@ -373,7 +410,7 @@ Surface.Prototype = function() {
         var sel = change.after.selection;
         self.editor.selection = sel;
         self.domSelection.set(sel);
-        self.emit('selection:changed', sel);
+        self.emit('selection:changed', sel, self);
       });
     }
   };
@@ -414,7 +451,7 @@ Surface.Prototype = function() {
     if (!this.editor.selection.equals(sel)) {
       // console.log('Surface.setSelection: %s', sel.toString());
       this.editor.selection = sel ;
-      this.emit('selection:changed', sel);
+      this.emit('selection:changed', sel, this);
       return true;
     }
   };
