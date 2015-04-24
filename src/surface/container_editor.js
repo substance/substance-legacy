@@ -50,7 +50,7 @@ ContainerEditor.Prototype = function() {
   this.break = function(selection, info) {
     // console.log("Breaking at %s", selection.toString());
     info = info || {};
-    var tx = this.document.startTransaction({ seleciton: selection });
+    var tx = this.document.startTransaction({ selection: selection });
     tx.selection = selection;
     try {
       if (!this.selection.isCollapsed()) {
