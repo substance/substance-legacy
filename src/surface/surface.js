@@ -47,18 +47,30 @@ function Surface(editor, options) {
   this.domObserverConfig = { subtree: true, characterData: true };
   this.skipNextObservation = false;
 
+  // set when editing is enabled
   this.enabled = false;
+
+  // surface usually gets frozen while showing a popup
+  this.frozen = false;
+  this.$caret = $('<span>').addClass('surface-caret');
 
   this.isIE = Surface.detectIE();
   this.isFF = window.navigator.userAgent.toLowerCase().indexOf('firefox') > -1;
 
   this.undoEnabled = true;
+
+  /*jshint eqnull:true */
   if (options.undoEnabled != null) {
     this.undoEnabled = options.undoEnabled;
   }
+  /*jshint eqnull:false */
 }
 
 Surface.Prototype = function() {
+
+  this.getElement = function() {
+    return this.element;
+  };
 
   this.getContainerName = function() {
     if (this.editor.isContainerEditor()) {
@@ -111,7 +123,6 @@ Surface.Prototype = function() {
 
     // Mouse Events
     //
-    this.$element.on( 'mousemove', this._onMouseMove );
     this.$element.on( 'mousedown', this._onMouseDown );
     this.$element.on('blur', this._onBlur);
     this.$element.on('focus', this._onFocus);
@@ -137,7 +148,6 @@ Surface.Prototype = function() {
 
     // Mouse Events
     //
-    this.$element.off( 'mousemove', this._onMouseMove );
     this.$element.off( 'mousedown', this._onMouseDown );
     this.$element.off('blur', this._onBlur);
     this.$element.off('focus', this._onFocus);
@@ -179,6 +189,16 @@ Surface.Prototype = function() {
   this.disable = function() {
     this.$element.prop('contentEditable', 'false');
     this.enabled = false;
+  };
+
+  this.freeze = function() {
+
+    this.frozen = true;
+  };
+
+  this.unfreeze = function() {
+
+    this.frozen = false;
   };
 
   // ###########################################
@@ -280,9 +300,9 @@ Surface.Prototype = function() {
   };
 
   // Handling Dead-keys under OSX
-  this.onCompositionStart = function(e) {
+  this.onCompositionStart = function() {
     // just tell DOM observer that we have everything under control
-    this.skipNextObservation = true
+    this.skipNextObservation = true;
   };
 
   // a shim for textInput events based on keyPress and a horribly dangerous dance with the CE
@@ -362,7 +382,7 @@ Surface.Prototype = function() {
       var el = DomSelection.getDomNodeForPath(this.element, range.start.path);
       this.editor.delete(sel, direction, {surface: this, source: el, typing: true});
     } else {
-      e.preventDefault()
+      e.preventDefault();
       this.editor.delete(sel, direction, {surface: this});
     }
   };
@@ -378,11 +398,13 @@ Surface.Prototype = function() {
     // Bind mouseup to the whole document in case of dragging out of the surface
     this.dragging = true;
     this.$document.on( 'mouseup', this._onMouseUp );
+    this.$document.on( 'mousemove', this._onMouseMove );
   };
 
   this.onMouseUp = function(/*e*/) {
     // ... and unbind the temporary handler
     this.$document.off( 'mouseup', this._onMouseUp );
+    this.$document.off( 'mousemove', this._onMouseMove );
     this.dragging = false;
     // HACK: somehow the DOM selection is not ready yet
     var self = this;
@@ -400,7 +422,7 @@ Surface.Prototype = function() {
   };
 
   this.onBlur = function() {
-    // console.log('Blurring surface', this.name, this.__id__);
+    console.log('Blurring surface', this.name, this.__id__);
     this.isFocused = false;
     this.setSelection(Substance.Document.nullSelection);
   };
@@ -466,6 +488,10 @@ Surface.Prototype = function() {
     }
   };
 
+  this.getDomNodeForId = function(nodeId) {
+    return this.element.querySelector('*[data-id='+nodeId+']');
+  };
+
   this._updateModelSelection = function(options) {
     this._setModelSelection(this.domSelection.get(options));
   };
@@ -487,6 +513,48 @@ Surface.Prototype = function() {
 
   this.getLogger = function() {
     return this.logger;
+  };
+
+  this.placeCaretElement = function() {
+    var sel = this.editor.selection;
+    if (sel.isNull()) {
+      throw new Error('Selection is null.');
+    }
+    var $caret = this.$caret;
+    $caret.empty().remove();
+    var pos = DomSelection.findDomPosition(this.element, sel.start.path, sel.start.offset);
+    if (pos.node.nodeType === window.Node.TEXT_NODE) {
+      var textNode = pos.node;
+      if (textNode.length === pos.offset) {
+        $caret.insertAfter(textNode);
+      } else {
+        // split the text node into two pieces
+        var wsel = window.getSelection();
+        var wrange = window.document.createRange();
+        var text = textNode.textContent;
+        var frag = window.document.createDocumentFragment();
+        var textFrag = window.document.createTextNode(text.substring(0, pos.offset));
+        frag.appendChild(textFrag);
+        frag.appendChild($caret[0]);
+        frag.appendChild(document.createTextNode(text.substring(pos.offset)));
+        $(textNode).replaceWith(frag);
+        wrange.setStart(textFrag, pos.offset);
+        wsel.removeAllRanges()
+        wsel.addRange(wrange);
+      }
+    } else {
+      pos.node.appendChild($caret[0]);
+    }
+    return $caret;
+  };
+
+  this.removeCaretElement = function() {
+    this.$caret.remove();
+  };
+
+  this.updateCaretElement = function() {
+    this.$caret.remove();
+    this.placeCaretElement();
   };
 
 };
