@@ -613,15 +613,19 @@ ContainerEditor.Prototype = function() {
     var startLen = doc.get(startComp.path).length;
     var endLen = doc.get(endComp.path).length;
     if (range.start.offset > 0 ||
-      (startComp.hasPrevious() && doc.get(startComp.getPrevious().rootId) !== startNodeSel.node))
+      (startComp.hasPrevious() && startComp.getPrevious().rootId === startComp.rootId))
     {
       startNodeSel.isFully = false;
       startNodeSel.startOffset = range.start.offset;
-      startNodeSel.endOffset = startLen;
+      if (result.length === 1) {
+        startNodeSel.endOffset = range.end.offset;
+      } else {
+        startNodeSel.endOffset = startLen;
+      }
     }
     if (result.length > 1 &&
         (range.end.offset < endLen ||
-          (endComp.hasNext() && doc.get(endComp.getNext().rootId) !== endNodeSel.node))
+          (endComp.hasNext() && endComp.getNext().rootId === endComp.rootId))
        ) {
       endNodeSel.isFully = false;
       endNodeSel.startOffset = 0;
