@@ -106,6 +106,8 @@ Surface.Prototype = function() {
     this.$element.prop('contentEditable', 'true');
     this.domSelection = new DomSelection(element, this.editor.getContainer());
 
+    this.$element.addClass('surface')
+
     // Keyboard Events
     //
     this.attachKeyboard();
@@ -158,6 +160,8 @@ Surface.Prototype = function() {
     //
     this.detachKeyboard();
 
+    this.$element.removeClass('surface')
+
     // Clean-up
     //
     this.element = null;
@@ -199,7 +203,8 @@ Surface.Prototype = function() {
 
   this.freeze = function() {
     console.log('Freezing surface...');
-    this.$element.prop('contentEditable', 'false');
+    this.$element.prop('contentEditable', 'false')
+      .addClass('frozen');
     this.detachKeyboard()
     this.domObserver.disconnect();
     this.frozen = true;
@@ -207,7 +212,8 @@ Surface.Prototype = function() {
 
   this.unfreeze = function() {
     console.log('Unfreezing surface...');
-    this.$element.prop('contentEditable', 'true');
+    this.$element.prop('contentEditable', 'true')
+      .removeClass('frozen');
     this.attachKeyboard();
     this.domObserver.observe(this.element, this.domObserverConfig);
     this.frozen = false;
