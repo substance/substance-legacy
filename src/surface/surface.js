@@ -108,18 +108,7 @@ Surface.Prototype = function() {
 
     // Keyboard Events
     //
-    this.$element.on('keydown', this._onKeyDown);
-
-    // OSX specific handling of dead-keys
-    if (this.element.addEventListener) {
-      this.element.addEventListener('compositionstart', this._onCompositionStart, false);
-    }
-
-    if (window.TextEvent && !this.isIE) {
-      this.element.addEventListener('textInput', this._onTextInput, false);
-    } else {
-      this.$element.on('keypress', this._onTextInputShim);
-    }
+    this.attachKeyboard();
 
     // Mouse Events
     //
@@ -135,6 +124,19 @@ Surface.Prototype = function() {
     this.domObserver.observe(element, this.domObserverConfig);
 
     this.attached = true;
+  };
+
+  this.attachKeyboard = function() {
+    this.$element.on('keydown', this._onKeyDown);
+    // OSX specific handling of dead-keys
+    if (this.element.addEventListener) {
+      this.element.addEventListener('compositionstart', this._onCompositionStart, false);
+    }
+    if (window.TextEvent && !this.isIE) {
+      this.element.addEventListener('textInput', this._onTextInput, false);
+    } else {
+      this.$element.on('keypress', this._onTextInputShim);
+    }
   };
 
   this.detach = function() {
@@ -154,6 +156,18 @@ Surface.Prototype = function() {
 
     // Keyboard Events
     //
+    this.detachKeyboard();
+
+    // Clean-up
+    //
+    this.element = null;
+    this.$element = null;
+    this.domSelection = null;
+
+    this.attached = false;
+  };
+
+  this.detachKeyboard = function() {
     this.$element.off('keydown', this._onKeyDown);
     if (this.element.addEventListener) {
       this.element.removeEventListener('compositionstart', this._onCompositionStart, false);
@@ -163,14 +177,6 @@ Surface.Prototype = function() {
     } else {
       this.$element.off('keypress', this._onTextInputShim);
     }
-
-    // Clean-up
-    //
-    this.element = null;
-    this.$element = null;
-    this.domSelection = null;
-
-    this.attached = false;
   };
 
   this.isAttached = function() {
@@ -192,12 +198,18 @@ Surface.Prototype = function() {
   };
 
   this.freeze = function() {
-
+    console.log('Freezing surface...');
+    this.$element.prop('contentEditable', 'false');
+    this.detachKeyboard()
+    this.domObserver.disconnect();
     this.frozen = true;
   };
 
   this.unfreeze = function() {
-
+    console.log('Unfreezing surface...');
+    this.$element.prop('contentEditable', 'true');
+    this.attachKeyboard();
+    this.domObserver.observe(this.element, this.domObserverConfig);
     this.frozen = false;
   };
 
@@ -392,6 +404,9 @@ Surface.Prototype = function() {
   //
 
   this.onMouseDown = function(e) {
+    if (this.frozen) {
+      this.unfreeze();
+    }
     if ( e.which !== 1 ) {
       return;
     }
