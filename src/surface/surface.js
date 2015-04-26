@@ -106,7 +106,7 @@ Surface.Prototype = function() {
     this.$element.prop('contentEditable', 'true');
     this.domSelection = new DomSelection(element, this.editor.getContainer());
 
-    this.$element.addClass('surface')
+    this.$element.addClass('surface');
 
     // Keyboard Events
     //
@@ -160,7 +160,7 @@ Surface.Prototype = function() {
     //
     this.detachKeyboard();
 
-    this.$element.removeClass('surface')
+    this.$element.removeClass('surface');
 
     // Clean-up
     //
@@ -197,15 +197,16 @@ Surface.Prototype = function() {
   };
 
   this.disable = function() {
-    this.$element.prop('contentEditable', 'false');
+    this.$element.removeAttr('contentEditable');
     this.enabled = false;
   };
 
   this.freeze = function() {
     console.log('Freezing surface...');
-    this.$element.prop('contentEditable', 'false')
+    // this.$element.prop('contentEditable', 'false')
+    //   .addClass('frozen');
+    this.$element.removeAttr('contentEditable')
       .addClass('frozen');
-    this.detachKeyboard()
     this.domObserver.disconnect();
     this.frozen = true;
   };
@@ -214,7 +215,6 @@ Surface.Prototype = function() {
     console.log('Unfreezing surface...');
     this.$element.prop('contentEditable', 'true')
       .removeClass('frozen');
-    this.attachKeyboard();
     this.domObserver.observe(this.element, this.domObserverConfig);
     this.frozen = false;
   };
@@ -227,6 +227,9 @@ Surface.Prototype = function() {
    * Handle document key down events.
    */
   this.onKeyDown = function( e ) {
+    if (this.frozen) {
+      return;
+    }
     if ( e.which === 229 ) {
       // ignore fake IME events (emitted in IE and Chromium)
       return;
@@ -292,6 +295,9 @@ Surface.Prototype = function() {
 
 
   this.onTextInput = function(e) {
+    if (this.frozen) {
+      return;
+    }
     if (!e.data) return;
     // console.log("TextInput:", e);
     this.skipNextObservation=true;
@@ -325,6 +331,9 @@ Surface.Prototype = function() {
 
   // a shim for textInput events based on keyPress and a horribly dangerous dance with the CE
   this.onTextInputShim = function( e ) {
+    if (this.frozen) {
+      return;
+    }
     // Filter out non-character keys. Doing this prevents:
     // * Unexpected content deletion when selection is not collapsed and the user presses, for
     //   example, the Home key (Firefox fires 'keypress' for it)
@@ -448,7 +457,7 @@ Surface.Prototype = function() {
     // set this when you want to deabug selection related issues
     // otherwise the developer console will draw the focus, which
     // leads to an implicit deselection in the surface.
-    if (!Substance.Surface.DISABLE_BLUR) {
+    if (!Substance.Surface.DISABLE_BLUR && !this.frozen) {
       this.setSelection(Substance.Document.nullSelection);
     }
   };
@@ -565,7 +574,7 @@ Surface.Prototype = function() {
         frag.appendChild(document.createTextNode(text.substring(pos.offset)));
         $(textNode).replaceWith(frag);
         wrange.setStart(textFrag, pos.offset);
-        wsel.removeAllRanges()
+        wsel.removeAllRanges();
         wsel.addRange(wrange);
       }
     } else {
