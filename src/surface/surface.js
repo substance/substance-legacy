@@ -424,7 +424,12 @@ Surface.Prototype = function() {
   this.onBlur = function() {
     console.log('Blurring surface', this.name, this.__id__);
     this.isFocused = false;
-    this.setSelection(Substance.Document.nullSelection);
+    // set this when you want to deabug selection related issues
+    // otherwise the developer console will draw the focus, which
+    // leads to an implicit deselection in the surface.
+    if (!Substance.Surface.DISABLE_BLUR) {
+      this.setSelection(Substance.Document.nullSelection);
+    }
   };
 
   this.onFocus = function() {
