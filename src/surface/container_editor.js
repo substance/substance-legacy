@@ -64,6 +64,28 @@ ContainerEditor.Prototype = function() {
     }
   };
 
+  this.insertNode = function(node) {
+    var selection = this.selection;
+    var tx = this.document.startTransaction({ selection: selection });
+    tx.selection = selection;
+    try {
+      if (!this.selection.isCollapsed()) {
+        this._delete(tx);
+      }
+      this._break(tx);
+      var container = tx.get(this.container.id);
+      if (!tx.get(node.id)) {
+        node = tx.create(node);
+      }
+      var comp = container.getComponent(tx.selection.start.path);
+      var pos = container.getPosition(comp.rootId);
+      container.show(node.id, pos);
+      tx.save({ selection: tx.selection });
+    } finally {
+      tx.cleanup();
+    }
+  };
+
   this.selectAll = function() {
     var container = this.container;
     var first = container.getFirstComponent();
