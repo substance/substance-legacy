@@ -28,6 +28,20 @@ HtmlExporter.Prototype = function() {
     return this.state.rootElement;
   };
 
+  this.propertyToHtml = function(doc, path, options) {
+    options = {} || options;
+    this.state =  {
+      doc: doc,
+      options: options
+    };
+    var frag = this.annotatedText(path);
+    var div = window.document.createElement('div');
+    div.appendChild(frag);
+    var html = div.innerHTML;
+    console.log('HtmlExporter.propertyToHtml', path, html);
+    return html;
+  };
+
   this.container = function(containerNode) {
     var state = this.state;
     var nodeIds = containerNode.nodes;
