@@ -11,6 +11,9 @@ Dual licensed under the MIT and GPL licenses.
 */
 
 var uuid = function (prefix, len) {
+  if (prefix[prefix.length-1] !== "_") {
+    prefix = prefix.concat("_");
+  }
   var chars = '0123456789abcdefghijklmnopqrstuvwxyz'.split(''),
       uuid = [],
       radix = 16,
