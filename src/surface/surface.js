@@ -215,7 +215,7 @@ Surface.Prototype = function() {
   this.freeze = function() {
     console.log('Freezing surface...');
     if (this.enableContentEditable) {
-      this.$element.removeAttr('contentEditable')
+      this.$element.removeAttr('contentEditable');
     }
     this.$element.addClass('frozen');
     this.domObserver.disconnect();
@@ -223,9 +223,12 @@ Surface.Prototype = function() {
   };
 
   this.unfreeze = function() {
+    if (!this.frozen) {
+      return;
+    }
     console.log('Unfreezing surface...');
     if (this.enableContentEditable) {
-      this.$element.prop('contentEditable', 'true')
+      this.$element.prop('contentEditable', 'true');
     }
     this.$element.removeClass('frozen');
     this.domObserver.observe(this.element, this.domObserverConfig);
@@ -482,12 +485,12 @@ Surface.Prototype = function() {
   // is contenteditable.
 
   this.onBlur = function() {
-    console.log('Blurring surface', this.name, this.__id__);
-    this.isFocused = false;
     // set this when you want to deabug selection related issues
     // otherwise the developer console will draw the focus, which
     // leads to an implicit deselection in the surface.
     if (!Substance.Surface.DISABLE_BLUR && !this.frozen) {
+      console.log('Blurring surface', this.name, this.__id__);
+      this.isFocused = false;
       this.setSelection(Substance.Document.nullSelection);
     }
   };

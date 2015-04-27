@@ -120,7 +120,6 @@ TextProperty.Prototype = function() {
             // as this get called delayed it can happen
             // that this element has been deleted in the mean time
             if (doc) {
-              console.log('Rerendering text-property', self.getPath());
               self.renderContent();
               info.surface.rerenderDomSelection();
             }

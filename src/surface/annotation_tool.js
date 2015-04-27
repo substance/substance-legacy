@@ -63,7 +63,6 @@ AnnotationTool.Prototype = function() {
   };
 
   this.update = function(surface, sel) {
-    console.log('updating tool for surface', surface.__id__);
     this.surface = surface;
     if ( (this.needsEnabledSurface && !surface.isEnabled()) ||
           sel.isNull() ) {
