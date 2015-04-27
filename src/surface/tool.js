@@ -3,10 +3,6 @@ var Substance = require("../basics");
 function Tool() {
   Substance.EventEmitter.call(this);
 
-  // proxy is managed by the application provided dynamic access to
-  // the current surface
-  this.proxy = null;
-
   this.state = {
     // if the tool can be applied at all
     enabled: false,
@@ -24,18 +20,18 @@ Tool.Prototype = function() {
   };
 
   this.getSurface = function() {
-    return this.proxy.getSurface();
+    return this.surface;
   };
 
   this.getDocument = function() {
-    var surface = this.proxy.getSurface();
+    var surface = this.getSurface();
     if (surface) {
       return surface.getDocument();
     }
   };
 
   this.getContainer = function() {
-    var surface = this.proxy.getSurface();
+    var surface = this.getSurface();
     if (surface) {
       var editor = surface.getEditor();
       if (editor.isContainerEditor()) {
@@ -82,8 +78,9 @@ Tool.Prototype = function() {
 
   /* jshint unused:false */
   this.update = function(surface, sel) {
+    this.surface = surface;
     if (this.needsEnabledSurface && !surface.isEnabled()) {
-      return this.setEnabled(false);
+      return this.setDisabled(false);
     }
   };
 };

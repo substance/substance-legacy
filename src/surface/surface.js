@@ -63,6 +63,11 @@ function Surface(editor, options) {
   if (options.undoEnabled != null) {
     this.undoEnabled = options.undoEnabled;
   }
+  if (options.contentEditable != null) {
+    this.enableContentEditable = options.contentEditable;
+  } else {
+    this.enableContentEditable = true;
+  }
   /*jshint eqnull:false */
 }
 
@@ -103,7 +108,9 @@ Surface.Prototype = function() {
     // Initialization
     this.element = element;
     this.$element = $(element);
-    this.$element.prop('contentEditable', 'true');
+    if (this.enableContentEditable) {
+      this.$element.prop('contentEditable', 'true');
+    }
     this.domSelection = new DomSelection(element, this.editor.getContainer());
 
     this.$element.addClass('surface');
@@ -188,7 +195,9 @@ Surface.Prototype = function() {
   };
 
   this.enable = function() {
-    this.$element.prop('contentEditable', 'true');
+    if (this.enableContentEditable) {
+      this.$element.prop('contentEditable', 'true');
+    }
     this.enabled = true;
   };
 
@@ -197,24 +206,28 @@ Surface.Prototype = function() {
   };
 
   this.disable = function() {
-    this.$element.removeAttr('contentEditable');
+    if (this.enableContentEditable) {
+      this.$element.removeAttr('contentEditable');
+    }
     this.enabled = false;
   };
 
   this.freeze = function() {
     console.log('Freezing surface...');
-    // this.$element.prop('contentEditable', 'false')
-    //   .addClass('frozen');
-    this.$element.removeAttr('contentEditable')
-      .addClass('frozen');
+    if (this.enableContentEditable) {
+      this.$element.removeAttr('contentEditable')
+    }
+    this.$element.addClass('frozen');
     this.domObserver.disconnect();
     this.frozen = true;
   };
 
   this.unfreeze = function() {
     console.log('Unfreezing surface...');
-    this.$element.prop('contentEditable', 'true')
-      .removeClass('frozen');
+    if (this.enableContentEditable) {
+      this.$element.prop('contentEditable', 'true')
+    }
+    this.$element.removeClass('frozen');
     this.domObserver.observe(this.element, this.domObserverConfig);
     this.frozen = false;
   };
@@ -392,10 +405,11 @@ Surface.Prototype = function() {
   this.handleEnterKey = function( e ) {
     e.preventDefault();
     var selection = this.domSelection.get();
+    var el = DomSelection.getDomNodeForPath(this.element, selection.range.start.path);
     if (e.shiftKey) {
-      this.editor.softBreak(selection, {surface: this});
+      this.editor.softBreak(selection, {surface: this, source: el});
     } else {
-      this.editor.break(selection, {surface: this});
+      this.editor.break(selection, {surface: this, source: el});
     }
   };
 
@@ -451,6 +465,22 @@ Surface.Prototype = function() {
     }
   };
 
+  // There is now a problem with non-editable elements at the boundary
+  // of elements, as illustrated by this example:
+  //
+  //  <div>
+  //    <label contenteditable="false">Label:</label>
+  //    <span>Value</span>
+  //  </div>
+  //
+  // CE allows to set the cursor before the label, and without intervention
+  // would even allow to delete it.
+  // Particularly in FormEditors we could solve this by making
+  // only the text-properties editable.
+
+  // TODO: native blur and focus does only work if the root element
+  // is contenteditable.
+
   this.onBlur = function() {
     console.log('Blurring surface', this.name, this.__id__);
     this.isFocused = false;
@@ -463,7 +493,7 @@ Surface.Prototype = function() {
   };
 
   this.onFocus = function() {
-    // console.log('Focusing surface', this.name, this.__id__);
+    console.log('Focusing surface', this.name, this.__id__);
     this.isFocused = true;
   };
 
@@ -518,9 +548,7 @@ Surface.Prototype = function() {
   };
 
   this.rerenderDomSelection = function() {
-    if (this.isFocused) {
-      this.domSelection.set(this.getSelection());
-    }
+    this.domSelection.set(this.getSelection());
   };
 
   this.getDomNodeForId = function(nodeId) {

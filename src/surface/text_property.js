@@ -111,7 +111,7 @@ TextProperty.Prototype = function() {
       // things which can lead to a slight diversion of model and view.
       // Using this hack we can stick to the trivial rerender based implementation
       // of TextProperty as opposed to an incremental version.
-      if (info.surface) {
+      if (info.surface && info.typing) {
         if (!this._debouncedRerender) {
           var INTERVAL = 200; //ms
           var self = this;
@@ -120,19 +120,26 @@ TextProperty.Prototype = function() {
             // as this get called delayed it can happen
             // that this element has been deleted in the mean time
             if (doc) {
+              console.log('Rerendering text-property', self.getPath());
               self.renderContent();
               info.surface.rerenderDomSelection();
             }
           }, INTERVAL);
         }
         this._debouncedRerender();
+        return;
       }
-      return;
     }
     // For now, we stick to rerendering as opposed to incremental rendering.
     // As long the user is not editing this property this strategy is sufficient.
     // For the editing the above strategy is applied.
     this.renderContent();
+
+    if (info.source === this.getElement() && info.surface) {
+      setTimeout(function() {
+        info.surface.rerenderDomSelection();
+      });
+    }
   };
 };
 
