@@ -48,11 +48,13 @@ HtmlImporter.Prototype = function HtmlImporterPrototype() {
       skipTypes: {},
       ignoreAnnotations: false,
     };
-    var containerNode = doc.get(containerId);
-    if (!containerNode) {
-      throw new Error('Illegal argument: could not find container with id' + containerId);
+    if (containerId) {
+      var containerNode = doc.get(containerId);
+      if (!containerNode) {
+        throw new Error('Illegal argument: could not find container with id' + containerId);
+      }
+      state.containerNode = containerNode;
     }
-    state.containerNode = containerNode;
     this.state = state;
   };
 
@@ -76,11 +78,20 @@ HtmlImporter.Prototype = function HtmlImporterPrototype() {
 
     this.initialize(doc, body, containerId);
     this.body(body);
-    // create annotations afterwards so that the targeted nodes
-    // exist for sure
+
+    // Note: we need to create inlineNodes/annotations afterwards
+    // as at this point the target nodes exist
     for (var i = 0; i < this.state.inlineNodes.length; i++) {
       doc.create(this.state.inlineNodes[i]);
     }
+  };
+
+  this.convertProperty = function(doc, path, html) {
+    var el = window.document.createElement('div');
+    el.innerHTML = html;
+    this.initialize(doc, el);
+    var text = this.annotatedText(el, path);
+    doc.setText(path, text, this.state.inlineNodes);
   };
 
   this.sanitizeHtmlDoc = function(body) {

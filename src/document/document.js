@@ -177,6 +177,19 @@ Document.Prototype = function() {
     }
   };
 
+  this.setText = function(path, text, annotations) {
+    var idx;
+    var oldAnnos = this.getIndex('annotations').get(path);
+    // TODO: what to do with container annotations
+    for (idx = 0; idx < oldAnnos.length; idx++) {
+      this.delete(oldAnnos[idx].id);
+    }
+    this.set(path, text);
+    for (idx = 0; idx < annotations.length; idx++) {
+      this.create(annotations[idx]);
+    }
+  };
+
   this.update = function(path, diff) {
     if (this.isTransacting) {
       this.stage.update(path, diff);
