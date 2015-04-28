@@ -398,10 +398,13 @@ Surface.Prototype = function() {
     });
   };
 
-  this.handleUpOrDownArrowKey = function ( /*e*/ ) {
+  this.handleUpOrDownArrowKey = function ( e ) {
     var self = this;
     window.setTimeout(function() {
-      self._updateModelSelection();
+      self._updateModelSelection({
+        up: (e.keyCode === Surface.Keys.UP),
+        down: (e.keyCode === Surface.Keys.DOWN)
+      });
     });
   };
 
@@ -573,7 +576,7 @@ Surface.Prototype = function() {
       // console.log('Surface.setSelection: %s', sel.toString());
       this.editor.selection = sel ;
       this.emit('selection:changed', sel, this);
-      return true;
+      this.rerenderDomSelection();
     }
   };
 

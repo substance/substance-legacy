@@ -51,51 +51,145 @@ var _findDomPosition = function(element, offset) {
   }
 };
 
-var _getPathFromElement = function(el) {
-  var path = [];
-  var elements = [];
+var _getPathFromElement = function(el, options) {
   var current = el;
+
+  var direction;
+  if (options.left || options.up) {
+    direction = 'previous';
+  } else if (options.right || options.down) {
+    direction = 'next';
+  }
+
+  function _result(el, data) {
+    var path = el.dataset.path.split('.');
+    return Substance.extend({
+      path: path,
+      element: el
+    }, data);
+  }
+
+  // First pass: try to find an element with data-path going up the tree
+  // Note: most often the click happens on a TextNode, where its parentNode
+  // is a text-property
   while(current) {
     var $current = $(current);
     // if available extract a path fragment
-    var pathProperty = $current.attr("data-path");
-    if (pathProperty) {
-      path = pathProperty.split('.');
-      return {
-        path: path,
-        element: current
-      };
+    if (current.dataset && current.dataset.path) {
+      return _result(current);
     }
-    var nodeId = $current.attr("data-id");
-    if (nodeId) {
-      // try to take the first property
-      var $properties = $current.find('*[data-path]');
-      if ($properties.length>0) {
-        pathProperty = $($properties[0]).attr("data-path");
-        path = pathProperty.split('.');
-        return {
-          path: path,
-          element: $properties[0]
-        };
-      }
+    // it does also happen that the click target is the node
+    // itself (e.g, when property is empty)
+    // Then we set the selection to the first position
+    else if (current.dataset && current.dataset.id) {
+      break;
+    } else {
+      current = $current.parent()[0];
     }
-    current = $current.parent()[0];
   }
+
+  // TODO: this needs to be rethought. Instead of guessing so much
+  // we should do a more expensive search.
+  // Second pass: If the previous lookup did not succeed
+  // go search for a sibling first
+  // and finally catch using the node's first property
+  current = el;
+  var charPos;
+  while(current) {
+    // HACK: CE is difficult to handle in presence of non-editable
+    // elements. CE creates cursor positions between those elements
+    // To solve this we need to look for the next appropriate
+    // element
+    if (current.dataset && current.dataset.path) {
+      charPos = 0;
+      if (direction === 'previous') {
+        charPos = $(current).text().length;
+      } else if (direction === 'next') {
+        charPos = 0;
+      }
+      return _result(current, {
+        override: true,
+        charPos: charPos
+      });
+    }
+    if (current.parentNode && current.parentNode.dataset.path) {
+      charPos = 0;
+      if (direction === 'previous') {
+        charPos = $(current.parentNode).text().length;
+      } else if (direction === 'next') {
+        charPos = 0;
+      }
+      return _result(current.parentNode, {
+        override: true,
+        charPos: charPos
+      });
+    }
+    if (direction === 'previous' && current.previousSibling) {
+      current = current.previousSibling;
+      continue;
+    } else if (direction === 'next' && current.nextSibling) {
+      current = current.nextSibling;
+      continue;
+    }
+    // check for the previous and next
+    else if (current.previousSibling && current.previousSibling.dataset &&
+      current.previousSibling.dataset.path) {
+      return _result(current.previousSibling, {
+        override: true,
+        charPos: $(current.previousSibling).text().length
+      });
+    }
+    else if (current.nextSibling && current.nextSibling.dataset &&
+      current.nextSibling.dataset.path) {
+      return _result(current.nextSibling, {
+        override: true,
+        charPos: 0
+      });
+    }
+    // it does also happen that the click target is the node
+    // itself (e.g, when property is empty)
+    // Then we set the selection to the first position
+    else if (current.dataset && current.dataset.id) {
+      // try to take the first property
+      var properties = current.querySelectorAll('*[data-path]');
+      if (properties.length>0) {
+        charPos = 0;
+        if (direction === 'previous') {
+          charPos = $(properties[0]).text().length;
+        } else if (direction === 'next') {
+          charPos = 0;
+        }
+        return _result(properties[0], {
+          override: true,
+          charPos: charPos
+        });
+      }
+    } else {
+      current = $(current).parent()[0];
+    }
+  }
+
+  // Eventually give up
   return null;
 };
 
 var _modelCoordinateFromDomPosition = function(domNode, offset, options) {
   options = options || {};
-  var found = _getPathFromElement(domNode);
+  var found = _getPathFromElement(domNode, options);
   if (!found) return null;
   var path = found.path;
   var element = found.element;
   var charPos = 0;
-  // TODO: in future we might support other component types than string
-  var range = window.document.createRange();
-  range.setStart(element, 0);
-  range.setEnd(domNode, offset);
-  charPos = range.toString().length;
+  if (found.override) {
+    charPos = found.charPos;
+  } else {
+    var range = window.document.createRange();
+    range.setStart(element, 0);
+    range.setEnd(domNode, offset);
+    charPos = range.toString().length;
+    // HACK: in presence of
+    charPos = Math.min(element.textContent.length, charPos);
+  }
   // TODO: this needs more experiments, at the moment we do not detect these cases correctly
   var after = (options.left && offset === domNode.length) ||
     (options.right && offset === 0) ;
