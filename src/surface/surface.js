@@ -493,14 +493,14 @@ Surface.Prototype = function() {
     // otherwise the developer console will draw the focus, which
     // leads to an implicit deselection in the surface.
     if (!Substance.Surface.DISABLE_BLUR && !this.frozen) {
-      console.log('Blurring surface', this.name, this.__id__);
+      // console.log('Blurring surface', this.name, this.__id__);
       this.isFocused = false;
       this.setSelection(Substance.Document.nullSelection);
     }
   };
 
   this.onFocus = function() {
-    console.log('Focusing surface', this.name, this.__id__);
+    // console.log('Focusing surface', this.name, this.__id__);
     this.isFocused = true;
   };
 

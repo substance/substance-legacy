@@ -38,7 +38,7 @@ HtmlExporter.Prototype = function() {
     var div = window.document.createElement('div');
     div.appendChild(frag);
     var html = div.innerHTML;
-    console.log('HtmlExporter.propertyToHtml', path, html);
+    // console.log('HtmlExporter.propertyToHtml', path, html);
     return html;
   };
 
