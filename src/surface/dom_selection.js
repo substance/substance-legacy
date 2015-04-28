@@ -77,12 +77,6 @@ var _getPathFromElement = function(el, options) {
     // if available extract a path fragment
     if (current.dataset && current.dataset.path) {
       return _result(current);
-    }
-    // it does also happen that the click target is the node
-    // itself (e.g, when property is empty)
-    // Then we set the selection to the first position
-    else if (current.dataset && current.dataset.id) {
-      break;
     } else {
       current = $current.parent()[0];
     }
