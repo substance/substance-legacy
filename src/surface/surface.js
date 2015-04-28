@@ -411,7 +411,8 @@ Surface.Prototype = function() {
   this.handleEnterKey = function( e ) {
     e.preventDefault();
     var selection = this.domSelection.get();
-    var el = DomSelection.getDomNodeForPath(this.element, selection.range.start.path);
+    var el;
+    // var el = DomSelection.getDomNodeForPath(this.element, selection.range.start.path);
     if (e.shiftKey) {
       this.editor.softBreak(selection, {surface: this, source: el});
     } else {
@@ -574,9 +575,13 @@ Surface.Prototype = function() {
     sel = sel || Substance.Document.nullSelection;
     if (!this.editor.selection.equals(sel)) {
       // console.log('Surface.setSelection: %s', sel.toString());
-      this.editor.selection = sel ;
+      this.editor.selection = sel;
       this.emit('selection:changed', sel, this);
-      this.rerenderDomSelection();
+      // FIXME: ATM rerendering an expanded selection leads
+      // to a strante behavior. So do not do that for now
+      if (sel.isCollapsed()) {
+        this.rerenderDomSelection();
+      }
     }
   };
 
