@@ -3,15 +3,10 @@
 var Substance = require('../basics');
 
 // context must have a getSurface() method.
-var Clipboard = function(surfaceProvider, element, htmlImporter, htmlExporter) {
+var Clipboard = function(htmlImporter, htmlExporter) {
 
-  this.surfaceProvider = surfaceProvider;
   this.htmlImporter = htmlImporter;
   this.htmlExporter = htmlExporter;
-
-  this.el = element;
-  this.$el = $(this.el);
-  this.$el.prop("contentEditable", "true").addClass('clipboard');
 
   this._contentDoc = null;
   this._contentText = "";
@@ -35,6 +30,10 @@ var Clipboard = function(surfaceProvider, element, htmlImporter, htmlExporter) {
 Clipboard.Prototype = function() {
 
   this.attach = function(rootElement) {
+    this.el = window.document.createElement('div');
+    this.$el = $(this.el);
+    this.$el.prop("contentEditable", "true").addClass('clipboard');
+    rootElement.appendChild(this.el);
 
     rootElement.addEventListener('keydown', this._onKeyDown, false);
     rootElement.addEventListener('copy', this._onCopy, false);
@@ -49,6 +48,8 @@ Clipboard.Prototype = function() {
   };
 
   this.detach = function(rootElement) {
+    this.$el.remove();
+
     rootElement.removeEventListener('keydown', this._onKeyDown, false);
     rootElement.removeEventListener('copy', this._onCopy, false);
     rootElement.removeEventListener('cut', this._onCut, false);
@@ -60,8 +61,12 @@ Clipboard.Prototype = function() {
     }
   };
 
+  this.setSurface = function(surface) {
+    this.surface = surface;
+  };
+
   this.getSurface = function() {
-    return this.surfaceProvider.getSurface();
+    return this.surface;
   };
 
   this.onCopy = function(event) {
