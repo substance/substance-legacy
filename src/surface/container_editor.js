@@ -532,9 +532,15 @@ ContainerEditor.Prototype = function() {
     if (deleteBehavior) {
       deleteBehavior.call(this, tx, nodeSel);
     } else {
-      // otherwise we can just delete the node
       var nodeId = nodeSel.node.id;
       var container = tx.get(this.container.id);
+
+      // only hide a node if it is managed externally
+      if (nodeSel.node.isExternal()) {
+        container.hide(nodeId);
+        return;
+      }
+
       // remove all associated annotations
       var annos = tx.getIndex('annotations').get(nodeId);
       var i;

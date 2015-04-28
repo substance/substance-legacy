@@ -9,14 +9,6 @@ function Node( data ) {
   this.properties.id = this.properties.id || Substance.uuid(this.properties.type);
 }
 
-// Idea for default properties:
-// Node.schema = {
-//   "foo": {
-//     type: "string",
-//     default: ""
-//   }
-// }
-
 Node.Prototype = function() {
 
   this.toJSON = function() {
