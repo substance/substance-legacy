@@ -149,10 +149,10 @@ ContainerEditor.Prototype = function() {
       var newPath = [newNode.id, 'content'];
       tx.create(newNode);
       Annotations.transferAnnotations(tx, path, 0, newPath, 0);
-      _deleteNodeWithId(tx, node.id);
+      this._deleteNodeWithId(tx, node.id);
       container.show(newNode.id, pos);
       tx.selection = Selection.create(newPath, offset);
-      tx.save({ selection: tx.selection }, info);
+      tx.save({ selection: tx.selection });
       this.selection = tx.selection;
     } finally {
       tx.cleanup();
@@ -554,58 +554,60 @@ ContainerEditor.Prototype = function() {
       }
     }
   };
+
   this._deleteNode = function(tx, nodeSel) {
     var deleteBehavior = this._getDeleteBehavior(nodeSel.node);
     if (deleteBehavior) {
       deleteBehavior.call(this, tx, nodeSel);
     } else {
       this._deleteNodeWithId(tx, nodeSel.node.id);
+    }
   };
 
   this._deleteNodeWithId = function(tx, nodeId) {
-      var container = tx.get(this.container.id);
-      // only hide a node if it is managed externally
-      if (nodeSel.node.isExternal()) {
-        container.hide(nodeId);
-        return;
-      }
-      // remove all associated annotations
-      var annos = tx.getIndex('annotations').get(nodeId);
-      var i;
-      for (i = 0; i < annos.length; i++) {
-        tx.delete(annos[i].id);
-      }
-      // We need to transfer anchors of ContainerAnnotations
-      // to previous or next node
-      var anchors = tx.getIndex('container-annotations').get(nodeId);
-      for (i = 0; i < anchors.length; i++) {
-        var anchor = anchors[i];
-        // Note: during the course of this loop we might have deleted the node already
-        // so, do not do it again
-        if (!tx.get(anchor.id)) continue;
-        var comp = container.getComponent(anchor.path);
-        if (anchor.isStart) {
-          if (comp.hasNext()) {
-            tx.set([anchor.id, 'startPath'], comp.next.path);
-            tx.set([anchor.id, 'startOffset'], 0);
-          } else {
-            tx.delete(anchor.id);
-          }
+    var container = tx.get(this.container.id);
+    var node = tx.get(nodeId);
+    // only hide a node if it is managed externally
+    if (node.isExternal()) {
+      container.hide(nodeId);
+      return;
+    }
+    // remove all associated annotations
+    var annos = tx.getIndex('annotations').get(nodeId);
+    var i;
+    for (i = 0; i < annos.length; i++) {
+      tx.delete(annos[i].id);
+    }
+    // We need to transfer anchors of ContainerAnnotations
+    // to previous or next node
+    var anchors = tx.getIndex('container-annotations').get(nodeId);
+    for (i = 0; i < anchors.length; i++) {
+      var anchor = anchors[i];
+      // Note: during the course of this loop we might have deleted the node already
+      // so, do not do it again
+      if (!tx.get(anchor.id)) continue;
+      var comp = container.getComponent(anchor.path);
+      if (anchor.isStart) {
+        if (comp.hasNext()) {
+          tx.set([anchor.id, 'startPath'], comp.next.path);
+          tx.set([anchor.id, 'startOffset'], 0);
         } else {
-          if (comp.hasPrevious()) {
-            var prevLength = tx.get(comp.previous.path).length;
-            tx.set([anchor.id, 'endPath'], comp.previous.path);
-            tx.set([anchor.id, 'endOffset'], prevLength);
-          } else {
-            tx.delete(anchor.id);
-          }
+          tx.delete(anchor.id);
+        }
+      } else {
+        if (comp.hasPrevious()) {
+          var prevLength = tx.get(comp.previous.path).length;
+          tx.set([anchor.id, 'endPath'], comp.previous.path);
+          tx.set([anchor.id, 'endOffset'], prevLength);
+        } else {
+          tx.delete(anchor.id);
         }
       }
-      // remove from view first
-      container.hide(nodeId);
-      // and then permanently delete
-      tx.delete(nodeId);
     }
+    // remove from view first
+    container.hide(nodeId);
+    // and then permanently delete
+    tx.delete(nodeId);
   };
 
   this._deleteNodePartially = function(tx, nodeSel) {
