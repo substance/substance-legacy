@@ -72,4 +72,12 @@ Substance.clone = function(obj) {
 
 Substance.deepclone = Substance.cloneDeep;
 
+Substance.getRelativeOffset = function ( $element, $ancestor ) {
+  var pos = $element.offset();
+  var ancestorPos = $ancestor.offset();
+  pos.left -= ancestorPos.left;
+  pos.top -= ancestorPos.top;
+  return pos;
+};
+
 module.exports = Substance;
