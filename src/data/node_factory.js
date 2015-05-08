@@ -6,7 +6,7 @@ var Factory = Substance.Factory;
 
 function NodeFactory() {
   Factory.call(this);
-};
+}
 
 NodeFactory.Prototype = function() {
 
@@ -33,7 +33,7 @@ NodeFactory.Prototype = function() {
       }
     }
     return null;
-  }
+  };
 };
 
 Substance.inherit(NodeFactory, Factory);

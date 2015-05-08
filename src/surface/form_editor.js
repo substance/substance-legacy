@@ -1,9 +1,9 @@
 'use strict';
 
 var Substance = require('../basics');
-var Document = Substance.Document;
+var Document = require('../document');
 var Selection = Document.Selection;
-var Annotations = require('../document/annotation_updates');
+var Annotations = Document.AnnotationUpdates;
 
 function FormEditor(doc) {
   this.document = doc;
@@ -132,6 +132,7 @@ FormEditor.Prototype = function() {
   };
 
   // no merging, just move cursor when pressing backspace
+  /* jshint unused: false */
   this._merge = function(tx, path, dir) {
     // not possible
   };

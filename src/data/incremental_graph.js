@@ -114,7 +114,7 @@ IncrementalGraph.Prototype = function() {
       throw new Error('Unsupported diff: ' + JSON.stringify(diff));
     }
     return diffOp;
-  }
+  };
 
 };
 

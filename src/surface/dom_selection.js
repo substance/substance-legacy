@@ -185,8 +185,8 @@ var _modelCoordinateFromDomPosition = function(domNode, offset, options) {
     charPos = Math.min(element.textContent.length, charPos);
   }
   // TODO: this needs more experiments, at the moment we do not detect these cases correctly
-  var after = (options.left && offset === domNode.length) ||
-    (options.right && offset === 0) ;
+  // var after = (options.left && offset === domNode.length) ||
+  //   (options.right && offset === 0) ;
   return {
     domNode: element,
     // Note: deactivated 'after' feature which is basically an interesting concept
@@ -207,7 +207,6 @@ var _modelCoordinateToDomPosition = function(rootElement, coordinate) {
     }
   }
 };
-
 
 DomSelection.Prototype = function() {
 

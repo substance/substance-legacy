@@ -1,4 +1,3 @@
-'use strict'
 
 var Surface = require('./surface');
 Surface.DomSelection = require('./dom_selection');

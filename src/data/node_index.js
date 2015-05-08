@@ -34,10 +34,9 @@ Index.Prototype = function() {
     } else {
       return node.isInstanceOf(this.type);
     }
-  },
+  };
 
   this.get = function(path) {
-    var res = this.index.get(path);
     // HACK: unwrap objects on the index when method is called without a path
     if (!path) return this.getAll();
     return this.index.get(path) || {};
@@ -46,7 +45,7 @@ Index.Prototype = function() {
   // HACK: When there's no path supplied we need to flatten the index to show all objects that are on the index
   this.getAll = function() {
     var result = {};
-    Substance.each(this.index, function(values, key) {
+    Substance.each(this.index, function(values) {
       Substance.extend(result, values);
     });
     return result;

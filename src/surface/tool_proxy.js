@@ -4,7 +4,7 @@ var Substance = require('../basics');
 
 // ToolProxy is used by Tools to access the currently active Surface.
 // Usually this is used as a mixin for an application managed class.
-function ToolProxy() {};
+function ToolProxy() {}
 
 ToolProxy.Prototype = function() {
 

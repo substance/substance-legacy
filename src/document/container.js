@@ -46,9 +46,11 @@ Container.Prototype = function() {
   this.show = function(nodeId, pos) {
     var doc = this.getDocument();
     // Note: checking with ==  is what we want here
+    /* jshint eqnull: true */
     if (pos == null) {
       pos = this.nodes.length;
     }
+    /* jshint eqnull: false */
     doc.update([this.id, 'nodes'], {
       insert: { offset: pos, value: nodeId }
     });

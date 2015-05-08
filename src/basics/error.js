@@ -4,7 +4,7 @@ var oo = require('./oo');
 
 function SubstanceError() {
   Error.apply(this, arguments);
-};
+}
 
 SubstanceError.Prototype = function() {
 };

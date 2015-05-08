@@ -411,12 +411,10 @@ Surface.Prototype = function() {
   this.handleEnterKey = function( e ) {
     e.preventDefault();
     var selection = this.domSelection.get();
-    var el;
-    // var el = DomSelection.getDomNodeForPath(this.element, selection.range.start.path);
     if (e.shiftKey) {
-      this.editor.softBreak(selection, {surface: this, source: el});
+      this.editor.softBreak(selection, {surface: this});
     } else {
-      this.editor.break(selection, {surface: this, source: el});
+      this.editor.break(selection, {surface: this});
     }
   };
 

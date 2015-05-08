@@ -1,10 +1,12 @@
+'use strict';
+
 var Substance = require('../basics');
 
 function NodeView(props) {
   this.props = props;
   this.doc = props.doc;
   this.node = props.node;
-};
+}
 
 NodeView.Prototype = function() {
 
@@ -37,6 +39,8 @@ NodeView.Prototype = function() {
         } else if (child instanceof NodeView) {
           var el = child.render();
           element.appendChild(el);
+        } else if (child instanceof window.Node) {
+          element.appendChild(child);
         }
       }
     }

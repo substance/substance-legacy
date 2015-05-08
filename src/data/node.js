@@ -117,7 +117,7 @@ var prepareSchema = function(NodeClass) {
   if (parentSchema) {
     NodeClass.static.schema = Substance.extend(Object.create(parentSchema), schema);
   }
-}
+};
 
 var initNodeClass = function(NodeClass) {
   // add a extend method so that this class can be used to create child models.

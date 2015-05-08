@@ -93,9 +93,11 @@ AnnotationIndex.filterByRange = function(start, end) {
     var aEnd = anno.endOffset;
     var overlap = (aEnd >= start);
     // Note: it is allowed to omit the end part
+    /* jshint eqnull: true */
     if (end != null) {
       overlap = overlap && (aStart <= end);
     }
+    /* jshint eqnull: false */
     return overlap;
   };
 };
