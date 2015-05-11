@@ -24,7 +24,7 @@ module.exports = function(config) {
       "test/**/*.test.js": ["commonjs"],
       "node_modules/lodash/**/*.js": ["commonjs"],
       // compute test coverage only for the real modules
-      "src/!(basics)/**/*.js": ["coverage"],
+      "src/!(basics)/**/!(index).js": ["coverage"],
     },
     reporters: ['progress', 'coverage'],
     coverageReporter: {
