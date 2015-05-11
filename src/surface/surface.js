@@ -458,7 +458,9 @@ Surface.Prototype = function() {
     // HACK: somehow the DOM selection is not ready yet
     var self = this;
     setTimeout(function() {
-      self._setModelSelection(self.domSelection.get());
+      if (self.domSelection) {
+        self._setModelSelection(self.domSelection.get());  
+      }
     });
   };
 
