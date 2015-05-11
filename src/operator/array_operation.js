@@ -8,35 +8,24 @@ var NOP = "NOP";
 var DEL = "delete";
 var INS = "insert";
 
-var ArrayOperation = function(options) {
-
-  if (options.type === undefined) {
+var ArrayOperation = function(data) {
+  /* jshint eqnull: true */
+  if (!data || data.type == null) {
     throw new Error("Illegal argument: insufficient data.");
   }
-
-  // Insert: '+', Delete: '-', Move: '>>'
-  this.type = options.type;
-
+  /* jshint eqnull: false */
+  this.type = data.type;
   if (this.type === NOP) return;
 
-  // the position where to apply the operation
-  this.pos = options.pos;
-
-  // the string to delete or insert
-  this.val = options.val;
-
-  // sanity checks
-  if(this.type !== NOP && this.type !== INS && this.type !== DEL) {
+  if (this.type !== INS && this.type !== DEL) {
     throw new Error("Illegal type.");
   }
-
-  if (this.type === INS || this.type === DEL) {
-    if (this.pos === undefined || this.val === undefined) {
-      throw new Error("Illegal argument: insufficient data.");
-    }
-    if (!Substance.isNumber(this.pos) && this.pos < 0) {
-      throw new Error("Illegal argument: expecting positive number as pos.");
-    }
+  // the position where to apply the operation
+  this.pos = data.pos;
+  // the value to insert or delete
+  this.val = data.val;
+  if (!Substance.isNumber(this.pos) || this.pos < 0) {
+    throw new Error("Illegal argument: expecting positive number as pos.");
   }
 };
 
@@ -58,7 +47,7 @@ ArrayOperation.Prototype = function() {
       return array;
     }
     // Delete
-    else if (this.type === DEL) {
+    else /* if (this.type === DEL) */ {
       if (array.length < this.pos) {
         throw new Error("Provided array is too small.");
       }
@@ -68,9 +57,6 @@ ArrayOperation.Prototype = function() {
       array.splice(this.pos, 1);
       return array;
     }
-    else {
-      throw new Error("Illegal state.");
-    }
   };
 
   this.clone = function() {
@@ -79,12 +65,9 @@ ArrayOperation.Prototype = function() {
 
   this.invert = function() {
     var data = this.toJSON();
-    if (this.type === INS) data.type = DEL;
-    else if (this.type === DEL) data.type = INS;
-    else if (this.type === NOP) data.type = NOP;
-    else {
-      throw new Error("Illegal state.");
-    }
+    if (this.type === NOP) data.type = NOP;
+    else if (this.type === INS) data.type = DEL;
+    else /* if (this.type === DEL) */ data.type = INS;
     return new ArrayOperation(data);
   };
 
@@ -98,7 +81,7 @@ ArrayOperation.Prototype = function() {
     };
     if (this.type === NOP) return result;
     result.pos = this.pos;
-    result.val = this.val;
+    result.val = Substance.clone(this.val);
     return result;
   };
 
@@ -121,150 +104,93 @@ ArrayOperation.Prototype = function() {
   this.isNOP = function() {
     return this.type === NOP;
   };
+
+  this.toString = function() {
+    return ["(", (this.isInsert() ? '+' : '-'), ",", this.getOffset(), ",'", this.getValue(), "')"].join('');
+  };
 };
 
 Substance.inherit(ArrayOperation, Operation);
 
-var _NOP = 0;
-var _DEL = 1;
-var _INS = 2;
-
-var CODE = {};
-CODE[NOP] = _NOP;
-CODE[DEL] = _DEL;
-CODE[INS] = _INS;
-
-var _hasConflict = [];
-
-_hasConflict[_DEL | _DEL] = function(a,b) {
-  return a.pos === b.pos;
-};
-
-_hasConflict[_DEL | _INS] = function() {
-  return false;
-};
-
-_hasConflict[_INS | _INS] = function(a,b) {
-  return a.pos === b.pos;
-};
-
-/*
-  As we provide Move as quasi atomic operation we have to look at it conflict potential.
-
-  A move is realized as composite of Delete and Insert.
-
-  M / I: ( -> I / I conflict)
-
-    m.s < i && m.t == i-1
-    else i && m.t == i
-
-  M / D: ( -> D / D conflict)
-
-    m.s === d
-
-  M / M:
-
-    1. M/D conflict
-    2. M/I conflict
-*/
-
 var hasConflict = function(a, b) {
   if (a.type === NOP || b.type === NOP) return false;
-  var caseId = CODE[a.type] | CODE[b.type];
-  if (_hasConflict[caseId]) {
-    return _hasConflict[caseId](a,b);
+  if (a.type === INS && b.type === INS) {
+    return a.pos === b.pos;
   } else {
     return false;
   }
 };
 
-var transform0;
-
-function transform_insert_insert(a, b, first) {
-
+function transform_insert_insert(a, b) {
   if (a.pos === b.pos) {
-    if (first) {
-      b.pos += 1;
-    } else {
-      a.pos += 1;
-    }
+    b.pos += 1;
   }
   // a before b
   else if (a.pos < b.pos) {
     b.pos += 1;
   }
-
   // a after b
   else  {
     a.pos += 1;
   }
-
 }
 
 function transform_delete_delete(a, b) {
-
   // turn the second of two concurrent deletes into a NOP
   if (a.pos === b.pos) {
     b.type = NOP;
     a.type = NOP;
     return;
   }
-
   if (a.pos < b.pos) {
     b.pos -= 1;
   } else {
     a.pos -= 1;
   }
-
 }
 
 function transform_insert_delete(a, b) {
-
   // reduce to a normalized case
   if (a.type === DEL) {
     var tmp = a;
     a = b;
     b = tmp;
   }
-
   if (a.pos <= b.pos) {
     b.pos += 1;
   } else {
     a.pos -= 1;
   }
-
 }
 
-transform0 = function(a, b, options) {
-
+var transform = function(a, b, options) {
   options = options || {};
-
-  if (options.check && hasConflict(a, b)) {
+  // enable conflicts when you want to notify the user of potential problems
+  // Note that even in these cases, there is a defined result.
+  if (options['no-conflict'] && hasConflict(a, b)) {
     throw new Conflict(a, b);
   }
-
+  // this is used internally only as optimization, e.g., when rebasing an operation
   if (!options.inplace) {
     a = Substance.clone(a);
     b = Substance.clone(b);
   }
-
   if (a.type === NOP || b.type === NOP)  {
     // nothing to transform
   }
   else if (a.type === INS && b.type === INS)  {
-    transform_insert_insert(a, b, true);
+    transform_insert_insert(a, b);
   }
   else if (a.type === DEL && b.type === DEL) {
-    transform_delete_delete(a, b, true);
+    transform_delete_delete(a, b);
   }
   else {
-    transform_insert_delete(a, b, true);
+    transform_insert_delete(a, b);
   }
-
   return [a, b];
 };
 
-ArrayOperation.transform = transform0;
+ArrayOperation.transform = transform;
 ArrayOperation.hasConflict = hasConflict;
 
 /* Factories */
