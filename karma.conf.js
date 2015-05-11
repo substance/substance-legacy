@@ -2,7 +2,7 @@
 // Generated on Sat May 09 2015 01:51:50 GMT+0200 (W. Europe Summer Time)
 module.exports = function(config) {
   config.set({
-    basePath: '..',
+    basePath: '',
     frameworks: ['qunit', 'commonjs'],
     plugins: [
       'karma-qunit',
@@ -11,7 +11,8 @@ module.exports = function(config) {
       'karma-coverage'
     ],
     files: [
-      {pattern: 'index.js'},
+      'index.js',
+      'helpers.js',
       {pattern: 'src/**/*.js'},
       {pattern: 'node_modules/lodash/**/*.js'},
       {pattern: 'test/**/*.test.js'}
@@ -19,7 +20,7 @@ module.exports = function(config) {
     exclude: [
     ],
     preprocessors: {
-      "index.js": ["commonjs"],
+      "*.js": ["commonjs"],
       "src/**/*.js": ["commonjs"],
       "test/**/*.test.js": ["commonjs"],
       "node_modules/lodash/**/*.js": ["commonjs"],
