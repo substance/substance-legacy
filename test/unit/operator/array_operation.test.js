@@ -100,7 +100,6 @@ QUnit.test("JSON de-/serialisation", function(assert) {
 //  2. `b < a`:   dito
 //  3. `a == b`:  result depends on preference (first applied)
 
-
 QUnit.test("Transformation: a=Insert, b=Insert, a < b and b < a", function(assert) {
   var input = [1,3,5];
   var expected = [1,2,3,4,5];

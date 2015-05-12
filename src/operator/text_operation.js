@@ -10,6 +10,8 @@ var DEL = "-";
 var hasConflict;
 
 function TextOperation(data) {
+  Operation.call(this);
+
   if (!data || data.type === undefined || data.pos === undefined || data.str === undefined) {
     throw new Error("Illegal argument: insufficient data.");
   }

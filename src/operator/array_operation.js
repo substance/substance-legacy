@@ -9,6 +9,8 @@ var DEL = "delete";
 var INS = "insert";
 
 var ArrayOperation = function(data) {
+  Operation.call(this);
+
   /* jshint eqnull: true */
   if (!data || data.type == null) {
     throw new Error("Illegal argument: insufficient data.");
