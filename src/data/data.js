@@ -4,25 +4,36 @@ var Substance = require('../basics');
 var PathAdapter = Substance.PathAdapter;
 var EventEmitter = Substance.EventEmitter;
 
-function Graph(schema, options) {
+/**
+ * A data storage implemention.
+ *
+ * @class Data
+ * @extends EventEmitter
+ * @constructor
+ * @module Data
+ */
+function Data(schema, options) {
   EventEmitter.call(this);
 
-  options = options || {};
-
   this.schema = schema;
-
-  this.seed = options.seed;
-  this.didCreateNode = options.didCreateNode || function() {};
-  this.didDeleteNode = options.didDeleteNode || function() {};
-
   this.nodes = {};
   this.indexes = {};
-
-  this.init();
+  // Handlers that are called after a node was created or deleted
+  options = options || {};
+  // For example in Substance.Document this is used to attach and detach a document from a node.
+  this.didCreateNode = options.didCreateNode || function() {};
+  this.didDeleteNode = options.didDeleteNode || function() {};
 }
 
-Graph.Prototype = function() {
+Data.Prototype = function() {
 
+  /**
+   * Get a node or value via path.
+   *
+   * @method get
+   * @param {String|Array} path node id or path to property.
+   * @return a Node instance, a value or undefined if not found.
+   */
   this.get = function(path) {
     if (!path) {
       throw new Error('Path or id required');
@@ -30,10 +41,22 @@ Graph.Prototype = function() {
     return this.nodes.get(path);
   };
 
+  /**
+   * Get the internal storage for nodes.
+   *
+   * @method getNodes
+   * @return {PathAdapter} The internal node storage.
+   */
   this.getNodes = function() {
     return this.nodes;
   };
 
+  /**
+   * Create a node from the given data.
+   *
+   * @method create
+   * @return {Node} The created node.
+   */
   this.create = function(nodeData) {
     var node = this.schema.getNodeFactory().create(nodeData.type, nodeData);
     if (!node) {
@@ -55,15 +78,15 @@ Graph.Prototype = function() {
     return node;
   };
 
-  this.delete = function(nodeOrId) {
-    var node, nodeId;
-    if (Substance.isString(nodeOrId)) {
-      nodeId = nodeOrId;
-      node = this.nodes[nodeId];
-    } else {
-      node = nodeOrId;
-      nodeId = node.id;
-    }
+  /**
+   * Delete the node with given id.
+   *
+   * @method delete
+   * @param {String} nodeId
+   * @return {Node} The deleted node.
+   */
+  this.delete = function(nodeId) {
+    var node = this.nodes[nodeId];
     delete this.nodes[nodeId];
     this.didDeleteNode(node);
     Substance.each(this.indexes, function(index) {
@@ -74,6 +97,14 @@ Graph.Prototype = function() {
     return node;
   };
 
+  /**
+   * Set a property to a new value.
+   *
+   * @method set
+   * @param {Array} property path
+   * @param {Object} newValue
+   * @return {Node} The deleted node.
+   */
   this.set = function(path, newValue) {
     var node = this.get(path[0]);
     var oldValue = this.nodes.get(path);
@@ -86,9 +117,7 @@ Graph.Prototype = function() {
     return oldValue;
   };
 
-  // TODO: it does not make too much sense to use this incremental method
-  // on the non-incremental graph
-  // We leave it here so that the two versions are compatible API-wise
+  // TODO: do we really want this incremental implementation here?
   this.update = function(path, diff) {
     var oldValue = this.nodes.get(path);
     var newValue;
@@ -128,7 +157,6 @@ Graph.Prototype = function() {
         throw new Error('Diff is not supported:', JSON.stringify(diff));
       }
     }
-
     this.nodes.set(path, newValue);
     var node = this.get(path[0]);
     Substance.each(this.indexes, function(index) {
@@ -139,6 +167,12 @@ Graph.Prototype = function() {
     return oldValue;
   };
 
+  /**
+   * Convert to JSON.
+   *
+   * @method toJSON
+   * @return {Object} Plain content.
+   */
   this.toJSON = function() {
     return {
       schema: [this.schema.id, this.schema.version],
@@ -146,42 +180,55 @@ Graph.Prototype = function() {
     };
   };
 
+  /**
+   * Check if this storage contains a node with given id.
+   *
+   * @method contains
+   * @return {Boolean} `true` if a node with id exists, `false` otherwise.
+   */
   this.contains = function(id) {
     return (!!this.nodes[id]);
   };
 
+  /**
+   * Clear nodes.
+   *
+   * @method reset
+   */
   this.reset = function() {
-    this.init();
-  };
-
-  // Graph initialization.
-  this.init = function() {
     this.nodes = new PathAdapter();
-    if (this.seed) {
-      var nodes = this.seed.nodes;
-      Substance.each(nodes, function(nodeData) {
-        this.create(nodeData);
-      }, this);
-    }
   };
 
+  /**
+   * Add a node index.
+   *
+   * @method addIndex
+   * @param {String} name
+   * @param {NodeIndex} index
+   */
   this.addIndex = function(name, index) {
     if (this.indexes[name]) {
       console.error('Index with name %s already exists.', name);
     }
-    index.setGraph(this);
+    index.setData(this);
     index.initialize();
     this.indexes[name] = index;
-    return index;
+    return this;
   };
 
+  /**
+   * Get the node index with given name.
+   *
+   * @method getIndex
+   * @param {String} name
+   * @return The node index.
+   */
   this.getIndex = function(name) {
     return this.indexes[name];
   };
 
-
 };
 
-Substance.inherit(Graph, EventEmitter);
+Substance.inherit(Data, EventEmitter);
 
-module.exports = Graph;
+module.exports = Data;

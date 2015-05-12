@@ -2,24 +2,46 @@
 
 var Substance = require('../basics');
 
-var Graph = require('./graph');
+var Data = require('./data');
 var Operator = require('../operator');
 var ObjectOperation = Operator.ObjectOperation;
 var ArrayOperation = Operator.ArrayOperation;
 var TextOperation = Operator.TextOperation;
 
-var IncrementalGraph = function(schema, options) {
-  IncrementalGraph.super.call(this, schema, options);
+/**
+ * Incremental data storage implemention.
+ *
+ * @class IncrementalData
+ * @extends Data
+ * @constructor
+ * @module Data
+ */
+var IncrementalData = function(schema, options) {
+  IncrementalData.super.call(this, schema, options);
 };
 
-IncrementalGraph.Prototype = function() {
+IncrementalData.Prototype = function() {
 
+  /**
+   * Create a new node.
+   *
+   * @method create
+   * @param {Object} nodeData
+   * @return The applied operation.
+   */
   this.create = function(nodeData) {
     var op = ObjectOperation.Create([nodeData.id], nodeData);
     this.apply(op);
     return op;
   };
 
+  /**
+   * Delete a node.
+   *
+   * @method delete
+   * @param {String} nodeId
+   * @return The applied operation.
+   */
   this.delete = function(nodeId) {
     var op = null;
     var node = this.get(nodeId);
@@ -31,6 +53,22 @@ IncrementalGraph.Prototype = function() {
     return op;
   };
 
+  /**
+   * Update a property incrementally.
+   *
+   * The diff can be of the following forms (depending on the updated property type):
+   *   - String:
+   *     - `{ insert: { offset: Number, value: Object } }`
+   *     - `{ delete: { start: Number, end: Number } }`
+   *   - Array:
+   *     - `{ insert: { offset: Number, value: Object } }`
+   *     - `{ delete: { offset: Number } }`
+   *
+   * @method update
+   * @param {Array} path
+   * @param {Object} diff
+   * @return The applied operation.
+   */
   this.update = function(path, diff) {
     var diffOp = this._getDiffOp(path, diff);
     var op = ObjectOperation.Update(path, diffOp);
@@ -38,6 +76,14 @@ IncrementalGraph.Prototype = function() {
     return op;
   };
 
+  /**
+   * Set a property to a new value
+   *
+   * @method set
+   * @param {Array} path
+   * @param {Object} newValue
+   * @return The applied operation.
+   */
   this.set = function(path, newValue) {
     var oldValue = this.get(path);
     var op = ObjectOperation.Set(path, oldValue, newValue);
@@ -45,6 +91,12 @@ IncrementalGraph.Prototype = function() {
     return op;
   };
 
+  /**
+   * Apply a given operation.
+   *
+   * @method apply
+   * @param {ObjectOperation} op
+   */
   this.apply = function(op) {
     if (op.type === ObjectOperation.NOP) return;
     else if (op.type === ObjectOperation.CREATE) {
@@ -118,6 +170,6 @@ IncrementalGraph.Prototype = function() {
 
 };
 
-Substance.inherit(IncrementalGraph, Graph);
+Substance.inherit(IncrementalData, Data);
 
-module.exports = IncrementalGraph;
+module.exports = IncrementalData;

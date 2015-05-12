@@ -17,8 +17,7 @@ function Document( schema, seed ) {
   this.schema = schema;
   this.seed = seed;
 
-  this.data = new Data.IncrementalGraph(schema, {
-    seed: seed,
+  this.data = new Data.Incremental(schema, {
     didCreateNode: Substance.bind(this._didCreateNode, this),
     didDeleteNode: Substance.bind(this._didDeleteNode, this),
   });

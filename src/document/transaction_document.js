@@ -12,8 +12,7 @@ function TransactionDocument(document) {
   // when calling undo
   this.before = {};
 
-  this.data = new Data.IncrementalGraph(document.schema, {
-    seed: document.data.seed,
+  this.data = new Data.Incremental(document.schema, {
     didCreateNode: Substance.bind(this._didCreateNode, this),
     didDeleteNode: Substance.bind(this._didDeleteNode, this),
   });

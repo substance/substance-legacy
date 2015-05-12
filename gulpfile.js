@@ -12,7 +12,7 @@ var uglify = require('gulp-uglify');
 var sourcemaps = require('gulp-sourcemaps');
 
 gulp.task('doc', function() {
-  return gulp.src("./src/**/*.js")
+  return gulp.src(["index.js", "./src/**/*.js"])
     .pipe(yuidoc.parser())
     .pipe(yuidoc.reporter())
     .pipe(yuidoc.generator())
