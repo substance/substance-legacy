@@ -10,6 +10,8 @@ var EventEmitter = Substance.EventEmitter;
  * @class Data
  * @extends EventEmitter
  * @constructor
+ * @param {Schema} schema
+ * @param {Object} [options]
  * @module Data
  */
 function Data(schema, options) {

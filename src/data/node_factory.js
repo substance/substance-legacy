@@ -4,35 +4,34 @@ var Substance = require('../basics');
 var Node = require('./node');
 var Factory = Substance.Factory;
 
+/**
+ * Factory for Nodes.
+ *
+ * @class NodeFactory
+ * @extends Factory
+ * @constructor
+ * @module Data
+ */
 function NodeFactory() {
   Factory.call(this);
 }
 
 NodeFactory.Prototype = function() {
-
-  this.register = function ( constructor ) {
-    var name = constructor.static && constructor.static.name;
+  /**
+   * Register a Node class.
+   *
+   * @method register
+   * @param {Class} nodeClass
+   */
+  this.register = function ( nodeClazz ) {
+    var name = nodeClazz.static && nodeClazz.static.name;
     if ( typeof name !== 'string' || name === '' ) {
       throw new Error( 'Node names must be strings and must not be empty' );
     }
-    if ( !( constructor.prototype instanceof Node) ) {
+    if ( !( nodeClazz.prototype instanceof Node) ) {
       throw new Error( 'Nodes must be subclasses of Substance.Data.Node' );
     }
-    this.add(name, constructor);
-  };
-
-  this.getClassForHtmlElement = function(el) {
-    for (var i = 0; i < this.names.length; i++) {
-      var name = this.names[i];
-      var NodeClass = this.get(name);
-      if (NodeClass.matchElement) {
-        var match = NodeClass.matchElement(el);
-        if (match) {
-          return match;
-        }
-      }
-    }
-    return null;
+    this.add(name, nodeClazz);
   };
 };
 

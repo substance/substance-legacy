@@ -14,6 +14,8 @@ var TextOperation = Operator.TextOperation;
  * @class IncrementalData
  * @extends Data
  * @constructor
+ * @param {Schema} schema
+ * @param {Object} [options]
  * @module Data
  */
 var IncrementalData = function(schema, options) {
