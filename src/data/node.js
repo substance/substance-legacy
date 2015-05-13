@@ -6,7 +6,7 @@ var EventEmitter = Substance.EventEmitter;
 /**
  * Base node implemention.
  *
- * @class Node
+ * @class Data.Node
  * @extends EventEmitter
  * @constructor
  * @param {Object} properties

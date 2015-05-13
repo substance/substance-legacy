@@ -9,7 +9,7 @@ var PathAdapter = Substance.PathAdapter;
  * Node indexes are first-class citizens in Substance.Data.
  * I.e., they are updated after each operation.
  *
- * @class NodeIndex
+ * @class Data.NodeIndex
  * @constructor
  * @module Data
  */

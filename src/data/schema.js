@@ -7,7 +7,7 @@ var NodeFactory = require('./node_factory');
 /**
  * Data Schema.
  *
- * @class Schema
+ * @class Data.Schema
  * @constructor
  * @param {String} name
  * @param {String} version

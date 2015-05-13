@@ -7,7 +7,7 @@ var Factory = Substance.Factory;
 /**
  * Factory for Nodes.
  *
- * @class NodeFactory
+ * @class Data.NodeFactory
  * @extends Factory
  * @constructor
  * @module Data

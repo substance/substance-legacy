@@ -11,7 +11,7 @@ var TextOperation = Operator.TextOperation;
 /**
  * Incremental data storage implemention.
  *
- * @class IncrementalData
+ * @class Data.Incremental
  * @extends Data
  * @constructor
  * @param {Schema} schema
