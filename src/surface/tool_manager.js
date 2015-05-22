@@ -29,10 +29,10 @@ ToolManager.Prototype = function() {
     }, this);
   };
 
-  this.updateTools = function(sel) {
+  this.updateTools = function(sel, surface) {
     _.each(this.tools, function(tool) {
       if (this.isToolEnabled(tool.name)) {
-        tool.updateToolState(sel);
+        tool.updateToolState(sel, surface);
       } else {
         tool.disableTool();
       }

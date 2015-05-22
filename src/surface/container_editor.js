@@ -122,7 +122,7 @@ ContainerEditor.Prototype = function() {
     }
   };
 
-  this.switchType = function(selection, newType, data) {
+  this.switchType = function(selection, data) {
     if (!selection.isPropertySelection()) {
       return;
     }
@@ -131,7 +131,7 @@ ContainerEditor.Prototype = function() {
     var offset = selection.start.offset;
     var comp = this.container.getComponent(path);
     var node = this.document.get(comp.rootId);
-    if (!(node.isInstanceOf('text')) || node.type === newType) {
+    if (!(node.isInstanceOf('text')) || node.type === data.type) {
       return;
     }
     var pos = this.container.getPosition(node.id);
@@ -141,8 +141,8 @@ ContainerEditor.Prototype = function() {
     try {
       // create a new node
       var newNode = {
-        id: Substance.uuid(newType),
-        type: newType,
+        id: Substance.uuid(data.type),
+        type: data.type,
         content: node.content
       };
       Substance.extend(newNode, data);
@@ -568,10 +568,7 @@ ContainerEditor.Prototype = function() {
     var container = tx.get(this.container.id);
     var node = tx.get(nodeId);
     // only hide a node if it is managed externally
-    if (node.isExternal()) {
-      container.hide(nodeId);
-      return;
-    }
+
     // remove all associated annotations
     var annos = tx.getIndex('annotations').get(nodeId);
     var i;
