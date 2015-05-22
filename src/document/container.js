@@ -103,6 +103,13 @@ Container.Prototype = function() {
     }
   };
 
+  this.getNodeForComponentPath = function(path) {
+    var comp = this.getComponent(path);
+    if (!comp) return null;
+    var nodeId = comp.rootId;
+    return this.getDocument().get(nodeId);
+  };
+
   this.getAnnotationFragments = function(containerAnnotation) {
     var fragments = [];
     var doc = containerAnnotation.getDocument();

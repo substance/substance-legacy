@@ -122,6 +122,43 @@ ContainerEditor.Prototype = function() {
     }
   };
 
+  this.switchType = function(selection, newType, data) {
+    if (!selection.isPropertySelection()) {
+      return;
+    }
+    // only text nodes can be changed at the moment
+    var path = selection.start.path;
+    var offset = selection.start.offset;
+    var comp = this.container.getComponent(path);
+    var node = this.document.get(comp.rootId);
+    if (!(node.isInstanceOf('text')) || node.type === newType) {
+      return;
+    }
+    var pos = this.container.getPosition(node.id);
+    var tx = this.document.startTransaction({ selection: selection });
+    tx.selection = selection;
+    var container = tx.get(this.container.id);
+    try {
+      // create a new node
+      var newNode = {
+        id: Substance.uuid(newType),
+        type: newType,
+        content: node.content
+      };
+      Substance.extend(newNode, data);
+      var newPath = [newNode.id, 'content'];
+      tx.create(newNode);
+      Annotations.transferAnnotations(tx, path, 0, newPath, 0);
+      _deleteNodeWithId(tx, node.id);
+      container.show(newNode.id, pos);
+      tx.selection = Selection.create(newPath, offset);
+      tx.save({ selection: tx.selection }, info);
+      this.selection = tx.selection;
+    } finally {
+      tx.cleanup();
+    }
+  };
+
   this._copyPropertySelection = function(selection) {
     var copy = this.document.newInstance();
     var path = selection.start.path;
@@ -432,16 +469,25 @@ ContainerEditor.Prototype = function() {
     var secondPath = secondComp.path;
     var secondText = tx.get(secondPath);
     var container = tx.get(this.container.id);
-    // append the second text
-    tx.update(firstPath, { insert: { offset: firstLength, value: secondText } });
-    // transfer annotations
-    Annotations.transferAnnotations(tx, secondPath, 0, firstPath, firstLength);
-    // hide the second node
-    container.hide(secondPath[0]);
-    // delete the second node
-    tx.delete(secondPath[0]);
-    // set the selection to the end of the first component
-    tx.selection = Selection.create(firstPath, firstLength);
+    if (firstLength === 0) {
+      // hide the second node
+      container.hide(firstPath[0]);
+      // delete the second node
+      tx.delete(firstPath[0]);
+      // set the selection to the end of the first component
+      tx.selection = Selection.create(secondPath, 0);
+    } else {
+      // append the second text
+      tx.update(firstPath, { insert: { offset: firstLength, value: secondText } });
+      // transfer annotations
+      Annotations.transferAnnotations(tx, secondPath, 0, firstPath, firstLength);
+      // hide the second node
+      container.hide(secondPath[0]);
+      // delete the second node
+      tx.delete(secondPath[0]);
+      // set the selection to the end of the first component
+      tx.selection = Selection.create(firstPath, firstLength);
+    }
   };
 
   this._getDeleteBehavior = function(node) {
@@ -508,15 +554,21 @@ ContainerEditor.Prototype = function() {
       }
     }
   };
-
   this._deleteNode = function(tx, nodeSel) {
     var deleteBehavior = this._getDeleteBehavior(nodeSel.node);
     if (deleteBehavior) {
       deleteBehavior.call(this, tx, nodeSel);
     } else {
-      // otherwise we can just delete the node
-      var nodeId = nodeSel.node.id;
+      this._deleteNodeWithId(tx, nodeSel.node.id);
+  };
+
+  this._deleteNodeWithId = function(tx, nodeId) {
       var container = tx.get(this.container.id);
+      // only hide a node if it is managed externally
+      if (nodeSel.node.isExternal()) {
+        container.hide(nodeId);
+        return;
+      }
       // remove all associated annotations
       var annos = tx.getIndex('annotations').get(nodeId);
       var i;
@@ -552,7 +604,7 @@ ContainerEditor.Prototype = function() {
       // remove from view first
       container.hide(nodeId);
       // and then permanently delete
-      tx.delete(nodeSel.node.id);
+      tx.delete(nodeId);
     }
   };
 
