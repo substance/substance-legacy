@@ -243,6 +243,7 @@ Surface.Prototype = function() {
     }
     if (character.length>0) {
       this.editor.insertText(character, sel);
+      this.rerenderDomSelection();
       e.preventDefault();
       e.stopPropagation();
       return;
@@ -319,11 +320,12 @@ Surface.Prototype = function() {
     this.dragging = false;
     // HACK: somehow the DOM selection is not ready yet
     var self = this;
-    setTimeout(function() {
+    // Deactivating this for now, hoping that this is not necessary anymore.
+    // setTimeout(function() {
       if (self.domSelection) {
-        self._setModelSelection(self.domSelection.get());  
+        self._setModelSelection(self.domSelection.get());
       }
-    });
+    // });
   };
 
   this.onMouseMove = function() {
