@@ -374,7 +374,7 @@ Surface.Prototype = function() {
         if (!self.domSelection) return;
         var sel = change.after.selection;
         // self.editor.selection = sel;
-        // self.domSelection.set(sel);
+        self.domSelection.set(sel);
         self.emit('selection:changed', sel);
       // });
     }
