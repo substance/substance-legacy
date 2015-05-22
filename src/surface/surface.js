@@ -170,6 +170,8 @@ Surface.Prototype = function() {
         return this.handleUpOrDownArrowKey(e);
       case Surface.Keys.ENTER:
         return this.handleEnterKey(e);
+      case Surface.Keys.SPACE:
+        return this.handleSpaceKey(e);
       case Surface.Keys.BACKSPACE:
       case Surface.Keys.DELETE:
         return this.handleDeleteKey(e);
@@ -205,10 +207,9 @@ Surface.Prototype = function() {
     var range = sel.getRange();
     var el = DomSelection.getDomNodeForPath(this.element, range.start.path);
     this.editor.insertText(e.data, sel, {source: el, typing: true});
-    if (sel.isContainerSelection()) {
-      e.preventDefault();
-      e.stopPropagation();
-    }
+    e.preventDefault();
+    e.stopPropagation();
+    this.rerenderDomSelection();
   };
 
   // Handling Dead-keys under OSX
@@ -274,6 +275,13 @@ Surface.Prototype = function() {
     });
   };
 
+  this.handleSpaceKey = function( e ) {
+    e.preventDefault();
+    e.stopPropagation();
+    var sel = this.editor.selection;
+    this.editor.insertText(" ", sel);
+  };
+
   this.handleEnterKey = function( e ) {
     e.preventDefault();
     var selection = this.domSelection.get();
@@ -287,15 +295,8 @@ Surface.Prototype = function() {
   this.handleDeleteKey = function ( e ) {
     var direction = (e.keyCode === Surface.Keys.BACKSPACE) ? 'left' : 'right';
     var sel = this.editor.selection;
-    var range = sel.getRange();
-    // minor optimization: in simple cases we can let CE do the delete
-    if (range.isCollapsed() && direction === 'left' && range.start.offset !== 0) {
-      var el = DomSelection.getDomNodeForPath(this.element, range.start.path);
-      this.editor.delete(sel, direction, {source: el, typing: true});
-    } else {
-      e.preventDefault()
-      this.editor.delete(sel, direction);
-    }
+    this.editor.delete(sel, direction);
+    e.preventDefault();
   };
 
   // ###########################################
