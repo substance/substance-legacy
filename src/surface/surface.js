@@ -202,13 +202,12 @@ Surface.Prototype = function() {
   this.onTextInput = function(e) {
     if (!e.data) return;
     // console.log("TextInput:", e);
-    this.skipNextObservation=true;
-    var sel = this.editor.selection;
-    var range = sel.getRange();
-    var el = DomSelection.getDomNodeForPath(this.element, range.start.path);
-    this.editor.insertText(e.data, sel, {source: el, typing: true});
     e.preventDefault();
     e.stopPropagation();
+    // necessary for handling dead keys properly
+    this.skipNextObservation=true;
+    var sel = this.editor.selection;
+    this.editor.insertText(e.data, sel);
     this.rerenderDomSelection();
   };
 
@@ -243,14 +242,9 @@ Surface.Prototype = function() {
       character = character.toLowerCase();
     }
     if (character.length>0) {
-      sel = this.editor.selection;
-      range = sel.getRange();
-      el = DomSelection.getDomNodeForPath(this.element, range.start.path);
-      this.editor.insertText(character, sel, {source: el, typing: true});
-      if (sel.isContainerSelection()) {
-        e.preventDefault();
-        e.stopPropagation();
-      }
+      this.editor.insertText(character, sel);
+      e.preventDefault();
+      e.stopPropagation();
       return;
     } else {
       e.preventDefault();
@@ -260,6 +254,8 @@ Surface.Prototype = function() {
 
   this.handleLeftOrRightArrowKey = function ( e ) {
     var self = this;
+    // Note: we need this timeout so that CE updates the DOM selection first
+    // before we map the DOM selection
     window.setTimeout(function() {
       self._updateModelSelection({
         left: (e.keyCode === Surface.Keys.LEFT),
@@ -270,6 +266,8 @@ Surface.Prototype = function() {
 
   this.handleUpOrDownArrowKey = function ( /*e*/ ) {
     var self = this;
+    // Note: we need this timeout so that CE updates the DOM selection first
+    // before we map the DOM selection
     window.setTimeout(function() {
       self._updateModelSelection();
     });
@@ -280,6 +278,7 @@ Surface.Prototype = function() {
     e.stopPropagation();
     var sel = this.editor.selection;
     this.editor.insertText(" ", sel);
+    this.rerenderDomSelection();
   };
 
   this.handleEnterKey = function( e ) {
@@ -290,13 +289,15 @@ Surface.Prototype = function() {
     } else {
       this.editor.break(selection);
     }
+    this.rerenderDomSelection();
   };
 
   this.handleDeleteKey = function ( e ) {
+    e.preventDefault();
     var direction = (e.keyCode === Surface.Keys.BACKSPACE) ? 'left' : 'right';
     var sel = this.editor.selection;
     this.editor.delete(sel, direction);
-    e.preventDefault();
+    this.rerenderDomSelection();
   };
 
   // ###########################################
@@ -364,19 +365,16 @@ Surface.Prototype = function() {
     if (!this.isFocused) {
       return;
     }
-    // update the domSelection first so that we know if we are
-    // within this surface at all
-    if (!info.replay && !info.typing) {
+    if (!info.replay) {
       var self = this;
-      window.setTimeout(function() {
-        // GUARD: For cases where the panel/or whatever has been disposed already
-        // after changing the doc
+      // window.setTimeout(function() {
+        // GUARD: For cases where the panel/or whatever has been disposed already ‚after changing the doc
         if (!self.domSelection) return;
         var sel = change.after.selection;
-        self.editor.selection = sel;
-        self.domSelection.set(sel);
+        // self.editor.selection = sel;
+        // self.domSelection.set(sel);
         self.emit('selection:changed', sel);
-      });
+      // });
     }
   };
 
