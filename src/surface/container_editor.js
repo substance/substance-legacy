@@ -131,7 +131,7 @@ ContainerEditor.Prototype = function() {
     var offset = selection.start.offset;
     var comp = this.container.getComponent(path);
     var node = this.document.get(comp.rootId);
-    if (!(node.isInstanceOf('text')) || node.type === data.type) {
+    if (!(node.isInstanceOf('text'))) {
       return;
     }
     var pos = this.container.getPosition(node.id);
