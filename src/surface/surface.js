@@ -80,7 +80,10 @@ Surface.Prototype = function() {
     // Initialization
     this.element = element;
     this.$element = $(element);
-    this.$element.prop('contentEditable', 'true');
+
+    // We leave this now to the view implementation, because readers don't have ce on.
+    // this.$element.prop('contentEditable', 'true');
+    
     this.domSelection = new DomSelection(element, this.editor.getContainer());
 
     // Keyboard Events
@@ -124,8 +127,8 @@ Surface.Prototype = function() {
 
     // Mouse Events
     //
-    this.$element.off( 'mousemove', this._onMouseMove );
-    this.$element.off( 'mousedown', this._onMouseDown );
+    this.$element.off('mousemove', this._onMouseMove );
+    this.$element.off('mousedown', this._onMouseDown );
     this.$element.off('blur', this._onBlur);
     this.$element.off('focus', this._onFocus);
 
