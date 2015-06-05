@@ -152,8 +152,8 @@ Document.Prototype = function() {
     if (this.isTransacting) {
       this.stage.create(nodeData);
     } else {
-      var op = this.stage.create(nodeData);
-      this.data.create(nodeData);
+      this.stage.create(nodeData);
+      var op = this.data.create(nodeData);
       this._updateContainers(op);
     }
     return this.data.get(nodeData.id);
@@ -163,8 +163,8 @@ Document.Prototype = function() {
     if (this.isTransacting) {
       this.stage.delete(nodeId);
     } else {
-      var op = this.stage.delete(nodeId);
-      this.data.delete(nodeId);
+      this.stage.delete(nodeId);
+      var op = this.data.delete(nodeId);
       this._updateContainers(op);
     }
   };
@@ -173,8 +173,8 @@ Document.Prototype = function() {
     if (this.isTransacting) {
       this.stage.set(path, value);
     } else {
-      var op = this.stage.set(path, value);
-      this.data.set(path, value);
+      this.stage.set(path, value);
+      var op = this.data.set(path, value);
       this._updateContainers(op);
     }
   };
@@ -183,8 +183,8 @@ Document.Prototype = function() {
     if (this.isTransacting) {
       this.stage.update(path, diff);
     } else {
-      var op = this.stage.update(path, diff);
-      this.data.update(path, diff);
+      this.stage.update(path, diff);
+      var op = this.data.update(path, diff);
       this._updateContainers(op);
     }
   };

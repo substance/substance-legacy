@@ -50,6 +50,8 @@ TransactionDocument.Prototype = function() {
     if (this.document.isTransacting) {
       this.ops.push(op);
     }
+    // TODO: incremental graph returns op not the node,
+    // so probably here we should too?
     return this.data.get(nodeData.id);
   };
 
@@ -59,6 +61,7 @@ TransactionDocument.Prototype = function() {
     if (this.document.isTransacting) {
       this.ops.push(op);
     }
+    return op;
   };
 
   this.set = function(path, value) {
@@ -68,6 +71,7 @@ TransactionDocument.Prototype = function() {
     if (this.document.isTransacting) {
       this.ops.push(op);
     }
+    return op;
   };
 
   this.update = function(path, diffOp) {
@@ -77,6 +81,7 @@ TransactionDocument.Prototype = function() {
     if (this.document.isTransacting) {
       this.ops.push(op);
     }
+    return op;
   };
 
   this._updateContainers = function(op) {
