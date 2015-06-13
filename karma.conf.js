@@ -13,6 +13,7 @@ module.exports = function(config) {
     files: [
       'index.js',
       'helpers.js',
+      {pattern: 'test/public/jquery.js'},
       {pattern: 'src/**/*.js'},
       {pattern: 'node_modules/lodash/**/*.js'},
       {pattern: 'test/**/*.test.js'}

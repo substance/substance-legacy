@@ -47,7 +47,7 @@ Data.Prototype = function() {
    * Get the internal storage for nodes.
    *
    * @method getNodes
-   * @return {PathAdapter} The internal node storage.
+   * @return The internal node storage.
    */
   this.getNodes = function() {
     return this.nodes;
