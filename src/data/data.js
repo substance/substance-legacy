@@ -1,5 +1,6 @@
 'use strict';
 
+var _ = require('../basics/helpers');
 var Substance = require('../basics');
 var PathAdapter = Substance.PathAdapter;
 var EventEmitter = Substance.EventEmitter;
@@ -18,7 +19,7 @@ function Data(schema, options) {
   EventEmitter.call(this);
 
   this.schema = schema;
-  this.nodes = {};
+  this.nodes = new PathAdapter();
   this.indexes = {};
   // Handlers that are called after a node was created or deleted
   options = options || {};
@@ -72,7 +73,7 @@ Data.Prototype = function() {
     }
     this.nodes[node.id] = node;
     this.didCreateNode(node);
-    Substance.each(this.indexes, function(index) {
+    _.each(this.indexes, function(index) {
       if (index.select(node)) {
         index.create(node);
       }
@@ -91,7 +92,7 @@ Data.Prototype = function() {
     var node = this.nodes[nodeId];
     delete this.nodes[nodeId];
     this.didDeleteNode(node);
-    Substance.each(this.indexes, function(index) {
+    _.each(this.indexes, function(index) {
       if (index.select(node)) {
         index.delete(node);
       }
@@ -111,7 +112,7 @@ Data.Prototype = function() {
     var node = this.get(path[0]);
     var oldValue = this.nodes.get(path);
     this.nodes.set(path, newValue);
-    Substance.each(this.indexes, function(index) {
+    _.each(this.indexes, function(index) {
       if (index.select(node)) {
         index.update(node, path, newValue, oldValue);
       }
@@ -127,7 +128,7 @@ Data.Prototype = function() {
       newValue = diff.apply(oldValue);
     } else {
       var start, end, pos, val;
-      if (Substance.isString(oldValue)) {
+      if (_.isString(oldValue)) {
         if (diff['delete']) {
           // { delete: [2, 5] }
           start = diff['delete'].start;
@@ -141,7 +142,7 @@ Data.Prototype = function() {
         } else {
           throw new Error('Diff is not supported:', JSON.stringify(diff));
         }
-      } else if (Substance.isArray(oldValue)) {
+      } else if (_.isArray(oldValue)) {
         newValue = oldValue.slice(0);
         if (diff['delete']) {
           // { delete: 2 }
@@ -161,7 +162,7 @@ Data.Prototype = function() {
     }
     this.nodes.set(path, newValue);
     var node = this.get(path[0]);
-    Substance.each(this.indexes, function(index) {
+    _.each(this.indexes, function(index) {
       if (index.select(node)) {
         index.update(node, path, oldValue, newValue);
       }
@@ -178,7 +179,7 @@ Data.Prototype = function() {
   this.toJSON = function() {
     return {
       schema: [this.schema.id, this.schema.version],
-      nodes: Substance.deepclone(this.nodes)
+      nodes: _.deepclone(this.nodes)
     };
   };
 
@@ -212,8 +213,7 @@ Data.Prototype = function() {
     if (this.indexes[name]) {
       console.error('Index with name %s already exists.', name);
     }
-    index.setData(this);
-    index.initialize();
+    index.reset(this);
     this.indexes[name] = index;
     return this;
   };

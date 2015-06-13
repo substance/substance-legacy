@@ -32,6 +32,10 @@ NodeIndex.Prototype = function() {
    */
   this.reset = function(data) {
     this.index.clear();
+    this._initialize(data);
+  };
+
+  this._initialize = function(data) {
     Substance.each(data.getNodes(), function(node) {
       if (this.select(node)) {
         this.create(node);

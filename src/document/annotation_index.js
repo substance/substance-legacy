@@ -32,10 +32,10 @@ AnnotationIndex.Prototype = function() {
     return (node instanceof Annotation);
   };
 
-  this.reset = function() {
+  this.reset = function(data) {
     this.byPath.clear();
     this.byType.clear();
-    this.initialize();
+    this._initialize(data);
   };
 
   // TODO: use object interface? so we can combine filters (path and type)
