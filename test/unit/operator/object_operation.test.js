@@ -153,19 +153,20 @@ QUnit.test("Creating operation with invalid data.", function(assert) {
       diff: "foo"
     });
   }, "Should throw when update diff is invalid.");
-  assert.throws(function() {
-    new ObjectOperation({
-      type: ObjectOperation.SET,
-      path: ["test"],
-    });
-  }, "Should throw when value is missing.");
-  assert.throws(function() {
-    new ObjectOperation({
-      type: ObjectOperation.SET,
-      path: ["test"],
-      val: 1
-    });
-  }, "Should throw when old value is missing.");
+  // we have relaxed that, so that it is possible to 'delete' a property by setting it to undefined
+  // assert.throws(function() {
+  //   new ObjectOperation({
+  //     type: ObjectOperation.SET,
+  //     path: ["test"],
+  //   });
+  // }, "Should throw when value is missing.");
+  // assert.throws(function() {
+  //   new ObjectOperation({
+  //     type: ObjectOperation.SET,
+  //     path: ["test"],
+  //     val: 1
+  //   });
+  // }, "Should throw when old value is missing.");
 });
 
 QUnit.test("Inverse of NOP is NOP", function(assert) {

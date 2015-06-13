@@ -54,9 +54,6 @@ var ObjectOperation = function(data) {
   else if (this.type === SET) {
     this.val = data.val;
     this.original = data.original;
-    if (data.val === undefined || data.original === undefined) {
-      throw new Error('Invalid data: val and original are mandatory for set operation.');
-    }
   } else {
     throw new Error('Invalid type: '+ data.type);
   }
