@@ -82,13 +82,7 @@ TextProperty.Prototype = function() {
 
     var annotator = new Annotator();
     annotator.onText = function(context, text) {
-      var chars = text.split('');
-      for (var i = 0; i < chars.length; i++) {
-        var el = document.createElement('span');
-        el.classList.add('char');
-        el.innerHTML = chars[i];
-        context.children.push(el);
-      }
+      context.children.push(text);
     };
     annotator.onEnter = function(entry) {
       var node = entry.node;
