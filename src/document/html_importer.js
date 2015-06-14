@@ -1,16 +1,13 @@
 var Substance = require('../basics');
 var _ = Substance;
 
+var Node = window.Node;
+
 function HtmlImporter( config ) {
-
   this.config = config || {};
-
   this.nodeTypes = [];
-
   this.blockTypes = [];
-
   this.inlineTypes = [];
-
   // register converters defined in schema
   if (config.schema) {
     config.schema.each(function(NodeClass) {
@@ -26,8 +23,6 @@ function HtmlImporter( config ) {
       }
     }, this);
   }
-
-  this.$ = window.$;
 }
 
 HtmlImporter.Prototype = function HtmlImporterPrototype() {
@@ -56,6 +51,10 @@ HtmlImporter.Prototype = function HtmlImporterPrototype() {
       state.containerNode = containerNode;
     }
     this.state = state;
+  };
+
+  this.createElement = function(tagName) {
+    return global.document.createElement(tagName);
   };
 
   this.convert = function(rootEl, doc, containerId) {
@@ -87,7 +86,7 @@ HtmlImporter.Prototype = function HtmlImporterPrototype() {
   };
 
   this.convertProperty = function(doc, path, html) {
-    var el = window.document.createElement('div');
+    var el = this.createElement('div');
     el.innerHTML = html;
     this.initialize(doc, el);
     var text = this.annotatedText(el, path);
@@ -139,16 +138,16 @@ HtmlImporter.Prototype = function HtmlImporterPrototype() {
           containerNode.show(node.id);
         }
       } else {
-        if (el.nodeType === window.Node.COMMENT_NODE) {
+        if (el.nodeType === Node.COMMENT_NODE) {
           // skip comment nodes on block level
-        } else if (el.nodeType === window.Node.TEXT_NODE) {
+        } else if (el.nodeType === Node.TEXT_NODE) {
           var text = el.textContent;
           if (/^\s*$/.exec(text)) continue;
           // If we find text nodes on the block level we wrap
           // it into a paragraph element (or what is configured as default block level element)
           childIterator.back();
           this.wrapInlineElementsIntoBlockElement(childIterator);
-        } else if (el.nodeType === window.Node.ELEMENT_NODE) {
+        } else if (el.nodeType === Node.ELEMENT_NODE) {
           // NOTE: hard to tell if unsupported nodes on this level
           // should be treated as inline or not.
           // ATM we only support spans as entry to the catch-all implementation
@@ -169,7 +168,7 @@ HtmlImporter.Prototype = function HtmlImporterPrototype() {
     var state = this.state;
     var doc = state.doc;
     var containerNode = state.containerNode;
-    var wrapper = window.document.createElement('div');
+    var wrapper = global.document.createElement('div');
     while(childIterator.hasNext()) {
       var el = childIterator.next();
       var blockType = this._getBlockTypeForElement(el);
@@ -254,7 +253,7 @@ HtmlImporter.Prototype = function HtmlImporterPrototype() {
       var el = iterator.next();
       var text = "";
       // Plain text nodes...
-      if (el.nodeType === window.Node.TEXT_NODE) {
+      if (el.nodeType === Node.TEXT_NODE) {
         text = this._prepareText(state, el.textContent);
         if (text.length) {
           // Note: text is not merged into the reentrant state
@@ -262,10 +261,10 @@ HtmlImporter.Prototype = function HtmlImporterPrototype() {
           context.text = context.text.concat(text);
           context.offset += text.length;
         }
-      } else if (el.nodeType === window.Node.COMMENT_NODE) {
+      } else if (el.nodeType === Node.COMMENT_NODE) {
         // skip comment nodes
         continue;
-      } else if (el.nodeType === window.Node.ELEMENT_NODE) {
+      } else if (el.nodeType === Node.ELEMENT_NODE) {
         var inlineType = this._getInlineTypeForElement(el);
         if (!inlineType) {
           var blockType = this._getInlineTypeForElement(el);
@@ -343,9 +342,9 @@ HtmlImporter.Prototype = function HtmlImporterPrototype() {
   };
 
   this._getDomNodeType = function(el) {
-    if (el.nodeType === window.Node.TEXT_NODE) {
+    if (el.nodeType === Node.TEXT_NODE) {
       return "text";
-    } else if (el.nodeType === window.Node.COMMENT_NODE) {
+    } else if (el.nodeType === Node.COMMENT_NODE) {
       return "comment";
     } else if (el.tagName) {
       return el.tagName.toLowerCase();
