@@ -34,6 +34,14 @@ Coordinate.Prototype = function() {
     return this.path[0];
   };
 
+  this.getPath = function() {
+    return this.path;
+  };
+
+  this.getOffset = function() {
+    return this.offset;
+  };
+
 };
 
 Substance.initClass( Coordinate );

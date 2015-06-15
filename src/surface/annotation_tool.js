@@ -1,34 +1,25 @@
 var Substance = require("../basics");
-var Selection = Substance.Document.Selection;
+var Tool = require('./tool');
 
-// Mixin with helpers to implement an AnnotationTool
-function AnnotationTool() {}
+function AnnotationTool() {
+  Tool.call(this);
+}
 
 AnnotationTool.Prototype = function() {
-
   // blacklist of modes; one of 'create', 'remove', 'truncate', 'expand', 'fusion'
   this.disabledModes = [];
 
   this.splitContainerSelections = false;
 
-  this.getDocument = function() {
-    throw new Error('Contract: an AnnotationTool must implement getDocument()');
-  };
-
-  this.getContainer = function() {
-    throw new Error('Contract: an AnnotationTool must implement getContainer()');
-  };
-
-  this.getToolState = function() {
-    throw new Error('Contract: an AnnotationTool must implement getToolState()');
-  };
-
-  this.setToolState = function(/*newState*/) {
-    throw new Error('Contract: an AnnotationTool must implement setToolState()');
-  };
-
+  // Provides the type of the associated annotation node.
+  // The default implementation uses the Tool's static name.
+  // Override this method to customize.
   this.getAnnotationType = function() {
-    throw new Error('Contract: an AnnotationTool must implement getAnnotationType()');
+    if (this.constructor.static.name) {
+      return this.constructor.static.name;
+    } else {
+      throw new Error('Contract: AnnotationTool.static.name should be associated to a document annotation type.');
+    }
   };
 
   this.afterCreate = function() {};
@@ -61,29 +52,25 @@ AnnotationTool.Prototype = function() {
   // When there's some overlap with only a single annotation we do an expand
   this.canExpand = function(annos, sel) {
     if (annos.length !== 1) return false;
-    var annoSel = annos[0].getSelection(); // annoSels[0];
+    var annoSel = annos[0].getSelection();
     return sel.overlaps(annoSel) && !sel.isInsideOf(annoSel);
   };
 
   this.canTruncate = function(annos, sel) {
     if (annos.length !== 1) return false;
-    var annoSel = annos[0].getSelection(); // annoSels[0];
+    var annoSel = annos[0].getSelection();
     return (sel.isLeftAlignedWith(annoSel) || sel.isRightAlignedWith(annoSel)) && !sel.equals(annoSel);
   };
 
-  this.updateToolState = function(sel) {
-    // Note: toggling of a subject reference is only possible when
-    // the subject reference is selected and the
-    if (sel.isNull()) {
-      return this.setToolState({
-        active: false,
-        selected: false
-      });
+  this.update = function(surface, sel) {
+    this.surface = surface;
+    if ( (this.needsEnabledSurface && !surface.isEnabled()) ||
+          sel.isNull() ) {
+      return this.setDisabled();
     }
     var doc = this.getDocument();
     var annotationType = this.getAnnotationType();
     var isContainerAnno = this.isContainerAnno();
-
     // Extract range and matching annos of current selection
     var annos;
     if (isContainerAnno) {
@@ -96,23 +83,18 @@ AnnotationTool.Prototype = function() {
       // In future we could introduce a multi-annotation (multiple property selections)
       // and create multiple annotations at once.
       if (sel.isContainerSelection() && !this.splitContainerSelections) {
-        return this.setToolState({
-          active: false,
-          selected: false
-        });
+        return this.setDisabled();
       }
       annos = doc.getAnnotationsForSelection(sel, { type: annotationType });
     }
 
-    // var annoSels = annos.map(function(anno) { return anno.getSelection(); });
-
     var newState = {
-      active: true,
+      surface: surface,
+      enabled: true,
       selected: false,
       mode: null,
       sel: sel,
       annos: annos
-      // annoSels: annoSels
     };
 
     if (this.canCreate(annos, sel)) {
@@ -128,27 +110,18 @@ AnnotationTool.Prototype = function() {
     } else if (this.canExpand(annos, sel)) {
       newState.mode = "expand";
     }
-
     // Verifies if the detected mode has been disabled by the concrete implementation
     if (!newState.mode || Substance.includes(this.disabledModes, newState.mode)) {
-      return this.disableTool();
+      return this.setDisabled();
+    } else {
+      this.setToolState(newState);
     }
-
-    this.setToolState(newState);
-  };
-
-  this.disableTool = function() {
-    this.setToolState({
-      active: false,
-      selected: false
-    });
   };
 
   this.performAction = function() {
     var state = this.getToolState();
     // TODO: is this really necessary? better just check if the toolstate does not have a proper mode
     if (!state.sel || !state.mode || state.sel.isNull()) return;
-
     switch (state.mode) {
       case "create":
         return this.handleCreate(state);
@@ -160,8 +133,6 @@ AnnotationTool.Prototype = function() {
         return this.handleTruncate(state);
       case "expand":
         return this.handleExpand(state);
-      default:
-        console.error('Unknown mode: %s', this.state.mode);
     }
   };
 
@@ -173,11 +144,10 @@ AnnotationTool.Prototype = function() {
     try {
       var anno = this.createAnnotationForSelection(tx, sel);
       tx.save({ selection: sel });
+      this.afterCreate(anno);
     } finally {
       tx.cleanup();
     }
-
-    this.afterCreate(anno);
   };
 
   this.getAnnotationData = function() {
@@ -207,7 +177,7 @@ AnnotationTool.Prototype = function() {
       anno.path = sels[i].getPath();
       anno.startOffset = sels[i].getStartOffset();
       anno.endOffset = sels[i].getEndOffset();
-      tx.create(anno)
+      tx.create(anno);
     }
   };
 
@@ -304,6 +274,6 @@ AnnotationTool.Prototype = function() {
   };
 };
 
-Substance.initClass(AnnotationTool);
+Substance.inherit(AnnotationTool, Tool);
 
 module.exports = AnnotationTool;

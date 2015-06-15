@@ -1,32 +1,23 @@
 'use strict';
 
-var uuid = require('./uuid');
-var oo = require('./oo');
-var PathAdapter = require('./path_adapter');
-var EventEmitter = require('./event_emitter');
-var SubstanceError = require('./error');
-var Registry = require('./registry');
-var Factory = require('./factory');
+var _ = require('./helpers');
 
-var Substance = require('./helpers');
+/**
+ * Substance.Basics
+ * ----------------
+ * A collection of helpers pulled together from different sources, such as lodash.
+ *
+ * @module Basics
+ * @main Basics
+ */
+var Basics = {};
 
-Substance.uuid = uuid;
+_.extend(Basics, require('./helpers'));
+_.extend(Basics, require('./oo'));
+Basics.PathAdapter = require('./path_adapter');
+Basics.EventEmitter = require('./event_emitter');
+Basics.Error = require('./error');
+Basics.Registry = require('./registry');
+Basics.Factory = require('./factory');
 
-Substance.initClass = oo.initClass;
-
-Substance.inherit = oo.inherit;
-Substance.inheritClass = oo.inheritClass;
-
-Substance.mixin = oo.mixin;
-Substance.mixinClass = oo.mixinClass;
-
-Substance.PathAdapter = PathAdapter;
-
-Substance.EventEmitter = EventEmitter;
-
-Substance.Error = SubstanceError;
-
-Substance.Registry = Registry;
-Substance.Factory = Factory;
-
-module.exports = Substance;
+module.exports = Basics;

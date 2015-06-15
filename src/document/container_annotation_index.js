@@ -17,10 +17,10 @@ ContainerAnnotationIndex.Prototype = function() {
     return (node instanceof ContainerAnnotation);
   };
 
-  this.reset = function() {
+  this.reset = function(data) {
     this.byPath.clear();
     this.byId = {};
-    this.initialize();
+    this._initialize(data);
   };
 
   this.get = function(path, containerName) {

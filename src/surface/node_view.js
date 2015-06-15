@@ -1,21 +1,27 @@
+'use strict';
+
 var Substance = require('../basics');
 
 function NodeView(props) {
   this.props = props;
   this.doc = props.doc;
   this.node = props.node;
-};
+}
 
 NodeView.Prototype = function() {
 
   this.tagName = 'div';
 
   this.createElement = function() {
-    var element = document.createElement(this.tagName);
+    var element = document.createElement(this.getTagName());
     var classNames = this.getClassNames();
     $(element).addClass(classNames);
     element.dataset.id = this.node.id;
     return element;
+  };
+
+  this.getTagName = function() {
+    return this.node.constructor.static.tagName || this.tagName;
   };
 
   this.getClassNames = function() {
@@ -33,6 +39,8 @@ NodeView.Prototype = function() {
         } else if (child instanceof NodeView) {
           var el = child.render();
           element.appendChild(el);
+        } else if (child instanceof window.Node) {
+          element.appendChild(child);
         }
       }
     }

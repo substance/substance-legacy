@@ -1,4 +1,5 @@
-var Substance = require('../basics');
+'use strict';
+
 var NodeView = require('./node_view');
 
 var AnnotationView = NodeView.extend({

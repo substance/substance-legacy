@@ -7,8 +7,12 @@ var Conflict = require('./conflict');
 var INS = "+";
 var DEL = "-";
 
+var hasConflict;
+
 function TextOperation(data) {
-  if (data.type === undefined || data.pos === undefined || data.str === undefined) {
+  Operation.call(this);
+
+  if (!data || data.type === undefined || data.pos === undefined || data.str === undefined) {
     throw new Error("Illegal argument: insufficient data.");
   }
   // '+' or '-'
@@ -24,7 +28,7 @@ function TextOperation(data) {
   if (!Substance.isString(this.str)) {
     throw new Error("Illegal argument: expecting string.");
   }
-  if (!Substance.isNumber(this.pos) && this.pos < 0) {
+  if (!Substance.isNumber(this.pos) || this.pos < 0) {
     throw new Error("Illegal argument: expecting positive number as pos.");
   }
 }
@@ -47,7 +51,7 @@ TextOperation.Prototype = function() {
         return str.slice(0, this.pos).concat(this.str).concat(str.slice(this.pos));
       }
     }
-    else if (this.type === DEL) {
+    else /* if (this.type === DEL) */ {
       if (str.length < this.pos + this.str.length) {
         throw new Error("Provided string is too short.");
       }
@@ -56,9 +60,6 @@ TextOperation.Prototype = function() {
       } else {
         return str.slice(0, this.pos).concat(str.slice(this.pos + this.str.length));
       }
-    }
-    else {
-      throw new Error("Illegal operation type: " + this.type);
     }
   };
 
@@ -92,7 +93,7 @@ TextOperation.Prototype = function() {
   };
 
   this.hasConflict = function(other) {
-    return TextOperation.hasConflict(this, other);
+    return hasConflict(this, other);
   };
 
   this.isEmpty = function() {
@@ -107,11 +108,14 @@ TextOperation.Prototype = function() {
     };
   };
 
+  this.toString = function() {
+    return ["(", (this.isInsert() ? '+' : '-'), ",", this.pos, ",'", this.str, "')"].join('');
+  };
 };
 
 Substance.inherit(TextOperation, Operation);
 
-var hasConflict = function(a, b) {
+hasConflict = function(a, b) {
   // Insert vs Insert:
   //
   // Insertions are conflicting iff their insert position is the same.
@@ -138,13 +142,9 @@ var hasConflict = function(a, b) {
 // Transforms two Insertions
 // --------
 
-function transform_insert_insert(a, b, first) {
+function transform_insert_insert(a, b) {
   if (a.pos === b.pos) {
-    if (first) {
-      b.pos += a.str.length;
-    } else {
-      a.pos += b.str.length;
-    }
+    b.pos += a.str.length;
   }
   else if (a.pos < b.pos) {
     b.pos += a.str.length;
@@ -208,7 +208,7 @@ function transform_insert_delete(a, b) {
 
 var transform = function(a, b, options) {
   options = options || {};
-  if (options.check && hasConflict(a, b)) {
+  if (options["no-conflict"] && hasConflict(a, b)) {
     throw new Conflict(a, b);
   }
   if (!options.inplace) {
@@ -216,7 +216,7 @@ var transform = function(a, b, options) {
     b = Substance.clone(b);
   }
   if (a.type === INS && b.type === INS)  {
-    transform_insert_insert(a, b, true);
+    transform_insert_insert(a, b);
   }
   else if (a.type === DEL && b.type === DEL) {
     transform_delete_delete(a, b, true);

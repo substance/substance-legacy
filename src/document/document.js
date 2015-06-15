@@ -1,5 +1,6 @@
 'use strict';
 
+var _ = require('../basics/helpers');
 var Substance = require('../basics');
 var Data = require('../data');
 
@@ -11,16 +12,14 @@ var DocumentChange = require('./document_change');
 
 var NotifyPropertyChange = require('./notify_property_change');
 
-function Document( schema, seed ) {
+function Document(schema) {
   Substance.EventEmitter.call(this);
 
   this.schema = schema;
-  this.seed = seed;
 
-  this.data = new Data.IncrementalGraph(schema, {
-    seed: seed,
-    didCreateNode: Substance.bind(this._didCreateNode, this),
-    didDeleteNode: Substance.bind(this._didDeleteNode, this),
+  this.data = new Data.Incremental(schema, {
+    didCreateNode: _.bind(this._didCreateNode, this),
+    didDeleteNode: _.bind(this._didDeleteNode, this),
   });
 
   // all by type
@@ -53,11 +52,10 @@ function Document( schema, seed ) {
     'path': new NotifyPropertyChange(this),
   };
 
-  // reset containers initially
+  this.initialize();
+
+  // CONTRACT: containers should be added in this.initialize()
   this.containers = this.getIndex('type').get('container');
-  Substance.each(this.containers, function(container) {
-    container.reset();
-  });
 }
 
 Document.Prototype = function() {
@@ -66,8 +64,23 @@ Document.Prototype = function() {
     return new Document(this.schema);
   };
 
+  this.initialize = function() {
+    // add things to the document, such as containers etc.
+  };
+
+  this.loadSeed = function(seed) {
+    _.each(seed.nodes, function(nodeData) {
+      this.create(nodeData);
+    }, this);
+    _.each(this.containers, function(container) {
+      container.reset();
+    });
+  };
+
   this.fromSnapshot = function(data) {
-    return new Document(this.schema, data);
+    var doc = this.newInstance();
+    doc.loadSeed(data);
+    return doc;
   };
 
   this.getSchema = function() {
@@ -179,6 +192,19 @@ Document.Prototype = function() {
     }
   };
 
+  this.setText = function(path, text, annotations) {
+    var idx;
+    var oldAnnos = this.getIndex('annotations').get(path);
+    // TODO: what to do with container annotations
+    for (idx = 0; idx < oldAnnos.length; idx++) {
+      this.delete(oldAnnos[idx].id);
+    }
+    this.set(path, text);
+    for (idx = 0; idx < annotations.length; idx++) {
+      this.create(annotations[idx]);
+    }
+  };
+
   this.update = function(path, diff) {
     if (this.isTransacting) {
       this.stage.update(path, diff);
@@ -233,7 +259,7 @@ Document.Prototype = function() {
     }
     annotations = this.annotationIndex.get(path, startOffset, endOffset);
     if (options.type) {
-      annotations = Substance.filter(annotations, AnnotationIndex.filterByType(options.type));
+      annotations = _.filter(annotations, AnnotationIndex.filterByType(options.type));
     }
     return annotations;
   };
@@ -256,7 +282,7 @@ Document.Prototype = function() {
     } else {
       annotations = this.getIndex('container-annotations').byId;
     }
-    annotations = Substance.filter(annotations, function(anno) {
+    annotations = _.filter(annotations, function(anno) {
       var annoSel = anno.getSelection();
       return sel.overlaps(annoSel);
     });
@@ -298,7 +324,7 @@ Document.Prototype = function() {
 
   this._updateContainers = function(op) {
     var containers = this.containers;
-    Substance.each(containers, function(container) {
+    _.each(containers, function(container) {
       container.update(op);
     });
   };
@@ -312,7 +338,7 @@ Document.Prototype = function() {
     if (mode !== 'skipStage') {
       this.stage.apply(documentChange);
     }
-    Substance.each(documentChange.ops, function(op) {
+    _.each(documentChange.ops, function(op) {
       this.data.apply(op);
       this._updateContainers(op);
     }, this);
@@ -320,7 +346,7 @@ Document.Prototype = function() {
 
   this._notifyChangeListeners = function(documentChange, info) {
     info = info || {};
-    Substance.each(this.eventProxies, function(proxy) {
+    _.each(this.eventProxies, function(proxy) {
       proxy.onDocumentChanged(documentChange, info);
     });
     this.emit('document:changed', documentChange, info);

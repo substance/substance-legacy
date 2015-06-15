@@ -7,7 +7,7 @@ It provides generic API's:
 - Substance Document (define custom document schemas, instantiate and manipulate a document)
 - Substance Surface (Define the HTML structure of your custom editor and attach a Substance Surface on it to make it editable)
 
-Substance also includes a reference implementation for an extensible web-editor. 
+Substance also includes a reference implementation for an extensible web-editor.
 
 - Substance Writer
 
@@ -27,3 +27,24 @@ TODO:
   That way we can prevent the blur event to be fired on the surface.
 
 - The root element of a Substance Surface must be set contenteditable
+
+
+## Development
+
+### Testing
+
+1. Running the QUnit test-suite in a browser for debugging:
+
+```
+$ node test/serve
+```
+
+Then open http://localhost:4201 in your browser.
+
+2. Running test-suite using Karma to generate a code coverage report.
+
+```
+$ karma start test/karma.conf.js
+```
+
+The report will be stored in the `coverage` folder.

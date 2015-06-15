@@ -1,4 +1,5 @@
 {
+  "esnext": true,
   "node": true,
   "jquery": true,
   "devel": true,
@@ -7,8 +8,8 @@
   "unused": true,
   "sub": true,
   "predef": [
-    "React",
     "window",
-    "document"
+    "document",
+    "QUnit"
   ]
 }

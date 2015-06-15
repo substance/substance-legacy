@@ -1,15 +1,13 @@
 var Substance = require('../basics');
+var _ = Substance;
+
+var Node = window.Node;
 
 function HtmlImporter( config ) {
-
   this.config = config || {};
-
   this.nodeTypes = [];
-
   this.blockTypes = [];
-
   this.inlineTypes = [];
-
   // register converters defined in schema
   if (config.schema) {
     config.schema.each(function(NodeClass) {
@@ -33,33 +31,37 @@ HtmlImporter.Prototype = function HtmlImporterPrototype() {
     console.warn('This element is not handled by the converters you provided. This is the default implementation which just skips conversion. Override HtmlImporter.defaultConverter(el, converter) to change this behavior.');
   };
 
-  this.initialize = function(doc, rootEl) {
+  this.initialize = function(doc, rootEl, containerId) {
     var state = {
       doc: doc,
       rootEl: rootEl,
       inlineNodes: [],
       trimWhitespaces: !!this.config.trimWhitespaces,
-      // properties
-      contexts: [],
-      // state for reentrant calls
-      reentrant: null,
+      // stack of contexts to handle reentrant calls
+      stack: [],
       lastChar: "",
       skipTypes: {},
       ignoreAnnotations: false,
     };
-    if (!doc.get('content')) {
-      doc.create({
-        'type': 'container',
-        'id': 'content',
-        nodes: []
-      });
+    if (containerId) {
+      var containerNode = doc.get(containerId);
+      if (!containerNode) {
+        throw new Error('Illegal argument: could not find container with id' + containerId);
+      }
+      state.containerNode = containerNode;
     }
-    state.containerNode = doc.get('content');
     this.state = state;
   };
 
-  this.convert = function(rootEl, doc) {
-    this.initialize(doc, rootEl);
+  this.createElement = function(tagName) {
+    return global.document.createElement(tagName);
+  };
+
+  this.convert = function(rootEl, doc, containerId) {
+    if (!containerId) {
+      throw new Error('Missing argument: containerId is required.');
+    }
+    this.initialize(doc, rootEl, containerId);
     this.body(rootEl);
     // create annotations afterwards so that the targeted nodes
     // exist for sure
@@ -68,18 +70,27 @@ HtmlImporter.Prototype = function HtmlImporterPrototype() {
     }
   };
 
-  this.convertDocument = function(htmlDoc, doc) {
+  this.convertDocument = function(htmlDoc, doc, containerId) {
     var body = htmlDoc.getElementsByTagName( 'body' )[0];
     body = this.sanitizeHtmlDoc(body);
     console.log('Sanitized html:', body.innerHTML);
 
-    this.initialize(doc, body);
+    this.initialize(doc, body, containerId);
     this.body(body);
-    // create annotations afterwards so that the targeted nodes
-    // exist for sure
+
+    // Note: we need to create inlineNodes/annotations afterwards
+    // as at this point the target nodes exist
     for (var i = 0; i < this.state.inlineNodes.length; i++) {
       doc.create(this.state.inlineNodes[i]);
     }
+  };
+
+  this.convertProperty = function(doc, path, html) {
+    var el = this.createElement('div');
+    el.innerHTML = html;
+    this.initialize(doc, el);
+    var text = this.annotatedText(el, path);
+    doc.setText(path, text, this.state.inlineNodes);
   };
 
   this.sanitizeHtmlDoc = function(body) {
@@ -127,16 +138,16 @@ HtmlImporter.Prototype = function HtmlImporterPrototype() {
           containerNode.show(node.id);
         }
       } else {
-        if (el.nodeType === window.Node.COMMENT_NODE) {
+        if (el.nodeType === Node.COMMENT_NODE) {
           // skip comment nodes on block level
-        } else if (el.nodeType === window.Node.TEXT_NODE) {
+        } else if (el.nodeType === Node.TEXT_NODE) {
           var text = el.textContent;
           if (/^\s*$/.exec(text)) continue;
           // If we find text nodes on the block level we wrap
           // it into a paragraph element (or what is configured as default block level element)
           childIterator.back();
           this.wrapInlineElementsIntoBlockElement(childIterator);
-        } else if (el.nodeType === window.Node.ELEMENT_NODE) {
+        } else if (el.nodeType === Node.ELEMENT_NODE) {
           // NOTE: hard to tell if unsupported nodes on this level
           // should be treated as inline or not.
           // ATM we only support spans as entry to the catch-all implementation
@@ -157,7 +168,7 @@ HtmlImporter.Prototype = function HtmlImporterPrototype() {
     var state = this.state;
     var doc = state.doc;
     var containerNode = state.containerNode;
-    var wrapper = window.document.createElement('div');
+    var wrapper = global.document.createElement('div');
     while(childIterator.hasNext()) {
       var el = childIterator.next();
       var blockType = this._getBlockTypeForElement(el);
@@ -198,28 +209,33 @@ HtmlImporter.Prototype = function HtmlImporterPrototype() {
    *
    * Make sure you call this method only for elements where `this.isParagraphish(elements) === true`
    */
-  this.annotatedText = function(el, path, options) {
-    options = options || {};
+  this.annotatedText = function(el, path) {
     var state = this.state;
     if (path) {
-      if (state.reentrant) {
+      if (state.stack.length>0) {
         throw new Error('Contract: it is not allowed to bind a new call annotatedText to a path while the previous has not been completed.');
       }
-      state.contexts.push({
-        path: path
-      });
-      state.reentrant = {
-        offset:options.offset || 0,
-        text: ""
-      };
+      state.stack = [{ path: path, offset: 0, text: ""}];
+    } else {
+      if (state.stack.length===0) {
+        throw new Error("Contract: HtmlImporter.annotatedText() requires 'path' for non-reentrant call.");
+      }
     }
     var iterator = new HtmlImporter.ChildNodeIterator(el);
     var text = this._annotatedText(iterator);
-    // append the text of the last reentrant call
-    // state.reentrant.text = state.reentrant.text.concat(text);
     if (path) {
-      state.contexts.pop();
-      state.reentrant = null;
+      state.stack.pop();
+    }
+    return text;
+  };
+
+  this.plainText = function(el) {
+    var state = this.state;
+    var text = $(el).text();
+    if (state.stack.length > 0) {
+      var context = _.last(state.stack);
+      context.offset += text.length;
+      context.text += context.text.concat(text);
     }
     return text;
   };
@@ -229,28 +245,26 @@ HtmlImporter.Prototype = function HtmlImporterPrototype() {
   //
   this._annotatedText = function(iterator) {
     var state = this.state;
-    var context = state.contexts[state.contexts.length-1];
-    var reentrant = state.reentrant;
-    var plainText = "";
-    if (!reentrant) {
-      throw new Error('Illegal state: state.reentrant is null.');
+    var context = _.last(state.stack);
+    if (!context) {
+      throw new Error('Illegal state: context is null.');
     }
     while(iterator.hasNext()) {
       var el = iterator.next();
       var text = "";
       // Plain text nodes...
-      if (el.nodeType === window.Node.TEXT_NODE) {
+      if (el.nodeType === Node.TEXT_NODE) {
         text = this._prepareText(state, el.textContent);
         if (text.length) {
           // Note: text is not merged into the reentrant state
           // so that we are able to return for this reentrant call
-          plainText = plainText.concat(text);
-          reentrant.offset += text.length;
+          context.text = context.text.concat(text);
+          context.offset += text.length;
         }
-      } else if (el.nodeType === window.Node.COMMENT_NODE) {
+      } else if (el.nodeType === Node.COMMENT_NODE) {
         // skip comment nodes
         continue;
-      } else if (el.nodeType === window.Node.ELEMENT_NODE) {
+      } else if (el.nodeType === Node.ELEMENT_NODE) {
         var inlineType = this._getInlineTypeForElement(el);
         if (!inlineType) {
           var blockType = this._getInlineTypeForElement(el);
@@ -258,25 +272,32 @@ HtmlImporter.Prototype = function HtmlImporterPrototype() {
             throw new Error('Expected inline element. Found block element:', el);
           }
           console.warn('Unsupported inline element. We will not create an annotation for it, but process its children to extract annotated text.', el);
-          plainText = plainText.concat(this.annotatedText(el));
+          // Note: this will store the result into the current context
+          this.annotatedText(el);
           continue;
         }
         // reentrant: we delegate the conversion to the inline node class
         // it will either call us back (this.annotatedText) or give us a finished
         // node instantly (self-managed)
-        var startOffset = reentrant.offset;
+        var startOffset = context.offset;
         var inlineNode;
         if (inlineType.static.fromHtml) {
+          // push a new context so we can deal with reentrant calls
+          state.stack.push({ path: context.path, offset: startOffset, text: ""});
           inlineNode = inlineType.static.fromHtml(el, this);
           if (!inlineNode) {
             throw new Error("Contract: a Node's fromHtml() method must return a node");
           }
+          // ... and transfer the result into the current context
+          var result = state.stack.pop();
+          context.offset = result.offset;
+          context.text = context.text.concat(result.text);
         } else {
           inlineNode = {};
-          plainText = plainText.concat(this.annotatedText(el));
+          this.annotatedText(el);
         }
         // in the mean time the offset will probably have changed to reentrant calls
-        var endOffset = reentrant.offset;
+        var endOffset = context.offset;
         inlineNode.type = inlineType.static.name;
         inlineNode.id = inlineType.id || Substance.uuid(inlineNode.type);
         inlineNode.startOffset = startOffset;
@@ -286,16 +307,12 @@ HtmlImporter.Prototype = function HtmlImporterPrototype() {
       } else {
         console.warn('Unknown element type. Taking plain text. NodeTyp=%s', el.nodeType, el);
         text = this._prepareText(state, el.textContent);
-        plainText = plainText.concat(text);
+        context.text = context.text.concat(text);
+        context.offset += text.length;
       }
     }
     // return the plain text collected during this reentrant call
-    return plainText;
-  };
-
-  this.getCurrentPath = function() {
-    var currentContext = this.state.contexts[this.state.contexts.length-1];
-    return currentContext.path;
+    return context.text;
   };
 
   this._getBlockTypeForElement = function(el) {
@@ -325,9 +342,9 @@ HtmlImporter.Prototype = function HtmlImporterPrototype() {
   };
 
   this._getDomNodeType = function(el) {
-    if (el.nodeType === window.Node.TEXT_NODE) {
+    if (el.nodeType === Node.TEXT_NODE) {
       return "text";
-    } else if (el.nodeType === window.Node.COMMENT_NODE) {
+    } else if (el.nodeType === Node.COMMENT_NODE) {
       return "comment";
     } else if (el.tagName) {
       return el.tagName.toLowerCase();

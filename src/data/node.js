@@ -1,34 +1,68 @@
 'use strict';
 
 var Substance = require('../basics');
+var EventEmitter = Substance.EventEmitter;
 
-function Node( data ) {
-  Substance.EventEmitter.call(this);
-  this.properties = Substance.extend({}, this.getDefaultProperties(), data);
+/**
+ * Base node implemention.
+ *
+ * @class Data.Node
+ * @extends EventEmitter
+ * @constructor
+ * @param {Object} properties
+ * @module Data
+ */
+function Node( properties ) {
+  EventEmitter.call(this);
+
+  /**
+   * The internal storage for properties.
+   * @property properties {Object}
+   */
+  this.properties = Substance.extend({}, this.getDefaultProperties(), properties);
   this.properties.type = this.constructor.static.name;
   this.properties.id = this.properties.id || Substance.uuid(this.properties.type);
 }
 
-// Idea for default properties:
-// Node.schema = {
-//   "foo": {
-//     type: "string",
-//     default: ""
-//   }
-// }
-
 Node.Prototype = function() {
 
+  /**
+   * Serialize to JSON.
+   *
+   * @method toJSON
+   * @return Plain object.
+   */
   this.toJSON = function() {
     return this.properties;
   };
 
+  /**
+   * Get default properties.
+   *
+   * Stub implementation.
+   *
+   * @method getDefaultProperties
+   * @return An object containing default properties.
+   */
   this.getDefaultProperties = function() {};
 
+  /**
+   * Check if the node is of a given type.
+   *
+   * @method isInstanceOf
+   * @param {String} typeName
+   * @return true if the node has a parent with given type, false otherwise.
+   */
   this.isInstanceOf = function(typeName) {
-    return Node.static.isInstanceOf(this.constructor, typeName);
+    return Node.isInstanceOf(this.constructor, typeName);
   };
 
+  /**
+   * Get a the list of all polymorphic types.
+   *
+   * @method getClassNames
+   * @return An array of type names.
+   */
   this.getClassNames = function() {
     var classNames = [];
     var staticData = this.constructor.static;
@@ -39,6 +73,13 @@ Node.Prototype = function() {
     return classNames.join(' ');
   };
 
+  /**
+   * Get the type of a property.
+   *
+   * @method getPropertyType
+   * @param {String} propertyName
+   * @return The property's type.
+   */
   this.getPropertyType = function(propertyName) {
     var schema = this.constructor.static.schema;
     return schema[propertyName];
@@ -46,30 +87,42 @@ Node.Prototype = function() {
 
 };
 
-Substance.inherit( Node, Substance.EventEmitter );
+Substance.inherit(Node, EventEmitter);
 
 /**
  * Symbolic name for this model class. Must be set to a unique string by every subclass.
+ * @static
+ * @property name {String}
  */
 Node.static.name = "node";
 
+/**
+ * The node schema.
+ *
+ * @property schema {Object}
+ * @static
+ */
 Node.static.schema = {
   type: 'string',
   id: 'string'
 };
 
+/**
+ * Read-only properties.
+ *
+ * @property readOnlyProperties {Array}
+ * @static
+ */
 Node.static.readOnlyProperties = ['type', 'id'];
 
-Node.static.getPropertyType = function(propertyName) {
-  // TODO: is this bound to Node.static?
-  return this.schema[propertyName];
-};
-
-Node.static.matchFunction = function(/*el*/) {
-  return false;
-};
-
-Node.static.isInstanceOf = function(NodeClass, typeName) {
+/**
+ * Internal implementation of Node.prototype.isInstanceOf.
+ *
+ * @method isInstanceOf
+ * @static
+ * @private
+ */
+ Node.isInstanceOf = function(NodeClass, typeName) {
   var staticData = NodeClass.static;
   while (staticData && staticData.name !== "node") {
     if (staticData && staticData.name === typeName) {
@@ -79,7 +132,6 @@ Node.static.isInstanceOf = function(NodeClass, typeName) {
   }
   return false;
 };
-
 
 var defineProperty = function(prototype, property, readonly) {
   var getter, setter;
@@ -125,7 +177,7 @@ var prepareSchema = function(NodeClass) {
   if (parentSchema) {
     NodeClass.static.schema = Substance.extend(Object.create(parentSchema), schema);
   }
-}
+};
 
 var initNodeClass = function(NodeClass) {
   // add a extend method so that this class can be used to create child models.

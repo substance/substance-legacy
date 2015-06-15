@@ -32,10 +32,10 @@ AnnotationIndex.Prototype = function() {
     return (node instanceof Annotation);
   };
 
-  this.reset = function() {
+  this.reset = function(data) {
     this.byPath.clear();
     this.byType.clear();
-    this.initialize();
+    this._initialize(data);
   };
 
   // TODO: use object interface? so we can combine filters (path and type)
@@ -93,9 +93,11 @@ AnnotationIndex.filterByRange = function(start, end) {
     var aEnd = anno.endOffset;
     var overlap = (aEnd >= start);
     // Note: it is allowed to omit the end part
+    /* jshint eqnull: true */
     if (end != null) {
       overlap = overlap && (aStart <= end);
     }
+    /* jshint eqnull: false */
     return overlap;
   };
 };
