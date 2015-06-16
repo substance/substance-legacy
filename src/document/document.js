@@ -70,6 +70,10 @@ Document.Prototype = function() {
 
   this.loadSeed = function(seed) {
     _.each(seed.nodes, function(nodeData) {
+      var id = nodeData.id;
+      if (this.get(id)) {
+        this.delete(id);
+      }
       this.create(nodeData);
     }, this);
     _.each(this.containers, function(container) {
