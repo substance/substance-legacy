@@ -1,7 +1,7 @@
 var Substance = require('../basics');
 var _ = Substance;
 
-var Node = window.Node;
+var inBrowser = (typeof window !== 'undefined');
 
 function HtmlImporter( config ) {
   this.config = config || {};
@@ -18,23 +18,25 @@ function HtmlImporter( config ) {
       this.nodeTypes.push(NodeClass);
       if (NodeClass.static.blockType) {
         this.blockTypes.push(NodeClass);
-      } else {
+      } else if (NodeClass.static.isInline){
         this.inlineTypes.push(NodeClass);
       }
     }, this);
   }
+  this.$ = global.$;
 }
 
 HtmlImporter.Prototype = function HtmlImporterPrototype() {
 
-  this.defaultConverter = function(/*el, converter*/) {
-    console.warn('This element is not handled by the converters you provided. This is the default implementation which just skips conversion. Override HtmlImporter.defaultConverter(el, converter) to change this behavior.');
+  this.defaultConverter = function($el, converter) {
+    /* jshint unused:false */
+    console.warn('This element is not handled by the converters you provided. This is the default implementation which just skips conversion. Override HtmlImporter.defaultConverter(el, converter) to change this behavior.', this.$toStr($el));
   };
 
-  this.initialize = function(doc, rootEl, containerId) {
+  this.initialize = function(doc, $root) {
     var state = {
       doc: doc,
-      rootEl: rootEl,
+      $root: $root,
       inlineNodes: [],
       trimWhitespaces: !!this.config.trimWhitespaces,
       // stack of contexts to handle reentrant calls
@@ -43,26 +45,75 @@ HtmlImporter.Prototype = function HtmlImporterPrototype() {
       skipTypes: {},
       ignoreAnnotations: false,
     };
-    if (containerId) {
-      var containerNode = doc.get(containerId);
-      if (!containerNode) {
-        throw new Error('Illegal argument: could not find container with id' + containerId);
-      }
-      state.containerNode = containerNode;
-    }
     this.state = state;
   };
 
-  this.createElement = function(tagName) {
-    return global.document.createElement(tagName);
+  this.convert = function($root, doc) {
+    /* jshint unused:false */
+    throw new Error('This method is abstract.');
+
+    /* Example:
+
+    this.initialize(doc, $root);
+    var $body = $root.find('body');
+    this.convertContainer($body, 'body');
+    this.finish();
+
+    */
   };
 
-  this.convert = function(rootEl, doc, containerId) {
-    if (!containerId) {
-      throw new Error('Missing argument: containerId is required.');
+  // convert a container with block level elements and show
+  // the result in the container node with given id
+  this.convertContainer = function($containerEl, containerId) {
+    var state = this.state;
+    var doc = state.doc;
+    var containerNode = doc.get(containerId);
+    state.containerNode = containerNode;
+    var childIterator = new HtmlImporter.ChildNodeIterator($containerEl[0]);
+    while(childIterator.hasNext()) {
+      var el = childIterator.next();
+      var $el = this.$(el);
+      var blockType = this._getBlockTypeForElement($el);
+      var node;
+      if (blockType) {
+        node = blockType.static.fromHtml($el, this);
+        if (!node) {
+          throw new Error("Contract: a Node's fromHtml() method must return a node", this.$toStr($el));
+        } else {
+          node.type = blockType.static.name;
+          node.id = node.id || $el.attr('id') || Substance.uuid(node.type);
+          doc.create(node);
+          containerNode.show(node.id);
+        }
+      } else {
+        if (this.isCommentNode(el)) {
+          // skip comment nodes on block level
+        } else if (this.isTextNode(el)) {
+          var text = $el.text();
+          if (/^\s*$/.exec(text)) continue;
+          // If we find text nodes on the block level we wrap
+          // it into a paragraph element (or what is configured as default block level element)
+          childIterator.back();
+          this.wrapInlineElementsIntoBlockElement(childIterator);
+        } else if (this.isElementNode(el)) {
+          // NOTE: hard to tell if unsupported nodes on this level
+          // should be treated as inline or not.
+          // ATM we only support spans as entry to the catch-all implementation
+          // that collects inline elements and wraps into a paragraph.
+          // TODO: maybe this should be the default?
+          if (this.getTagName(el) === "span") {
+            childIterator.back();
+            this.wrapInlineElementsIntoBlockElement(childIterator);
+          } else {
+            this.createDefaultBlockElement($el);
+          }
+        }
+      }
     }
-    this.initialize(doc, rootEl, containerId);
-    this.body(rootEl);
+  };
+
+  this.finish = function() {
+    var doc = this.state.doc;
     // create annotations afterwards so that the targeted nodes
     // exist for sure
     for (var i = 0; i < this.state.inlineNodes.length; i++) {
@@ -70,97 +121,56 @@ HtmlImporter.Prototype = function HtmlImporterPrototype() {
     }
   };
 
-  this.convertDocument = function(htmlDoc, doc, containerId) {
-    var body = htmlDoc.getElementsByTagName( 'body' )[0];
-    body = this.sanitizeHtmlDoc(body);
-    console.log('Sanitized html:', body.innerHTML);
-
-    this.initialize(doc, body, containerId);
-    this.body(body);
-
-    // Note: we need to create inlineNodes/annotations afterwards
-    // as at this point the target nodes exist
-    for (var i = 0; i < this.state.inlineNodes.length; i++) {
-      doc.create(this.state.inlineNodes[i]);
-    }
-  };
-
   this.convertProperty = function(doc, path, html) {
-    var el = this.createElement('div');
-    el.innerHTML = html;
-    this.initialize(doc, el);
-    var text = this.annotatedText(el, path);
+    var $el = this.$('<div>').html(html);
+    this.initialize(doc, $el);
+    var text = this.annotatedText($el, path);
     doc.setText(path, text, this.state.inlineNodes);
   };
 
-  this.sanitizeHtmlDoc = function(body) {
-    var newRoot = body;
-    // Look for paragraphs in <b> which is served by GDocs.
-    var gdocs = body.querySelector('b > p');
-    if (gdocs) {
-      return gdocs.parentNode;
-    }
-    $(body).find('*[style]').removeAttr('style');
-    return newRoot;
-  };
-
-  this.convertElement = function(el) {
+  this.convertElement = function($el) {
     var doc = this.state.doc;
-    var nodeType = this._getNodeTypeForElement(el);
+    var nodeType = this._getNodeTypeForElement($el);
     if (!nodeType) {
-      console.error("Could not find a node class associated to element", el);
-      throw new Error("Could not find a node class associated to element");
+      throw new Error("Could not find a node class associated to element:" + this.$toStr($el));
     }
-    var node = nodeType.static.fromHtml(el, this);
+    var node = nodeType.static.fromHtml($el, this);
     node.type = nodeType.static.name;
-    node.id = node.id || Substance.uuid(node.type);
+    node.id = node.id || this.defaultId($el, node.type);
     doc.create(node);
     return node;
   };
 
-  this.body = function(body) {
-    var state = this.state;
-    var doc = state.doc;
-    var containerNode = state.containerNode;
-    var childIterator = new HtmlImporter.ChildNodeIterator(body);
-    while(childIterator.hasNext()) {
-      var el = childIterator.next();
-      var blockType = this._getBlockTypeForElement(el);
-      var node;
-      if (blockType) {
-        node = blockType.static.fromHtml(el, this);
-        if (!node) {
-          throw new Error("Contract: a Node's fromHtml() method must return a node");
-        } else {
-          node.type = blockType.static.name;
-          node.id = node.id || Substance.uuid(node.type);
-          doc.create(node);
-          containerNode.show(node.id);
-        }
-      } else {
-        if (el.nodeType === Node.COMMENT_NODE) {
-          // skip comment nodes on block level
-        } else if (el.nodeType === Node.TEXT_NODE) {
-          var text = el.textContent;
-          if (/^\s*$/.exec(text)) continue;
-          // If we find text nodes on the block level we wrap
-          // it into a paragraph element (or what is configured as default block level element)
-          childIterator.back();
-          this.wrapInlineElementsIntoBlockElement(childIterator);
-        } else if (el.nodeType === Node.ELEMENT_NODE) {
-          // NOTE: hard to tell if unsupported nodes on this level
-          // should be treated as inline or not.
-          // ATM we only support spans as entry to the catch-all implementation
-          // that collects inline elements and wraps into a paragraph.
-          // TODO: maybe this should be the default?
-          if (el.tagName.toLowerCase() === "span") {
-            childIterator.back();
-            this.wrapInlineElementsIntoBlockElement(childIterator);
-          } else {
-            this.createDefaultBlockElement(el);
-          }
-        }
-      }
+  this.getTagName = function(el) {
+    if (!el.tagName) {
+      return "";
+    } else {
+      return el.tagName.toLowerCase();
+    }
+  };
+
+  this.isTextNode = function(el) {
+    if (inBrowser) {
+      return (el.nodeType === window.Node.TEXT_NODE);
+    } else {
+      // cheerio text node
+      return el.type === "text";
+    }
+  };
+
+  this.isElementNode = function(el) {
+    if (inBrowser) {
+      return (el.nodeType === window.Node.ELEMENT_NODE);
+    } else {
+      return el.type === "tag";
+    }
+  };
+
+  this.isCommentNode = function(el) {
+    if (inBrowser) {
+      return (el.nodeType === window.Node.COMMENT_NODE);
+    } else {
+      return el.type === "comment";
     }
   };
 
@@ -168,37 +178,38 @@ HtmlImporter.Prototype = function HtmlImporterPrototype() {
     var state = this.state;
     var doc = state.doc;
     var containerNode = state.containerNode;
-    var wrapper = global.document.createElement('div');
+    var $wrapper = this.$('<div>');
     while(childIterator.hasNext()) {
       var el = childIterator.next();
-      var blockType = this._getBlockTypeForElement(el);
+      var $el = this.$(el);
+      var blockType = this._getBlockTypeForElement($el);
       if (blockType) {
         childIterator.back();
         break;
       }
-      wrapper.appendChild(el.cloneNode(true));
+      $wrapper.append($el.clone());
     }
-    var node = this.defaultConverter(wrapper, this);
+    var node = this.defaultConverter($wrapper, this);
     if (node) {
       if (!node.type) {
-        throw new Error('Contract: Html.defaultConverter() must return a node with type.');
+        throw new Error('Contract: Html.defaultConverter() must return a node with type.', this.$toStr($el));
       }
-      node.id = node.id || Substance.uuid(node.type);
+      node.id = node.id || this.nextId(node.type);
       doc.create(node);
       containerNode.show(node.id);
     }
   };
 
-  this.createDefaultBlockElement = function(el) {
+  this.createDefaultBlockElement = function($el) {
     var state = this.state;
     var doc = state.doc;
     var containerNode = state.containerNode;
-    var node = this.defaultConverter(el, this);
+    var node = this.defaultConverter($el, this);
     if (node) {
       if (!node.type) {
-        throw new Error('Contract: Html.defaultConverter() must return a node with type.');
+        throw new Error('Contract: Html.defaultConverter() must return a node with type.', this.$toStr($el));
       }
-      node.id = node.id || Substance.uuid(node.type);
+      node.id = node.id || this.defaultId($el, node.type);
       doc.create(node);
       containerNode.show(node.id);
     }
@@ -209,19 +220,19 @@ HtmlImporter.Prototype = function HtmlImporterPrototype() {
    *
    * Make sure you call this method only for elements where `this.isParagraphish(elements) === true`
    */
-  this.annotatedText = function(el, path) {
+  this.annotatedText = function($el, path) {
     var state = this.state;
     if (path) {
       if (state.stack.length>0) {
-        throw new Error('Contract: it is not allowed to bind a new call annotatedText to a path while the previous has not been completed.');
+        throw new Error('Contract: it is not allowed to bind a new call annotatedText to a path while the previous has not been completed.', this.$toStr($el));
       }
       state.stack = [{ path: path, offset: 0, text: ""}];
     } else {
       if (state.stack.length===0) {
-        throw new Error("Contract: HtmlImporter.annotatedText() requires 'path' for non-reentrant call.");
+        throw new Error("Contract: HtmlImporter.annotatedText() requires 'path' for non-reentrant call.", this.$toStr($el));
       }
     }
-    var iterator = new HtmlImporter.ChildNodeIterator(el);
+    var iterator = new HtmlImporter.ChildNodeIterator($el[0]);
     var text = this._annotatedText(iterator);
     if (path) {
       state.stack.pop();
@@ -229,15 +240,38 @@ HtmlImporter.Prototype = function HtmlImporterPrototype() {
     return text;
   };
 
-  this.plainText = function(el) {
+  this.plainText = function($el) {
     var state = this.state;
-    var text = $(el).text();
+    var text = $el.text();
     if (state.stack.length > 0) {
       var context = _.last(state.stack);
       context.offset += text.length;
       context.text += context.text.concat(text);
     }
     return text;
+  };
+
+  this.nextId = function(prefix) {
+    // TODO: we could create more beautiful ids?
+    // however we would need to be careful as there might be another
+    // element in the HTML coming with that id
+    // For now we use shas
+    return Substance.uuid(prefix);
+  };
+
+  // TODO: maybe we want to capture warnings and errors in future
+  this.warning = function(msg) {
+    console.warn('[HtmlImporter] ' + msg);
+  };
+
+  this.error = function(msg) {
+    console.error('[HtmlImporter] ' + msg);
+  };
+
+  this.defaultId = function($el, type) {
+    var id = $el.attr('id') || this.nextId(type);
+    // TODO: check for collisions
+    return id;
   };
 
   // Internal function for parsing annotated text
@@ -251,29 +285,30 @@ HtmlImporter.Prototype = function HtmlImporterPrototype() {
     }
     while(iterator.hasNext()) {
       var el = iterator.next();
+      var $el = this.$(el);
       var text = "";
       // Plain text nodes...
-      if (el.nodeType === Node.TEXT_NODE) {
-        text = this._prepareText(state, el.textContent);
+      if (this.isTextNode(el)) {
+        text = this._prepareText(state, $el.text());
         if (text.length) {
           // Note: text is not merged into the reentrant state
           // so that we are able to return for this reentrant call
           context.text = context.text.concat(text);
           context.offset += text.length;
         }
-      } else if (el.nodeType === Node.COMMENT_NODE) {
+      } else if (this.isCommentNode(el)) {
         // skip comment nodes
         continue;
-      } else if (el.nodeType === Node.ELEMENT_NODE) {
-        var inlineType = this._getInlineTypeForElement(el);
+      } else if (this.isElementNode(el)) {
+        var inlineType = this._getInlineTypeForElement($el);
         if (!inlineType) {
-          var blockType = this._getInlineTypeForElement(el);
+          var blockType = this._getInlineTypeForElement($el);
           if (blockType) {
-            throw new Error('Expected inline element. Found block element:', el);
+            throw new Error('Expected inline element. Found block element:', this.$toStr($el));
           }
-          console.warn('Unsupported inline element. We will not create an annotation for it, but process its children to extract annotated text.', el);
+          console.warn('Unsupported inline element. We will not create an annotation for it, but process its children to extract annotated text.', this.$toStr($el));
           // Note: this will store the result into the current context
-          this.annotatedText(el);
+          this.annotatedText($el);
           continue;
         }
         // reentrant: we delegate the conversion to the inline node class
@@ -284,9 +319,9 @@ HtmlImporter.Prototype = function HtmlImporterPrototype() {
         if (inlineType.static.fromHtml) {
           // push a new context so we can deal with reentrant calls
           state.stack.push({ path: context.path, offset: startOffset, text: ""});
-          inlineNode = inlineType.static.fromHtml(el, this);
+          inlineNode = inlineType.static.fromHtml($el, this);
           if (!inlineNode) {
-            throw new Error("Contract: a Node's fromHtml() method must return a node");
+            throw new Error("Contract: a Node's fromHtml() method must return a node", this.$toStr($el));
           }
           // ... and transfer the result into the current context
           var result = state.stack.pop();
@@ -294,19 +329,19 @@ HtmlImporter.Prototype = function HtmlImporterPrototype() {
           context.text = context.text.concat(result.text);
         } else {
           inlineNode = {};
-          this.annotatedText(el);
+          this.annotatedText($el);
         }
         // in the mean time the offset will probably have changed to reentrant calls
         var endOffset = context.offset;
         inlineNode.type = inlineType.static.name;
-        inlineNode.id = inlineType.id || Substance.uuid(inlineNode.type);
+        inlineNode.id = inlineType.id || this.nextId(inlineNode.type);
         inlineNode.startOffset = startOffset;
         inlineNode.endOffset = endOffset;
         inlineNode.path = context.path.slice(0);
         state.inlineNodes.push(inlineNode);
       } else {
-        console.warn('Unknown element type. Taking plain text. NodeTyp=%s', el.nodeType, el);
-        text = this._prepareText(state, el.textContent);
+        console.warn('Unknown element type. Taking plain text.', this.$toStr($el));
+        text = this._prepareText(state, $el.text());
         context.text = context.text.concat(text);
         context.offset += text.length;
       }
@@ -315,36 +350,36 @@ HtmlImporter.Prototype = function HtmlImporterPrototype() {
     return context.text;
   };
 
-  this._getBlockTypeForElement = function(el) {
+  this._getBlockTypeForElement = function($el) {
     // HACK: tagName does not exist for prmitive nodes such as DOM TextNode.
-    if (!el.tagName) return null;
+    if (!$el[0].tagName) return null;
     for (var i = 0; i < this.blockTypes.length; i++) {
-      if (this.blockTypes[i].static.matchElement(el)) {
+      if (this.blockTypes[i].static.matchElement($el)) {
         return this.blockTypes[i];
       }
     }
   };
 
-  this._getInlineTypeForElement = function(el) {
+  this._getInlineTypeForElement = function($el) {
     for (var i = 0; i < this.inlineTypes.length; i++) {
-      if (this.inlineTypes[i].static.matchElement(el)) {
+      if (this.inlineTypes[i].static.matchElement($el)) {
         return this.inlineTypes[i];
       }
     }
   };
 
-  this._getNodeTypeForElement = function(el) {
+  this._getNodeTypeForElement = function($el) {
     for (var i = 0; i < this.nodeTypes.length; i++) {
-      if (this.nodeTypes[i].static.matchElement(el)) {
+      if (this.nodeTypes[i].static.matchElement($el)) {
         return this.nodeTypes[i];
       }
     }
   };
 
   this._getDomNodeType = function(el) {
-    if (el.nodeType === Node.TEXT_NODE) {
+    if (this.isTextNode(el)) {
       return "text";
-    } else if (el.nodeType === Node.COMMENT_NODE) {
+    } else if (this.isCommentNode(el)) {
       return "comment";
     } else if (el.tagName) {
       return el.tagName.toLowerCase();
@@ -383,6 +418,13 @@ HtmlImporter.Prototype = function HtmlImporterPrototype() {
     }
     state.lastChar = text[text.length-1] || state.lastChar;
     return text;
+  };
+
+  // for error messages
+  this.$toStr = function($el) {
+    var $clone = $el.clone();
+    $clone.empty();
+    return $('<p>').append($clone).html();
   };
 
 };

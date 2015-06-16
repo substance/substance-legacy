@@ -38,7 +38,7 @@ var Node = Data.Node.extend({
   getComponents: function() {
     var componentNames = this.constructor.static.components || [];
     if (componentNames.length === 0) {
-      console.warn('Contract: a node must define its editable properties.');
+      console.warn('Contract: a node must define its editable properties.', this.constructor.static.name);
     }
     return componentNames;
   },

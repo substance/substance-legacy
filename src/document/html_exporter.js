@@ -3,8 +3,6 @@
 var Substance = require('../basics');
 var Annotator = require('./annotator');
 
-var Node = window.Node;
-
 function HtmlExporter(config) {
   this.config = config || {};
   this.state = null;
@@ -48,7 +46,7 @@ HtmlExporter.Prototype = function() {
     for (var i = 0; i < nodeIds.length; i++) {
       var node = state.doc.get(nodeIds[i]);
       var el = node.toHtml(this);
-      if (!el || (el.nodeType !== Node.ELEMENT_NODE)) {
+      if (!el || (el.nodeType !== window.Node.ELEMENT_NODE)) {
         throw new Error('Contract: Node.toHtml() must return a DOM element. NodeType: '+node.type);
       }
       el.setAttribute('data-id', node.id);
@@ -77,7 +75,7 @@ HtmlExporter.Prototype = function() {
     annotator.onExit = function(entry, context, parentContext) {
       var anno = context.annotation;
       var el = anno.toHtml(self, context.children);
-      if (!el || el.nodeType !== Node.ELEMENT_NODE) {
+      if (!el || el.nodeType !== window.Node.ELEMENT_NODE) {
         throw new Error('Contract: Annotation.toHtml() must return a DOM element.');
       }
       el.setAttribute('data-id', anno.id);

@@ -61,6 +61,8 @@ var Annotation = Node.extend({
 
 });
 
+Annotation.static.isInline = true;
+
 // default implementation for inline elements
 // Attention: there is a difference between the implementation
 // of toHtml for annotations and general nodes.
