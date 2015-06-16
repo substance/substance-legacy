@@ -3,6 +3,8 @@
 var Substance = require('../basics');
 var Annotator = require('./annotator');
 
+var inBrowser = (typeof window !== 'undefined');
+
 function HtmlExporter(config) {
   this.config = config || {};
   this.state = null;
@@ -10,60 +12,69 @@ function HtmlExporter(config) {
 
 HtmlExporter.Prototype = function() {
 
-  this.createElement = function(tagName) {
-    return global.document.createElement(tagName);
+  /**
+   * @param doc Substance.Document instance
+   * @param object options TODO: what options are available?
+   * @return $element
+   */
+  this.convert = function(doc, options) {
+    /* jshint unused:false */
+    throw new Error('Method is abstract.');
+
+    /**
+      Example:
+
+      this.initialize(doc, options);
+      var body = doc.get('body');
+      this.convertContainer(body);
+      return this.state.$root;
+    */
   };
 
-  this.toHtml = function(doc, containerId, options) {
+  this.convertProperty = function(doc, path, options) {
+    this.initialize(doc, options);
+    var $wrapper = $('<div>')
+      .append(this.annotatedText(path));
+    return $wrapper.html();
+  };
+
+  this.initialize = function(doc, options) {
     options = {} || options;
     this.state =  {
       doc: doc,
-      rootElement: this.createElement('div'),
       options: options
     };
-    var container = doc.get(containerId);
-    this.container(container);
-    return this.state.rootElement;
   };
 
-  this.propertyToHtml = function(doc, path, options) {
-    options = {} || options;
-    this.state =  {
-      doc: doc,
-      options: options
-    };
-    var frag = this.annotatedText(path);
-    var div = this.createElement('div');
-    div.appendChild(frag);
-    var html = div.innerHTML;
-    // console.log('HtmlExporter.propertyToHtml', path, html);
-    return html;
+  this.convertNode = function(node) {
+    return node.toHtml(this);
   };
 
-  this.container = function(containerNode) {
+  this.convertContainer = function(containerNode) {
     var state = this.state;
     var nodeIds = containerNode.nodes;
+    var elements = [];
     for (var i = 0; i < nodeIds.length; i++) {
       var node = state.doc.get(nodeIds[i]);
-      var el = node.toHtml(this);
-      if (!el || (el.nodeType !== window.Node.ELEMENT_NODE)) {
+      var $el = node.toHtml(this);
+      if (!$el || !this.isElementNode($el[0])) {
         throw new Error('Contract: Node.toHtml() must return a DOM element. NodeType: '+node.type);
       }
-      el.setAttribute('data-id', node.id);
-      state.rootElement.appendChild(el);
+      $el.attr('id', node.id);
+      elements.push($el);
     }
+    return elements
   };
 
   this.annotatedText = function(path) {
     var self = this;
     var doc = this.state.doc;
-    var fragment = global.document.createDocumentFragment();
     var annotations = doc.getIndex('annotations').get(path);
     var text = doc.get(path);
 
     var annotator = new Annotator();
     annotator.onText = function(context, text) {
-      context.children.push(global.document.createTextNode(text));
+      context.children.push(text);
     };
     annotator.onEnter = function(entry) {
       var anno = entry.node;
@@ -74,21 +85,37 @@ HtmlExporter.Prototype = function() {
     };
     annotator.onExit = function(entry, context, parentContext) {
       var anno = context.annotation;
-      var el = anno.toHtml(self, context.children);
-      if (!el || el.nodeType !== window.Node.ELEMENT_NODE) {
+      var $el = anno.toHtml(self, context.children);
+      if (!$el || !self.isElementNode($el[0])) {
         throw new Error('Contract: Annotation.toHtml() must return a DOM element.');
       }
-      el.setAttribute('data-id', anno.id);
-      parentContext.children.push(el);
+      $el.attr('id', anno.id);
+      parentContext.children.push($el);
     };
-    var root = { children: [] };
-    annotator.start(root, text, annotations);
-    for (var i = 0; i < root.children.length; i++) {
-      fragment.appendChild(root.children[i]);
-    }
-    return fragment;
+    var wrapper = { children: [] };
+    annotator.start(wrapper, text, annotations);
+    return wrapper.children;
   };
 
+  this.isElementNode = function(el) {
+    if (inBrowser) {
+      return (el.nodeType === window.Node.ELEMENT_NODE);
+    } else {
+      return el.type === "tag";
+    }
+  };
+
+  this.createDoc = function() {
+    if (inBrowser) {
+      var doc = window.document.implementation.createDocument ('http://www.w3.org/1999/xhtml', 'html', null);
+      return $(doc);
+    } else {
+      // creating document using cheerio
+      var EMPTY_DOC = '<!DOCTYPE html><html><head></head><body></body></html>';
+      var $root = $.load(EMPTY_DOC).root();
+      return $root;
+    }
+  };
 };
 
 Substance.initClass(HtmlExporter);
