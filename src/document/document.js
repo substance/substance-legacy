@@ -293,6 +293,10 @@ Document.Prototype = function() {
     return annotations;
   };
 
+  this.getDocumentMeta = function() {
+    return this.get('document');
+  };
+
   // Called back by Substance.Data after a node instance has been created
   this._didCreateNode = function(node) {
     // create the node from schema
