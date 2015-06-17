@@ -76,7 +76,10 @@ Document.Prototype = function() {
       }
       this.create(nodeData);
     }, this);
-    _.each(this.containers, function(container) {
+    _.each(this.getIndex('type').get('container'), function(container) {
+      container.reset();
+    });
+    _.each(this.stage.getIndex('type').get('container'), function(container) {
       container.reset();
     });
   };
