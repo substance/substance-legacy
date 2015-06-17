@@ -168,7 +168,7 @@ SurfaceSelection.Prototype = function() {
     if (_.isEqual(this.state.start.path, this.state.end.path)) {
       return new Document.PropertySelection(range, this.state.reverse);
     } else {
-      return new Document.ContainerSelection(this.surface.getContainer(), range, this.state.reverse);
+      return new Document.ContainerSelection(this.container, range, this.state.reverse);
     }
   };
 
