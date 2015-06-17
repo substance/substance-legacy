@@ -83,6 +83,11 @@ Tool.Prototype = function() {
       return this.setDisabled(false);
     }
   };
+
+  //legacy TODO fixme
+  this.updateToolState = function(sel, surface) {
+    return this.update(surface, sel);
+  };
 };
 
 Substance.inherit(Tool, Substance.EventEmitter);

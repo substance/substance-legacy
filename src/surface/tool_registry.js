@@ -1,6 +1,7 @@
 "use strict";
 
 var Substance = require('../basics');
+var _ = Substance._;
 
 var ToolRegistry = function() {
   Substance.Registry.call(this);
@@ -8,18 +9,13 @@ var ToolRegistry = function() {
 
 ToolRegistry.Prototype = function() {
 
-  this.registerTool = function(ToolClass) {
-    var name = ToolClass.static.name;
-    if (!name) {
-      throw new Error('Contract: a Tool class must have a name.');
-    }
-    this.add(name, new ToolClass());
-  };
-
-  this.registerTools = function(toolClasses) {
-    for (var i = 0; i < toolClasses.length; i++) {
-      this.registerTool(toolClasses[i]);
-    }
+  this.dispose = function() {
+    this.each(function(tool) {
+      if (tool.dispose) {
+        tool.dispose();
+      }
+    });
+    this.clear();
   };
 
 };
