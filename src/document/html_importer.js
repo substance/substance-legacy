@@ -128,7 +128,7 @@ HtmlImporter.Prototype = function HtmlImporterPrototype() {
     doc.setText(path, text, this.state.inlineNodes);
   };
 
-  this.convertElement = function($el) {
+  this.convertElement = function($el, data) {
     var doc = this.state.doc;
     var nodeType = this._getNodeTypeForElement($el);
     if (!nodeType) {
@@ -137,8 +137,8 @@ HtmlImporter.Prototype = function HtmlImporterPrototype() {
     var node = nodeType.static.fromHtml($el, this);
     node.type = nodeType.static.name;
     node.id = node.id || this.defaultId($el, node.type);
-    doc.create(node);
-    return node;
+    _.extend(node, data);
+    return doc.create(node);
   };
 
   this.getTagName = function(el) {

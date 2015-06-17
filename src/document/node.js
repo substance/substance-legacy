@@ -24,15 +24,19 @@ var Node = Data.Node.extend({
   },
 
   hasParent: function() {
-    return false;
+    return !!this.parent;
   },
 
-  getParentNode: function() {
-    return this.document.get(this.parentId);
+  getParent: function() {
+    return this.document.get(this.parent);
   },
 
-  isResilient: function() {
-    return false;
+  getRootParent: function() {
+    var node = this;
+    while (node.hasParent()) {
+      node = node.getParent();
+    }
+    return node;
   },
 
   getComponents: function() {
@@ -46,14 +50,6 @@ var Node = Data.Node.extend({
   // Note: children are provided for inline nodes only.
   toHtml: function(converter, children) {
     return this.constructor.static.toHtml(this, converter, children);
-  },
-
-  // Node can be managed externally.
-  // They are not removed from a document when the node
-  // gets deleted by the user, but only removed from
-  // the container.
-  isExternal: function() {
-    return !!this.constructor.static.external;
   },
 
 });
