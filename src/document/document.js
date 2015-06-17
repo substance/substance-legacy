@@ -366,7 +366,7 @@ Substance.inherit(Document, Substance.EventEmitter);
 
 Object.defineProperty(Document.prototype, 'id', {
   get: function() {
-    return this.get('document').guid;
+    return this.getDocumentMeta().guid;
   },
   set: function() {
     throw new Error("Id is an immutable property.");

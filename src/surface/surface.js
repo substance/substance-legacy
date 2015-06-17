@@ -48,7 +48,7 @@ function Surface(editor, options) {
   this.skipNextObservation = false;
 
   // set when editing is enabled
-  this.enabled = false;
+  this.enabled = true;
 
   // surface usually gets frozen while showing a popup
   this.frozen = false;

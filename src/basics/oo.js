@@ -17,7 +17,7 @@ var extend = function( parent, proto ) {
   var ctor = function $$$() {
     parent.apply(this, arguments);
     if (this.init) {
-      this.init();
+      this.init.apply(this, arguments);
     }
   };
   OO.inherit(ctor, parent);

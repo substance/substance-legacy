@@ -215,7 +215,7 @@ Data.Prototype = function() {
     }
     index.reset(this);
     this.indexes[name] = index;
-    return this;
+    return index;
   };
 
   /**

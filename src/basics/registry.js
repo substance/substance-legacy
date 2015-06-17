@@ -56,6 +56,11 @@ Registry.Prototype = function() {
     delete this.entries[name];
   };
 
+  this.clear = function() {
+    this.names = [];
+    this.entries = [];
+  };
+
   /**
    * Get the entry registered for a given name.
    *

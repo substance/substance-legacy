@@ -133,6 +133,8 @@ Node.static.readOnlyProperties = ['type', 'id'];
   return false;
 };
 
+Node.static.isInstanceOf = Node.isInstanceOf;
+
 var defineProperty = function(prototype, property, readonly) {
   var getter, setter;
   getter = function() {
