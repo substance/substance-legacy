@@ -21,11 +21,7 @@ function TransactionDocument(document) {
     this.data.addIndex(name, index.clone());
   }, this);
 
-  // reset containers initially
-  this.containers = this.getIndex('type').get('container');
-  Substance.each(this.containers, function(container) {
-    container.reset();
-  });
+  this.reset();
 }
 
 TransactionDocument.Prototype = function() {
@@ -33,6 +29,7 @@ TransactionDocument.Prototype = function() {
   this.reset = function() {
     this.ops = [];
     this.before = {};
+    this.containers = this.getIndex('type').get('container');
     // reset containers initially
     Substance.each(this.containers, function(container) {
       container.reset();

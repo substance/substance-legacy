@@ -79,9 +79,7 @@ Document.Prototype = function() {
     _.each(this.getIndex('type').get('container'), function(container) {
       container.reset();
     });
-    _.each(this.stage.getIndex('type').get('container'), function(container) {
-      container.reset();
-    });
+    this.stage.reset();
   };
 
   this.fromSnapshot = function(data) {
