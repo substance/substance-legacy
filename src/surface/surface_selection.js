@@ -1,5 +1,6 @@
 var OO = require('../basics/oo');
 var Document = require('../document');
+var _ = require('../basics/helpers');
 
 /**
  * A class that maps DOM selections to model selections.
@@ -15,8 +16,9 @@ var Document = require('../document');
  * @param {Element} rootElement
  * @module Surface
  */
-function SurfaceSelection(rootElement) {
+function SurfaceSelection(rootElement, container) {
   this.element = rootElement;
+  this.container = container;
   this.state = new SurfaceSelection.State();
 }
 
@@ -49,7 +51,8 @@ SurfaceSelection.Prototype = function() {
   // 2. fixup coordinates
   // 3. create a model selection
 
-  this.updateState = function() {
+  this.updateState = function(options) {
+    options = options || {};
     var sel = window.getSelection();
     var anchorNode = sel.anchorNode;
     var anchorOffset = sel.anchorOffset;
@@ -68,14 +71,14 @@ SurfaceSelection.Prototype = function() {
     var startCoor, endCoor;
     if (isCollapsed) {
       if (isBackward) {
-        startCoor = this.getModelCoordinate(focusNode, focusOffset);
+        startCoor = this.getModelCoordinate(focusNode, focusOffset, options);
       } else {
-        startCoor = this.getModelCoordinate(anchorNode, anchorOffset);
+        startCoor = this.getModelCoordinate(anchorNode, anchorOffset, options);
       }
       endCoor = startCoor;
     } else {
-      startCoor = this.getModelCoordinate(anchorNode, anchorOffset);
-      endCoor = this.getModelCoordinate(focusNode, focusOffset);
+      startCoor = this.getModelCoordinate(anchorNode, anchorOffset, options);
+      endCoor = this.getModelCoordinate(focusNode, focusOffset, options);
       if (isBackward) {
         var tmp = endCoor;
         endCoor = startCoor;
@@ -154,6 +157,107 @@ SurfaceSelection.Prototype = function() {
     }
     path = getPath(elements[idx]);
     return new Document.Coordinate(path, charPos);
+  };
+
+  this.getSelection = function() {
+    this.updateState();
+    if (!this.state) {
+      return Document.nullSelection;
+    }
+    var range = new Document.Range(this.state.start, this.state.end);
+    if (_.isEqual(this.state.start.path, this.state.end.path)) {
+      return new Document.PropertySelection(range, this.state.reverse);
+    } else {
+      return new Document.ContainerSelection(this.surface.getContainer(), range, this.state.reverse);
+    }
+  };
+
+  var _findDomPosition = function(element, offset) {
+    var text = $(element).text();
+    // not in this element
+    if (text.length < offset) {
+      return {
+        node: null,
+        offset: offset - text.length
+      };
+    // at the right boundary
+    } else if (element.nodeType === document.TEXT_NODE) {
+      return {
+        node: element,
+        offset: offset,
+        boundary: (text.length === offset)
+      };
+    // HACK: for empty elements
+    } else if (text.length === 0) {
+      return {
+        node: element,
+        offset: offset,
+        boundary: true
+      };
+    // within the node or a child node
+    } else {
+      for (var child = element.firstChild; child; child = child.nextSibling) {
+        var pos = _findDomPosition(child, offset);
+        if (pos.node) {
+          return pos;
+        } else {
+          // not found in this child; then pos.offset contains the translated offset
+          offset = pos.offset;
+        }
+      }
+      throw new Error("Illegal state: we should not have reached here!");
+    }
+  };
+
+  this._getDomPosition = function(path, offset) {
+    var selector = '*[data-path="'+path.join('.')+'"]';
+    var componentElement = this.element.querySelector(selector);
+    if (!componentElement) {
+      console.warn('Could not find DOM element for path', path);
+      return null;
+    }
+    if (componentElement) {
+      var pos = _findDomPosition(componentElement, offset);
+      if (pos.node) {
+        return pos;
+      } else {
+        return null;
+      }
+    }
+  };
+
+  this.setSelection = function(sel) {
+    var wSel = window.getSelection();
+    if (sel.isNull()) {
+      return this.clear();
+    }
+    var range = sel.getRange();
+    var startPosition = this._getDomPosition(range.start.path, range.start.offset);
+    if (!startPosition) {
+      return this.clear();
+    }
+    var endPosition;
+    if (range.isCollapsed()) {
+      endPosition = startPosition;
+    } else {
+      endPosition = this._getDomPosition(range.end.path, range.end.offset);
+    }
+    if (!endPosition) {
+      return this.clear();
+    }
+    // if there is a range then set replace the window selection accordingly
+    wSel.removeAllRanges();
+    range = window.document.createRange();
+    range.setStart(startPosition.node, startPosition.offset);
+    range.setEnd(endPosition.node, endPosition.offset);
+    wSel.addRange(range);
+    this.state = new SurfaceSelection.State(sel.isCollapsed(), sel.isReverse(), range.start, range.end);
+  };
+
+  this.clear = function() {
+    var sel = window.getSelection();
+    sel.removeAllRanges();
+    this.state = null;
   };
 
 };

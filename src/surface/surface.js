@@ -1,9 +1,7 @@
 'use strict';
 
 var Substance = require('../basics');
-
-// DomSelection is used to map DOM to editor selections and vice versa
-var DomSelection = require('./dom_selection');
+var SurfaceSelection = require('./surface_selection');
 
 var __id__ = 0;
 
@@ -19,7 +17,7 @@ function Surface(editor, options) {
   this.$element = null;
   this.editor = editor;
 
-  this.domSelection = null;
+  this.surfaceSelection = null;
 
   this.logger = options.logger || window.console;
 
@@ -113,7 +111,7 @@ Surface.Prototype = function() {
     // if (this.enableContentEditable) {
     //   this.$element.prop('contentEditable', 'true');
     // }
-    this.domSelection = new DomSelection(element, this.editor.getContainer());
+    this.surfaceSelection = new SurfaceSelection(element, this.editor.getContainer());
 
     this.$element.addClass('surface');
 
@@ -176,7 +174,7 @@ Surface.Prototype = function() {
     //
     this.element = null;
     this.$element = null;
-    this.domSelection = null;
+    this.surfaceSelection = null;
 
     this.attached = false;
   };
@@ -280,7 +278,7 @@ Surface.Prototype = function() {
       this.editor.selectAll();
       var sel = this.editor.selection;
       this.setSelection(sel);
-      this.domSelection.set(sel);
+      this.surfaceSelection.setSelection(sel);
       this.emit('selection:changed', sel, this);
       handled = true;
     }
@@ -380,10 +378,10 @@ Surface.Prototype = function() {
     // Note: we need this timeout so that CE updates the DOM selection first
     // before we map the DOM selection
     window.setTimeout(function() {
-      self._updateModelSelection({
-        left: (e.keyCode === Surface.Keys.LEFT),
-        right: (e.keyCode === Surface.Keys.RIGHT)
-      });
+      var options = {
+        direction: (e.keyCode === Surface.Keys.LEFT) ? 'left' : 'right'
+      };
+      self._updateModelSelection(options);
     });
   };
 
@@ -392,10 +390,10 @@ Surface.Prototype = function() {
     // Note: we need this timeout so that CE updates the DOM selection first
     // before we map the DOM selection
     window.setTimeout(function() {
-      self._updateModelSelection({
-        up: (e.keyCode === Surface.Keys.UP),
-        down: (e.keyCode === Surface.Keys.DOWN)
-      });
+      var options = {
+        direction: (e.keyCode === Surface.Keys.UP) ? 'left' : 'right'
+      };
+      self._updateModelSelection(options);
     });
   };
 
@@ -409,7 +407,7 @@ Surface.Prototype = function() {
 
   this.handleEnterKey = function( e ) {
     e.preventDefault();
-    var selection = this.domSelection.get();
+    var selection = this.surfaceSelection.getSelection();
     if (e.shiftKey) {
       this.editor.softBreak(selection, {surface: this});
     } else {
@@ -452,8 +450,8 @@ Surface.Prototype = function() {
     var self = this;
     // Deactivating this for now, hoping that this is not necessary anymore.
     // setTimeout(function() {
-      if (self.domSelection) {
-        self._setModelSelection(self.domSelection.get());
+      if (self.surfaceSelection) {
+        self._setModelSelection(self.surfaceSelection.getSelection());
       }
     // });
   };
@@ -462,7 +460,7 @@ Surface.Prototype = function() {
     if (this.dragging) {
       // TODO: do we want that?
       // update selection during dragging
-      // this._setModelSelection(this.domSelection.get());
+      // this._setModelSelection(this.surfaceSelection.getSelection());
     }
   };
 
@@ -522,10 +520,10 @@ Surface.Prototype = function() {
       var self = this;
       // window.setTimeout(function() {
         // GUARD: For cases where the panel/or whatever has been disposed already ‚after changing the doc
-        if (!self.domSelection) return;
+        if (!self.surfaceSelection) return;
         var sel = change.after.selection;
         // self.editor.selection = sel;
-        self.domSelection.set(sel);
+        self.surfaceSelection.setSelection(sel);
         self.emit('selection:changed', sel);
       // });
     }
@@ -540,15 +538,15 @@ Surface.Prototype = function() {
    */
   this.setSelection = function(sel) {
     if (this._setModelSelection(sel)) {
-      if (this.domSelection) {
+      if (this.surfaceSelection) {
         // also update the DOM selection
-        this.domSelection.set(sel);
+        this.surfaceSelection.setSelection(sel);
       }
     }
   };
 
   this.rerenderDomSelection = function() {
-    this.domSelection.set(this.getSelection());
+    this.surfaceSelection.setSelection(this.getSelection());
   };
 
   this.getDomNodeForId = function(nodeId) {
@@ -556,7 +554,7 @@ Surface.Prototype = function() {
   };
 
   this._updateModelSelection = function(options) {
-    this._setModelSelection(this.domSelection.get(options));
+    this._setModelSelection(this.surfaceSelection.getSelection(options));
   };
 
   /**
@@ -589,7 +587,7 @@ Surface.Prototype = function() {
     }
     var $caret = this.$caret;
     $caret.empty().remove();
-    var pos = DomSelection.findDomPosition(this.element, sel.start.path, sel.start.offset);
+    var pos = this.surfaceSelection._findDomPosition(sel.start.path, sel.start.offset);
     if (pos.node.nodeType === window.Node.TEXT_NODE) {
       var textNode = pos.node;
       if (textNode.length === pos.offset) {
