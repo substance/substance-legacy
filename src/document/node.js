@@ -31,7 +31,7 @@ var Node = Data.Node.extend({
     return this.document.get(this.parent);
   },
 
-  getRootParent: function() {
+  getRoot: function() {
     var node = this;
     while (node.hasParent()) {
       node = node.getParent();
