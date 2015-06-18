@@ -524,7 +524,7 @@ Surface.Prototype = function() {
         var sel = change.after.selection;
         // self.editor.selection = sel;
         self.surfaceSelection.setSelection(sel);
-        self.emit('selection:changed', sel);
+        self.emit('selection:changed', sel, this);
       // });
     }
   };
