@@ -4,10 +4,10 @@ function Tool() {
   Substance.EventEmitter.call(this);
 
   this.state = {
-    // if the tool can be applied at all
-    enabled: false,
-    // if the tool has been applied and can be toggled
-    selected: false
+    // we disable tools by default
+    disabled: true,
+    // if the tool is turned on / toggled on
+    active: false
   };
 }
 
@@ -50,29 +50,37 @@ Tool.Prototype = function() {
     return this.state;
   };
 
+  this.isEnabled = function() {
+    return !this.state.disabled;
+  };
+
+  this.isDisabled = function() {
+    return this.state.disabled;
+  };
+
   this.setEnabled = function() {
     this.setToolState({
-      enabled: true,
-      selected: false
+      disabled: false,
+      active: false
     });
   };
 
   this.setDisabled = function() {
     this.setToolState({
-      enabled: false,
-      selected: false
+      disabled: true,
+      active: false
     });
   };
 
   this.disableTool = function() {
-    console.error('DEPRICATED: use tool.setDisabled()');
+    console.error('DEPRECATED: use tool.setDisabled()');
     this.setDisabled();
   };
 
   this.setSelected = function() {
     this.setToolState({
-      enabled: true,
-      selected: true
+      disabled: false,
+      active: true
     });
   };
 
@@ -80,7 +88,7 @@ Tool.Prototype = function() {
   this.update = function(surface, sel) {
     this.surface = surface;
     if (this.needsEnabledSurface && !surface.isEnabled()) {
-      return this.setDisabled(false);
+      return this.setDisabled();
     }
   };
 

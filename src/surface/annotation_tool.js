@@ -90,8 +90,8 @@ AnnotationTool.Prototype = function() {
 
     var newState = {
       surface: surface,
-      enabled: true,
-      selected: false,
+      disabled: false,
+      active: false,
       mode: null,
       sel: sel,
       annos: annos
@@ -102,10 +102,10 @@ AnnotationTool.Prototype = function() {
     } else if (this.canFusion(annos, sel)) {
       newState.mode = "fusion";
     } else if (this.canTruncate(annos, sel)) {
-      newState.selected = true;
+      newState.active = true;
       newState.mode = "truncate";
     } else if (this.canRemove(annos, sel)) {
-      newState.selected = true;
+      newState.active = true;
       newState.mode = "remove";
     } else if (this.canExpand(annos, sel)) {
       newState.mode = "expand";
