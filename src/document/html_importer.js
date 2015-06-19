@@ -141,6 +141,10 @@ HtmlImporter.Prototype = function HtmlImporterPrototype() {
     return doc.create(node);
   };
 
+  this.getDocument = function() {
+    return this.state.doc;
+  };
+
   this.getTagName = function(el) {
     if (!el.tagName) {
       return "";
