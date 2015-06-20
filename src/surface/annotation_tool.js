@@ -82,7 +82,7 @@ AnnotationTool.Prototype = function() {
       // is a property annotation.
       // In future we could introduce a multi-annotation (multiple property selections)
       // and create multiple annotations at once.
-      if (sel.isContainerSelection() && !this.splitContainerSelections) {
+      if (!sel.isPropertySelection() && !this.splitContainerSelections) {
         return this.setDisabled();
       }
       annos = doc.getAnnotationsForSelection(sel, { type: annotationType });

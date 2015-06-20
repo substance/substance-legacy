@@ -17,6 +17,7 @@ Document.Selection.create = require('./create_selection');
 Document.nullSelection = Document.Selection.nullSelection;
 Document.PropertySelection = require('./property_selection');
 Document.ContainerSelection = require('./container_selection');
+Document.TableSelection = require('./table_selection');
 
 Document.Annotator = require('./annotator');
 Document.AnnotationUpdates = require('./annotation_updates');

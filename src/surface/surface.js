@@ -111,7 +111,7 @@ Surface.Prototype = function() {
     // if (this.enableContentEditable) {
     //   this.$element.prop('contentEditable', 'true');
     // }
-    this.surfaceSelection = new SurfaceSelection(element, this.editor.getContainer());
+    this.surfaceSelection = new SurfaceSelection(element, doc, this.editor.getContainer());
 
     this.$element.addClass('surface');
 
@@ -448,12 +448,11 @@ Surface.Prototype = function() {
     this.dragging = false;
     // HACK: somehow the DOM selection is not ready yet
     var self = this;
-    // Deactivating this for now, hoping that this is not necessary anymore.
-    // setTimeout(function() {
-      if (self.surfaceSelection) {
-        self._setModelSelection(self.surfaceSelection.getSelection());
-      }
-    // });
+    if (self.surfaceSelection) {
+      var sel = self.surfaceSelection.getSelection();
+      console.log('######', sel.toString());
+      self._setModelSelection(sel);
+    }
   };
 
   this.onMouseMove = function() {

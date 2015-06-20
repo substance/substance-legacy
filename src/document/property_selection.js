@@ -56,7 +56,7 @@ PropertySelection.Prototype = function() {
     } else {
       coor = this.range.end;
     }
-    return Selection.create(coor);
+    this.createWithNewRange(range.start.offset, range.end.offset);
   };
 
   // Helper Methods
@@ -163,7 +163,11 @@ PropertySelection.Prototype = function() {
     }
     var newStartOffset = Math.min(this.startOffset, other.startOffset);
     var newEndOffset = Math.max(this.endOffset, other.endOffset);
-    return Selection.create(this.getPath(), newStartOffset, newEndOffset);
+    return this.createWithNewRange(newStartOffset, newEndOffset);
+  };
+
+  this.createWithNewRange = function(startOffset, endOffset) {
+    return new PropertySelection(new Range(new Coordinate(this.path, startOffset), new Coordinate(this.path, endOffset)));
   };
 
   this.truncate = function(other) {
@@ -183,7 +187,7 @@ PropertySelection.Prototype = function() {
       newStartOffset = this.startOffset;
       newEndOffset = other.startOffset;
     }
-    return Selection.create(this.getPath(), newStartOffset, newEndOffset);
+    this.createWithNewRange(newStartOffset, newEndOffset);
   };
 };
 

@@ -1,6 +1,11 @@
 var OO = require('../basics/oo');
 var Document = require('../document');
 var _ = require('../basics/helpers');
+var Range = Document.Range;
+var Coordinate = Document.Coordinate;
+var PropertySelection = Document.PropertySelection;
+var ContainerSelection = Document.ContainerSelection;
+var TableSelection = Document.TableSelection;
 
 /**
  * A class that maps DOM selections to model selections.
@@ -16,8 +21,9 @@ var _ = require('../basics/helpers');
  * @param {Element} rootElement
  * @module Surface
  */
-function SurfaceSelection(rootElement, container) {
+function SurfaceSelection(rootElement, doc, container) {
   this.element = rootElement;
+  this.doc = doc;
   this.container = container;
   this.state = new SurfaceSelection.State();
 }
@@ -110,7 +116,7 @@ SurfaceSelection.Prototype = function() {
     range.setEnd(node, offset);
     charPos = range.toString().length;
     charPos = Math.min(propertyEl.textContent.length, charPos);
-    return new Document.Coordinate(path, charPos);
+    return new Coordinate(path, charPos);
   };
 
   /**
@@ -156,7 +162,7 @@ SurfaceSelection.Prototype = function() {
       charPos = 0;
     }
     path = getPath(elements[idx]);
-    return new Document.Coordinate(path, charPos);
+    return new Coordinate(path, charPos);
   };
 
   this.getSelection = function() {
@@ -164,11 +170,39 @@ SurfaceSelection.Prototype = function() {
     if (!this.state) {
       return Document.nullSelection;
     }
-    var range = new Document.Range(this.state.start, this.state.end);
-    if (_.isEqual(this.state.start.path, this.state.end.path)) {
-      return new Document.PropertySelection(range, this.state.reverse);
+    var start = this.state.start;
+    var end = this.state.end;
+    var reverse = this.state.reverse;
+    var node1, node2, parent1, parent2, row1, col1, row2, col2;
+    var range = new Range(start, end);
+    if (_.isEqual(start.path, end.path)) {
+      node1 = this.doc.get(start.path[0]);
+      parent1 = node1.getRoot();
+      if (parent1.type === "table") {
+        // HACK make sure the table matrix has been computed
+        parent1.getMatrix();
+        row1 = node1.rowIdx;
+        col1 = node1.colIdx;
+        return TableSelection.create(range, parent1.id, row1, col1, row1, col1, reverse);
+      } else {
+        return new PropertySelection(range, this.state.reverse);
+      }
     } else {
-      return new Document.ContainerSelection(this.container, range, this.state.reverse);
+      node1 = this.doc.get(start.path[0]);
+      node2 = this.doc.get(end.path[0]);
+      parent1 = node1.getRoot();
+      parent2 = node2.getRoot();
+      if (parent1.type === "table" && parent1.id === parent2.id) {
+        // HACK make sure the table matrix has been computed
+        parent1.getMatrix();
+        row1 = node1.rowIdx;
+        col1 = node1.colIdx;
+        row2 = node2.rowIdx;
+        col2 = node2.colIdx;
+        return TableSelection.create(range, parent1.id, row1, col1, row2, col2, reverse);
+      } else {
+        return new ContainerSelection(this.container, range, this.state.reverse);
+      }
     }
   };
 

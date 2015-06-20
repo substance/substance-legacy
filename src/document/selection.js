@@ -27,6 +27,10 @@ Selection.Prototype = function() {
     return false;
   };
 
+  this.isTableSelection = function() {
+    return false;
+  };
+
   this.isCollapsed = function() {
     return true;
   };
