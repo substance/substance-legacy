@@ -80,6 +80,11 @@ Document.Prototype = function() {
       container.reset();
     });
     this.stage.reset();
+    this.documentDidLoad();
+  };
+
+  this.documentDidLoad = function() {
+
   };
 
   this.fromSnapshot = function(data) {

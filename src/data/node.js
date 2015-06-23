@@ -193,6 +193,9 @@ var initNodeClass = function(NodeClass) {
 extend = function( parent, modelSpec ) {
   var ctor = function NodeClass() {
     parent.apply(this, arguments);
+    if (this.init) {
+      this.init.apply(this, arguments);
+    }
   };
   Substance.inherit(ctor, parent);
   for(var key in modelSpec) {
