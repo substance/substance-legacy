@@ -2,24 +2,25 @@
 
 var Substance = require('../basics');
 var _ = require('../basics/helpers');
-var PropertySelection = require('./property_selection');
+var Selection = require('./selection');
 
-function TableSelection(range, tableId, rectangle, reverse) {
+function TableSelection(tableId, rectangle) {
   this.tableId = tableId;
   this.rectangle = rectangle;
-  this._isSingleCell = _.isEqual(range.start.path, range.end.path);
-  // calling this afterwards as it calls freeze
-  PropertySelection.call(this, range, reverse);
 }
 
 TableSelection.Prototype = function() {
 
   this.isPropertySelection = function() {
-    return this._isSingleCell;
+    return false;
   };
 
   this.isTableSelection = function() {
     return true;
+  };
+
+  this.isSingleCell = function() {
+    return this.rectangle.isSingleCell();
   };
 
   this.getTableId = function() {
@@ -31,10 +32,8 @@ TableSelection.Prototype = function() {
   };
 
   this.equals = function(other) {
-    if (this === other) {
-      return true ;
-    } else if (!other) {
-      return false;
+    if (other === this) {
+      return true;
     } else if (!other.isTableSelection()) {
       return false;
     } else {
@@ -48,15 +47,9 @@ TableSelection.Prototype = function() {
     return "T[("+ r.start.row + "," + r.start.col + "), ("+ r.end.row + ", " + r.end.col +")]";
   };
 
-  this.createWithNewRange = function(startOffset, endOffset) {
-    return new TableSelection(
-      new Range(new Coordinate(this.path, startOffset), new Coordinate(this.path, endOffset)),
-        this.tableId, this.rectangle);
-  };
-
 };
 
-Substance.inherit(TableSelection, PropertySelection);
+Substance.inherit(TableSelection, Selection);
 
 TableSelection.Rectangle = function(startRow, startCol, endRow, endCol) {
   this.start = {
@@ -72,10 +65,22 @@ TableSelection.Rectangle = function(startRow, startCol, endRow, endCol) {
   Object.freeze(this);
 };
 
-TableSelection.create = function(range, tableId, startRow, startCol, endRow, endCol, reverse) {
+TableSelection.Rectangle.prototype.isSingleCell = function() {
+  return (this.start.row === this.end.row && this.start.col === this.end.col);
+};
+
+TableSelection.Rectangle.create = function(startRow, startCol, endRow, endCol) {
+  var minRow = Math.min(startRow, endRow);
+  var maxRow = Math.max(startRow, endRow);
+  var minCol = Math.min(startCol, endCol);
+  var maxCol = Math.max(startCol, endCol);
+  return new TableSelection.Rectangle(minRow, minCol, maxRow, maxCol);
+};
+
+TableSelection.create = function(tableId, startRow, startCol, endRow, endCol) {
   var tmp;
   if (startCol > endCol) {
-    tmp = startCol
+    tmp = startCol;
     startCol = endCol;
     endCol = tmp;
   }
@@ -84,7 +89,7 @@ TableSelection.create = function(range, tableId, startRow, startCol, endRow, end
     startRow = endRow;
     endRow = tmp;
   }
-  return new TableSelection(range, tableId, new TableSelection.Rectangle(startRow, startCol, endRow, endCol), reverse)
-}
+  return new TableSelection(tableId, new TableSelection.Rectangle(startRow, startCol, endRow, endCol));
+};
 
 module.exports = TableSelection;

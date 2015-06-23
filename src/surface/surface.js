@@ -450,7 +450,6 @@ Surface.Prototype = function() {
     var self = this;
     if (self.surfaceSelection) {
       var sel = self.surfaceSelection.getSelection();
-      console.log('######', sel.toString());
       self._setModelSelection(sel);
     }
   };

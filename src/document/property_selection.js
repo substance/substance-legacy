@@ -45,6 +45,7 @@ PropertySelection.Prototype = function() {
   this.equals = function(other) {
     return (
       Selection.prototype.equals.call(this, other) &&
+      !other.isTableSelection() &&
       this.range.equals(other.range)
     );
   };

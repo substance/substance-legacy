@@ -176,17 +176,7 @@ SurfaceSelection.Prototype = function() {
     var node1, node2, parent1, parent2, row1, col1, row2, col2;
     var range = new Range(start, end);
     if (_.isEqual(start.path, end.path)) {
-      node1 = this.doc.get(start.path[0]);
-      parent1 = node1.getRoot();
-      if (parent1.type === "table") {
-        // HACK make sure the table matrix has been computed
-        parent1.getMatrix();
-        row1 = node1.rowIdx;
-        col1 = node1.colIdx;
-        return TableSelection.create(range, parent1.id, row1, col1, row1, col1, reverse);
-      } else {
-        return new PropertySelection(range, this.state.reverse);
-      }
+      return new PropertySelection(range, this.state.reverse);
     } else {
       node1 = this.doc.get(start.path[0]);
       node2 = this.doc.get(end.path[0]);
@@ -199,7 +189,7 @@ SurfaceSelection.Prototype = function() {
         col1 = node1.colIdx;
         row2 = node2.rowIdx;
         col2 = node2.colIdx;
-        return TableSelection.create(range, parent1.id, row1, col1, row2, col2, reverse);
+        return TableSelection.create(parent1.id, row1, col1, row2, col2);
       } else {
         return new ContainerSelection(this.container, range, this.state.reverse);
       }
@@ -262,7 +252,7 @@ SurfaceSelection.Prototype = function() {
 
   this.setSelection = function(sel) {
     var wSel = window.getSelection();
-    if (sel.isNull()) {
+    if (sel.isNull() || sel.isTableSelection() ) {
       return this.clear();
     }
     var range = sel.getRange();
