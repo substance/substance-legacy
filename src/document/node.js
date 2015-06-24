@@ -54,6 +54,10 @@ var Node = Data.Node.extend({
     return componentNames;
   },
 
+  isExternal: function() {
+    return this.constructor.static.external;
+  },
+
   // Note: children are provided for inline nodes only.
   toHtml: function(converter, children) {
     return this.constructor.static.toHtml(this, converter, children);

@@ -18,11 +18,12 @@ var insertedText = function(doc, coordinate, length) {
     var newStart = start;
     var newEnd = end;
     if ( (pos < start) ||
-         (pos === start && !coordinate.after) ) {
+         (pos === start) ) {
       newStart += length;
     }
+    // Node: external nodes do not expand automatically
     if ( (pos < end) ||
-         (pos === end && !coordinate.after) ) {
+         (pos === end && !anno.isExternal()) ) {
       newEnd += length;
     }
     if (newStart !== start) {
