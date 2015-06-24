@@ -144,7 +144,7 @@ SurfaceSelection.Prototype = function() {
       console.error('Could not find char position.');
       return 0;
     }
-    console.log('charPos', charPos);
+    // console.log('charPos', charPos);
     return charPos;
   };
 

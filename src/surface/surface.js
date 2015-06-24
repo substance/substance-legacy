@@ -2,6 +2,7 @@
 
 var Substance = require('../basics');
 var SurfaceSelection = require('./surface_selection');
+var Document = require('../document');
 
 var __id__ = 0;
 
@@ -11,6 +12,10 @@ function Surface(editor, options) {
   options = options || {};
 
   this.__id__ = __id__++;
+  this.state = {
+    surfaceId: this.__id__,
+    selection: Document.nullSelection
+  }
 
   // this.element must be set via surface.attach(element)
   this.element = null;
@@ -275,9 +280,8 @@ Surface.Prototype = function() {
     var handled = false;
     if ( (e.ctrlKey||e.metaKey) && e.keyCode === 65 ) {
       console.log('Selecting all...');
-      this.editor.selectAll();
-      var sel = this.editor.selection;
-      this.setSelection(sel);
+      this.editor.selectAll(this.state);
+      this.setSelection(this.state.selection);
       this.surfaceSelection.setSelection(sel);
       this.emit('selection:changed', sel, this);
       handled = true;
@@ -312,6 +316,17 @@ Surface.Prototype = function() {
     }
   };
 
+  this.transaction = function(options, transformation) {
+    if (arguments !== 2) {
+      transformation = options;
+      options = {};
+    }
+    var state = {
+      selection: this.getSelection(),
+      surfaceId: this.__id__
+    };
+    this.getDocument().transaction(state, options, transformation);
+  };
 
   this.onTextInput = function(e) {
     if (this.frozen) {
@@ -323,8 +338,7 @@ Surface.Prototype = function() {
     e.stopPropagation();
     // necessary for handling dead keys properly
     this.skipNextObservation=true;
-    var sel = this.editor.selection;
-    this.editor.insertText(e.data, sel);
+    this.editor.insertText(e.data, this.state);
     this.rerenderDomSelection();
   };
 
@@ -355,14 +369,13 @@ Surface.Prototype = function() {
       return;
     }
     var character = String.fromCharCode(e.which);
-    var sel, range, el;
+    var sel;
     this.skipNextObservation=true;
-    sel = this.editor.selection;
     if (!e.shiftKey) {
       character = character.toLowerCase();
     }
     if (character.length>0) {
-      this.editor.insertText(character, sel);
+      this.editor.insertText(character, this.state);
       this.rerenderDomSelection();
       e.preventDefault();
       e.stopPropagation();
@@ -400,8 +413,7 @@ Surface.Prototype = function() {
   this.handleSpaceKey = function( e ) {
     e.preventDefault();
     e.stopPropagation();
-    var sel = this.editor.selection;
-    this.editor.insertText(" ", sel);
+    this.editor.insertText(" ", this.state);
     this.rerenderDomSelection();
   };
 
@@ -409,9 +421,9 @@ Surface.Prototype = function() {
     e.preventDefault();
     var selection = this.surfaceSelection.getSelection();
     if (e.shiftKey) {
-      this.editor.softBreak(selection, {surface: this});
+      this.editor.softBreak(this.state, {surface: this});
     } else {
-      this.editor.break(selection, {surface: this});
+      this.editor.break(this.state, {surface: this});
     }
     this.rerenderDomSelection();
   };
@@ -419,8 +431,7 @@ Surface.Prototype = function() {
   this.handleDeleteKey = function ( e ) {
     e.preventDefault();
     var direction = (e.keyCode === Surface.Keys.BACKSPACE) ? 'left' : 'right';
-    var sel = this.editor.selection;
-    this.editor.delete(sel, direction);
+    this.editor.delete(direction, this.state);
     this.rerenderDomSelection();
   };
 
@@ -528,7 +539,7 @@ Surface.Prototype = function() {
   };
 
   this.getSelection = function() {
-    return this.editor.selection;
+    return this.state.selection;
   };
 
   /**
@@ -562,9 +573,9 @@ Surface.Prototype = function() {
    */
   this._setModelSelection = function(sel) {
     sel = sel || Substance.Document.nullSelection;
-    if (!this.editor.selection.equals(sel)) {
+    if (!this.getSelection().equals(sel)) {
       // console.log('Surface.setSelection: %s', sel.toString());
-      this.editor.selection = sel;
+      this.state.selection = sel;
       this.emit('selection:changed', sel, this);
       // FIXME: ATM rerendering an expanded selection leads
       // to a strante behavior. So do not do that for now
@@ -579,7 +590,7 @@ Surface.Prototype = function() {
   };
 
   this.placeCaretElement = function() {
-    var sel = this.editor.selection;
+    var sel = this.getSelection();
     if (sel.isNull()) {
       throw new Error('Selection is null.');
     }

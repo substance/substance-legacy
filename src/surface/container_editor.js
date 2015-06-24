@@ -47,10 +47,10 @@ ContainerEditor.Prototype = function() {
     return this.container.id;
   };
 
-  this.break = function(selection, info) {
+  this.break = function(state, info) {
     // console.log("Breaking at %s", selection.toString());
     info = info || {};
-    var tx = this.document.startTransaction({ selection: selection });
+    var tx = this.document.startTransaction({ selection: state.selection });
     tx.selection = selection;
     try {
       if (!this.selection.isCollapsed()) {
@@ -58,31 +58,30 @@ ContainerEditor.Prototype = function() {
       }
       this._break(tx);
       tx.save({ selection: tx.selection }, info);
-      this.selection = tx.selection;
+      state.selection = tx.selection;
     } finally {
       tx.cleanup();
     }
   };
 
-  this.insertNode = function(node) {
-    var selection = this.selection;
-    var tx = this.document.startTransaction({ selection: selection });
-    tx.selection = selection;
+  this.insertNode = function(node, state) {
+    var tx = this.document.startTransaction(state);
+    tx.selection = state.selection;
     try {
-      this._insertNode(tx, node);
-      tx.save({ selection: tx.selection }, info);
-      this.selection = tx.selection;
+      this._insertNode(tx, {node:node}, state);
+      tx.save({ selection: state.selection }, info);
+      state.selection = tx.selection;
     } finally {
       tx.cleanup();
     }
   };
 
-  this.selectAll = function() {
+  this.selectAll = function(state) {
     var container = this.container;
     var first = container.getFirstComponent();
     var last = container.getLastComponent();
     var lastText = this.document.get(last.path);
-    this.selection = Selection.create(this.container, first.path, 0, last.path, lastText.length);
+    state.selection = Selection.create(this.container, first.path, 0, last.path, lastText.length);
   };
 
   // create a document instance containing only the selected content
