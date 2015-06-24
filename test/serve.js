@@ -19,13 +19,18 @@ app.get('/tests.js', function (req, res, next) {
           return path.join(__dirname, '..', file);
         }))
         .bundle()
-        .pipe(res)
-        .on('error', next);
+        .on('error', function(err, data){
+          console.error(err.message);
+          res.send('console.log("'+err.message+'");');
+        })
+        .pipe(res);
     }
   });
 });
 
-app.use(express.static(path.join(__dirname,'public')));
+app.use('/base', express.static(path.join(__dirname, '..')));
+app.use(express.static(path.join(__dirname, 'public')));
+
 app.listen(PORT);
 
 console.log('QUnit server is listening on %s', PORT);
