@@ -83,9 +83,7 @@ Document.Prototype = function() {
     this.documentDidLoad();
   };
 
-  this.documentDidLoad = function() {
-
-  };
+  this.documentDidLoad = function() {};
 
   this.fromSnapshot = function(data) {
     var doc = this.newInstance();
@@ -154,12 +152,39 @@ Document.Prototype = function() {
 
   // Document manipulation
   //
-  // var tx = doc.startTransaction()
-  // tx.create(...);
-  // ...
-  // tx.save();
-  //
-  // Note: there is no direct manipulation without transaction
+
+  /**
+   * @param options app information which will be added as payload
+   *      to the document:changed event
+   * @param state information which will be persisted with the document change
+   *        snapshot before and after the transformation is stored.
+   * @param transformation a function(tx, state, info) that performs actions
+   *        on the transaction document tx
+   */
+  this.transaction = function(state, options, transformation) {
+    if (arguments.length !== 3) {
+      transformation = options;
+      options = {};
+    } else {
+      options = options || {};
+    }
+    if (!_.isFunction(transformation)) {
+      throw new Error('Document.transaction() requires a transformation function.');
+    }
+    // HACK: ATM we can't deep clone as we do not have a deserialization
+    // for selections.
+    var tx = this.startTransaction(_.extend({}, state));
+    try {
+      transformation(tx, state, options);
+      // save automatically if not yet saved or cancelled
+      if (this.isTransacting) {
+        tx.save(_.extend({}, state), options);
+      }
+    } finally {
+      tx.finish();
+    }
+  };
+
   this.startTransaction = function(beforeState) {
     if (this.isTransacting) {
       throw new Error('Nested transactions are not supported.');
