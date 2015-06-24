@@ -110,13 +110,42 @@ SurfaceSelection.Prototype = function() {
       return this.searchForCoordinate(node, offset, options);
     }
     var path = getPath(propertyEl);
-    var charPos;
-    var range = window.document.createRange();
-    range.setStart(propertyEl, 0);
-    range.setEnd(node, offset);
-    charPos = range.toString().length;
-    charPos = Math.min(propertyEl.textContent.length, charPos);
+    var charPos = this.computeCharPosition(propertyEl, node, offset);
     return new Coordinate(path, charPos);
+  };
+
+  this.computeCharPosition = function(propertyEl, endNode, offset) {
+    var charPos = 0;
+    function _getPosition(node) {
+      if (endNode === node) {
+        charPos += offset;
+        return true;
+      }
+      if (node.nodeType === window.Node.TEXT_NODE) {
+        charPos += node.textContent.length;
+      } else if (node.nodeType === window.Node.ELEMENT_NODE) {
+        // external nodes have a length of 1
+        // they are attached to an invisible character
+        // but may have a custom rendering
+        if ($(node).data('external')) {
+          charPos += 1;
+          return false;
+        }
+        for (var childNode = node.firstChild; childNode; childNode = childNode.nextSibling) {
+          if (_getPosition(childNode)) {
+            return true;
+          }
+        }
+      }
+      return false;
+    }
+    var found = _getPosition(propertyEl);
+    if (!found) {
+      console.error('Could not find char position.');
+      return 0;
+    }
+    console.log('charPos', charPos);
+    return charPos;
   };
 
   /**
@@ -172,7 +201,7 @@ SurfaceSelection.Prototype = function() {
     }
     var start = this.state.start;
     var end = this.state.end;
-    var reverse = this.state.reverse;
+    // var reverse = this.state.reverse;
     var node1, node2, parent1, parent2, row1, col1, row2, col2;
     var range = new Range(start, end);
     if (_.isEqual(start.path, end.path)) {
@@ -197,29 +226,27 @@ SurfaceSelection.Prototype = function() {
   };
 
   var _findDomPosition = function(element, offset) {
-    var text = $(element).text();
-    // not in this element
-    if (text.length < offset) {
-      return {
-        node: null,
-        offset: offset - text.length
-      };
-    // at the right boundary
-    } else if (element.nodeType === document.TEXT_NODE) {
-      return {
-        node: element,
-        offset: offset,
-        boundary: (text.length === offset)
-      };
-    // HACK: for empty elements
-    } else if (text.length === 0) {
-      return {
-        node: element,
-        offset: offset,
-        boundary: true
-      };
-    // within the node or a child node
-    } else {
+    if (element.nodeType === document.TEXT_NODE) {
+      var l = element.textContent.length;
+      if (l < offset) {
+        return {
+          node: null,
+          offset: offset-l
+        };
+      } else {
+        return {
+          node: element,
+          offset: offset,
+          boundary: (l === offset)
+        };
+      }
+    } else if (element.nodeType === document.ELEMENT_NODE) {
+      if ($(element).data('external')) {
+        return {
+          node: null,
+          offset: offset-1
+        };
+      }
       for (var child = element.firstChild; child; child = child.nextSibling) {
         var pos = _findDomPosition(child, offset);
         if (pos.node) {
@@ -229,8 +256,11 @@ SurfaceSelection.Prototype = function() {
           offset = pos.offset;
         }
       }
-      throw new Error("Illegal state: we should not have reached here!");
     }
+    return {
+      node: null,
+      offset: offset
+    };
   };
 
   this._getDomPosition = function(path, offset) {
