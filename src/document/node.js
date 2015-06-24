@@ -7,13 +7,20 @@ var Node = Data.Node.extend({
 
   name: "node",
 
-  attach: function( document ) {
+  attach: function(document) {
     this.document = document;
+    this.didAttach(document);
   },
 
   detach: function() {
+    var doc = this.document;
     this.document = null;
+    this.didDetach(doc);
   },
+
+  didAttach: function() {},
+
+  didDetach: function() {},
 
   isAttached: function() {
     return this.document !== null;
@@ -73,5 +80,7 @@ Node.static.toHtml = function(node, converter) {
   });
   return $el[0];
 };
+
+Node.static.external = false;
 
 module.exports = Node;

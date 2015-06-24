@@ -255,6 +255,16 @@ HtmlImporter.Prototype = function HtmlImporterPrototype() {
     return text;
   };
 
+  this.customText = function(text) {
+    var state = this.state;
+    if (state.stack.length > 0) {
+      var context = _.last(state.stack);
+      context.offset += text.length;
+      context.text += context.text.concat(text);
+    }
+    return text;
+  };
+
   this.nextId = function(prefix) {
     // TODO: we could create more beautiful ids?
     // however we would need to be careful as there might be another
@@ -326,6 +336,10 @@ HtmlImporter.Prototype = function HtmlImporterPrototype() {
           inlineNode = inlineType.static.fromHtml($el, this);
           if (!inlineNode) {
             throw new Error("Contract: a Node's fromHtml() method must return a node", this.$toStr($el));
+          }
+          // external nodes are attached to an invisible character
+          if (inlineType.static.external) {
+            this.customText("\u200B");
           }
           // ... and transfer the result into the current context
           var result = state.stack.pop();
