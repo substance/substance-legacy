@@ -25,4 +25,19 @@ Document.AnnotationUpdates = require('./annotation_updates');
 Document.HtmlImporter = require('./html_importer');
 Document.HtmlExporter = require('./html_exporter');
 
+// Standard node implementations
+Document.Paragraph = require('./nodes/paragraph');
+Document.Heading = require('./nodes/heading');
+Document.Emphasis = require('./nodes/emphasis');
+Document.Strong = require('./nodes/strong');
+Document.Link = require('./nodes/link');
+Document.Table = require('./nodes/table');
+Document.TableSection = require('./nodes/table_section');
+Document.TableRow = require('./nodes/table_row');
+Document.TableCell = require('./nodes/table_cell');
+Document.List = require('./nodes/list');
+Document.ListItem = require('./nodes/list_item');
+
+Document.Transformations = require('./transformations');
+
 module.exports = Document;
