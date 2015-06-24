@@ -129,13 +129,11 @@ TransactionDocument.Prototype = function() {
 
   // Called back by Substance.Data after a node instance has been created
   this._didCreateNode = function(node) {
-    // create the node from schema
-    node.attach(this);
+    node.document = this;
   };
 
   this._didDeleteNode = function(node) {
-    // create the node from schema
-    node.detach(this);
+    node.document = null;
   };
 
 };
