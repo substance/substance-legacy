@@ -76,6 +76,10 @@ function Surface(editor, options) {
 
 Surface.Prototype = function() {
 
+  this.getName = function() {
+    return this.name;
+  };
+
   this.getElement = function() {
     return this.element;
   };
