@@ -144,9 +144,13 @@ Document.Prototype = function() {
   };
 
   this.toJSON = function() {
+    var nodes = {};
+    _.each(this.getNodes(), function(node) {
+      nodes[node.id] = node.toJSON();
+    });
     return {
       schema: [this.schema.name, this.schema.version],
-      nodes: this.getNodes()
+      nodes: nodes
     };
   };
 
