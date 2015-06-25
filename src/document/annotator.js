@@ -174,7 +174,7 @@ Annotator.Prototype = function() {
         }
         // create elements which are open, and are now stacked ontop of the
         // entered entry
-        for (idx = stackLevel; idx < stack.length; idx++) {
+        for (idx = stack.length-1; idx >= stackLevel; idx--) {
           this.exit(stack[idx].entry, stack[idx].context, stack[idx-1].context);
         }
         stack.splice(stackLevel, 0, {entry: entry});
@@ -190,7 +190,7 @@ Annotator.Prototype = function() {
             break;
           }
         }
-        for (idx = stackLevel; idx < stack.length; idx++) {
+        for (idx = stack.length-1; idx >= stackLevel; idx--) {
           this.exit(stack[idx].entry, stack[idx].context, stack[idx-1].context);
         }
         stack.splice(stackLevel, 1);
