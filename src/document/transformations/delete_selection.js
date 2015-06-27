@@ -1,49 +1,33 @@
 'use strict';
 
-var mergeNodes = require('./merge_nodes');
+var deleteCharacter = require('./delete_character');
 var Annotations = require('../annotation_updates');
 var createSelection = require('../create_selection');
 
 var deleteProperty = function(tx, args, state) {
-  // if a property selection but not collapsed
-  // simply delete the selected area
-  tx.update(args.path, { delete: { start: args.startOffset, end: args.endOffset } });
-  Annotations.deletedText(tx, args.path, args.startOffset, args.endOffset);
-  state.selection = createSelection(args.path, args.startOffset);
+  var range = state.selection.getRange();
+  var path = range.start.path;
+  var startOffset = range.start.offset;
+  var endOffset = range.end.offset;
+  tx.update(path, { delete: { start: startOffset, end: endOffset } });
+  Annotations.deletedText(tx, path, startOffset, endOffset);
+  state.selection = createSelection(path, startOffset);
 };
 
 var deleteContainerSelection = function(tx, args, state) {
-
+  /* jshint unused:false */
 };
 
 var deleteSelection = function(tx, args, state) {
-  var direction = args.direction;
-  var range = state.selection.getRange();
-  var startChar, endChar;
   // if collapsed see if we are at the start or the end
   // and try to merge
   if (state.selection.isCollapsed()) {
-    var prop = tx.get(range.start.path);
-    if ((range.start.offset === 0 && direction === 'left') ||
-        (range.start.offset === prop.length && direction === 'right')) {
-      mergeNodes(tx, { path: range.start.path, direction: direction }, state);
-    } else {
-      // simple delete one character
-      startChar = (direction === 'left') ? range.start.offset-1 : range.start.offset;
-      endChar = startChar+1;
-      tx.update(range.start.path, { delete: { start: startChar, end: endChar } });
-      Annotations.deletedText(tx, range.start.path, startChar, endChar);
-      state.selection = createSelection(range.start.path, startChar);
-    }
+    return deleteCharacter(tx, args, state);
   } else if (state.selection.isPropertySelection()) {
-    deleteProperty(tx, {
-      path: range.start.path,
-      startOffset: range.start.offset,
-      endOffset: range.end.offset
-    }, state);
+    deleteProperty(tx, {}, state);
   } else {
     // deal with container deletes
-    deleteContainerSelection(tx, { direction: direction }, state);
+    deleteContainerSelection(tx, {}, state);
   }
 };
 
