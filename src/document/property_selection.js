@@ -2,6 +2,8 @@
 
 var Substance = require('../basics');
 var Selection = require('./selection');
+var Coordinate = require('./coordinate');
+var Range = require('./range');
 
 function PropertySelection(range, reverse) {
   this.range = range;
@@ -57,7 +59,7 @@ PropertySelection.Prototype = function() {
     } else {
       coor = this.range.end;
     }
-    this.createWithNewRange(range.start.offset, range.end.offset);
+    return this.createWithNewRange(coor.offset, coor.offset);
   };
 
   // Helper Methods
@@ -188,7 +190,7 @@ PropertySelection.Prototype = function() {
       newStartOffset = this.startOffset;
       newEndOffset = other.startOffset;
     }
-    this.createWithNewRange(newStartOffset, newEndOffset);
+    return this.createWithNewRange(newStartOffset, newEndOffset);
   };
 };
 
