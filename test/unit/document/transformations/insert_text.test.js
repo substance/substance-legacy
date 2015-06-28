@@ -6,7 +6,7 @@ var Document = require('../../../../src/document');
 var insertText = require('../../../../src/document/transformations/insert_text');
 var Selection = Document.Selection;
 
-QUnit.module('Unit/Substance.Document/Transformations/InsertText');
+QUnit.module('Unit/Substance.Document/Transformations/insertText');
 
 QUnit.test("insert text at cursor position", function(assert) {
   var doc = sample1();

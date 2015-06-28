@@ -6,7 +6,7 @@ var Document = require('../../../../src/document');
 var deleteSelection = require('../../../../src/document/transformations/delete_selection');
 var Selection = Document.Selection;
 
-QUnit.module('Unit/Substance.Document/Transformations/DeleteSelection');
+QUnit.module('Unit/Substance.Document/Transformations/deleteSelection');
 
 QUnit.test("delete property selection", function(assert) {
   var doc = sample1();

@@ -4,6 +4,12 @@ var mergeNodes = require('./merge_nodes');
 var Annotations = require('../annotation_updates');
 var createSelection = require('../create_selection');
 
+/**
+ * The behavior when you press delete or backspace.
+ * I.e., it starts with a collapsed PropertySelection and deletes the character before
+ * or after the caret.
+ * If the caret is at the begin or end it will call `mergeNodes`.
+ */
 var deleteCharacter = function(tx, args, state) {
   var direction = args.direction;
   var range = state.selection.getRange();

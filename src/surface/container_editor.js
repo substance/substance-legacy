@@ -65,15 +65,9 @@ ContainerEditor.Prototype = function() {
   };
 
   this.insertNode = function(node, state) {
-    var tx = this.document.startTransaction(state);
-    tx.selection = state.selection;
-    try {
-      this._insertNode(tx, {node:node}, state);
-      tx.save({ selection: state.selection }, info);
-      state.selection = tx.selection;
-    } finally {
-      tx.cleanup();
-    }
+    this.document.transaction({ selection: state.selection }, function(tx, state) {
+      insertNode(tx, { node: node }, state);
+    });
   };
 
   this.selectAll = function(state) {
@@ -562,21 +556,6 @@ ContainerEditor.Prototype = function() {
       }
     }
   };
-
-  this._insertNode = function(tx, node) {
-    if (!this.selection.isCollapsed()) {
-      this._delete(tx);
-    }
-    this._break(tx);
-    var container = tx.get(this.container.id);
-    if (!tx.get(node.id)) {
-      node = tx.create(node);
-    }
-    var comp = container.getComponent(tx.selection.start.path);
-    var pos = container.getPosition(comp.rootId);
-    container.show(node.id, pos);
-  };
-
 
   this._deleteNode = function(tx, nodeSel) {
     var deleteBehavior = this._getDeleteBehavior(nodeSel.node);
