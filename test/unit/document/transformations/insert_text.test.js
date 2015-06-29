@@ -2,15 +2,17 @@
 
 require('../../init');
 var sample1 = require('../../../fixtures/sample1');
-var Document = require('../../../../src/document');
 var insertText = require('../../../../src/document/transformations/insert_text');
-var Selection = Document.Selection;
 
 QUnit.module('Unit/Substance.Document/Transformations/insertText');
 
 QUnit.test("insert text at cursor position", function(assert) {
   var doc = sample1();
-  var sel = Selection.create(['p1', 'content'], 4);
+  var sel = doc.createSelection({
+    type: 'property',
+    path: ['p1', 'content'],
+    startOffset: 4
+  });
   var state = {selection: sel};
   insertText(doc, { text: 'test' }, state);
   assert.equal(doc.get(['p1', 'content']), 'Paratestgraph 1', 'Text should be inserted.');
@@ -20,7 +22,12 @@ QUnit.test("insert text at cursor position", function(assert) {
 
 QUnit.test("writer over an expanded property selection", function(assert) {
   var doc = sample1();
-  var sel = Selection.create(['p1', 'content'], 4, 9);
+  var sel = doc.createSelection({
+    type: 'property',
+    path: ['p1', 'content'],
+    startOffset: 4,
+    endOffset: 9
+  });
   var state = {selection: sel};
   insertText(doc, { text: 'test' }, state);
   assert.equal(doc.get(['p1', 'content']), 'Paratest 1', 'Text should be overwritten.');
@@ -30,7 +37,11 @@ QUnit.test("writer over an expanded property selection", function(assert) {
 
 QUnit.test("insert text before annotation", function(assert) {
   var doc = sample1();
-  var sel = Selection.create(['p2', 'content'], 4);
+  var sel = doc.createSelection({
+    type: 'property',
+    path: ['p2', 'content'],
+    startOffset: 4
+  });
   var state = {selection: sel};
   insertText(doc, { text: 'test' }, state);
   var anno = doc.get('em1');
@@ -40,7 +51,11 @@ QUnit.test("insert text before annotation", function(assert) {
 
 QUnit.test("insert text at left annotation boundary", function(assert) {
   var doc = sample1();
-  var sel = Selection.create(['p2', 'content'], 15);
+  var sel = doc.createSelection({
+    type: 'property',
+    path: ['p2', 'content'],
+    startOffset: 15
+  });
   var state = {selection: sel};
   insertText(doc, { text: 'test' }, state);
   var anno = doc.get('em1');
@@ -49,7 +64,11 @@ QUnit.test("insert text at left annotation boundary", function(assert) {
 
 QUnit.test("insert text into annotation range", function(assert) {
   var doc = sample1();
-  var sel = Selection.create(['p2', 'content'], 17);
+  var sel = doc.createSelection({
+    type: 'property',
+    path: ['p2', 'content'],
+    startOffset: 17
+  });
   var state = {selection: sel};
   insertText(doc, { text: 'test' }, state);
   var anno = doc.get('em1');
@@ -59,7 +78,11 @@ QUnit.test("insert text into annotation range", function(assert) {
 
 QUnit.test("insert text at right annotation boundary", function(assert) {
   var doc = sample1();
-  var sel = Selection.create(['p2', 'content'], 25);
+  var sel = doc.createSelection({
+    type: 'property',
+    path: ['p2', 'content'],
+    startOffset: 25
+  });
   var state = {selection: sel};
   insertText(doc, { text: 'test' }, state);
   var anno = doc.get('em1');

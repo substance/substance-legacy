@@ -68,8 +68,4 @@ NullSelection.Prototype = function() {
 Substance.inherit(NullSelection, Selection);
 Selection.nullSelection = Object.freeze(new NullSelection());
 
-// this is set in index as it has dependencies to sub-classes
-// which can't be required here to avoid cyclic dep.
-Selection.create = null;
-
 module.exports = Selection;

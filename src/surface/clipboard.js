@@ -108,7 +108,13 @@ Clipboard.Prototype = function() {
         var first = pasteContent.getFirstComponent();
         var last = pasteContent.getLastComponent();
         var lastLength = content.get(last.path).length;
-        var sel = Substance.Document.Selection.create(pasteContent, first.path, 0, last.path, lastLength);
+        var sel = doc.createSelection({
+          containerId: 'content',
+          startPath: first.path,
+          startOffset: 0,
+          endPath: last.path,
+          endOffset: lastLength
+        });
         plainText = content.getTextForSelection(sel);
       }
       editor.paste(editor.selection, {

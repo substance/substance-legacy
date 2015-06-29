@@ -12,10 +12,7 @@ function Surface(editor, options) {
   options = options || {};
 
   this.__id__ = __id__++;
-  this.state = {
-    surfaceId: this.__id__,
-    selection: Document.nullSelection
-  }
+  this.selection = Document.nullSelection;
 
   // this.element must be set via surface.attach(element)
   this.element = null;
@@ -284,10 +281,10 @@ Surface.Prototype = function() {
     var handled = false;
     if ( (e.ctrlKey||e.metaKey) && e.keyCode === 65 ) {
       console.log('Selecting all...');
-      this.editor.selectAll(this.state);
-      this.setSelection(this.state.selection);
-      this.surfaceSelection.setSelection(sel);
-      this.emit('selection:changed', sel, this);
+      var newSelection = this.editor.selectAll(this.getSelection());
+      this.setSelection(newSelection);
+      this.surfaceSelection.setSelection(newSelection);
+      this.emit('selection:changed', newSelection, this);
       handled = true;
     }
     // Undo/Redo: cmd+z, cmd+shift+z
@@ -320,16 +317,24 @@ Surface.Prototype = function() {
     }
   };
 
-  this.transaction = function(options, transformation) {
-    if (arguments !== 2) {
-      transformation = options;
-      options = {};
-    }
-    var state = {
+  /**
+   * Run a transformation as a transaction properly configured for this surface.
+   */
+  this.transaction = function(transformation, ctx) {
+    var beforeState = {
       selection: this.getSelection(),
-      surfaceId: this.__id__
+      surfaceId: this.getName()
     };
-    this.getDocument().transaction(state, options, transformation);
+    this.getDocument().transaction(beforeState, function(tx) {
+      var afterState = transformation.call(ctx, tx);
+      afterState = afterState || {};
+      if (!afterState.selection) {
+        console.warn('A surface transformation should return a selection.');
+        afterState.selection = beforeState.selection;
+      }
+      afterState.surfaceId = this.getName();
+      return afterState;
+    });
   };
 
   this.onTextInput = function(e) {
@@ -342,7 +347,9 @@ Surface.Prototype = function() {
     e.stopPropagation();
     // necessary for handling dead keys properly
     this.skipNextObservation=true;
-    this.editor.insertText(e.data, this.state);
+    this.transaction(function(tx) {
+      return this.editor.insertText(tx, { selection: this.getSelection(), text: e.data });
+    }, this);
     this.rerenderDomSelection();
   };
 
@@ -379,7 +386,9 @@ Surface.Prototype = function() {
       character = character.toLowerCase();
     }
     if (character.length>0) {
-      this.editor.insertText(character, this.state);
+      this.transaction(function(tx) {
+        this.editor.insertText(tx, { selection: this.getSelection(), text: character });
+      }, this);
       this.rerenderDomSelection();
       e.preventDefault();
       e.stopPropagation();
@@ -417,17 +426,22 @@ Surface.Prototype = function() {
   this.handleSpaceKey = function( e ) {
     e.preventDefault();
     e.stopPropagation();
-    this.editor.insertText(" ", this.state);
+    this.transaction(function(tx) {
+      return this.editor.write(tx, { selection: this.getSelection(), text: " " });
+    }, this);
     this.rerenderDomSelection();
   };
 
   this.handleEnterKey = function( e ) {
     e.preventDefault();
-    var selection = this.surfaceSelection.getSelection();
     if (e.shiftKey) {
-      this.editor.softBreak(this.state, {surface: this});
+      this.transaction(function(tx) {
+        return this.editor.softBreak(tx, { selection: this.getSelection() });
+      }, this);
     } else {
-      this.editor.break(this.state, {surface: this});
+      this.transaction(function(tx) {
+        return this.editor.break(tx, { selection: this.getSelection() });
+      }, this);
     }
     this.rerenderDomSelection();
   };
@@ -435,7 +449,9 @@ Surface.Prototype = function() {
   this.handleDeleteKey = function ( e ) {
     e.preventDefault();
     var direction = (e.keyCode === Surface.Keys.BACKSPACE) ? 'left' : 'right';
-    this.editor.delete(direction, this.state);
+    this.transaction(function(tx) {
+      return this.editor.delete(tx, { selection: this.getSelection() });
+    }, this);
     this.rerenderDomSelection();
   };
 
@@ -543,7 +559,7 @@ Surface.Prototype = function() {
   };
 
   this.getSelection = function() {
-    return this.state.selection;
+    return this.selection;
   };
 
   /**
@@ -579,7 +595,7 @@ Surface.Prototype = function() {
     sel = sel || Substance.Document.nullSelection;
     if (!this.getSelection().equals(sel)) {
       // console.log('Surface.setSelection: %s', sel.toString());
-      this.state.selection = sel;
+      this.selection = sel;
       this.emit('selection:changed', sel, this);
       // FIXME: ATM rerendering an expanded selection leads
       // to a strante behavior. So do not do that for now

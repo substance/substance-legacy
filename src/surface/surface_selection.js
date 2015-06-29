@@ -3,9 +3,6 @@ var Document = require('../document');
 var _ = require('../basics/helpers');
 var Range = Document.Range;
 var Coordinate = Document.Coordinate;
-var PropertySelection = Document.PropertySelection;
-var ContainerSelection = Document.ContainerSelection;
-var TableSelection = Document.TableSelection;
 
 /**
  * A class that maps DOM selections to model selections.
@@ -199,16 +196,23 @@ SurfaceSelection.Prototype = function() {
     if (!this.state) {
       return Document.nullSelection;
     }
+    var doc = this.doc;
     var start = this.state.start;
     var end = this.state.end;
     // var reverse = this.state.reverse;
     var node1, node2, parent1, parent2, row1, col1, row2, col2;
     var range = new Range(start, end);
     if (_.isEqual(start.path, end.path)) {
-      return new PropertySelection(range, this.state.reverse);
+      return doc.createSelection({
+        type: 'property',
+        path: start.path,
+        startOffset: start.offset,
+        endOffset: end.offset,
+        reverse: this.state.reverse
+      });
     } else {
-      node1 = this.doc.get(start.path[0]);
-      node2 = this.doc.get(end.path[0]);
+      node1 = doc.get(start.path[0]);
+      node2 = doc.get(end.path[0]);
       parent1 = node1.getRoot();
       parent2 = node2.getRoot();
       if (parent1.type === "table" && parent1.id === parent2.id) {
@@ -218,9 +222,24 @@ SurfaceSelection.Prototype = function() {
         col1 = node1.colIdx;
         row2 = node2.rowIdx;
         col2 = node2.colIdx;
-        return TableSelection.create(parent1.id, row1, col1, row2, col2);
+        return doc.createSelection({
+          type: 'table',
+          tableId: parent1.id,
+          startRow: row1,
+          startCol: col1,
+          endRow: row2,
+          endCol: col2
+        });
       } else {
-        return new ContainerSelection(this.container, range, this.state.reverse);
+        return doc.createSelection({
+          type: 'container',
+          containerId: this.container.id,
+          startPath: range.start.path,
+          startOffset: range.start.offset,
+          endPath: range.end.path,
+          endOffset: range.end.offset,
+          reverse: this.state.reverse
+        });
       }
     }
   };

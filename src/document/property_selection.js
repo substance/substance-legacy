@@ -5,9 +5,15 @@ var Selection = require('./selection');
 var Coordinate = require('./coordinate');
 var Range = require('./range');
 
-function PropertySelection(range, reverse) {
-  this.range = range;
-  this.reverse = reverse;
+function PropertySelection(properties) {
+  var path = properties.path;
+  var startOffset = properties.startOffset;
+  var endOffset = properties.endOffset || properties.startOffset;
+  this.range = new Range(
+    new Coordinate(path, startOffset),
+    new Coordinate(path, endOffset)
+  );
+  this.reverse = properties.reverse;
   this._internal = {};
   Object.freeze(this);
 }
@@ -15,6 +21,21 @@ function PropertySelection(range, reverse) {
 PropertySelection.Prototype = function() {
 
   Substance.extend(this, Selection.prototype);
+
+  this.toJSON = function() {
+    return {
+      type: 'property',
+      path: this.path,
+      startOffset: this.startOffset,
+      endOffset: this.endOffset,
+      reverse: this.reverse
+    }
+  };
+
+  this.attach = function(doc) {
+    this._internal.doc = doc;
+    return this;
+  };
 
   this.isNull = function() {
     return false;

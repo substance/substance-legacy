@@ -3,22 +3,45 @@
 var Substance = require('../basics');
 var PropertySelection = require('./property_selection');
 var Selection = require('./selection');
-var Container = require('./container');
 
-function ContainerSelection(container, range, reverse) {
-  if (!(container instanceof Container)) {
-    throw new Error('Illegal argument: expected Container instance.');
-  }
+function ContainerSelection(properties) {
   // Note: not calling the super ctor as it freezes the instance
-  this.container = container;
-  this.range = range;
-  this.reverse = reverse;
-  this.collapsed = range.start.equals(range.end);
+  var containerId = properties.containerId;
+  var startPath = properties.startPath;
+  var endPath = properties.endPath || properties.startPath;
+  var startOffset = properties.startOffset;
+  var endOffset = properties.endOffset || properties.startOffset;
+  // TODO: validate arguments
+  this.containerId = containerId;
+  this.range = new Range(
+    new Coordinate(startPath, startOffset),
+    new Coordinate(endPath, endOffset)
+  );
+  this.reverse = properties.reverse;
+  // optimization
+  this.collapsed = this.range.start.equals(this.range.end);
   this._internal = {};
   Object.freeze(this);
 }
 
 ContainerSelection.Prototype = function() {
+
+  this.toJSON = function() {
+    return {
+      type: 'container',
+      containerId: this.containerId,
+      startPath: this.startPath,
+      startOffset: this.startOffset,
+      endPath: this.endPath,
+      endOffset: this.endOffset,
+      reverse: this.reverse
+    };
+  };
+
+  this.attach = function(doc) {
+    this._internal.doc = doc;
+    return this;
+  };
 
   this.isPropertySelection = function() {
     return false;
@@ -32,9 +55,16 @@ ContainerSelection.Prototype = function() {
     return "ContainerSelection("+ JSON.stringify(this.range.start.path) + ":" + this.range.start.offset + " -> " +  JSON.stringify(this.range.end.path) + ":" + this.range.end.offset + (this.reverse ? ", reverse" : "") + ")";
   };
 
+  this.getContainer = function() {
+    var doc = this._internal.doc;
+    if (!doc) {
+      throw new Error('Selection is not attached to a document.');
+    }
+  };
+
   this.expand = function(other) {
-    var c1 = _coordinates(this.container, this);
-    var c2 = _coordinates(this.container, other);
+    var c1 = _coordinates(this);
+    var c2 = _coordinates(other);
     var c1s = c1.start;
     var c2s = c2.start;
     var c1e = c1.end;
@@ -55,13 +85,13 @@ ContainerSelection.Prototype = function() {
     } else if (c1e.pos === c2e.pos) {
       newCoors.end.offset = Math.max(c1e.offset, c2e.offset);
     }
-    return _createNewSelection(this.container, newCoors);
+    return _createNewSelection(this, newCoors);
   };
 
   // There should be exactly one
   this.truncate = function(other) {
-    var c1 = _coordinates(this.container, this);
-    var c2 = _coordinates(this.container, other);
+    var c1 = _coordinates(this);
+    var c2 = _coordinates(other);
     var newCoors = {};
     if (_isBefore(c2.start, c1.start, 'strict')) {
       newCoors.start = c1.start;
@@ -80,26 +110,26 @@ ContainerSelection.Prototype = function() {
       newCoors.start = c1.start;
       newCoors.end = c2.start;
     }
-    return _createNewSelection(this.container, newCoors);
+    return _createNewSelection(this, newCoors);
   };
 
   this.isInsideOf = function(other, strict) {
     if (other.isNull()) return false;
-    var c1 = _coordinates(this.container, this);
-    var c2 = _coordinates(this.container, other);
+    var c1 = _coordinates(this);
+    var c2 = _coordinates(other);
     return (_isBefore(c2.start, c1.start, strict) && _isBefore(c1.end, c2.end, strict));
   };
 
   this.contains = function(other) {
-    var c1 = _coordinates(this.container, this);
-    var c2 = _coordinates(this.container, other);
+    var c1 = _coordinates(this);
+    var c2 = _coordinates(other);
     return (_isBefore(c1.start, c2.start) && _isBefore(c2.end, c1.end));
   };
 
   // includes and at least one boundary
   this.includesWithOneBoundary = function(other) {
-    var c1 = _coordinates(this.container, this);
-    var c2 = _coordinates(this.container, other);
+    var c1 = _coordinates(this);
+    var c2 = _coordinates(other);
     return (
       (_isEqual(c1.start, c2.start) && _isBefore(c2.end, c1.end)) ||
       (_isEqual(c1.end, c2.end) && _isBefore(c1.start, c2.start))
@@ -107,28 +137,29 @@ ContainerSelection.Prototype = function() {
   };
 
   this.overlaps = function(other) {
-    var c1 = _coordinates(this.container, this);
-    var c2 = _coordinates(this.container, other);
+    var c1 = _coordinates(this);
+    var c2 = _coordinates(other);
     // it overlaps if they are not disjunct
     return !(_isBefore(c1.end, c2.start) || _isBefore(c2.end, c1.start));
   };
 
   this.isLeftAlignedWith = function(other) {
-    var c1 = _coordinates(this.container, this);
-    var c2 = _coordinates(this.container, other);
+    var c1 = _coordinates(this);
+    var c2 = _coordinates(other);
     return _isEqual(c1.start, c2.start);
   };
 
   this.isRightAlignedWith = function(other) {
-    var c1 = _coordinates(this.container, this);
-    var c2 = _coordinates(this.container, other);
+    var c1 = _coordinates(this);
+    var c2 = _coordinates(other);
     return _isEqual(c1.end, c2.end);
   };
 
   this.splitIntoPropertySelections = function() {
     var sels = [];
-    var comps = this.container.getComponentsForRange(this.range);
-    var doc = this.container.getDocument();
+    var container = this.getContainer();
+    var comps = container.getComponentsForRange(this.range);
+    var doc = container.getDocument();
     for (var i = 0; i < comps.length; i++) {
       var comp = comps[i];
       var startOffset, endOffset;
@@ -142,15 +173,21 @@ ContainerSelection.Prototype = function() {
       } else {
         endOffset = doc.get(comp.path).length;
       }
-      sels.push(Selection.create(comp.path, startOffset, endOffset));
+      sels.push(doc.createSelection({
+        type: 'property',
+        path: path,
+        startOffset: startOffset,
+        endOffset: endOffset
+      }));
     }
     return sels;
   };
 
-  var _coordinates = function(container, sel) {
+  var _coordinates = function(sel) {
     if (sel._internal.coor) {
       return sel._internal.coor;
     }
+    var container = this.getContainer();
     var range = sel.getRange();
     var startPos = container.getComponent(range.start.path).getIndex();
     var endPos;
@@ -190,12 +227,19 @@ ContainerSelection.Prototype = function() {
     return (c1.pos === c2.pos && c1.offset === c2.offset);
   };
 
-  var _createNewSelection = function(container, newCoors) {
+  var _createNewSelection = function(containerSel, newCoors) {
+    var container = containerSel.getContainer();
+    var doc = container.getDocument();
     newCoors.start.path = container.getComponentAt(newCoors.start.pos).path;
     newCoors.end.path = container.getComponentAt(newCoors.end.pos).path;
-    return Selection.create(container,
-      newCoors.start.path, newCoors.start.offset,
-      newCoors.end.path, newCoors.end.offset);
+    return doc.createSelection({
+      type: 'container',
+      containerId: this.containerId,
+      startPath: newCoors.start.path,
+      startOffset: newCoors.start.offset,
+      endPath: newCoors.end.path,
+      endOffset: newCoors.end.offset
+    });
   };
 };
 
@@ -204,7 +248,7 @@ Substance.inherit(ContainerSelection, PropertySelection);
 Object.defineProperties(ContainerSelection.prototype, {
   path: {
     get: function() {
-      throw new Error('ContainerSelection has not path property. Use startPath and endPath instead');
+      throw new Error('ContainerSelection has no path property. Use startPath and endPath instead');
     },
     set: function() { throw new Error('immutable.'); }
   },

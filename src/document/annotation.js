@@ -31,7 +31,12 @@ var Annotation = Node.extend({
   },
 
   getSelection: function() {
-    return Selection.create(this.path, this.startOffset, this.endOffset);
+    return this.getDocument().createSelection({
+      type: 'property',
+      path: this.path,
+      startOffset: this.startOffset,
+      endOffset: this.endOffset
+    });
   },
 
   updateRange: function(tx, sel) {

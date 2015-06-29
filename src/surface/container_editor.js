@@ -4,16 +4,11 @@ var Substance = require('../basics');
 var Document = require('../document');
 var FormEditor = require('./form_editor');
 var Annotations = Document.AnnotationUpdates;
-var Selection = Document.Selection;
+var Transformations = Document.Transformations;
 
 function ContainerEditor(container) {
   FormEditor.call(this, container.getDocument());
   this.container = container;
-
-  this.mergeBehavior = {};
-  this.breakBehavior = {};
-  this.deleteBehavior = {};
-  this.defineBehavior();
 }
 
 ContainerEditor.Prototype = function() {
@@ -21,19 +16,6 @@ ContainerEditor.Prototype = function() {
   // TODO: we should make paragraph the default type
   // as this seems to be a more natural choice
   this.defaultTextType = 'paragraph';
-
-  // Define custom editing behavior
-  //
-  // Register custom handlers for merge and break.
-  // Example:
-  //
-  //  To support text nodes being merged into a figure node:
-  //    this.mergeBehavior.figure = { 'text': function() {...} }
-  //
-  //  To support breaking a figure's caption:
-  //    this.breakBehavior.figure = function(doc, node, path, offset) {...}
-  //
-  this.defineBehavior = function() {};
 
   this.isContainerEditor = function() {
     return true;
@@ -47,35 +29,42 @@ ContainerEditor.Prototype = function() {
     return this.container.id;
   };
 
-  this.break = function(state, info) {
-    // console.log("Breaking at %s", selection.toString());
-    info = info || {};
-    var tx = this.document.startTransaction({ selection: state.selection });
-    tx.selection = selection;
-    try {
-      if (!this.selection.isCollapsed()) {
-        this._delete(tx);
-      }
-      this._break(tx);
-      tx.save({ selection: tx.selection }, info);
-      state.selection = tx.selection;
-    } finally {
-      tx.cleanup();
-    }
+  /**
+   * Performs a `deleteSelection` tr
+   */
+  this.delete = function(tx, args) {
+    args.containerId = this.container.id;
+    return Transformations.deleteSelection(tx, args);
   };
 
-  this.insertNode = function(node, state) {
-    this.document.transaction({ selection: state.selection }, function(tx, state) {
-      insertNode(tx, { node: node }, state);
-    });
+  this.break = function(tx, args) {
+    args.containerId = this.container.id;
+    return Transformations.breakNode(tx, args);
   };
 
-  this.selectAll = function(state) {
+  this.insertNode = function(tx, args) {
+    args.containerId = this.container.id;
+    return Transformations.insertNode(tx, args);
+  };
+
+  this.switchType = function(tx, args) {
+    args.containerId = this.container.id;
+    return Transformations.switchTextType(tx, args);
+  };
+
+  this.selectAll = function() {
     var container = this.container;
     var first = container.getFirstComponent();
     var last = container.getLastComponent();
     var lastText = this.document.get(last.path);
-    state.selection = Selection.create(this.container, first.path, 0, last.path, lastText.length);
+    return this.document.createSelection({
+      type: 'container',
+      containerId: this.container.id,
+      startPath: first.path,
+      startOffset: 0,
+      endPath: last.path,
+      endOffset: lastText.length
+    });
   };
 
   // create a document instance containing only the selected content
@@ -118,43 +107,6 @@ ContainerEditor.Prototype = function() {
         }
       }
       tx.save({selection: tx.selection});
-      this.selection = tx.selection;
-    } finally {
-      tx.cleanup();
-    }
-  };
-
-  this.switchType = function(selection, data) {
-    if (!selection.isPropertySelection()) {
-      return;
-    }
-    // only text nodes can be changed at the moment
-    var path = selection.start.path;
-    var offset = selection.start.offset;
-    var comp = this.container.getComponent(path);
-    var node = this.document.get(comp.rootId);
-    if (!(node.isInstanceOf('text'))) {
-      return;
-    }
-    var pos = this.container.getPosition(node.id);
-    var tx = this.document.startTransaction({ selection: selection });
-    tx.selection = selection;
-    var container = tx.get(this.container.id);
-    try {
-      // create a new node
-      var newNode = {
-        id: Substance.uuid(data.type),
-        type: data.type,
-        content: node.content
-      };
-      Substance.extend(newNode, data);
-      var newPath = [newNode.id, 'content'];
-      tx.create(newNode);
-      Annotations.transferAnnotations(tx, path, 0, newPath, 0);
-      this._deleteNodeWithId(tx, node.id);
-      container.show(newNode.id, pos);
-      tx.selection = Selection.create(newPath, offset);
-      tx.save({ selection: tx.selection });
       this.selection = tx.selection;
     } finally {
       tx.cleanup();
@@ -270,7 +222,11 @@ ContainerEditor.Prototype = function() {
     var offset = selection.start.offset;
     tx.update(path, { insert: { offset: offset, value: text } } );
     Annotations.insertedText(tx, selection.start, text.length);
-    tx.selection = Selection.create(selection.start.path, selection.start.offset+text.length);
+    tx.selection = tx.createSelection({
+      type: 'property',
+      path: selection.start.path,
+      startOffset: selection.start.offset+text.length
+    });
     // copy annotations
     Substance.each(annotations, function(anno) {
       var data = anno.toJSON();
@@ -349,342 +305,22 @@ ContainerEditor.Prototype = function() {
     if (false) {
       var firstId = insertedNodes[0].id;
       var firstComp = container.getComponentsForNode(firstId)[0];
-      tx.selection = Selection.create(container, firstComp.path, 0, lastComp.path, lastLength);
-    } else {
-      tx.selection = Selection.create(lastComp.path, lastLength);
-    }
-  };
-
-  this._getBreakBehavior = function(node) {
-    var behavior = null;
-    if (this.breakBehavior[node.type]) {
-      behavior = this.breakBehavior[node.type];
-    } else if (node.isInstanceOf('text')) {
-      behavior = this._breakTextNode;
-    }
-    if (!behavior) {
-      console.info("No breaking behavior defined for %s", node.type);
-    }
-    return behavior;
-  };
-
-  this._break = function(tx) {
-    var range = tx.selection.getRange();
-    var container = tx.get(this.container.id);
-    var component = container.getComponent(range.start.path);
-    var node = tx.get(component.path[0]);
-    var offset = range.start.offset;
-    var breakBehavior = this._getBreakBehavior(node);
-    if (breakBehavior) {
-      breakBehavior.call(this, tx, node, component.path, offset);
-    }
-  };
-
-  this._breakTextNode = function(tx, node, path, offset) {
-    // split the text property and create a new paragraph node with trailing text and annotations transferred
-    var text = node.content;
-    var container = tx.get(this.container.id);
-    var nodePos = container.getPosition(node.id);
-    var id = Substance.uuid(node.type);
-    var newPath = [id, 'content'];
-    // when breaking at the first position, a new node of the same
-    // type will be inserted.
-    if (offset === 0) {
-      tx.create({
-        id: id,
-        type: node.type,
-        content: ""
+      tx.selection = tx.createSelection({
+        type: 'container',
+        containerId: container.id,
+        startPath: firstComp.path,
+        startOffset: 0,
+        endPath: lastComp.path,
+        endOffset: lastLength
       });
-      // show the new node
-      container.show(id, nodePos);
-      tx.selection = Selection.create(path, 0);
     } else {
-      // create a new node
-      tx.create({
-        id: id,
-        type: this.defaultTextType,
-        content: text.substring(offset)
+      tx.selection = tx.createSelection({
+        type: 'property',
+        path: lastComp.path,
+        startOffset: lastLength
       });
-      if (offset < text.length) {
-        // transfer annotations which are after offset to the new node
-        Annotations.transferAnnotations(tx, path, offset, [id, 'content'], 0);
-        // truncate the original property
-        tx.update(path, {
-          delete: { start: offset, end: text.length }
-        });
-      }
-      // show the new node
-      container.show(id, nodePos+1);
-      // update the selection
-      tx.selection = Selection.create(newPath, 0);
     }
   };
-
-  this._getMergeBehavior = function(node, otherNode) {
-    var merge = this.mergeBehavior;
-    var behavior = null;
-    if (merge[node.type] && merge[node.type][otherNode.type]) {
-      behavior = merge[node.type][otherNode.type];
-    }
-    // special convenience to define behaviors when text nodes are involved
-    // E.g., you might want to define how to merge a text node into a figure
-    else if (node.isInstanceOf('text') && otherNode.isInstanceOf('text')) {
-      behavior = this._mergeTextNodes;
-    } else if (node.isInstanceOf('text') && merge['text']) {
-      behavior = merge['text'][otherNode.type];
-    } else if (otherNode.isInstanceOf('text') && merge[node.type]) {
-      behavior = merge[node.type]['text'];
-    }
-    if (!behavior) {
-      console.info("No merge behavior defined for %s <- %s", node.type, otherNode.type);
-    }
-    return behavior;
-  };
-
-  // low-level merge implementation
-  this._merge = function(tx, path, dir) {
-    var container = tx.get(this.container.id);
-    var component = container.getComponent(path);
-    if (dir === 'right' && component.next) {
-      this._mergeComponents(tx, component, component.next);
-    } else if (dir === 'left' && component.previous) {
-      this._mergeComponents(tx, component.previous, component);
-    } else {
-      // No behavior defined for this merge
-    }
-  };
-
-  this._mergeComponents = function(tx, firstComp, secondComp) {
-    var firstNode = tx.get(firstComp.parentNode.id);
-    var secondNode = tx.get(secondComp.parentNode.id);
-    var mergeBehavior = this._getMergeBehavior(firstNode, secondNode);
-    if (mergeBehavior) {
-      mergeBehavior.call(this, tx, firstComp, secondComp);
-    }
-  };
-
-
-  this._mergeTextNodes = function(tx, firstComp, secondComp) {
-    var firstPath = firstComp.path;
-    var firstText = tx.get(firstPath);
-    var firstLength = firstText.length;
-    var secondPath = secondComp.path;
-    var secondText = tx.get(secondPath);
-    var container = tx.get(this.container.id);
-    if (firstLength === 0) {
-      // hide the second node
-      container.hide(firstPath[0]);
-      // delete the second node
-      tx.delete(firstPath[0]);
-      // set the selection to the end of the first component
-      tx.selection = Selection.create(secondPath, 0);
-    } else {
-      // append the second text
-      tx.update(firstPath, { insert: { offset: firstLength, value: secondText } });
-      // transfer annotations
-      Annotations.transferAnnotations(tx, secondPath, 0, firstPath, firstLength);
-      // hide the second node
-      container.hide(secondPath[0]);
-      // delete the second node
-      tx.delete(secondPath[0]);
-      // set the selection to the end of the first component
-      tx.selection = Selection.create(firstPath, firstLength);
-    }
-  };
-
-  this._getDeleteBehavior = function(node) {
-    var behavior = null;
-    if (this.deleteBehavior[node.type]) {
-      behavior = this.deleteBehavior[node.type];
-    }
-    return behavior;
-  };
-
-  this._delete = function(tx, direction) {
-    FormEditor.prototype._delete.call(this, tx, direction);
-    var container = tx.get(this.container.id);
-    if (container.nodes.length === 0) {
-      var empty = {
-        type: this.defaultTextType,
-        id: Substance.uuid(this.defaultTextType),
-        content: ""
-      };
-      tx.create(empty);
-      container.show(empty.id, 0);
-      tx.selection = Selection.create([empty.id, 'content'], 0);
-    }
-  };
-
-  this._deleteContainerSelection = function(tx) {
-    var sel = tx.selection.getRange();
-    var nodeSels = this._getNodeSelection(tx, sel);
-    var nodeSel;
-    // apply deletion backwards so that we do not to recompute array positions
-    for (var idx = nodeSels.length - 1; idx >= 0; idx--) {
-      nodeSel = nodeSels[idx];
-      if (nodeSel.isFully && !nodeSel.node.isResilient()) {
-        this._deleteNode(tx, nodeSel);
-      } else {
-        this._deleteNodePartially(tx, nodeSel);
-      }
-    }
-
-    // update the selection; take the first component which is not fully deleted
-    if (!nodeSels[0].isFully) {
-      tx.selection = Selection.create(sel.start);
-    } else {
-      tx.selection = Substance.Document.Selection.nullSelection;
-      for (var i = 1; i < nodeSels.length; i++) {
-        nodeSel = nodeSels[i];
-        if (!nodeSel.isFully || nodeSel.node.isResilient()) {
-          tx.selection = Substance.Document.Selection.create(nodeSel.components[0].path, 0);
-          break;
-        }
-      }
-    }
-
-    // Do a merge
-    if (nodeSels.length>1) {
-      var firstSel = nodeSels[0];
-      var lastSel = nodeSels[nodeSels.length-1];
-      if (firstSel.isFully || lastSel.isFully) {
-        // TODO: think about if we want to merge in those cases
-      } else {
-        var firstComp = firstSel.components[0];
-        var secondComp = Substance.last(lastSel.components);
-        this._mergeComponents(tx, firstComp, secondComp);
-      }
-    }
-  };
-
-  this._deleteNode = function(tx, nodeSel) {
-    var deleteBehavior = this._getDeleteBehavior(nodeSel.node);
-    if (deleteBehavior) {
-      deleteBehavior.call(this, tx, nodeSel);
-    } else {
-      this._deleteNodeWithId(tx, nodeSel.node.id);
-    }
-  };
-
-  this._deleteNodeWithId = function(tx, nodeId) {
-    var container = tx.get(this.container.id);
-    var node = tx.get(nodeId);
-    // remove all associated annotations
-    var annos = tx.getIndex('annotations').get(nodeId);
-    var i;
-    for (i = 0; i < annos.length; i++) {
-      tx.delete(annos[i].id);
-    }
-    // We need to transfer anchors of ContainerAnnotations
-    // to previous or next node
-    var anchors = tx.getIndex('container-annotations').get(nodeId);
-    for (i = 0; i < anchors.length; i++) {
-      var anchor = anchors[i];
-      // Note: during the course of this loop we might have deleted the node already
-      // so, do not do it again
-      if (!tx.get(anchor.id)) continue;
-      var comp = container.getComponent(anchor.path);
-      if (anchor.isStart) {
-        if (comp.hasNext()) {
-          tx.set([anchor.id, 'startPath'], comp.next.path);
-          tx.set([anchor.id, 'startOffset'], 0);
-        } else {
-          tx.delete(anchor.id);
-        }
-      } else {
-        if (comp.hasPrevious()) {
-          var prevLength = tx.get(comp.previous.path).length;
-          tx.set([anchor.id, 'endPath'], comp.previous.path);
-          tx.set([anchor.id, 'endOffset'], prevLength);
-        } else {
-          tx.delete(anchor.id);
-        }
-      }
-    }
-    // remove from view first
-    container.hide(nodeId);
-    // and then permanently delete
-    tx.delete(nodeId);
-  };
-
-  this._deleteNodePartially = function(tx, nodeSel) {
-    var deleteBehavior = this._getDeleteBehavior(nodeSel.node);
-    if (deleteBehavior) {
-      deleteBehavior.call(this, tx, nodeSel);
-    } else {
-      // Just go through all components and apply a property deletion
-      var components = nodeSel.components;
-      var length = components.length;
-      for (var i = 0; i < length; i++) {
-        var comp = components[i];
-        var startOffset = 0;
-        var endOffset = tx.get(comp.path).length;
-        if (i === 0) {
-          startOffset = nodeSel.startOffset;
-        }
-        if (i === length-1) {
-          endOffset = nodeSel.endOffset;
-        }
-        this._deleteProperty(tx, comp.path, startOffset, endOffset);
-      }
-    }
-  };
-
-  this._getNodeSelection = function(doc, range) {
-    var result = [];
-    var groups = {};
-    var container = doc.get(this.container.id);
-    var components = container.getComponentsForRange(range);
-    for (var i = 0; i < components.length; i++) {
-      var comp = components[i];
-      var node = doc.get(comp.rootId);
-      if (!node) {
-        throw new Error('Illegal state: expecting a component to have a proper root node id set.');
-      }
-      var nodeId = node.id;
-      var nodeGroup;
-      if (!groups[nodeId]) {
-        nodeGroup = {
-          node: node,
-          isFully: true,
-          components: []
-        };
-        groups[nodeId] = nodeGroup;
-        result.push(nodeGroup);
-      }
-      nodeGroup = groups[nodeId];
-      nodeGroup.components.push(comp);
-    }
-    // finally we analyze the first and last node-selection
-    // if these
-    var startComp = components[0];
-    var endComp = components[components.length-1];
-    var startNodeSel = result[0];
-    var endNodeSel = result[result.length-1];
-    var startLen = doc.get(startComp.path).length;
-    var endLen = doc.get(endComp.path).length;
-    if (range.start.offset > 0 ||
-      (startComp.hasPrevious() && startComp.getPrevious().rootId === startComp.rootId))
-    {
-      startNodeSel.isFully = false;
-      startNodeSel.startOffset = range.start.offset;
-      if (result.length === 1) {
-        startNodeSel.endOffset = range.end.offset;
-      } else {
-        startNodeSel.endOffset = startLen;
-      }
-    }
-    if (result.length > 1 &&
-        (range.end.offset < endLen ||
-          (endComp.hasNext() && endComp.getNext().rootId === endComp.rootId))
-       ) {
-      endNodeSel.isFully = false;
-      endNodeSel.startOffset = 0;
-      endNodeSel.endOffset = range.end.offset;
-    }
-    return result;
-  };
-
 };
 
 Substance.inherit(ContainerEditor, FormEditor);

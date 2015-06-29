@@ -15,6 +15,10 @@ function DocumentSchema(name, version) {
 
 DocumentSchema.Prototype = function() {
 
+  this.getDefaultTextType = function() {
+    throw new Error('DocumentSchema.getDefaultTextType() is abstract and must be overridden.');
+  };
+
   this.isAnnotationType = function(type) {
     var nodeClass = this.getNodeClass(type);
     return (nodeClass && nodeClass.prototype instanceof Annotation);
@@ -23,6 +27,7 @@ DocumentSchema.Prototype = function() {
   this.getBuiltIns = function() {
     return [ Node, Annotation, Container, ContainerAnnotation, TextNode ];
   };
+
 };
 
 Substance.inherit( DocumentSchema, Data.Schema );

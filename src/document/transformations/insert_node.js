@@ -3,13 +3,18 @@
 var deleteSelection = require('./delete_selection');
 var breakNode = require('./break_node');
 
-function insertNode(tx, args, state) {
+function insertNode(tx, args) {
+  var selection = args.selection;
   var node = args.node;
-  if (!this.selection.isCollapsed()) {
-    deleteSelection(tx, {}, state);
+  var containerId = args.containerId;
+  var container = tx.get(containerId);
+  var result;
+  if (!selection.isCollapsed()) {
+    result = deleteSelection(tx, args);
+    selection = result.selection;
   }
-  breakNode(tx, {}, args);
-  var container = tx.get(this.container.id);
+  result = breakNode(tx, args);
+  selection = result.selection;
   if (!tx.get(node.id)) {
     node = tx.create(node);
   }
@@ -17,6 +22,9 @@ function insertNode(tx, args, state) {
   var pos = container.getPosition(comp.rootId);
   container.show(node.id, pos);
   // TODO: set cursor to first position of inserted node
+  return {
+    selection: null
+  };
 }
 
 module.exports = insertNode;

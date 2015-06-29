@@ -11,6 +11,10 @@ var TransactionDocument = require('./transaction_document');
 var DocumentChange = require('./document_change');
 
 var NotifyPropertyChange = require('./notify_property_change');
+var Selection = require('./selection');
+var PropertySelection = require('./property_selection');
+var ContainerSelection = require('./container_selection');
+var TableSelection = require('./table_selection');
 
 function Document(schema) {
   Substance.EventEmitter.call(this);
@@ -158,31 +162,32 @@ Document.Prototype = function() {
   //
 
   /**
-   * @param options app information which will be added as payload
-   *      to the document:changed event
-   * @param state information which will be persisted with the document change
-   *        snapshot before and after the transformation is stored.
-   * @param transformation a function(tx, state, info) that performs actions
-   *        on the transaction document tx
+   * @param beforeState object which will be used as before start of transaction
+   * @param eventData object which will be used as payload for the emitted change event
+   * @param transformation a function(tx) that performs actions on the transaction document tx
    */
-  this.transaction = function(state, options, transformation) {
-    if (arguments.length !== 3) {
-      transformation = options;
-      options = {};
+  this.transaction = function(beforeState, eventData, transformation) {
+    if (arguments.length === 2) {
+      transformation = arguments[1];
+      eventData = {};
     } else {
-      options = options || {};
+      eventData = eventData || {};
     }
     if (!_.isFunction(transformation)) {
       throw new Error('Document.transaction() requires a transformation function.');
     }
     // HACK: ATM we can't deep clone as we do not have a deserialization
     // for selections.
-    var tx = this.startTransaction(_.extend({}, state));
+    var tx = this.startTransaction(beforeState);
     try {
-      transformation(tx, state, options);
+      var result = transformation(tx);
+      var afterState = {};
+      for (var key in beforeState) {
+        result[key] = result[key];
+      }
       // save automatically if not yet saved or cancelled
       if (this.isTransacting) {
-        tx.save(_.extend({}, state), options);
+        tx.save(afterState, eventData);
       }
     } finally {
       tx.finish();
@@ -330,6 +335,36 @@ Document.Prototype = function() {
 
   this.getDocumentMeta = function() {
     return this.get('document');
+  };
+
+  /**
+   * Creates a selection which is attached to this document.
+   * Every selection implementation provides its own
+   * parameter format which is basically a JSON representation.
+   *
+   * @param an object describing the selection.
+   * @example
+   *   doc.createSelection({
+   *     type: 'property',
+   *     path: [ 'text1', 'content'],
+   *     startOffset: 10,
+   *     endOffset: 20
+   *   })
+   */
+  this.createSelection = function(sel) {
+    if (!sel) {
+      return Selection.nullSelection;
+    }
+    switch(sel.type) {
+      case 'property':
+        return new PropertySelection(sel).attach(this);
+      case 'container':
+        return new ContainerSelection(sel).attach(this);
+      case 'table':
+        return new TableSelection(sel).attach(this);
+      default:
+        throw new Error('Unsupported selection type', sel.type);
+    }
   };
 
   // Called back by Substance.Data after a node instance has been created

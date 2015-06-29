@@ -51,20 +51,14 @@ Container.Prototype = function() {
       pos = this.nodes.length;
     }
     /* jshint eqnull: false */
-    doc.update([this.id, 'nodes'], {
-      insert: { offset: pos, value: nodeId }
-    });
+    doc.update([this.id, 'nodes'], { insert: { offset: pos, value: nodeId } });
   };
 
   this.hide = function(nodeId) {
     var doc = this.getDocument();
     var pos = this.nodes.indexOf(nodeId);
     if (pos >= 0) {
-      doc.update([this.id, 'nodes'], {
-        delete: { offset: pos }
-      });
-    } else {
-      console.error('Could not find node with id %s.', nodeId);
+      doc.update([this.id, 'nodes'], { delete: { offset: pos } });
     }
   };
 
