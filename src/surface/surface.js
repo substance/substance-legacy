@@ -3,6 +3,7 @@
 var Substance = require('../basics');
 var SurfaceSelection = require('./surface_selection');
 var Document = require('../document');
+var _ = require('../basics/helpers');
 
 var __id__ = 0;
 
@@ -319,20 +320,58 @@ Surface.Prototype = function() {
 
   /**
    * Run a transformation as a transaction properly configured for this surface.
+   * @param beforeState (optional) use this to override the default before-state (e.g. to use a different the initial selection).
+   * @param transformation a (surface) transformation function(tx, args) which receives
+   *                       the selection the transaction was started with, and should return
+   *                       output arguments containing a selection, as well.
+   * @param ctx (optional) will be used as `this` object when calling the transformation.
+   *
+   * @example
+   *
+   *   ```
+   *   surface.transaction(function(tx, args) {
+   *     var selection = args.selection;
+   *     ...
+   *     selection = tx.createSelection(...);
+   *     return {
+   *       selection: selection
+   *     };
+   *   });
+   *
+   *   surface.transaction(function(tx, args) {
+   *     ...
+   *     this.foo();
+   *     ...
+   *   }, this);
+   *
+   *   surface.transaction(beforeState, function(tx, args) {
+   *     ...
+   *   });
+   *   ```
    */
   this.transaction = function(transformation, ctx) {
-    var beforeState = {
-      selection: this.getSelection(),
-      surfaceId: this.getName()
+    // `beforeState` is saved with the document operation and will be used
+    // to recover the selection when using 'undo'.
+    beforeState = {
+      surfaceId: this.getName(),
+      selection: this.getSelection()
     };
+    // Note: this is to provide the optional signature transaction(before)
+    if (!_.isFunction(arguments[0]) && arguments.length >= 2) {
+      var customBeforeState = arguments[0];
+      beforeState = _.extend(beforeState, customBeforeState);
+    }
     this.getDocument().transaction(beforeState, function(tx) {
-      var afterState = transformation.call(ctx, tx);
-      afterState = afterState || {};
+      // A transformation receives a set of input arguments and should return a set of output arguments.
+      var result = transformation.call(ctx, tx, { selection: beforeState.selection });
+      // The `afterState` is saved with the document operation and will be used
+      // to recover the selection whe using `redo`.
+      var afterState = result || {};
+      // If no selection is returned, the old selection is for `afterState`.
       if (!afterState.selection) {
-        console.warn('A surface transformation should return a selection.');
         afterState.selection = beforeState.selection;
       }
-      afterState.surfaceId = this.getName();
+      afterState.surfaceId = beforeState.surfaceId;
       return afterState;
     });
   };
@@ -347,8 +386,8 @@ Surface.Prototype = function() {
     e.stopPropagation();
     // necessary for handling dead keys properly
     this.skipNextObservation=true;
-    this.transaction(function(tx) {
-      return this.editor.insertText(tx, { selection: this.getSelection(), text: e.data });
+    this.transaction(function(tx, args) {
+      return this.editor.insertText(tx, { selection: args.selection, text: e.data });
     }, this);
     this.rerenderDomSelection();
   };
@@ -380,14 +419,13 @@ Surface.Prototype = function() {
       return;
     }
     var character = String.fromCharCode(e.which);
-    var sel;
     this.skipNextObservation=true;
     if (!e.shiftKey) {
       character = character.toLowerCase();
     }
     if (character.length>0) {
-      this.transaction(function(tx) {
-        this.editor.insertText(tx, { selection: this.getSelection(), text: character });
+      this.transaction(function(tx, args) {
+        this.editor.insertText(tx, { selection: args.selection, text: character });
       }, this);
       this.rerenderDomSelection();
       e.preventDefault();
@@ -426,8 +464,8 @@ Surface.Prototype = function() {
   this.handleSpaceKey = function( e ) {
     e.preventDefault();
     e.stopPropagation();
-    this.transaction(function(tx) {
-      return this.editor.write(tx, { selection: this.getSelection(), text: " " });
+    this.transaction(function(tx, args) {
+      return this.editor.write(tx, { selection: args.selection, text: " " });
     }, this);
     this.rerenderDomSelection();
   };
@@ -435,12 +473,12 @@ Surface.Prototype = function() {
   this.handleEnterKey = function( e ) {
     e.preventDefault();
     if (e.shiftKey) {
-      this.transaction(function(tx) {
-        return this.editor.softBreak(tx, { selection: this.getSelection() });
+      this.transaction(function(tx, args) {
+        return this.editor.softBreak(tx, args);
       }, this);
     } else {
-      this.transaction(function(tx) {
-        return this.editor.break(tx, { selection: this.getSelection() });
+      this.transaction(function(tx, args) {
+        return this.editor.break(tx, args);
       }, this);
     }
     this.rerenderDomSelection();
@@ -449,8 +487,8 @@ Surface.Prototype = function() {
   this.handleDeleteKey = function ( e ) {
     e.preventDefault();
     var direction = (e.keyCode === Surface.Keys.BACKSPACE) ? 'left' : 'right';
-    this.transaction(function(tx) {
-      return this.editor.delete(tx, { selection: this.getSelection() });
+    this.transaction(function(tx, args) {
+      return this.editor.delete(tx, { selection: args.selection, direction: direction });
     }, this);
     this.rerenderDomSelection();
   };
