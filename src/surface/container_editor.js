@@ -1,6 +1,7 @@
 'use strict';
 
-var Substance = require('../basics');
+var _ = require('../basics/helpers');
+var OO = require('../basics/oo');
 var Document = require('../document');
 var FormEditor = require('./form_editor');
 var Annotations = Document.AnnotationUpdates;
@@ -73,7 +74,7 @@ ContainerEditor.Prototype = function() {
       return null;
     }
     // return a simplified version if only a piece of text is selected
-    if (selection.isPropertySelection() || Substance.isEqual(selection.start.path, selection.end.path)) {
+    if (selection.isPropertySelection() || _.isEqual(selection.start.path, selection.end.path)) {
       return this._copyPropertySelection(selection);
     }
     else if (selection.isContainerSelection()) {
@@ -131,8 +132,8 @@ ContainerEditor.Prototype = function() {
     });
     containerNode.show('text');
     var annotations = this.document.getIndex('annotations').get(path, offset, endOffset);
-    Substance.each(annotations, function(anno) {
-      var data = Substance.deepclone(anno.toJSON());
+    _.each(annotations, function(anno) {
+      var data = _.deepclone(anno.toJSON());
       data.path = ['text', 'content'];
       data.startOffset = Math.max(offset, anno.startOffset)-offset;
       data.endOffset = Math.min(endOffset, anno.endOffset)-offset;
@@ -168,7 +169,7 @@ ContainerEditor.Prototype = function() {
       }
       var annotations = annotationIndex.get(comp.path);
       for (var j = 0; j < annotations.length; j++) {
-        copy.create(Substance.clone(annotations[j].toJSON()));
+        copy.create(_.deepclone(annotations[j].toJSON()));
       }
     }
     // 2. Truncate properties according to the selection.
@@ -228,13 +229,13 @@ ContainerEditor.Prototype = function() {
       startOffset: selection.start.offset+text.length
     });
     // copy annotations
-    Substance.each(annotations, function(anno) {
+    _.each(annotations, function(anno) {
       var data = anno.toJSON();
       data.path = path.slice(0);
       data.startOffset += offset;
       data.endOffset += offset;
       if (tx.get(data.id)) {
-        data.id = Substance.uuid(data.type);
+        data.id = _.uuid(data.type);
       }
       tx.create(data);
     });
@@ -250,7 +251,7 @@ ContainerEditor.Prototype = function() {
     var startComp = container.getComponent(tx.selection.start.path);
     var startNodeComp = startComp.parentNode;
     var insertPos;
-    if ( startComp === Substance.last(startNodeComp.components) &&
+    if ( startComp === _.last(startNodeComp.components) &&
       tx.get(startComp.path).length === tx.selection.start.offset )
     {
       insertPos = container.getPosition(tx.selection.start.path[0]) + 1;
@@ -272,7 +273,7 @@ ContainerEditor.Prototype = function() {
       var node = pasteDoc.get(nodeId).toJSON();
       // create a new id if the node exists already
       if (tx.get(nodeId)) {
-        node.id = Substance.uuid(node.type);
+        node.id = _.uuid(node.type);
       }
       tx.create(node);
       container.show(node.id, insertPos++);
@@ -287,7 +288,7 @@ ContainerEditor.Prototype = function() {
           data.path[0] = node.id;
         }
         if (tx.get(data.id)) {
-          data.id = Substance.uuid(data.type);
+          data.id = _.uuid(data.type);
         }
         tx.create(data);
       }
@@ -296,8 +297,8 @@ ContainerEditor.Prototype = function() {
     if (insertedNodes.length === 0) return;
 
     // set a new selection
-    var lastId = Substance.last(insertedNodes).id;
-    var lastComp = Substance.last(container.getComponentsForNode(lastId));
+    var lastId = _.last(insertedNodes).id;
+    var lastComp = _.last(container.getComponentsForNode(lastId));
     var lastLength = tx.get(lastComp.path).length;
     // This version turned out to be useful in some situations
     // as it hightlights the pasted content
@@ -323,6 +324,6 @@ ContainerEditor.Prototype = function() {
   };
 };
 
-Substance.inherit(ContainerEditor, FormEditor);
+OO.inherit(ContainerEditor, FormEditor);
 
 module.exports = ContainerEditor;

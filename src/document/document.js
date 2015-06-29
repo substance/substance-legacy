@@ -64,6 +64,10 @@ function Document(schema) {
 
 Document.Prototype = function() {
 
+  this.isTransaction = function() {
+    return false;
+  };
+
   this.newInstance = function() {
     return new Document(this.schema);
   };
@@ -176,11 +180,15 @@ Document.Prototype = function() {
     if (!_.isFunction(transformation)) {
       throw new Error('Document.transaction() requires a transformation function.');
     }
+    var time = Date.now();
     // HACK: ATM we can't deep clone as we do not have a deserialization
     // for selections.
     var tx = this.startTransaction(_.clone(beforeState));
+    console.log('Starting the transaction took', Date.now() - time);
     try {
+      time = Date.now();
       var result = transformation(tx);
+      console.log('Executing the transformation took', Date.now() - time);
       var afterState = {};
       // only keys that are in the beforeState can be in the afterState
       // TODO: maybe this is to sharp?
@@ -387,7 +395,7 @@ Document.Prototype = function() {
   };
 
   this._saveTransaction = function(beforeState, afterState, info) {
-    console.log('SAVING TX', beforeState, afterState, beforeState.selection.toString(), afterState.selection.toString());
+    // var time = Date.now();
     if (!this.isTransacting) {
       throw new Error('Not in a transaction.');
     }
@@ -399,7 +407,10 @@ Document.Prototype = function() {
     // push to undo queue and wipe the redo queue
     this.done.push(documentChange);
     this.undone = [];
+    // console.log('Document._saveTransaction took %s ms', (Date.now() - time));
+    // time = Date.now();
     this._notifyChangeListeners(documentChange, info);
+    // console.log('Notifying change listener took %s ms', (Date.now() - time));
   };
 
   this._cancelTransaction = function() {

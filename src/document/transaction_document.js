@@ -4,7 +4,6 @@ var Substance = require('../basics');
 var Data = require('../data');
 
 function TransactionDocument(document) {
-
   this.document = document;
   this.schema = document.schema;
   this.ops = [];
@@ -25,6 +24,10 @@ function TransactionDocument(document) {
 }
 
 TransactionDocument.Prototype = function() {
+
+  this.isTransaction = function() {
+    return true;
+  };
 
   this.reset = function() {
     this.ops = [];

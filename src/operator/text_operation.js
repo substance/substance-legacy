@@ -1,6 +1,7 @@
 'use strict';
 
-var Substance = require('../basics');
+var _ = require('../basics/helpers');
+var OO = require('../basics/oo');
 var Operation = require('./operation');
 var Conflict = require('./conflict');
 
@@ -25,10 +26,10 @@ function TextOperation(data) {
   if(!this.isInsert() && !this.isDelete()) {
     throw new Error("Illegal type.");
   }
-  if (!Substance.isString(this.str)) {
+  if (!_.isString(this.str)) {
     throw new Error("Illegal argument: expecting string.");
   }
-  if (!Substance.isNumber(this.pos) || this.pos < 0) {
+  if (!_.isNumber(this.pos) || this.pos < 0) {
     throw new Error("Illegal argument: expecting positive number as pos.");
   }
 }
@@ -113,7 +114,7 @@ TextOperation.Prototype = function() {
   };
 };
 
-Substance.inherit(TextOperation, Operation);
+OO.inherit(TextOperation, Operation);
 
 hasConflict = function(a, b) {
   // Insert vs Insert:
@@ -212,8 +213,8 @@ var transform = function(a, b, options) {
     throw new Conflict(a, b);
   }
   if (!options.inplace) {
-    a = Substance.clone(a);
-    b = Substance.clone(b);
+    a = _.deepclone(a);
+    b = _.deepclone(b);
   }
   if (a.type === INS && b.type === INS)  {
     transform_insert_insert(a, b);

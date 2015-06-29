@@ -1,6 +1,7 @@
 'use strict';
 
-var Substance = require('../basics');
+var _ = require('../basics/helpers');
+var OO = require('../basics/oo');
 var Operation = require('./operation');
 var Conflict = require('./conflict');
 
@@ -26,7 +27,7 @@ var ArrayOperation = function(data) {
   this.pos = data.pos;
   // the value to insert or delete
   this.val = data.val;
-  if (!Substance.isNumber(this.pos) || this.pos < 0) {
+  if (!_.isNumber(this.pos) || this.pos < 0) {
     throw new Error("Illegal argument: expecting positive number as pos.");
   }
 };
@@ -53,7 +54,7 @@ ArrayOperation.Prototype = function() {
       if (array.length < this.pos) {
         throw new Error("Provided array is too small.");
       }
-      if (!Substance.isEqual(array[this.pos], this.val)) {
+      if (!_.isEqual(array[this.pos], this.val)) {
         throw Error("Unexpected value at position " + this.pos + ". Expected " + this.val + ", found " + array[this.pos]);
       }
       array.splice(this.pos, 1);
@@ -83,7 +84,7 @@ ArrayOperation.Prototype = function() {
     };
     if (this.type === NOP) return result;
     result.pos = this.pos;
-    result.val = Substance.clone(this.val);
+    result.val = _.deepclone(this.val);
     return result;
   };
 
@@ -112,7 +113,7 @@ ArrayOperation.Prototype = function() {
   };
 };
 
-Substance.inherit(ArrayOperation, Operation);
+OO.inherit(ArrayOperation, Operation);
 
 var hasConflict = function(a, b) {
   if (a.type === NOP || b.type === NOP) return false;
@@ -174,8 +175,8 @@ var transform = function(a, b, options) {
   }
   // this is used internally only as optimization, e.g., when rebasing an operation
   if (!options.inplace) {
-    a = Substance.clone(a);
-    b = Substance.clone(b);
+    a = _.deepclone(a);
+    b = _.deepclone(b);
   }
   if (a.type === NOP || b.type === NOP)  {
     // nothing to transform

@@ -1,6 +1,7 @@
 'use strict';
 
-var Substance = require('../basics');
+var _ = require('../basics/helpers');
+var OO = require('../basics/oo');
 var Node = require('./node');
 var NodeFactory = require('./node_factory');
 
@@ -71,7 +72,7 @@ Schema.Prototype = function() {
   function getJsonForNodeClass(nodeClass) {
     var nodeSchema = {};
     if (nodeClass.static.hasOwnProperty('schema')) {
-      nodeSchema.properties = Substance.clone(nodeClass.static.schema);
+      nodeSchema.properties = _.clone(nodeClass.static.schema);
     }
     // add 'parent' attribute if the nodeClass has a parent
     return nodeSchema;
@@ -152,6 +153,6 @@ Schema.Prototype = function() {
   };
 };
 
-Substance.initClass(Schema);
+OO.initClass(Schema);
 
 module.exports = Schema;

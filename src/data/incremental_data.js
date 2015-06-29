@@ -1,6 +1,7 @@
 'use strict';
 
-var Substance = require('../basics');
+var OO = require('../basics/oo');
+var _ = require('../basics/helpers');
 
 var Data = require('./data');
 var Operator = require('../operator');
@@ -103,7 +104,7 @@ IncrementalData.Prototype = function() {
     if (op.type === ObjectOperation.NOP) return;
     else if (op.type === ObjectOperation.CREATE) {
       // clone here as the operations value must not be changed
-      this.super.create.call(this, Substance.clone(op.val));
+      this.super.create.call(this, _.deepclone(op.val));
     } else if (op.type === ObjectOperation.DELETE) {
       this.super.delete.call(this, op.val.id);
     } else if (op.type === ObjectOperation.UPDATE) {
@@ -139,7 +140,7 @@ IncrementalData.Prototype = function() {
     } else {
       var value = this.get(path);
       var start, end, pos, val;
-      if (Substance.isString(value)) {
+      if (_.isString(value)) {
         if (diff['delete']) {
           // { delete: [2, 5] }
           start = diff['delete'].start;
@@ -151,7 +152,7 @@ IncrementalData.Prototype = function() {
           val = diff['insert'].value;
           diffOp = TextOperation.Insert(pos, val);
         }
-      } else if (Substance.isArray(value)) {
+      } else if (_.isArray(value)) {
         if (diff['delete']) {
           // { delete: 2 }
           pos = diff['delete'].offset;
@@ -172,6 +173,6 @@ IncrementalData.Prototype = function() {
 
 };
 
-Substance.inherit(IncrementalData, Data);
+OO.inherit(IncrementalData, Data);
 
 module.exports = IncrementalData;

@@ -5,6 +5,7 @@ var PathAdapter = Substance.PathAdapter;
 
 var NotifyByPathProxy = function(doc) {
   this.listeners = new PathAdapter();
+  this._list = [];
   this.doc = doc;
 };
 
@@ -67,6 +68,10 @@ NotifyByPathProxy.Prototype = function() {
     listeners.push({ method: method, listener: listener });
   };
 
+  this.connect = function(listener, path, method) {
+    this.add(path, listener, method);
+  };
+
   // TODO: it would be cool if we would just need to provide the listener instance, no path
   this.remove = function(path, listener) {
     var key = path.concat(['listeners']);
@@ -80,6 +85,13 @@ NotifyByPathProxy.Prototype = function() {
       }
     }
   };
+
+  this.disconnect = function(listener) {
+    this.listeners.traverse(function(path, listeners) {
+      _.deleteFromArray(listeners, listener);
+    });
+  };
+
 };
 
 Substance.initClass(NotifyByPathProxy);

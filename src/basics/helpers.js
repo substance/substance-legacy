@@ -52,6 +52,12 @@ Helpers.isFunction = require('lodash/lang/isFunction');
  */
 Helpers.cloneDeep = require('lodash/lang/cloneDeep');
 
+/**
+ * See https://lodash.com/docs#clone
+ * @method clone
+ */
+Helpers.clone = require('lodash/lang/clone');
+
 // Function helpers
 
 /**
@@ -190,7 +196,6 @@ Helpers.deleteFromArray = function(array, value) {
   }
 };
 
-
 /**
  * Clones a given object.
  * Uses obj.clone() if available, otherwise delegates to _.cloneDeep().
@@ -199,7 +204,7 @@ Helpers.deleteFromArray = function(array, value) {
  * @param {Object} obj
  * @return The cloned object.
  */
-Helpers.clone = function(obj) {
+Helpers.deepclone = function(obj) {
   if (obj === null || obj === undefined) {
     return obj;
   }
