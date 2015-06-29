@@ -23,7 +23,7 @@ DocumentChange.Prototype = function() {
     var ops = this.ops;
     var created = {};
     var deleted = {};
-    var updated = new PathAdapter({});
+    var updated = new PathAdapter();
     var i;
     for (i = 0; i < ops.length; i++) {
       var op = ops[i];

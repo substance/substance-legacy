@@ -46,7 +46,7 @@ function _deletePropertySelection(tx, args) {
 
 function _deleteContainerSelection(tx, args) {
   var selection = args.selection;
-  var containerId = selection.container;
+  var containerId = selection.containerId;
   var range = selection.getRange();
   var nodeSels = _getNodeSelection(tx, selection);
   var nodeSel, node;
@@ -55,7 +55,7 @@ function _deleteContainerSelection(tx, args) {
   for (var idx = nodeSels.length - 1; idx >= 0; idx--) {
     nodeSel = nodeSels[idx];
     node = nodeSel.node;
-    if (nodeSel.isFully && !node.isResilient()) {
+    if (nodeSel.isFully) {
       deleteNode(tx, { nodeId: node.id });
     } else {
       _deleteNodePartially(tx, nodeSel);
@@ -74,7 +74,7 @@ function _deleteContainerSelection(tx, args) {
     result.selection = null;
     for (var i = 1; i < nodeSels.length; i++) {
       nodeSel = nodeSels[i];
-      if (!nodeSel.isFully || nodeSel.node.isResilient()) {
+      if (!nodeSel.isFully) {
         result.selection = tx.createSelection({
           type: 'property',
           path: nodeSel.components[0].path,
@@ -92,7 +92,7 @@ function _deleteContainerSelection(tx, args) {
       // TODO: think about if we want to merge in those cases
     } else {
       var secondComp = _.last(lastSel.components);
-      result = merge(tx, { containerId: containerId, path: secondComp.path, direction: 'left' });
+      result = merge(tx, { selection: result.selection, containerId: containerId, path: secondComp.path, direction: 'left' });
     }
   }
   // If the container is empty after deletion insert a default text node is inserted
@@ -148,7 +148,7 @@ function _getNodeSelection(doc, containerSelection) {
   var result = [];
   var groups = {};
   var range = containerSelection.getRange();
-  var container = doc.get(containerSelection.containerthis.container.id);
+  var container = doc.get(containerSelection.containerId);
   var components = container.getComponentsForRange(range);
   for (var i = 0; i < components.length; i++) {
     var comp = components[i];

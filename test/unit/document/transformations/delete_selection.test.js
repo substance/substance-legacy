@@ -67,3 +67,26 @@ QUnit.test("delete property selection overlapping annotation end", function(asse
   assert.equal(anno.startOffset, 15, 'Annotation start should not change.');
   assert.equal(anno.endOffset, 20, 'Annotation end should be shifted left.');
 });
+
+QUnit.test("delete container selection", function(assert) {
+  var doc = sample1();
+  var sel = doc.createSelection({
+    type: 'container',
+    containerId: 'main',
+    startPath: ['h2', 'content'],
+    startOffset: 8,
+    endPath: ['p2', 'content'],
+    endOffset: 10
+  });
+  var anno = doc.get('em1');
+  var args = {selection: sel, containerId: 'main'};
+  var out = deleteSelection(doc, args);
+  var selection = out.selection;
+  var anno = doc.get('em1');
+  assert.equal(doc.get(['h2', 'content']), "Section with annotation", "Remaining content of p2 should get appended to remains of h2");
+  assert.ok(selection.isCollapsed(), 'Selection should be collapsed afterwards.');
+  assert.deepEqual(selection.path, ['h2', 'content'], 'Cursor should be in h2.');
+  assert.equal(selection.startOffset, 8, 'Cursor should be at the end of h2s remains');
+  assert.deepEqual(anno.path, ['h2', 'content'], 'Annotation should have been transferred to h2.');
+  assert.deepEqual([anno.startOffset, anno.endOffset], [13, 23], 'Annotation should have been placed correctly.');
+});
