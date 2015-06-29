@@ -178,12 +178,20 @@ Document.Prototype = function() {
     }
     // HACK: ATM we can't deep clone as we do not have a deserialization
     // for selections.
-    var tx = this.startTransaction(beforeState);
+    var tx = this.startTransaction(_.clone(beforeState));
     try {
       var result = transformation(tx);
       var afterState = {};
+      // only keys that are in the beforeState can be in the afterState
+      // TODO: maybe this is to sharp?
+      // we could also just merge the transformation result with beforeState
+      // but then we might have non-state related information in the after state.
       for (var key in beforeState) {
-        result[key] = result[key];
+        if (result[key]) {
+          afterState[key] = result[key];
+        } else {
+          afterState[key] = beforeState[key];
+        }
       }
       // save automatically if not yet saved or cancelled
       if (this.isTransacting) {
@@ -379,6 +387,7 @@ Document.Prototype = function() {
   };
 
   this._saveTransaction = function(beforeState, afterState, info) {
+    console.log('SAVING TX', beforeState, afterState, beforeState.selection.toString(), afterState.selection.toString());
     if (!this.isTransacting) {
       throw new Error('Not in a transaction.');
     }

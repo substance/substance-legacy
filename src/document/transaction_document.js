@@ -136,6 +136,14 @@ TransactionDocument.Prototype = function() {
     node.document = null;
   };
 
+  this.createSelection = function() {
+    return this.document.createSelection.apply(this, arguments);
+  };
+
+  this.getSchema = function() {
+    return this.schema;
+  };
+
 };
 
 Substance.initClass(TransactionDocument);

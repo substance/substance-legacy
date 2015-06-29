@@ -3,6 +3,8 @@
 var Substance = require('../basics');
 var PropertySelection = require('./property_selection');
 var Selection = require('./selection');
+var Range = require('./range');
+var Coordinate = require('./coordinate');
 
 function ContainerSelection(properties) {
   // Note: not calling the super ctor as it freezes the instance
@@ -175,7 +177,7 @@ ContainerSelection.Prototype = function() {
       }
       sels.push(doc.createSelection({
         type: 'property',
-        path: path,
+        path: comp.path,
         startOffset: startOffset,
         endOffset: endOffset
       }));

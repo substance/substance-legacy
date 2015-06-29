@@ -42,7 +42,7 @@ FormEditor.Prototype = function() {
     }
   };
 
-  this.write = function(tx, args) {
+  this.insertText = function(tx, args) {
     return Transformations.insertText(tx, args);
   };
 
@@ -58,7 +58,7 @@ FormEditor.Prototype = function() {
 
   this.softBreak = function(tx, args) {
     args.text = "\n";
-    return this.write(tx, args);
+    return this.insertText(tx, args);
   };
 
   this.paste = function(tx, args) {
@@ -68,7 +68,7 @@ FormEditor.Prototype = function() {
     // received in the document
     if (data.text) {
       args.text = data.text;
-      return this.write(tx, args);
+      return this.insertText(tx, args);
     } else {
       return args;
     }

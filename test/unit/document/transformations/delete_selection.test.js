@@ -16,8 +16,9 @@ QUnit.test("delete property selection", function(assert) {
     endOffset: 15
   });
   var args = {selection: sel};
-  deleteSelection(doc, args);
+  args = deleteSelection(doc, args);
   assert.equal(doc.get(['p2', 'content']), 'Paragraph annotation', 'Selected text should be deleted.');
+  assert.equal(args.selection.start.offset, 10, 'Selection should be collapsed to the left');
 });
 
 QUnit.test("delete property selection before annotation", function(assert) {

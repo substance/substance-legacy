@@ -1,18 +1,25 @@
 'use strict';
 
+var _ = require('../basics/helpers');
 var Substance = require('../basics');
 var SurfaceSelection = require('./surface_selection');
 var Document = require('../document');
-var _ = require('../basics/helpers');
+var SurfaceManager = require('./surface_manager');
 
 var __id__ = 0;
 
 function Surface(editor, options) {
   Substance.EventEmitter.call(this);
 
+  // TODO: maybe it shouldn't be done automatically...
+  if (!Surface.surfaceManager) {
+    Surface.surfaceManager = new SurfaceManager(editor.getDocument());
+  }
+
   options = options || {};
 
   this.__id__ = __id__++;
+  this.name = options.name || __id__;
   this.selection = Document.nullSelection;
 
   // this.element must be set via surface.attach(element)
@@ -40,9 +47,6 @@ function Surface(editor, options) {
   this._onTextInputShim = Substance.bind( this.onTextInputShim, this );
   this._onCompositionStart = Substance.bind( this.onCompositionStart, this );
 
-  this._onBlur = Substance.bind( this.onBlur, this );
-  this._onFocus = Substance.bind( this.onFocus, this );
-
   this._onDomMutations = Substance.bind(this.onDomMutations, this);
   this.domObserver = new window.MutationObserver(this._onDomMutations);
   this.domObserverConfig = { subtree: true, characterData: true };
@@ -69,6 +73,8 @@ function Surface(editor, options) {
   } else {
     this.enableContentEditable = true;
   }
+
+  Surface.surfaceManager.registerSurface(this);
   /*jshint eqnull:false */
 }
 
@@ -102,6 +108,11 @@ Surface.Prototype = function() {
 
   this.dispose = function() {
     this.detach();
+    Surface.surfaceManager.unregisterSurface(this);
+    if (!Surface.surfaceManager.hasSurfaces()) {
+      Surface.surfaceManager.dispose();
+      Surface.surfaceManager = null;
+    }
   };
 
   this.attach = function(element) {
@@ -129,14 +140,9 @@ Surface.Prototype = function() {
     // Mouse Events
     //
     this.$element.on( 'mousedown', this._onMouseDown );
-    this.$element.on('blur', this._onBlur);
-    this.$element.on('focus', this._onFocus);
 
     // Document Change Events
     //
-    // listen to updates so that we can set the selection (only for editing not for replay)
-    doc.connect(this, { 'document:changed': this.onDocumentChange });
-
     this.domObserver.observe(element, this.domObserverConfig);
 
     this.attached = true;
@@ -168,8 +174,6 @@ Surface.Prototype = function() {
     //
     this.$element.off('mousemove', this._onMouseMove );
     this.$element.off('mousedown', this._onMouseDown );
-    this.$element.off('blur', this._onBlur);
-    this.$element.off('focus', this._onFocus);
 
     // Keyboard Events
     //
@@ -305,6 +309,7 @@ Surface.Prototype = function() {
   };
 
   this.undo = function() {
+    console.log('UNDO!');
     var doc = this.getDocument();
     if (doc.done.length>0) {
       doc.undo();
@@ -352,7 +357,7 @@ Surface.Prototype = function() {
   this.transaction = function(transformation, ctx) {
     // `beforeState` is saved with the document operation and will be used
     // to recover the selection when using 'undo'.
-    beforeState = {
+    var beforeState = {
       surfaceId: this.getName(),
       selection: this.getSelection()
     };
@@ -361,12 +366,13 @@ Surface.Prototype = function() {
       var customBeforeState = arguments[0];
       beforeState = _.extend(beforeState, customBeforeState);
     }
+    var afterState;
     this.getDocument().transaction(beforeState, function(tx) {
       // A transformation receives a set of input arguments and should return a set of output arguments.
       var result = transformation.call(ctx, tx, { selection: beforeState.selection });
       // The `afterState` is saved with the document operation and will be used
       // to recover the selection whe using `redo`.
-      var afterState = result || {};
+      afterState = result || {};
       // If no selection is returned, the old selection is for `afterState`.
       if (!afterState.selection) {
         afterState.selection = beforeState.selection;
@@ -374,6 +380,7 @@ Surface.Prototype = function() {
       afterState.surfaceId = beforeState.surfaceId;
       return afterState;
     });
+    this.setSelection(afterState.selection);
   };
 
   this.onTextInput = function(e) {
@@ -465,7 +472,7 @@ Surface.Prototype = function() {
     e.preventDefault();
     e.stopPropagation();
     this.transaction(function(tx, args) {
-      return this.editor.write(tx, { selection: args.selection, text: " " });
+      return this.editor.insertText(tx, { selection: args.selection, text: " " });
     }, this);
     this.rerenderDomSelection();
   };
@@ -515,6 +522,10 @@ Surface.Prototype = function() {
     this.$document.off( 'mouseup', this._onMouseUp );
     this.$document.off( 'mousemove', this._onMouseMove );
     this.dragging = false;
+    if (!this.isFocused) {
+      Surface.surfaceManager.didFocus(this);
+      this.isFocused = true;
+    }
     // HACK: somehow the DOM selection is not ready yet
     var self = this;
     if (self.surfaceSelection) {
@@ -531,36 +542,16 @@ Surface.Prototype = function() {
     }
   };
 
-  // There is now a problem with non-editable elements at the boundary
-  // of elements, as illustrated by this example:
-  //
-  //  <div>
-  //    <label contenteditable="false">Label:</label>
-  //    <span>Value</span>
-  //  </div>
-  //
-  // CE allows to set the cursor before the label, and without intervention
-  // would even allow to delete it.
-  // Particularly in FormEditors we could solve this by making
-  // only the text-properties editable.
-
-  // TODO: native blur and focus does only work if the root element
-  // is contenteditable.
-
-  this.onBlur = function() {
-    // set this when you want to deabug selection related issues
-    // otherwise the developer console will draw the focus, which
-    // leads to an implicit deselection in the surface.
-    if (!Substance.Surface.DISABLE_BLUR && !this.frozen) {
-      // console.log('Blurring surface', this.name, this.__id__);
-      this.isFocused = false;
-      this.setSelection(Substance.Document.nullSelection);
-    }
+  // called by SurfaceManager when another surface get's the focus
+  this._blur = function() {
+    this.setSelection(Substance.Document.nullSelection);
+    this.isFocused = false;
   };
 
-  this.onFocus = function() {
-    // console.log('Focusing surface', this.name, this.__id__);
+  // called by SurfaceManager when another surface get's the focus
+  this._focus = function() {
     this.isFocused = true;
+    this.rerenderDomSelection();
   };
 
   this.onDomMutations = function() {
@@ -578,23 +569,6 @@ Surface.Prototype = function() {
   // ###########################################
   // Document and Selection Changes
   //
-
-  this.onDocumentChange = function(change, info) {
-    if (!this.isFocused) {
-      return;
-    }
-    if (!info.replay) {
-      var self = this;
-      // window.setTimeout(function() {
-        // GUARD: For cases where the panel/or whatever has been disposed already ‚after changing the doc
-        if (!self.surfaceSelection) return;
-        var sel = change.after.selection;
-        // self.editor.selection = sel;
-        self.surfaceSelection.setSelection(sel);
-        self.emit('selection:changed', sel, this);
-      // });
-    }
-  };
 
   this.getSelection = function() {
     return this.selection;
@@ -631,16 +605,16 @@ Surface.Prototype = function() {
    */
   this._setModelSelection = function(sel) {
     sel = sel || Substance.Document.nullSelection;
-    if (!this.getSelection().equals(sel)) {
+    // if (!this.getSelection().equals(sel)) {
       // console.log('Surface.setSelection: %s', sel.toString());
       this.selection = sel;
       this.emit('selection:changed', sel, this);
       // FIXME: ATM rerendering an expanded selection leads
       // to a strante behavior. So do not do that for now
-      if (sel.isCollapsed()) {
-        this.rerenderDomSelection();
-      }
-    }
+      // if (sel.isCollapsed()) {
+      this.rerenderDomSelection();
+      // }
+    // }
   };
 
   this.getLogger = function() {
@@ -733,5 +707,6 @@ Surface.detectIE = function() {
   // other browser
   return false;
 };
+
 
 module.exports = Surface;
