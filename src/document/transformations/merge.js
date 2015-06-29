@@ -9,25 +9,28 @@ var merge = function(tx, args) {
   var containerId = args.containerId;
   var path = args.path;
   var direction = args.direction;
+  if (!containerId||!path||!direction) {
+    throw new Error('Insufficient arguments! mandatory fields: `containerId`, `path`, `direction`');
+  }
   var container = tx.get(containerId);
   var component = container.getComponent(path);
   if (direction === 'right' && component.next) {
-     return _mergeComponents(tx, component, component.next);
+     return _mergeComponents(tx, containerId, component, component.next);
   } else if (direction === 'left' && component.previous) {
-    return _mergeComponents(tx, component.previous, component);
+    return _mergeComponents(tx, containerId, component.previous, component);
   } else {
     // No behavior defined for this merge
   }
 };
 
-var _mergeComponents = function(tx, firstComp, secondComp) {
+var _mergeComponents = function(tx, containerId, firstComp, secondComp) {
   var firstNode = tx.get(firstComp.parentNode.id);
   var secondNode = tx.get(secondComp.parentNode.id);
   // TODO: it should be possible to extend the merge transformation by providing custom transformations
   // for nodes anc components
   var mergeTrafo = _getMergeTransformation(firstNode, secondNode);
   if (mergeTrafo) {
-    return mergeTrafo.call(this, tx, firstComp, secondComp);
+    return mergeTrafo.call(this, tx, containerId, firstComp, secondComp);
   }
 };
 
@@ -54,13 +57,13 @@ var _getMergeTransformation = function(node, otherNode) {
   return trafo;
 };
 
-var _mergeTextNodes = function(tx, firstComp, secondComp) {
+var _mergeTextNodes = function(tx, containerId, firstComp, secondComp) {
   var firstPath = firstComp.path;
   var firstText = tx.get(firstPath);
   var firstLength = firstText.length;
   var secondPath = secondComp.path;
   var secondText = tx.get(secondPath);
-  var container = tx.get(this.container.id);
+  var container = tx.get(containerId);
   var selection;
   if (firstLength === 0) {
     // hide the second node

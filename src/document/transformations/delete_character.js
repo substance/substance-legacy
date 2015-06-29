@@ -21,6 +21,8 @@ var deleteCharacter = function(tx, args) {
   if ((range.start.offset === 0 && direction === 'left') ||
       (range.start.offset === prop.length && direction === 'right')) {
     var result = merge(tx, {
+      selection: selection,
+      containerId: args.containerId,
       path: range.start.path,
       direction: direction
     });
