@@ -63,7 +63,12 @@ ArrayOperation.Prototype = function() {
   };
 
   this.clone = function() {
-    return new ArrayOperation(this);
+    var data = {
+      type: this.type,
+      pos: this.pos,
+      val: _.deepclone(this.val)
+    };
+    return new ArrayOperation(data);
   };
 
   this.invert = function() {
@@ -175,8 +180,8 @@ var transform = function(a, b, options) {
   }
   // this is used internally only as optimization, e.g., when rebasing an operation
   if (!options.inplace) {
-    a = _.deepclone(a);
-    b = _.deepclone(b);
+    a = a.clone();
+    b = b.clone();
   }
   if (a.type === NOP || b.type === NOP)  {
     // nothing to transform

@@ -109,13 +109,23 @@ ObjectOperation.Prototype = function() {
     }
     else /* if (this.type === SET) */ {
       // clone here as the operations value must not be changed
-      adapter.set(this.path, _.clone(this.val));
+      adapter.set(this.path, _.deepclone(this.val));
     }
     return obj;
   };
 
   this.clone = function() {
-    return new ObjectOperation(this);
+    var data = {
+      type: this.type,
+      path: this.path,
+    };
+    if (this.val) {
+      data.val = _.deepclone(this.val);
+    }
+    if (this.diff) {
+      data.diff = this.diff.clone();
+    }
+    return new ObjectOperation(data);
   };
 
   this.isNOP = function() {
@@ -346,8 +356,8 @@ var transform = function(a, b, options) {
     throw new Conflict(a, b);
   }
   if (!options.inplace) {
-    a = _.deepclone(a);
-    b = _.deepclone(b);
+    a = a.clone();
+    b = b.clone();
   }
   if (a.isNOP() || b.isNOP()) {
     return [a, b];

@@ -10,9 +10,9 @@ QUnit.module('Unit/Substance.Operator/ObjectOperation');
 
 QUnit.assert.checkObjectOperationTransform = function(a, b, input, expected) {
   var t = ObjectOperation.transform(a, b);
-  var output = t[1].apply(a.apply(_.clone(input)));
+  var output = t[1].apply(a.apply(_.deepclone(input)));
   this.push(_.isEqual(expected, output), output, expected, "(b' o a)('"+JSON.stringify(input)+"') == '" + JSON.stringify(expected) + "' with a="+a.toString()+", b'="+t[1].toString());
-  output = t[0].apply(b.apply(_.clone(input)));
+  output = t[0].apply(b.apply(_.deepclone(input)));
   this.push(_.isEqual(expected, output), output, expected, "(a' o b)('"+JSON.stringify(input)+"') == '" + JSON.stringify(expected) + "' with b="+b.toString()+", a'="+t[0].toString());
 };
 

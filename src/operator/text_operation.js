@@ -12,7 +12,6 @@ var hasConflict;
 
 function TextOperation(data) {
   Operation.call(this);
-
   if (!data || data.type === undefined || data.pos === undefined || data.str === undefined) {
     throw new Error("Illegal argument: insufficient data.");
   }
@@ -213,8 +212,8 @@ var transform = function(a, b, options) {
     throw new Conflict(a, b);
   }
   if (!options.inplace) {
-    a = _.deepclone(a);
-    b = _.deepclone(b);
+    a = a.clone();
+    b = b.clone();
   }
   if (a.type === INS && b.type === INS)  {
     transform_insert_insert(a, b);
