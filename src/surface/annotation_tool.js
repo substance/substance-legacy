@@ -232,7 +232,7 @@ AnnotationTool.Prototype = function() {
     var sel = state.sel;
     this.surface.transaction({ selection: sel }, function(tx, args) {
       var anno = state.annos[0];
-      var annoSel = anno.getSelection(); // state.annoSels[0];
+      var annoSel = anno.getSelection();
       var newAnnoSel = annoSel.truncate(sel);
       anno.updateRange(tx, newAnnoSel);
       this.afterTruncate();
@@ -244,7 +244,7 @@ AnnotationTool.Prototype = function() {
     var sel = state.sel;
     this.surface.transaction({ selection: sel }, function(tx, args) {
       var anno = state.annos[0];
-      var annoSel = anno.getSelection(); // state.annoSels[0];
+      var annoSel = anno.getSelection();
       var newAnnoSel = annoSel.expand(sel);
       anno.updateRange(tx, newAnnoSel);
       this.afterExpand();
