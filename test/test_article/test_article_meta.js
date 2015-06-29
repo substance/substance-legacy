@@ -1,6 +1,6 @@
-var Substance = require('substance');
+var Document = require('../../src/document');
 
-var MetaNode = Substance.Document.Node.extend({
+var MetaNode = Document.Node.extend({
   name: "meta",
   properties: {
     "title": "string"

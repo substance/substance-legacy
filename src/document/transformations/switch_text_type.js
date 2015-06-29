@@ -1,8 +1,8 @@
 'use strict';
 
-var deleteNode = require('./deleteNode');
 var _ = require('../../basics/helpers');
 var Annotations = require('../annotation_updates');
+var deleteNode = require('./delete_node');
 
 // TODO: needs to be overhauled
 // should work without a given container

@@ -6,6 +6,12 @@ var Annotations = require('../annotation_updates');
 var insertText = function(tx, args) {
   var selection = args.selection;
   var text = args.text;
+  if (!selection) {
+    throw new Error('Argument `selection` is mandatory for transformation `insertText`.');
+  }
+  if (!text) {
+    throw new Error('Argument `text` is mandatory for transformation `insertText`.');
+  }
   var result;
   if (!selection.isCollapsed()) {
     result = deleteSelection(tx, {

@@ -5,6 +5,6 @@ module.exports = {
   deleteSelection: require('./delete_selection'),
   insertNode: require('./insert_node'),
   insertText: require('./insert_text'),
-  mergeNodes: require('./merge_nodes'),
+  merge: require('./merge'),
   switchTextType: require('./switch_text_type'),
 };

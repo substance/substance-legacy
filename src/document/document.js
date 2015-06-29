@@ -27,7 +27,7 @@ function Document(schema) {
   });
 
   // all by type
-  this.nodeIndex = this.addIndex('type', Substance.Data.Index.create({
+  this.nodeIndex = this.addIndex('type', Data.Index.create({
     property: "type"
   }));
   // special index for (property-scoped) annotations

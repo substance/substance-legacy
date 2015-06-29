@@ -2,7 +2,8 @@
 
 require('../../init');
 var sample1 = require('../../../fixtures/sample1');
-var deleteCharacter = require('../../../../src/document/transformations/delete_character');
+var Document = require('../../../../src/document');
+var deleteCharacter = Document.Transformations.deleteCharacter;
 
 QUnit.module('Unit/Substance.Document/Transformations/deleteCharacter');
 
@@ -13,8 +14,8 @@ QUnit.test("backspace", function(assert) {
     path: ['p2', 'content'],
     startOffset: 4
   });
-  var state = {selection: sel};
-  deleteCharacter(doc, { direction: 'left' }, state);
+  var args = {selection: sel, direction: 'left'};
+  deleteCharacter(doc, args);
   assert.equal(doc.get(['p2', 'content']), 'Pargraph with annotation', 'Character should be deleted.');
 });
 
@@ -25,7 +26,7 @@ QUnit.test("delete", function(assert) {
     path: ['p2', 'content'],
     startOffset: 4
   });
-  var state = {selection: sel};
-  deleteCharacter(doc, { direction: 'right' }, state);
+  var args = {selection: sel, direction: 'right'};
+  deleteCharacter(doc, args);
   assert.equal(doc.get(['p2', 'content']), 'Pararaph with annotation', 'Character should be deleted.');
 });
