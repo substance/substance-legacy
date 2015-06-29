@@ -11,19 +11,26 @@ var Annotations = require('../annotation_updates');
  */
 function breakNode(tx, args) {
   var selection = args.selection;
+  var containerId = args.containerId;
+  if (!selection) {
+    throw new Error("Argument 'selection' is mandatory.");
+  }
+  if (!containerId) {
+    throw new Error("Argument 'containerId' is mandatory.");
+  }
   if (!selection.isCollapsed()) {
-    deleteSelection(tx, args);
+    args = deleteSelection(tx, args);
+    selection = args.selection;
   }
   var range = selection.getRange();
   var node = tx.get(range.start.path[0]);
-
   // TODO: we want to allow custom break behaviors
   // for that to happen we need to learn more
-
   if (node.isInstanceOf('text')) {
     return breakTextNode(tx, args);
   } else {
     console.info("Breaking is not supported for node type %s.", node.type);
+    return args;
   }
 }
 
@@ -35,7 +42,7 @@ function breakTextNode(tx, args) {
   }
   var range = selection.getRange();
   var path = range.start.path;
-  var offset = range.startoffset;
+  var offset = range.start.offset;
   var node = tx.get(path[0]);
 
   // split the text property and create a new paragraph node with trailing text and annotations transferred
@@ -46,8 +53,9 @@ function breakTextNode(tx, args) {
   var newPath = [id, 'content'];
   // when breaking at the first position, a new node of the same
   // type will be inserted.
+  var newNode;
   if (offset === 0) {
-    tx.create({
+    newNode = tx.create({
       id: id,
       type: node.type,
       content: ""
@@ -61,7 +69,7 @@ function breakTextNode(tx, args) {
     });
   } else {
     // create a new node
-    tx.create({
+    newNode = tx.create({
       id: id,
       type: tx.getSchema().getDefaultTextType(),
       content: text.substring(offset)
@@ -83,7 +91,10 @@ function breakTextNode(tx, args) {
       startOffset: 0
     });
   }
-  return { selection: selection };
+  return {
+    selection: selection,
+    node: newNode
+  };
 }
 
 module.exports = breakNode;

@@ -58,6 +58,12 @@ Helpers.cloneDeep = require('lodash/lang/cloneDeep');
  */
 Helpers.clone = require('lodash/lang/clone');
 
+/**
+ * See https://lodash.com/docs#isEmpty
+ * @method isEmpty
+ */
+Helpers.isEmpty = require('lodash/lang/isEmpty');
+
 // Function helpers
 
 /**

@@ -3,6 +3,10 @@ var MetaNode = require('./test_article_meta');
 
 var schema = new Document.Schema("test-article", "1.0.0");
 
+schema.getDefaultTextType = function() {
+  return 'paragraph';
+};
+
 schema.addNodes([
   MetaNode,
   Document.Paragraph,
