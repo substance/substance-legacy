@@ -191,7 +191,11 @@ PropertySelection.Prototype = function() {
   };
 
   this.createWithNewRange = function(startOffset, endOffset) {
-    return new PropertySelection(new Range(new Coordinate(this.path, startOffset), new Coordinate(this.path, endOffset)));
+    return new PropertySelection({
+      path: this.path,
+      startOffset: startOffset,
+      endOffset: endOffset
+    });
   };
 
   this.truncate = function(other) {

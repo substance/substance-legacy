@@ -1,4 +1,5 @@
-var Substance = require("../basics");
+var _ = require("../basics/helpers");
+var OO = require("../basics/oo");
 var Tool = require('./tool');
 
 function AnnotationTool() {
@@ -111,7 +112,7 @@ AnnotationTool.Prototype = function() {
       newState.mode = "expand";
     }
     // Verifies if the detected mode has been disabled by the concrete implementation
-    if (!newState.mode || Substance.includes(this.disabledModes, newState.mode)) {
+    if (!newState.mode || _.includes(this.disabledModes, newState.mode)) {
       return this.setDisabled();
     } else {
       this.setToolState(newState);
@@ -139,15 +140,10 @@ AnnotationTool.Prototype = function() {
   this.handleCreate = function(state) {
     var sel = state.sel;
     if (sel.isNull()) return;
-    var doc = this.getDocument();
-    var tx = doc.startTransaction({ selection: sel });
-    try {
-      var anno = this.createAnnotationForSelection(tx, sel);
-      tx.save({ selection: sel });
-      this.afterCreate(anno);
-    } finally {
-      tx.cleanup();
-    }
+    this.surface.transaction({ selection: sel }, function(tx, args) {
+      this.createAnnotationForSelection(tx, sel);
+      return args;
+    }, this);
   };
 
   this.getAnnotationData = function() {
@@ -170,10 +166,10 @@ AnnotationTool.Prototype = function() {
     }
     for (var i = 0; i < sels.length; i++) {
       var anno = {
-        id: Substance.uuid(annotationType),
+        id: _.uuid(annotationType),
         type: annotationType
       };
-      Substance.extend(anno, this.getAnnotationData());
+      _.extend(anno, this.getAnnotationData());
       anno.path = sels[i].getPath();
       anno.startOffset = sels[i].getStartOffset();
       anno.endOffset = sels[i].getEndOffset();
@@ -187,10 +183,10 @@ AnnotationTool.Prototype = function() {
     }
     var annotationType = this.getAnnotationType();
     var anno = {
-      id: Substance.uuid(annotationType),
+      id: _.uuid(annotationType),
       type: annotationType,
     };
-    Substance.extend(anno, this.getAnnotationData());
+    _.extend(anno, this.getAnnotationData());
     if (this.isContainerAnno()) {
       anno.startPath = sel.start.path;
       anno.endPath = sel.end.path;
@@ -208,72 +204,55 @@ AnnotationTool.Prototype = function() {
   };
 
   this.handleFusion = function(state) {
-    var doc = this.getDocument();
     var sel = state.sel;
-    var tx = doc.startTransaction({ selection: sel });
-    try {
-      Substance.each(state.annos, function(anno) {
+    this.surface.transaction({ selection: sel }, function(tx, args) {
+      _.each(state.annos, function(anno) {
         sel = sel.expand(anno.getSelection());
       });
-      Substance.each(state.annos, function(anno) {
+      _.each(state.annos, function(anno) {
         tx.delete(anno.id);
       });
-
       this.createAnnotationForSelection(tx, sel);
-      tx.save({ selection: sel });
       this.afterFusion();
-    } finally {
-      tx.cleanup();
-    }
+      return args;
+    }, this);
   };
 
   this.handleRemove = function(state) {
-    var doc = this.getDocument();
     var sel = state.sel;
-    var tx = doc.startTransaction({ selection: sel });
-    try {
+    this.surface.transaction({ selection: sel }, function(tx, args) {
       var annoId = state.annos[0].id;
       tx.delete(annoId);
-      tx.save({ selection: sel });
       this.afterRemove();
-    } finally {
-      tx.cleanup();
-    }
+      return args;
+    }, this);
   };
 
   this.handleTruncate = function(state) {
-    var doc = this.getDocument();
     var sel = state.sel;
-    var tx = doc.startTransaction({ selection: sel });
-    try {
+    this.surface.transaction({ selection: sel }, function(tx, args) {
       var anno = state.annos[0];
       var annoSel = anno.getSelection(); // state.annoSels[0];
       var newAnnoSel = annoSel.truncate(sel);
       anno.updateRange(tx, newAnnoSel);
-      tx.save({ selection: sel });
       this.afterTruncate();
-    } finally {
-      tx.cleanup();
-    }
+      return args;
+    }, this);
   };
 
   this.handleExpand = function(state) {
-    var doc = this.getDocument();
     var sel = state.sel;
-    var tx = doc.startTransaction({ selection: sel });
-    try {
+    this.surface.transaction({ selection: sel }, function(tx, args) {
       var anno = state.annos[0];
       var annoSel = anno.getSelection(); // state.annoSels[0];
       var newAnnoSel = annoSel.expand(sel);
       anno.updateRange(tx, newAnnoSel);
-      tx.save({ selection: sel });
       this.afterExpand();
-    } finally {
-      tx.cleanup();
-    }
+      return args;
+    }, this);
   };
 };
 
-Substance.inherit(AnnotationTool, Tool);
+OO.inherit(AnnotationTool, Tool);
 
 module.exports = AnnotationTool;

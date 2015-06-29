@@ -365,6 +365,8 @@ Surface.Prototype = function() {
     if (!_.isFunction(arguments[0]) && arguments.length >= 2) {
       var customBeforeState = arguments[0];
       beforeState = _.extend(beforeState, customBeforeState);
+      transformation = arguments[1];
+      ctx = arguments[2];
     }
     var afterState;
     this.getDocument().transaction(beforeState, function(tx) {

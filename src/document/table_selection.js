@@ -4,9 +4,14 @@ var Substance = require('../basics');
 var _ = require('../basics/helpers');
 var Selection = require('./selection');
 
-function TableSelection(tableId, rectangle) {
+function TableSelection(tableId, startRow, startCol, endRow, endCol) {
   this.tableId = tableId;
-  this.rectangle = rectangle;
+  if (arguments.length === 2 && arguments[1] instanceof TableSelection.Rectangle) {
+    this.rectangle = arguments[1];
+  } else {
+    this.rectangle = new TableSelection.Rectangle(startRow, startCol, endRow, endCol);
+  }
+  Object.freeze(this);
 }
 
 TableSelection.Prototype = function() {
@@ -45,6 +50,11 @@ TableSelection.Prototype = function() {
   this.toString = function() {
     var r = this.rectangle;
     return "T[("+ r.start.row + "," + r.start.col + "), ("+ r.end.row + ", " + r.end.col +")]";
+  };
+
+  this.attach = function(doc) {
+    this.doc = doc;
+    return this;
   };
 
 };

@@ -15,7 +15,10 @@ function Coordinate(path, offset, after) {
   this.path = path;
   this.offset = offset;
   this.after = after;
-  Object.freeze(path);
+  // make sure that path can't be changed afterwards
+  if (!Object.isFrozen(path)) {
+    Object.freeze(path);
+  }
   Object.freeze(this);
 }
 
