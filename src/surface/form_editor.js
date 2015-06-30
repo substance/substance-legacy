@@ -27,13 +27,13 @@ FormEditor.Prototype = function() {
   };
 
   // Selects the current property.
-  this.selectAll = function(state) {
-    var sel = state.selection;
+  this.selectAll = function(selection) {
+    var sel = selection;
     if (sel.isNull()) return;
     if (sel.isPropertySelection()) {
       var path = sel.start.path;
       var text = this.document.get(path);
-      state.selection = this.document.createSelection({
+      return this.document.createSelection({
         type: 'property',
         path: path,
         startOffset: 0,
