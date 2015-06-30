@@ -13,6 +13,12 @@ var singlePropertyFixture = [
   '</div>'
 ].join('');
 
+var emptyParagraphFixture = [
+  '<div id="test1" class="content-node" data-id="test1">',
+    '<span data-path="test1.content"></span>',
+  '</div>'
+].join('');
+
 var multiplePropertiesFixture = [
   '<div id="test1">',
     '<span data-path="test1.content">The first property.</span>',
@@ -112,5 +118,17 @@ QUnit.test("Get coordinate via search", function(assert) {
   var coor = surfaceSelection.getModelCoordinate(node, offset, {});
   assert.ok(coor, "Extrated coordinate should be !== null");
   assert.deepEqual(coor.getPath(), ['test3', 'content'], 'Path should be extracted correctly.');
+  assert.equal(coor.getOffset(), 0, 'Offset should be extracted correctly.');
+});
+
+QUnit.test("Get coordinate for empty paragraph", function(assert) {
+  var el = window.document.querySelector('#qunit-fixture');
+  el.innerHTML = emptyParagraphFixture;
+  var surfaceSelection = new SurfaceSelection(el);
+  var node = el.querySelector('#test1');
+  var offset = 0;
+  var coor = surfaceSelection.getModelCoordinate(node, offset, {});
+  assert.ok(coor, "Extrated coordinate should be !== null");
+  assert.deepEqual(coor.getPath(), ['test1', 'content'], 'Path should be extracted correctly.');
   assert.equal(coor.getOffset(), 0, 'Offset should be extracted correctly.');
 });
