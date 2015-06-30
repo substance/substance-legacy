@@ -31,6 +31,11 @@ NodeFactory.Prototype = function() {
     if ( !( nodeClazz.prototype instanceof Node) ) {
       throw new Error( 'Nodes must be subclasses of Substance.Data.Node' );
     }
+
+    if (this.contains(name)) {
+      throw new Error('Node class is already registered: ' + name);
+    }
+
     this.add(name, nodeClazz);
   };
 };
