@@ -347,6 +347,7 @@ Surface.Prototype = function() {
    *     ...
    *     this.foo();
    *     ...
+   *     return args;
    *   }, this);
    *
    *   surface.transaction(beforeState, function(tx, args) {
