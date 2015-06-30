@@ -180,15 +180,15 @@ Document.Prototype = function() {
     if (!_.isFunction(transformation)) {
       throw new Error('Document.transaction() requires a transformation function.');
     }
-    var time = Date.now();
+    // var time = Date.now();
     // HACK: ATM we can't deep clone as we do not have a deserialization
     // for selections.
     var tx = this.startTransaction(_.clone(beforeState));
-    console.log('Starting the transaction took', Date.now() - time);
+    // console.log('Starting the transaction took', Date.now() - time);
     try {
-      time = Date.now();
+      // time = Date.now();
       var result = transformation(tx);
-      console.log('Executing the transformation took', Date.now() - time);
+      // console.log('Executing the transformation took', Date.now() - time);
       var afterState = {};
       // only keys that are in the beforeState can be in the afterState
       // TODO: maybe this is to sharp?
