@@ -26,6 +26,25 @@ QUnit.test("Breaking a paragraph", function(assert) {
   assert.equal(selection.startOffset, 0, 'Selection should be at begin of line.');
 });
 
+QUnit.test("Breaking a paragraph with expanded property selection", function(assert) {
+  var doc = sample1();
+  var sel = doc.createSelection({
+    type: 'property',
+    path: ['p1', 'content'],
+    startOffset: 4,
+    endOffset: 10,
+  });
+  var args = {selection: sel, containerId: 'main'};
+  var out = breakNode(doc, args);
+  var newNodeId = out.node.id;
+  var selection = out.selection;
+  assert.equal(doc.get(['p1', 'content']), 'Para', 'Content of p2 should be truncated.');
+  assert.equal(doc.get([newNodeId, 'content']), '1', 'Remaining content should be inserted into new paragraph.');
+  assert.ok(selection.isCollapsed(), 'Selection should be collapsed afterwards.');
+  assert.deepEqual(selection.path, [newNodeId, 'content'], 'Selection should be in new line.');
+  assert.equal(selection.startOffset, 0, 'Selection should be at begin of line.');
+});
+
 QUnit.test("Breaking a paragraph before annotation", function(assert) {
   var doc = sample1();
   var sel = doc.createSelection({

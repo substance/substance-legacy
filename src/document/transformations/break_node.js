@@ -19,8 +19,8 @@ function breakNode(tx, args) {
     throw new Error("Argument 'containerId' is mandatory.");
   }
   if (!selection.isCollapsed()) {
-    args = deleteSelection(tx, args);
-    selection = args.selection;
+    var out = deleteSelection(tx, args);
+    selection = out.selection;
   }
   var range = selection.getRange();
   var node = tx.get(range.start.path[0]);
