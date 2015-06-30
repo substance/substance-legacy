@@ -1,7 +1,8 @@
 'use strict';
 
-var Substance = require('../basics');
-var PathAdapter = Substance.PathAdapter;
+var _ = require('../basics/helpers');
+var OO = require('../basics/oo');
+var PathAdapter = require('../basics/path_adapter');
 
 var NotifyByPathProxy = function(doc) {
   this.listeners = new PathAdapter();
@@ -21,7 +22,7 @@ NotifyByPathProxy.Prototype = function() {
       }
     }
 
-    Substance.each(change.ops, function(op) {
+    _.each(change.ops, function(op) {
       if ( (op.type === "create" || op.type === "delete") && (op.val.path || op.val.startPath)) {
         if (op.val.path) {
           _updated(op.val.path);
@@ -49,7 +50,7 @@ NotifyByPathProxy.Prototype = function() {
     change.traverse(function(path) {
       var key = path.concat(['listeners']);
       var scopedListeners = listeners.get(key);
-      Substance.each(scopedListeners, function(entry) {
+      _.each(scopedListeners, function(entry) {
         entry.method.call(entry.listener, change, info);
       });
     }, this);
@@ -94,6 +95,6 @@ NotifyByPathProxy.Prototype = function() {
 
 };
 
-Substance.initClass(NotifyByPathProxy);
+OO.initClass(NotifyByPathProxy);
 
 module.exports = NotifyByPathProxy;
