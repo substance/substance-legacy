@@ -6,4 +6,8 @@ QUnit.assert.isEmpty = function(a, msg) {
 
 QUnit.assert.isNullOrUndefined = function(a, msg) {
   this.push((a === null)||(a === undefined), false, true, msg);
-}
+};
+
+QUnit.assert.isDefinedAndNotNull = function(a, msg) {
+  this.push((a !== null)&&(a !== undefined), false, true, msg);
+};

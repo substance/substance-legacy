@@ -8,18 +8,16 @@ var SurfaceManager = require('./surface_manager');
 
 var __id__ = 0;
 
-function Surface(editor, options) {
+function Surface(surfaceManager, doc, editor, options) {
   Substance.EventEmitter.call(this);
-
-  // TODO: maybe it shouldn't be done automatically...
-  if (!Surface.surfaceManager) {
-    Surface.surfaceManager = new SurfaceManager(editor.getDocument());
-  }
 
   options = options || {};
 
   this.__id__ = __id__++;
   this.name = options.name || __id__;
+  this.doc = doc;
+  this.surfaceManager = surfaceManager;
+
   this.selection = Document.nullSelection;
 
   // this.element must be set via surface.attach(element)
@@ -74,7 +72,7 @@ function Surface(editor, options) {
     this.enableContentEditable = true;
   }
 
-  Surface.surfaceManager.registerSurface(this);
+  this.surfaceManager.registerSurface(this);
   /*jshint eqnull:false */
 }
 
@@ -90,12 +88,14 @@ Surface.Prototype = function() {
 
   this.getContainerName = function() {
     if (this.editor.isContainerEditor()) {
-      return this.editor.getContainerName();
+      return this.editor.getContainerId();
     }
   };
 
   this.getContainer = function() {
-    return this.editor.getContainer();
+    if (this.editor.isContainerEditor()) {
+      return this.doc.get(this.editor.getContainerId());
+    }
   };
 
   this.getEditor = function() {
@@ -103,23 +103,19 @@ Surface.Prototype = function() {
   };
 
   this.getDocument = function() {
-    return this.editor.getDocument();
+    return this.doc;
   };
 
   this.dispose = function() {
     this.detach();
-    Surface.surfaceManager.unregisterSurface(this);
-    if (!Surface.surfaceManager.hasSurfaces()) {
-      Surface.surfaceManager.dispose();
-      Surface.surfaceManager = null;
-    }
+    this.surfaceManager.unregisterSurface(this);
   };
 
   this.attach = function(element) {
     if (!element) {
       throw new Error('Illegal argument: Surface element is required. was ' + element);
     }
-    var doc = this.editor.getDocument();
+    var doc = this.getDocument();
 
     // Initialization
     this.element = element;
@@ -129,7 +125,7 @@ Surface.Prototype = function() {
     // if (this.enableContentEditable) {
     //   this.$element.prop('contentEditable', 'true');
     // }
-    this.surfaceSelection = new SurfaceSelection(element, doc, this.editor.getContainer());
+    this.surfaceSelection = new SurfaceSelection(element, doc, this.getContainer());
 
     this.$element.addClass('surface');
 
@@ -162,7 +158,7 @@ Surface.Prototype = function() {
   };
 
   this.detach = function() {
-    var doc = this.editor.getDocument();
+    var doc = this.getDocument();
 
     this.domObserver.disconnect();
 
@@ -286,7 +282,7 @@ Surface.Prototype = function() {
     var handled = false;
     if ( (e.ctrlKey||e.metaKey) && e.keyCode === 65 ) {
       console.log('Selecting all...');
-      var newSelection = this.editor.selectAll(this.getSelection());
+      var newSelection = this.editor.selectAll(this.getDocument(), this.getSelection());
       this.setSelection(newSelection);
       this.surfaceSelection.setSelection(newSelection);
       this.emit('selection:changed', newSelection, this);
@@ -525,7 +521,7 @@ Surface.Prototype = function() {
     this.$document.off( 'mousemove', this._onMouseMove );
     this.dragging = false;
     if (!this.isFocused) {
-      Surface.surfaceManager.didFocus(this);
+      this.surfaceManager.didFocus(this);
       this.isFocused = true;
     }
     // HACK: somehow the DOM selection is not ready yet

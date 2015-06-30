@@ -1,6 +1,7 @@
 'use strict';
 
-var Substance = require('../basics');
+var OO = require('../basics/oo');
+var _ = require('../basics/helpers');
 var PropertySelection = require('./property_selection');
 var Selection = require('./selection');
 var Range = require('./range');
@@ -13,6 +14,10 @@ function ContainerSelection(properties) {
   var endPath = properties.endPath || properties.startPath;
   var startOffset = properties.startOffset;
   var endOffset = properties.endOffset || properties.startOffset;
+  if (!containerId || !startPath || !_.isNumber(startOffset)) {
+    throw new Error('Invalid arguments: `containerId`, `startPath` and `startOffset` are mandatory');
+  }
+
   // TODO: validate arguments
   this.containerId = containerId;
   this.range = new Range(
@@ -231,7 +236,6 @@ ContainerSelection.Prototype = function() {
 
   var _createNewSelection = function(containerSel, newCoors) {
     var container = containerSel.getContainer();
-    var doc = container.getDocument();
     newCoors.start.path = container.getComponentAt(newCoors.start.pos).path;
     newCoors.end.path = container.getComponentAt(newCoors.end.pos).path;
     return new ContainerSelection({
@@ -244,7 +248,7 @@ ContainerSelection.Prototype = function() {
   };
 };
 
-Substance.inherit(ContainerSelection, PropertySelection);
+OO.inherit(ContainerSelection, PropertySelection);
 
 Object.defineProperties(ContainerSelection.prototype, {
   path: {

@@ -1,6 +1,7 @@
 'use strict';
 
-var Substance = require('../basics');
+var OO = require('../basics/oo');
+var _ = require('../basics/helpers');
 
 // path: the address of a property, such as ['text_1', 'content']
 // offset: the position in the property
@@ -15,6 +16,12 @@ function Coordinate(path, offset, after) {
   this.path = path;
   this.offset = offset;
   this.after = after;
+  if (!_.isArray(path)) {
+    throw new Error('Invalid arguments: path should be an array.');
+  }
+  if (!_.isNumber(offset) || offset < 0) {
+    throw new Error('Invalid arguments: offset must be a positive number.');
+  }
   // make sure that path can't be changed afterwards
   if (!Object.isFrozen(path)) {
     Object.freeze(path);
@@ -26,7 +33,7 @@ Coordinate.Prototype = function() {
 
   this.equals = function(other) {
     return (other === this ||
-      (Substance.isArrayEqual(other.path, this.path) && other.offset === this.offset) );
+      (_.isArrayEqual(other.path, this.path) && other.offset === this.offset) );
   };
 
   this.withCharPos = function(offset) {
@@ -47,6 +54,6 @@ Coordinate.Prototype = function() {
 
 };
 
-Substance.initClass( Coordinate );
+OO.initClass( Coordinate );
 
 module.exports = Coordinate;

@@ -6,9 +6,7 @@ var Selection = Document.Selection;
 var Annotations = Document.AnnotationUpdates;
 var Transformations = Document.Transformations;
 
-function FormEditor(doc) {
-  this.document = doc;
-}
+function FormEditor() {}
 
 FormEditor.Prototype = function() {
 
@@ -16,24 +14,14 @@ FormEditor.Prototype = function() {
     return false;
   };
 
-  this.getContainer = function() {
-    return null;
-  };
-
-  this.setContainer = function() {};
-
-  this.getDocument = function() {
-    return this.document;
-  };
-
   // Selects the current property.
-  this.selectAll = function(selection) {
+  this.selectAll = function(doc, selection) {
     var sel = selection;
     if (sel.isNull()) return;
     if (sel.isPropertySelection()) {
       var path = sel.start.path;
-      var text = this.document.get(path);
-      return this.document.createSelection({
+      var text = doc.get(path);
+      return doc.createSelection({
         type: 'property',
         path: path,
         startOffset: 0,
@@ -61,6 +49,12 @@ FormEditor.Prototype = function() {
     return this.insertText(tx, args);
   };
 
+  // create a document instance containing only the selected content
+  this.copy = function(doc, selection) {
+    var result = Transformations.copySelection(doc, { selection: selection });
+    return result.doc;
+  };
+
   this.paste = function(tx, args) {
     var data = args.data;
     // TODO: for now only plain text is inserted
@@ -73,6 +67,7 @@ FormEditor.Prototype = function() {
       return args;
     }
   };
+
 };
 
 Substance.initClass(FormEditor);

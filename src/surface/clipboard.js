@@ -3,8 +3,9 @@
 var Substance = require('../basics');
 
 // context must have a getSurface() method.
-var Clipboard = function(htmlImporter, htmlExporter) {
+var Clipboard = function(surfaceManager, htmlImporter, htmlExporter) {
 
+  this.surfaceManager = surfaceManager;
   this.htmlImporter = htmlImporter;
   this.htmlExporter = htmlExporter;
 
@@ -28,6 +29,10 @@ var Clipboard = function(htmlImporter, htmlExporter) {
 };
 
 Clipboard.Prototype = function() {
+
+  this.getSurface = function() {
+    return this.surfaceManager.getFocussedSurface();
+  };
 
   this.attach = function(rootElement) {
     this.el = window.document.createElement('div');
@@ -61,19 +66,11 @@ Clipboard.Prototype = function() {
     }
   };
 
-  this.setSurface = function(surface) {
-    this.surface = surface;
-  };
-
-  this.getSurface = function() {
-    return this.surface;
-  };
-
   this.onCopy = function(event) {
     console.log("Clipboard.onCopy", arguments);
     this._copySelection();
     if (event.clipboardData && this._contentDoc) {
-      var html = this.htmlExporter.toHtml(this._contentDoc, 'content');
+      var html = this.htmlExporter.convert(this._contentDoc);
       console.log('Stored HTML in clipboard', html);
       this._contentDoc.__id__ = Substance.uuid();
       var data = this._contentDoc.toJSON();
@@ -87,19 +84,23 @@ Clipboard.Prototype = function() {
 
   // nothing special for cut.
   this.onCut = function(e) {
+    e.preventDefault();
     console.log("Clipboard.onCut", arguments);
     this.onCopy(e);
     var surface = this.getSurface();
+    if (!surface) return;
     var editor = surface.getEditor();
-    editor.delete(editor.selection, 'left');
-    e.preventDefault();
+    surface.transaction(function(tx, args) {
+      return editor.delete(tx, args);
+    });
   };
 
   this.pasteSubstanceData = function(data) {
     var surface = this.getSurface();
+    if (!surface) return;
     var editor = surface.getEditor();
     var logger = surface.getLogger();
-    var doc = editor.getDocument();
+    var doc = surface.getDocument();
     try {
       var content = doc.fromSnapshot(JSON.parse(data));
       var plainText = "";
@@ -117,9 +118,10 @@ Clipboard.Prototype = function() {
         });
         plainText = content.getTextForSelection(sel);
       }
-      editor.paste(editor.selection, {
-        content: content,
-        text: plainText
+      surface.transaction(function(tx, args) {
+        args.text = plainText,
+        args.doc = content;
+        return editor.paste(tx, args);
       });
     } catch (error) {
       console.error(error);
@@ -129,9 +131,10 @@ Clipboard.Prototype = function() {
 
   this.pasteHtml = function(html) {
     var surface = this.getSurface();
+    if (!surface) return;
     var editor = surface.getEditor();
     var logger = surface.getLogger();
-    var doc = editor.getDocument();
+    var doc = surface.getDocument();
     try {
       var content = doc.newInstance();
       if (!content.get('content')) {
@@ -143,9 +146,10 @@ Clipboard.Prototype = function() {
       }
       var htmlDoc = new window.DOMParser().parseFromString(html, "text/html");
       this.htmlImporter.convertDocument(htmlDoc, content, 'content');
-      editor.paste(editor.selection, {
-        content: content,
-        text: htmlDoc.body.textContent
+      surface.transaction(function(tx, args) {
+        args.text = plainText,
+        args.doc = content;
+        return editor.paste(tx, args);
       });
     } catch (error) {
       console.error(error);
@@ -157,6 +161,7 @@ Clipboard.Prototype = function() {
   this.onPaste = function(e) {
     var clipboardData = e.clipboardData;
     var surface = this.getSurface();
+    if (!surface) return;
     var editor = surface.getEditor();
     var logger = surface.getLogger();
     var types = {};
@@ -185,7 +190,10 @@ Clipboard.Prototype = function() {
     } else {
       try {
         var plainText = clipboardData.getData('text/plain');
-        editor.insertText(plainText, editor.selection);
+        surface.transaction(function(tx, args) {
+          args.text = plainText;
+          return editor.insertText(tx, args);
+        });
       } catch (error) {
         console.error(error);
         logger.error(error);
@@ -208,11 +216,13 @@ Clipboard.Prototype = function() {
     // var clipboardText = clipboardData.getData('Text');
     this.$el.empty();
     var self = this;
+    // FIXME: it seems that we had the problem of loosing the selection
+    // is it really necessary anymore?
     var surface = this.getSurface();
-    var editor = surface.getEditor();
-    var sel = editor.selection;
+    if (!surface) return;
+    var sel = surface.getSelection();
     setTimeout(function() {
-      editor.selection = sel;
+      surface.setSelection(sel);
       self.pasteHtml(self.$el.html());
       self.$el.empty();
     }, 0);
@@ -250,6 +260,7 @@ Clipboard.Prototype = function() {
     this.el.appendChild(frag);
     this._copySelection();
     var surface = this.getSurface();
+    if (!surface) return;
     try {
       console.log("...selection before deletion", surface.getSelection().toString());
       surface.getEditor().delete();
@@ -285,10 +296,11 @@ Clipboard.Prototype = function() {
     var surface = this.getSurface();
     var sel = surface.getSelection();
     var editor = surface.getEditor();
+    var doc = surface.getDocument();
     if (wSel.rangeCount > 0 && !sel.isCollapsed()) {
       var wRange = wSel.getRangeAt(0);
       this._contentText = wRange.toString();
-      this._contentDoc = editor.copy(sel);
+      this._contentDoc = editor.copy(doc, sel);
       console.log("Clipboard._copySelection(): created a copy", this._contentDoc);
     } else {
       this._contentDoc = null;

@@ -9,24 +9,28 @@ function HtmlImporter( config ) {
   this.blockTypes = [];
   this.inlineTypes = [];
   // register converters defined in schema
-  if (config.schema) {
-    config.schema.each(function(NodeClass) {
-      // ATM Node.matchElement is required
-      if (!NodeClass.static.matchElement) {
-        return;
-      }
-      this.nodeTypes.push(NodeClass);
-      if (NodeClass.static.blockType) {
-        this.blockTypes.push(NodeClass);
-      } else if (NodeClass.static.isInline){
-        this.inlineTypes.push(NodeClass);
-      }
+  if (this.config.schema) {
+    this.config.schema.each(function(NodeClass) {
+      this.defineNodeImporter(NodeClass);
     }, this);
   }
   this.$ = global.$;
 }
 
 HtmlImporter.Prototype = function HtmlImporterPrototype() {
+
+  this.defineNodeImporter = function(NodeClass) {
+    // ATM Node.matchElement is required
+    if (!NodeClass.static.matchElement) {
+      return;
+    }
+    this.nodeTypes.push(NodeClass);
+    if (NodeClass.static.blockType) {
+      this.blockTypes.push(NodeClass);
+    } else if (NodeClass.static.isInline){
+      this.inlineTypes.push(NodeClass);
+    }
+  };
 
   this.defaultConverter = function($el, converter) {
     /* jshint unused:false */

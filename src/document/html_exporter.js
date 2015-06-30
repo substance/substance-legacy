@@ -31,6 +31,10 @@ HtmlExporter.Prototype = function() {
     */
   };
 
+  this.getNodeConverter = function(node) {
+    return node.constructor;
+  };
+
   this.convertProperty = function(doc, path, options) {
     this.initialize(doc, options);
     var $wrapper = $('<div>')
@@ -47,7 +51,8 @@ HtmlExporter.Prototype = function() {
   };
 
   this.convertNode = function(node) {
-    return node.toHtml(this);
+    var NodeConverter = this.getNodeConverter(node);
+    return NodeConverter.static.toHtml(node, this);
   };
 
   this.convertContainer = function(containerNode) {
@@ -56,9 +61,9 @@ HtmlExporter.Prototype = function() {
     var elements = [];
     for (var i = 0; i < nodeIds.length; i++) {
       var node = state.doc.get(nodeIds[i]);
-      var $el = node.toHtml(this);
+      var $el = this.convertNode(node);
       if (!$el || !this.isElementNode($el[0])) {
-        throw new Error('Contract: Node.toHtml() must return a DOM element. NodeType: '+node.type);
+        throw new Error('Contract: Node.static.toHtml() must return a DOM element. NodeType: '+node.type);
       }
       $el.attr('id', node.id);
       elements.push($el);
@@ -85,7 +90,8 @@ HtmlExporter.Prototype = function() {
     };
     annotator.onExit = function(entry, context, parentContext) {
       var anno = context.annotation;
-      var $el = anno.toHtml(self, context.children);
+      var NodeConverter = this.getNodeConverter(anno);
+      var $el = NodeConverter.static.toHtml(anno, self, context.children);
       if (!$el || !self.isElementNode($el[0])) {
         throw new Error('Contract: Annotation.toHtml() must return a DOM element.');
       }
@@ -105,7 +111,7 @@ HtmlExporter.Prototype = function() {
     }
   };
 
-  this.createDoc = function() {
+  this.createHtmlDocument = function() {
     if (inBrowser) {
       var doc = window.document.implementation.createDocument ('http://www.w3.org/1999/xhtml', 'html', null);
       return $(doc);

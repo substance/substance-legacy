@@ -1,6 +1,7 @@
 'use strict';
 
-var Substance = require('../basics');
+var _ = require('../basics/helpers');
+var OO = require('../basics/oo');
 var Selection = require('./selection');
 var Coordinate = require('./coordinate');
 var Range = require('./range');
@@ -9,6 +10,9 @@ function PropertySelection(properties) {
   var path = properties.path;
   var startOffset = properties.startOffset;
   var endOffset = properties.endOffset || properties.startOffset;
+  if (!path || !_.isNumber(startOffset)) {
+    throw new Error('Invalid arguments: `path` and `startOffset` are mandatory');
+  }
   this.range = new Range(
     new Coordinate(path, startOffset),
     new Coordinate(path, endOffset)
@@ -20,7 +24,7 @@ function PropertySelection(properties) {
 
 PropertySelection.Prototype = function() {
 
-  Substance.extend(this, Selection.prototype);
+  _.extend(this, Selection.prototype);
 
   this.toJSON = function() {
     return {
@@ -29,7 +33,7 @@ PropertySelection.Prototype = function() {
       startOffset: this.startOffset,
       endOffset: this.endOffset,
       reverse: this.reverse
-    }
+    };
   };
 
   this.attach = function(doc) {
@@ -115,11 +119,11 @@ PropertySelection.Prototype = function() {
       return other.contains(this);
     }
     if (strict) {
-      return (Substance.isEqual(this.path, other.path) &&
+      return (_.isEqual(this.path, other.path) &&
         this.start.offset > other.start.offset &&
         this.end.offset < other.end.offset);
     } else {
-      return (Substance.isEqual(this.path, other.path) &&
+      return (_.isEqual(this.path, other.path) &&
         this.start.offset >= other.start.offset &&
         this.end.offset <= other.end.offset);
     }
@@ -132,11 +136,11 @@ PropertySelection.Prototype = function() {
       return other.isInsideOf(this);
     }
     if (strict) {
-      return (Substance.isEqual(this.path, other.path) &&
+      return (_.isEqual(this.path, other.path) &&
         this.start.offset < other.start.offset &&
         this.end.offset > other.end.offset);
     } else {
-      return (Substance.isEqual(this.path, other.path) &&
+      return (_.isEqual(this.path, other.path) &&
         this.start.offset <= other.start.offset &&
         this.end.offset >= other.end.offset);
     }
@@ -148,7 +152,7 @@ PropertySelection.Prototype = function() {
       // console.log('PropertySelection.overlaps: delegating to ContainerSelection.overlaps...');
       return other.overlaps(this);
     }
-    if (!Substance.isEqual(this.getPath(), other.getPath())) return false;
+    if (!_.isEqual(this.getPath(), other.getPath())) return false;
     if (strict) {
       return (! (this.startOffset>=other.endOffset||this.endOffset<=other.startOffset) );
     } else {
@@ -162,7 +166,7 @@ PropertySelection.Prototype = function() {
       // console.log('PropertySelection.isRightAlignedWith: delegating to ContainerSelection.isRightAlignedWith...');
       return other.isRightAlignedWith(this);
     }
-    return (Substance.isEqual(this.getPath(), other.getPath()) &&
+    return (_.isEqual(this.getPath(), other.getPath()) &&
       this.getEndOffset() === other.getEndOffset());
   };
 
@@ -172,7 +176,7 @@ PropertySelection.Prototype = function() {
       // console.log('PropertySelection.isLeftAlignedWith: delegating to ContainerSelection.isLeftAlignedWith...');
       return other.isLeftAlignedWith(this);
     }
-    return (Substance.isEqual(this.getPath(), other.getPath()) &&
+    return (_.isEqual(this.getPath(), other.getPath()) &&
       this.getStartOffset() === other.getStartOffset());
   };
 
@@ -182,7 +186,7 @@ PropertySelection.Prototype = function() {
       // console.log('PropertySelection.expand: delegating to ContainerSelection.expand...');
       return other.expand(this);
     }
-    if (!Substance.isEqual(this.path, other.path)) {
+    if (!_.isEqual(this.path, other.path)) {
       throw new Error('Can not expand PropertySelection to a different property.');
     }
     var newStartOffset = Math.min(this.startOffset, other.startOffset);
@@ -202,8 +206,8 @@ PropertySelection.Prototype = function() {
     if (other.isNull()) return this;
     // Checking that paths are ok
     // doing that in a generalized manner so that other can even be a ContainerSelection
-    if (!Substance.isEqual(this.start.path, other.start.path) ||
-      !Substance.isEqual(this.end.path, other.end.path)) {
+    if (!_.isEqual(this.start.path, other.start.path) ||
+      !_.isEqual(this.end.path, other.end.path)) {
       throw new Error('Can not expand PropertySelection to a different property.');
     }
     var newStartOffset;
@@ -219,7 +223,7 @@ PropertySelection.Prototype = function() {
   };
 };
 
-Substance.inherit(PropertySelection, Selection);
+OO.inherit(PropertySelection, Selection);
 
 Object.defineProperties(PropertySelection.prototype, {
   start: {

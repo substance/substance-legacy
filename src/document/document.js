@@ -15,6 +15,8 @@ var Selection = require('./selection');
 var PropertySelection = require('./property_selection');
 var ContainerSelection = require('./container_selection');
 var TableSelection = require('./table_selection');
+var ClipboardImporter = require('./clipboard_importer');
+var ClipboardExporter = require('./clipboard_exporter');
 
 function Document(schema) {
   Substance.EventEmitter.call(this);
@@ -169,6 +171,17 @@ Document.Prototype = function() {
    * @param beforeState object which will be used as before start of transaction
    * @param eventData object which will be used as payload for the emitted change event
    * @param transformation a function(tx) that performs actions on the transaction document tx
+   *
+   * @example
+   * ```
+   *   doc.transaction({ selection: sel }, {'event-hack': true}, function(tx, args) {
+   *     tx.update(...);
+   *     ...
+   *     return {
+   *       selection: newSelection
+   *     };
+   *   })
+   * ```
    */
   this.transaction = function(beforeState, eventData, transformation) {
     if (arguments.length === 2) {
@@ -381,6 +394,14 @@ Document.Prototype = function() {
       default:
         throw new Error('Unsupported selection type', sel.type);
     }
+  };
+
+  this.getClipboardImporter = function() {
+    return new ClipboardImporter();
+  };
+
+  this.getClipboardExporter = function() {
+    return new ClipboardExporter();
   };
 
   // Called back by Substance.Data after a node instance has been created

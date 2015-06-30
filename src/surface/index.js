@@ -1,5 +1,6 @@
 
 var Surface = require('./surface');
+Surface.SurfaceManager = require('./surface_manager');
 Surface.SurfaceSelection = require('./surface_selection');
 
 Surface.FormEditor = require('./form_editor');

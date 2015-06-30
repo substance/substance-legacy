@@ -23,6 +23,8 @@ Document.AnnotationUpdates = require('./annotation_updates');
 
 Document.HtmlImporter = require('./html_importer');
 Document.HtmlExporter = require('./html_exporter');
+Document.ClipboardImporter = require('./clipboard_importer');
+Document.ClipboardExporter = require('./clipboard_exporter');
 
 // Standard node implementations
 Document.Paragraph = require('./nodes/paragraph');

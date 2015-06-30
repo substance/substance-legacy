@@ -35,10 +35,7 @@ Tool.Prototype = function() {
   this.getContainer = function() {
     var surface = this.getSurface();
     if (surface) {
-      var editor = surface.getEditor();
-      if (editor.isContainerEditor()) {
-        return editor.getContainer();
-      }
+      return surface.getContainer();
     }
   };
 

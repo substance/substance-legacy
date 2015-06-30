@@ -1,6 +1,7 @@
 'use strict';
 
 var OO = require('../basics/oo');
+var Surface = require('./surface');
 
 var SurfaceManager = function(doc) {
   this.doc = doc;
@@ -13,6 +14,11 @@ SurfaceManager.Prototype = function() {
 
   this.dispose = function() {
     this.doc.disconnect(this);
+    this.surfaces = {};
+  };
+
+  this.createSurface = function(editor, options) {
+    return new Surface(this, editor, options);
   };
 
   this.registerSurface = function(surface) {
@@ -32,6 +38,10 @@ SurfaceManager.Prototype = function() {
       this.focussedSurface._blur();
     }
     this.focussedSurface = surface;
+  };
+
+  this.getFocussedSurface = function() {
+    return this.focussedSurface;
   };
 
   this.onDocumentChange = function(change, info) {
