@@ -71,6 +71,7 @@ SurfaceSelection.Prototype = function() {
       this.state = null;
       return;
     }
+    // console.log('###', anchorNode, anchorOffset, focusNode, focusOffset);
     var startCoor, endCoor;
     if (isCollapsed) {
       if (isBackward) {
@@ -88,25 +89,35 @@ SurfaceSelection.Prototype = function() {
         startCoor = tmp;
       }
     }
+    // console.log('### extracted coors:', startCoor, endCoor);
     this.state = new SurfaceSelection.State(isCollapsed, isBackward, startCoor, endCoor);
   };
 
   this.getModelCoordinate = function(node, offset, options) {
     var current = node;
     var propertyEl = null;
+    var path;
     while(current) {
       // if available extract a path fragment
       if (current.dataset && current.dataset.path) {
         propertyEl = current;
         break;
-      } else {
-        current = current.parentNode;
       }
+      // edge case: when a node is empty then then the given DOM node
+      // is the node element and with offset=0
+      if ($(current).is('.content-node') && offset === 0) {
+        var $propertyEl = $(current).find('[data-path]');
+        if ($propertyEl.length) {
+          path = getPath($propertyEl[0]);
+          return new Coordinate(path, 0);
+        }
+      }
+      current = current.parentNode;
     }
     if (!propertyEl) {
       return this.searchForCoordinate(node, offset, options);
     }
-    var path = getPath(propertyEl);
+    path = getPath(propertyEl);
     var charPos = this.computeCharPosition(propertyEl, node, offset);
     return new Coordinate(path, charPos);
   };
@@ -266,6 +277,13 @@ SurfaceSelection.Prototype = function() {
           offset: offset-1
         };
       }
+      // edge case: if the element itself is empty and offset===0
+      if (!element.firstChild && offset === 0) {
+        return {
+          node: element,
+          offset: 0
+        };
+      }
       for (var child = element.firstChild; child; child = child.nextSibling) {
         var pos = _findDomPosition(child, offset);
         if (pos.node) {
@@ -289,13 +307,12 @@ SurfaceSelection.Prototype = function() {
       console.warn('Could not find DOM element for path', path);
       return null;
     }
-    if (componentElement) {
-      var pos = _findDomPosition(componentElement, offset);
-      if (pos.node) {
-        return pos;
-      } else {
-        return null;
-      }
+    // console.log('### Found component element', componentElement);
+    var pos = _findDomPosition(componentElement, offset);
+    if (pos.node) {
+      return pos;
+    } else {
+      return null;
     }
   };
 
