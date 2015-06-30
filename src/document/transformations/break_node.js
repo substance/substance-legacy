@@ -49,9 +49,9 @@ function breakTextNode(tx, args) {
   var nodePos = container.getPosition(node.id);
   var id = Substance.uuid(node.type);
   var newPath = [id, 'content'];
+  var newNode;
   // when breaking at the first position, a new node of the same
   // type will be inserted.
-  var newNode;
   if (offset === 0) {
     newNode = tx.create({
       id: id,
@@ -65,7 +65,9 @@ function breakTextNode(tx, args) {
       path: path,
       startOffset: 0
     });
-  } else {
+  }
+  // otherwise a default text type node is inserted
+  else {
     // create a new node
     newNode = tx.create({
       id: id,

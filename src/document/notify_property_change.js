@@ -87,10 +87,8 @@ NotifyByPathProxy.Prototype = function() {
     }
   };
 
-  this.disconnect = function(listener) {
-    this.listeners.traverse(function(path, listeners) {
-      _.deleteFromArray(listeners, listener);
-    });
+  this.disconnect = function(listener, path) {
+    this.remove(path, listener);
   };
 
 };
