@@ -25,6 +25,7 @@ Document.HtmlImporter = require('./html_importer');
 Document.HtmlExporter = require('./html_exporter');
 
 // Standard node implementations
+Document.Include = require('./nodes/include');
 Document.Paragraph = require('./nodes/paragraph');
 Document.Heading = require('./nodes/heading');
 Document.Emphasis = require('./nodes/emphasis');
