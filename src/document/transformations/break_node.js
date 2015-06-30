@@ -10,19 +10,17 @@ var Annotations = require('../annotation_updates');
  * @params args object with fields `selection`, `containerId`
  */
 function breakNode(tx, args) {
-  var selection = args.selection;
-  var containerId = args.containerId;
-  if (!selection) {
+  if (!args.selection) {
     throw new Error("Argument 'selection' is mandatory.");
   }
-  if (!containerId) {
+  if (!args.containerId) {
     throw new Error("Argument 'containerId' is mandatory.");
   }
-  if (!selection.isCollapsed()) {
+  if (!args.selection.isCollapsed()) {
     var out = deleteSelection(tx, args);
-    selection = out.selection;
+    args.selection = out.selection;
   }
-  var range = selection.getRange();
+  var range = args.selection.getRange();
   var node = tx.get(range.start.path[0]);
   // TODO: we want to allow custom break behaviors
   // for that to happen we need to learn more
