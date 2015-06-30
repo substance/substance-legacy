@@ -11,6 +11,7 @@ function TableSelection(tableId, startRow, startCol, endRow, endCol) {
   } else {
     this.rectangle = new TableSelection.Rectangle(startRow, startCol, endRow, endCol);
   }
+  this._internal = {};
   Object.freeze(this);
 }
 
@@ -53,7 +54,7 @@ TableSelection.Prototype = function() {
   };
 
   this.attach = function(doc) {
-    this.doc = doc;
+    this._internal.doc = doc;
     return this;
   };
 
