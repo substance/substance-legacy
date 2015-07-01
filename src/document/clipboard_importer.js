@@ -22,10 +22,12 @@ var TableRow = require('./nodes/table_row');
 var TableCell = require('./nodes/table_cell');
 var Emphasis = require('./nodes/emphasis');
 var Strong = require('./nodes/strong');
-var Link = require('./nodes/link');
 
 function ClipboardImporter() {
-  ClipboardImporter.super.call(this);
+  ClipboardImporter.super.call(this, {
+    trimWhitespaces: true,
+    REMOVE_INNER_WS: true,
+  });
   _.each(ClipboardImporter.nodeClasses, function(NodeClass) {
     this.defineNodeImporter(NodeClass);
   }, this);
@@ -38,7 +40,7 @@ ClipboardImporter.Prototype = function() {
 
     var $body = $rootEl.find('body');
     $body = this.sanitizeBody($body);
-    this.convertContainer($body, 'main');
+    this.convertContainer($body, 'content');
 
     this.finish();
   };
@@ -87,8 +89,7 @@ ClipboardImporter.Strong.static.toHtml = function(anno, converter, children) {
 ClipboardImporter.nodeClasses =   [
   Paragraph, Heading, List, ListItem,
   Table, TableSection, TableRow, TableCell,
-  ClipboardImporter.Emphasis, ClipboardImporter.Strong,
-  Link
+  ClipboardImporter.Emphasis, ClipboardImporter.Strong
 ];
 
 module.exports = ClipboardImporter;
