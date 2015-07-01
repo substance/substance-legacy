@@ -4,8 +4,12 @@ var _ = require('../basics/helpers');
 var OO = require('../basics/oo');
 var AbstractDocument = require('./abstract_document');
 
+var __id__ = 0;
+
 function TransactionDocument(document) {
   AbstractDocument.call(this, document.schema);
+  this.__id__ = "TX_"+__id__++;
+
   this.document = document;
   // ops recorded since transaction start
   this.ops = [];

@@ -15,9 +15,11 @@ var PathEventProxy = require('./path_event_proxy');
 var ClipboardImporter = require('./clipboard_importer');
 var ClipboardExporter = require('./clipboard_exporter');
 
+var __id__ = 0;
+
 function Document(schema) {
   AbstractDocument.call(this, schema);
-
+  this.__id__ = __id__++;
   // all by type
   this.nodeIndex = this.addIndex('type', Data.Index.create({
     property: "type"
