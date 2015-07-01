@@ -146,6 +146,11 @@ Helpers.filter = require('lodash/collection/filter');
  */
 Helpers.includes = require('lodash/collection/includes');
 /**
+ * See https://lodash.com/docs#find
+ * @method find
+ */
+Helpers.find = require('lodash/collection/find');
+/**
  * See https://lodash.com/docs#map
  * @method map
  */
