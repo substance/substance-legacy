@@ -8,6 +8,7 @@ var SurfaceManager = function(doc) {
   this.doc = doc;
   this.surfaces = {};
   this.focussedSurface = null;
+  this.stack = [];
   doc.connect(this, { 'document:changed': this.onDocumentChange });
 };
 
@@ -30,13 +31,6 @@ SurfaceManager.Prototype = function() {
     delete this.surfaces[surface.getName()];
     if (surface && this.focussedSurface === surface) {
       this.focussedSurface = null;
-      // HACK: blurring the other surfaces so that there
-      // is no selection associated to tools
-      // FIXME: instead we probably want to recover the
-      // previous selection.
-      _.each(this.surfaces, function(surface) {
-        surface.setSelection(null);
-      });
     }
   };
 
@@ -67,6 +61,26 @@ SurfaceManager.Prototype = function() {
       }
     }
   };
+
+  this.pushState = function() {
+    var state = {
+      surface: this.focussedSurface,
+      selection: null
+    }
+    if (this.focussedSurface) {
+      state.selection = this.focussedSurface.getSelection();
+    }
+    this.stack.push(state);
+  };
+
+  this.popState = function() {
+    var state = this.stack.pop();
+    if (state && state.surface) {
+      state.surface._focus();
+      state.surface.setSelection(state.selection);
+    }
+  };
+
 };
 
 OO.initClass(SurfaceManager);

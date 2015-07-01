@@ -107,6 +107,7 @@ Surface.Prototype = function() {
   };
 
   this.dispose = function() {
+    this.setSelection(null);
     this.detach();
     this.surfaceManager.unregisterSurface(this);
   };
@@ -516,15 +517,19 @@ Surface.Prototype = function() {
   this.onMouseUp = function(/*e*/) {
     // ... and unbind the temporary handler
     this.dragging = false;
-    if (!this.isFocused) {
-      this.surfaceManager.didFocus(this);
-      this.isFocused = true;
-    }
+    this._focus();
     // HACK: somehow the DOM selection is not ready yet
     var self = this;
     if (self.surfaceSelection) {
       var sel = self.surfaceSelection.getSelection();
       self._setModelSelection(sel);
+    }
+  };
+
+  this._focus = function() {
+    if (!this.isFocused) {
+      this.surfaceManager.didFocus(this);
+      this.isFocused = true;
     }
   };
 
@@ -534,18 +539,6 @@ Surface.Prototype = function() {
       // update selection during dragging
       // this._setModelSelection(this.surfaceSelection.getSelection());
     }
-  };
-
-  // called by SurfaceManager when another surface get's the focus
-  this._blur = function() {
-    this.setSelection(Substance.Document.nullSelection);
-    this.isFocused = false;
-  };
-
-  // called by SurfaceManager when another surface get's the focus
-  this._focus = function() {
-    this.isFocused = true;
-    this.rerenderDomSelection();
   };
 
   this.onDomMutations = function() {
