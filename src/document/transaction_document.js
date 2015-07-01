@@ -1,24 +1,24 @@
 'use strict';
 
-var Substance = require('../basics');
-var Data = require('../data');
+var _ = require('../basics/helpers');
+var OO = require('../basics/oo');
+var AbstractDocument = require('./abstract_document');
 
 function TransactionDocument(document) {
+  AbstractDocument.call(this, document.schema);
+
   this.document = document;
-  this.schema = document.schema;
+
   this.ops = [];
   // app information state information used to recover the state before the transaction
   // when calling undo
   this.before = {};
-
-  this.data = new Data.Incremental(document.schema, {
-    didCreateNode: Substance.bind(this._didCreateNode, this),
-    didDeleteNode: Substance.bind(this._didDeleteNode, this),
-  });
-
-  Substance.each(document.data.indexes, function(index, name) {
+  // HACK: copying all indexes
+  _.each(document.data.indexes, function(index, name) {
     this.data.addIndex(name, index.clone());
   }, this);
+
+  this.loadSeed(document.toJSON());
 
   this.reset();
 }
@@ -34,13 +34,9 @@ TransactionDocument.Prototype = function() {
     this.before = {};
     this.containers = this.getIndex('type').get('container');
     // reset containers initially
-    Substance.each(this.containers, function(container) {
+    _.each(this.containers, function(container) {
       container.reset();
     });
-  };
-
-  this.get = function(path) {
-    return this.data.get(path);
   };
 
   this.create = function(nodeData) {
@@ -85,14 +81,14 @@ TransactionDocument.Prototype = function() {
 
   this._updateContainers = function(op) {
     var containers = this.containers;
-    Substance.each(containers, function(container) {
+    _.each(containers, function(container) {
       container.update(op);
     });
   };
 
   this.save = function(afterState, info) {
     var before = this.before;
-    var after = Substance.extend({}, before, afterState);
+    var after = _.extend({}, before, afterState);
     this.document._saveTransaction(before, after, info);
     // reset after finishing
     this.reset();
@@ -120,7 +116,7 @@ TransactionDocument.Prototype = function() {
   };
 
   this.apply = function(documentChange) {
-    Substance.each(documentChange.ops, function(op) {
+    _.each(documentChange.ops, function(op) {
       this.data.apply(op);
       this._updateContainers(op);
     }, this);
@@ -149,6 +145,6 @@ TransactionDocument.Prototype = function() {
 
 };
 
-Substance.initClass(TransactionDocument);
+OO.inherit(TransactionDocument, AbstractDocument);
 
 module.exports = TransactionDocument;

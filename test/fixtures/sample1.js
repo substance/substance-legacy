@@ -43,6 +43,14 @@ module.exports = function sample1() {
     id: 'p3',
     content: 'Paragraph 3'
   });
+  article.create({
+    type: "test-node",
+    id: "test",
+    boolVal: true,
+    stringVal: "Test",
+    arrayVal: [1, 2, 3, 4],
+    objectVal: { "a": 1, "b": 2 }
+  });
   var main = article.get('main');
   main.show('h1');
   main.show('p1');

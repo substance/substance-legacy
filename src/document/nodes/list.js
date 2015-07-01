@@ -1,7 +1,9 @@
-var TextNode = require('../text_node');
-var _ = require('../../basics/helpers');
+'use strict';
 
-var List = TextNode.extend({
+var _ = require('../../basics/helpers');
+var DocumentNode = require('../node');
+
+var List = DocumentNode.extend({
   name: "list",
   properties: {
     ordered: "bool",
@@ -16,7 +18,6 @@ var List = TextNode.extend({
 });
 
 List.static.components = ['items'];
-
 
 // HtmlImporter
 

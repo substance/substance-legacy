@@ -3,6 +3,7 @@
 var _ = require('../basics/helpers');
 var Substance = require('../basics');
 var Data = require('../data');
+var AbstractDocument = require('./abstract_document');
 
 var AnnotationIndex = require('./annotation_index');
 var ContainerAnnotationIndex = require('./container_annotation_index');
@@ -10,23 +11,12 @@ var ContainerAnnotationIndex = require('./container_annotation_index');
 var TransactionDocument = require('./transaction_document');
 var DocumentChange = require('./document_change');
 
-var NotifyPropertyChange = require('./notify_property_change');
-var Selection = require('./selection');
-var PropertySelection = require('./property_selection');
-var ContainerSelection = require('./container_selection');
-var TableSelection = require('./table_selection');
+var PathEventProxy = require('./path_event_proxy');
 var ClipboardImporter = require('./clipboard_importer');
 var ClipboardExporter = require('./clipboard_exporter');
 
 function Document(schema) {
-  Substance.EventEmitter.call(this);
-
-  this.schema = schema;
-
-  this.data = new Data.Incremental(schema, {
-    didCreateNode: _.bind(this._didCreateNode, this),
-    didDeleteNode: _.bind(this._didDeleteNode, this),
-  });
+  AbstractDocument.call(this, schema);
 
   // all by type
   this.nodeIndex = this.addIndex('type', Data.Index.create({
@@ -37,12 +27,6 @@ function Document(schema) {
 
   // special index for (contaoiner-scoped) annotations
   this.containerAnnotationIndex = this.addIndex('container-annotations', new ContainerAnnotationIndex());
-
-  // the stage is a essentially a clone of this document
-  // used to apply a sequence of document operations
-  // without touching this document
-  this.stage = new TransactionDocument(this);
-  this.isTransacting = false;
 
   this.done = [];
   this.undone = [];
@@ -55,13 +39,21 @@ function Document(schema) {
   // The proxies filter the document change by interest and then only notify a small set of observers.
   // Example: NotifyByPath notifies only observers which are interested in changes to a certain path.
   this.eventProxies = {
-    'path': new NotifyPropertyChange(this),
+    'path': new PathEventProxy(this),
   };
 
   this.initialize();
 
+  // the stage is a essentially a clone of this document
+  // used to apply a sequence of document operations
+  // without touching this document
+  this.stage = new TransactionDocument(this);
+  this.isTransacting = false;
+
   // CONTRACT: containers should be added in this.initialize()
   this.containers = this.getIndex('type').get('container');
+
+  this.FORCE_TRANSACTIONS = false;
 }
 
 Document.Prototype = function() {
@@ -74,94 +66,26 @@ Document.Prototype = function() {
     return new Document(this.schema);
   };
 
-  this.initialize = function() {
-    // add things to the document, such as containers etc.
-  };
-
-  this.loadSeed = function(seed) {
-    _.each(seed.nodes, function(nodeData) {
-      var id = nodeData.id;
-      if (this.get(id)) {
-        this.delete(id);
-      }
-      this.create(nodeData);
-    }, this);
-    _.each(this.getIndex('type').get('container'), function(container) {
-      container.reset();
-    });
-    this.stage.reset();
-    this.documentDidLoad();
-  };
-
-  this.documentDidLoad = function() {};
-
   this.fromSnapshot = function(data) {
     var doc = this.newInstance();
     doc.loadSeed(data);
     return doc;
   };
 
-  this.getSchema = function() {
-    return this.schema;
+  this.loadSeed = function(seed) {
+    this.transaction(function(tx) {
+      tx.loadSeed(seed);
+    });
   };
 
-  this.get = function(path) {
-    return this.data.get(path);
-  };
-
-  this.getNodes = function() {
-    return this.data.getNodes();
-  };
-
-  this.addIndex = function(name, index) {
-    return this.data.addIndex(name, index);
-  };
-
-  this.getIndex = function(name) {
-    return this.data.getIndex(name);
+  this.documentDidLoad = function() {
+      // HACK: need to reset the stage
+    this.stage.reset();
+    this.done = [];
   };
 
   this.getEventProxy = function(name) {
     return this.eventProxies[name];
-  };
-
-  this.getTextForSelection = function(sel) {
-    var result = [];
-    var text;
-    if (!sel || sel.isNull()) {
-      return "";
-    } else if (sel.isPropertySelection()) {
-      text = this.get(sel.start.path);
-      result.push(text.substring(sel.start.offset, sel.end.offset));
-    } else if (sel.isContainerSelection()) {
-      var container = this.get(sel.container.id);
-      var components = container.getComponentsForRange(sel.range);
-      for (var i = 0; i < components.length; i++) {
-        var comp = components[i];
-        text = this.get(comp.path);
-        if (components.length === 1) {
-          result.push(text.substring(sel.start.offset, sel.end.offset));
-        } else if (i===0) {
-          result.push(text.substring(sel.start.offset));
-        } else if (i===components.length-1) {
-          result.push(text.substring(0, sel.end.offset));
-        } else {
-          result.push(text);
-        }
-      }
-    }
-    return result.join('');
-  };
-
-  this.toJSON = function() {
-    var nodes = {};
-    _.each(this.getNodes(), function(node) {
-      nodes[node.id] = node.toJSON();
-    });
-    return {
-      schema: [this.schema.name, this.schema.version],
-      nodes: nodes
-    };
   };
 
   // Document manipulation
@@ -184,6 +108,11 @@ Document.Prototype = function() {
    * ```
    */
   this.transaction = function(beforeState, eventData, transformation) {
+    if (arguments.length === 1) {
+      transformation = arguments[0];
+      eventData = {};
+      beforeState = {};
+    }
     if (arguments.length === 2) {
       transformation = arguments[1];
       eventData = {};
@@ -235,56 +164,59 @@ Document.Prototype = function() {
   };
 
   this.create = function(nodeData) {
+    if (this.FORCE_TRANSACTIONS) {
+      throw new Error('Use a transaction!');
+    }
     if (this.isTransacting) {
       this.stage.create(nodeData);
     } else {
-      this.stage.create(nodeData);
-      var op = this.data.create(nodeData);
-      this._updateContainers(op);
+      if (this.stage) {
+        this.stage.create(nodeData);
+      }
+      this._create(nodeData);
     }
     return this.data.get(nodeData.id);
   };
 
   this.delete = function(nodeId) {
+    if (this.FORCE_TRANSACTIONS) {
+      throw new Error('Use a transaction!');
+    }
     if (this.isTransacting) {
       this.stage.delete(nodeId);
     } else {
-      this.stage.delete(nodeId);
-      var op = this.data.delete(nodeId);
-      this._updateContainers(op);
+      if (this.stage) {
+        this.stage.delete(nodeId);
+      }
+      this._delete(nodeId);
     }
   };
 
   this.set = function(path, value) {
+    if (this.FORCE_TRANSACTIONS) {
+      throw new Error('Use a transaction!');
+    }
     if (this.isTransacting) {
       this.stage.set(path, value);
     } else {
-      this.stage.set(path, value);
-      var op = this.data.set(path, value);
-      this._updateContainers(op);
-    }
-  };
-
-  this.setText = function(path, text, annotations) {
-    var idx;
-    var oldAnnos = this.getIndex('annotations').get(path);
-    // TODO: what to do with container annotations
-    for (idx = 0; idx < oldAnnos.length; idx++) {
-      this.delete(oldAnnos[idx].id);
-    }
-    this.set(path, text);
-    for (idx = 0; idx < annotations.length; idx++) {
-      this.create(annotations[idx]);
+      if (this.stage) {
+        this.stage.set(path, value);
+      }
+      this._set(path, value);
     }
   };
 
   this.update = function(path, diff) {
+    if (this.FORCE_TRANSACTIONS) {
+      throw new Error('Use a transaction!');
+    }
     if (this.isTransacting) {
       this.stage.update(path, diff);
     } else {
-      this.stage.update(path, diff);
-      var op = this.data.update(path, diff);
-      this._updateContainers(op);
+      this._update(path, diff);
+      if (this.stage) {
+        this.stage.update(path, diff);
+      }
     }
   };
 
@@ -366,53 +298,12 @@ Document.Prototype = function() {
     return this.get('document');
   };
 
-  /**
-   * Creates a selection which is attached to this document.
-   * Every selection implementation provides its own
-   * parameter format which is basically a JSON representation.
-   *
-   * @param an object describing the selection.
-   * @example
-   *   doc.createSelection({
-   *     type: 'property',
-   *     path: [ 'text1', 'content'],
-   *     startOffset: 10,
-   *     endOffset: 20
-   *   })
-   */
-  this.createSelection = function(sel) {
-    if (!sel) {
-      return Selection.nullSelection;
-    }
-    switch(sel.type) {
-      case 'property':
-        return new PropertySelection(sel).attach(this);
-      case 'container':
-        return new ContainerSelection(sel).attach(this);
-      case 'table':
-        return new TableSelection(sel).attach(this);
-      default:
-        throw new Error('Unsupported selection type', sel.type);
-    }
-  };
-
   this.getClipboardImporter = function() {
     return new ClipboardImporter();
   };
 
   this.getClipboardExporter = function() {
     return new ClipboardExporter();
-  };
-
-  // Called back by Substance.Data after a node instance has been created
-  this._didCreateNode = function(node) {
-    // create the node from schema
-    node.attach(this);
-  };
-
-  this._didDeleteNode = function(node) {
-    // create the node from schema
-    node.detach(this);
   };
 
   this._saveTransaction = function(beforeState, afterState, info) {
@@ -441,14 +332,6 @@ Document.Prototype = function() {
     this.isTransacting = false;
   };
 
-  this._updateContainers = function(op) {
-    var containers = this.containers;
-    _.each(containers, function(container) {
-      container.update(op);
-    });
-  };
-
-
   this._apply = function(documentChange, mode) {
     if (this.isTransacting) {
       throw new Error('Can not replay a document change during transaction.');
@@ -473,7 +356,7 @@ Document.Prototype = function() {
 
 };
 
-Substance.inherit(Document, Substance.EventEmitter);
+Substance.inherit(Document, AbstractDocument);
 
 Object.defineProperty(Document.prototype, 'id', {
   get: function() {

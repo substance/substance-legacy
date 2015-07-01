@@ -1,5 +1,6 @@
 var Document = require('../../src/document');
 var MetaNode = require('./test_article_meta');
+var TestNode = require('./test_node');
 
 var schema = new Document.Schema("test-article", "1.0.0");
 
@@ -19,7 +20,8 @@ schema.addNodes([
   Document.TableRow,
   Document.TableCell,
   Document.List,
-  Document.ListItem
+  Document.ListItem,
+  TestNode
 ]);
 
 module.exports = schema;
