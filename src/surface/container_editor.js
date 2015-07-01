@@ -49,8 +49,8 @@ ContainerEditor.Prototype = function() {
     var container = doc.get(this.containerId);
     var first = container.getFirstComponent();
     var last = container.getLastComponent();
-    var lastText = this.document.get(last.path);
-    return this.document.createSelection({
+    var lastText = doc.get(last.path);
+    return doc.createSelection({
       type: 'container',
       containerId: this.containerId,
       startPath: first.path,
