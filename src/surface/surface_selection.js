@@ -38,10 +38,6 @@ SurfaceSelection.Prototype = function() {
     }
   }
 
-  function getPath(el) {
-    return el.dataset.path.split('.');
-  }
-
   // input methods:
   // - mouse down (setting cursor with mouse)
   // - keyboard cursor movement
@@ -53,50 +49,40 @@ SurfaceSelection.Prototype = function() {
   // 1. extract coordinates
   // 2. fixup coordinates
   // 3. create a model selection
-
-  this.updateState = function(options) {
+  this._pullState = function(anchorNode, anchorOffset, focusNode, focusOffset, isCollapsed, options) {
     options = options || {};
-    var sel = window.getSelection();
-    var anchorNode = sel.anchorNode;
-    var anchorOffset = sel.anchorOffset;
-    var focusNode = sel.focusNode;
-    var focusOffset = sel.focusOffset;
-    var isCollapsed = sel.isCollapsed;
-    var isBackward = false;
-    if (!isCollapsed && focusNode && anchorNode) {
-      var cmp = compareNodes(focusNode, anchorNode);
-      isBackward = ( cmp < 0 || (cmp === 0 && focusOffset < anchorOffset) );
-    }
     if (!focusNode || !anchorNode) {
       this.state = null;
       return;
     }
-    // console.log('###', anchorNode, anchorOffset, focusNode, focusOffset);
-    var startCoor, endCoor;
+    console.log('###', anchorNode, anchorOffset, focusNode, focusOffset);
+    var start, end;
     if (isCollapsed) {
-      if (isBackward) {
-        startCoor = this.getModelCoordinate(focusNode, focusOffset, options);
-      } else {
-        startCoor = this.getModelCoordinate(anchorNode, anchorOffset, options);
-      }
-      endCoor = startCoor;
+      start = this.getModelCoordinate(anchorNode, anchorOffset, options);
+      end = start;
     } else {
-      startCoor = this.getModelCoordinate(anchorNode, anchorOffset, options);
-      endCoor = this.getModelCoordinate(focusNode, focusOffset, options);
-      if (isBackward) {
-        var tmp = endCoor;
-        endCoor = startCoor;
-        startCoor = tmp;
-      }
+      start = this.getModelCoordinate(anchorNode, anchorOffset, options);
+      end = this.getModelCoordinate(focusNode, focusOffset, options);
     }
-    // console.log('### extracted coors:', startCoor, endCoor);
-    this.state = new SurfaceSelection.State(isCollapsed, isBackward, startCoor, endCoor);
+    // the selection is reversed when the focus propertyEl is before
+    // the anchor el or the computed charPos is in reverse order
+    var isBackward = false;
+    if (!isCollapsed && focusNode && anchorNode) {
+      var cmp = compareNodes(end.el, start.el);
+      isBackward = ( cmp < 0 || (cmp === 0 && end.offset < start.offset) );
+    }
+    if (isBackward) {
+      var tmp = end;
+      end = start;
+      start = tmp;
+    }
+    console.log('### extracted coors:', start, end);
+    this.state = new SurfaceSelection.State(isCollapsed, isBackward, start, end);
   };
 
   this.getModelCoordinate = function(node, offset, options) {
     var current = node;
     var propertyEl = null;
-    var path;
     while(current) {
       // if available extract a path fragment
       if (current.dataset && current.dataset.path) {
@@ -108,8 +94,7 @@ SurfaceSelection.Prototype = function() {
       if ($(current).is('.content-node') && offset === 0) {
         var $propertyEl = $(current).find('[data-path]');
         if ($propertyEl.length) {
-          path = getPath($propertyEl[0]);
-          return new Coordinate(path, 0);
+          return new SurfaceSelection.Coordinate($propertyEl[0], 0);
         }
       }
       current = current.parentNode;
@@ -117,12 +102,11 @@ SurfaceSelection.Prototype = function() {
     if (!propertyEl) {
       return this.searchForCoordinate(node, offset, options);
     }
-    path = getPath(propertyEl);
-    var charPos = this.computeCharPosition(propertyEl, node, offset);
-    return new Coordinate(path, charPos);
+    var charPos = this._computeCharPosition(propertyEl, node, offset);
+    return new SurfaceSelection.Coordinate(propertyEl, charPos);
   };
 
-  this.computeCharPosition = function(propertyEl, endNode, offset) {
+  this._computeCharPosition = function(propertyEl, endNode, offset) {
     var charPos = 0;
 
     // This works with endNode being a TextNode
@@ -230,7 +214,7 @@ SurfaceSelection.Prototype = function() {
         cmp2 = pivotCmp;
       }
     }
-    var path, charPos;
+    var charPos;
     if (options.direction === "left") {
       idx = Math.max(0, idx-1);
       charPos = elements[idx].textContent.length;
@@ -239,12 +223,11 @@ SurfaceSelection.Prototype = function() {
     } else {
       charPos = 0;
     }
-    path = getPath(elements[idx]);
-    return new Coordinate(path, charPos);
+    return new SurfaceSelection.Coordinate(elements[idx], charPos);
   };
 
-  this.getSelection = function() {
-    this.updateState();
+  this._getSelection = function(anchorNode, anchorOffset, focusNode, focusOffset, collapsed) {
+    this._pullState(anchorNode, anchorOffset, focusNode, focusOffset, collapsed);
     if (!this.state) {
       return Document.nullSelection;
     }
@@ -253,7 +236,10 @@ SurfaceSelection.Prototype = function() {
     var end = this.state.end;
     // var reverse = this.state.reverse;
     var node1, node2, parent1, parent2, row1, col1, row2, col2;
-    var range = new Range(start, end);
+    var range = new Range(
+      new Coordinate(start.path, start.offset),
+      new Coordinate(end.path, end.offset)
+    );
     if (_.isEqual(start.path, end.path)) {
       return doc.createSelection({
         type: 'property',
@@ -294,6 +280,11 @@ SurfaceSelection.Prototype = function() {
         });
       }
     }
+  };
+
+  this.getSelection = function() {
+    var sel = window.getSelection();
+    return this._getSelection(sel.anchorNode, sel.anchorOffset, sel.focusNode, sel.focusOffset, sel.isCollapsed);
   };
 
   var _findDomPosition = function(element, offset) {
@@ -401,6 +392,12 @@ SurfaceSelection.State = function(collapsed, reverse, start, end) {
   this.start = start;
   this.end = end;
   Object.freeze(this);
+};
+
+SurfaceSelection.Coordinate = function(el, charPos) {
+  this.el = el;
+  this.offset = charPos;
+  this.path = el.dataset.path.split('.');
 };
 
 module.exports = SurfaceSelection;
