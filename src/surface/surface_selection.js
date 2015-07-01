@@ -172,7 +172,10 @@ SurfaceSelection.Prototype = function() {
 
     var found = false;
 
-    if (endNode.nodeType === window.Node.ELEMENT_NODE) {
+    // HACK: edge case which occurs when the last element
+    // is not content-editable (i.e., external)
+    // then the anchor node is the property element itself
+    if (endNode === propertyEl) {
       var child = propertyEl.firstChild;
       for (var i = 0; i < offset; i++) {
         if (!child) {
