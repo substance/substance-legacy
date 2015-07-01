@@ -12,7 +12,7 @@ var NotifyByPathProxy = function(doc) {
 
 NotifyByPathProxy.Prototype = function() {
 
-  this.onDocumentChanged = function(change, info) {
+  this.onDocumentChanged = function(change, info, doc) {
     var listeners = this.listeners;
     var updated = change.updated;
 
@@ -51,7 +51,7 @@ NotifyByPathProxy.Prototype = function() {
       var key = path.concat(['listeners']);
       var scopedListeners = listeners.get(key);
       _.each(scopedListeners, function(entry) {
-        entry.method.call(entry.listener, change, info);
+        entry.method.call(entry.listener, change, info, doc);
       });
     }, this);
   };

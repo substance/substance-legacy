@@ -358,8 +358,8 @@ Document.Prototype = function() {
   this._notifyChangeListeners = function(documentChange, info) {
     info = info || {};
     _.each(this.eventProxies, function(proxy) {
-      proxy.onDocumentChanged(documentChange, info);
-    });
+      proxy.onDocumentChanged(documentChange, info, this);
+    }, this);
     this.emit('document:changed', documentChange, info, this);
   };
 
