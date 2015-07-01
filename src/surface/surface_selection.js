@@ -55,7 +55,7 @@ SurfaceSelection.Prototype = function() {
       this.state = null;
       return;
     }
-    console.log('###', anchorNode, anchorOffset, focusNode, focusOffset);
+    // console.log('###', anchorNode, anchorOffset, focusNode, focusOffset);
     var start, end;
     if (isCollapsed) {
       start = this.getModelCoordinate(anchorNode, anchorOffset, options);
@@ -76,7 +76,7 @@ SurfaceSelection.Prototype = function() {
       end = start;
       start = tmp;
     }
-    console.log('### extracted coors:', start, end);
+    // console.log('### extracted coors:', start, end);
     this.state = new SurfaceSelection.State(isCollapsed, isBackward, start, end);
   };
 
