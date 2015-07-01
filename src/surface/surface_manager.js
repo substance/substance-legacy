@@ -26,6 +26,9 @@ SurfaceManager.Prototype = function() {
   };
 
   this.unregisterSurface = function(surface) {
+    if (this.focussedSurface === surface) {
+      this.focussedSurface = null;
+    }
     delete this.surfaces[surface.getName()];
   };
 
