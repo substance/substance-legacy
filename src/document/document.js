@@ -360,7 +360,7 @@ Document.Prototype = function() {
     _.each(this.eventProxies, function(proxy) {
       proxy.onDocumentChanged(documentChange, info);
     });
-    this.emit('document:changed', documentChange, info);
+    this.emit('document:changed', documentChange, info, this);
   };
 
 };

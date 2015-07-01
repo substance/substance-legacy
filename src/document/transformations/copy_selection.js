@@ -24,6 +24,7 @@ var copySelection = function(doc, args) {
 
 var _copyPropertySelection = function(doc, selection) {
   var copy = doc.newInstance();
+  copy._setForClipboard(true);
   var path = selection.start.path;
   var offset = selection.start.offset;
   var endOffset = selection.end.offset;
@@ -52,6 +53,7 @@ var _copyPropertySelection = function(doc, selection) {
 
 var _copyContainerSelection = function(doc, selection) {
   var copy = doc.newInstance();
+  copy._setForClipboard(true);
   var annotationIndex = doc.getIndex('annotations');
   var container = doc.get(selection.containerId);
   var startComp = container.getComponent(selection.start.path);

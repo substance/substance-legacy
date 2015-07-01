@@ -13,6 +13,8 @@ function AbstractDocument(schema) {
   this.schema = schema;
 
   this.AUTO_ATTACH = true;
+  this.FOR_CLIPBOARD = false;
+
   this.data = new Data.Incremental(schema, {
     didCreateNode: _.bind(this._didCreateNode, this),
     didDeleteNode: _.bind(this._didDeleteNode, this),
@@ -23,6 +25,10 @@ AbstractDocument.Prototype = function() {
 
   this.isTransaction = function() {
     return false;
+  };
+
+  this.isClipboard = function() {
+    return this.FOR_CLIPBOARD;
   };
 
   this.newInstance = function() {
@@ -51,6 +57,10 @@ AbstractDocument.Prototype = function() {
    */
   this._setAutoAttach = function(val) {
     this.AUTO_ATTACH = val;
+  };
+
+  this._setForClipboard = function(val) {
+    this.FOR_CLIPBOARD = val;
   };
 
   this._resetContainers = function() {
@@ -108,8 +118,6 @@ AbstractDocument.Prototype = function() {
   };
 
   this.loadSeed = function(seed) {
-    var containers = [];
-
     // Attention: order of nodes may be 'invalid'
     // so that we should not attach the doc a created note
     // until all its dependencies are created

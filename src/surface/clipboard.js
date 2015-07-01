@@ -102,7 +102,9 @@ Clipboard.Prototype = function() {
     var logger = surface.getLogger();
     var doc = surface.getDocument();
     // try {
-      var content = doc.fromSnapshot(JSON.parse(data));
+      var content = doc.newInstance();
+      content._setForClipboard(true);
+      content.loadSeed(JSON.parse(data));
       var plainText = "";
       var pasteContent = content.get('content');
       if (pasteContent.nodes.length > 0) {
@@ -138,6 +140,7 @@ Clipboard.Prototype = function() {
     var doc = surface.getDocument();
     try {
       var content = doc.newInstance();
+      content._setForClipboard(true);
       if (!content.get('content')) {
         content.create({
           id: 'content',

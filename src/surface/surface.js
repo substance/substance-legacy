@@ -281,7 +281,6 @@ Surface.Prototype = function() {
     // Ctrl+A: select all
     var handled = false;
     if ( (e.ctrlKey||e.metaKey) && e.keyCode === 65 ) {
-      console.log('Selecting all...');
       var newSelection = this.editor.selectAll(this.getDocument(), this.getSelection());
       this.setSelection(newSelection);
       this.surfaceSelection.setSelection(newSelection);
