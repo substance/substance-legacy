@@ -124,6 +124,8 @@ SurfaceSelection.Prototype = function() {
 
   this.computeCharPosition = function(propertyEl, endNode, offset) {
     var charPos = 0;
+
+    // This works with endNode being a TextNode
     function _getPosition(node) {
       if (endNode === node) {
         charPos += offset;
@@ -147,7 +149,43 @@ SurfaceSelection.Prototype = function() {
       }
       return false;
     }
-    var found = _getPosition(propertyEl);
+    // count characters recursively
+    // by sum up the length of all TextNodes
+    // and counting external nodes by 1.
+    function _countCharacters(el) {
+      var type = el.nodeType;
+      if (type === window.Node.TEXT_NODE) {
+        return el.textContent.length;
+      } else if (type === window.Node.ELEMENT_NODE) {
+        if ($(el).data('external')) {
+          return 1;
+        } else {
+          var count = 0;
+          for (var childNode = el.firstChild; childNode; childNode = childNode.nextSibling) {
+            count += _countCharacters(childNode);
+          }
+          return count;
+        }
+      }
+      return 0;
+    }
+
+    var found = false;
+
+    if (endNode.nodeType === window.Node.ELEMENT_NODE) {
+      var child = propertyEl.firstChild;
+      for (var i = 0; i < offset; i++) {
+        if (!child) {
+          break;
+        }
+        charPos += _countCharacters(child);
+        child = child.nextSibling;
+      }
+      found = true;
+    } else {
+      found = _getPosition(propertyEl);
+    }
+
     if (!found) {
       console.error('Could not find char position.');
       return 0;
