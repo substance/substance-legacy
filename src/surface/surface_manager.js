@@ -39,6 +39,9 @@ SurfaceManager.Prototype = function() {
   };
 
   this.didFocus = function(surface) {
+    if (this.focussedSurface && surface !== this.focussedSurface) {
+      this.focussedSurface.setFocused(false);
+    }
     this.focussedSurface = surface;
   };
 
@@ -76,7 +79,7 @@ SurfaceManager.Prototype = function() {
   this.popState = function() {
     var state = this.stack.pop();
     if (state && state.surface) {
-      state.surface._focus();
+      state.surface.setFocused(true);
       state.surface.setSelection(state.selection);
     }
   };

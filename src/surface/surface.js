@@ -517,7 +517,7 @@ Surface.Prototype = function() {
   this.onMouseUp = function(/*e*/) {
     // ... and unbind the temporary handler
     this.dragging = false;
-    this._focus();
+    this.setFocused(true);
     // HACK: somehow the DOM selection is not ready yet
     var self = this;
     if (self.surfaceSelection) {
@@ -526,10 +526,10 @@ Surface.Prototype = function() {
     }
   };
 
-  this._focus = function() {
-    if (!this.isFocused) {
+  this.setFocused = function(val) {
+    this.isFocused = val;
+    if (this.isFocused) {
       this.surfaceManager.didFocus(this);
-      this.isFocused = true;
     }
   };
 
