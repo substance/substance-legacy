@@ -22,6 +22,7 @@ function Document(schema) {
   this.nodeIndex = this.addIndex('type', Data.Index.create({
     property: "type"
   }));
+
   // special index for (property-scoped) annotations
   this.annotationIndex = this.addIndex('annotations', new AnnotationIndex());
 
@@ -63,7 +64,8 @@ Document.Prototype = function() {
   };
 
   this.newInstance = function() {
-    return new Document(this.schema);
+    var DocumentClass = this.constructor;
+    return new DocumentClass(this.schema);
   };
 
   this.fromSnapshot = function(data) {
