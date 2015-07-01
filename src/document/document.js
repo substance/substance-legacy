@@ -51,9 +51,6 @@ function Document(schema) {
   this.stage = new TransactionDocument(this);
   this.isTransacting = false;
 
-  // CONTRACT: containers should be added in this.initialize()
-  this.containers = this.getIndex('type').get('container');
-
   this.FORCE_TRANSACTIONS = false;
 }
 
@@ -72,12 +69,6 @@ Document.Prototype = function() {
     var doc = this.newInstance();
     doc.loadSeed(data);
     return doc;
-  };
-
-  this.loadSeed = function(seed) {
-    this.transaction(function(tx) {
-      tx.loadSeed(seed);
-    });
   };
 
   this.documentDidLoad = function() {
@@ -307,6 +298,20 @@ Document.Prototype = function() {
   this.getClipboardExporter = function() {
     return new ClipboardExporter();
   };
+
+  /**
+   * Enable or disable auto-attaching of nodes.
+   * When this is enabled (default), a created node
+   * gets attached to the document instantly.
+   * Otherwise you need to take care of that yourself.
+   *
+   * Used internally e.g., by AbstractDocument.prototype.loadSeed()
+   */
+  this._setAutoAttach = function(val) {
+    Document.super.prototype._setAutoAttach.call(this, val);
+    this.stage._setAutoAttach(val);
+  };
+
 
   this._saveTransaction = function(beforeState, afterState, info) {
     // var time = Date.now();

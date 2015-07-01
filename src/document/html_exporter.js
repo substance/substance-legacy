@@ -68,7 +68,7 @@ HtmlExporter.Prototype = function() {
       $el.attr('id', node.id);
       elements.push($el);
     }
-    return elements
+    return elements;
   };
 
   this.annotatedText = function(path) {
@@ -90,7 +90,7 @@ HtmlExporter.Prototype = function() {
     };
     annotator.onExit = function(entry, context, parentContext) {
       var anno = context.annotation;
-      var NodeConverter = this.getNodeConverter(anno);
+      var NodeConverter = self.getNodeConverter(anno);
       var $el = NodeConverter.static.toHtml(anno, self, context.children);
       if (!$el || !self.isElementNode($el[0])) {
         throw new Error('Contract: Annotation.toHtml() must return a DOM element.');
@@ -112,12 +112,13 @@ HtmlExporter.Prototype = function() {
   };
 
   this.createHtmlDocument = function() {
+    var EMPTY_DOC = '<!DOCTYPE html><html><head></head><body></body></html>';
     if (inBrowser) {
-      var doc = window.document.implementation.createDocument ('http://www.w3.org/1999/xhtml', 'html', null);
+      var parser = new window.DOMParser();
+      var doc = parser.parseFromString(EMPTY_DOC, "text/html");
       return $(doc);
     } else {
       // creating document using cheerio
-      var EMPTY_DOC = '<!DOCTYPE html><html><head></head><body></body></html>';
       var $root = $.load(EMPTY_DOC).root();
       return $root;
     }

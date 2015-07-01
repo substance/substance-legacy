@@ -12,9 +12,10 @@ function AbstractDocument(schema) {
   Substance.EventEmitter.call(this);
   this.schema = schema;
 
+  this.AUTO_ATTACH = true;
   this.data = new Data.Incremental(schema, {
-    didCreateNode: Substance.bind(this._didCreateNode, this),
-    didDeleteNode: Substance.bind(this._didDeleteNode, this),
+    didCreateNode: _.bind(this._didCreateNode, this),
+    didDeleteNode: _.bind(this._didDeleteNode, this),
   });
 }
 
@@ -40,10 +41,22 @@ AbstractDocument.Prototype = function() {
     return this.data.getIndex(name);
   };
 
-  this.reset = function() {
-    this.containers = this.getIndex('type').get('container');
+  /**
+   * Enable or disable auto-attaching of nodes.
+   * When this is enabled (default), a created node
+   * gets attached to the document instantly.
+   * Otherwise you need to take care of that yourself.
+   *
+   * Used internally e.g., by AbstractDocument.prototype.loadSeed()
+   */
+  this._setAutoAttach = function(val) {
+    this.AUTO_ATTACH = val;
+  };
+
+  this._resetContainers = function() {
+    var containers = this.getIndex('type').get('container');
     // reset containers initially
-    Substance.each(this.containers, function(container) {
+    Substance.each(containers, function(container) {
       container.reset();
     });
   };
@@ -95,13 +108,29 @@ AbstractDocument.Prototype = function() {
   };
 
   this.loadSeed = function(seed) {
+    var containers = [];
+
+    // Attention: order of nodes may be 'invalid'
+    // so that we should not attach the doc a created note
+    // until all its dependencies are created
+    //
+    // Thus we disable AUTO_ATTACH when creating nodes
+
+    // 1. clear all existing nodes (as they should be there in the seed)
+    _.each(this.data.nodes, function(node) {
+      this.delete(node.id);
+    }, this);
+    // 2. create nodes with AUTO_ATTACH disabled
+    this._setAutoAttach(false);
     _.each(seed.nodes, function(nodeData) {
-      var id = nodeData.id;
-      if (this.get(id)) {
-        this.delete(id);
-      }
       this.create(nodeData);
     }, this);
+    this._setAutoAttach(true);
+    // 3. attach all nodes
+    _.each(this.data.nodes, function(node) {
+      node.attach(this);
+    }, this);
+
     this.documentDidLoad();
   };
 
@@ -114,7 +143,7 @@ AbstractDocument.Prototype = function() {
       text = this.get(sel.start.path);
       result.push(text.substring(sel.start.offset, sel.end.offset));
     } else if (sel.isContainerSelection()) {
-      var container = this.get(sel.container.id);
+      var container = this.get(sel.containerId);
       var components = container.getComponentsForRange(sel.range);
       for (var i = 0; i < components.length; i++) {
         var comp = components[i];
@@ -209,8 +238,10 @@ AbstractDocument.Prototype = function() {
 
   // Called back by Substance.Data after a node instance has been created
   this._didCreateNode = function(node) {
-    // create the node from schema
-    node.attach(this);
+    if (this.AUTO_ATTACH) {
+      // create the node from schema
+      node.attach(this);
+    }
   };
 
   this._didDeleteNode = function(node) {
@@ -219,7 +250,7 @@ AbstractDocument.Prototype = function() {
   };
 
   this._updateContainers = function(op) {
-    var containers = this.containers;
+    var containers = this.getIndex('type').get('container');
     _.each(containers, function(container) {
       container.update(op);
     });

@@ -6,9 +6,8 @@ var AbstractDocument = require('./abstract_document');
 
 function TransactionDocument(document) {
   AbstractDocument.call(this, document.schema);
-
   this.document = document;
-
+  // ops recorded since transaction start
   this.ops = [];
   // app information state information used to recover the state before the transaction
   // when calling undo
@@ -19,8 +18,6 @@ function TransactionDocument(document) {
   }, this);
 
   this.loadSeed(document.toJSON());
-
-  this.reset();
 }
 
 TransactionDocument.Prototype = function() {
@@ -32,11 +29,7 @@ TransactionDocument.Prototype = function() {
   this.reset = function() {
     this.ops = [];
     this.before = {};
-    this.containers = this.getIndex('type').get('container');
-    // reset containers initially
-    _.each(this.containers, function(container) {
-      container.reset();
-    });
+    this._resetContainers();
   };
 
   this.create = function(nodeData) {
@@ -77,13 +70,6 @@ TransactionDocument.Prototype = function() {
       this.ops.push(op);
     }
     return op;
-  };
-
-  this._updateContainers = function(op) {
-    var containers = this.containers;
-    _.each(containers, function(container) {
-      container.update(op);
-    });
   };
 
   this.save = function(afterState, info) {

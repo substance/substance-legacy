@@ -1,7 +1,8 @@
 'use strict';
 
-var Substance = require('../basics');
-var PathAdapter = Substance.PathAdapter;
+var _ = require('../basics/helpers');
+var OO = require('../basics/oo');
+var PathAdapter = require('../basics/path_adapter');
 var Node = require('./node');
 
 // Container
@@ -37,6 +38,10 @@ function Container() {
 }
 
 Container.Prototype = function() {
+
+  this.didAttach = function() {
+    this.reset();
+  };
 
   this.getPosition = function(nodeId) {
     var pos = this.nodes.indexOf(nodeId);
@@ -89,7 +94,7 @@ Container.Prototype = function() {
   };
 
   this.getLastComponent = function() {
-    return Substance.last(this.components);
+    return _.last(this.components);
   };
 
   this.getComponentsForNode = function(nodeId) {
@@ -113,7 +118,7 @@ Container.Prototype = function() {
     var startAnchor = anno.getStartAnchor();
     var endAnchor = anno.getEndAnchor();
     // if start and end anchors are on the same property, then there is only one fragment
-    if (Substance.isEqual(startAnchor.path, endAnchor.path)) {
+    if (_.isEqual(startAnchor.path, endAnchor.path)) {
       fragments.push({
         id: anno.id,
         path: startAnchor.path,
@@ -158,10 +163,10 @@ Container.Prototype = function() {
   };
 
   this.reset = function() {
-    this.byPath = new Substance.PathAdapter();
+    this.byPath = new PathAdapter();
     var doc = this.getDocument();
     var components = [];
-    Substance.each(this.nodes, function(id) {
+    _.each(this.nodes, function(id) {
       var node = doc.get(id);
       components = components.concat(_getNodeComponents(node));
     }, this);
@@ -268,7 +273,7 @@ Container.Prototype = function() {
     var nodeComponent = this.nodeComponents[nodeId];
     var components = nodeComponent.components;
     var start = nodeComponent.components[0].getIndex();
-    var end = Substance.last(components).getIndex();
+    var end = _.last(components).getIndex();
 
     // remove the components from the tree
     for (var i = 0; i < components.length; i++) {
@@ -308,7 +313,7 @@ Container.Prototype = function() {
         components = components.concat(_getNodeComponents(childNode, rootNode));
       }
       // array of children
-      else if (Substance.isEqual(propertyType, ['array', 'id'])) {
+      else if (_.isEqual(propertyType, ['array', 'id'])) {
         var ids = node[name];
         for (var j = 0; j < ids.length; j++) {
           childNode = node.getDocument().get(ids[j]);
@@ -322,7 +327,7 @@ Container.Prototype = function() {
   };
 };
 
-Substance.inherit(Container, Node);
+OO.inherit(Container, Node);
 
 Container.static.name = "container";
 
@@ -370,13 +375,13 @@ Container.Component.Prototype = function() {
   };
 };
 
-Substance.initClass(Container.Component);
+OO.initClass(Container.Component);
 
 Container.NodeComponent = function NodeComponent(id) {
   this.id = id;
   this.components = [];
 };
 
-Substance.initClass(Container.NodeComponent);
+OO.initClass(Container.NodeComponent);
 
 module.exports = Container;
