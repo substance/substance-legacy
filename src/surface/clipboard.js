@@ -101,7 +101,7 @@ Clipboard.Prototype = function() {
     var editor = surface.getEditor();
     var logger = surface.getLogger();
     var doc = surface.getDocument();
-    try {
+    // try {
       var content = doc.fromSnapshot(JSON.parse(data));
       var plainText = "";
       var pasteContent = content.get('content');
@@ -110,6 +110,7 @@ Clipboard.Prototype = function() {
         var last = pasteContent.getLastComponent();
         var lastLength = content.get(last.path).length;
         var sel = doc.createSelection({
+          type: 'container',
           containerId: 'content',
           startPath: first.path,
           startOffset: 0,
@@ -123,10 +124,10 @@ Clipboard.Prototype = function() {
         args.doc = content;
         return editor.paste(tx, args);
       });
-    } catch (error) {
-      console.error(error);
-      logger.error(error);
-    }
+    // } catch (error) {
+    //   console.error(error);
+    //   logger.error(error);
+    // }
   };
 
   this.pasteHtml = function(html) {

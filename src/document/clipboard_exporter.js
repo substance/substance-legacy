@@ -27,7 +27,10 @@ ClipboardExporter.Prototype = function() {
     var content = doc.get('content');
     $doc.find('body').append(this.convertContainer(content));
 
-    return $doc.html();
+    // This is not working with jquery
+    //return $doc.html();
+
+    return $doc.find('html').html();
   };
 
 };
