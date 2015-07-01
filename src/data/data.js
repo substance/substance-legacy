@@ -72,12 +72,12 @@ Data.Prototype = function() {
       throw new Error("Node id and type are mandatory.");
     }
     this.nodes[node.id] = node;
-    this.didCreateNode(node);
     _.each(this.indexes, function(index) {
       if (index.select(node)) {
         index.create(node);
       }
     });
+    this.didCreateNode(node);
     return node;
   };
 
