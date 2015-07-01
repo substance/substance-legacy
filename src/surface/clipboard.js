@@ -119,7 +119,7 @@ Clipboard.Prototype = function() {
         plainText = content.getTextForSelection(sel);
       }
       surface.transaction(function(tx, args) {
-        args.text = plainText,
+        args.text = plainText;
         args.doc = content;
         return editor.paste(tx, args);
       });
@@ -145,9 +145,9 @@ Clipboard.Prototype = function() {
         });
       }
       var htmlDoc = new window.DOMParser().parseFromString(html, "text/html");
-      this.htmlImporter.convertDocument(htmlDoc, content, 'content');
+      this.htmlImporter.convert($(htmlDoc), content);
       surface.transaction(function(tx, args) {
-        args.text = plainText,
+        args.text = htmlDoc.body.textContent;
         args.doc = content;
         return editor.paste(tx, args);
       });
@@ -174,8 +174,7 @@ Clipboard.Prototype = function() {
     if (this.isFF && !types['application/substance'] && !types['text/html']) {
       var sel = editor.selection;
       this.beforePasteShim();
-      // restore selection which might got lost via Surface.onblur().
-      editor.selection = sel;
+      surface.rerenderSelection();
       this.pasteShim();
       return;
     }
