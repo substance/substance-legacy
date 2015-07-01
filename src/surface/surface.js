@@ -168,7 +168,6 @@ Surface.Prototype = function() {
 
     // Mouse Events
     //
-    this.$element.off('mousemove', this._onMouseMove );
     this.$element.off('mousedown', this._onMouseDown );
 
     // Keyboard Events
@@ -511,14 +510,11 @@ Surface.Prototype = function() {
     }
     // Bind mouseup to the whole document in case of dragging out of the surface
     this.dragging = true;
-    this.$document.on( 'mouseup', this._onMouseUp );
-    this.$document.on( 'mousemove', this._onMouseMove );
+    this.$document.one( 'mouseup', this._onMouseUp );
   };
 
   this.onMouseUp = function(/*e*/) {
     // ... and unbind the temporary handler
-    this.$document.off( 'mouseup', this._onMouseUp );
-    this.$document.off( 'mousemove', this._onMouseMove );
     this.dragging = false;
     if (!this.isFocused) {
       this.surfaceManager.didFocus(this);
