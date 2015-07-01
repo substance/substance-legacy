@@ -572,6 +572,7 @@ Surface.Prototype = function() {
    * Set the model selection and update the DOM selection accordingly
    */
   this.setSelection = function(sel) {
+    var sel = sel || Selection.nullSelection;
     if (this._setModelSelection(sel)) {
       if (this.surfaceSelection) {
         // also update the DOM selection

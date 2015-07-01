@@ -1,6 +1,7 @@
 'use strict';
 
 var OO = require('../basics/oo');
+var _ = require('../basics/helpers');
 var Surface = require('./surface');
 
 var SurfaceManager = function(doc) {
@@ -26,10 +27,17 @@ SurfaceManager.Prototype = function() {
   };
 
   this.unregisterSurface = function(surface) {
-    if (this.focussedSurface === surface) {
-      this.focussedSurface = null;
-    }
     delete this.surfaces[surface.getName()];
+    if (surface && this.focussedSurface === surface) {
+      this.focussedSurface = null;
+      // HACK: blurring the other surfaces so that there
+      // is no selection associated to tools
+      // FIXME: instead we probably want to recover the
+      // previous selection.
+      _.each(this.surfaces, function(surface) {
+        surface.setSelection(null);
+      });
+    }
   };
 
   this.hasSurfaces = function() {
@@ -37,9 +45,6 @@ SurfaceManager.Prototype = function() {
   };
 
   this.didFocus = function(surface) {
-    if (this.focussedSurface) {
-      this.focussedSurface._blur();
-    }
     this.focussedSurface = surface;
   };
 
