@@ -6,6 +6,11 @@ var Include = DocumentNode.extend({
     "nodeType": "string",
     "nodeId": "id"
   },
+
+  getIncludedNode: function() {
+    return this.getDocument().get(this.nodeId);
+  },
+
 });
 
 Include.static.components = ['nodeId'];
