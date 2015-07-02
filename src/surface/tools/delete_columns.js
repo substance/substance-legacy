@@ -2,9 +2,9 @@
 
 var Tool = require('../tool');
 
-var InsertColumnsTool = Tool.extend({
+var DeleteColumnsTool = Tool.extend({
 
-  name: "insert_columns",
+  name: "delete_columns",
 
   update: function(surface, sel) {
     this.surface = surface; // IMPORTANT!
@@ -21,11 +21,11 @@ var InsertColumnsTool = Tool.extend({
 
   performAction: function(options) {
     this.surface.transaction(function(tx, args) {
-      console.log('TODO: insert columns', options);
+      console.log('TODO: delete columns', options);
       return args;
     });
   },
 
 });
 
-module.exports = InsertColumnsTool;
+module.exports = DeleteColumnsTool;

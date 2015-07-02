@@ -19,9 +19,9 @@ var InsertRowsTool = Tool.extend({
     });
   },
 
-  performAction: function() {
+  performAction: function(options) {
     this.surface.transaction(function(tx, args) {
-      console.log('TODO: insert rows');
+      console.log('TODO: insert rows', options);
       return args;
     });
   },
