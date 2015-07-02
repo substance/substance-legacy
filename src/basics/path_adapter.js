@@ -107,7 +107,8 @@ PathAdapter.Prototype = function() {
 
   this._traverse = function(root, path, fn, ctx) {
     for (var id in root) {
-      if (root.hasOwnProperty(id) && id !== '__values__') {
+      if (!root.hasOwnProperty(id)) continue;
+      if (id !== '__values__') {
         var childPath = path.concat([id]);
         fn.call(ctx, childPath, root[id]);
         this._traverse(root[id], childPath, fn, ctx);
@@ -175,8 +176,9 @@ PathAdapter.Arrays.Prototype = function() {
 
   this._traverse = function(root, path, fn, ctx) {
     for (var id in root) {
+      if (!root.hasOwnProperty(id)) continue;
       if (id === '__values__') {
-        fn.call(ctx, root.__values__);
+        fn.call(ctx, path, root.__values__);
       } else {
         var childPath = path.concat([id]);
         this._traverse(root[id], childPath, fn, ctx);
