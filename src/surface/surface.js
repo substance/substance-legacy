@@ -576,7 +576,11 @@ Surface.Prototype = function() {
   };
 
   this.rerenderDomSelection = function() {
-    this.surfaceSelection.setSelection(this.getSelection());
+    // Note: as rerendering the selection is done delayed
+    // it can happen that the surface has been detached in the meantime.
+    if (this.surfaceSelection) {
+      this.surfaceSelection.setSelection(this.getSelection());
+    }
   };
 
   this.getDomNodeForId = function(nodeId) {
@@ -608,7 +612,7 @@ Surface.Prototype = function() {
       setTimeout(function() {
         self.rerenderDomSelection();
       });
-      
+
       // }
     // }
   };
