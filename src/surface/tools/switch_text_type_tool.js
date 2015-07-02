@@ -17,10 +17,20 @@ var TextTool = Tool.extend({
 
   update: function(surface, sel) {
     this.surface = surface; // IMPORTANT!
-
     // Set disabled when not a property selection
-    if (!surface.isEnabled() || sel.isNull() || !sel.isPropertySelection()) {
+    if (!surface.isEnabled() || sel.isNull()) {
       return this.setDisabled();
+    }
+    if (sel.isTableSelection()) {
+      return this.setToolState({
+        disabled: true,
+        currentContext: 'table'
+      });
+    } else if (sel.isContainerSelection()) {
+      return this.setToolState({
+        disabled: true,
+        currentContext: 'container'
+      });
     }
 
     var doc = this.getDocument();
@@ -67,7 +77,7 @@ var TextTool = Tool.extend({
     var textType = TEXT_TYPES[textTypeName];
     var surface = state.surface;
     var editor = surface.getEditor();
-    
+
     surface.transaction(function(tx, args) {
       args.data = textType.data;
       return editor.switchType(tx, args);
