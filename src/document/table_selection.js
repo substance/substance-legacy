@@ -4,12 +4,16 @@ var Substance = require('../basics');
 var _ = require('../basics/helpers');
 var Selection = require('./selection');
 
-function TableSelection(tableId, startRow, startCol, endRow, endCol) {
-  this.tableId = tableId;
-  if (arguments.length === 2 && arguments[1] instanceof TableSelection.Rectangle) {
-    this.rectangle = arguments[1];
+function TableSelection(properties) {
+  this.tableId = properties.tableId;
+  if (properties.rectangle) {
+    this.rectangle = properties.rectangle;
   } else {
-    this.rectangle = new TableSelection.Rectangle(startRow, startCol, endRow, endCol);
+    this.rectangle = new TableSelection.Rectangle(properties.startRow, properties.startCol,
+      properties.endRow, properties.endCol);
+  }
+  if (!this.tableId) {
+    throw new Error('Invalid arguments. `tableId` is mandatory.');
   }
   this._internal = {};
   Object.freeze(this);
@@ -63,13 +67,18 @@ TableSelection.Prototype = function() {
 Substance.inherit(TableSelection, Selection);
 
 TableSelection.Rectangle = function(startRow, startCol, endRow, endCol) {
+  var minRow = Math.min(startRow, endRow);
+  var maxRow = Math.max(startRow, endRow);
+  var minCol = Math.min(startCol, endCol);
+  var maxCol = Math.max(startCol, endCol);
+
   this.start = {
-    row: startRow,
-    col: startCol
+    row: minRow,
+    col: minCol
   };
   this.end = {
-    row: endRow,
-    col: endCol
+    row: maxRow,
+    col: maxCol
   };
   Object.freeze(this.start);
   Object.freeze(this.end);
@@ -78,29 +87,6 @@ TableSelection.Rectangle = function(startRow, startCol, endRow, endCol) {
 
 TableSelection.Rectangle.prototype.isSingleCell = function() {
   return (this.start.row === this.end.row && this.start.col === this.end.col);
-};
-
-TableSelection.Rectangle.create = function(startRow, startCol, endRow, endCol) {
-  var minRow = Math.min(startRow, endRow);
-  var maxRow = Math.max(startRow, endRow);
-  var minCol = Math.min(startCol, endCol);
-  var maxCol = Math.max(startCol, endCol);
-  return new TableSelection.Rectangle(minRow, minCol, maxRow, maxCol);
-};
-
-TableSelection.create = function(tableId, startRow, startCol, endRow, endCol) {
-  var tmp;
-  if (startCol > endCol) {
-    tmp = startCol;
-    startCol = endCol;
-    endCol = tmp;
-  }
-  if (startRow > endRow) {
-    tmp = startRow;
-    startRow = endRow;
-    endRow = tmp;
-  }
-  return new TableSelection(tableId, new TableSelection.Rectangle(startRow, startCol, endRow, endCol));
 };
 
 module.exports = TableSelection;

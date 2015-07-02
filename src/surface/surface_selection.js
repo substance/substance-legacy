@@ -254,7 +254,7 @@ SurfaceSelection.Prototype = function() {
       parent1 = node1.getRoot();
       parent2 = node2.getRoot();
       if (parent1.type === "table" && parent1.id === parent2.id) {
-        // HACK make sure the table matrix has been computed
+        // HACK making sure that the table matrix has been computed
         parent1.getMatrix();
         row1 = node1.rowIdx;
         col1 = node1.colIdx;
@@ -350,7 +350,7 @@ SurfaceSelection.Prototype = function() {
 
   this.setSelection = function(sel) {
     var wSel = window.getSelection();
-    if (sel.isNull() || sel.isTableSelection() ) {
+    if (sel.isNull() || sel.isTableSelection()) {
       return this.clear();
     }
     var range = sel.getRange();
