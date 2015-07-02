@@ -2,14 +2,13 @@
 
 var Tool = require('../tool');
 
-var InsertColumnsTool = Tool.extend({
+var InsertRowsTool = Tool.extend({
 
-  name: "insert_columns",
+  name: "insert_rows",
 
   update: function(surface, sel) {
     this.surface = surface; // IMPORTANT!
     // Set disabled when not a property selection
-    console.log('####', sel.toString(), surface.isEnabled(), sel.isNull(), sel.isTableSelection());
     if (!surface.isEnabled() || sel.isNull() || !sel.isTableSelection()) {
       return this.setDisabled();
     }
@@ -22,11 +21,11 @@ var InsertColumnsTool = Tool.extend({
 
   performAction: function() {
     this.surface.transaction(function(tx, args) {
-      console.log('TODO: insert columns');
+      console.log('TODO: insert rows');
       return args;
     });
   },
 
 });
 
-module.exports = InsertColumnsTool;
+module.exports = InsertRowsTool;

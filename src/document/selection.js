@@ -12,7 +12,7 @@ Selection.Prototype = function() {
   };
 
   this.isNull = function() {
-    return true;
+    return false;
   };
 
   this.isMultiSeletion = function() {

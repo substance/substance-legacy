@@ -42,8 +42,12 @@ TableSelection.Prototype = function() {
   };
 
   this.equals = function(other) {
-    if (other === this) {
-      return true;
+    if (this === other) {
+      return true ;
+    } else if (!other) {
+      return false;
+    } else if (this.isNull() !== other.isNull()) {
+      return false;
     } else if (!other.isTableSelection()) {
       return false;
     } else {
@@ -65,6 +69,29 @@ TableSelection.Prototype = function() {
 };
 
 Substance.inherit(TableSelection, Selection);
+
+Object.defineProperties(TableSelection.prototype, {
+  startRow: {
+    get: function() {
+      return this.rectangle.start.row;
+    }
+  },
+  endRow: {
+    get: function() {
+      return this.rectangle.end.row;
+    }
+  },
+  startCol: {
+    get: function() {
+      return this.rectangle.start.col;
+    }
+  },
+  endCol: {
+    get: function() {
+      return this.rectangle.end.col;
+    }
+  },
+});
 
 TableSelection.Rectangle = function(startRow, startCol, endRow, endCol) {
   var minRow = Math.min(startRow, endRow);
