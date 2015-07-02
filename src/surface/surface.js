@@ -378,6 +378,7 @@ Surface.Prototype = function() {
       afterState.surfaceId = beforeState.surfaceId;
       return afterState;
     });
+
     this.setSelection(afterState.selection);
   };
 
@@ -597,10 +598,17 @@ Surface.Prototype = function() {
       // console.log('Surface.setSelection: %s', sel.toString());
       this.selection = sel;
       this.emit('selection:changed', sel, this);
+      var self = this;
       // FIXME: ATM rerendering an expanded selection leads
       // to a strante behavior. So do not do that for now
       // if (sel.isCollapsed()) {
-      this.rerenderDomSelection();
+
+      // We need to wait for the UI to update, because in many cases DOM updates to the doc
+      // are async (like React.render, React.forceUpdate), so we wait for the next tick
+      setTimeout(function() {
+        self.rerenderDomSelection();
+      });
+      
       // }
     // }
   };
