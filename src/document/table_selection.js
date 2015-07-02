@@ -42,18 +42,10 @@ TableSelection.Prototype = function() {
   };
 
   this.equals = function(other) {
-    if (this === other) {
-      return true ;
-    } else if (!other) {
-      return false;
-    } else if (this.isNull() !== other.isNull()) {
-      return false;
-    } else if (!other.isTableSelection()) {
-      return false;
-    } else {
-      return (this.startRow === other.startRow && this.endRow === other.endRow &&
-        this.startCol === other.startCol && this.ednCol === other.endCol );
-    }
+    return (Selection.prototype.equals.call(this, other) &&
+      !other.isTableSelection() &&
+      (this.startRow === other.startRow && this.endRow === other.endRow &&
+       this.startCol === other.startCol && this.ednCol === other.endCol ));
   };
 
   this.toString = function() {
