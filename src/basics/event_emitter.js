@@ -40,15 +40,13 @@ EventEmitter.Prototype = function() {
   }
 
   /**
-   * Register a listener.
+   * Internal implementation for registering a listener.
    *
-   * @method on
    * @param {String} event
    * @param {Function} method
    * @param {Object} context
-   * @chainable
    */
-  this.on = function ( event, method, context ) {
+  this._on = function ( event, method, context, priority) {
     var bindings;
     validateMethod( method, context );
     if ( this.__events__.hasOwnProperty( event ) ) {
@@ -60,7 +58,8 @@ EventEmitter.Prototype = function() {
     // Add binding
     bindings.push({
       method: method,
-      context: context || null
+      context: context || null,
+      priority: priority
     });
     return this;
   };
@@ -74,7 +73,7 @@ EventEmitter.Prototype = function() {
    * @param {Object} context
    * @chainable
    */
-  this.off = function ( event, method, context ) {
+  this._off = function ( event, method, context ) {
     var i, bindings;
     if ( arguments.length === 1 ) {
       // Remove all bindings for event
@@ -127,19 +126,37 @@ EventEmitter.Prototype = function() {
     return false;
   };
 
+  // sort descending as a listener with higher priority should be
+  // called earlier
+  function byPriorityDescending(a, b) {
+    return b.priority - a.priority;
+  }
+
   /**
    * Connect a listener to a set of events.
+   *
+   * Optionally, a `priority` can be provided to control the order
+   * of all bindings. The default priority is 0. All listeners with the
+   * same priority remain in order of registration.
+   * A lower priority will make the listener be called later, a higher
+   * priority earlier.
    *
    * @method emit
    * @param {Object} listener
    * @param {Object} hash with event as keys, and handler functions as values.
+   * @param {Number} hash with `priority` as ordering hint (default is 0).
    * @chainable
    */
-  this.connect = function (obj, methods) {
+  this.connect = function (obj, methods, options) {
+    var priority = 0;
+    if (arguments.length === 3) {
+      priority = options.priority || priority;
+    }
     for ( var event in methods ) {
       var method = methods[event];
-      this.on( event, method, obj );
+      this._on( event, method, obj, priority);
     }
+    this.__events__[event].sort(byPriorityDescending);
     return this;
   };
 
@@ -160,7 +177,7 @@ EventEmitter.Prototype = function() {
         // bindings[i] may have been removed by the previous step's
         // this.off so check it still exists
         if ( bindings[i] && bindings[i].context === context ) {
-          this.off( event, bindings[i].method, context );
+          this._off( event, bindings[i].method, context );
         }
       }
     }
