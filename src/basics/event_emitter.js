@@ -160,6 +160,15 @@ EventEmitter.Prototype = function() {
     return this;
   };
 
+  this.on = function ( event, method, context, options) {
+    var priority = 0;
+    if (arguments.length === 3) {
+      priority = options.priority || priority;
+    }
+    this._on(event, method, context, priority);
+    this.__events__[event].sort(byPriorityDescending);
+  };
+
   /**
    * Disconnect a listener (all bindings).
    *
