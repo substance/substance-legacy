@@ -17,4 +17,6 @@ Surface.SwitchTypeTool = require('./switch_type_tool');
 Surface.ToolRegistry = require('./tool_registry');
 Surface.Panel = require('./panel');
 
+Surface.Tools = require('./tools');
+
 module.exports = Surface;
