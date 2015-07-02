@@ -28,6 +28,11 @@ function Schema(name, version) {
    * @private
    */
   this.nodeFactory = new NodeFactory();
+  /**
+   * @property {Array} _tocTypes all Node classes which have `Node.static.tocType = true`
+   * @private
+   */
+  this.tocTypes = [];
 
   // add built-in node classes
   this.addNodes(this.getBuiltIns());
@@ -44,7 +49,11 @@ Schema.Prototype = function() {
   this.addNodes = function(nodes) {
     if (!nodes) return;
     for (var i = 0; i < nodes.length; i++) {
-      this.nodeFactory.register(nodes[i]);
+      var NodeClass = nodes[i];
+      this.nodeFactory.register(NodeClass);
+      if (NodeClass.static.tocType) {
+        this.tocTypes.push(NodeClass.static.name);
+      }
     }
   };
 
@@ -150,6 +159,14 @@ Schema.Prototype = function() {
    */
   this.each = function() {
     this.nodeFactory.each.apply(this.nodeFactory, arguments);
+  };
+
+  /**
+   * @method getTocTypes
+   * @return list of types that should appear in a TOC
+   */
+  this.getTocTypes = function() {
+    return this.tocTypes;
   };
 };
 
