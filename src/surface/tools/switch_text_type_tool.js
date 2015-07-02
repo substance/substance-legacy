@@ -5,10 +5,10 @@ var Tool = require('../tool');
 var TEXT_NODE_TYPES = ["paragraph", "heading"];
 
 var TEXT_TYPES = {
-  "paragraph": {label: "paragraph", data: {type: "paragraph"}},
-  "heading1": {label: "heading1", data: {type: "heading", level: 1}},
-  "heading2": {label: "heading2", data: {type: "heading", level: 2}},
-  "heading3": {label: "heading3", data: {type: "heading", level: 3}}
+  "paragraph": {label: 'Paragraph', data: {type: "paragraph"}},
+  "heading1": {label: 'Heading 1', data: {type: "heading", level: 1}},
+  "heading2": {label: 'Heading 2', data: {type: "heading", level: 2}},
+  "heading3": {label: 'Heading 3', data: {type: "heading", level: 3}}
 };
 
 var TextTool = Tool.extend({
@@ -67,7 +67,11 @@ var TextTool = Tool.extend({
     var textType = TEXT_TYPES[textTypeName];
     var surface = state.surface;
     var editor = surface.getEditor();
-    editor.switchType(state.sel, textType.data);
+    
+    surface.transaction(function(tx, args) {
+      args.data = textType.data;
+      return editor.switchType(tx, args);
+    });
   },
 
   getContext: function(parentNode, path) {
