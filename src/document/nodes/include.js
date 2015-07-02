@@ -25,8 +25,8 @@ Include.static.fromHtml = function($el, converter) {
   var id = converter.defaultId($el, 'include');
   var inc = {
     id: id,
-    nodeId: $el.data('rid'),
-    nodeType: $el.data('rtype'),
+    nodeId: $el.attr('data-rid'),
+    nodeType: $el.attr('data-rtype'),
   };
   return inc;
 };
@@ -36,8 +36,8 @@ Include.static.toHtml = function(inc, converter) {
   var $el = $('<div>')
     .attr('id', id)
     .attr('typeof', inc.type)
-    .data('rtype', inc.nodeType)
-    .data('rid', inc.nodeId);
+    .attr('data-rtype', inc.nodeType)
+    .attr('data-rid', inc.nodeId);
   return $el;
 };
 
