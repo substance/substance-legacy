@@ -16,33 +16,33 @@ NotifyByPathProxy.Prototype = function() {
     var listeners = this.listeners;
     var updated = change.updated;
 
-    function _updated(path) {
+    function _updated(path, op) {
       if (!change.deleted[path[0]]) {
-        updated.set(path, true);
+        updated.add(path, op);
       }
     }
 
     _.each(change.ops, function(op) {
       if ( (op.type === "create" || op.type === "delete") && (op.val.path || op.val.startPath)) {
         if (op.val.path) {
-          _updated(op.val.path);
+          _updated(op.val.path, op);
         } else if (op.val.startPath) {
-          _updated(op.val.startPath);
-          _updated(op.val.endPath);
+          _updated(op.val.startPath, op);
+          _updated(op.val.endPath, op);
         }
       }
       else if (op.type === "set" && (op.path[1] === "path" || op.path[1] === "startPath" || op.path[1] === "endPath")) {
-        _updated(op.val);
-        _updated(op.original);
+        _updated(op.val, op);
+        _updated(op.original, op);
       }
       else if (op.type === "set" && (op.path[1] === "startOffset" || op.path[1] === "endOffset")) {
         var anno = this.doc.get(op.path[0]);
         if (anno) {
           if (anno.path) {
-            _updated(anno.path);
+            _updated(anno.path, op);
           } else {
-            _updated(anno.startPath);
-            _updated(anno.endPath);
+            _updated(anno.startPath, op);
+            _updated(anno.endPath, op);
           }
         }
       }

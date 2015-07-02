@@ -28,7 +28,7 @@ DocumentChange.Prototype = function() {
     var ops = this.ops;
     var created = {};
     var deleted = {};
-    var updated = new PathAdapter();
+    var updated = new PathAdapter.Arrays();
     var i;
     for (i = 0; i < ops.length; i++) {
       var op = ops[i];
@@ -43,7 +43,7 @@ DocumentChange.Prototype = function() {
       }
       if (op.type === "set" || op.type === "update") {
         // The old as well the new one is affected
-        updated.set(op.path, true);
+        updated.add(op.path, op);
       }
     }
     this.created = created;
@@ -54,6 +54,8 @@ DocumentChange.Prototype = function() {
   this.isAffected = function(path) {
     return !!this.updated.get(path);
   };
+
+  this.isUpdated = this.isAffected;
 
   this.invert = function() {
     var ops = [];
@@ -69,6 +71,18 @@ DocumentChange.Prototype = function() {
     this.updated.traverse(function() {
       fn.apply(ctx, arguments);
     });
+  };
+
+  this.getUpdates = function(path) {
+    return this.updated.get(path) || [];
+  };
+
+  this.getCreated = function() {
+    return this.created;
+  };
+
+  this.getDeleted = function() {
+    return this.deleted;
   };
 
 };
