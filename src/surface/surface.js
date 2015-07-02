@@ -609,9 +609,9 @@ Surface.Prototype = function() {
 
       // We need to wait for the UI to update, because in many cases DOM updates to the doc
       // are async (like React.render, React.forceUpdate), so we wait for the next tick
-      setTimeout(function() {
+      // setTimeout(function() {
         self.rerenderDomSelection();
-      });
+      // });
 
       // }
     // }
