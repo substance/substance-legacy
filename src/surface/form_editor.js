@@ -58,12 +58,10 @@ FormEditor.Prototype = function() {
   };
 
   this.paste = function(tx, args) {
-    var data = args.data;
     // TODO: for now only plain text is inserted
     // We could do some stitching however, preserving the annotations
     // received in the document
-    if (data.text) {
-      args.text = data.text;
+    if (args.text) {
       return this.insertText(tx, args);
     }
   };
