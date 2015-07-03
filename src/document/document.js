@@ -322,16 +322,18 @@ Document.Prototype = function() {
     }
     this.isTransacting = false;
     var ops = this.stage.getOperations();
-    var documentChange = new DocumentChange(ops, beforeState, afterState);
-    // apply the change
-    this._apply(documentChange, 'skipStage');
-    // push to undo queue and wipe the redo queue
-    this.done.push(documentChange);
-    this.undone = [];
-    // console.log('Document._saveTransaction took %s ms', (Date.now() - time));
-    // time = Date.now();
-    this._notifyChangeListeners(documentChange, info);
-    // console.log('Notifying change listener took %s ms', (Date.now() - time));
+    if (ops.length > 0) {
+      var documentChange = new DocumentChange(ops, beforeState, afterState);
+      // apply the change
+      this._apply(documentChange, 'skipStage');
+      // push to undo queue and wipe the redo queue
+      this.done.push(documentChange);
+      this.undone = [];
+      // console.log('Document._saveTransaction took %s ms', (Date.now() - time));
+      // time = Date.now();
+      this._notifyChangeListeners(documentChange, info);
+      // console.log('Notifying change listener took %s ms', (Date.now() - time));
+    }
   };
 
   this._cancelTransaction = function() {
