@@ -249,9 +249,14 @@ Clipboard.Prototype = function() {
     if (!surface) return;
     var sel = surface.getSelection();
     setTimeout(function() {
-      surface.setSelection(sel);
-      self.pasteHtml(self.$el.html());
+      surface.selection = sel;
+      var html = self.$el.html();
+      html = ['<html><head></head><body>', html, '</body></html>'].join('');
       self.$el.empty();
+      var htmlDoc = new window.DOMParser().parseFromString(html, "text/html");
+      // if (self.htmlImporter.checkQuality($(htmlDoc))) {
+        return self.pasteHtml(htmlDoc);
+      // }
     }, 0);
   };
 
