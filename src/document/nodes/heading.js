@@ -11,6 +11,8 @@ var Heading = TextNode.extend({
 
 Heading.static.blockType = true;
 
+Heading.static.tocType = true;
+
 Heading.static.matchElement = function($el) {
   return /^h\d$/.exec($el[0].tagName.toLowerCase());
 };
