@@ -32,17 +32,23 @@ ContainerEditor.Prototype = function() {
 
   this.break = function(tx, args) {
     args.containerId = this.containerId;
-    return Transformations.breakNode(tx, args);
+    if (args.selection.isPropertySelection() || args.selection.isContainerSelection()) {
+      return Transformations.breakNode(tx, args);
+    }
   };
 
   this.insertNode = function(tx, args) {
     args.containerId = this.containerId;
-    return Transformations.insertNode(tx, args);
+    if (args.selection.isPropertySelection() || args.selection.isContainerSelection()) {
+      return Transformations.insertNode(tx, args);
+    }
   };
 
   this.switchType = function(tx, args) {
     args.containerId = this.containerId;
-    return Transformations.switchTextType(tx, args);
+    if (args.selection.isPropertySelection()) {
+      return Transformations.switchTextType(tx, args);
+    }
   };
 
   this.selectAll = function(doc) {
@@ -62,7 +68,9 @@ ContainerEditor.Prototype = function() {
 
   this.paste = function(tx, args) {
     args.containerId = this.containerId;
-    return Transformations.paste(tx, args);
+    if (args.selection.isPropertySelection() || args.selection.isContainerSelection()) {
+      return Transformations.paste(tx, args);
+    }
   };
 
 };

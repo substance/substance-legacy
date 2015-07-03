@@ -12,6 +12,9 @@ var insertText = function(tx, args) {
   if (!text) {
     throw new Error('Argument `text` is mandatory for transformation `insertText`.');
   }
+  if (!(selection.isPropertySelection() || selection.isContainerSelection())) {
+    throw new Error('Selection must be property or container selection.')
+  }
   var result;
   if (!selection.isCollapsed()) {
     result = deleteSelection(tx, {

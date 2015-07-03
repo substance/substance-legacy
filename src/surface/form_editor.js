@@ -31,7 +31,9 @@ FormEditor.Prototype = function() {
   };
 
   this.insertText = function(tx, args) {
-    return Transformations.insertText(tx, args);
+    if (args.selection.isPropertySelection() || args.selection.isContainerSelection()) {
+      return Transformations.insertText(tx, args);
+    }
   };
 
   // implements backspace and delete
@@ -63,8 +65,6 @@ FormEditor.Prototype = function() {
     if (data.text) {
       args.text = data.text;
       return this.insertText(tx, args);
-    } else {
-      return args;
     }
   };
 
