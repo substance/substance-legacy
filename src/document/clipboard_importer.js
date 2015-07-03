@@ -51,14 +51,13 @@ ClipboardImporter.Prototype = function() {
     if ($gdocs.length) {
       $body = $($gdocs[0].parentNode);
     }
-    $body.find('*[style]').removeAttr('style');
     return $body;
   };
 
   this.checkQuality = function($rootEl) {
     var $body = $rootEl.find('body');
     // TODO: proper GDocs detection
-    if ($body.children('b > p').length) {
+    if ($body.children('b').children('p').length) {
       return true;
     }
     // Are there any useful block-level elements?
@@ -67,7 +66,7 @@ ClipboardImporter.Prototype = function() {
       return true;
     }
     // if we have paragraphs on a deeper level, it is fishy
-    if ($body.children('* p').length) {
+    if ($body.find('* p').length) {
       return false;
     }
     if ($body.children('a,b,i,strong,italic')) {
@@ -88,7 +87,7 @@ ClipboardImporter.Emphasis = function() {
 OO.inherit(ClipboardImporter.Emphasis, Emphasis);
 
 ClipboardImporter.Emphasis.static.matchElement = function($el) {
-  return $el.is('em,i');
+  return $el.is('em,i') || $el[0].style.fontStyle === "italic";
 };
 
 ClipboardImporter.Emphasis.static.toHtml = function(anno, converter, children) {
@@ -102,7 +101,7 @@ ClipboardImporter.Strong = function() {
 OO.inherit(ClipboardImporter.Strong, Strong);
 
 ClipboardImporter.Strong.static.matchElement = function($el) {
-  return $el.is('strong,b');
+  return $el.is('strong,b') || $el[0].style.fontWeight === "bold";
 };
 
 ClipboardImporter.Strong.static.toHtml = function(anno, converter, children) {
