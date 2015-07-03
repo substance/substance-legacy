@@ -77,6 +77,7 @@ SurfaceManager.Prototype = function() {
     if (this.focussedSurface) {
       state.selection = this.focussedSurface.getSelection();
     }
+    this.focussedSurface = null;
     this.stack.push(state);
   };
 
