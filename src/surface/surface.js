@@ -5,7 +5,6 @@ var OO = require('../basics/oo');
 var Substance = require('../basics');
 var SurfaceSelection = require('./surface_selection');
 var Document = require('../document');
-var Clipboard = require('./clipboard');
 var Selection = Document.Selection;
 
 var __id__ = 0;
@@ -19,7 +18,6 @@ function Surface(surfaceManager, doc, editor, options) {
   this.name = options.name || __id__;
   this.doc = doc;
   this.surfaceManager = surfaceManager;
-  this.clipboard = new Clipboard(this, doc.getClipboardImporter(), doc.getClipboardExporter());
 
   this.selection = Document.nullSelection;
 
@@ -145,8 +143,6 @@ Surface.Prototype = function() {
     //
     this.domObserver.observe(element, this.domObserverConfig);
 
-    this.clipboard.attach(this.element);
-
     this.attached = true;
   };
 
@@ -187,8 +183,6 @@ Surface.Prototype = function() {
     this.element = null;
     this.$element = null;
     this.surfaceSelection = null;
-
-    this.clipboard.detach(this.element);
 
     this.attached = false;
   };

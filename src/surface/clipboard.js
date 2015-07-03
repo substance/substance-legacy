@@ -4,11 +4,14 @@ var _ = require('../basics/helpers');
 var OO = require('../basics/oo');
 
 // context must have a getSurface() method.
-var Clipboard = function(surface, htmlImporter, htmlExporter) {
+var Clipboard = function(surfaceManager, htmlImporter, htmlExporter) {
 
-  this.surface = surface;
+  this.surfaceManager = surfaceManager;
   this.htmlImporter = htmlImporter;
   this.htmlExporter = htmlExporter;
+
+  this._contentDoc = null;
+  this._contentText = "";
 
   this._onKeyDown = _.bind(this.onKeyDown, this);
   this._onCopy = _.bind(this.onCopy, this);
@@ -29,13 +32,14 @@ var Clipboard = function(surface, htmlImporter, htmlExporter) {
 Clipboard.Prototype = function() {
 
   this.getSurface = function() {
-    return this.surface;
+    return this.surfaceManager.getFocussedSurface();
   };
 
   this.attach = function(rootElement) {
-    this.$el = $('#clipboard');
+    this.el = window.document.createElement('div');
+    this.$el = $(this.el);
     this.$el.prop("contentEditable", "true").addClass('clipboard');
-    this.el = this.$el[0];
+    rootElement.appendChild(this.el);
 
     rootElement.addEventListener('keydown', this._onKeyDown, false);
     rootElement.addEventListener('copy', this._onCopy, false);
@@ -50,6 +54,8 @@ Clipboard.Prototype = function() {
   };
 
   this.detach = function(rootElement) {
+    this.$el.remove();
+
     rootElement.removeEventListener('keydown', this._onKeyDown, false);
     rootElement.removeEventListener('copy', this._onCopy, false);
     rootElement.removeEventListener('cut', this._onCut, false);
@@ -64,12 +70,12 @@ Clipboard.Prototype = function() {
   this.onCopy = function(event) {
     console.log("Clipboard.onCopy", arguments);
     this._copySelection();
-    if (event.clipboardData && Clipboard._contentDoc) {
-      var html = this.htmlExporter.convert(Clipboard._contentDoc);
+    if (event.clipboardData && this._contentDoc) {
+      var html = this.htmlExporter.convert(this._contentDoc);
       console.log('Stored HTML in clipboard', html);
-      Clipboard._contentDoc.__id__ = _.uuid();
-      var data = Clipboard._contentDoc.toJSON();
-      data.__id__ = Clipboard._contentDoc.__id__;
+      this._contentDoc.__id__ = _.uuid();
+      var data = this._contentDoc.toJSON();
+      data.__id__ = this._contentDoc.__id__;
       event.clipboardData.setData('application/substance', JSON.stringify(data));
       event.clipboardData.setData('text/plain', $(html).text());
       event.clipboardData.setData('text/html', html);
@@ -156,7 +162,6 @@ Clipboard.Prototype = function() {
 
   // Works on Safari/Chrome/FF
   this.onPaste = function(e) {
-    console.log('####', e.currentTarget);
     var clipboardData = e.clipboardData;
     var surface = this.getSurface();
     if (!surface) return;
@@ -313,20 +318,20 @@ Clipboard.Prototype = function() {
 
   this._copySelection = function() {
     var wSel = window.getSelection();
-    Clipboard._contentText = "";
-    Clipboard._contentDoc = null;
+    this._contentText = "";
+    this._contentDoc = null;
     var surface = this.getSurface();
     var sel = surface.getSelection();
     var editor = surface.getEditor();
     var doc = surface.getDocument();
     if (wSel.rangeCount > 0 && !sel.isCollapsed()) {
       var wRange = wSel.getRangeAt(0);
-      Clipboard._contentText = wRange.toString();
-      Clipboard._contentDoc = editor.copy(doc, sel);
-      console.log("Clipboard._copySelection(): created a copy", Clipboard._contentDoc);
+      this._contentText = wRange.toString();
+      this._contentDoc = editor.copy(doc, sel);
+      console.log("Clipboard._copySelection(): created a copy", this._contentDoc);
     } else {
-      Clipboard._contentDoc = null;
-      Clipboard._contentText = "";
+      this._contentDoc = null;
+      this._contentText = "";
     }
   };
 
