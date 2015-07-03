@@ -69,7 +69,7 @@ ClipboardImporter.Prototype = function() {
     if ($body.find('* p').length) {
       return false;
     }
-    if ($body.children('a,b,i,strong,italic')) {
+    if ($body.children('a,b,i,strong,italic').length) {
       return true;
     }
     // TODO: how does the content for inline data look like?
