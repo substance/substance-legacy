@@ -283,8 +283,10 @@ SurfaceSelection.Prototype = function() {
   };
 
   this.getSelection = function() {
-    var sel = window.getSelection();
-    return this._getSelection(sel.anchorNode, sel.anchorOffset, sel.focusNode, sel.focusOffset, sel.collapsed);
+    var wSel = window.getSelection();
+    var sel = this._getSelection(wSel.anchorNode, wSel.anchorOffset, wSel.focusNode, wSel.focusOffset, wSel.collapsed);
+    // console.log('### selection', sel.toString());
+    return sel;
   };
 
   var _findDomPosition = function(element, offset) {
@@ -349,7 +351,7 @@ SurfaceSelection.Prototype = function() {
   };
 
   this.setSelection = function(sel) {
-    // console.log('##############', sel.toString());
+    // console.log('### renderSelection', sel.toString());
     var wSel = window.getSelection();
     if (sel.isNull() || sel.isTableSelection()) {
       return this.clear();
