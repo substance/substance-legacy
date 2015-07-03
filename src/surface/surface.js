@@ -4,7 +4,7 @@ var _ = require('../basics/helpers');
 var Substance = require('../basics');
 var SurfaceSelection = require('./surface_selection');
 var Document = require('../document');
-var SurfaceManager = require('./surface_manager');
+var Selection = Document.Selection;
 
 var __id__ = 0;
 
@@ -566,7 +566,11 @@ Surface.Prototype = function() {
    * Set the model selection and update the DOM selection accordingly
    */
   this.setSelection = function(sel) {
-    var sel = sel || Selection.nullSelection;
+    if (!sel) {
+      sel = Selection.nullSelection;
+    } else if (_.isObject(sel) && !(sel instanceof Selection)) {
+      sel = this.getDocument().createSelection(sel);
+    }
     if (this._setModelSelection(sel)) {
       if (this.surfaceSelection) {
         // also update the DOM selection
