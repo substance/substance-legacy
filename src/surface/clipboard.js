@@ -233,6 +233,8 @@ Clipboard.Prototype = function() {
   };
 
   this.beforePasteShim = function() {
+    var surface = this.getSurface();
+    if (!surface) return;
     console.log("Paste before...");
     this.$el.focus();
     var range = document.createRange();
