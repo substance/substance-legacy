@@ -431,7 +431,7 @@ Surface.Prototype = function() {
     }
     if (character.length>0) {
       this.transaction(function(tx, args) {
-        this.editor.insertText(tx, { selection: args.selection, text: character });
+        return this.editor.insertText(tx, { selection: args.selection, text: character });
       }, this);
       this.rerenderDomSelection();
       e.preventDefault();
