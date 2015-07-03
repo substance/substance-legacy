@@ -25,7 +25,7 @@ var paste = function(tx, args) {
     var first = pasteDoc.get(nodes[0]);
     // copy of a property selection creates a doc containing
     // one default text node with id 'text'
-    if (nodes.length === 1 && first.id === "text") {
+    if (nodes.length === 1 && first.isInstanceOf("text")) {
       return _pasteAnnotatedText(tx, args);
     } else {
       return _pasteDocument(tx, args);

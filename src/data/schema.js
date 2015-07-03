@@ -168,6 +168,11 @@ Schema.Prototype = function() {
   this.getTocTypes = function() {
     return this.tocTypes;
   };
+
+  this.getDefaultTextType = function() {
+    throw new Error('Schmema.prototype.getDefaultTextType() must be overridden.');
+  };
+
 };
 
 OO.initClass(Schema);

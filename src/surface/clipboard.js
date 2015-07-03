@@ -1,6 +1,7 @@
 "use strict";
 
-var Substance = require('../basics');
+var _ = require('../basics/helpers');
+var OO = require('../basics/oo');
 
 // context must have a getSurface() method.
 var Clipboard = function(surfaceManager, htmlImporter, htmlExporter) {
@@ -12,18 +13,18 @@ var Clipboard = function(surfaceManager, htmlImporter, htmlExporter) {
   this._contentDoc = null;
   this._contentText = "";
 
-  this._onKeyDown = Substance.bind(this.onKeyDown, this);
-  this._onCopy = Substance.bind(this.onCopy, this);
-  this._onCut = Substance.bind(this.onCut, this);
+  this._onKeyDown = _.bind(this.onKeyDown, this);
+  this._onCopy = _.bind(this.onCopy, this);
+  this._onCut = _.bind(this.onCut, this);
 
   this.isIe = (window.navigator.userAgent.toLowerCase().indexOf("msie") != -1 || window.navigator.userAgent.toLowerCase().indexOf("trident") != -1);
   this.isFF = window.navigator.userAgent.toLowerCase().indexOf('firefox') > -1;
 
   if (this.isIe) {
-    this._beforePasteShim = Substance.bind(this.beforePasteShim, this);
-    this._pasteShim = Substance.bind(this.pasteShim, this);
+    this._beforePasteShim = _.bind(this.beforePasteShim, this);
+    this._pasteShim = _.bind(this.pasteShim, this);
   } else {
-    this._onPaste = Substance.bind(this.onPaste, this);
+    this._onPaste = _.bind(this.onPaste, this);
   }
 
 };
@@ -72,7 +73,7 @@ Clipboard.Prototype = function() {
     if (event.clipboardData && this._contentDoc) {
       var html = this.htmlExporter.convert(this._contentDoc);
       console.log('Stored HTML in clipboard', html);
-      this._contentDoc.__id__ = Substance.uuid();
+      this._contentDoc.__id__ = _.uuid();
       var data = this._contentDoc.toJSON();
       data.__id__ = this._contentDoc.__id__;
       event.clipboardData.setData('application/substance', JSON.stringify(data));
@@ -99,7 +100,6 @@ Clipboard.Prototype = function() {
     var surface = this.getSurface();
     if (!surface) return;
     var editor = surface.getEditor();
-    var logger = surface.getLogger();
     var doc = surface.getDocument();
     // try {
       var content = doc.newInstance();
@@ -132,7 +132,7 @@ Clipboard.Prototype = function() {
     // }
   };
 
-  this.pasteHtml = function(html) {
+  this.pasteHtml = function(htmlDoc) {
     var surface = this.getSurface();
     if (!surface) return;
     var editor = surface.getEditor();
@@ -148,7 +148,6 @@ Clipboard.Prototype = function() {
           nodes: []
         });
       }
-      var htmlDoc = new window.DOMParser().parseFromString(html, "text/html");
       this.htmlImporter.convert($(htmlDoc), content);
       surface.transaction(function(tx, args) {
         args.text = htmlDoc.body.textContent;
@@ -176,7 +175,6 @@ Clipboard.Prototype = function() {
     // HACK: FF does not provide HTML coming in from other applications
     // so fall back to the paste shim
     if (this.isFF && !types['application/substance'] && !types['text/html']) {
-      var sel = editor.selection;
       this.beforePasteShim();
       surface.rerenderSelection();
       this.pasteShim();
@@ -186,21 +184,51 @@ Clipboard.Prototype = function() {
     e.preventDefault();
     e.stopPropagation();
     console.log('Available types', types);
+
+    // use internal data if available
     if (types['application/substance']) {
-      this.pasteSubstanceData(clipboardData.getData('application/substance'));
-    } else if (types['text/html']) {
-      this.pasteHtml(clipboardData.getData('text/html'));
-    } else {
-      try {
-        var plainText = clipboardData.getData('text/plain');
-        surface.transaction(function(tx, args) {
-          args.text = plainText;
-          return editor.insertText(tx, args);
-        });
-      } catch (error) {
-        console.error(error);
-        logger.error(error);
+      return this.pasteSubstanceData(clipboardData.getData('application/substance'));
+    }
+
+    // if we have content given as HTML we let the importer assess the quality first
+    // and fallback to plain text import if it's bad
+    if (types['text/html']) {
+      var html = clipboardData.getData('text/html');
+      var htmlDoc = new window.DOMParser().parseFromString(html, "text/html");
+      if (this.htmlImporter.checkQuality($(htmlDoc))) {
+        return this.pasteHtml(htmlDoc);
       }
+    }
+    // Fallback to plain-text in other cases
+    var plainText = clipboardData.getData('text/plain');
+    if (surface.getEditor().isContainerEditor()) {
+      var doc = surface.getDocument();
+      var defaultTextType = doc.getSchema().getDefaultTextType();
+      surface.transaction(function(tx, args) {
+        var paraText = plainText.split(/\s*\n\s*\n/);
+        var pasteDoc = doc.newInstance();
+        pasteDoc._setForClipboard(true);
+        var container = pasteDoc.create({
+          type: 'container',
+          id: 'content',
+          nodes: []
+        });
+        for (var i = 0; i < paraText.length; i++) {
+          var paragraph = pasteDoc.create({
+            id: _.uuid(defaultTextType),
+            type: defaultTextType,
+            content: paraText[i]
+          });
+          container.show(paragraph.id);
+        }
+        args.doc = pasteDoc;
+        return editor.paste(tx, args);
+      });
+    } else {
+      surface.transaction(function(tx, args) {
+        args.text = plainText.split('').join('');
+        return editor.insertText(tx, args);
+      });
     }
   };
 
@@ -215,12 +243,8 @@ Clipboard.Prototype = function() {
   };
 
   this.pasteShim = function() {
-    // var clipboardData = window.clipboardData;
-    // var clipboardText = clipboardData.getData('Text');
     this.$el.empty();
     var self = this;
-    // FIXME: it seems that we had the problem of loosing the selection
-    // is it really necessary anymore?
     var surface = this.getSurface();
     if (!surface) return;
     var sel = surface.getSelection();
@@ -313,6 +337,6 @@ Clipboard.Prototype = function() {
 
 };
 
-Substance.initClass(Clipboard);
+OO.initClass(Clipboard);
 
 module.exports = Clipboard;

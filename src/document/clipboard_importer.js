@@ -54,6 +54,29 @@ ClipboardImporter.Prototype = function() {
     $body.find('*[style]').removeAttr('style');
     return $body;
   };
+
+  this.checkQuality = function($rootEl) {
+    var $body = $rootEl.find('body');
+    // TODO: proper GDocs detection
+    if ($body.children('b > p').length) {
+      return true;
+    }
+    // Are there any useful block-level elements?
+    // For example this works if you copy'n'paste a set of paragraphs from a wikipedia page
+    if ($body.children('p').length) {
+      return true;
+    }
+    // if we have paragraphs on a deeper level, it is fishy
+    if ($body.children('* p').length) {
+      return false;
+    }
+    if ($body.children('a,b,i,strong,italic')) {
+      return true;
+    }
+    // TODO: how does the content for inline data look like?
+    return false;
+  };
+
 };
 
 OO.inherit(ClipboardImporter, HtmlImporter);

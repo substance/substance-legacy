@@ -5,6 +5,7 @@ var inBrowser = (typeof window !== 'undefined');
 
 function HtmlImporter( config ) {
   this.config = config || {};
+  this.nodeTypesByName = {};
   this.nodeTypes = [];
   this.blockTypes = [];
   this.inlineTypes = [];
@@ -25,6 +26,7 @@ HtmlImporter.Prototype = function HtmlImporterPrototype() {
       return;
     }
     this.nodeTypes.push(NodeClass);
+    this.nodeTypesByName[NodeClass.static.name] = NodeClass;
     if (NodeClass.static.blockType) {
       this.blockTypes.push(NodeClass);
     } else if (NodeClass.static.isInline){
@@ -35,6 +37,16 @@ HtmlImporter.Prototype = function HtmlImporterPrototype() {
   this.defaultConverter = function($el, converter) {
     /* jshint unused:false */
     console.warn('This element is not handled by the converters you provided. This is the default implementation which just skips conversion. Override HtmlImporter.defaultConverter(el, converter) to change this behavior.', this.$toStr($el));
+    var defaultTextType = this.state.doc.getSchema().getDefaultTextType();
+    var DefaultBlockTextClass = this.nodeTypesByName[defaultTextType];
+    if (!DefaultBlockTextClass) {
+      throw new Error('Could not class for default text type', defaultTextType);
+    }
+    var node = DefaultBlockTextClass.static.fromHtml($el, converter);
+    if (node) {
+      node.type = defaultTextType;
+    }
+    return node;
   };
 
   this.initialize = function(doc, $root) {
@@ -100,12 +112,13 @@ HtmlImporter.Prototype = function HtmlImporterPrototype() {
           childIterator.back();
           this.wrapInlineElementsIntoBlockElement(childIterator);
         } else if (this.isElementNode(el)) {
+          var inlineType = this._getInlineTypeForElement($el);
           // NOTE: hard to tell if unsupported nodes on this level
           // should be treated as inline or not.
           // ATM we only support spans as entry to the catch-all implementation
           // that collects inline elements and wraps into a paragraph.
           // TODO: maybe this should be the default?
-          if (this.getTagName(el) === "span") {
+          if (inlineType || this.getTagName(el) === "span") {
             childIterator.back();
             this.wrapInlineElementsIntoBlockElement(childIterator);
           } else {
@@ -200,7 +213,7 @@ HtmlImporter.Prototype = function HtmlImporterPrototype() {
     var node = this.defaultConverter($wrapper, this);
     if (node) {
       if (!node.type) {
-        throw new Error('Contract: Html.defaultConverter() must return a node with type.', this.$toStr($el));
+        throw new Error('Contract: Html.defaultConverter() must return a node with type.');
       }
       node.id = node.id || this.nextId(node.type);
       doc.create(node);
@@ -288,6 +301,9 @@ HtmlImporter.Prototype = function HtmlImporterPrototype() {
 
   this.defaultId = function($el, type) {
     var id = $el.attr('id') || this.nextId(type);
+    while (this.state.doc.get(id)) {
+      id = this.nextId(type)
+    }
     // TODO: check for collisions
     return id;
   };
