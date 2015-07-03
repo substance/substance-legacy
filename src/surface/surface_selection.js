@@ -228,7 +228,7 @@ SurfaceSelection.Prototype = function() {
 
   this._getSelection = function(anchorNode, anchorOffset, focusNode, focusOffset, collapsed) {
     this._pullState(anchorNode, anchorOffset, focusNode, focusOffset, collapsed);
-    console.log('#### selection state', this.state);
+    // console.log('#### selection state', this.state);
     if (!this.state) {
       return Document.nullSelection;
     }
@@ -349,7 +349,7 @@ SurfaceSelection.Prototype = function() {
   };
 
   this.setSelection = function(sel) {
-    console.log('##############', sel.toString());
+    // console.log('##############', sel.toString());
     var wSel = window.getSelection();
     if (sel.isNull() || sel.isTableSelection()) {
       return this.clear();
