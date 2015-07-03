@@ -1,6 +1,7 @@
 'use strict';
 
 var _ = require('../basics/helpers');
+var OO = require('../basics/oo');
 var Substance = require('../basics');
 var SurfaceSelection = require('./surface_selection');
 var Document = require('../document');
@@ -36,16 +37,16 @@ function Surface(surfaceManager, doc, editor, options) {
 
   this.dragging = false;
 
-  this._onMouseUp = Substance.bind( this.onMouseUp, this );
-  this._onMouseDown = Substance.bind( this.onMouseDown, this );
-  this._onMouseMove = Substance.bind( this.onMouseMove, this );
+  this._onMouseUp = _.bind( this.onMouseUp, this );
+  this._onMouseDown = _.bind( this.onMouseDown, this );
+  this._onMouseMove = _.bind( this.onMouseMove, this );
 
-  this._onKeyDown = Substance.bind(this.onKeyDown, this);
-  this._onTextInput = Substance.bind(this.onTextInput, this);
-  this._onTextInputShim = Substance.bind( this.onTextInputShim, this );
-  this._onCompositionStart = Substance.bind( this.onCompositionStart, this );
+  this._onKeyDown = _.bind(this.onKeyDown, this);
+  this._onTextInput = _.bind(this.onTextInput, this);
+  this._onTextInputShim = _.bind( this.onTextInputShim, this );
+  this._onCompositionStart = _.bind( this.onCompositionStart, this );
 
-  this._onDomMutations = Substance.bind(this.onDomMutations, this);
+  this._onDomMutations = _.bind(this.onDomMutations, this);
   this.domObserver = new window.MutationObserver(this._onDomMutations);
   this.domObserverConfig = { subtree: true, characterData: true };
   this.skipNextObservation = false;
@@ -658,7 +659,7 @@ Surface.Prototype = function() {
 
 };
 
-Substance.inherit( Surface, Substance.EventEmitter );
+OO.inherit( Surface, Substance.EventEmitter );
 
 Surface.Keys =  {
   UNDEFINED: 0,
