@@ -354,6 +354,7 @@ Document.Prototype = function() {
     _.each(documentChange.ops, function(op) {
       this.data.apply(op);
       this._updateContainers(op);
+      this.emit('operation:applied', op);
     }, this);
   };
 
