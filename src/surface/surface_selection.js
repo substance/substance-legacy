@@ -49,7 +49,7 @@ SurfaceSelection.Prototype = function() {
   // 1. extract coordinates
   // 2. fixup coordinates
   // 3. create a model selection
-  this._pullState = function(anchorNode, anchorOffset, focusNode, focusOffset, isCollapsed, options) {
+  this._pullState = function(anchorNode, anchorOffset, focusNode, focusOffset, collapsed, options) {
     options = options || {};
     if (!focusNode || !anchorNode) {
       this.state = null;
@@ -57,7 +57,7 @@ SurfaceSelection.Prototype = function() {
     }
     // console.log('###', anchorNode, anchorOffset, focusNode, focusOffset);
     var start, end;
-    if (isCollapsed) {
+    if (collapsed) {
       start = this.getModelCoordinate(anchorNode, anchorOffset, options);
       end = start;
     } else {
@@ -66,18 +66,18 @@ SurfaceSelection.Prototype = function() {
     }
     // the selection is reversed when the focus propertyEl is before
     // the anchor el or the computed charPos is in reverse order
-    var isBackward = false;
-    if (!isCollapsed && focusNode && anchorNode) {
+    var reverse = false;
+    if (!collapsed && focusNode && anchorNode) {
       var cmp = compareNodes(end.el, start.el);
-      isBackward = ( cmp < 0 || (cmp === 0 && end.offset < start.offset) );
+      reverse = ( cmp < 0 || (cmp === 0 && end.offset < start.offset) );
     }
-    if (isBackward) {
+    if (reverse) {
       var tmp = end;
       end = start;
       start = tmp;
     }
-    // console.log('### extracted coors:', start, end);
-    this.state = new SurfaceSelection.State(isCollapsed, isBackward, start, end);
+    // console.log('### extracted selection:', start, end, reverse);
+    this.state = new SurfaceSelection.State(collapsed, reverse, start, end);
   };
 
   this.getModelCoordinate = function(node, offset, options) {
@@ -228,13 +228,13 @@ SurfaceSelection.Prototype = function() {
 
   this._getSelection = function(anchorNode, anchorOffset, focusNode, focusOffset, collapsed) {
     this._pullState(anchorNode, anchorOffset, focusNode, focusOffset, collapsed);
+    console.log('#### selection state', this.state);
     if (!this.state) {
       return Document.nullSelection;
     }
     var doc = this.doc;
     var start = this.state.start;
     var end = this.state.end;
-    // var reverse = this.state.reverse;
     var node1, node2, parent1, parent2, row1, col1, row2, col2;
     var range = new Range(
       new Coordinate(start.path, start.offset),
@@ -284,7 +284,7 @@ SurfaceSelection.Prototype = function() {
 
   this.getSelection = function() {
     var sel = window.getSelection();
-    return this._getSelection(sel.anchorNode, sel.anchorOffset, sel.focusNode, sel.focusOffset, sel.isCollapsed);
+    return this._getSelection(sel.anchorNode, sel.anchorOffset, sel.focusNode, sel.focusOffset, sel.collapsed);
   };
 
   var _findDomPosition = function(element, offset) {
@@ -349,6 +349,7 @@ SurfaceSelection.Prototype = function() {
   };
 
   this.setSelection = function(sel) {
+    console.log('##############', sel.toString());
     var wSel = window.getSelection();
     if (sel.isNull() || sel.isTableSelection()) {
       return this.clear();
@@ -370,9 +371,15 @@ SurfaceSelection.Prototype = function() {
     // if there is a range then set replace the window selection accordingly
     wSel.removeAllRanges();
     range = window.document.createRange();
-    range.setStart(startPosition.node, startPosition.offset);
-    range.setEnd(endPosition.node, endPosition.offset);
-    wSel.addRange(range);
+    if (sel.isReverse()) {
+      range.setStart(endPosition.node, endPosition.offset);
+      wSel.addRange(range);
+      wSel.extend(startPosition.node, startPosition.offset);
+    } else {
+      range.setStart(startPosition.node, startPosition.offset);
+      range.setEnd(endPosition.node, endPosition.offset);
+      wSel.addRange(range);
+    }
     this.state = new SurfaceSelection.State(sel.isCollapsed(), sel.isReverse(), range.start, range.end);
   };
 
@@ -387,8 +394,8 @@ SurfaceSelection.Prototype = function() {
 OO.initClass(SurfaceSelection);
 
 SurfaceSelection.State = function(collapsed, reverse, start, end) {
-  this.isCollapsed = collapsed;
-  this.isReverse = reverse;
+  this.collapsed = collapsed;
+  this.reverse = reverse;
   this.start = start;
   this.end = end;
   Object.freeze(this);

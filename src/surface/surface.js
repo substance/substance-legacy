@@ -523,7 +523,7 @@ Surface.Prototype = function() {
     var self = this;
     if (self.surfaceSelection) {
       var sel = self.surfaceSelection.getSelection();
-      self._setModelSelection(sel);
+      self.setSelection(sel);
     }
   };
 
@@ -572,10 +572,7 @@ Surface.Prototype = function() {
       sel = this.getDocument().createSelection(sel);
     }
     if (this._setModelSelection(sel)) {
-      if (this.surfaceSelection) {
-        // also update the DOM selection
-        this.surfaceSelection.setSelection(sel);
-      }
+      this.rerenderDomSelection();
     }
   };
 
@@ -583,7 +580,11 @@ Surface.Prototype = function() {
     // Note: as rerendering the selection is done delayed
     // it can happen that the surface has been detached in the meantime.
     if (this.surfaceSelection) {
-      this.surfaceSelection.setSelection(this.getSelection());
+      var surfaceSelection = this.surfaceSelection;
+      var sel = this.getSelection();
+      setTimeout(function() {
+        surfaceSelection.setSelection(sel);
+      });
     }
   };
 
@@ -602,23 +603,9 @@ Surface.Prototype = function() {
    */
   this._setModelSelection = function(sel) {
     sel = sel || Substance.Document.nullSelection;
-    // if (!this.getSelection().equals(sel)) {
-      // console.log('Surface.setSelection: %s', sel.toString());
-      this.selection = sel;
-      this.emit('selection:changed', sel, this);
-      var self = this;
-      // FIXME: ATM rerendering an expanded selection leads
-      // to a strante behavior. So do not do that for now
-      // if (sel.isCollapsed()) {
-
-      // We need to wait for the UI to update, because in many cases DOM updates to the doc
-      // are async (like React.render, React.forceUpdate), so we wait for the next tick
-      // setTimeout(function() {
-        self.rerenderDomSelection();
-      // });
-
-      // }
-    // }
+    this.selection = sel;
+    this.emit('selection:changed', sel, this);
+    return true;
   };
 
   this.getLogger = function() {
