@@ -519,12 +519,14 @@ Surface.Prototype = function() {
     // ... and unbind the temporary handler
     this.dragging = false;
     this.setFocused(true);
-    // HACK: somehow the DOM selection is not ready yet
+    // HACK: somehow the DOM selection is sometimes not there
     var self = this;
-    if (self.surfaceSelection) {
-      var sel = self.surfaceSelection.getSelection();
-      self.setSelection(sel);
-    }
+    setTimeout(function() {
+      if (self.surfaceSelection) {
+        var sel = self.surfaceSelection.getSelection();
+        self.setSelection(sel);
+      }
+    });
   };
 
   this.setFocused = function(val) {
