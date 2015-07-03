@@ -15,7 +15,7 @@ var Table = Node.extend({
 
   getSections: function() {
     var doc = this.getDocument();
-    return Substance.map(this.sections, function(id) {
+    return _.map(this.sections, function(id) {
       return doc.get(id);
     }, this);
   },

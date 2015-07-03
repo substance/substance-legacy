@@ -10,7 +10,7 @@ var TableSection = Node.extend({
   },
   getRows: function() {
     var doc = this.getDocument();
-    return Substance.map(this.rows, function(id) {
+    return _.map(this.rows, function(id) {
       return doc.get(id);
     }, this);
   },
