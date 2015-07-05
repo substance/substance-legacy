@@ -10,7 +10,6 @@ var Include = DocumentNode.extend({
   getIncludedNode: function() {
     return this.getDocument().get(this.nodeId);
   },
-
 });
 
 Include.static.components = ['nodeId'];
@@ -18,7 +17,7 @@ Include.static.components = ['nodeId'];
 Include.static.blockType = true;
 
 Include.static.matchElement = function($el) {
-  return $el.attr('typeof') === 'include';
+  return $el.is('include');
 };
 
 Include.static.fromHtml = function($el, converter) {
@@ -33,9 +32,8 @@ Include.static.fromHtml = function($el, converter) {
 
 Include.static.toHtml = function(inc, converter) {
   var id = inc.id;
-  var $el = $('<div>')
+  var $el = $('<include>')
     .attr('id', id)
-    .attr('typeof', inc.type)
     .attr('data-rtype', inc.nodeType)
     .attr('data-rid', inc.nodeId);
   return $el;
