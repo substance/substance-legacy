@@ -123,6 +123,22 @@ HtmlExporter.Prototype = function() {
       return $root;
     }
   };
+
+  this.createXmlDocument = function() {
+    // We provide xmlns="http://www.w3.org/1999/xhtml" so we don't get the whole doc
+    // polluted with xmlns attributes
+    // See: http://stackoverflow.com/questions/8084175/how-do-i-prevent-jquery-from-inserting-the-xmlns-attribute-in-an-xml-object
+    var EMPTY_DOC = '<article xmlns="http://www.w3.org/1999/xhtml"></article>';
+    if (inBrowser) {
+      var parser = new window.DOMParser();
+      var doc = parser.parseFromString(EMPTY_DOC, "text/xml");
+      return $(doc);
+    } else {
+      // creating document using cheerio
+      var $root = $.load(EMPTY_DOC).root();
+      return $root;
+    }
+  };
 };
 
 Substance.initClass(HtmlExporter);
