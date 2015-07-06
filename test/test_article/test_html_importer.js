@@ -42,7 +42,7 @@ TestHtmlImporter.Prototype = function() {
     // TODO: should we do some QA here?
     var meta = doc.get('meta');
     if (!meta) {
-      console.error('TAHI HTML: article should have `body/header/[typeof=meta]`.');
+      console.error('Article should have `body/header/[typeof=meta]`.');
     }
   };
 
