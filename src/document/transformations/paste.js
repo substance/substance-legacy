@@ -20,7 +20,7 @@ var paste = function(tx, args) {
     var out = deleteSelection(tx, args);
     args.selection = out.selection;
   }
-  var nodes = pasteDoc.get('content').nodes;
+  var nodes = pasteDoc.get('clipboard_content').nodes;
   if (nodes.length > 0) {
     var first = pasteDoc.get(nodes[0]);
     // copy of a property selection creates a doc containing
@@ -38,7 +38,7 @@ var _pasteAnnotatedText = function(tx, args) {
   var copy = args.doc;
   var selection = args.selection;
 
-  var nodes = copy.get('content').nodes;
+  var nodes = copy.get('clipboard_content').nodes;
   var textPath = [nodes[0], 'content'];
   var text = copy.get(textPath);
   var annotations = copy.getIndex('annotations').get(textPath);
@@ -93,7 +93,7 @@ var _pasteDocument = function(tx, args) {
   }
   // transfer nodes from content document
   // TODO: transfer annotations
-  var nodeIds = pasteDoc.get('content').nodes;
+  var nodeIds = pasteDoc.get('clipboard_content').nodes;
   var annoIndex = pasteDoc.getIndex('annotations');
   var insertedNodes = [];
   for (var i = 0; i < nodeIds.length; i++) {

@@ -106,14 +106,14 @@ Clipboard.Prototype = function() {
       content._setForClipboard(true);
       content.loadSeed(JSON.parse(data));
       var plainText = "";
-      var pasteContent = content.get('content');
+      var pasteContent = content.get('clipboard_content');
       if (pasteContent.nodes.length > 0) {
         var first = pasteContent.getFirstComponent();
         var last = pasteContent.getLastComponent();
         var lastLength = content.get(last.path).length;
         var sel = doc.createSelection({
           type: 'container',
-          containerId: 'content',
+          containerId: 'clipboard_content',
           startPath: first.path,
           startOffset: 0,
           endPath: last.path,
@@ -141,9 +141,10 @@ Clipboard.Prototype = function() {
     try {
       var content = doc.newInstance();
       content._setForClipboard(true);
-      if (!content.get('content')) {
+      
+      if (!content.get('clipboard_content')) {
         content.create({
-          id: 'content',
+          id: 'clipboard_content',
           type: 'container',
           nodes: []
         });
@@ -210,7 +211,7 @@ Clipboard.Prototype = function() {
         pasteDoc._setForClipboard(true);
         var container = pasteDoc.create({
           type: 'container',
-          id: 'content',
+          id: 'clipboard_content',
           nodes: []
         });
         for (var i = 0; i < paraText.length; i++) {

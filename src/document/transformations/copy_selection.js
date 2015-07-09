@@ -31,7 +31,7 @@ var _copyPropertySelection = function(doc, selection) {
   var text = doc.get(path);
   var containerNode = copy.create({
     type: 'container',
-    id: 'content',
+    id: 'clipboard_content',
     nodes: []
   });
   copy.create({
@@ -60,7 +60,7 @@ var _copyContainerSelection = function(doc, selection) {
   var endComp = container.getComponent(selection.end.path);
   var containerNode = copy.create({
     type: 'container',
-    id: 'content',
+    id: 'clipboard_content',
     nodes: []
   });
   // 1. Copy nodes and annotations.
