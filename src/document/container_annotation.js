@@ -58,7 +58,14 @@ var ContainerAnnotation = Node.extend({
       console.warn('Trying to use a ContainerAnnotation which is not attached to the document.');
       return Selection.nullSelection();
     }
-    return doc.createSelection(this.toJSON());
+    return doc.createSelection({
+      type: "container",
+      containerId: this.container,
+      startPath: this.startPath,
+      startOffset: this.startOffset,
+      endPath: this.endPath,
+      endOffset: this.endOffset
+    });
   },
 
   getText: function() {
