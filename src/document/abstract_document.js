@@ -249,7 +249,7 @@ AbstractDocument.Prototype = function() {
     if (this.AUTO_ATTACH) {
       // create the node from schema
       node.attach(this);
-    }
+    } 
   };
 
   this._didDeleteNode = function(node) {

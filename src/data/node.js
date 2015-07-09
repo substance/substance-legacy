@@ -60,17 +60,17 @@ Node.Prototype = function() {
   /**
    * Get a the list of all polymorphic types.
    *
-   * @method getClassNames
+   * @method getTypeNames
    * @return An array of type names.
    */
-  this.getClassNames = function() {
-    var classNames = [];
+  this.getTypeNames = function() {
+    var typeNames = [];
     var staticData = this.constructor.static;
     while (staticData && staticData.name !== "node") {
-      classNames.push(staticData.name);
+      typeNames.push(staticData.name);
       staticData = Object.getPrototypeOf(staticData);
     }
-    return classNames.join(' ');
+    return typeNames;
   };
 
   /**

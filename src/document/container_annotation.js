@@ -97,22 +97,46 @@ var ContainerAnnotation = Node.extend({
 
 });
 
-ContainerAnnotation.Anchor = function(node, isStart) {
-  this.node = node;
-  this.id = node.id;
-  this.container = node.container;
+ContainerAnnotation.Anchor = function(anno, isStart) {
+  this.type = "container-annotation-anchor";
+  this.anno = anno;
+  // TODO: remove this.node in favor of this.anno
+  this.node = anno;
+  this.id = anno.id;
+  this.container = anno.container;
   this.isStart = !!isStart;
   Object.freeze(this);
 };
 
 ContainerAnnotation.Anchor.Prototype = function() {
   this.zeroWidth = true;
-  this.getClassNames = function() {
-    return (this.node.getClassNames()+" anchor "+(this.isStart?"start-anchor":"end-anchor"));
+
+  this.getTypeNames = function() {
+    return [this.type];
   };
 };
 
 Substance.initClass(ContainerAnnotation.Anchor);
+
+ContainerAnnotation.Fragment = function(anno, path, startOffset, endOffset) {
+  this.type = "container_annotation_fragment";
+  this.anno = anno;
+  // HACK: id is necessary for Annotator
+  this.id = anno.id;
+  this.path = path;
+  this.startOffset = startOffset;
+  this.endOffset = endOffset;
+};
+
+ContainerAnnotation.Fragment.Prototype = function() {
+  this.getTypeNames = function() {
+    return [this.type];
+  };
+};
+
+Substance.initClass(ContainerAnnotation.Fragment);
+
+ContainerAnnotation.Fragment.static.level = Number.MAX_VALUE;
 
 Object.defineProperties(ContainerAnnotation.Anchor.prototype, {
   path: {

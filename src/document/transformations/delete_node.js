@@ -21,7 +21,7 @@ function deleteNode(tx, args) {
   }
   // We need to transfer anchors of ContainerAnnotations
   // to previous or next node
-  var anchors = tx.getIndex('container-annotations').get(nodeId);
+  var anchors = tx.getIndex('container-annotation-anchors').get(nodeId);
   for (i = 0; i < anchors.length; i++) {
     var anchor = anchors[i];
     var container = tx.get(anchor.container);

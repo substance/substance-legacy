@@ -4,6 +4,7 @@ var _ = require('../basics/helpers');
 var OO = require('../basics/oo');
 var PathAdapter = require('../basics/path_adapter');
 var Node = require('./node');
+var ContainerAnnotation = require('./container_annotation');
 
 // Container
 // --------
@@ -119,12 +120,7 @@ Container.Prototype = function() {
     var endAnchor = anno.getEndAnchor();
     // if start and end anchors are on the same property, then there is only one fragment
     if (_.isEqual(startAnchor.path, endAnchor.path)) {
-      fragments.push({
-        id: anno.id,
-        path: startAnchor.path,
-        startOffset: startAnchor.offset,
-        endOffset: endAnchor.offset,
-      });
+      fragments.push(new ContainerAnnotation.Fragment(anno, startAnchor.path, startAnchor.offset, endAnchor.offset));
     }
     // otherwise create a trailing fragment for the property of the start anchor,
     // full-spanning fragments for inner properties,
@@ -136,28 +132,13 @@ Container.Prototype = function() {
       if (!startComp || !endComp) {
         throw new Error('Could not find components of AbstractContainerAnnotation');
       }
-      fragments.push({
-        path: startAnchor.path,
-        id: anno.id,
-        startOffset: startAnchor.offset,
-        endOffset: text.length,
-      });
+      fragments.push(new ContainerAnnotation.Fragment(anno, startAnchor.path, startAnchor.offset, text.length));
       for (var idx = startComp.idx + 1; idx < endComp.idx; idx++) {
         var comp = this.getComponentAt(idx);
         text = doc.get(comp.path);
-        fragments.push({
-          path: comp.path,
-          id: anno.id,
-          startOffset: 0,
-          endOffset: text.length,
-        });
+        fragments.push(new ContainerAnnotation.Fragment(anno, comp.path, 0, text.length));
       }
-      fragments.push({
-        path: endAnchor.path,
-        id: anno.id,
-        startOffset: 0,
-        endOffset: endAnchor.offset,
-      });
+      fragments.push(new ContainerAnnotation.Fragment(anno, endAnchor.path, 0, endAnchor.offset));
     }
     return fragments;
   };

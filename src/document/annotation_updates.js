@@ -34,7 +34,7 @@ var insertedText = function(doc, coordinate, length) {
     }
   });
   // same for container annotation anchors
-  index = doc.getIndex('container-annotations');
+  index = doc.getIndex('container-annotation-anchors');
   var anchors = index.get(coordinate.path);
   _.each(anchors, function(anchor) {
     var pos = coordinate.offset;
@@ -90,7 +90,7 @@ var deletedText = function(doc, path, startOffset, endOffset) {
     }
   });
   // same for container annotation anchors
-  index = doc.getIndex('container-annotations');
+  index = doc.getIndex('container-annotation-anchors');
   var anchors = index.get(path);
   var containerAnnoIds = [];
   _.each(anchors, function(anchor) {
@@ -176,7 +176,7 @@ var transferAnnotations = function(doc, path, offset, newPath, newOffset) {
     }
   });
   // same for container annotation anchors
-  index = doc.getIndex('container-annotations');
+  index = doc.getIndex('container-annotation-anchors');
   var anchors = index.get(path);
   var containerAnnoIds = [];
   _.each(anchors, function(anchor) {

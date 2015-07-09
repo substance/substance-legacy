@@ -6,6 +6,7 @@ var Data = require('../data');
 var AbstractDocument = require('./abstract_document');
 
 var AnnotationIndex = require('./annotation_index');
+var AnchorIndex = require('./anchor_index');
 var ContainerAnnotationIndex = require('./container_annotation_index');
 
 var TransactionDocument = require('./transaction_document');
@@ -29,7 +30,12 @@ function Document(schema) {
   this.annotationIndex = this.addIndex('annotations', new AnnotationIndex());
 
   // special index for (contaoiner-scoped) annotations
-  this.containerAnnotationIndex = this.addIndex('container-annotations', new ContainerAnnotationIndex());
+  this.anchorIndex = this.addIndex('container-annotation-anchors', new AnchorIndex());
+
+  // HACK: ATM we can't register this as Data.Index, as it depends on Containers to be up2date,
+  // but containers are updated after indexes.
+  // This must not be used from within transactions.
+  this.containerAnnotationIndex = new ContainerAnnotationIndex(this);
 
   this.done = [];
   this.undone = [];
@@ -76,6 +82,7 @@ Document.Prototype = function() {
   this.documentDidLoad = function() {
       // HACK: need to reset the stage
     this.stage.reset();
+    this.containerAnnotationIndex.reset();
     this.done = [];
   };
 
@@ -280,7 +287,7 @@ Document.Prototype = function() {
     if (options.type) {
       annotations = this.getIndex('type').get(options.type);
     } else {
-      annotations = this.getIndex('container-annotations').byId;
+      annotations = this.getIndex('container-annotation-anchors').byId;
     }
     annotations = _.filter(annotations, function(anno) {
       var annoSel = anno.getSelection();
