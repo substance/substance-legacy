@@ -21,11 +21,20 @@ TODO:
 
 TODO:
 
+### Transactions
+
+When you want to update a document, you should wrap all your changes in a transaction, so you don't end up in inconsistent in-between states. The API is fairly easy:
+
+```js
+doc.transaction(function(tx) {
+  tx.delete("em2"); // deletes an emphasis annotation with id em2
+});
+```
+
 ## Rules that make your life easier:
 
 - Content tools must bind to mousedown instead of click to handle toggling.
   That way we can prevent the blur event to be fired on the surface.
-
 - The root element of a Substance Surface must be set contenteditable
 
 
