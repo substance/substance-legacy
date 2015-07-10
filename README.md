@@ -31,6 +31,13 @@ doc.transaction(function(tx) {
 });
 ```
 
+```js
+var updated = "Hello world!";
+doc.transaction(function(tx) {
+  tx.set([text_node_1, "content"], updated); // updates content property of node text_node_1
+});
+```
+
 ## Rules that make your life easier:
 
 - Content tools must bind to mousedown instead of click to handle toggling.
