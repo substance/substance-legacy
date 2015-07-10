@@ -89,6 +89,11 @@ Helpers.debounce = require('lodash/function/debounce');
  * @method extend
  */
 Helpers.extend = require('lodash/object/extend');
+/**
+ * See https://lodash.com/docs#omit
+ * @method omit
+ */
+Helpers.omit = require('lodash/object/omit');
 
 // Array helpers
 
