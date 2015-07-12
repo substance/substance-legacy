@@ -118,14 +118,13 @@ ContainerAnnotation.Anchor.Prototype = function() {
 
 Substance.initClass(ContainerAnnotation.Anchor);
 
-ContainerAnnotation.Fragment = function(anno, path, startOffset, endOffset) {
+ContainerAnnotation.Fragment = function(anno, path, mode) {
   this.type = "container_annotation_fragment";
   this.anno = anno;
   // HACK: id is necessary for Annotator
   this.id = anno.id;
   this.path = path;
-  this.startOffset = startOffset;
-  this.endOffset = endOffset;
+  this.mode = mode;
 };
 
 ContainerAnnotation.Fragment.Prototype = function() {
@@ -135,6 +134,22 @@ ContainerAnnotation.Fragment.Prototype = function() {
 };
 
 Substance.initClass(ContainerAnnotation.Fragment);
+
+Object.defineProperties(ContainerAnnotation.Fragment.prototype, {
+  startOffset: {
+    get: function() {
+      return (this.mode === "start" ? this.anno.startOffset : 0);
+    },
+    set: function() { throw new Error('Immutable!'); }
+  },
+  endOffset: {
+    get: function() {
+      return (this.mode === "end" ? this.anno.endOffset : this.anno.getDocument().get(this.path).length);
+    },
+    set: function() { throw new Error('Immutable!'); }
+  },
+});
+
 
 ContainerAnnotation.Fragment.static.level = Number.MAX_VALUE;
 

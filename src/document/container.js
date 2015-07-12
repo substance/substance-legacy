@@ -120,7 +120,7 @@ Container.Prototype = function() {
     var endAnchor = anno.getEndAnchor();
     // if start and end anchors are on the same property, then there is only one fragment
     if (_.isEqual(startAnchor.path, endAnchor.path)) {
-      fragments.push(new ContainerAnnotation.Fragment(anno, startAnchor.path, startAnchor.offset, endAnchor.offset));
+      fragments.push(new ContainerAnnotation.Fragment(anno, startAnchor.path, "start"));
     }
     // otherwise create a trailing fragment for the property of the start anchor,
     // full-spanning fragments for inner properties,
@@ -132,13 +132,13 @@ Container.Prototype = function() {
       if (!startComp || !endComp) {
         throw new Error('Could not find components of AbstractContainerAnnotation');
       }
-      fragments.push(new ContainerAnnotation.Fragment(anno, startAnchor.path, startAnchor.offset, text.length));
+      fragments.push(new ContainerAnnotation.Fragment(anno, startAnchor.path, "start"));
       for (var idx = startComp.idx + 1; idx < endComp.idx; idx++) {
         var comp = this.getComponentAt(idx);
         text = doc.get(comp.path);
-        fragments.push(new ContainerAnnotation.Fragment(anno, comp.path, 0, text.length));
+        fragments.push(new ContainerAnnotation.Fragment(anno, comp.path, "inner"));
       }
-      fragments.push(new ContainerAnnotation.Fragment(anno, endAnchor.path, 0, endAnchor.offset));
+      fragments.push(new ContainerAnnotation.Fragment(anno, endAnchor.path, "end"));
     }
     return fragments;
   };
