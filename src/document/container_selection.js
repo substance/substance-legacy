@@ -25,8 +25,6 @@ function ContainerSelection(properties) {
     new Coordinate(endPath, endOffset)
   );
   this.reverse = properties.reverse;
-  // optimization
-  this.collapsed = this.range.start.equals(this.range.end);
   this._internal = {};
   Object.freeze(this);
 }
@@ -62,16 +60,21 @@ ContainerSelection.Prototype = function() {
     return "ContainerSelection("+ JSON.stringify(this.range.start.path) + ":" + this.range.start.offset + " -> " +  JSON.stringify(this.range.end.path) + ":" + this.range.end.offset + (this.reverse ? ", reverse" : "") + ")";
   };
 
-  this.getContainer = function() {
+  this.getDocument = function() {
     var doc = this._internal.doc;
     if (!doc) {
       throw new Error('Selection is not attached to a document.');
     }
+    return doc;
+  };
+
+  this.getContainer = function() {
+    return this.getDocument().get(this.containerId);
   };
 
   this.expand = function(other) {
-    var c1 = _coordinates(this);
-    var c2 = _coordinates(other);
+    var c1 = this._coordinates();
+    var c2 = other._coordinates();
     var c1s = c1.start;
     var c2s = c2.start;
     var c1e = c1.end;
@@ -97,8 +100,8 @@ ContainerSelection.Prototype = function() {
 
   // There should be exactly one
   this.truncate = function(other) {
-    var c1 = _coordinates(this);
-    var c2 = _coordinates(other);
+    var c1 = this._coordinates();
+    var c2 = other._coordinates();
     var newCoors = {};
     if (_isBefore(c2.start, c1.start, 'strict')) {
       newCoors.start = c1.start;
@@ -122,21 +125,21 @@ ContainerSelection.Prototype = function() {
 
   this.isInsideOf = function(other, strict) {
     if (other.isNull()) return false;
-    var c1 = _coordinates(this);
-    var c2 = _coordinates(other);
+    var c1 = this._coordinates();
+    var c2 = other._coordinates();
     return (_isBefore(c2.start, c1.start, strict) && _isBefore(c1.end, c2.end, strict));
   };
 
   this.contains = function(other) {
-    var c1 = _coordinates(this);
-    var c2 = _coordinates(other);
+    var c1 = this._coordinates();
+    var c2 = other._coordinates();
     return (_isBefore(c1.start, c2.start) && _isBefore(c2.end, c1.end));
   };
 
   // includes and at least one boundary
   this.includesWithOneBoundary = function(other) {
-    var c1 = _coordinates(this);
-    var c2 = _coordinates(other);
+    var c1 = this._coordinates();
+    var c2 = other._coordinates();
     return (
       (_isEqual(c1.start, c2.start) && _isBefore(c2.end, c1.end)) ||
       (_isEqual(c1.end, c2.end) && _isBefore(c1.start, c2.start))
@@ -144,21 +147,21 @@ ContainerSelection.Prototype = function() {
   };
 
   this.overlaps = function(other) {
-    var c1 = _coordinates(this);
-    var c2 = _coordinates(other);
+    var c1 = this._coordinates();
+    var c2 = other._coordinates();
     // it overlaps if they are not disjunct
     return !(_isBefore(c1.end, c2.start) || _isBefore(c2.end, c1.start));
   };
 
   this.isLeftAlignedWith = function(other) {
-    var c1 = _coordinates(this);
-    var c2 = _coordinates(other);
+    var c1 = this._coordinates();
+    var c2 = other._coordinates();
     return _isEqual(c1.start, c2.start);
   };
 
   this.isRightAlignedWith = function(other) {
-    var c1 = _coordinates(this);
-    var c2 = _coordinates(other);
+    var c1 = this._coordinates();
+    var c2 = other._coordinates();
     return _isEqual(c1.end, c2.end);
   };
 
@@ -190,20 +193,20 @@ ContainerSelection.Prototype = function() {
     return sels;
   };
 
-  var _coordinates = function(sel) {
-    if (sel._internal.coor) {
-      return sel._internal.coor;
+  this._coordinates = function() {
+    if (this._internal.range) {
+      return this._internal.range;
     }
     var container = this.getContainer();
-    var range = sel.getRange();
+    var range = this.getRange();
     var startPos = container.getComponent(range.start.path).getIndex();
     var endPos;
-    if (sel.isCollapsed()) {
+    if (this.isCollapsed()) {
       endPos = startPos;
     } else {
       endPos = container.getComponent(range.end.path).getIndex();
     }
-    var result = {
+    this._internal.range = {
       start: {
         pos: startPos,
         offset: range.start.offset,
@@ -211,11 +214,9 @@ ContainerSelection.Prototype = function() {
       end: {
         pos: endPos,
         offset: range.end.offset
-      },
-      collapsed: sel.isCollapsed()
+      }
     };
-    sel._internal.coor = result;
-    return result;
+    return this._internal.range;
   };
 
   var _isBefore = function(c1, c2, strict) {

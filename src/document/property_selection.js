@@ -221,6 +221,10 @@ PropertySelection.Prototype = function() {
     }
     return this.createWithNewRange(newStartOffset, newEndOffset);
   };
+
+  this._coordinates = function() {
+    return this;
+  };
 };
 
 OO.inherit(PropertySelection, Selection);
@@ -255,7 +259,14 @@ Object.defineProperties(PropertySelection.prototype, {
       return this.range.end.offset;
     },
     set: function() { throw new Error('immutable.'); }
-  }
+  },
+  collapsed: {
+    get: function() {
+      return this.isCollapsed();
+    },
+    set: function() { throw new Error('immutable.'); }
+  },
+
 });
 
 module.exports = PropertySelection;
