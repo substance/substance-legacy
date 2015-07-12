@@ -24,7 +24,7 @@ ClipboardExporter.Prototype = function() {
     var $doc = this.createHtmlDocument();
     // Note: the content of a clipboard document
     // is coming as container with id 'clipboard'
-    var content = doc.get('content');
+    var content = doc.get('clipboard_content');
     $doc.find('body').append(this.convertContainer(content));
 
     // This is not working with jquery
