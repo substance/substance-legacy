@@ -12,6 +12,10 @@ var __id__ = 0;
 function Surface(surfaceManager, doc, editor, options) {
   Substance.EventEmitter.call(this);
 
+  if (!doc) {
+    throw new Error('Illegal argument: document is required. was ' + doc);
+  }
+
   options = options || {};
 
   this.__id__ = __id__++;
