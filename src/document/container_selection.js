@@ -73,8 +73,8 @@ ContainerSelection.Prototype = function() {
   };
 
   this.expand = function(other) {
-    var c1 = this._coordinates();
-    var c2 = other._coordinates();
+    var c1 = this._coordinates(this);
+    var c2 = this._coordinates(other);
     var c1s = c1.start;
     var c2s = c2.start;
     var c1e = c1.end;
@@ -100,8 +100,8 @@ ContainerSelection.Prototype = function() {
 
   // There should be exactly one
   this.truncate = function(other) {
-    var c1 = this._coordinates();
-    var c2 = other._coordinates();
+    var c1 = this._coordinates(this);
+    var c2 = this._coordinates(other);
     var newCoors = {};
     if (_isBefore(c2.start, c1.start, 'strict')) {
       newCoors.start = c1.start;
@@ -125,21 +125,21 @@ ContainerSelection.Prototype = function() {
 
   this.isInsideOf = function(other, strict) {
     if (other.isNull()) return false;
-    var c1 = this._coordinates();
-    var c2 = other._coordinates();
+    var c1 = this._coordinates(this);
+    var c2 = this._coordinates(other);
     return (_isBefore(c2.start, c1.start, strict) && _isBefore(c1.end, c2.end, strict));
   };
 
   this.contains = function(other) {
-    var c1 = this._coordinates();
-    var c2 = other._coordinates();
+    var c1 = this._coordinates(this);
+    var c2 = this._coordinates(other);
     return (_isBefore(c1.start, c2.start) && _isBefore(c2.end, c1.end));
   };
 
   // includes and at least one boundary
   this.includesWithOneBoundary = function(other) {
-    var c1 = this._coordinates();
-    var c2 = other._coordinates();
+    var c1 = this._coordinates(this);
+    var c2 = this._coordinates(other);
     return (
       (_isEqual(c1.start, c2.start) && _isBefore(c2.end, c1.end)) ||
       (_isEqual(c1.end, c2.end) && _isBefore(c1.start, c2.start))
@@ -147,21 +147,21 @@ ContainerSelection.Prototype = function() {
   };
 
   this.overlaps = function(other) {
-    var c1 = this._coordinates();
-    var c2 = other._coordinates();
+    var c1 = this._coordinates(this);
+    var c2 = this._coordinates(other);
     // it overlaps if they are not disjunct
     return !(_isBefore(c1.end, c2.start) || _isBefore(c2.end, c1.start));
   };
 
   this.isLeftAlignedWith = function(other) {
-    var c1 = this._coordinates();
-    var c2 = other._coordinates();
+    var c1 = this._coordinates(this);
+    var c2 = this._coordinates(other);
     return _isEqual(c1.start, c2.start);
   };
 
   this.isRightAlignedWith = function(other) {
-    var c1 = this._coordinates();
-    var c2 = other._coordinates();
+    var c1 = this._coordinates(this);
+    var c2 = this._coordinates(other);
     return _isEqual(c1.end, c2.end);
   };
 
@@ -193,20 +193,20 @@ ContainerSelection.Prototype = function() {
     return sels;
   };
 
-  this._coordinates = function() {
-    if (this._internal.range) {
-      return this._internal.range;
+  this._coordinates = function(sel) {
+    if (sel._internal.containerRange) {
+      return sel._internal.containerRange;
     }
     var container = this.getContainer();
-    var range = this.getRange();
+    var range = sel.getRange();
     var startPos = container.getComponent(range.start.path).getIndex();
     var endPos;
-    if (this.isCollapsed()) {
+    if (sel.isCollapsed()) {
       endPos = startPos;
     } else {
       endPos = container.getComponent(range.end.path).getIndex();
     }
-    this._internal.range = {
+    var containerRange = {
       start: {
         pos: startPos,
         offset: range.start.offset,
@@ -216,7 +216,10 @@ ContainerSelection.Prototype = function() {
         offset: range.end.offset
       }
     };
-    return this._internal.range;
+    if (sel instanceof ContainerSelection) {
+      sel._internal.containerRange = containerRange;
+    }
+    return containerRange;
   };
 
   var _isBefore = function(c1, c2, strict) {
