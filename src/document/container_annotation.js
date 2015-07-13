@@ -138,13 +138,13 @@ Substance.initClass(ContainerAnnotation.Fragment);
 Object.defineProperties(ContainerAnnotation.Fragment.prototype, {
   startOffset: {
     get: function() {
-      return (this.mode === "start" ? this.anno.startOffset : 0);
+      return ( (this.mode === "start" || this.mode === "property") ? this.anno.startOffset : 0);
     },
     set: function() { throw new Error('Immutable!'); }
   },
   endOffset: {
     get: function() {
-      return (this.mode === "end" ? this.anno.endOffset : this.anno.getDocument().get(this.path).length);
+      return ( (this.mode === "end" || this.mode === "property") ? this.anno.endOffset : this.anno.getDocument().get(this.path).length);
     },
     set: function() { throw new Error('Immutable!'); }
   },

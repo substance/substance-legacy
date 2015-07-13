@@ -120,7 +120,7 @@ Container.Prototype = function() {
     var endAnchor = anno.getEndAnchor();
     // if start and end anchors are on the same property, then there is only one fragment
     if (_.isEqual(startAnchor.path, endAnchor.path)) {
-      fragments.push(new ContainerAnnotation.Fragment(anno, startAnchor.path, "start"));
+      fragments.push(new ContainerAnnotation.Fragment(anno, startAnchor.path, "property"));
     }
     // otherwise create a trailing fragment for the property of the start anchor,
     // full-spanning fragments for inner properties,
