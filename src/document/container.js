@@ -68,6 +68,10 @@ Container.Prototype = function() {
     }
   };
 
+  this.getComponents = function() {
+    return this.components;
+  };
+
   this.getComponent = function(path) {
     var comp = this.byPath.get(path);
     return comp;
