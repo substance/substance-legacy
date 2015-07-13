@@ -190,8 +190,12 @@ AnnotationTool.Prototype = function() {
     if (this.isContainerAnno()) {
       anno.startPath = sel.start.path;
       anno.endPath = sel.end.path;
-      // HACK: where to get the container id from when sel is a property selection
-      anno.container = "content";
+
+      // Assuming that this branch only gets reached when the surface has a container
+      // editor attached, we can ask this editor for the containerId
+      var containerId = this.surface.getEditor().getContainerId();
+      if (!containerId) throw "Container could not be determined";
+      anno.container = containerId;
     } else if (sel.isPropertySelection()) {
       anno.path = sel.getPath();
     } else {
