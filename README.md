@@ -1,5 +1,15 @@
 # Substance
 
+Substance is a JavaScript library for manipulating documents based on data. It enables you to build completely custom web-based editors.
+
+See Substance in action:
+
+- **[Substance Starter](http://cdn.substance.io/starter)** - A minimal example for learning
+- **[Science Writer](http://cdn.substance.io/science-writer)** - A full-fledged scientific editor
+- **[Archivist](http://cdn.substance.io/science-writer)** - A modern interface for tagging entities and subjects in digital archives
+
+## Motivation
+
 Building a web editor is a hard task. Native browser support for text editing is [limited and not reliable](https://medium.com/medium-eng/why-contenteditable-is-terrible-122d8a40e480) and there are many pitfalls such as handling selections, copy&paste or undo/redo. Substance was developed to solve the common problems of web-editing and provides API's for building custom editors.
 
 With Substance you can:
@@ -10,6 +20,7 @@ With Substance you can:
 - Implement custom tools for any possible task like toggling annotations, inserting content or replacing text
 - Control *undo/redo* behavior and *copy&paste*
 - and more.
+
 
 ## Getting started
 
