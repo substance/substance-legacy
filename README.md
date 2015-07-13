@@ -6,7 +6,7 @@ See Substance in action:
 
 - **[Substance Starter](http://cdn.substance.io/starter)** - A minimal example for learning
 - **[Science Writer](http://cdn.substance.io/science-writer)** - A full-fledged scientific editor
-- **[Archivist](http://cdn.substance.io/science-writer)** - A modern interface for tagging entities and subjects in digital archives
+- **[Archivist](http://cdn.substance.io/archivist-composer)** - A modern interface for tagging entities and subjects in digital archives
 
 ## Motivation
 
