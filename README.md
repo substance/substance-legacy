@@ -185,6 +185,34 @@ We bind some event handlers:
 
 We'll look into those handler implementations later. First, let's render our document. 
 
+#### Render the document
+
+For each node type we defined we need to define a component class with a render method. Here's how our paragraph implementation looks like:
+
+
+See: [components/paragraph.js](https://github.com/substance/starter/blob/master/src/components/paragraph.js)
+
+```js
+var TextProperty = require('substance-ui/text_property');
+var $$ = React.createElement;
+
+class Paragraph extends React.Component {
+  render() {
+    return $$("div", { className: "content-node paragraph", "data-id": this.props.node.id },
+      $$(TextProperty, {
+        doc: this.props.doc,
+        path: [ this.props.node.id, "content"]
+      })
+    );
+  }
+}
+```
+
+The paragraph is represented as a simple div. However the text rendering is where things get difficult. Substance provides a generic implementation TextProperty for rendering annotated text. We just use this component here and refer to a path (paragraph id and property name).
+
+We don't need to implement annotation nodes (strong, emphasis), as there is a default renderer implemented for annotations. Now that we have our components ready, we can head over to implementing the `render` method of our editor:
+
+
 ```js
 render() {
   var doc = this.props.doc;
@@ -212,8 +240,9 @@ render() {
 Essentially what we do is iterating over all nodes of our body container, determining the ComponentClass and constructing a React.Element from it. We also provided a simple toolbar, that has annotation toggles. We will learn more about tools later when we implement a custom tool for our editor.
 
 
-### Anatomy of a Substance Document
 
+
+### Anatomy of a Substance Document
 
 TODO: describe 
 
