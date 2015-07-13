@@ -22,7 +22,7 @@ ContainerAnnotationIndex.Prototype = function() {
     var index = this.indexes[containerName];
     if (index) {
       return index.get(path) || [];
-    } 
+    }
     return [];
   };
 
@@ -115,6 +115,10 @@ ContainerAnnotationIndex.Prototype = function() {
         }
       } else {
         var nodeId = op.path[0];
+        // skip updates on nodes which have been deleted by this change
+        if (change.deleted[nodeId]) {
+          continue;
+        }
         var node = doc.get(nodeId);
         if (node.type === "container") {
           containers[node.id] = true;
