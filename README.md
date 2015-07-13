@@ -23,15 +23,18 @@ Modelling a schema is easy.
 var schema = new Substance.Document.Schema("rich-text-article", "1.0.0");
 ```
 
-Substance has a number of predefined commonly used Node types, that we are going to borrow for our schema. But defining our own is very simple too.
+Substance has a number of predefined commonly used Node types, that we are going to borrow for our schema. But defining our own is very simple too. We'll define a node type highlight, just as another annotation type. We choose to use a container annotation type, which means that the annotation can span over multiple paragraphs. Regular annotations (like our emphasis and strong) are scoped to one text property.
 
 ```js
 var Paragraph = Substance.Document.Paragraph;
 var Emphasis = Substance.Document.Emphasis;
 var Strong = Substance.Document.Strong;
 
-var Highlight = Document.Annotation.extend({
-  name: "highlight"
+var Highlight = Document.ContainerAnnotation.extend({
+  name: 'highlight',
+  properties: {
+    created_at: 'date'
+  }
 });
 
 schema.addNodes([
