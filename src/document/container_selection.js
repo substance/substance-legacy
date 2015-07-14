@@ -243,7 +243,7 @@ ContainerSelection.Prototype = function() {
     newCoors.start.path = container.getComponentAt(newCoors.start.pos).path;
     newCoors.end.path = container.getComponentAt(newCoors.end.pos).path;
     return new ContainerSelection({
-      containerId: this.containerId,
+      containerId: containerSel.containerId,
       startPath: newCoors.start.path,
       startOffset: newCoors.start.offset,
       endPath: newCoors.end.path,
