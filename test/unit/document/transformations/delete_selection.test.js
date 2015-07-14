@@ -2,6 +2,7 @@
 
 require('../../init');
 var sample1 = require('../../../fixtures/sample1');
+var containerSample = require('../../../fixtures/container_anno_sample');
 var Document = require('../../../../src/document');
 var deleteSelection = Document.Transformations.deleteSelection;
 
@@ -78,7 +79,6 @@ QUnit.test("deleting a container selection", function(assert) {
     endPath: ['p2', 'content'],
     endOffset: 10
   });
-  var anno = doc.get('em1');
   var args = {selection: sel, containerId: 'main'};
   var out = deleteSelection(doc, args);
   var selection = out.selection;
@@ -91,18 +91,39 @@ QUnit.test("deleting a container selection", function(assert) {
   assert.deepEqual([anno.startOffset, anno.endOffset], [13, 23], 'Annotation should have been placed correctly.');
 });
 
-QUnit.test("deleting the full document", function(assert) {
-  var doc = sample1();
+// QUnit.test("deleting the full document", function(assert) {
+//   var doc = sample1();
+//   var sel = doc.createSelection({
+//     type: 'container',
+//     containerId: 'main',
+//     startPath: ['h1', 'content'],
+//     startOffset: 0,
+//     endPath: ['p3', 'content'],
+//     endOffset: 11
+//   });
+//   var args = { selection: sel, containerId: 'main' };
+//   var out = deleteSelection(doc, args);
+// });
+
+QUnit.test("Edge case: delete container selection spaning multiple nodes containing container annotations", function(assert) {
+  // the annotation spans over three nodes
+  // we start the selection within the anno in the first text node
+  // and expand to the end of the third node
+  var doc = containerSample();
   var sel = doc.createSelection({
     type: 'container',
     containerId: 'main',
-    startPath: ['h1', 'content'],
-    startOffset: 0,
+    startPath: ['p1', 'content'],
+    startOffset: 7,
     endPath: ['p3', 'content'],
-    endOffset: 11
+    endOffset: 10
   });
   var args = { selection: sel, containerId: 'main' };
   var out = deleteSelection(doc, args);
   var selection = out.selection;
-  assert.ok(true, 'Haha');
+  var a1 = doc.get('a1');
+  assert.equal(doc.get(['p1', 'content']), "0123456", "Remaining content of p1 should be truncated.");
+  assert.ok(selection.isCollapsed(), 'Selection should be collapsed afterwards.');
+  assert.deepEqual(a1.endPath, ['p1', 'content'], "Container annotation should be truncated");
+  assert.equal(a1.endOffset, 7, "Container annotation should be truncated");
 });

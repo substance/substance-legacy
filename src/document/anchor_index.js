@@ -5,13 +5,13 @@ var PathAdapter = Substance.PathAdapter;
 var Data = require('../data');
 var ContainerAnnotation = require('./container_annotation');
 
-var ContainerAnnotationIndex = function(doc) {
+var ContainerAnnotationAnchorIndex = function(doc) {
   this.doc = doc;
   this.byPath = new PathAdapter.Arrays();
   this.byId = {};
 };
 
-ContainerAnnotationIndex.Prototype = function() {
+ContainerAnnotationAnchorIndex.Prototype = function() {
 
   this.select = function(node) {
     return (node instanceof ContainerAnnotation);
@@ -27,7 +27,7 @@ ContainerAnnotationIndex.Prototype = function() {
     var anchors = this.byPath.get(path) || [];
     if (!Substance.isArray(anchors)) {
       var _anchors = [];
-      this.byPath._traverse(anchors, [], function(anchors) {
+      this.byPath._traverse(anchors, [], function(path, anchors) {
         _anchors = _anchors.concat(anchors);
       });
       anchors = _anchors;
@@ -76,6 +76,6 @@ ContainerAnnotationIndex.Prototype = function() {
 
 };
 
-Substance.inherit(ContainerAnnotationIndex, Data.Index);
+Substance.inherit(ContainerAnnotationAnchorIndex, Data.Index);
 
-module.exports = ContainerAnnotationIndex;
+module.exports = ContainerAnnotationAnchorIndex;
