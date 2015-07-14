@@ -4,6 +4,7 @@ var _ = require('../basics/helpers');
 var OO = require('../basics/oo');
 var PathAdapter = require('../basics/path_adapter');
 var Data = require('../data');
+var ContainerAnnotation = require('./container_annotation');
 
 // HACK: this is not the final version
 var ContainerAnnotationIndex = function(doc) {
@@ -24,6 +25,10 @@ ContainerAnnotationIndex.Prototype = function() {
       return index.get(path) || [];
     }
     return [];
+  };
+
+  this.getAllContainerAnnotations = function() {
+    return this.containerAnnotations;
   };
 
   this.reset = function() {
@@ -48,14 +53,14 @@ ContainerAnnotationIndex.Prototype = function() {
   };
 
   this.select = function(node) {
-    return (node.type === "container" || node.isInstanceOf('container_annotation'));
+    return (node.type === "container" || node.isInstanceOf(ContainerAnnotation.static.name));
   };
 
   this.create = function(node, isInitializing) {
     if (node.type === "container") {
       this.containers[node.id] = node;
       this.indexes[node.id] = new PathAdapter.Arrays();
-    } else if (node.isInstanceOf('container_annotation')) {
+    } else if (node.isInstanceOf(ContainerAnnotation.static.name)) {
       var containerId = node.container;
       this.containerAnnotations[node.id] = node;
       if (!isInitializing) {
@@ -99,7 +104,7 @@ ContainerAnnotationIndex.Prototype = function() {
 
   this.onDocumentChange = function(change) {
     var needsUpdate = false;
-    var containers = {};
+    var dirtyContainers = {};
     var doc = this.doc;
     var schema = doc.getSchema();
     for (var i = 0; i < change.ops.length; i++) {
@@ -107,10 +112,20 @@ ContainerAnnotationIndex.Prototype = function() {
       if (op.isCreate() || op.isDelete()) {
         var nodeData = op.getValue();
         if (nodeData.type === "container") {
-          containers[nodeData.id] = true;
+          dirtyContainers[nodeData.id] = true;
+          if (op.isCreate()) {
+            this.containers[nodeData.id] = doc.get(nodeData.id);
+          } else {
+            delete this.containers[nodeData.id];
+          }
           needsUpdate = true;
-        } else if (schema.isInstanceOf(nodeData.type, "container-annotation")) {
-          containers[nodeData.container] = true;
+        } else if (schema.isInstanceOf(nodeData.type, ContainerAnnotation.static.name)) {
+          dirtyContainers[nodeData.container] = true;
+          if (op.isCreate()) {
+            this.containerAnnotations[nodeData.id] = doc.get(nodeData.id);
+          } else {
+            delete this.containerAnnotations[nodeData.id];
+          }
           needsUpdate = true;
         }
       } else {
@@ -121,16 +136,16 @@ ContainerAnnotationIndex.Prototype = function() {
         }
         var node = doc.get(nodeId);
         if (node.type === "container") {
-          containers[node.id] = true;
+          dirtyContainers[node.id] = true;
           needsUpdate = true;
-        } else if (node.isInstanceOf("container-annotation")) {
-          containers[node.container] = true;
+        } else if (node.isInstanceOf(ContainerAnnotation.static.name)) {
+          dirtyContainers[node.container] = true;
           needsUpdate = true;
         }
       }
     }
     if (needsUpdate) {
-      _.each(containers, function(val, containerId) {
+      _.each(dirtyContainers, function(val, containerId) {
         this.recompute(containerId);
       }, this);
     }
@@ -139,8 +154,6 @@ ContainerAnnotationIndex.Prototype = function() {
 };
 
 OO.inherit(ContainerAnnotationIndex, Data.Index);
-
-
 
 module.exports = ContainerAnnotationIndex;
 

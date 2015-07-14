@@ -80,10 +80,12 @@ Document.Prototype = function() {
   };
 
   this.documentDidLoad = function() {
-      // HACK: need to reset the stage
+    // HACK: need to reset the stage
     this.stage.reset();
     this.containerAnnotationIndex.reset();
     this.done = [];
+    // do not allow non-transactional changes after that
+    this.FORCE_TRANSACTIONS = true;
   };
 
   this.getEventProxy = function(name) {

@@ -36,11 +36,6 @@ TestArticle.Prototype = function() {
   this.getDocumentMeta = function() {
     return this.get('meta');
   };
-
-  this.documentDidLoad = function() {
-    // HACK: need to reset the stage
-    this.stage.reset();
-  };
 };
 
 OO.inherit(TestArticle, Document);
