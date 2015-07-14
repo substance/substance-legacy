@@ -3,7 +3,6 @@
 require('../init');
 require('../assert_helpers');
 var sample = require('../../fixtures/container_anno_sample');
-var Document = require('../../../src/document');
 
 QUnit.module('Unit/Substance.Document/ContainerAnnotationIndex');
 
@@ -44,5 +43,25 @@ QUnit.test("Should index dynamically created annotations", function(assert) {
   var frags = index.getFragments(['p3', 'content'], 'main');
   assert.equal(frags.length, 2, "There should be 2 fragments on p3");
   frags = index.getFragments(['p4', 'content'], 'main');
+  assert.equal(frags.length, 1, "There should be one fragment on p4");
+});
+
+QUnit.test("Should index dynamically created annotation which is only on one property", function(assert) {
+  var doc = sample();
+  var index = doc.containerAnnotationIndex;
+  // ATTENTION: we need to use transactions here because ContainerAnnotationIndex
+  // is updated after transaction
+  doc.transaction(function(tx) {
+    tx.create({
+      type: 'test-container-anno',
+      id: 'a2',
+      container: 'main',
+      startPath: ['p4', 'content'],
+      startOffset: 1,
+      endPath: ['p4', 'content'],
+      endOffset: 3,
+    });
+  });
+  var frags = index.getFragments(['p4', 'content'], 'main');
   assert.equal(frags.length, 1, "There should be one fragment on p4");
 });
