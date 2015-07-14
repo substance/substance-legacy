@@ -2,8 +2,8 @@ var _ = require("../basics/helpers");
 var OO = require("../basics/oo");
 var Tool = require('./tool');
 
-function AnnotationTool() {
-  Tool.call(this);
+function AnnotationTool(context) {
+  Tool.call(this, context);
 }
 
 AnnotationTool.Prototype = function() {
