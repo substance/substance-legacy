@@ -139,11 +139,14 @@ AnnotationTool.Prototype = function() {
 
   this.handleCreate = function(state) {
     var sel = state.sel;
+    var anno;
+
     if (sel.isNull()) return;
     this.surface.transaction({ selection: sel }, function(tx, args) {
-      this.createAnnotationForSelection(tx, sel);
+      anno = this.createAnnotationForSelection(tx, sel);
       return args;
     }, this);
+    this.afterCreate(anno);
   };
 
   this.getAnnotationData = function() {
