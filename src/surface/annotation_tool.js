@@ -39,8 +39,8 @@ AnnotationTool.Prototype = function() {
   };
 
   // When more than one annotation overlaps with the current selection
-  this.canFusion = function(annos) {
-    return (annos.length >= 2);
+  this.canFusion = function(annos, sel) {
+    return (annos.length >= 2 && !sel.isCollapsed());
   };
 
   // When the cursor or selection is inside an existing annotation
@@ -60,7 +60,7 @@ AnnotationTool.Prototype = function() {
   this.canTruncate = function(annos, sel) {
     if (annos.length !== 1) return false;
     var annoSel = annos[0].getSelection();
-    return (sel.isLeftAlignedWith(annoSel) || sel.isRightAlignedWith(annoSel)) && !sel.equals(annoSel);
+    return (sel.isLeftAlignedWith(annoSel) || sel.isRightAlignedWith(annoSel)) && !sel.equals(annoSel) && !sel.isCollapsed();
   };
 
   this.update = function(surface, sel) {
@@ -111,6 +111,7 @@ AnnotationTool.Prototype = function() {
     } else if (this.canExpand(annos, sel)) {
       newState.mode = "expand";
     }
+
     // Verifies if the detected mode has been disabled by the concrete implementation
     if (!newState.mode || _.includes(this.disabledModes, newState.mode)) {
       return this.setDisabled();
@@ -221,6 +222,7 @@ AnnotationTool.Prototype = function() {
       });
       this.createAnnotationForSelection(tx, sel);
       this.afterFusion();
+      args.selection = sel;
       return args;
     }, this);
   };
