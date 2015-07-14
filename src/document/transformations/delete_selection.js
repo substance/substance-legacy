@@ -49,9 +49,12 @@ function _deleteContainerSelection(tx, args) {
   var containerId = selection.containerId;
   var range = selection.getRange();
   var nodeSels = _getNodeSelection(tx, selection);
-  var nodeSel, node;
+  var nodeSel, node, type;
   var result = { selection: null };
   // apply deletion backwards so that we do not to recompute array positions
+  var container = tx.get(containerId);
+  var firstNodePos = container.getPosition(nodeSels[0].node.id);
+
   for (var idx = nodeSels.length - 1; idx >= 0; idx--) {
     nodeSel = nodeSels[idx];
     node = nodeSel.node;
@@ -83,6 +86,24 @@ function _deleteContainerSelection(tx, args) {
         break;
       }
     }
+    // TODO: if we could not find an insertion position,
+    // that is the case when nodes were fully selected,
+    // insert a default text node and set the cursor into it
+    if (result.selection === null) {
+      type = tx.getSchema().getDefaultTextType();
+      node = {
+        type: type,
+        id: _.uuid(type),
+        content: ""
+      };
+      tx.create(node);
+      container.show(node.id, firstNodePos);
+      result.selection = tx.createSelection({
+        type: 'property',
+        path: [node.id, 'content'],
+        startOffset: 0
+      });
+    }
   }
   // Do a merge
   if (nodeSels.length>1) {
@@ -96,9 +117,9 @@ function _deleteContainerSelection(tx, args) {
     }
   }
   // If the container is empty after deletion insert a default text node is inserted
-  var container = tx.get(containerId);
+  container = tx.get(containerId);
   if (container.nodes.length === 0) {
-    var type = tx.getSchema().getDefaultTextType();
+    type = tx.getSchema().getDefaultTextType();
     node = {
       type: type,
       id: _.uuid(type),

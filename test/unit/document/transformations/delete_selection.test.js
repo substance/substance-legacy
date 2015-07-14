@@ -127,3 +127,27 @@ QUnit.test("Edge case: delete container selection spaning multiple nodes contain
   assert.deepEqual(a1.endPath, ['p1', 'content'], "Container annotation should be truncated");
   assert.equal(a1.endOffset, 7, "Container annotation should be truncated");
 });
+
+QUnit.test("Edge case: delete container selection with 2 fully selected paragraphs", function(assert) {
+  // when all nodes under a container selection are covered
+  // fully, we want to have a default text type get inserted
+  // and the cursor at its first position
+  var doc = containerSample();
+  var sel = doc.createSelection({
+    type: 'container',
+    containerId: 'main',
+    startPath: ['p2', 'content'],
+    startOffset: 0,
+    endPath: ['p3', 'content'],
+    endOffset: 10
+  });
+  var args = { selection: sel, containerId: 'main' };
+  var out = deleteSelection(doc, args);
+  var selection = out.selection;
+  assert.ok(selection.isCollapsed(), 'Selection should be collapsed afterwards.');
+  assert.equal(selection.startOffset, 0, 'Cursor should be at first position');
+  var p = doc.get(selection.path[0]);
+  assert.equal(p.type, "paragraph", 'Cursor should be in an empty paragraph');
+  assert.equal(p.content.length, 0, 'Paragraph should be empty.');
+  assert.equal(doc.get('main').getPosition(p.id), 1);
+});
