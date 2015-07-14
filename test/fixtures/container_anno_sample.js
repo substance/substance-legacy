@@ -38,5 +38,6 @@ module.exports = function() {
   main.show('p3');
   main.show('p4');
   article.documentDidLoad();
+  article.FORCE_TRANSACTIONS = false;
   return article;
 };

@@ -57,7 +57,7 @@ QUnit.test("Copying a container selection", function(assert) {
   var args = {selection: sel};
   var out = copySelection(doc, args);
   var copy = out.doc;
-  var content = copy.get('content');
+  var content = copy.get('clipboard_content');
   assert.isDefinedAndNotNull(content, 'There should be a container node with id "content".');
   assert.equal(content.nodes.length, 4, 'There should be 4 nodes in the copied document.');
   var first = copy.get(content.nodes[0]);

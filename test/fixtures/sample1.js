@@ -59,5 +59,6 @@ module.exports = function sample1() {
   main.show('h3');
   main.show('p3');
   article.documentDidLoad();
+  article.FORCE_TRANSACTIONS = false;
   return article;
 };
