@@ -4,9 +4,9 @@ Substance is a JavaScript library for manipulating documents based on data. It e
 
 See Substance in action:
 
-- **[Substance Starter](http://cdn.substance.io/starter)** - A minimal example for learning
+- **[Substance HTML Editor](http://cdn.substance.io/starter)** - A minimal HTML editor component based on Substance
 - **[Science Writer](http://cdn.substance.io/science-writer)** - A full-fledged scientific editor
-- **[Archivist](http://cdn.substance.io/archivist-composer)** - A modern interface for tagging entities and subjects in digital archives
+- **[Archivist Writer](http://cdn.substance.io/archivist-composer)** - A modern interface for tagging entities and subjects in digital archives
 
 ## Motivation
 
@@ -21,8 +21,7 @@ With Substance you can:
 - Control *undo/redo* behavior and *copy&paste*
 - and more.
 
-
-## Getting started
+<!-- ## Getting started
 
 Let's develop a basic Rich Text Editor using Substance. We will define a simple article format, and an editor to manipulate it in the browser. Follow our guide here to get a feeling about the available concepts. Get your hands dirty by playing around with our [starter package](https://github.com/substance/starter) and if you feel more ambitious you can look at our [Science Writer](https://github.com/substance/science-writer) app.
 
@@ -288,9 +287,9 @@ doc.transaction(function(tx) {
   That way we can prevent the blur event to be fired on the surface.
 - The root element of a Substance Surface must be set contenteditable
 
+-->
 
 ## Development
-
 
 ### Testing
 
