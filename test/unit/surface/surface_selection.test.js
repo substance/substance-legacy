@@ -2,9 +2,7 @@
 
 var SurfaceSelection = require('../../../src/surface/surface_selection');
 
-// HACK: by now karma.qunit does not create qunit-fixture so we do need to create it on our own
-QUnit.uiModule('Unit/Substance.Surface/Selection', {
-});
+QUnit.uiModule('Unit/Substance.Surface/Selection');
 
 // Fixtures
 var singlePropertyFixture = [
@@ -74,8 +72,7 @@ var wrappedTextNodesWithExternals = [
 ].join('');
 
 QUnit.test("Get coordinate for collapsed selection", function(assert) {
-  var el = window.document.querySelector('#qunit-fixture');
-  el.innerHTML = singlePropertyFixture;
+  var el = $('#qunit-fixture').html(singlePropertyFixture)[0];
   var surfaceSelection = new SurfaceSelection(el);
   var node = el.querySelector('#test1').childNodes[0].childNodes[0];
   var offset = 5;
@@ -86,8 +83,7 @@ QUnit.test("Get coordinate for collapsed selection", function(assert) {
 });
 
 QUnit.test("Search coordinate (before)", function(assert) {
-  var el = window.document.querySelector('#qunit-fixture');
-  el.innerHTML = mixedFixture;
+  var el = $('#qunit-fixture').html(mixedFixture)[0];
   var surfaceSelection = new SurfaceSelection(el);
   var node = el.querySelector('#before').childNodes[0];
   var offset = 1;
@@ -98,8 +94,7 @@ QUnit.test("Search coordinate (before)", function(assert) {
 });
 
 QUnit.test("Search coordinate (between)", function(assert) {
-  var el = window.document.querySelector('#qunit-fixture');
-  el.innerHTML = mixedFixture;
+  var el = $('#qunit-fixture').html(mixedFixture)[0];
   var surfaceSelection = new SurfaceSelection(el);
   var node = el.querySelector('#between').childNodes[0];
   var offset = 1;
@@ -110,8 +105,7 @@ QUnit.test("Search coordinate (between)", function(assert) {
 });
 
 QUnit.test("Search coordinate (between, left)", function(assert) {
-  var el = window.document.querySelector('#qunit-fixture');
-  el.innerHTML = mixedFixture;
+  var el = $('#qunit-fixture').html(mixedFixture)[0];
   var surfaceSelection = new SurfaceSelection(el);
   var node = el.querySelector('#between').childNodes[0];
   var offset = 1;
@@ -122,8 +116,7 @@ QUnit.test("Search coordinate (between, left)", function(assert) {
 });
 
 QUnit.test("Search coordinate (after)", function(assert) {
-  var el = window.document.querySelector('#qunit-fixture');
-  el.innerHTML = mixedFixture;
+  var el = $('#qunit-fixture').html(mixedFixture)[0];
   var surfaceSelection = new SurfaceSelection(el);
   var node = el.querySelector('#after').childNodes[0];
   var offset = 1;
@@ -134,8 +127,7 @@ QUnit.test("Search coordinate (after)", function(assert) {
 });
 
 QUnit.test("coordinate via search", function(assert) {
-  var el = window.document.querySelector('#qunit-fixture');
-  el.innerHTML = mixedFixture;
+  var el = $('#qunit-fixture').html(mixedFixture)[0];
   var surfaceSelection = new SurfaceSelection(el);
   var node = el.querySelector('#between').childNodes[0];
   var offset = 1;
@@ -146,8 +138,7 @@ QUnit.test("coordinate via search", function(assert) {
 });
 
 QUnit.test("coordinate for empty paragraph", function(assert) {
-  var el = window.document.querySelector('#qunit-fixture');
-  el.innerHTML = emptyParagraphFixture;
+  var el = $('#qunit-fixture').html(emptyParagraphFixture)[0];
   var surfaceSelection = new SurfaceSelection(el);
   var node = el.querySelector('#test1');
   var offset = 0;
@@ -158,8 +149,7 @@ QUnit.test("coordinate for empty paragraph", function(assert) {
 });
 
 QUnit.test("coordinate from wrapped text nodes", function(assert) {
-  var el = window.document.querySelector('#qunit-fixture');
-  el.innerHTML = wrappedTextNodes;
+  var el = $('#qunit-fixture').html(wrappedTextNodes)[0];
   var surfaceSelection = new SurfaceSelection(el);
   var node = el.querySelector('#test1_content');
   var offset = 4;
@@ -170,8 +160,7 @@ QUnit.test("coordinate from wrapped text nodes", function(assert) {
 });
 
 QUnit.test("coordinate from wrapped text nodes with externals", function(assert) {
-  var el = window.document.querySelector('#qunit-fixture');
-  el.innerHTML = wrappedTextNodesWithExternals;
+  var el = $('#qunit-fixture').html(wrappedTextNodesWithExternals)[0];
   var surfaceSelection = new SurfaceSelection(el);
   var node = el.querySelector('#test1_content');
   var offset = 6;
@@ -182,8 +171,7 @@ QUnit.test("coordinate from wrapped text nodes with externals", function(assert)
 });
 
 QUnit.test("a selection spanning over a external at the end of a property", function(assert) {
-  var el = window.document.querySelector('#qunit-fixture');
-  el.innerHTML = wrappedTextNodesWithExternals;
+  var el = $('#qunit-fixture').html(wrappedTextNodesWithExternals)[0];
   var surfaceSelection = new SurfaceSelection(el);
   var anchorNode = el.querySelector('#before-last').childNodes[0];
   var anchorOffset = 2;
