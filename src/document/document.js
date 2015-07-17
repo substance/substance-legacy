@@ -303,7 +303,7 @@ Document.Prototype = function() {
   };
 
   this.getClipboardImporter = function() {
-    return new ClipboardImporter();
+    return new ClipboardImporter({ schema: this.getSchema()});
   };
 
   this.getClipboardExporter = function() {

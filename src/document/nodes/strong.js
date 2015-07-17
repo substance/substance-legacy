@@ -13,7 +13,7 @@ var Strong = Annotation.extend({
 Strong.static.tagName = 'strong';
 
 Strong.static.matchElement = function($el) {
-  return $el.is(Strong.static.tagName);
+  return $el.is('strong,b');
 };
 
 module.exports = Strong;

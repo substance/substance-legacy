@@ -107,6 +107,8 @@ Clipboard.Prototype = function() {
       content.loadSeed(JSON.parse(data));
       var plainText = "";
       var pasteContent = content.get('clipboard_content');
+      // TODO: try to get rid of that here.
+      // we need a document.toPlainText() for that
       if (pasteContent.nodes.length > 0) {
         var first = pasteContent.getFirstComponent();
         var last = pasteContent.getLastComponent();
@@ -141,7 +143,8 @@ Clipboard.Prototype = function() {
     try {
       var content = doc.newInstance();
       content._setForClipboard(true);
-      
+      // TODO: the clipboard importer should make sure
+      // that the container exists
       if (!content.get('clipboard_content')) {
         content.create({
           id: 'clipboard_content',
@@ -206,6 +209,8 @@ Clipboard.Prototype = function() {
       var doc = surface.getDocument();
       var defaultTextType = doc.getSchema().getDefaultTextType();
       surface.transaction(function(tx, args) {
+        // TODO: this implementation should not do this
+        // instead the 'paste' transformation should be able to do it.
         var paraText = plainText.split(/\s*\n\s*\n/);
         var pasteDoc = doc.newInstance();
         pasteDoc._setForClipboard(true);
