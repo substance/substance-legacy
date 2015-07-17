@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "gulp test",
+    "test": "gulp build-test && gulp test",
     "karma": "./node_modules/.bin/karma start"
   },
   "author": "",
