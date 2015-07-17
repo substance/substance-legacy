@@ -1,3 +1,5 @@
+'use strict';
+
 var Document = require('../../src/document');
 
 var MetaNode = Document.Node.extend({

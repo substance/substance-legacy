@@ -1,4 +1,5 @@
 "use strict";
+
 var _ = require('../../../helpers');
 var PathAdapter = require('../../../src/basics/path_adapter');
 var Operator = require('../../../src/operator');

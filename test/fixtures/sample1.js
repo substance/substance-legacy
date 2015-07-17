@@ -1,3 +1,5 @@
+'use strict';
+
 var Article = require('../test_article');
 
 module.exports = function sample1() {

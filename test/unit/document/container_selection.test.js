@@ -1,7 +1,6 @@
 'use strict';
 
-require('../init');
-require('../assert_helpers');
+require('../qunit_extensions');
 var sample = require('../../fixtures/container_anno_sample');
 
 QUnit.module('Unit/Substance.Document/ContainerSelection');

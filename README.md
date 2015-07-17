@@ -197,7 +197,7 @@ We bind some event handlers:
   - `onDocumentChange` to trigger an editor rerender if the container changes (a node is added or removed)
   - `onSelectionChanged` to update the tools based on the new document selection
 
-We'll look into those handler implementations later. First, let's render our document. 
+We'll look into those handler implementations later. First, let's render our document.
 
 #### Render the document
 
@@ -258,7 +258,7 @@ Essentially what we do is iterating over all nodes of our body container, determ
 
 ### Anatomy of a Substance Document
 
-TODO: describe 
+TODO: describe
 
 - Nodes
 - Properties
@@ -293,18 +293,24 @@ doc.transaction(function(tx) {
 
 ### Testing
 
-1. Running the QUnit test-suite in a browser for debugging:
+1. Running the test-suite headless (using Phantom.js)
 
 ```
-$ node test/serve
+$ npm test
 ```
 
-Then open http://localhost:4201 in your browser.
-
-2. Running test-suite using Karma to generate a code coverage report.
+2. Running the test-suite in a browser for debugging:
 
 ```
-$ karma start test/karma.conf.js
+$ npm start
+```
+
+Then open http://localhost:4201/test in your browser.
+
+3. Running test-suite using Karma to generate a code coverage report.
+
+```
+$ npm run karma
 ```
 
 The report will be stored in the `coverage` folder.

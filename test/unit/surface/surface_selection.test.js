@@ -1,10 +1,10 @@
 "use strict";
 
-require('../init');
-
 var SurfaceSelection = require('../../../src/surface/surface_selection');
 
-QUnit.module('Unit/Substance.Surface/Selection');
+// HACK: by now karma.qunit does not create qunit-fixture so we do need to create it on our own
+QUnit.uiModule('Unit/Substance.Surface/Selection', {
+});
 
 // Fixtures
 var singlePropertyFixture = [

@@ -1,6 +1,5 @@
 "use strict";
 
-require('../../init');
 var sample1 = require('../../../fixtures/sample1');
 var insertText = require('../../../../src/document/transformations/insert_text');
 

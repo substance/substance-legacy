@@ -1,3 +1,5 @@
+var path = require('path');
+var glob = require('glob');
 var gulp = require('gulp');
 var source = require('vinyl-source-stream');
 var buffer = require('vinyl-buffer');
@@ -10,6 +12,8 @@ var yuidoc =  require('gulp-yuidoc');
 var browserify = require('browserify');
 var uglify = require('gulp-uglify');
 var sourcemaps = require('gulp-sourcemaps');
+// var qunit = require('node-qunit-phantomjs');
+var qunit = require('gulp-qunit');
 
 gulp.task('doc', function() {
   return gulp.src(["index.js", "./src/**/*.js"])
@@ -38,6 +42,27 @@ gulp.task('build', ['lint'], function() {
     .on('error', gutil.log)
     .pipe(sourcemaps.write('./'))
     .pipe(gulp.dest('./dist'));
+});
+
+gulp.task('build-test', function() {
+  return glob("test/**/*.test.js", {}, function (err, testfiles) {
+    browserify({ debug: true })
+    .add(testfiles.map(function(file) {
+      return path.join(__dirname, file);
+    }))
+    .bundle()
+    .pipe(source('test.js'))
+    .pipe(buffer())
+    .pipe(sourcemaps.init({loadMaps: true}))
+    .on('error', gutil.log)
+    .pipe(sourcemaps.write('./'))
+    .pipe(gulp.dest('./test/tmp'));
+  });
+});
+
+gulp.task('test', ['build-test'], function() {
+  return gulp.src('./test/index.html')
+    .pipe(qunit());
 });
 
 gulp.task('default', ['build']);

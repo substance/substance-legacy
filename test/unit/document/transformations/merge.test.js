@@ -1,7 +1,6 @@
 "use strict";
 
-require('../../init');
-require('../../assert_helpers');
+require('../../qunit_extensions');
 var sample1 = require('../../../fixtures/sample1');
 var Document = require('../../../../src/document');
 var merge = Document.Transformations.merge;

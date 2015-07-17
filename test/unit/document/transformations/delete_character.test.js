@@ -1,6 +1,5 @@
 "use strict";
 
-require('../../init');
 var sample1 = require('../../../fixtures/sample1');
 var Document = require('../../../../src/document');
 var deleteCharacter = Document.Transformations.deleteCharacter;

@@ -1,3 +1,5 @@
+'use strict';
+
 var Document = require('../../src/document');
 var MetaNode = require('./test_article_meta');
 var TestNode = require('./test_node');

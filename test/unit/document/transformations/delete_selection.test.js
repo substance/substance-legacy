@@ -1,6 +1,5 @@
 "use strict";
 
-require('../../init');
 var sample1 = require('../../../fixtures/sample1');
 var containerSample = require('../../../fixtures/container_anno_sample');
 var Document = require('../../../../src/document');

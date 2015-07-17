@@ -3,8 +3,9 @@
 module.exports = function(config) {
   config.set({
     basePath: '',
-    frameworks: ['qunit', 'commonjs'],
+    frameworks: ['qunit', 'commonjs', 'jquery-2.1.0'],
     plugins: [
+      'karma-jquery',
       'karma-qunit',
       'karma-chrome-launcher',
       'karma-commonjs',
@@ -13,17 +14,21 @@ module.exports = function(config) {
     files: [
       'index.js',
       'helpers.js',
+      'document.js',
       {pattern: 'test/public/jquery.js'},
       {pattern: 'src/**/*.js'},
       {pattern: 'node_modules/lodash/**/*.js'},
-      {pattern: 'test/**/*.test.js'}
+      {pattern: 'test/fixtures/*.js'},
+      {pattern: 'test/test_article/*.js'},
+      {pattern: 'test/unit/*.js'},
+      {pattern: 'test/unit/**/*.test.js'}
     ],
     exclude: [
     ],
     preprocessors: {
       "*.js": ["commonjs"],
       "src/**/*.js": ["commonjs"],
-      "test/**/*.test.js": ["commonjs"],
+      "test/**/*.js": ["commonjs"],
       "node_modules/lodash/**/*.js": ["commonjs"],
       // compute test coverage only for the real modules
       "src/!(basics)/**/!(index).js": ["coverage"],

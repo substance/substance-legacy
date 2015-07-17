@@ -1,4 +1,5 @@
 "use strict";
+
 var _ = require('../../../helpers');
 var Operator = require('../../../src/operator');
 var TextOperation = Operator.TextOperation;

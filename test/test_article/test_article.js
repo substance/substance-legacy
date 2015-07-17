@@ -1,3 +1,5 @@
+'use strict';
+
 var OO = require('../../src/basics/oo');
 var Document = require('../../document');
 var schema = require('./test_schema');
