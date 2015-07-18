@@ -1,11 +1,9 @@
 # Substance
 
-Substance is a JavaScript library for manipulating documents based on data. It enables you to build completely custom web-based editors.
-
-See Substance in action:
+Substance is a JavaScript library for manipulating documents based on data. It enables you to build completely custom web-based editors. See Substance in action:
 
 - **[Substance HTML Editor](http://cdn.substance.io/starter)** - A minimal HTML editor component based on Substance
-- **[Science Writer](http://cdn.substance.io/science-writer)** - A full-fledged scientific editor
+- **[Lens Writer](http://cdn.substance.io/lens-writer)** - A full-fledged scientific editor
 - **[Archivist Writer](http://cdn.substance.io/archivist-composer)** - A modern interface for tagging entities and subjects in digital archives
 
 ## Motivation
@@ -16,10 +14,116 @@ With Substance you can:
 
 - Define a *custom article schema*
 - Manipulate content and annotations using *operations* and *transactions*
-- Define custom HTML structure and attach a `Substance Surface` on it to make it editable
+- Define a custom HTML structure and attach a `Substance Surface` on it to make it editable
 - Implement custom tools for any possible task like toggling annotations, inserting content or replacing text
 - Control *undo/redo* behavior and *copy&paste*
 - and more.
+
+## Getting started
+
+A good way to get started with Substance is checking out our fully customizable and highly reliable HTML Editor component. Unlike most web-based editors, Substance operates on a Javascript data model, and uses HTML just as an input and output format. You can inject the editor using `React.render`.
+
+```js
+var HtmlEditor = require('substance-html-editor');
+
+React.render(
+  $$(HtmlEditor, {
+    ref: 'htmlEditor',
+    content: '<p>Hello <strong>world</strong></p><p>Some <em>emphasized</em> text</p>',
+    toolbar: Toolbar,
+    enabledTools: ["text", "strong", "emphasis"],
+    onContentChanged: function(doc, change) {
+      console.log('new content', doc.toHtml());
+    }
+  }),
+  document.getElementById('editor_container')
+);
+```
+
+Please see the [README](https://github.com/substance/html-editor) of HtmlEditor for configuration options.
+
+## Defining custom article formats.
+
+Substance allows you to define completely custom article formats. 
+
+```js
+var Paragraph = Substance.Document.Paragraph;
+var Emphasis = Substance.Document.Emphasis;
+var Strong = Substance.Document.Strong;
+
+var Highlight = Document.ContainerAnnotation.extend({
+  name: 'highlight',
+  properties: {
+    created_at: 'date'
+  }
+});
+
+var schema = new Document.Schema("my-article", "1.0.0");
+schema.getDefaultTextType = function() {
+  return "paragraph";
+};
+schema.addNodes([Paragraph, Emphasis, Strong, Highlight]);
+```
+
+A very simple one is the [HtmlArticle specification](https://github.com/substance/html-editor/blob/master/src/html_article.js) used by our HtmlEditor. Lens Writer defines a [scientific article](https://github.com/substance/lens-writer/tree/master/lib/article) including bib items and figures with captions etc.
+
+
+## Manipulated documents programmatically
+
+Substance documents can be manipulated incrementally using simple operations. Let's grab an existing article implementation and create instances for it.
+
+```js
+var doc = new RichTextArticle();
+```
+
+Create several paragraph nodes
+
+```js
+doc.create({
+  id: "p1",
+  type: "paragraph",
+  content: "Hi I am a Substance paragraph."
+});
+
+doc.create({
+  id: "p2",
+  type: "paragraph",
+  content: "And I am the second pargraph"
+});
+```
+
+A Substance document works like an object store, you can create as many nodes as you wish and assign unique id's to them. However in order to show up as content, we need to show them on a container.
+
+```js
+// Get the body container
+var body = doc.get('body');
+
+body.show('p1');
+body.show('p2');
+```
+
+Now let's make a **strong** annotation. With Substance you store annotations separate from the text. Annotations are just regular nodes in the document. They refer to a certain range (startOffset, endOffset) in a text property (path).
+
+```js
+doc.create({
+  "id": "s1",
+  "type": "strong",
+  "path": [
+    "p1",
+    "content"
+  ],
+  "startOffset": 10,
+  "endOffset": 19
+});
+```
+
+
+## Developing editors
+
+In order to build your own editor based on Substance we recommend that you poke into the code of existing editors. HtmlEditor implements an editor for HTML content in [under 200 lines of code](https://github.com/substance/html-editor/blob/master/src/html_editor.js).
+
+We also provide 
+
 
 <!-- ## Getting started
 
