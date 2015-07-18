@@ -2,7 +2,7 @@
 
 Substance is a JavaScript library for manipulating documents based on data. It enables you to build completely custom web-based editors. See Substance in action:
 
-- **[Substance HTML Editor](http://cdn.substance.io/starter)** - A minimal HTML editor component based on Substance
+- **[Substance HTML Editor](http://cdn.substance.io/html-editor)** - A minimal HTML editor component based on Substance
 - **[Lens Writer](http://cdn.substance.io/lens-writer)** - A full-fledged scientific editor
 - **[Archivist Writer](http://cdn.substance.io/archivist-composer)** - A modern interface for tagging entities and subjects in digital archives
 
@@ -102,7 +102,7 @@ body.show('p1');
 body.show('p2');
 ```
 
-Now let's make a **strong** annotation. With Substance you store annotations separate from the text. Annotations are just regular nodes in the document. They refer to a certain range (startOffset, endOffset) in a text property (path).
+Now let's make a **strong** annotation. In Substance annotations are stored separately from the text. Annotations are just regular nodes in the document. They refer to a certain range (`startOffset, endOffset`) in a text property (`path`).
 
 ```js
 doc.create({
