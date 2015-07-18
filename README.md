@@ -68,7 +68,7 @@ schema.addNodes([Paragraph, Emphasis, Strong, Highlight]);
 A very simple one is the [HtmlArticle specification](https://github.com/substance/html-editor/blob/master/src/html_article.js) used by our HtmlEditor. Lens Writer defines a [scientific article](https://github.com/substance/lens-writer/tree/master/lib/article) including bib items and figures with captions etc.
 
 
-## Manipulated documents programmatically
+## Manipulate documents programmatically
 
 Substance documents can be manipulated incrementally using simple operations. Let's grab an existing article implementation and create instances for it.
 
@@ -76,54 +76,78 @@ Substance documents can be manipulated incrementally using simple operations. Le
 var doc = new RichTextArticle();
 ```
 
-Create several paragraph nodes
+When you want to update a document, you should wrap your changes in a transaction, so you don't end up in inconsistent in-between states. The API is fairly easy. Let's create several paragraph nodes in one transaction
 
 ```js
-doc.create({
-  id: "p1",
-  type: "paragraph",
-  content: "Hi I am a Substance paragraph."
+doc.transaction(function(tx) {
+  tx.create({
+    id: "p1",
+    type: "paragraph",
+    content: "Hi I am a Substance paragraph."
+  });
+
+  tx.create({
+    id: "p2",
+    type: "paragraph",
+    content: "And I am the second pargraph"
+  });
 });
 
-doc.create({
-  id: "p2",
-  type: "paragraph",
-  content: "And I am the second pargraph"
-});
+
 ```
 
 A Substance document works like an object store, you can create as many nodes as you wish and assign unique id's to them. However in order to show up as content, we need to show them on a container.
 
 ```js
-// Get the body container
-var body = doc.get('body');
+doc.transaction(function(tx) {
+  // Get the body container
+  var body = tx.get('body');
 
-body.show('p1');
-body.show('p2');
+  body.show('p1');
+  body.show('p2');
+});
 ```
 
 Now let's make a **strong** annotation. In Substance annotations are stored separately from the text. Annotations are just regular nodes in the document. They refer to a certain range (`startOffset, endOffset`) in a text property (`path`).
 
 ```js
-doc.create({
-  "id": "s1",
-  "type": "strong",
-  "path": [
-    "p1",
-    "content"
-  ],
-  "startOffset": 10,
-  "endOffset": 19
+doc.transaction(function(tx) {
+  tx.create({
+    "id": "s1",
+    "type": "strong",
+    "path": [
+      "p1",
+      "content"
+    ],
+    "startOffset": 10,
+    "endOffset": 19
+  });
 });
 ```
-
 
 ## Developing editors
 
 In order to build your own editor based on Substance we recommend that you poke into the code of existing editors. HtmlEditor implements an editor for HTML content in [under 200 lines of code](https://github.com/substance/html-editor/blob/master/src/html_editor.js).
 
-We also provide 
 
+### Editor initialization
+
+Editors to setup a bit of Substance infrastructure first, most importantly a Substance Surface, that maps DOM selections to internal document selections. Here's the most important parts from the initialization phase.
+
+```js
+this.surfaceManager = new Substance.Surface.SurfaceManager(doc);
+this.clipboard = new Substance.Surface.Clipboard(this.surfaceManager, doc.getClipboardImporter(), doc.getClipboardExporter());
+var editor = new Substance.Surface.ContainerEditor('body');
+this.surface = new Surface(this.surfaceManager, doc, editor);
+```
+
+A Surface instance requires a `SurfaceManager`, which keeps track of multiple Surfaces and dispatches to the currently active one. It also requires an editor. There are two kinds of editors: A ContainerEditor manages a sequence of nodes, including breaking and merging of text nodes. A FormEditor by contrast allows you to define a fixed structure of your editable content. Furthermore we initialized a clipboard instance and tie it to the Surface Manager.
+
+We also setup a registry for components (such as Paragraph) and tools (e.g. EmphasisTool, StrongTrool). Our editor will then be able to dynamically retrieve the right view component for a certain node type.
+
+### 2-column editing
+
+We provide a framework, that allows building 
 
 <!-- ## Getting started
 
