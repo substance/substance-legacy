@@ -12,9 +12,6 @@ var ContainerAnnotationIndex = function(doc) {
   this.indexes = {};
   this.containers = {};
   this.containerAnnotations = {};
-
-  // connect with high-priority so that gets updated before any UI
-  doc.connect(this, { "document:changed": this.onDocumentChange }, 1000);
 };
 
 ContainerAnnotationIndex.Prototype = function() {

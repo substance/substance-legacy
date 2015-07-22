@@ -144,7 +144,10 @@ Object.defineProperties(ContainerAnnotation.Fragment.prototype, {
   },
   endOffset: {
     get: function() {
-      return ( (this.mode === "end" || this.mode === "property") ? this.anno.endOffset : this.anno.getDocument().get(this.path).length);
+      var doc = this.anno.getDocument();
+      var textProp = doc.get(this.path);
+      var length = textProp.length;
+      return ( (this.mode === "end" || this.mode === "property") ? this.anno.endOffset : length);
     },
     set: function() { throw new Error('Immutable!'); }
   },
