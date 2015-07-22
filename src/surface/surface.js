@@ -141,7 +141,10 @@ Surface.Prototype = function() {
 
     // Mouse Events
     //
-    this.$element.on( 'mousedown', this._onMouseDown );
+    this.$element.on('mousedown', this._onMouseDown);
+
+    // disable drag'n'drop
+    this.$element.on('dragstart', this.onDragStart);
 
     // Document Change Events
     //
@@ -175,6 +178,9 @@ Surface.Prototype = function() {
     // Mouse Events
     //
     this.$element.off('mousedown', this._onMouseDown );
+
+    // enable drag'n'drop
+    this.$element.off('dragstart', this.onDragStart);
 
     // Keyboard Events
     //
@@ -559,6 +565,11 @@ Surface.Prototype = function() {
     //      - Delete
     //      - Note: copy, cut, paste work just fine
     console.info("We want to enable a DOM MutationObserver which catches all changes made by native interfaces (such as spell corrections, etc). Lookout for this message and try to set Surface.skipNextObservation=true when you know that you will mutate the DOM.");
+  };
+
+  this.onDragStart = function(e) {
+    e.preventDefault();
+    e.stopPropagation();
   };
 
   // ###########################################
