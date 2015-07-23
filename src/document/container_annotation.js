@@ -1,6 +1,8 @@
 'use strict';
 
-var Substance = require('../basics');
+var _ = require('../basics/helpers');
+var OO = require('../basics/oo');
+var EventEmitter = require('../basics/event_emitter');
 var Node = require('./node');
 var Selection = require('./selection');
 
@@ -81,13 +83,13 @@ var ContainerAnnotation = Node.extend({
     if (!sel.isContainerSelection()) {
       throw new Error('Cannot change to ContainerAnnotation.');
     }
-    if (!Substance.isEqual(this.startPath, sel.start.path)) {
+    if (!_.isEqual(this.startPath, sel.start.path)) {
       tx.set([this.id, 'startPath'], sel.start.path);
     }
     if (this.startOffset !== sel.start.offset) {
       tx.set([this.id, 'startOffset'], sel.start.offset);
     }
-    if (!Substance.isEqual(this.endPath, sel.end.path)) {
+    if (!_.isEqual(this.endPath, sel.end.path)) {
       tx.set([this.id, 'endPath'], sel.end.path);
     }
     if (this.endOffset !== sel.end.offset) {
@@ -97,7 +99,8 @@ var ContainerAnnotation = Node.extend({
 
 });
 
-ContainerAnnotation.Anchor = function(anno, isStart) {
+ContainerAnnotation.Anchor = function Anchor(anno, isStart) {
+  EventEmitter.call(this);
   this.type = "container-annotation-anchor";
   this.anno = anno;
   // TODO: remove this.node in favor of this.anno
@@ -109,6 +112,8 @@ ContainerAnnotation.Anchor = function(anno, isStart) {
 };
 
 ContainerAnnotation.Anchor.Prototype = function() {
+  _.extend(this, EventEmitter.prototype);
+
   this.zeroWidth = true;
 
   this.getTypeNames = function() {
@@ -116,9 +121,11 @@ ContainerAnnotation.Anchor.Prototype = function() {
   };
 };
 
-Substance.initClass(ContainerAnnotation.Anchor);
+OO.initClass(ContainerAnnotation.Anchor);
 
-ContainerAnnotation.Fragment = function(anno, path, mode) {
+ContainerAnnotation.Fragment = function Fragment(anno, path, mode) {
+  EventEmitter.call(this);
+
   this.type = "container_annotation_fragment";
   this.anno = anno;
   // HACK: id is necessary for Annotator
@@ -128,12 +135,14 @@ ContainerAnnotation.Fragment = function(anno, path, mode) {
 };
 
 ContainerAnnotation.Fragment.Prototype = function() {
+  _.extend(this, EventEmitter.prototype);
+
   this.getTypeNames = function() {
     return [this.type];
   };
 };
 
-Substance.initClass(ContainerAnnotation.Fragment);
+OO.initClass(ContainerAnnotation.Fragment);
 
 Object.defineProperties(ContainerAnnotation.Fragment.prototype, {
   startOffset: {

@@ -690,7 +690,7 @@ Surface.Prototype = function() {
 
 };
 
-OO.inherit( Surface, Substance.EventEmitter );
+OO.inherit(Surface, Substance.EventEmitter);
 
 Surface.Keys =  {
   UNDEFINED: 0,
