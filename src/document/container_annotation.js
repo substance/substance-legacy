@@ -108,8 +108,7 @@ var ContainerAnnotation = Node.extend({
     }
   },
 
-  // Note: this recreates the fragments on every call
-  // TODO: we could be smarter here on the long run
+  // FIXME: this implementation will not prune old fragments
   getFragments: function() {
     if (!this._fragments) {
       this._fragments = new PathAdapter();

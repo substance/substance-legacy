@@ -335,6 +335,10 @@ Container.Component = function Component(path, rootId) {
 
 Container.Component.Prototype = function() {
 
+  this.getPath = function() {
+    return this.path;
+  };
+
   this.hasPrevious = function() {
     return !!this.previous;
   };

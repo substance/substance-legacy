@@ -22,13 +22,29 @@ NotifyByPathProxy.Prototype = function() {
       }
     }
 
+    function _updatedContainerAnno(containerId, startPath, endPath, op) {
+      var container = doc.get(containerId);
+      var startComp = container.getComponent(startPath);
+      var endComp = container.getComponent(endPath);
+      if (startComp && endComp) {
+        var startIdx = startComp.getIndex();
+        var endIdx = endComp.getIndex();
+        var comp = startComp;
+        for (var i = startIdx; comp && i <= endIdx; i++, comp = comp.getNext()) {
+          _updated(comp.getPath(), op);
+        }
+      } else {
+        _updated(startPath, op);
+        _updated(endPath, op);
+      }
+    }
+
     _.each(change.ops, function(op) {
       if ( (op.type === "create" || op.type === "delete") && (op.val.path || op.val.startPath)) {
         if (op.val.path) {
           _updated(op.val.path, op);
         } else if (op.val.startPath) {
-          _updated(op.val.startPath, op);
-          _updated(op.val.endPath, op);
+          _updatedContainerAnno(op.val.container, op.val.startPath, op.val.endPath, op);
         }
       }
       else if (op.type === "set" && (op.path[1] === "path" || op.path[1] === "startPath" || op.path[1] === "endPath")) {
@@ -41,8 +57,7 @@ NotifyByPathProxy.Prototype = function() {
           if (anno.path) {
             _updated(anno.path, op);
           } else {
-            _updated(anno.startPath, op);
-            _updated(anno.endPath, op);
+            _updatedContainerAnno(anno.container, anno.startPath, anno.endPath, op);
           }
         }
       }
