@@ -155,6 +155,8 @@ var ContainerAnnotation = Node.extend({
         if (!fragment) {
           fragment = new ContainerAnnotation.Fragment(this, comp.path, "inner");
           this._fragments.set(fragment.path, fragment);
+        } else if (fragment.mode !== "inner") {
+          fragment.mode = "inner";
         }
         fragments.push(fragment);
       }
@@ -162,7 +164,7 @@ var ContainerAnnotation = Node.extend({
       if (!fragment) {
         fragment = new ContainerAnnotation.Fragment(this, endAnchor.path, "end");
         this._fragments.set(fragment.path, fragment);
-      } else if (!fragment.mode === "end") {
+      } else if (fragment.mode !== "end") {
         fragment.mode = "end";
       }
       fragments.push(fragment);
