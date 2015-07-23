@@ -33,11 +33,6 @@ ContainerAnnotationIndex.Prototype = function() {
     this._initialize(this.doc.data);
   };
 
-  // this.reset = function(data) {
-  //   this.indexes = {};
-  //   this._initialize(data);
-  // };
-
   this._initialize = function(data) {
     _.each(data.getNodes(), function(node) {
       if (this.select(node)) {
@@ -65,27 +60,6 @@ ContainerAnnotationIndex.Prototype = function() {
       }
     }
   };
-
-  // this.delete = function(node) {
-  //   if (node.type === "container") {
-  //     delete this.containers[node.id];
-  //     delete this.indexes[node.id];
-  //   } else if (node.isInstanceOf('container_annotation')) {
-  //     var containerId = node.container;
-  //     delete this.containerAnnotations[node.id];
-  //     this.recompute(containerId);
-  //   }
-  // };
-
-  // this.update = function(node, path, newValue, oldValue) {
-  //   /* jshint unused: false */
-  //   if (node.type === "container") {
-  //     this.recompute(node.id);
-  //   } else if (node.isInstanceOf('container_annotation')) {
-  //     var containerId = node.container;
-  //     this.recompute(containerId);
-  //   }
-  // };
 
   this.recompute = function(containerId) {
     var container = this.containers[containerId];

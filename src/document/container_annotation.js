@@ -5,6 +5,7 @@ var OO = require('../basics/oo');
 var EventEmitter = require('../basics/event_emitter');
 var Node = require('./node');
 var Selection = require('./selection');
+var PathAdapter = require('../basics/path_adapter');
 
 
 // Container Annotation
@@ -110,14 +111,25 @@ var ContainerAnnotation = Node.extend({
   // Note: this recreates the fragments on every call
   // TODO: we could be smarter here on the long run
   getFragments: function() {
+    if (!this._fragments) {
+      this._fragments = new PathAdapter();
+    }
     var fragments = [];
     var doc = this.getDocument();
     var startAnchor = this.getStartAnchor();
     var endAnchor = this.getEndAnchor();
     var container = doc.get(this.container);
+    var fragment;
     // if start and end anchors are on the same property, then there is only one fragment
     if (_.isEqual(startAnchor.path, endAnchor.path)) {
-      fragments.push(new ContainerAnnotation.Fragment(this, startAnchor.path, "property"));
+      fragment = this._fragments.get(startAnchor.path);
+      if (!fragment) {
+        fragment = new ContainerAnnotation.Fragment(this, startAnchor.path, "property");
+        this._fragments.set(fragment.path, fragment);
+      } else if (!fragment.mode === "property") {
+        fragment.mode = "property";
+      }
+      fragments.push(fragment);
     }
     // otherwise create a trailing fragment for the property of the start anchor,
     // full-spanning fragments for inner properties,
@@ -129,13 +141,32 @@ var ContainerAnnotation = Node.extend({
       if (!startComp || !endComp) {
         throw new Error('Could not find components of AbstractContainerAnnotation');
       }
-      fragments.push(new ContainerAnnotation.Fragment(this, startAnchor.path, "start"));
+      fragment = this._fragments.get(startAnchor.path);
+      if (!fragment) {
+        fragment = new ContainerAnnotation.Fragment(this, startAnchor.path, "start");
+        this._fragments.set(fragment.path, fragment);
+      } else if (fragment.mode !== "start") {
+        fragment.mode = "start";
+      }
+      fragments.push(fragment);
       for (var idx = startComp.idx + 1; idx < endComp.idx; idx++) {
         var comp = container.getComponentAt(idx);
         text = doc.get(comp.path);
-        fragments.push(new ContainerAnnotation.Fragment(this, comp.path, "inner"));
+        fragment = this._fragments.get(comp.path);
+        if (!fragment) {
+          fragment = new ContainerAnnotation.Fragment(this, comp.path, "inner");
+          this._fragments.set(fragment.path, fragment);
+        }
+        fragments.push(fragment);
       }
-      fragments.push(new ContainerAnnotation.Fragment(this, endAnchor.path, "end"));
+      fragment = this._fragments.get(endAnchor.path);
+      if (!fragment) {
+        fragment = new ContainerAnnotation.Fragment(this, endAnchor.path, "end");
+        this._fragments.set(fragment.path, fragment);
+      } else if (!fragment.mode === "end") {
+        fragment.mode = "end";
+      }
+      fragments.push(fragment);
     }
     this.fragments = fragments;
     return fragments;
