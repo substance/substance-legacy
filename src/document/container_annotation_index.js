@@ -89,10 +89,9 @@ ContainerAnnotationIndex.Prototype = function() {
 
   this.recompute = function(containerId) {
     var container = this.containers[containerId];
-    this.indexes[containerId] = new PathAdapter.Arrays();
-    var index = this.indexes[containerId];
+    var index = this.indexes[containerId] = new PathAdapter.Arrays();
     _.each(this.containerAnnotations, function(anno) {
-      var fragments = container.getAnnotationFragments(anno);
+      var fragments = anno.getFragments();
       _.each(fragments, function(frag) {
         index.add(frag.path, frag);
       });

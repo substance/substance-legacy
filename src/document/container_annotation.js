@@ -97,6 +97,50 @@ var ContainerAnnotation = Node.extend({
     }
   },
 
+  setActive: function(val) {
+    if (this.active !== val) {
+      this.active = val;
+      this.emit('active', val);
+      _.each(this.fragments, function(frag) {
+        frag.emit('active', val);
+      });
+    }
+  },
+
+  // Note: this recreates the fragments on every call
+  // TODO: we could be smarter here on the long run
+  getFragments: function() {
+    var fragments = [];
+    var doc = this.getDocument();
+    var startAnchor = this.getStartAnchor();
+    var endAnchor = this.getEndAnchor();
+    var container = doc.get(this.container);
+    // if start and end anchors are on the same property, then there is only one fragment
+    if (_.isEqual(startAnchor.path, endAnchor.path)) {
+      fragments.push(new ContainerAnnotation.Fragment(this, startAnchor.path, "property"));
+    }
+    // otherwise create a trailing fragment for the property of the start anchor,
+    // full-spanning fragments for inner properties,
+    // and one for the property containing the end anchor.
+    else {
+      var text = doc.get(startAnchor.path);
+      var startComp = container.getComponent(startAnchor.path);
+      var endComp = container.getComponent(endAnchor.path);
+      if (!startComp || !endComp) {
+        throw new Error('Could not find components of AbstractContainerAnnotation');
+      }
+      fragments.push(new ContainerAnnotation.Fragment(this, startAnchor.path, "start"));
+      for (var idx = startComp.idx + 1; idx < endComp.idx; idx++) {
+        var comp = container.getComponentAt(idx);
+        text = doc.get(comp.path);
+        fragments.push(new ContainerAnnotation.Fragment(this, comp.path, "inner"));
+      }
+      fragments.push(new ContainerAnnotation.Fragment(this, endAnchor.path, "end"));
+    }
+    this.fragments = fragments;
+    return fragments;
+  },
+
 });
 
 ContainerAnnotation.Anchor = function Anchor(anno, isStart) {
@@ -160,6 +204,12 @@ Object.defineProperties(ContainerAnnotation.Fragment.prototype, {
     },
     set: function() { throw new Error('Immutable!'); }
   },
+  active: {
+    get: function() {
+      return this.anno.active;
+    },
+    set: function() { throw new Error('Immutable!'); }
+  }
 });
 
 
