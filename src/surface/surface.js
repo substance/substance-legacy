@@ -672,6 +672,22 @@ Surface.Prototype = function() {
     this.placeCaretElement();
   };
 
+  // API for TextProperties
+  this.getAnnotationsForProperty = function(path) {
+    var doc = this.getDocument();
+    var annotations = doc.getIndex('annotations').get(path);
+    var containerName = this.getContainerName();
+    if (containerName) {
+      // Anchors
+      var anchors = doc.getIndex('container-annotation-anchors').get(path, containerName);
+      annotations = annotations.concat(anchors);
+      // Fragments
+      var fragments = doc.containerAnnotationIndex.getFragments(path, containerName);
+      annotations = annotations.concat(fragments);
+    }
+    return annotations;
+  };
+
 };
 
 OO.inherit( Surface, Substance.EventEmitter );
