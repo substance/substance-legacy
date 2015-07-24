@@ -19,5 +19,6 @@ Basics.EventEmitter = require('./event_emitter');
 Basics.Error = require('./error');
 Basics.Registry = require('./registry');
 Basics.Factory = require('./factory');
+_.extend(Basics, require('./tic'));
 
 module.exports = Basics;
