@@ -140,7 +140,9 @@ IncrementalData.Prototype = function() {
     } else {
       var value = this.get(path);
       var start, end, pos, val;
-      if (_.isString(value)) {
+      if (value === null || value === undefined) {
+        throw new Error('Property has not been initialized: ' + JSON.stringify(path));
+      } else if (_.isString(value)) {
         if (diff['delete']) {
           // { delete: [2, 5] }
           start = diff['delete'].start;
