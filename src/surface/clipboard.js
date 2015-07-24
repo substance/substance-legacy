@@ -32,7 +32,7 @@ var Clipboard = function(surfaceManager, htmlImporter, htmlExporter) {
 Clipboard.Prototype = function() {
 
   this.getSurface = function() {
-    return this.surfaceManager.getFocussedSurface();
+    return this.surfaceManager.getFocusedSurface();
   };
 
   this.attach = function(rootElement) {

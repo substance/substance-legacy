@@ -19,7 +19,7 @@ function Surface(surfaceManager, doc, editor, options) {
   options = options || {};
 
   this.__id__ = __id__++;
-  this.name = options.name || __id__;
+  this.name = options.name || this.__id__;
   this.doc = doc;
   this.surfaceManager = surfaceManager;
 

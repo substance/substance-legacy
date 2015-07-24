@@ -7,7 +7,7 @@ var Surface = require('./surface');
 var SurfaceManager = function(doc) {
   this.doc = doc;
   this.surfaces = {};
-  this.focussedSurface = null;
+  this.focusedSurface = null;
   this.stack = [];
   doc.connect(this, { 'document:changed': this.onDocumentChange }, {
     //lower priority so that everyting is up2date
@@ -33,8 +33,8 @@ SurfaceManager.Prototype = function() {
 
   this.unregisterSurface = function(surface) {
     delete this.surfaces[surface.getName()];
-    if (surface && this.focussedSurface === surface) {
-      this.focussedSurface = null;
+    if (surface && this.focusedSurface === surface) {
+      this.focusedSurface = null;
     }
   };
 
@@ -43,41 +43,43 @@ SurfaceManager.Prototype = function() {
   };
 
   this.didFocus = function(surface) {
-    if (this.focussedSurface && surface !== this.focussedSurface) {
-      this.focussedSurface.setFocused(false);
+    if (this.focusedSurface && surface !== this.focusedSurface) {
+      this.focusedSurface.setFocused(false);
     }
-    this.focussedSurface = surface;
+    this.focusedSurface = surface;
   };
 
-  this.getFocussedSurface = function() {
-    return this.focussedSurface;
+  this.getFocusedSurface = function() {
+    return this.focusedSurface;
   };
 
   this.onDocumentChange = function(change, info) {
     if (info.replay) {
       var selection = change.after.selection;
       var surfaceId = change.after.surfaceId;
-      var surface = this.surfaces[surfaceId];
-      if (surface) {
-        if (this.focussedSurface !== surface) {
-          this.didFocus(surface);
+      if (surfaceId) {
+        var surface = this.surfaces[surfaceId];
+        if (surface) {
+          if (this.focusedSurface !== surface) {
+            this.didFocus(surface);
+          }
+          surface.setSelection(selection);
+        } else {
+          console.warn('No surface with name', surfaceId);
         }
-        surface.setSelection(selection);
-      } else {
-        console.warn('No surface with name', surfaceId);
       }
     }
   };
 
   this.pushState = function() {
     var state = {
-      surface: this.focussedSurface,
+      surface: this.focusedSurface,
       selection: null
     }
-    if (this.focussedSurface) {
-      state.selection = this.focussedSurface.getSelection();
+    if (this.focusedSurface) {
+      state.selection = this.focusedSurface.getSelection();
     }
-    this.focussedSurface = null;
+    this.focusedSurface = null;
     this.stack.push(state);
   };
 
