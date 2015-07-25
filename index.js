@@ -1,11 +1,11 @@
 
-var Substance = require('./src/basics');
+var Substance = require('./basics');
 
-Substance.Data = require('./src/data');
-Substance.Document = require('./src/document');
-Substance.Operator = require('./src/operator');
-Substance.Surface = require('./src/surface');
+Substance.Data = require('./data');
+Substance.Document = require('./document');
+Substance.Operator = require('./operator');
+Substance.Surface = require('./surface');
 
-Substance._ = require('./src/basics/helpers');
+Substance._ = require('./basics/helpers');
 
 module.exports = Substance;

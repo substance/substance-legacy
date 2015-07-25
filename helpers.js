@@ -1,1 +1,1 @@
-module.exports = require('./src/basics/helpers');
+module.exports = require('./basics/helpers');

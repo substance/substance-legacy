@@ -1,6 +1,6 @@
 "use strict";
 
-var SurfaceSelection = require('../../../src/surface/surface_selection');
+var SurfaceSelection = require('../../../surface/surface_selection');
 
 QUnit.uiModule('Unit/Substance.Surface/Selection');
 

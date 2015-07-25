@@ -1,8 +1,8 @@
 "use strict";
 
 var _ = require('../../../helpers');
-var PathAdapter = require('../../../src/basics/path_adapter');
-var Operator = require('../../../src/operator');
+var PathAdapter = require('../../../basics/path_adapter');
+var Operator = require('../../../operator');
 var ObjectOperation = Operator.ObjectOperation;
 var ArrayOperation = Operator.ArrayOperation;
 var TextOperation = Operator.TextOperation;

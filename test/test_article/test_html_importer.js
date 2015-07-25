@@ -1,7 +1,7 @@
 'use strict';
 
-var OO = require('../../src/basics/oo');
-var Document = require('../../src/document');
+var OO = require('../../basics/oo');
+var Document = require('../../document');
 var schema = require('./test_schema');
 
 var HtmlImporter = Document.HtmlImporter;

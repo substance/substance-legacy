@@ -1,7 +1,7 @@
 "use strict";
 
 var sample1 = require('../../../fixtures/sample1');
-var Document = require('../../../../src/document');
+var Document = require('../../../../document');
 var deleteCharacter = Document.Transformations.deleteCharacter;
 
 QUnit.module('Unit/Substance.Document/Transformations/deleteCharacter');
