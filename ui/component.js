@@ -22,6 +22,11 @@ function Component(parent, props) {
   }
   this.__id__ = __id__++;
 
+  if (props && props.ref) {
+    this.refId = props.ref;
+    delete props.ref;
+  }
+
   this.parent = parent;
   this.children = [];
   this._childrenById = {};
@@ -187,6 +192,10 @@ Component.Prototype = function ComponentPrototype() {
     }
   };
 
+  this.getState = function() {
+    return this.state;
+  };
+
   this.setProps = function(newProps) {
     var needRerender = this.shouldRerender(newProps, this.getState());
     this.willUpdateProps(newProps);
@@ -271,8 +280,8 @@ Component.Prototype = function ComponentPrototype() {
       } else {
         this.children.push(child);
         this._childrenById[child.__id__] = child;
-        if (child.props.ref) {
-          this.refs[child.props.ref] = child;
+        if (child.refId) {
+          this.refs[child.refId] = child;
         }
         $el.append(child.$el);
       }
