@@ -53,6 +53,10 @@ Component.Prototype = function ComponentPrototype() {
     return {};
   };
 
+  this.getParent = function() {
+    return this.parent;
+  };
+
   this.createElement = function() {
     var $el = $('<' + this.tagName + '>');
     $el.addClass(this.classNames);
@@ -80,7 +84,7 @@ Component.Prototype = function ComponentPrototype() {
 
   this.rerender = function() {
     var oldChildren = this._childrenById;
-    var content = this.compileContent(this.render());
+    var content = this._compileContent(this.render());
     this._renderContent(content);
     // automatical unmounting unused children
     _.each(oldChildren, function(child, key) {
@@ -99,7 +103,7 @@ Component.Prototype = function ComponentPrototype() {
    * on this component and all of its children.
    */
   this.mount = function($el) {
-    var content = this.compileContent(this.render());
+    var content = this._compileContent(this.render());
     this._renderContent(content);
     $el.append(this.$el);
     // trigger didMount automatically if the given element is already in the DOM
@@ -150,11 +154,15 @@ Component.Prototype = function ComponentPrototype() {
   this.didMount = function() {};
 
   /**
-   * Removes
+   * Removes this component from its parent.
    */
   this.unmount = function() {
     this.triggerWillUnmount();
     this.$el.remove();
+    // TODO: do we need to remove this from parents children
+    // right now it feels like that it doesn't make a great difference
+    // because most often this method is called by the parent during rerendering
+    // and on other cases it would be gone after the next parent rerender.
     return this;
   };
 
@@ -167,10 +175,6 @@ Component.Prototype = function ComponentPrototype() {
 
   this.willUnmount = function() {
     console.log('Will unmount', this);
-  };
-
-  this.getParent = function() {
-    return this.parent;
   };
 
   this.send = function(action) {
@@ -196,9 +200,9 @@ Component.Prototype = function ComponentPrototype() {
     return this.state;
   };
 
+
   this.setProps = function(newProps) {
     var needRerender = this.shouldRerender(newProps, this.getState());
-    this.willUpdateProps(newProps);
     this._setProps(newProps);
     if (needRerender) {
       this.rerender();
@@ -209,9 +213,6 @@ Component.Prototype = function ComponentPrototype() {
     return this.props;
   };
 
-  this.willUpdateProps = function(newProps) {
-    /* jshint unused:false */
-  };
 
   var _isDocumentElement = function(el) {
     // Node.DOCUMENT_NODE = 9
@@ -233,7 +234,7 @@ Component.Prototype = function ComponentPrototype() {
     return false;
   };
 
-  this.compileContent = function(contentData) {
+  this._compileContent = function(contentData) {
     if (!_.isArray(contentData)) {
       contentData = [contentData];
     }
@@ -245,11 +246,11 @@ Component.Prototype = function ComponentPrototype() {
         content.push(data);
       } else if (data.type === 'element') {
         child = new Component.HtmlElement(data.tagName, this, data.props);
-        childContent = child.compileContent(data.children);
+        childContent = child._compileContent(data.children);
         child._renderContent(childContent);
       } else if (data.type === 'class') {
         child = new data.ComponentClass(this, data.props);
-        childContent = child.compileContent(child.render());
+        childContent = child._compileContent(child.render());
         child._renderContent(childContent);
       } else if (data.type === 'component') {
         child = data.component;
@@ -258,7 +259,7 @@ Component.Prototype = function ComponentPrototype() {
         }
         // render the component if it has never been rendered before
         if (child._virgin) {
-          childContent = child.compileContent(child.render());
+          childContent = child._compileContent(child.render());
           child._renderContent(childContent);
         }
       }
