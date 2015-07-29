@@ -32,6 +32,8 @@ function Component(parent, props) {
   this.$el = this.createElement();
   // gather context from parent components (dependency injection)
   this.context = this._collectContext();
+
+  this._virgin = true;
 }
 
 Component.Prototype = function ComponentPrototype() {
@@ -82,6 +84,7 @@ Component.Prototype = function ComponentPrototype() {
         child.unmount();
       }
     }, this);
+    return this;
   };
 
   /**
@@ -203,7 +206,6 @@ Component.Prototype = function ComponentPrototype() {
 
   var _isDocumentElement = function(el) {
     // Node.DOCUMENT_NODE = 9
-    // TODO: only works in browser
     return (el.nodeType === 9);
   };
 
@@ -245,6 +247,11 @@ Component.Prototype = function ComponentPrototype() {
         if (child.parent !== this) {
           throw new Error('Child has not been created for this component.');
         }
+        // render the component if it has never been rendered before
+        if (child._virgin) {
+          childContent = child.compileContent(child.render());
+          child._renderContent(childContent);
+        }
       }
       if (child) {
         content.push(child);
@@ -270,6 +277,7 @@ Component.Prototype = function ComponentPrototype() {
         $el.append(child.$el);
       }
     }, this);
+    delete this._virgin;
   };
 
   this._collectActionHandlers = function() {
@@ -352,6 +360,7 @@ Component.$$ = function() {
   } else if (arguments[0] instanceof Component) {
     return {
       type: 'component',
+      component: arguments[0],
       props: props,
       children: children
     };
