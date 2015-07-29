@@ -289,20 +289,6 @@ Component.Prototype = function ComponentPrototype() {
     delete this._virgin;
   };
 
-  this._collectActionHandlers = function() {
-    var args = [];
-    var ctor = this.constructor;
-    var proto = ctor.prototype;
-    while(proto) {
-      if (proto.actions) {
-        args.unshift(proto.actions);
-      }
-      proto = proto.prototype;
-    }
-    args.push({});
-    return _.extend.apply(null, args);
-  };
-
   this._collectContext = function() {
     var args = [];
     var comp = this;
