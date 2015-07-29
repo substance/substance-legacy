@@ -298,7 +298,7 @@ Component.Prototype = function ComponentPrototype() {
     var args = [];
     var comp = this;
     while(comp && comp instanceof Component) {
-      var context = comp.getContext();
+      var context = comp.childContext;
       if (context) {
         args.unshift(context);
       }
