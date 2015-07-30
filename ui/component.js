@@ -22,9 +22,15 @@ function Component(parent, props) {
   }
   this.__id__ = __id__++;
 
-  if (props && props.ref) {
-    this.refId = props.ref;
-    delete props.ref;
+  if (props) {
+    if (props.key) {
+      this.keyId = props.key;
+      delete props.key;
+    }
+    if (props.ref) {
+      this.refId = props.ref;
+      delete props.ref;
+    }
   }
 
   this.parent = parent;
@@ -75,7 +81,9 @@ Component.Prototype = function ComponentPrototype() {
    * Creates a virtual description of the content.
    * See `Component.$$`.
    */
-  this.render = function() {};
+  this.render = function() {
+    return [];
+  };
 
   this.shouldRerender = function(newProps, newState) {
     /* jshint unused: false */
@@ -240,27 +248,53 @@ Component.Prototype = function ComponentPrototype() {
     }
     var content = [];
     _.each(contentData, function(data) {
-      var child = null;
-      var childContent = null;
       if (_.isString(data)) {
         content.push(data);
-      } else if (data.type === 'element') {
-        child = new Component.HtmlElement(data.tagName, this, data.props);
+        return;
+      }
+      var child = null;
+      var childContent = null;
+      if (data.props && data.props.key && this._childrenById[data.props.key]) {
+        child = this._childrenById[data.props.key];
+      }
+      if (data.type === 'element') {
+        // FIXME: this temporarily removes DOM elements of preserved components
+        // which would have the effect of loosing the selection in an editor
+        // for instance. We need a minimalistic shallow diffing algo here
+        child = child || new Component.HtmlElement(data.tagName, this, data.props);
         childContent = child._compileContent(data.children);
+        // ... instead of emptying and rerendering
+        // we should iterate through children and remove or replace only those
+        // which are not marked for preservation
+        // don't want to do general diffing, as IMO this is more complicated
+        // as we need. The main concern for us is loosing selections or maybe
+        // flickering.
+        child.$el.empty();
         child._renderContent(childContent);
       } else if (data.type === 'class') {
-        child = new data.ComponentClass(this, data.props);
-        childContent = child._compileContent(child.render());
-        child._renderContent(childContent);
-      } else if (data.type === 'component') {
-        child = data.component;
-        if (child.parent !== this) {
-          throw new Error('Child has not been created for this component.');
-        }
-        // render the component if it has never been rendered before
-        if (child._virgin) {
+        // ... contrarily, we just use child.setProps in case
+        // of reusing a component declared via class
+        if (child) {
+          child.setProps(data.props);
+        } else {
+          child = new data.ComponentClass(this, data.props);
           childContent = child._compileContent(child.render());
           child._renderContent(childContent);
+        }
+      } else if (data.type === 'component') {
+        // ... and similar when reusing an instance based component
+        if (child) {
+          child.setProps(data.props);
+        } else {
+          child = data.component;
+          if (child.parent !== this) {
+            throw new Error('Child has not been created for this component.');
+          }
+          // render the component if it has never been rendered before
+          if (child._virgin) {
+            childContent = child._compileContent(child.render());
+            child._renderContent(childContent);
+          }
         }
       }
       if (child) {
@@ -283,6 +317,9 @@ Component.Prototype = function ComponentPrototype() {
         this._childrenById[child.__id__] = child;
         if (child.refId) {
           this.refs[child.refId] = child;
+        }
+        if (child.keyId) {
+          this._childrenById[child.keyId] = child;
         }
         $el.append(child.$el);
       }
