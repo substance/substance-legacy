@@ -377,32 +377,35 @@ Component.$$ = function() {
   }
   if (_.isString(arguments[0])) {
     // create a primitive component
-    return {
+    content = {
       type: 'element',
-      tagName: arguments[0],
-      props: props,
-      children: children
+      tagName: arguments[0]
     };
   } else if (_.isFunction(arguments[0]) && arguments[0].prototype instanceof Component) {
-    return {
+    content = {
       type: 'class',
       ComponentClass: arguments[0],
-      props: props,
-      children: children
     };
   } else if (arguments[0] instanceof Component) {
-    return {
+    content = {
       type: 'component',
       component: arguments[0],
-      props: props,
-      children: children
     };
-  }
-  if (!content) {
+  } else {
     throw new Error('Illegal usage of Component.$$.');
+  }
+  content.props = props;
+  content.children = children;
+  // propagate preservativeness
+  if (!content.isPreservative) {
+    for (var i = 0; i < children.length; i++) {
+      if (children[i].isPreservative) {
+        content.isPreservative = true;
+        break;
+      }
+    }
   }
   return content;
 };
-
 
 module.exports = Component;
