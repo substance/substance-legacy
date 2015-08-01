@@ -12,8 +12,7 @@ Panel.Prototype = function() {
   // Get the current coordinates of the first element in the
   // set of matched elements, relative to the offset parent
   // Please be aware that it looks up until it finds a parent that has
-  // position: relative|absolute set. So for now never set
-  // position: relative somewhere in your panel
+  // position: relative|absolute set. So for now never set relative somewhere in your panel
   this.getPanelOffsetForElement = function(el) {
     var offsetTop = $(el).position().top;
     return offsetTop;

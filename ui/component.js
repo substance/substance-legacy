@@ -41,8 +41,8 @@ function Component(parent, props) {
   this.$el = this.createElement();
   this.setAttributes();
 
-  // gather context from parent components (dependency injection)
-  this.context = this._collectContext();
+  // get context from parent (dependency injection)
+  this.context = this._getContext();
 }
 
 Component.Prototype = function ComponentPrototype() {
@@ -53,10 +53,6 @@ Component.Prototype = function ComponentPrototype() {
     return {};
   };
 
-  this.getContext = function() {
-    return {};
-  };
-
   this.getParent = function() {
     return this.parent;
   };
@@ -64,6 +60,7 @@ Component.Prototype = function ComponentPrototype() {
   this.createElement = function() {
     this.$el = $('<' + this.tagName + '>');
     this.$el.addClass(this.classNames);
+    this.$el.attr(this.attributes);
     if (this.props.classNames) {
       this.$el.addClass(this.props.classNames);
     }
@@ -206,8 +203,9 @@ Component.Prototype = function ComponentPrototype() {
     return this.state;
   };
 
-
   this.setProps = function(newProps) {
+    // TODO: split custom props from built-in props
+    // E.g., changing data attributes or styles does not require rerendering
     var needRerender = this.shouldRerender(newProps, this.getState());
     this._setProps(newProps);
     if (needRerender) {
@@ -218,7 +216,6 @@ Component.Prototype = function ComponentPrototype() {
   this.getProps = function() {
     return this.props;
   };
-
 
   var _isDocumentElement = function(el) {
     // Node.DOCUMENT_NODE = 9
@@ -465,20 +462,15 @@ Component.Prototype = function ComponentPrototype() {
     return component;
   };
 
-  this._collectContext = function() {
-    var args = [];
-    var comp = this;
-    while(comp && comp instanceof Component) {
-      var context = comp.childContext;
-      if (context) {
-        args.unshift(context);
-      }
-      comp = comp.getParent();
+  this._getContext = function() {
+    var parent = this.getParent();
+    var parentContext = parent.context;
+    if (parent.childContext) {
+      return _.extend(parentContext, parent.childContext);
+    } else {
+      return parentContext;
     }
-    args.push({});
-    return _.extend.apply(null, args);
   };
-
 
   var _builtinProps = ['key', 'ref'];
 
