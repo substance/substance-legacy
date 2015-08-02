@@ -1,17 +1,21 @@
+'use strict';
+
+var _ = require('../../basics/helpers');
+var OO = require('../../basics/oo');
 
 var Component = require('../component');
 var $$ = Component.$$;
 var Icon = require('../font_awesome_icon');
 
-class ContextToggles extends Component {
+function ContextToggles() {
+  Component.apply(this, arguments);
 
-  constructor(parent, props) {
-    super(parent, props);
+  this.onContextToggleClick = this.onContextToggleClick.bind(this);
+}
 
-    this.onContextToggleClick = this.onContextToggleClick.bind(this);
-  }
+ContextToggles.Prototype = function() {
 
-  render() {
+  this.render = function() {
     var panelOrder = this.props.panelOrder;
     var contextId = this.props.contextId;
 
@@ -30,27 +34,28 @@ class ContextToggles extends Component {
         },
         $$(Icon, { icon: panelClass.icon }),
         $$('span', { classNames: 'label'}, panelClass.displayName)
-      )
+      );
       toggleComps.push(toggle);
     }, this);
 
     return $$('div', { classNames: "context-toggles" }, toggleComps);
-  }
+  };
 
-  didMount() {
+  this.didMount = function() {
     this.$el.on('click', 'a.toggle-context', this.onContextToggleClick);
-  }
+  };
 
-  willUnmount() {
+  this.willUnmount = function() {
     this.$el.off('click');
-  }
+  };
 
-  onContextToggleClick(e) {
+  this.onContextToggleClick = function(e) {
     e.preventDefault();
     var newContext = $(e.currentTarget).attr("data-id");
     this.send('switchContext', newContext);
-  }
+  };
+};
 
-}
+OO.inherit(ContextToggles, Component);
 
 module.exports = ContextToggles;

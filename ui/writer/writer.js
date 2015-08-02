@@ -1,39 +1,44 @@
 "use strict";
 
+var OO = require('../../basics/oo');
 var Component = require('../component');
 var $$ = Component.$$;
 
 var _ = require("../../basics/helpers");
 var EventEmitter = require('../../basics/event_emitter');
+var Registry = require('../../basics/registry');
 var SurfaceManager = require('../../surface/surface_manager');
 var Clipboard = require('../../surface/clipboard');
-var Registry = require('../../basics/registry');
 var ToolRegistry = require('../../surface/tool_registry');
 
 var ExtensionManager = require('./extension_manager');
-var ContentToolbar = require("./content_tools");
+var ContentToolbar = require("./content_toolbar");
 var ContextToggles = require('./context_toggles');
 var ContentPanel = require("./content_panel");
 var StatusBar = require("./status_bar");
-var ModalPanel = require('../modal_panel');
+var ModalPanel = require('./modal_panel');
 
 // TODO: re-establish a means to set which tools are enabled for which surface
 
-class Writer extends Component {
+function Writer() {
+  Component.apply(this, arguments);
 
-  constructor(parent, props) {
-    super(parent, props);
-    // Mixin
-    EventEmitter.call(this);
+  // Mixin
+  EventEmitter.call(this);
 
-    this.handleApplicationKeyCombos = this.handleApplicationKeyCombos.bind(this);
-    this.onSelectionChangedDebounced = _.debounce(this.onSelectionChanged, 50);
+  this.handleApplicationKeyCombos = this.handleApplicationKeyCombos.bind(this);
+  this.onSelectionChangedDebounced = _.debounce(this.onSelectionChanged, 50);
 
-    this._registerExtensions();
-    this._initializeComponentRegistry();
-  }
+  this._registerExtensions();
+  this._initializeComponentRegistry();
+}
 
-  getChildContext() {
+Writer.Prototype = function() {
+
+  // mix-in
+  _.extend(this, EventEmitter.prototype);
+
+  this.getChildContext = function() {
     return {
       getHighlightedNodes: this.getHighlightedNodes,
       getHighlightsForTextProperty: this.getHighlightsForTextProperty,
@@ -41,22 +46,22 @@ class Writer extends Component {
       toolRegistry: this.toolRegistry,
       surfaceManager: this.surfaceManager
     };
-  }
+  };
 
-  get classNames() {
+  this.getClassNames = function() {
     return 'writer-component';
-  }
+  };
 
-  getDocument() {
+  this.getDocument = function() {
     return this.props.doc;
-  }
+  };
 
-  getInitialState() {
+  this.getInitialState = function() {
     var defaultContextId = this.props.contextId;
     return {"contextId": defaultContextId || "toc"};
-  }
+  };
 
-  render() {
+  this.render = function() {
     if (this.props.doc) {
       return $$('div', {}, 'Loading');
     } else {
@@ -74,15 +79,15 @@ class Writer extends Component {
         $$('div', { key: 'clipboard', classNames: "clipboard" })
       ];
     }
-  }
+  };
 
-  willReceiveProps(newProps) {
+  this.willReceiveProps = function(newProps) {
     if (this.props.doc && newProps.doc !== this.props.doc) {
       this._disposeDoc();
     }
-  }
+  };
 
-  didReceiveProps() {
+  this.didReceiveProps = function() {
     if (this.props.doc) {
       this.surfaceManager = new SurfaceManager(this.props.doc);
       this.clipboard = new Clipboard(this.surfaceManager, this.doc.getClipboardImporter(), this.doc.getClipboardExporter());
@@ -91,25 +96,25 @@ class Writer extends Component {
         'document:changed': this.onDocumentChanged
       });
     }
-  }
+  };
 
-  willUpdateState(newState) {
+  this.willUpdateState = function(newState) {
     this.extensionManager.handleStateChange(newState, this.state);
-  }
+  };
 
-  didMount() {
+  this.didMount = function() {
     this.$el.on('keydown', this.handleApplicationKeyCombos);
-  }
+  };
 
-  willUnmount() {
+  this.willUnmount = function() {
     this.$el.off('keydown');
     if (this.props.doc) {
       this._disposeDoc();
     }
-  }
+  };
 
   // return true when you handled a key combo
-  handleApplicationKeyCombos(e) {
+  this.handleApplicationKeyCombos = function(e) {
     // console.log('####', e.keyCode, e.metaKey, e.ctrlKey, e.shiftKey);
     var handled = false;
     // TODO: we could make this configurable via extensions
@@ -136,18 +141,18 @@ class Writer extends Component {
       e.preventDefault();
       e.stopPropagation();
     }
-  }
+  };
 
   // Event handlers
   // --------------
 
-  transactionStarted(tx) {
+  this.transactionStarted = function(tx) {
     // store the state so that it can be recovered when undo/redo
     tx.before.state = this.state;
     tx.before.selection = this.getSelection();
-  }
+  };
 
-  onDocumentChanged(change, info) {
+  this.onDocumentChanged = function(change, info) {
     var doc = this.getDocument();
     doc.__dirty = true;
     var notifications = this.context.notifications;
@@ -159,34 +164,34 @@ class Writer extends Component {
     if (info.replay && change.after.state) {
       this.setState(change.after.state);
     }
-  }
+  };
 
-  onSelectionChanged(sel, surface) {
+  this.onSelectionChanged = function(sel, surface) {
     this.extensionManager.handleSelectionChange(sel);
     this.toolRegistry.each(function(tool) {
       tool.update(surface, sel);
     }, this);
     this.emit('selection:changed', sel);
-  }
+  };
 
   // Action handlers
   // ---------------
 
-  switchContext(contextId) {
+  this.switchContext = function(contextId) {
     this.setState({ contextId: contextId });
-  }
+  };
 
-  executeAction(actionName) {
+  this.executeAction = function(actionName) {
     return this.extensionManager.handleAction(actionName);
-  }
+  };
 
-  closeModal() {
+  this.closeModal = function() {
     var newState = _.cloneDeep(this.state);
     delete newState.modal;
     this.setState(newState);
-  }
+  };
 
-  saveDocument() {
+  this.saveDocument = function() {
     var doc = this.props.doc;
     var backend = this.context.backend;
     var notifications = this.context.notifications;
@@ -214,23 +219,24 @@ class Writer extends Component {
         }
       });
     }
-  }
+  };
 
-  handleAction(actionName) {
+  // TODO: this is a duplicate of this.executeAction()... which one?
+  this.handleAction = function(actionName) {
     this.extensionManager.handleAction(actionName);
-  }
+  };
 
-  handleCloseDialog(e) {
+  this.handleCloseDialog = function(e) {
     e.preventDefault();
     console.log('handling close');
     this.setState(this.getInitialState());
-  }
+  };
 
 
   // Internal Methods
   // ----------------------
 
-  _registerExtensions() {
+  this._registerExtensions = function() {
     // Note: we are treating basics as extension internally
     var config = this.config;
     var basics = {
@@ -244,9 +250,9 @@ class Writer extends Component {
       extensions = extensions.concat(config.extensions);
     }
     this.extensionManager = new ExtensionManager(extensions, this);
-  }
+  };
 
-  _initializeComponentRegistry() {
+  this._initializeComponentRegistry = function() {
     var componentRegistry = new Registry();
     _.each(this.extensionManager.extensions, function(extension) {
       _.each(extension.components, function(ComponentClass, name) {
@@ -254,9 +260,9 @@ class Writer extends Component {
       });
     });
     this.componentRegistry = componentRegistry;
-  }
+  };
 
-  _initializeToolRegistry() {
+  this._initializeToolRegistry = function() {
     var toolRegistry = new ToolRegistry();
     _.each(this.extensionManager.extensions, function(extension) {
       _.each(extension.tools, function(ToolClass, name) {
@@ -267,19 +273,46 @@ class Writer extends Component {
       }, this);
     }, this);
     this.toolRegistry = toolRegistry;
-  }
+  };
 
-  _disposeDoc() {
+  this._disposeDoc = function() {
     this.props.doc.disconnect(this);
     this.surfaceManager.dispose();
     this.clipboard.detach(this.$el[0]);
     this.surfaceManager.dispose();
     this.surfaceManager = null;
     this.clipboard = null;
-  }
+  };
 
-  _renderModalPanel() {
-    var modalPanelElement = this.getActivePanelElement();
+  this._panelPropsFromState = function (state) {
+    var props = _.omit(state, 'contextId');
+    props.doc = this.doc;
+    return props;
+  };
+
+  this._getActivePanelElement = function() {
+    var panelComponent = this.componentRegistry.get(this.state.contextId);
+    if (panelComponent) {
+      return $$(panelComponent, this._panelPropsFromState(this.state));
+    } else {
+      console.warn("Could not find component for contextId:", this.state.contextId);
+    }
+  };
+
+  this._getActiveModalPanelElement = function() {
+    var state = this.state;
+    if (state.modal) {
+      var modalPanelComponent = this.componentRegistry.get(state.modal.contextId);
+      if (modalPanelComponent) {
+        return $$(modalPanelComponent, this._panelPropsFromState(state.modal));
+      } else {
+        console.warn("Could not find component for contextId:", state.modal.contextId);
+      }
+    }
+  };
+
+  this._renderModalPanel = function() {
+    var modalPanelElement = this._getActiveModalPanelElement();
     if (!modalPanelElement) {
       // Just render an empty div if no modal active available
       return $$('div');
@@ -287,17 +320,17 @@ class Writer extends Component {
     return $$(ModalPanel, {
       panelElement: modalPanelElement
     });
-  }
+  };
 
-  _renderContextPanel() {
-    var panelElement = this.getActivePanelElement();
+  this._renderContextPanel = function() {
+    var panelElement = this._getActivePanelElement();
     if (!panelElement) {
       return $$('div', null, "No panels are registered");
     }
     return panelElement;
-  }
-}
+  };
+};
 
-_.extend(Writer.prototype, EventEmitter.prototype);
+OO.inherit(Writer, Component);
 
 module.exports = Writer;

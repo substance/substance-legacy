@@ -1,36 +1,44 @@
 "use strict";
 
-var Substance = require('substance');
-var _ = require('substance/helpers');
-var Component = require('./component');
+var Component = require('../component');
 var $$ = Component.$$;
-var Annotator = Substance.Document.Annotator;
+var Annotator = require('../../document/annotator');
 var AnnotationComponent = require('./annotation_component');
 
-var TextPropertyComponent extends Component {
+class TextPropertyComponent extends Component {
 
-  didMount: function() {
+  get tagName() {
+    return this.props.tagName || 'span';
+  }
+
+  get classNames() {
+    return "text-property " + (this.props.classNames || "");
+  }
+
+  get attributes() {
+    return {
+      spellCheck: false,
+      "data-path": this.props.path.join('.')
+    };
+  }
+
+  get style() {
+    return {
+      whiteSpace: "pre-wrap"
+    };
+  }
+
+  didMount() {
     var doc = this.props.doc;
     doc.getEventProxy('path').add(this.props.path, this, this.textPropertyDidChange);
-  },
+  }
 
-  willUnmount: function() {
+  willUnmount() {
     var doc = this.props.doc;
     doc.getEventProxy('path').remove(this.props.path, this);
-  },
+  }
 
-  render: function() {
-    return $$((this.props.tagName || 'span'), {
-      classNames: "text-property " + (this.props.className || ""),
-      spellCheck: false,
-      style: {
-        whiteSpace: "pre-wrap"
-      },
-      "data-path": this.props.path.join('.')
-    }, this.renderChildren());
-  },
-
-  renderChildren: function() {
+  render() {
     var componentRegistry = this.context.componentRegistry;
     var doc = this.getDocument();
     var path = this.getPath();
@@ -62,7 +70,6 @@ var TextPropertyComponent extends Component {
         fragmentCounters[id] = 0;
       }
       fragmentCounters[id] = fragmentCounters[id]+1;
-      var key = id + "_" + fragmentCounters[id];
       // for debugging
       // console.log(_logPrefix+"<"+node.type+" key="+key+">");
 
@@ -111,45 +118,45 @@ var TextPropertyComponent extends Component {
     // TODO: sometimes we do not want to do this. Make it configurable.
     root.children.push($$('br'));
     return root.children;
-  },
+  }
 
-  getAnnotations: function() {
+  getAnnotation() {
     return this.context.surface.getAnnotationsForProperty(this.props.path);
-  },
+  }
 
   // Annotations that are active (not just visible)
-  getHighlights: function() {
+  getHighlights() {
     if (this.context.getHighlightedNodes) {
       return this.context.getHighlightedNodes();
     } else {
       return [];
     }
-  },
+  }
 
-  textPropertyDidChange: function() {
+  textPropertyDidChange() {
     this.rerender();
-  },
+  }
 
-  getContainer: function() {
+  getContainer() {
     return this.getSurface().getContainer();
-  },
+  }
 
-  getDocument: function() {
+  getDocument() {
     return this.props.doc;
-  },
+  }
 
-  getPath: function() {
+  getPath() {
     return this.props.path;
-  },
+  }
 
-  getElement: function() {
+  getElement() {
     return this.$el[0];
-  },
+  }
 
-  getSurface: function() {
+  getSurface() {
     return this.context.surface;
-  },
+  }
 
-}));
+}
 
 module.exports = TextPropertyComponent;

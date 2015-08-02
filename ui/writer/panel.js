@@ -1,26 +1,30 @@
 'use strict';
 
+var OO = require('../../basics/oo');
 var Component = require('../component');
 var $$ = Component.$$;
 
-// This is an abstract class
-class Panel extends Component {
+function Panel() {
+  Component.apply(this, arguments);
+}
 
-  getDocument() {
+Panel.Prototype = function() {
+
+  this.getDocument = function() {
     var app = this.context.app;
     return app.doc;
-  }
+  };
 
-  getPanelContentElement() {
+  this.getPanelContentElement = function() {
     return this.refs.panelContent.$el[0];
-  }
+  };
 
-  getScrollableContainer() {
+  this.getScrollableContainer = function() {
     return this.refs.panelContent.$el[0];
-  }
+  };
 
   // Returns the cumulated height of a panel's content
-  getContentHeight() {
+  this.getContentHeight = function() {
     // initialized lazily as this element is not accessible earlier (e.g. during construction)
     // get the new dimensions
     // TODO: better use outerheight for contentheight determination?
@@ -31,36 +35,36 @@ class Panel extends Component {
      contentHeight += $(this).outerHeight();
     });
     return contentHeight;
-  }
+  };
 
   // Returns the height of panel (inner content overflows)
-  getPanelHeight() {
+  this.getPanelHeight = function() {
     var panelContentEl = this.getPanelContentElement();
     return $(panelContentEl).height();
-  }
+  };
 
-  getScrollPosition() {
+  this.getScrollPosition = function() {
     var panelContentEl = this.getPanelContentElement();
     return $(panelContentEl).scrollTop();
-  }
+  };
 
   // This method must be overriden with your panel implementation
-  render() {
+  this.render = function() {
     return $$("div", {classNames: "panel"},
       $$('div', {classNames: 'panel-content'}, 'YOUR_PANEL_CONTENT')
     );
-  }
+  };
 
   // Get the current coordinates of the first element in the
   // set of matched elements, relative to the offset parent
   // Please be aware that it looks up until it finds a parent that has
   // position: relative|absolute set. So for now never set relative somewhere in your panel
-  getPanelOffsetForElement(el) {
+  this.getPanelOffsetForElement = function(el) {
     var offsetTop = $(el).position().top;
     return offsetTop;
-  }
+  };
 
-  scrollToNode(nodeId) {
+  this.scrollToNode = function(nodeId) {
     // var n = this.findNodeView(nodeId);
     // TODO make this generic
     var panelContentEl = this.getScrollableContainer();
@@ -73,7 +77,9 @@ class Panel extends Component {
     } else {
       console.warn(nodeId, 'not found in scrollable container');
     }
-  }
-}
+  };
+};
+
+OO.inherit(Panel, Component);
 
 module.exports = Panel;

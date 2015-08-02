@@ -1,7 +1,6 @@
 "use strict";
 
-var Substance = require('substance');
-var _ = require("substance/helpers");
+var OO = require("../../basics/oo");
 
 var ExtensionManager = function(extensions, writer) {
   this.extensions = extensions;
@@ -78,6 +77,6 @@ ExtensionManager.Prototype = function() {
 
 };
 
-Substance.initClass(ExtensionManager);
+OO.initClass(ExtensionManager);
 
 module.exports = ExtensionManager;

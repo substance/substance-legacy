@@ -16,9 +16,10 @@ app.get('/test/tmp/test.js', function (req, res, next) {
           return path.join(__dirname, file);
         }))
         .bundle()
-        .on('error', function(err, data){
+        .on('error', function(err){
           console.error(err.message);
-          res.send('console.log("'+err.message+'");');
+          res.status(500).send('console.log("'+err.message+'");');
+          next();
         })
         .pipe(res);
     }

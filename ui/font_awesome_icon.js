@@ -1,16 +1,22 @@
 'use strict';
 
+var OO = require('../basics/oo');
 var Component = require('./component');
-var $$ = Component.$$;
 
-class FontAwesomeIcon extends Component.Container {
-  get tagName() {
-    return 'i';
-  }
-
-  get classNames() {
-    return 'fa ' + this.props.icon
-  }
+function FontAwesomeIcon() {
+  Component.Container.apply(this, arguments);
 }
+
+FontAwesomeIcon.Prototype = function() {
+
+  this.tagName = 'i';
+
+  this.getClassNames = function() {
+    return 'fa ' + this.props.icon;
+  };
+
+};
+
+OO.inherit(FontAwesomeIcon, Component.Container);
 
 module.exports = FontAwesomeIcon;

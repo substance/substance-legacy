@@ -1,57 +1,61 @@
 "use strict";
 
-var Component = require('./component');
-var $$ = Component.$$;
+var OO = require('../../basics/oo');
+var Component = require('../component');
 
-class AnnotationComponent extends Component {
+function AnnotationComponent() {
+  Component.apply(this, arguments);
+}
 
-  get tagName: function() {
-    return 'span'
-  }
+AnnotationComponent.Prototype = function() {
 
-  get classNames: function() {
+  this.tagName = 'span';
+
+  this.getClassNames = function() {
     var typeNames = this.props.node.getTypeNames();
     var classNames = typeNames.join(' ');
     if (this.props.classNames) {
       classNames += " " + this.props.classNames.join(' ');
     }
     return classNames.replace(/_/g, '-');
-  }
+  };
 
-  get attributes() {
+  this.getAttributes = function() {
     return {
       "data-id": this.props.node.id
     };
-  }
+  };
 
-  render() {
+  this.render = function() {
     if (this.props.node.active) {
       this.$el.addClass('active');
     } else {
       this.$el.removeClass('active');
     }
     return this.props.children;
-  }
+  };
 
-  didMount() {
+  this.didMount = function() {
     var node = this.props.node;
     node.connect(this, {
       'active': this.onActiveChanged
     });
-  }
+  };
 
-  willUnmount() {
+  this.willUnmount = function() {
     var node = this.props.node;
     node.disconnect(this);
-  }
+  };
 
-  onActiveChanged() {
+  this.onActiveChanged = function() {
     if (this.props.node.active) {
       this.$el.addClass('active');
     } else {
       this.$el.removeClass('active');
     }
-  }
-}
+  };
+};
+
+OO.inherit(AnnotationComponent, Component);
 
 module.exports = AnnotationComponent;

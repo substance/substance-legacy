@@ -1,5 +1,6 @@
 "use strict";
 
+var OO = require('../../basics/oo');
 var Component = require('../component');
 var $$ = Component.$$;
 
@@ -13,43 +14,60 @@ var ICONS_FOR_TYPE = {
 // The Status Bar
 // ----------------
 
-class StatusBar extends Component {
+function StatusBar() {
+  Component.apply(this, arguments);
 
-  didMount: function() {
+  this.handleNotificationUpdate = this.handleNotificationUpdate.bind(this);
+}
+
+StatusBar.Prototype = function() {
+
+  this.didMount = function() {
     var notifications = this.context.notifications;
     notifications.connect(this, {
       'messages:updated': this.handleNotificationUpdate
     });
-  }
+  };
 
-  render: function() {
+  this.getClassNames = function() {
+    return "status-bar-component fill-light";
+  };
+
+  this.willUpdateState = function() {
+    if (this.state.message) {
+      this.$el.removeClass(this.state.message.type);
+    }
+  };
+
+  this.render = function() {
     var message = this.state.message;
     var notifications;
-    var classNames = ["status-bar-component fill-light"];
     if (message) {
-      classNames.push(message.type);
+      this.$el.addClass(message.type);
       notifications = $$('div', {className: 'notifications'},
         $$("div", { classNames: "icon"},
           $$('i', { classNames: 'fa '+ICONS_FOR_TYPE[message.type]})
         ),
-        $$('div', {classNames: 'message'}, message.message)
+        $$('div', { classNames: 'message' }, message.message)
       );
     } else {
       notifications = $$('div');
     }
-    return $$("div", { classNames: classNames.join(" ") },
+    return [
       $$("div", { classNames: "document-status" }, this.props.doc.getDocumentMeta().title),
       notifications
-    );
-  }
+    ];
+  };
 
-  handleNotificationUpdate: function(messages) {
+  this.handleNotificationUpdate = function(messages) {
     var currentMessage = messages.pop();
     this.setState({
       message: currentMessage
     });
-  }
+  };
 
-}
+};
+
+OO.inherit(StatusBar, Component);
 
 module.exports = StatusBar;

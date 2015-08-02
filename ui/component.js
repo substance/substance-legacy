@@ -105,24 +105,36 @@ Component.Prototype = function ComponentPrototype() {
     return this.parent;
   };
 
+  this.getClassNames = function() {
+    return this.classNames;
+  };
+
+  this.getAttributes = function() {
+    return this.attributes;
+  };
+
   this.createElement = function() {
     this.$el = $('<' + this.tagName + '>');
     if (this.htmlProps.id) {
       this.$el.attr('id', this.htmlProps.id);
     }
-    var classNames = this.classNames;
+    var classNames = this.getClassNames();
     if (classNames) {
       this.$el.addClass(classNames);
     }
     if (this.htmlProps.classNames) {
       this.$el.addClass(this.htmlProps.classNames);
     }
-    var attributes = this.attributes;
+    var attributes = this.getAttributes();
     if (attributes) {
       this.$el.attr(attributes);
     }
     if (this.htmlProps.attributes) {
       this.$el.attr(this.htmlProps.attributes);
+    }
+    var style = this.style;
+    if (style) {
+      this.$el.css(style);
     }
     if (this.htmlProps.style) {
       this.$el.css(this.htmlProps.style);
@@ -240,7 +252,9 @@ Component.Prototype = function ComponentPrototype() {
 
   this.setState = function(newState) {
     var needRerender = this.shouldRerender(this.getProps(), newState);
+    this.willUpdateState(newState);
     this._setState(newState);
+    this.didUpdateState();
     if (needRerender) {
       this.rerender();
     }
@@ -249,6 +263,12 @@ Component.Prototype = function ComponentPrototype() {
   this.getState = function() {
     return this.state;
   };
+
+  this.willUpdateState = function(newState) {
+    /* jshint unused: false */
+  };
+
+  this.didUpdateState = function() {};
 
   this.setProps = function(newProps) {
     var flags = this._setProps(newProps);
@@ -549,6 +569,10 @@ Component.Prototype = function ComponentPrototype() {
           break;
         case 'contentEditable':
         case 'href':
+        case 'src':
+        case 'spellCheck':
+        case 'rowspan':
+        case 'colspan':
           attributes[key] = val;
           html.attributes = attributes;
           result.html = html;

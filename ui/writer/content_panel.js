@@ -1,39 +1,44 @@
 'use strict';
 
+var _ = require('../../basics/helpers');
+var OO = require('../../basics/oo');
 var Component = require('../component');
 var $$ = Component.$$;
-var _ = require('../../basics/helpers');
 
 var Panel = require("./panel");
 var Scrollbar = require("./scrollbar");
 
-class ContentPanel extends Panel {
+function ContentPanel() {
+  Panel.apply(this, arguments);
+}
+
+ContentPanel.Prototype = function() {
 
   // Since component gets rendered multiple times we need to update
   // the scrollbar and reattach the scroll event
-  didMount() {
+  this.didMount = function() {
     this.updateScrollbar();
     $(window).on('resize', this.updateScrollbar);
     this.props.doc.connect(this, {
       'document:changed': this.onDocumentChange,
       'toc:entry-selected': this.onTOCEntrySelected
     }, -1);
-  }
+  };
 
-  willUnmount() {
+  this.willUnmount = function() {
     $(window).off('resize');
     this.props.doc.disconnect(this);
-  }
+  };
 
-  onDocumentChange() {
+  this.onDocumentChange = function() {
     this.updateScrollbar();
-  }
+  };
 
-  onTOCEntrySelected(nodeId) {
+  this.onTOCEntrySelected = function(nodeId) {
     this.scrollToNode(nodeId);
-  }
+  };
 
-  updateScrollbar() {
+  this.updateScrollbar = function() {
     var scrollbar = this.refs.scrollbar;
     var $panelContent = this.refs.panelContent.$el;
     // We need to await next repaint, otherwise dimensions will be wrong
@@ -43,15 +48,15 @@ class ContentPanel extends Panel {
     // (Re)-Bind scroll event on new panelContentEl
     $panelContent.off('scroll');
     $panelContent.on('scroll', this._onScroll);
-  }
+  };
 
-  onScroll() {
+  this.onScroll = function() {
     var $panelContent = this.refs.panelContent.$el;
     this.refs.scrollbar.update($panelContent[0], this);
     this.markActiveTOCEntry();
-  }
+  };
 
-  markActiveTOCEntry() {
+  this.markActiveTOCEntry = function() {
     var $panelContent = this.refs.panelContent.$el;
 
     var contentHeight = this.getContentHeight();
@@ -80,16 +85,16 @@ class ContentPanel extends Panel {
 
     var doc = this.getDocument();
     doc.emit('toc:entry-focused', activeNode);
-  }
+  };
 
   // Rendering
   // -----------------
 
-  get classNames() {
+  this.getClassNames = function() {
     return "panel content-panel-component";
-  }
+  };
 
-  render() {
+  this.render = function() {
     return [
       $$(Scrollbar, {
         id: "content-scrollbar",
@@ -100,9 +105,9 @@ class ContentPanel extends Panel {
         this.getContentEditor()
       )
     ];
-  }
+  };
 
-  renderContentEditor() {
+  this.renderContentEditor = function() {
     var componentRegistry = this.context.componentRegistry;
     var doc = this.props.doc;
     // FIXME: this is called getContentEditor() but requires 'content_container'
@@ -115,7 +120,9 @@ class ContentPanel extends Panel {
       doc: doc,
       node: doc.get("content"),
     });
-  }
-}
+  };
+};
+
+OO.inherit(ContentPanel, Panel);
 
 module.exports = ContentPanel;
