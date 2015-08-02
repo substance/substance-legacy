@@ -15,6 +15,49 @@ var __id__ = 0;
  * - minimalistic life-cycle with hooks
  * - up-tree communication (sendAction)
  * - dependency injection
+ *
+ * ## Concepts
+ *
+ * ### `props`
+ *
+ * Props are provided by a parent component. There is a set of built-in properties,
+ * such as `data` attributes or `classNames`.
+ * An initial set of properties is provided via constructor. After that, the parent
+ * component can call `setProps` to update these properties which triggers rerendering if the properties
+ * change.
+ *
+ * ### `state`
+ *
+ * The component state is a set of flags and values which are used to control how the component
+ * gets rendered give the current props.
+ * Using `setState` the component can change its internal state, which leads to a rerendering if the state
+ * changes.
+ *
+ * ### The `key` property
+ *
+ * A child component with a `key` id will be reused on rerender. All others will be wiped and rerender from scratch.
+ * If you want to preserve a grand-child (or lower), then make sure that all anchestors have a key id.
+ * After rendering the child will be accessible via `this.refs[key]`.
+ *
+ * ### The `config` property
+ *
+ *
+ * ### HTML built-in properties
+ *
+ * These are applied to the component's element directly. If props are updated only with such changes,
+ * the component will not be rerendered, only the element's attributes changed.
+ *
+ * - `id`: the element`s id
+ * - `style`: used with `$(el).css()`
+ * - `data-*`: used with `$(el).attr()`
+ * - `classNames`: used with `$(el).addClass()`
+ *
+ * ### Actions
+ *
+ * A component can send actions via `send` which are bubbled up through all parent components
+ * until one handles it.
+ * Attention: the action name must match a function name.
+ * TODO: maybe we should introduce a naming convention.
  */
 function Component(parent, props) {
   if (!parent && parent !== "root") {
@@ -22,32 +65,37 @@ function Component(parent, props) {
   }
   this.__id__ = __id__++;
 
-  if (props) {
-    if (props.key) {
-      this.keyId = props.key;
-    }
-    if (props.ref) {
-      this.refId = props.ref;
-    }
-  }
-
   this.parent = parent;
   this.content = [];
   this.children = {};
   this.refs = {};
 
-  this._setProps(props);
+  // Split properties into 'component', 'html', and 'custom'
+  props = this._splitProps(props);
+  // class properties ('key', 'config', etc.)
+  if (props.component) {
+    _.extend(this, props.component);
+  }
+  this.htmlProps = props.html;
+  this.props = props.custom;
+
   this._setState(this.getInitialState());
-  this.$el = this.createElement();
-  this.setAttributes();
 
   // get context from parent (dependency injection)
   this.context = this._getContext();
+
+  this.$el = this.createElement();
+
+  this.didReceiveProps();
 }
 
 Component.Prototype = function ComponentPrototype() {
 
   this.tagName = 'div';
+
+  this.getChildContext = function() {
+    return this.childContext || {};
+  };
 
   this.getInitialState = function() {
     return {};
@@ -59,28 +107,21 @@ Component.Prototype = function ComponentPrototype() {
 
   this.createElement = function() {
     this.$el = $('<' + this.tagName + '>');
+    if (this.htmlProps.id) {
+      this.$el.attr('id', this.htmlProps.id);
+    }
     this.$el.addClass(this.classNames);
+    if (this.htmlProps.classNames) {
+      this.$el.addClass(this.htmlProps.classNames);
+    }
     this.$el.attr(this.attributes);
-    if (this.props.classNames) {
-      this.$el.addClass(this.props.classNames);
+    if (this.htmlProps.attributes) {
+      this.$el.attr(this.htmlProps.attributes);
+    }
+    if (this.htmlProps.style) {
+      this.$el.css(this.htmlProps.style);
     }
     return this.$el;
-  };
-
-  this.setAttributes = function() {
-    _.each(this.props, function(val, key) {
-      if (key.slice(0, 5) === "data-") {
-        this.$el.attr(key, val);
-      }
-    }, this);
-  };
-
-  this.removeAttributes = function() {
-    _.each(this.props, function(val, key) {
-      if (key.slice(0, 5) === "data-") {
-        this.$el.removeAttr(key, val);
-      }
-    }, this);
   };
 
   /**
@@ -204,12 +245,22 @@ Component.Prototype = function ComponentPrototype() {
   };
 
   this.setProps = function(newProps) {
-    // TODO: split custom props from built-in props
-    // E.g., changing data attributes or styles does not require rerendering
-    var needRerender = this.shouldRerender(newProps, this.getState());
-    this._setProps(newProps);
-    if (needRerender) {
-      this.rerender();
+    var props = this._splitProps(newProps);
+    if (props.component) {
+      console.error('Some component properties can not be changed after creation such as key or config.');
+    }
+    if (props.html) {
+      this.htmlProps = props.html;
+      this._renderHtmlProps(this.htmlProps);
+    }
+    if (props.custom) {
+      var needRerender = this.shouldRerender(props.custom, this.state);
+      this.willReceiveProps(props.custom);
+      this.props = props.custom;
+      this.didReceiveProps();
+      if (needRerender) {
+        this.rerender();
+      }
     }
   };
 
@@ -217,14 +268,13 @@ Component.Prototype = function ComponentPrototype() {
     return this.props;
   };
 
+  this.willReceiveProps = function() {};
+
+  this.didReceiveProps = function() {};
+
   var _isDocumentElement = function(el) {
     // Node.DOCUMENT_NODE = 9
     return (el.nodeType === 9);
-  };
-
-  var _isElement = function(el) {
-    // Node.ELEMENT_NODE = 1
-    return (el.nodeType === 1);
   };
 
   var _isInDocument = function(el) {
@@ -306,7 +356,7 @@ Component.Prototype = function ComponentPrototype() {
     }
 
     function _update(comp, data) {
-      if (comp instanceof Component.HtmlElement) {
+      if (comp instanceof Component.Container) {
         comp.setPropsAndChildren(data.props, data.children);
       } else {
         comp.setProps(data);
@@ -317,8 +367,6 @@ Component.Prototype = function ComponentPrototype() {
       children[comp.__id__] = comp;
       if (comp.keyId) {
         refs[comp.keyId] = comp;
-      } else if (comp.refId) {
-        refs[comp.refId] = comp;
       }
     }
 
@@ -441,6 +489,19 @@ Component.Prototype = function ComponentPrototype() {
     this.content = newContent;
   };
 
+  this._renderHtmlProps = function(htmlProps, oldProps) {
+    // it must be possible to toggle classes
+    this.$el.removeClass(oldProps.classNames).addClass(htmlProps.classNames);
+    // we treat attributes
+    if (htmlProps.attributes) {
+      this.$el.attr(htmlProps.attributes);
+    }
+    // $ does not support removing styles, only overwriting
+    if (htmlProps.style) {
+      this.$el.css(htmlProps.style);
+    }
+  };
+
   this._compileComponent = function(data) {
     var component;
     switch(data.type) {
@@ -465,23 +526,48 @@ Component.Prototype = function ComponentPrototype() {
   this._getContext = function() {
     var parent = this.getParent();
     var parentContext = parent.context;
-    if (parent.childContext) {
-      return _.extend(parentContext, parent.childContext);
-    } else {
-      return parentContext;
-    }
+    return _.extend(parentContext, parent.getChildContext());
   };
 
-  var _builtinProps = ['key', 'ref'];
-
-  this._setProps = function(props) {
-    props = props || {};
-    _.each(_builtinProps, function(key) {
-      delete props[key];
-    });
-    // freezing properties to 'enforce' immutability
-    Object.freeze(props);
-    this.props = props;
+  this._splitProps = function(props) {
+    var result = {};
+    var component = {};
+    var html = {};
+    var attributes = {};
+    var custom = {};
+    _.each(props, function(key, val) {
+      switch (key) {
+        case 'key':
+        case 'config':
+          component[key] = val;
+          result.component = component;
+          break;
+        case 'id':
+        case 'classNames':
+          html[key] = val;
+          result.html = html;
+          break;
+        case 'contentEditable':
+          attributes[key] = val;
+          html.attributes = attributes;
+          result.html = html;
+          break;
+        case 'style':
+          html.style = val;
+          result.html = html;
+          break;
+        default:
+          if (/^data-/.exec(key)) {
+            attributes[key] = val;
+            html.attributes = attributes;
+            result.html = html;
+          } else {
+            custom[key] = val;
+            result.custom = custom;
+          }
+      }
+    }, this);
+    return result;
   };
 
   this._setState = function(state) {
@@ -499,11 +585,11 @@ Component.Root = function(props) {
 };
 OO.inherit(Component.Root, Component);
 
-Component.HtmlElement = function(parent, tagName, props) {
-  this.tagName = tagName;
+Component.Container = function(parent, props) {
   Component.call(this, parent, props);
 };
-Component.HtmlElement.Prototype = function() {
+
+Component.Container.Prototype = function() {
   this.setPropsAndChildren = function(props, children) {
     if (children) {
       this._setProps(props);
@@ -512,14 +598,14 @@ Component.HtmlElement.Prototype = function() {
       this.setProps(props);
     }
   };
-  this.setProps = function(newProps) {
-    // we do not need to rerender as new props can only be attributes
-    this.removeAttributes();
-    this._setProps(newProps);
-    this.setAttributes();
-  };
 };
-OO.inherit(Component.HtmlElement, Component);
+
+Component.HtmlElement = function(parent, tagName, props) {
+  this.tagName = tagName;
+  Component.Container.call(this, parent, props);
+};
+
+OO.inherit(Component.HtmlElement, Component.Container);
 
 Component.Text = function(parent, text) {
   Component.call(this, parent, {text: text});
