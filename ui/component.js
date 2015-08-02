@@ -76,8 +76,8 @@ function Component(parent, props) {
   if (props.component) {
     _.extend(this, props.component);
   }
-  this.htmlProps = props.html;
-  this.props = props.custom;
+  this.htmlProps = props.html || {};
+  this.props = props.custom || {};
 
   this._setState(this.getInitialState());
 
@@ -110,11 +110,17 @@ Component.Prototype = function ComponentPrototype() {
     if (this.htmlProps.id) {
       this.$el.attr('id', this.htmlProps.id);
     }
-    this.$el.addClass(this.classNames);
+    var classNames = this.classNames;
+    if (classNames) {
+      this.$el.addClass(classNames);
+    }
     if (this.htmlProps.classNames) {
       this.$el.addClass(this.htmlProps.classNames);
     }
-    this.$el.attr(this.attributes);
+    var attributes = this.attributes;
+    if (attributes) {
+      this.$el.attr(attributes);
+    }
     if (this.htmlProps.attributes) {
       this.$el.attr(this.htmlProps.attributes);
     }
@@ -526,7 +532,11 @@ Component.Prototype = function ComponentPrototype() {
   this._getContext = function() {
     var parent = this.getParent();
     var parentContext = parent.context;
-    return _.extend(parentContext, parent.getChildContext());
+    if (parent.getChildContext) {
+      return _.extend(parentContext, parent.getChildContext());
+    } else {
+      return parentContext;
+    }
   };
 
   this._splitProps = function(props) {
@@ -599,6 +609,7 @@ Component.Container.Prototype = function() {
     }
   };
 };
+OO.inherit(Component.Container, Component);
 
 Component.HtmlElement = function(parent, tagName, props) {
   this.tagName = tagName;
