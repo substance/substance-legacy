@@ -289,7 +289,7 @@ Component.Prototype = function ComponentPrototype() {
       var key;
       // yuck
       if (old) {
-        key = content[i].component.keyId;
+        key = content[i].component.key;
       } else {
         key = content[i].props.key;
       }
@@ -339,7 +339,7 @@ Component.Prototype = function ComponentPrototype() {
       // remove the data so we do not process it again
       delete oldComps[key];
       for (var i = oldPos+1; i < oldContent.length; i++) {
-        if (oldContent[i].component.keyId === key) {
+        if (oldContent[i].component.key === key) {
           oldContent.splice(i, 1);
           break;
         }
@@ -361,8 +361,8 @@ Component.Prototype = function ComponentPrototype() {
 
     function _registerComponent(comp) {
       children[comp.__id__] = comp;
-      if (comp.keyId) {
-        refs[comp.keyId] = comp;
+      if (comp.key) {
+        refs[comp.key] = comp;
       }
     }
 
@@ -399,7 +399,7 @@ Component.Prototype = function ComponentPrototype() {
 
       // Note: if the key property is set the component is treated preservatively
       var newKey = _new.props.key;
-      var oldKey = _old.component.keyId;
+      var oldKey = _old.component.key;
       if (oldKey && newKey) {
         // the component is in the right place already
         if (oldKey === newKey) {
@@ -535,7 +535,7 @@ Component.Prototype = function ComponentPrototype() {
     var html = {};
     var attributes = {};
     var custom = {};
-    _.each(props, function(key, val) {
+    _.each(props, function(val, key) {
       switch (key) {
         case 'key':
         case 'config':
@@ -548,6 +548,7 @@ Component.Prototype = function ComponentPrototype() {
           result.html = html;
           break;
         case 'contentEditable':
+        case 'href':
           attributes[key] = val;
           html.attributes = attributes;
           result.html = html;
@@ -575,7 +576,7 @@ Component.Prototype = function ComponentPrototype() {
       updateHtmlProps: false,
       rerender: false
     };
-    var props = this._splitProps(newProps);
+    props = this._splitProps(props);
     if (props.html) {
       this.htmlProps = props.html;
       result.updateHtmlProps = true;
