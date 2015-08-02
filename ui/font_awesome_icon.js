@@ -1,10 +1,16 @@
-var $$ = React.createElement;
+'use strict';
 
-var FontAwesomeIcon = React.createClass({
-  displayName: 'FontAwesomeIcon',
-  render: function() {
-    return $$('i', { className: "fa "+this.props.icon} );
+var Component = require('./component');
+var $$ = Component.$$;
+
+class FontAwesomeIcon extends Component.Container {
+  get tagName() {
+    return 'i';
   }
-});
+
+  get classNames() {
+    return 'fa ' + this.props.icon
+  }
+}
 
 module.exports = FontAwesomeIcon;
