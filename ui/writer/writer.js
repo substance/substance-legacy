@@ -35,7 +35,6 @@ class Writer extends Component {
 
   getChildContext() {
     return {
-      doc: this.doc,
       getHighlightedNodes: this.getHighlightedNodes,
       getHighlightsForTextProperty: this.getHighlightsForTextProperty,
       componentRegistry: this.componentRegistry,
@@ -58,19 +57,23 @@ class Writer extends Component {
   }
 
   render() {
-    return [
-      $$('div', { key: 'container', className: "main-container"},
-        $$(ContentToolbar, { key: 'toolbar' }),
-        $$(ContentPanel, { key: 'content', containerId: this.config.containerId })
-      ),
-      $$('div', { classNames: "resource-container" },
-        $$(ContextToggles, { key: "context-toggles", panelOrder: this.config.panelOrder }),
-        this.createContextPanel(this)
-      ),
-      this._renderModalPanel(),
-      $$(StatusBar, { key: 'statusBar' }),
-      $$('div', { key: 'clipboard', classNames: "clipboard" })
-    ];
+    if (this.props.doc) {
+      return $$('div', {}, 'Loading');
+    } else {
+      return [
+        $$('div', { key: 'container', className: "main-container"},
+          $$(ContentToolbar, { key: 'toolbar' }),
+          $$(ContentPanel, { key: 'content', containerId: this.config.containerId })
+        ),
+        $$('div', { classNames: "resource-container" },
+          $$(ContextToggles, { key: "context-toggles", panelOrder: this.config.panelOrder }),
+          this._renderContextPanel(this)
+        ),
+        this._renderModalPanel(),
+        $$(StatusBar, { key: 'statusBar' }),
+        $$('div', { key: 'clipboard', classNames: "clipboard" })
+      ];
+    }
   }
 
   willReceiveProps(newProps) {
