@@ -245,22 +245,12 @@ Component.Prototype = function ComponentPrototype() {
   };
 
   this.setProps = function(newProps) {
-    var props = this._splitProps(newProps);
-    if (props.component) {
-      console.error('Some component properties can not be changed after creation such as key or config.');
+    var flags = this._setProps(newProps);
+    if (flags.updateHtmlProps) {
+      this.updateHtmlProps(this.htmlProps);
     }
-    if (props.html) {
-      this.htmlProps = props.html;
-      this._renderHtmlProps(this.htmlProps);
-    }
-    if (props.custom) {
-      var needRerender = this.shouldRerender(props.custom, this.state);
-      this.willReceiveProps(props.custom);
-      this.props = props.custom;
-      this.didReceiveProps();
-      if (needRerender) {
-        this.rerender();
-      }
+    if (flags.needRerender) {
+      this.rerender();
     }
   };
 
@@ -567,6 +557,25 @@ Component.Prototype = function ComponentPrototype() {
           }
       }
     }, this);
+    return result;
+  };
+
+  this._setProps = function(props) {
+    var result = {
+      updateHtmlProps: false,
+      rerender: false
+    };
+    var props = this._splitProps(newProps);
+    if (props.html) {
+      this.htmlProps = props.html;
+      result.updateHtmlProps = true;
+    }
+    if (props.custom) {
+      result.needRerender = this.shouldRerender(props.custom, this.state);
+      this.willReceiveProps(props.custom);
+      this.props = props.custom;
+      this.didReceiveProps();
+    }
     return result;
   };
 
