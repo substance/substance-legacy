@@ -12,7 +12,6 @@ var Clipboard = require('../../surface/clipboard');
 var ToolRegistry = require('../../surface/tool_registry');
 
 var ExtensionManager = require('./extension_manager');
-var ContentToolbar = require("./content_toolbar");
 var ContextToggles = require('./context_toggles');
 var ContentPanel = require("./content_panel");
 var StatusBar = require("./status_bar");
@@ -22,15 +21,17 @@ var ModalPanel = require('./modal_panel');
 
 function Writer() {
   Component.apply(this, arguments);
-
   // Mixin
   EventEmitter.call(this);
+
+  this.config = this.props.config || {};
 
   this.handleApplicationKeyCombos = this.handleApplicationKeyCombos.bind(this);
   this.onSelectionChangedDebounced = _.debounce(this.onSelectionChanged, 50);
 
   this._registerExtensions();
   this._initializeComponentRegistry();
+  this._initializeToolRegistry();
 }
 
 Writer.Prototype = function() {
@@ -48,37 +49,33 @@ Writer.Prototype = function() {
     };
   };
 
-  this.getClassNames = function() {
-    return 'writer-component';
-  };
-
-  this.getDocument = function() {
-    return this.props.doc;
-  };
-
   this.getInitialState = function() {
     var defaultContextId = this.props.contextId;
     return {"contextId": defaultContextId || "toc"};
   };
 
   this.render = function() {
-    if (this.props.doc) {
-      return $$('div', {}, 'Loading');
+    var el = $$('div', { classNames: 'writer-component'});
+    if (!this.props.doc) {
+      el.append($$('div', {}, 'Loading'));
     } else {
-      return [
+      var doc = this.props.doc;
+      var ContentToolbar = this.componentRegistry.get('content_toolbar');
+      el.append(
         $$('div', { key: 'container', className: "main-container"},
           $$(ContentToolbar, { key: 'toolbar' }),
-          $$(ContentPanel, { key: 'content', containerId: this.config.containerId })
+          $$(ContentPanel, { key: 'content', doc: doc, containerId: this.config.containerId })
         ),
         $$('div', { classNames: "resource-container" },
           $$(ContextToggles, { key: "context-toggles", panelOrder: this.config.panelOrder }),
           this._renderContextPanel(this)
         ),
         this._renderModalPanel(),
-        $$(StatusBar, { key: 'statusBar' }),
+        $$(StatusBar, { key: 'statusBar', doc: doc }),
         $$('div', { key: 'clipboard', classNames: "clipboard" })
-      ];
+      );
     }
+    return el;
   };
 
   this.willReceiveProps = function(newProps) {
@@ -89,9 +86,10 @@ Writer.Prototype = function() {
 
   this.didReceiveProps = function() {
     if (this.props.doc) {
-      this.surfaceManager = new SurfaceManager(this.props.doc);
-      this.clipboard = new Clipboard(this.surfaceManager, this.doc.getClipboardImporter(), this.doc.getClipboardExporter());
-      this.props.doc.connect(this, {
+      var doc = this.props.doc;
+      this.surfaceManager = new SurfaceManager(doc);
+      this.clipboard = new Clipboard(this.surfaceManager, doc.getClipboardImporter(), doc.getClipboardExporter());
+      doc.connect(this, {
         'transaction:started': this.transactionStarted,
         'document:changed': this.onDocumentChanged
       });
@@ -112,6 +110,13 @@ Writer.Prototype = function() {
       this._disposeDoc();
     }
   };
+
+  this.getDocument = function() {
+    return this.props.doc;
+  };
+
+  // Event handlers
+  // --------------
 
   // return true when you handled a key combo
   this.handleApplicationKeyCombos = function(e) {
@@ -143,13 +148,12 @@ Writer.Prototype = function() {
     }
   };
 
-  // Event handlers
-  // --------------
-
+  // FIXME: even if this seems to be very hacky,
+  // it is quite useful to make transactions 'app-compatible'
   this.transactionStarted = function(tx) {
-    // store the state so that it can be recovered when undo/redo
-    tx.before.state = this.state;
-    tx.before.selection = this.getSelection();
+    // // store the state so that it can be recovered when undo/redo
+    // tx.before.state = this.state;
+    // tx.before.selection = this.getSelection();
   };
 
   this.onDocumentChanged = function(change, info) {
@@ -286,7 +290,7 @@ Writer.Prototype = function() {
 
   this._panelPropsFromState = function (state) {
     var props = _.omit(state, 'contextId');
-    props.doc = this.doc;
+    props.doc = this.props.doc;
     return props;
   };
 

@@ -17,9 +17,35 @@ function TableComponent() {
 TableComponent.Prototype = function() {
 
   this.getInitialState = function() {
-    return {
-      mode: 'table'
+    return { mode: 'table' };
+  };
+
+  this.render = function() {
+    var tableNode = this.props.node;
+    // HACK: make sure row col indexes are up2date
+    tableNode.getMatrix();
+    var sections = [];
+    _.each(tableNode.getSections(), function(sec) {
+      var rowEls = [];
+      var rows = sec.getRows();
+      _.each(rows, function(row) {
+        rowEls.push(this._renderRow(row));
+      }, this);
+      sections.push($$("t"+sec.sectionType, {key: sec.id }, rowEls));
+    }, this);
+
+    var modeClass = "";
+    if (this.state.mode === "table") {
+      modeClass = 'table-editing-mode';
+    } else if (this.state.mode === "cell") {
+      modeClass = 'cell-editing-mode';
+    }
+    var props = {
+      classNames: "content-node table " + modeClass,
+      "data-id": this.props.node.id,
+      contentEditable: false
     };
+    return $$('table', props, sections);
   };
 
   this.didMount = function() {
@@ -34,44 +60,6 @@ TableComponent.Prototype = function() {
     this.context.surface.disconnect(this);
   };
 
-  this.tagName = "table";
-
-  this.getClassNames = function() {
-    return "content-node table";
-  };
-
-  this.getAttributes = function() {
-    return {
-      "data-id": this.props.node.id,
-      contentEditable: false
-    };
-  };
-
-  this.render = function() {
-    var tableNode = this.props.node;
-    // HACK: make sure row col indexes are up2date
-    tableNode.getMatrix();
-    var secEls = [];
-    var secs = tableNode.getSections();
-    _.each(secs, function(sec) {
-      var rowEls = [];
-      var rows = sec.getRows();
-      _.each(rows, function(row) {
-        rowEls.push(this._renderRow(row));
-      }, this);
-      secEls.push($$("t"+sec.sectionType, {key: sec.id }, rowEls));
-    }, this);
-
-    if (this.state.mode === "table") {
-      this.$el.removeClass('cell-editing-mode');
-      this.$el.addClass('table-editing-mode');
-    } else if (this.state.mode === "cell") {
-      this.$el.addClass('cell-editing-mode');
-      this.$el.removeClass('table-editing-mode');
-    }
-
-    return secEls;
-  };
 
   this._renderRow = function(row) {
     var doc = this.props.doc;

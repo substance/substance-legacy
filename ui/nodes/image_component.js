@@ -1,7 +1,7 @@
 'use strict';
 
 var OO = require('../../basics/oo');
-var Component = require('../Component');
+var Component = require('../component');
 var $$ = Component.$$;
 
 function ImageComponent() {
@@ -12,6 +12,15 @@ function ImageComponent() {
 
 ImageComponent.Prototype = function() {
 
+  this.render = function() {
+    return $$('img', {
+      classNames: 'image',
+      "data-id": this.props.node.id,
+      contentEditable: false,
+      src: this.props.node.src,
+    });
+  };
+
   this.didMount = function() {
     var doc = this.props.doc;
     doc.connect(this, { 'document:changed': this.handleDocumentChange });
@@ -20,21 +29,6 @@ ImageComponent.Prototype = function() {
   this.willUnmount = function() {
     var doc = this.props.doc;
     doc.disconnect(this);
-  };
-
-  this.getClassNames = function() {
-    return 'image';
-  };
-
-  this.getAttributes = function() {
-    return {
-      contentEditable: false,
-      "data-id": this.props.node.id
-    };
-  };
-
-  this.render = function() {
-    return $$('img', {src: this.props.node.src});
   };
 
   this.handleDocumentChange = function(change) {

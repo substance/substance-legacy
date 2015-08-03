@@ -2,6 +2,7 @@
 
 var OO = require('../basics/oo');
 var Component = require('./component');
+var $$ = Component.$$;
 
 function FontAwesomeIcon() {
   Component.Container.apply(this, arguments);
@@ -9,10 +10,8 @@ function FontAwesomeIcon() {
 
 FontAwesomeIcon.Prototype = function() {
 
-  this.tagName = 'i';
-
-  this.getClassNames = function() {
-    return 'fa ' + this.props.icon;
+  this.render = function() {
+    return $$('i', { classNames: 'fa ' + this.props.icon });
   };
 
 };

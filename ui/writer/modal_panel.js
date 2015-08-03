@@ -12,10 +12,6 @@ function ModalPanel() {
 
 ModalPanel.Prototype = function() {
 
-  this.getClassNames = function() {
-    return 'modal '+this.props.panelElement.type.modalSize;
-  };
-
   this.didMount = function() {
     this.$el.on('click', '.close-modal', this.handleCloseModal);
     this.$el.on('click', '.modal-body', this.preventBubbling());
@@ -23,6 +19,14 @@ ModalPanel.Prototype = function() {
 
   this.willUnmount = function() {
     this.$el.off('click');
+  };
+
+  this.render = function() {
+    return $$('div', { classNames: 'modal '+this.props.panelElement.type.modalSize },
+      $$('div', { classNames: 'modal-body' },
+        this.props.panelElement
+      )
+    );
   };
 
   this.handleCloseModal = function(e) {
@@ -35,11 +39,6 @@ ModalPanel.Prototype = function() {
     e.preventDefault();
   };
 
-  this.render = function() {
-    return $$('div', { classNames: 'modal-body' },
-      this.props.panelElement
-    );
-  };
 };
 
 OO.inherit(ModalPanel, Component);

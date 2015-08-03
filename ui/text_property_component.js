@@ -1,49 +1,32 @@
 "use strict";
 
-var Component = require('../component');
+var OO = require('../basics/oo');
+var Component = require('./component');
 var $$ = Component.$$;
-var Annotator = require('../../document/annotator');
-var AnnotationComponent = require('./annotation_component');
+var Annotator = require('../document/annotator');
+var AnnotationComponent = require('./nodes/annotation_component');
 
-class TextPropertyComponent extends Component {
+function TextPropertyComponent() {
+  Component.apply(this, arguments);
+}
 
-  get tagName() {
-    return this.props.tagName || 'span';
-  }
+TextPropertyComponent.Prototype = function() {
 
-  get classNames() {
-    return "text-property " + (this.props.classNames || "");
-  }
-
-  get attributes() {
-    return {
-      spellCheck: false,
-      "data-path": this.props.path.join('.')
-    };
-  }
-
-  get style() {
-    return {
-      whiteSpace: "pre-wrap"
-    };
-  }
-
-  didMount() {
-    var doc = this.props.doc;
-    doc.getEventProxy('path').add(this.props.path, this, this.textPropertyDidChange);
-  }
-
-  willUnmount() {
-    var doc = this.props.doc;
-    doc.getEventProxy('path').remove(this.props.path, this);
-  }
-
-  render() {
+  this.render = function() {
     var componentRegistry = this.context.componentRegistry;
     var doc = this.getDocument();
     var path = this.getPath();
     var text = doc.get(path) || "";
     var annotations = this.getAnnotations();
+
+    var el = $$(this.props.tagName || 'span', {
+      classNames: "text-property " + (this.props.classNames || ""),
+      "data-path": this.props.path.join('.'),
+      spellCheck: false,
+      style: {
+        whiteSpace: "pre-wrap"
+      },
+    });
 
     var annotator = new Annotator();
     var fragmentCounters = {};
@@ -59,7 +42,10 @@ class TextPropertyComponent extends Component {
     // var _logPrefix = "";
     annotator.onText = function(context, text) {
       // console.log(_logPrefix+text);
-      context.children.push(text);
+      // HACK: this should not be necessary
+      if (text && text.length > 0) {
+        context.children.push(new Component.VirtualTextNode(text));
+      }
     };
     annotator.onEnter = function(entry) {
       // for debugging
@@ -110,53 +96,67 @@ class TextPropertyComponent extends Component {
       var view = $$.apply(null, args);
       parentContext.children.push(view);
     };
-    var root = { children: [] };
-    annotator.start(root, text, annotations);
+    annotator.start(el, text, annotations);
     // NOTE: this is particularly necessary for text-properties of
     // block level text nodes. Otherwise, the element will not y-expand
     // as desired, and soft-breaks are not visible.
     // TODO: sometimes we do not want to do this. Make it configurable.
-    root.children.push($$('br'));
-    return root.children;
-  }
+    el.append($$('br'));
 
-  getAnnotation() {
+    // HACK: need to post-process as some of the data has been
+    // add using push and not processed via $$.
+    Component.$$.prepareChildren(el.children);
+    return el;
+  };
+
+  this.didMount = function() {
+    var doc = this.props.doc;
+    doc.getEventProxy('path').add(this.props.path, this, this.textPropertyDidChange);
+  };
+
+  this.willUnmount = function() {
+    var doc = this.props.doc;
+    doc.getEventProxy('path').remove(this.props.path, this);
+  };
+
+  this.getAnnotations = function() {
     return this.context.surface.getAnnotationsForProperty(this.props.path);
-  }
+  };
 
   // Annotations that are active (not just visible)
-  getHighlights() {
+  this.getHighlights = function() {
     if (this.context.getHighlightedNodes) {
       return this.context.getHighlightedNodes();
     } else {
       return [];
     }
-  }
+  };
 
-  textPropertyDidChange() {
+  this.textPropertyDidChange = function() {
     this.rerender();
-  }
+  };
 
-  getContainer() {
+  this.getContainer = function() {
     return this.getSurface().getContainer();
-  }
+  };
 
-  getDocument() {
+  this.getDocument = function() {
     return this.props.doc;
-  }
+  };
 
-  getPath() {
+  this.getPath = function() {
     return this.props.path;
-  }
+  };
 
-  getElement() {
+  this.getElement = function() {
     return this.$el[0];
-  }
+  };
 
-  getSurface() {
+  this.getSurface = function() {
     return this.context.surface;
-  }
+  };
+};
 
-}
+OO.inherit(TextPropertyComponent, Component);
 
 module.exports = TextPropertyComponent;

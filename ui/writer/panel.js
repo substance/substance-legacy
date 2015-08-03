@@ -10,9 +10,15 @@ function Panel() {
 
 Panel.Prototype = function() {
 
+  // This method must be overriden with your panel implementation
+  this.render = function() {
+    return $$("div", {classNames: "panel"},
+      $$('div', {classNames: 'panel-content'}, 'YOUR_PANEL_CONTENT')
+    );
+  };
+
   this.getDocument = function() {
-    var app = this.context.app;
-    return app.doc;
+    return this.props.doc;
   };
 
   this.getPanelContentElement = function() {
@@ -46,13 +52,6 @@ Panel.Prototype = function() {
   this.getScrollPosition = function() {
     var panelContentEl = this.getPanelContentElement();
     return $(panelContentEl).scrollTop();
-  };
-
-  // This method must be overriden with your panel implementation
-  this.render = function() {
-    return $$("div", {classNames: "panel"},
-      $$('div', {classNames: 'panel-content'}, 'YOUR_PANEL_CONTENT')
-    );
   };
 
   // Get the current coordinates of the first element in the

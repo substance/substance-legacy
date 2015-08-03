@@ -513,7 +513,7 @@ Component.Prototype = function ComponentPrototype() {
 
   this._getContext = function() {
     var parent = this.getParent();
-    var parentContext = parent.context;
+    var parentContext = parent.context || {};
     if (parent.getChildContext) {
       return _.extend(parentContext, parent.getChildContext());
     } else {
@@ -533,6 +533,7 @@ Component.Prototype = function ComponentPrototype() {
         case 'rowspan':
         case 'spellCheck':
         case 'src':
+        case 'title':
           attributes[key] = val;
           break;
         default:
@@ -611,8 +612,39 @@ OO.inherit(Component.Text, Component);
 function VirtualContainer() {}
 
 VirtualContainer.Prototype = function() {
-  this.append = function(child) {
-    this.children.push(child);
+
+  this.append = function(/* ...children */) {
+    var children;
+    if (arguments.length === 1) {
+      var child = arguments[0];
+      if (!child) {
+        return this;
+      }
+      if (_.isArray(child)) {
+        children = child;
+        Component.$$.prepareChildren(children);
+        this.children = this.children.concat(children);
+      } else if (_.isString(child)) {
+        this.children.push(new VirtualTextNode(child));
+      } else {
+        this.children.push(child);
+      }
+    } else {
+      children = Array.prototype.slice.call(arguments,0);
+      Component.$$.prepareChildren(children);
+      for (var i = 0; i < children.length; i++) {
+        this.children.push(children[i]);
+      }
+    }
+    return this;
+  };
+
+  this.addClass = function(className) {
+    if (!this.props.classNames) {
+      this.props.classNames = "";
+    }
+    this.props.classNames += " " + className;
+    return this;
   };
 };
 
@@ -633,7 +665,7 @@ OO.inherit(VirtualComponent, VirtualContainer);
 function VirtualTextNode(text) {
   this.type = 'text';
   this.props = { text: text };
-};
+}
 
 Component.$$ = function() {
   var content = null;
@@ -655,13 +687,19 @@ Component.$$ = function() {
   } else if (!_.isArray(children)) {
     children = [ children ];
   }
+  Component.$$.prepareChildren(children);
+  content.children = children;
+  return content;
+};
+
+Component.$$.prepareChildren = function(children) {
   for (var i = 0; i < children.length; i++) {
     if(_.isString(children[i])) {
       children[i] = new VirtualTextNode(children[i]);
     }
   }
-  content.children = children;
-  return content;
 };
+
+Component.VirtualTextNode = VirtualTextNode;
 
 module.exports = Component;

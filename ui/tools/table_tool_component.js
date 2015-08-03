@@ -1,34 +1,29 @@
-var $$ = React.createElement;
+"use strict";
+/* global i18n*/
+
+var OO = require("../../basics/oo");
+var Component = require('../component');
+var $$ = Component.$$;
 
 // Navigate Tool Component
 // ----------------
 //
 // Just used to trigger app state changes
 
-var TableToolComponent = React.createClass({
-  displayName: "TableToolComponent",
+function TableToolComponent() {
+  Component.apply(this, arguments);
 
-  contextTypes: {
-    toolRegistry: React.PropTypes.object.isRequired
-  },
+  this.handleClick = this.handleClick.bind(this);
+  this.handleMouseDown = this.handleMouseDown.bind(this);
+}
 
-  componentWillMount: function() {
-    var toolName = this.props.tool;
-    if (!toolName) {
-      throw new Error('Prop "tool" is mandatory.');
-    }
-    this.tool = this.context.toolRegistry.get(toolName);
-    if (!this.tool) {
-      console.error('No tool registered with name %s', toolName);
-    }
-    this.tool.connect(this, {
-      'toolstate:changed': this.onToolstateChanged
-    });
-  },
+TableToolComponent.Prototype = function() {
 
-  getInitialState: function() { return { disabled: true }; },
+  this.getInitialState = function() {
+    return { disabled: true };
+  };
 
-  render: function() {
+  this.render = function() {
     var classNames = [];
     if (this.props.classNames) {
       classNames = this.props.classNames.slice();
@@ -95,28 +90,49 @@ var TableToolComponent = React.createClass({
     return $$("button", {
       className: classNames.join(' '),
       title: this.props.title,
-      onMouseDown: this.handleMouseDown,
-      onClick: this.handleClick
     }, label);
-  },
+  };
 
-  onToolstateChanged: function(toolState) {
+  this.didMount = function() {
+    var toolName = this.props.tool;
+    if (!toolName) {
+      throw new Error('Prop "tool" is mandatory.');
+    }
+    this.tool = this.context.toolRegistry.get(toolName);
+    if (!this.tool) {
+      console.error('No tool registered with name %s', toolName);
+    }
+    this.tool.connect(this, {
+      'toolstate:changed': this.onToolstateChanged
+    });
+    this.$el.on('mousedown', this.handleMouseDown);
+    this.$el.on('click', this.handleClick);
+  };
+
+  this.willUnmount = function() {
+    this.tool.disconnect(this);
+    this.$el.off('mousedown', this.handleMouseDown);
+    this.$el.off('click', this.handleClick);
+  };
+
+  this.onToolstateChanged = function(toolState) {
     this.setState({
       disabled: toolState.disabled
     });
-  },
+  };
 
-  handleClick: function(e) {
+  this.handleClick = function(e) {
     e.preventDefault();
-  },
+  };
 
-  handleMouseDown: function(e) {
+  this.handleMouseDown = function(e) {
     e.preventDefault();
     if (!this.state.disabled) {
       this.tool.performAction(this.props);
     }
-  },
+  };
+};
 
-});
+OO.inherit(TableToolComponent, Component);
 
 module.exports = TableToolComponent;

@@ -29,10 +29,6 @@ StatusBar.Prototype = function() {
     });
   };
 
-  this.getClassNames = function() {
-    return "status-bar-component fill-light";
-  };
-
   this.willUpdateState = function() {
     if (this.state.message) {
       this.$el.removeClass(this.state.message.type);
@@ -53,10 +49,12 @@ StatusBar.Prototype = function() {
     } else {
       notifications = $$('div');
     }
-    return [
-      $$("div", { classNames: "document-status" }, this.props.doc.getDocumentMeta().title),
+    return $$('div', {classNames: "status-bar-component fill-light"},
+      $$("div", { classNames: "document-status" },
+        this.props.doc.getDocumentMeta().title
+      ),
       notifications
-    ];
+    );
   };
 
   this.handleNotificationUpdate = function(messages) {

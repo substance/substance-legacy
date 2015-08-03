@@ -14,6 +14,35 @@ function ContentPanel() {
 
 ContentPanel.Prototype = function() {
 
+  this.render = function() {
+    return $$('div', {classNames:"panel content-panel-component"},
+      $$(Scrollbar, {
+        id: "content-scrollbar",
+        key: "scrollbar"
+      }),
+      $$('div', {classNames: 'scanline'}),
+      $$('div', {key: "panelContent", classNames: "panel-content"}, // requires absolute positioning, overflow=auto
+        this.renderContentEditor()
+      )
+    );
+  };
+
+  this.renderContentEditor = function() {
+    var componentRegistry = this.context.componentRegistry;
+    var doc = this.props.doc;
+    var containerNode = doc.get(this.props.containerId);
+    // FIXME: this is called getContentEditor() but requires 'content_container'
+    var ContentContainerClass = componentRegistry.get("content_container");
+    if (!ContentContainerClass) {
+      ContentContainerClass = componentRegistry.get("content_editor");
+    }
+    return $$(ContentContainerClass, {
+      key: "contentEditor",
+      doc: doc,
+      node: containerNode
+    });
+  };
+
   // Since component gets rendered multiple times we need to update
   // the scrollbar and reattach the scroll event
   this.didMount = function() {
@@ -85,41 +114,6 @@ ContentPanel.Prototype = function() {
 
     var doc = this.getDocument();
     doc.emit('toc:entry-focused', activeNode);
-  };
-
-  // Rendering
-  // -----------------
-
-  this.getClassNames = function() {
-    return "panel content-panel-component";
-  };
-
-  this.render = function() {
-    return [
-      $$(Scrollbar, {
-        id: "content-scrollbar",
-        key: "scrollbar"
-      }),
-      $$('div', {classNames: 'scanline'}),
-      $$('div', {key: "panelContent", classNames: "panel-content"}, // requires absolute positioning, overflow=auto
-        this.getContentEditor()
-      )
-    ];
-  };
-
-  this.renderContentEditor = function() {
-    var componentRegistry = this.context.componentRegistry;
-    var doc = this.props.doc;
-    // FIXME: this is called getContentEditor() but requires 'content_container'
-    var ContentContainerClass = componentRegistry.get("content_container");
-    if (!ContentContainerClass) {
-      ContentContainerClass = componentRegistry.get("content_editor");
-    }
-    return $$(ContentContainerClass, {
-      key: "contentEditor",
-      doc: doc,
-      node: doc.get("content"),
-    });
   };
 };
 

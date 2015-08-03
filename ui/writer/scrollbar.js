@@ -40,13 +40,9 @@ Scrollbar.Prototype = function() {
      this.$el.off('mousedown', this.onMouseDown);
   };
 
-  this.getClassNames = function() {
-    return 'scrollbar-component'+this.props.contextId;
-  };
-
   this.render = function() {
     var highlightEls = this.state.highlights.map(function(h) {
-     return $$('div', {
+      return $$('div', {
         classNames: 'highlight',
         key: h.id,
         style: {
@@ -55,18 +51,19 @@ Scrollbar.Prototype = function() {
         }
       });
     });
-    var thumbEl = $$('div', {
-      ref: "thumb",
-      classNames: "thumb",
-      style: {
-        top: this.state.thumb.top,
-        height: Math.max(this.state.thumb.height, THUMB_MIN_HEIGHT)
-      }
-    });
-    return [
-      thumbEl,
-      $$('div', {classNames: 'highlights'}, highlightEls)
-    ];
+    return $$('div', {classNames: 'scrollbar-component'+this.props.contextId},
+      $$('div', {
+        key: "thumb",
+        classNames: "thumb",
+        style: {
+          top: this.state.thumb.top,
+          height: Math.max(this.state.thumb.height, THUMB_MIN_HEIGHT)
+        }
+      }),
+      $$('div', {classNames: 'highlights'},
+        highlightEls
+      )
+    );
   };
 
   this.update = function(panelContentEl, panel) {
@@ -79,23 +76,27 @@ Scrollbar.Prototype = function() {
     this.factor = (contentHeight / panelHeight);
     var highlights = [];
     // Compute highlights
-    this.props.highlights().forEach(function(nodeId) {
-      var nodeEl = $(self.panelContentEl).find('*[data-id='+nodeId+']');
-      if (!nodeEl.length) return;
-      var top = nodeEl.position().top / self.factor;
-      var height = nodeEl.outerHeight(true) / self.factor;
-      // HACK: make all highlights at least 3 pxls high, and centered around the desired top pos
-      if (height < Scrollbar.overlayMinHeight) {
-        height = Scrollbar.overlayMinHeight;
-        top = top - 0.5 * Scrollbar.overlayMinHeight;
-      }
-      var data = {
-        id: nodeId,
-        top: top,
-        height: height
-      };
-      highlights.push(data);
-    });
+
+    // FIXME: This needs to be reworked...
+    // why not using component.setProps() when new hihglights should be displayed?
+
+    // this.props.highlights().forEach(function(nodeId) {
+    //   var nodeEl = $(self.panelContentEl).find('*[data-id='+nodeId+']');
+    //   if (!nodeEl.length) return;
+    //   var top = nodeEl.position().top / self.factor;
+    //   var height = nodeEl.outerHeight(true) / self.factor;
+    //   // HACK: make all highlights at least 3 pxls high, and centered around the desired top pos
+    //   if (height < Scrollbar.overlayMinHeight) {
+    //     height = Scrollbar.overlayMinHeight;
+    //     top = top - 0.5 * Scrollbar.overlayMinHeight;
+    //   }
+    //   var data = {
+    //     id: nodeId,
+    //     top: top,
+    //     height: height
+    //   };
+    //   highlights.push(data);
+    // });
 
     var thumbProps = {
      top: scrollTop / this.factor,

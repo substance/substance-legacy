@@ -11,23 +11,13 @@ function FigureComponent() {
 
 FigureComponent.Prototype = function() {
 
-  this.getClassNames = function() {
-    var specificType = this.props.node.type;
-    return "content-node figure clearfix "+specificType;
-  };
-
-  this.getAttributes = function() {
-    return {
-      "data-id": this.props.node.id
-    };
-  };
-
   this.render = function() {
     var componentRegistry = this.context.componentRegistry;
     var contentNode = this.props.node.getContentNode();
     var ContentComponentClass = componentRegistry.get(contentNode.type);
+    var specificType = this.props.node.type;
 
-    return [
+    return $$('div', { classNames: "content-node figure clearfix "+specificType, "data-id": this.props.node.id},
       $$('div', { classNames: 'label', contentEditable: false }, this.props.node.label),
       $$(TextProperty, {
         tagName: 'div',
@@ -49,7 +39,7 @@ FigureComponent.Prototype = function() {
           path: [this.props.node.id, "caption"]
         })
       )
-    ];
+    );
   };
 };
 

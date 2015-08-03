@@ -1,7 +1,7 @@
 'use strict';
 
 var OO = require('../../basics/oo');
-var Component = require('../Component');
+var Component = require('../component');
 var UnsupportedNode = require('./unsupported_node');
 var $$ = Component.$$;
 
@@ -20,11 +20,9 @@ IncludeComponent.Prototype = function() {
       console.error('Could not resolve a component for type: ' + node.type);
       ComponentClass = UnsupportedNode;
     }
-    return $$(ComponentClass, {
-      key: node.id,
-      doc: doc,
-      node: node
-    });
+    return $$('div', { classNames: "content-node include", "data-id": this.props.node.id },
+      $$(ComponentClass, { key: node.id, doc: doc, node: node })
+    );
   };
 };
 

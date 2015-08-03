@@ -2,6 +2,7 @@
 
 var OO = require('../../basics/oo');
 var Component = require('../component');
+var $$ = Component.$$;
 
 function AnnotationComponent() {
   Component.apply(this, arguments);
@@ -9,7 +10,13 @@ function AnnotationComponent() {
 
 AnnotationComponent.Prototype = function() {
 
-  this.tagName = 'span';
+  this.render = function() {
+    var el = $$('span', { "data-id": this.props.node.id, classNames: this.getClassNames() });
+    if (this.props.node.active) {
+      el.props.classNames += 'active';
+    }
+    return el.append(this.props.children);
+  };
 
   this.getClassNames = function() {
     var typeNames = this.props.node.getTypeNames();
@@ -18,21 +25,6 @@ AnnotationComponent.Prototype = function() {
       classNames += " " + this.props.classNames.join(' ');
     }
     return classNames.replace(/_/g, '-');
-  };
-
-  this.getAttributes = function() {
-    return {
-      "data-id": this.props.node.id
-    };
-  };
-
-  this.render = function() {
-    if (this.props.node.active) {
-      this.$el.addClass('active');
-    } else {
-      this.$el.removeClass('active');
-    }
-    return this.props.children;
   };
 
   this.didMount = function() {

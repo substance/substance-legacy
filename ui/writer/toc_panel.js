@@ -14,17 +14,25 @@ function TocPanel() {
 
 TocPanel.Prototype = function() {
 
-  this.didMount = function() {
-    var doc = this.getDocument();
-    doc.connect(this, {
-      'app:toc-entry:changed': this.setActiveTOCEntry,
-      'document:changed': this.handleDocumentChange
-    });
-  };
-
-  this.willUnmount = function() {
-    var doc = this.getDocument();
-    doc.disconnect(this);
+  this.render = function() {
+    var state = this.state;
+    var el = $$("div", {classNames: "panel toc-panel-component"});
+    var tocEntries = _.map(state.tocNodes, function(node) {
+      var level = node.level;
+      var classNames = ["toc-entry", "level-"+level];
+      if (state.activeNode === node.id) {
+        classNames.push("active");
+      }
+      return $$('a', {
+        className: classNames.join(" "),
+        href: "#",
+        key: node.id,
+        "data-id": node.id,
+        onClick: this.handleClick
+      }, node.content);
+    }, this);
+    el.append($$("div", {classNames: "toc-entries"}, tocEntries));
+    return el;
   };
 
   this.getInitialState = function() {
@@ -34,6 +42,19 @@ TocPanel.Prototype = function() {
       tocNodes: tocNodes,
       activeNode: tocNodes.length > 0 ? tocNodes[0].id : null
     };
+  };
+
+  this.didMount = function() {
+    var doc = this.getDocument();
+    doc.connect(this, {
+      'app:toc-entry:changed': this.setActiveTocEntry,
+      'document:changed': this.handleDocumentChange
+    });
+  };
+
+  this.willUnmount = function() {
+    var doc = this.getDocument();
+    doc.disconnect(this);
   };
 
   this.handleDocumentChange = function(change) {
@@ -84,32 +105,6 @@ TocPanel.Prototype = function() {
     e.preventDefault();
     var doc = this.getDocument();
     doc.emit("toc:entry-selected", nodeId);
-  };
-
-  this.getClassNames = function() {
-    return "panel toc-panel-component";
-  };
-
-  this.render = function() {
-    var state = this.state;
-    var tocEntries = _.map(state.tocNodes, function(node) {
-      var level = node.level;
-      var classNames = ["toc-entry", "level-"+level];
-
-      if (state.activeNode === node.id) {
-        classNames.push("active");
-      }
-
-      return $$('a', {
-        className: classNames.join(" "),
-        href: "#",
-        key: node.id,
-        "data-id": node.id,
-        onClick: this.handleClick
-      }, node.content);
-    }, this);
-
-    return $$("div", {classNames: "toc-entries"}, tocEntries);
   };
 };
 
