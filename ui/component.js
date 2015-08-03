@@ -252,17 +252,11 @@ Component.Prototype = function ComponentPrototype() {
     return false;
   };
 
-  var _indexByKey = function(children, old) {
+  var _indexByKey = function(children) {
     var index = {};
     for (var i = 0; i < children.length; i++) {
-      var key;
       var child = children[i];
-      // yuck
-      if (old) {
-        key = child.component.key;
-      } else {
-        key = child.props.key;
-      }
+      var key = child.props.key;
       if (key) {
         index[key] = child;
       }
@@ -343,7 +337,7 @@ Component.Prototype = function ComponentPrototype() {
       // remove the data so we do not process it again
       delete oldComps[key];
       for (var i = oldPos+1; i < oldContent.length; i++) {
-        if (oldContent[i].component.key === key) {
+        if (oldContent[i].props.key === key) {
           oldContent.splice(i, 1);
           break;
         }
@@ -403,11 +397,12 @@ Component.Prototype = function ComponentPrototype() {
 
       // Note: if the key property is set the component is treated preservatively
       var newKey = _new.props.key;
-      var oldKey = _old.component.key;
+      var oldKey = _old.props.key;
       if (oldKey && newKey) {
         // the component is in the right place already
         if (oldKey === newKey) {
           comp = _old.component;
+          _new.component = comp;
           _update(comp, _new);
           pos++; oldPos++; newPos++;
         }
