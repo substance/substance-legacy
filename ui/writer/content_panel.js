@@ -17,11 +17,18 @@ ContentPanel.Prototype = function() {
   this.render = function() {
     return $$('div', {classNames:"panel content-panel-component"},
       $$(Scrollbar, {
-        id: "content-scrollbar",
-        key: "scrollbar"
+        key: "scrollbar",
+        id: "content-scrollbar"
       }),
-      $$('div', {classNames: 'scanline'}),
-      $$('div', {key: "panelContent", classNames: "panel-content"}, // requires absolute positioning, overflow=auto
+      $$('div', { key: "scanline", classNames: 'scanline' } ),
+      $$('div', {
+          key: "panelContent",
+          classNames: "panel-content",
+          style: {
+            position: 'absolute',
+            overflow: 'auto'
+          }
+        },
         this.renderContentEditor()
       )
     );
@@ -31,11 +38,7 @@ ContentPanel.Prototype = function() {
     var componentRegistry = this.context.componentRegistry;
     var doc = this.props.doc;
     var containerNode = doc.get(this.props.containerId);
-    // FIXME: this is called getContentEditor() but requires 'content_container'
-    var ContentContainerClass = componentRegistry.get("content_container");
-    if (!ContentContainerClass) {
-      ContentContainerClass = componentRegistry.get("content_editor");
-    }
+    var ContentContainerClass = componentRegistry.get("content_editor");
     return $$(ContentContainerClass, {
       key: "contentEditor",
       doc: doc,
@@ -50,7 +53,7 @@ ContentPanel.Prototype = function() {
     $(window).on('resize', this.updateScrollbar);
     this.props.doc.connect(this, {
       'document:changed': this.onDocumentChange,
-      'toc:entry-selected': this.onTOCEntrySelected
+      'toc:entry-selected': this.onTocEntrySelected
     }, -1);
   };
 
@@ -63,7 +66,7 @@ ContentPanel.Prototype = function() {
     this.updateScrollbar();
   };
 
-  this.onTOCEntrySelected = function(nodeId) {
+  this.onTocEntrySelected = function(nodeId) {
     this.scrollToNode(nodeId);
   };
 

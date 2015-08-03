@@ -66,6 +66,10 @@ Scrollbar.Prototype = function() {
     );
   };
 
+  this._render = function() {
+    Component.prototype._render.apply(this, arguments);
+  };
+
   this.update = function(panelContentEl, panel) {
     var self = this;
     this.panelContentEl = panelContentEl;

@@ -37,7 +37,11 @@ ContainerNodeComponent.Prototype = function() {
         console.error('Could not resolve a component for type: ' + node.type);
         ComponentClass = UnsupporedNode;
       }
-      return $$(ComponentClass, { doc: doc, node: node });
+      return $$(ComponentClass, {
+        key: node.id,
+        doc: doc,
+        node: node
+      });
     });
   };
 
