@@ -13,7 +13,7 @@ var __id__ = 0;
  * Features:
  * - light-weight but simplified rerendering
  * - minimalistic life-cycle with hooks
- * - up-tree communication (sendAction)
+ * - up-tree communication (send action)
  * - dependency injection
  *
  * ## Concepts
@@ -39,19 +39,6 @@ var __id__ = 0;
  * If you want to preserve a grand-child (or lower), then make sure that all anchestors have a key id.
  * After rendering the child will be accessible via `this.refs[key]`.
  *
- * ### The `config` property
- *
- *
- * ### HTML built-in properties
- *
- * These are applied to the component's element directly. If props are updated only with such changes,
- * the component will not be rerendered, only the element's attributes changed.
- *
- * - `id`: the element`s id
- * - `style`: used with `$(el).css()`
- * - `data-*`: used with `$(el).attr()`
- * - `classNames`: used with `$(el).addClass()`
- *
  * ### Actions
  *
  * A component can send actions via `send` which are bubbled up through all parent components
@@ -70,28 +57,21 @@ function Component(parent, props) {
   this.children = {};
   this.refs = {};
 
-  // Split properties into 'component', 'html', and 'custom'
-  props = this._splitProps(props);
-  // class properties ('key', 'config', etc.)
-  if (props.component) {
-    _.extend(this, props.component);
-  }
-  this.htmlProps = props.html || {};
-  this.props = props.custom || {};
-
+  this._setProps(props);
   this._setState(this.getInitialState());
 
   // get context from parent (dependency injection)
   this.context = this._getContext();
 
-  this.$el = this.createElement();
-
   this.didReceiveProps();
+
+  this._data = {
+    props: {},
+    children: []
+  };
 }
 
 Component.Prototype = function ComponentPrototype() {
-
-  this.tagName = 'div';
 
   this.getChildContext = function() {
     return this.childContext || {};
@@ -105,49 +85,14 @@ Component.Prototype = function ComponentPrototype() {
     return this.parent;
   };
 
-  this.getClassNames = function() {
-    return this.classNames;
-  };
-
-  this.getAttributes = function() {
-    return this.attributes;
-  };
-
-  this.createElement = function() {
-    this.$el = $('<' + this.tagName + '>');
-    if (this.htmlProps.id) {
-      this.$el.attr('id', this.htmlProps.id);
-    }
-    var classNames = this.getClassNames();
-    if (classNames) {
-      this.$el.addClass(classNames);
-    }
-    if (this.htmlProps.classNames) {
-      this.$el.addClass(this.htmlProps.classNames);
-    }
-    var attributes = this.getAttributes();
-    if (attributes) {
-      this.$el.attr(attributes);
-    }
-    if (this.htmlProps.attributes) {
-      this.$el.attr(this.htmlProps.attributes);
-    }
-    var style = this.style;
-    if (style) {
-      this.$el.css(style);
-    }
-    if (this.htmlProps.style) {
-      this.$el.css(this.htmlProps.style);
-    }
-    return this.$el;
-  };
-
   /**
-   * Creates a virtual description of the content.
-   * See `Component.$$`.
+   * Renders the component.
+   *
+   * Note: actually it does not create a DOM presentation directly
+   * but a virtual representation which is compiled into a DOM element.
    */
   this.render = function() {
-    return [];
+    return Component.$$('div');
   };
 
   this.shouldRerender = function(newProps, newState) {
@@ -156,7 +101,7 @@ Component.Prototype = function ComponentPrototype() {
   };
 
   this.rerender = function() {
-    this._renderContent(this.render());
+    this._render(this.render());
   };
 
   /**
@@ -166,7 +111,7 @@ Component.Prototype = function ComponentPrototype() {
    * on this component and all of its children.
    */
   this.mount = function($el) {
-    this._renderContent(this.render());
+    this._render(this.render());
     $el.append(this.$el);
     // trigger didMount automatically if the given element is already in the DOM
     if (_isInDocument($el[0])) {
@@ -271,11 +216,11 @@ Component.Prototype = function ComponentPrototype() {
   this.didUpdateState = function() {};
 
   this.setProps = function(newProps) {
-    var flags = this._setProps(newProps);
-    if (flags.updateHtmlProps) {
-      this.updateHtmlProps(this.htmlProps);
-    }
-    if (flags.needRerender) {
+    var needRerender = this.shouldRerender(newProps, this.getState());
+    this.willReceiveProps(newProps);
+    this._setProps(newProps);
+    this.didReceiveProps();
+    if (needRerender) {
       this.rerender();
     }
   };
@@ -284,9 +229,13 @@ Component.Prototype = function ComponentPrototype() {
     return this.props;
   };
 
-  this.willReceiveProps = function() {};
+  this.willReceiveProps = function(newProps) {
+    /* jshint unused: false */
+  };
 
   this.didReceiveProps = function() {};
+
+  /* Internal API */
 
   var _isDocumentElement = function(el) {
     // Node.DOCUMENT_NODE = 9
@@ -303,50 +252,85 @@ Component.Prototype = function ComponentPrototype() {
     return false;
   };
 
-  function _indexByKey(content, old) {
+  var _indexByKey = function(children, old) {
     var index = {};
-    for (var i = 0; i < content.length; i++) {
+    for (var i = 0; i < children.length; i++) {
       var key;
+      var child = children[i];
       // yuck
       if (old) {
-        key = content[i].component.key;
+        key = child.component.key;
       } else {
-        key = content[i].props.key;
+        key = child.props.key;
       }
       if (key) {
-        index[key] = content[i];
+        index[key] = child;
       }
     }
     return index;
-  }
+  };
 
-  function _prepareContent(content) {
-    if (!_.isArray(content)) {
-      content = [ content ];
+  this._createElement = function(data) {
+    var $el = $('<' + data.tagName + '>');
+    if (data.props.id) {
+      $el.attr('id', data.props.id);
     }
-    // preparations for text nodes
-    for (var i = 0; i < content.length; i++) {
-      if (_.isString(content[i])) {
-        content[i] = {
-          type: 'text',
-          props: {},
-          text: content[i]
-        };
+    if (data.props.classNames) {
+      $el.addClass(data.props.classNames);
+    }
+    var attributes = this._getHtmlAttributesFromProps(data.props);
+    if (attributes) {
+      $el.attr(attributes);
+    }
+    if (data.props.style) {
+      $el.css(data.props.style);
+    }
+    return $el;
+  };
+
+  this._updateElement = function(data, oldData) {
+    var $el = this.$el;
+    var oldClassNames = oldData.props.classNames;
+    var newClassNames = data.props.classNames;
+    if (oldClassNames !== newClassNames) {
+      $el.removeClass(oldClassNames);
+      $el.addClass(newClassNames);
+    }
+    var oldAttributes = this._getHtmlAttributesFromProps(oldData.props);
+    var newAttributes = this._getHtmlAttributesFromProps(data.props);
+    if (!_.isEqual(oldAttributes, newAttributes)) {
+      $el.removeAttr(oldAttributes);
+      $el.attr(newAttributes);
+    }
+    // css styles must be overwritten explicitly (there is no '$.removeCss')
+    if (oldData.props.style !== data.props.style) {
+      if (data.props.style) {
+        $el.css(data.props.style);
       }
     }
-    return content;
-  }
+    return $el;
+  };
 
-  this._renderContent = function(newContent) {
-    // to allow more freedom in Component.render()
-    // we do some normalization here
-    newContent = _prepareContent(newContent);
-
+  this._render = function(data) {
+    if (data.type !== 'element') {
+      throw new Error("Component.render() must return one html element: e.g., $$('div')");
+    }
+    var oldData = this._data;
+    // the first time we need to create the component element
+    if (!this.$el) {
+      this.$el = this._createElement(data);
+    } else {
+      // update the element
+      this._updateElement(data, oldData);
+    }
     var el = this.$el[0];
     var isMounted = _isInDocument(el);
-    var oldContent = this.content;
-    var oldComps = _indexByKey(oldContent, "old");
-    var newComps = _indexByKey(newContent);
+
+    var oldContent = oldData.children;
+    var newContent = data.children;
+
+    var oldComps = _indexByKey(oldData.children, "old");
+    var newComps = _indexByKey(data.children);
 
     var pos = 0;
     var oldPos = 0;
@@ -373,16 +357,16 @@ Component.Prototype = function ComponentPrototype() {
 
     function _update(comp, data) {
       if (comp instanceof Component.Container) {
-        comp.setPropsAndChildren(data.props, data.children);
+        comp._render(data);
       } else {
-        comp.setProps(data);
+        comp.setProps(data.props);
       }
     }
 
     function _registerComponent(comp) {
       children[comp.__id__] = comp;
-      if (comp.key) {
-        refs[comp.key] = comp;
+      if (comp.props.key) {
+        refs[comp.props.key] = comp;
       }
     }
 
@@ -486,7 +470,7 @@ Component.Prototype = function ComponentPrototype() {
         pos++; newPos++;
       } else {
         // do not replace text components if they are equal
-        if (_new.type === "text" && _old.type === "text" && _new.text === _old.text) {
+        if (_new.type === "text" && _old.type === "text" && _new.props.text === _old.props.text) {
           // skip
           pos++; oldPos++; newPos++;
           continue;
@@ -502,35 +486,23 @@ Component.Prototype = function ComponentPrototype() {
 
     this.children = children;
     this.refs = refs;
-    this.content = newContent;
-  };
-
-  this._renderHtmlProps = function(htmlProps, oldProps) {
-    // it must be possible to toggle classes
-    this.$el.removeClass(oldProps.classNames).addClass(htmlProps.classNames);
-    // we treat attributes
-    if (htmlProps.attributes) {
-      this.$el.attr(htmlProps.attributes);
-    }
-    // $ does not support removing styles, only overwriting
-    if (htmlProps.style) {
-      this.$el.css(htmlProps.style);
-    }
+    this._data = data;
   };
 
   this._compileComponent = function(data) {
     var component;
     switch(data.type) {
       case 'text':
-        component = new Component.Text(this, data.text);
+        component = new Component.Text(this, data.props.text);
+        component._render();
         break;
       case 'element':
         component = new Component.HtmlElement(this, data.tagName, data.props);
-        component._renderContent(data.children);
+        component._render(data);
         break;
       case 'component':
         component = new data.ComponentClass(this, data.props);
-        component._renderContent(component.render());
+        component._render(component.render());
         break;
       default:
         throw new Error('Illegal state.');
@@ -549,69 +521,33 @@ Component.Prototype = function ComponentPrototype() {
     }
   };
 
-  this._splitProps = function(props) {
-    var result = {};
-    var component = {};
-    var html = {};
+  this._getHtmlAttributesFromProps = function(props) {
     var attributes = {};
-    var custom = {};
     _.each(props, function(val, key) {
       switch (key) {
-        case 'key':
-        case 'config':
-          component[key] = val;
-          result.component = component;
-          break;
-        case 'id':
-        case 'classNames':
-          html[key] = val;
-          result.html = html;
-          break;
+        // Add all html element attributes you want to get rendered into
+        // the DOM element
+        case 'colspan':
         case 'contentEditable':
         case 'href':
-        case 'src':
-        case 'spellCheck':
         case 'rowspan':
-        case 'colspan':
+        case 'spellCheck':
+        case 'src':
           attributes[key] = val;
-          html.attributes = attributes;
-          result.html = html;
-          break;
-        case 'style':
-          html.style = val;
-          result.html = html;
           break;
         default:
           if (/^data-/.exec(key)) {
             attributes[key] = val;
-            html.attributes = attributes;
-            result.html = html;
-          } else {
-            custom[key] = val;
-            result.custom = custom;
           }
       }
     }, this);
-    return result;
+    return attributes;
   };
 
   this._setProps = function(props) {
-    var result = {
-      updateHtmlProps: false,
-      rerender: false
-    };
-    props = this._splitProps(props);
-    if (props.html) {
-      this.htmlProps = props.html;
-      result.updateHtmlProps = true;
-    }
-    if (props.custom) {
-      result.needRerender = this.shouldRerender(props.custom, this.state);
-      this.willReceiveProps(props.custom);
-      this.props = props.custom;
-      this.didReceiveProps();
-    }
-    return result;
+    this.props = props || {};
+    // freezing state to 'enforce' immutability
+    Object.freeze(props);
   };
 
   this._setState = function(state) {
@@ -623,6 +559,8 @@ Component.Prototype = function ComponentPrototype() {
 };
 
 OO.initClass(Component);
+
+/* Built-in components */
 
 Component.Root = function(props) {
   Component.call(this, "root", props);
@@ -637,7 +575,7 @@ Component.Container.Prototype = function() {
   this.setPropsAndChildren = function(props, children) {
     if (children) {
       this._setProps(props);
-      this._renderContent(children);
+      this._render(children);
     } else {
       this.setProps(props);
     }
@@ -655,19 +593,47 @@ OO.inherit(Component.HtmlElement, Component.Container);
 Component.Text = function(parent, text) {
   Component.call(this, parent, {text: text});
 };
+
 Component.Text.Prototype = function() {
-  this.createElement = function() {
+  this._render = function() {
     var el = document.createTextNode(this.props.text);
-    return $(el);
-  };
-  this.setProps = function(props) {
-    this._setProps(props);
-    var $oldEl = this.$el;
-    this.$el = this.createElement();
-    $oldEl.replaceWith(this.$el[0]);
+    if (this.$el) {
+      this.$el.replaceWith(el);
+    }
+    this.$el = $(el);
   };
 };
+
 OO.inherit(Component.Text, Component);
+
+/* Virtual Components */
+
+function VirtualContainer() {}
+
+VirtualContainer.Prototype = function() {
+  this.append = function(child) {
+    this.children.push(child);
+  };
+};
+
+OO.initClass(VirtualContainer);
+
+function VirtualElement(tagName) {
+  this.type = 'element';
+  this.tagName = tagName;
+}
+OO.inherit(VirtualElement, VirtualContainer);
+
+function VirtualComponent(ComponentClass) {
+  this.type = 'component';
+  this.ComponentClass = ComponentClass;
+}
+OO.inherit(VirtualComponent, VirtualContainer);
+
+function VirtualTextNode(text) {
+  this.type = 'text';
+  this.props = { text: text };
+};
 
 Component.$$ = function() {
   var content = null;
@@ -677,21 +643,24 @@ Component.$$ = function() {
     children = Array.prototype.slice.call(arguments, 2);
   }
   if (_.isString(arguments[0])) {
-    // create a primitive component
-    content = {
-      type: 'element',
-      tagName: arguments[0]
-    };
+    content = new VirtualElement(arguments[0]);
   } else if (_.isFunction(arguments[0]) && arguments[0].prototype instanceof Component) {
-    content = {
-      type: 'component',
-      ComponentClass: arguments[0],
-    };
+    content = new VirtualComponent(arguments[0]);
   } else {
     throw new Error('Illegal usage of Component.$$.');
   }
   content.props = props || {};
-  content.children = children || [];
+  if (!children) {
+    children = [];
+  } else if (!_.isArray(children)) {
+    children = [ children ];
+  }
+  for (var i = 0; i < children.length; i++) {
+    if(_.isString(children[i])) {
+      children[i] = new VirtualTextNode(children[i]);
+    }
+  }
+  content.children = children;
   return content;
 };
 
