@@ -12,4 +12,6 @@ Emphasis.static.matchElement = function($el) {
   return $el.is("em,i");
 };
 
+Emphasis.static.level = Number.MAX_VALUE;
+
 module.exports = Emphasis;

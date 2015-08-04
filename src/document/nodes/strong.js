@@ -16,4 +16,6 @@ Strong.static.matchElement = function($el) {
   return $el.is('strong,b');
 };
 
+Strong.static.level = Number.MAX_VALUE;
+
 module.exports = Strong;
