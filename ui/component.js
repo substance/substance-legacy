@@ -53,8 +53,8 @@ function Component(parent, props) {
   this.__id__ = __id__++;
 
   this.parent = parent;
-  this.content = [];
-  this.children = {};
+
+  this.children = [];
   this.refs = {};
 
   this._setProps(props);
@@ -305,9 +305,17 @@ Component.Prototype = function ComponentPrototype() {
     return $el;
   };
 
-  this._render = function(data) {
+  this._render = function(data, scope) {
     if (data.type !== 'element') {
       throw new Error("Component.render() must return one html element: e.g., $$('div')");
+    }
+    if (!scope) {
+      scope = {
+        refs: {},
+        counter: [1]
+      };
+    } else {
+      scope.counter.push(1);
     }
     var oldData = this._data;
     // the first time we need to create the component element
@@ -323,6 +331,12 @@ Component.Prototype = function ComponentPrototype() {
     var oldContent = oldData.children;
     var newContent = data.children;
 
+    if (_.isEqual(oldContent, newContent)) {
+      console.log('-----');
+      this._data = data;
+      return;
+    }
+
     var oldComps = _indexByKey(oldData.children, "old");
     var newComps = _indexByKey(data.children);
 
@@ -330,19 +344,8 @@ Component.Prototype = function ComponentPrototype() {
     var oldPos = 0;
     var newPos = 0;
 
-    var children = {};
-    var refs = {};
-
-    function _removeOldData(key) {
-      // remove the data so we do not process it again
-      delete oldComps[key];
-      for (var i = oldPos+1; i < oldContent.length; i++) {
-        if (oldContent[i].props.key === key) {
-          oldContent.splice(i, 1);
-          break;
-        }
-      }
-    }
+    var oldChildren = this.children;
+    var children = [];
 
     function _replace(oldComp, newComp) {
       oldComp.triggerWillUnmount();
@@ -357,13 +360,6 @@ Component.Prototype = function ComponentPrototype() {
       }
     }
 
-    function _registerComponent(comp) {
-      children[comp.__id__] = comp;
-      if (comp.props.key) {
-        refs[comp.props.key] = comp;
-      }
-    }
-
     // step through old and new content data (~virtual DOM)
     // and apply changes to the component element
     while(oldPos < oldContent.length || newPos < newContent.length) {
@@ -371,27 +367,28 @@ Component.Prototype = function ComponentPrototype() {
       var _old = oldContent[oldPos];
       var _new = newContent[newPos];
       var comp = null;
+      var oldComp = oldChildren[oldPos];
 
       // append remaining new components if there is no old one left
       if (!_old) {
         for (var i = newPos; i < newContent.length; i++) {
-          comp = this._compileComponent(newContent[i]);
+          comp = this._compileComponent(newContent[i], scope);
           if (isMounted) comp.triggerDidMount();
           this.$el.append(comp.$el);
-          _registerComponent(comp);
+          children.push(comp);
         }
         break;
       }
       // unmount remaining old components if there is no old one left
       if (!_new) {
         for (var j = 0; j < oldContent.length; j++) {
-          oldContent[j].component.unmount();
+          oldChildren[j].unmount();
         }
         break;
       }
 
       // otherwise do a differential update
-      if (node !== _old.component.$el[0]) {
+      if (node !== oldComp.$el[0]) {
         throw new Error('Assertion failed: DOM structure is not as expected.');
       }
 
@@ -401,64 +398,57 @@ Component.Prototype = function ComponentPrototype() {
       if (oldKey && newKey) {
         // the component is in the right place already
         if (oldKey === newKey) {
-          comp = _old.component;
-          _new.component = comp;
+          comp = oldComp;
           _update(comp, _new);
           pos++; oldPos++; newPos++;
         }
         // a new component has been inserted
         else if (!oldComps[newKey] && newComps[oldKey]) {
-          comp = this._compileComponent(_new);
+          comp = this._compileComponent(_new, scope);
           comp.$el.insertBefore(node);
           if (isMounted) comp.triggerDidMount();
           pos++; newPos++;
         }
         // old component has been replaced
         else if (!oldComps[newKey] && !newComps[oldKey]) {
-          comp = this._compileComponent(_new);
-          _replace(_old.component, comp);
+          comp = this._compileComponent(_new, scope);
+          _replace(oldComp, comp);
           if (isMounted) comp.triggerDidMount();
           newPos++; oldPos++;
         }
+        // a component has been removed
+        else if (oldComps[newKey] && !newComps[oldKey]) {
+          oldComp.unmount();
+          oldPos++;
+          // continueing as we did not insert a component
+          continue;
+        }
         // component has been moved to a different position
-        else if (oldComps[newKey]) {
-          comp = oldComps[newKey].component;
-          _update(comp, _new);
-          // if the old component is coming up components have been swapped
-          if (newComps[oldKey]) {
-            comp.$el.insertBefore(node);
-          }
-          // otherwise we can replace the old one
-          else {
-            _replace(_old.component, comp);
-            oldPos++;
-          }
-          pos++; newPos++;
-          // remove the data so we do not process it again
-          _removeOldData(newKey);
+        else if (oldComps[newKey] && newComps[oldKey]) {
+          throw new Error('Swapping positions of persisted components not supported!');
         }
         else {
           throw new Error('Assertion failed: should not reach this statement.');
         }
       } else if (newKey) {
         if (oldComps[newKey]) {
-          _old.component.unmount();
+          oldComp.unmount();
           oldPos++;
           // continueing as we did not insert a component
           continue;
         }
         else {
-          comp = this._compileComponent(_new);
-          _replace(_old.component, comp);
+          comp = this._compileComponent(_new, scope);
+          _replace(oldComp, comp);
           if (isMounted) comp.triggerDidMount();
           pos++; oldPos++; newPos++;
         }
       } else if (oldKey) {
-        comp = this._compileComponent(_new);
+        comp = this._compileComponent(_new, scope);
         if (newComps[oldKey]) {
           comp.$el.insertBefore(node);
         } else {
-          _replace(_old.component, comp);
+          _replace(oldComp, comp);
           oldPos++;
         }
         if (isMounted) comp.triggerDidMount();
@@ -470,21 +460,22 @@ Component.Prototype = function ComponentPrototype() {
           pos++; oldPos++; newPos++;
           continue;
         }
-        comp = this._compileComponent(_new);
-        _replace(_old.component, comp);
+        comp = this._compileComponent(_new, scope);
+        _replace(oldComp, comp);
         if (isMounted) comp.triggerDidMount();
         pos++; oldPos++; newPos++;
       }
-
-      _registerComponent(comp);
+      children.push(comp);
     }
 
     this.children = children;
-    this.refs = refs;
+    this.refs = _.clone(scope.refs);
     this._data = data;
+
+    scope.counter.pop();
   };
 
-  this._compileComponent = function(data) {
+  this._compileComponent = function(data, scope) {
     var component;
     switch(data.type) {
       case 'text':
@@ -493,16 +484,26 @@ Component.Prototype = function ComponentPrototype() {
         break;
       case 'element':
         component = new Component.HtmlElement(this, data.tagName, data.props);
-        component._render(data);
+        component._render(data, scope);
         break;
       case 'component':
         component = new data.ComponentClass(this, data.props);
-        component._render(component.render());
+        var virtualDom = component.render();
+        if (data.children && data.children.length > 0) {
+          virtualDom.children = virtualDom.children.concat(data.children);
+        }
+        component._render(virtualDom, scope);
         break;
       default:
         throw new Error('Illegal state.');
     }
-    data.component = component;
+    component.id = scope.counter.join('.');
+    scope.counter[scope.counter.length-1]++;
+    if (data.props.key) {
+      scope.refs[data.props.key] = component;
+    } else  if (data.props.ref) {
+      scope.refs[data.props.ref] = component;
+    }
     return component;
   };
 
@@ -607,7 +608,6 @@ OO.inherit(Component.Text, Component);
 function VirtualContainer() {}
 
 VirtualContainer.Prototype = function() {
-
   this.append = function(/* ...children */) {
     var children;
     if (arguments.length === 1) {
@@ -633,7 +633,6 @@ VirtualContainer.Prototype = function() {
     }
     return this;
   };
-
   this.addClass = function(className) {
     if (!this.props.classNames) {
       this.props.classNames = "";
