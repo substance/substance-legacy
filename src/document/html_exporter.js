@@ -75,6 +75,11 @@ HtmlExporter.Prototype = function() {
     var self = this;
     var doc = this.state.doc;
     var annotations = doc.getIndex('annotations').get(path);
+
+    if (this.config.exportAnnotationFragments && this.config.containerId) {
+      annotations = annotations.concat(doc.containerAnnotationIndex.getFragments(path, this.config.containerId));
+    }
+
     var text = doc.get(path);
 
     var annotator = new Annotator();

@@ -220,6 +220,14 @@ ContainerAnnotation.Fragment.Prototype = function() {
 
 OO.initClass(ContainerAnnotation.Fragment);
 
+ContainerAnnotation.Fragment.static.toHtml = function(fragment, converter, children) {
+  var id = fragment.anno.id;
+  var $el = $('<span>')
+    .attr('id', id)
+    .append(children);
+  return $el;
+};
+
 Object.defineProperties(ContainerAnnotation.Fragment.prototype, {
   startOffset: {
     get: function() {
@@ -245,7 +253,7 @@ Object.defineProperties(ContainerAnnotation.Fragment.prototype, {
 });
 
 
-ContainerAnnotation.Fragment.static.level = Number.MAX_VALUE;
+ContainerAnnotation.Fragment.static.level = 10000;
 
 Object.defineProperties(ContainerAnnotation.Anchor.prototype, {
   path: {
