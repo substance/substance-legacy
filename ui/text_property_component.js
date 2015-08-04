@@ -42,9 +42,8 @@ TextPropertyComponent.Prototype = function() {
     // var _logPrefix = "";
     annotator.onText = function(context, text) {
       // console.log(_logPrefix+text);
-      // HACK: this should not be necessary
       if (text && text.length > 0) {
-        context.children.push(new Component.VirtualTextNode(text));
+        context.children.push(text);
       }
     };
     annotator.onEnter = function(entry) {

@@ -45,6 +45,11 @@ ContainerNodeComponent.Prototype = function() {
     });
   };
 
+  // this._render = function() {
+  //   debugger;
+  //   Component.prototype._render.apply(this, arguments);
+  // };
+
   this.willReceiveProps = function(newProps) {
     if (this.props.doc && this.props.doc !== newProps.doc) {
       this.surface.detach();

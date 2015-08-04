@@ -60,14 +60,13 @@ Scrollbar.Prototype = function() {
           height: Math.max(this.state.thumb.height, THUMB_MIN_HEIGHT)
         }
       }),
-      $$('div', {classNames: 'highlights'},
+      $$('div', {
+          key: 'highlights',
+          classNames: 'highlights'
+        },
         highlightEls
       )
     );
-  };
-
-  this._render = function() {
-    Component.prototype._render.apply(this, arguments);
   };
 
   this.update = function(panelContentEl, panel) {
