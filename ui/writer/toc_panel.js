@@ -24,7 +24,7 @@ TocPanel.Prototype = function() {
         classNames.push("active");
       }
       return $$('a', {
-        className: classNames.join(" "),
+        classNames: classNames.join(" "),
         href: "#",
         key: node.id,
         "data-id": node.id,

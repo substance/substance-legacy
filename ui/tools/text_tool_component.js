@@ -39,33 +39,25 @@ TextToolComponent.Prototype = function() {
     if (isTextContext) {
       label = textTypes[this.state.currentTextType].label;
     } else if (this.state.currentContext) {
-
       label = this.state.currentContext; // i18n.t(this.state.currentContext);
     } else {
       label = 'No selection';
     }
 
-    var currentTextTypeEl = $$('button', {
-        href: "#",
-        className: "toggle",
-        onMouseDown: this.toggleAvailableTextTypes,
-        onClick: this.handleClick
-      }, label);
+    var currentTextTypeEl = $$('button', { href: "#", classNames: "toggle"}, label);
 
     var availableTextTypes = [];
     availableTextTypes = _.map(textTypes, function(textType, textTypeId) {
       return $$('button', {
         key: textTypeId,
-        className: 'option '+textTypeId,
-        "data-type": textTypeId,
-        onMouseDown: this.handleSwitchTextType,
-        onClick: this.handleClick
+        classNames: 'option '+textTypeId,
+        "data-type": textTypeId
       }, textType.label);
     }.bind(this));
 
-    return $$("div", { className: classNames.join(' ')},
+    return $$("div", { classNames: classNames.join(' ')},
       currentTextTypeEl,
-      $$('div', {className: "options shadow border fill-white"}, availableTextTypes)
+      $$('div', {classNames: "options shadow border fill-white"}, availableTextTypes)
     );
   };
 

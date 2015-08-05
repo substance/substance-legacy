@@ -88,7 +88,7 @@ TableToolComponent.Prototype = function() {
       break;
     }
     return $$("button", {
-      className: classNames.join(' '),
+      classNames: classNames.join(' '),
       title: this.props.title,
     }, label);
   };

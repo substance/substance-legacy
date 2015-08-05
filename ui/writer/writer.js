@@ -62,7 +62,7 @@ Writer.Prototype = function() {
       var doc = this.props.doc;
       var ContentToolbar = this.componentRegistry.get('content_toolbar');
       el.append(
-        $$('div', { key: 'container', className: "main-container"},
+        $$('div', { key: 'container', classNames: "main-container"},
           $$(ContentToolbar, { key: 'toolbar' }),
           $$(ContentPanel, { key: 'content', doc: doc, containerId: this.config.containerId })
         ),

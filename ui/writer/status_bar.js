@@ -40,7 +40,7 @@ StatusBar.Prototype = function() {
     var notifications;
     if (message) {
       this.$el.addClass(message.type);
-      notifications = $$('div', {className: 'notifications'},
+      notifications = $$('div', {classNames: 'notifications'},
         $$("div", { classNames: "icon"},
           $$('i', { classNames: 'fa '+ICONS_FOR_TYPE[message.type]})
         ),
