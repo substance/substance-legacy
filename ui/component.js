@@ -325,6 +325,13 @@ Component.Prototype = function ComponentPrototype() {
       // update the element
       this._updateElement(data, oldData);
     }
+    // TODO: we can enable this simplification when the general implementation
+    // is stable
+    // if (this._simple_) {
+    //   this._renderSimple(data, scope);
+    //   return;
+    // }
+
     var el = this.$el[0];
     var isMounted = _isInDocument(el);
 
@@ -468,11 +475,38 @@ Component.Prototype = function ComponentPrototype() {
       children.push(comp);
     }
 
+    if (Object.keys(scope.refs).length > 0) {
+      delete this._simple_;
+    } else {
+      this._simple_ = true;
+    }
+
     this.children = children;
     this.refs = _.clone(scope.refs);
     this._data = data;
 
     scope.counter.pop();
+  };
+
+  this._renderSimple = function(data, scope) {
+    for (var i = 0; i < this.children.length; i++) {
+      this.children[i].unmount();
+    }
+    var isMounted = _isInDocument(this.$el[0]);
+    var children = [];
+    for (var j = 0; j < data.children.length; j++) {
+      var comp = this._compileComponent(data.children[j], scope);
+      if (isMounted) comp.triggerDidMount();
+      this.$el.append(comp.$el);
+      children.push(comp);
+    }
+    if (Object.keys(scope.refs).length > 0) {
+      delete this._simple_;
+    } else {
+      this._simple_ = true;
+    }
+    this.refs = scope.refs;
+    this.children = children;
   };
 
   this._compileComponent = function(data, scope) {
