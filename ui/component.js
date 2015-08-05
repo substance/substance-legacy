@@ -381,7 +381,7 @@ Component.Prototype = function ComponentPrototype() {
       }
       // unmount remaining old components if there is no old one left
       if (!_new) {
-        for (var j = 0; j < oldContent.length; j++) {
+        for (var j = oldPos; j < oldContent.length; j++) {
           oldChildren[j].unmount();
         }
         break;
