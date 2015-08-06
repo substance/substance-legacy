@@ -549,12 +549,12 @@ Component.Prototype = function ComponentPrototype() {
         // do not replace text components if they are equal
         if (_new.type === "text" && _old.type === "text" && _new.props.text === _old.props.text) {
           // skip
-          pos++; oldPos++; newPos++;
-          continue;
+          comp = oldComp;
+        } else {
+          comp = this._compileComponent(_new, scope);
+          _replace(oldComp, comp);
+          if (isMounted) comp.triggerDidMount();
         }
-        comp = this._compileComponent(_new, scope);
-        _replace(oldComp, comp);
-        if (isMounted) comp.triggerDidMount();
         pos++; oldPos++; newPos++;
       }
       children.push(comp);
