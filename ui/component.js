@@ -173,6 +173,13 @@ Component.Prototype = function ComponentPrototype() {
     return this;
   };
 
+  this.isMounted = function() {
+    if (this.$el) {
+      return _isInDocument(this.$el[0]);
+    }
+    return false;
+  };
+
   this.triggerWillUnmount = function() {
     _.each(this.children, function(child) {
       child.triggerWillUnmount();
@@ -234,6 +241,87 @@ Component.Prototype = function ComponentPrototype() {
   };
 
   this.didReceiveProps = function() {};
+
+  /* API for incremental updates */
+
+  this.addClass = function(className) {
+    this._data.addClass(className);
+    if (this.$el) {
+      this.$el.addClass(className);
+    }
+    return this;
+  };
+
+  this.removeClass = function(className) {
+    this._data.removeClass(className);
+    if (this.$el) {
+      this.$el.removeClass(className);
+    }
+    return this;
+  };
+
+  this.toggleClass = function(className) {
+    this._data.toggleClass(className);
+    if (this.$el) {
+      this.$el.toggleClass(className);
+    }
+    return this;
+  };
+
+  this.attr = function() {
+    this._data.attr.apply(this._data, arguments);
+    if (this.$el) {
+      this.$el.attr.apply(this.$el, arguments);
+    }
+    return this;
+  };
+
+  this.removeAttr = function() {
+    this._data.removeAttr.apply(this._data, arguments);
+    if (this.$el) {
+      this.$el.removeAttr.apply(this.$el, arguments);
+    }
+    return this;
+  };
+
+  this.append = function(child) {
+    var isMounted = this.isMounted();
+    var comp = this._compileComponent(child, {
+      refs: this.refs
+    });
+    this._data.append(child);
+    if (isMounted) comp.triggerDidMount();
+    this.$el.append(comp.$el);
+    this.children.push(comp);
+    return this;
+  };
+
+  this.insertAt = function(pos, child) {
+    var isMounted = this.isMounted();
+    var comp = this._compileComponent(child, {
+      refs: this.refs
+    });
+    this._data.insertAt(pos, child);
+    if (isMounted) comp.triggerDidMount();
+    comp.$el.insertBefore(this.children[pos].$el);
+    this.children.splice(pos, 0, comp);
+    return this;
+  };
+
+  this.removeAt = function(pos) {
+    this._data.removeAt(pos);
+    this.children[pos].unmount();
+    return this;
+  };
+
+  this.empty = function() {
+    this._data.children = [];
+    this.$el.empty();
+    for (var i = 0; i < this.children.length; i++) {
+      this.children[i].unmount();
+    }
+    return this;
+  };
 
   /* Internal API */
 
@@ -311,11 +399,8 @@ Component.Prototype = function ComponentPrototype() {
     }
     if (!scope) {
       scope = {
-        refs: {},
-        counter: [1]
+        refs: {}
       };
-    } else {
-      scope.counter.push(1);
     }
     var oldData = this._data;
     // the first time we need to create the component element
@@ -484,8 +569,6 @@ Component.Prototype = function ComponentPrototype() {
     this.children = children;
     this.refs = _.clone(scope.refs);
     this._data = data;
-
-    scope.counter.pop();
   };
 
   this._renderSimple = function(data, scope) {
@@ -521,18 +604,15 @@ Component.Prototype = function ComponentPrototype() {
         component._render(data, scope);
         break;
       case 'component':
-        component = new data.ComponentClass(this, data.props);
-        var virtualDom = component.render();
         if (data.children && data.children.length > 0) {
-          virtualDom.children = virtualDom.children.concat(data.children);
+          data.props.children = data.children;
         }
-        component._render(virtualDom, scope);
+        component = new data.ComponentClass(this, data.props);
+        component._render(component.render(), scope);
         break;
       default:
         throw new Error('Illegal state.');
     }
-    component.id = scope.counter.join('.');
-    scope.counter[scope.counter.length-1]++;
     if (data.props.key) {
       scope.refs[data.props.key] = component;
     } else  if (data.props.ref) {
@@ -667,12 +747,57 @@ VirtualContainer.Prototype = function() {
     }
     return this;
   };
+  this.insertAt = function(pos, child) {
+    this.children.splice(pos, 0, child);
+    return this;
+  };
+  this.removeAt = function(pos) {
+    this.children.splice(pos, 1);
+    return this;
+  };
   this.addClass = function(className) {
     if (!this.props.classNames) {
       this.props.classNames = "";
     }
     this.props.classNames += " " + className;
     return this;
+  };
+  this.removeClass = function(className) {
+    var classes = this.props.classNames.split(/\s+/);
+    classes = _.without(classes, className);
+    this.props.classNames = classes.join(' ');
+    return this;
+  };
+  this.toggleClass = function(className) {
+    var classes = this.props.classNames.split(/\s+/);
+    if (classes.indexOf(className) >= 0) {
+      classes = _.without(classes, className);
+    } else {
+      classes.push(className);
+    }
+    this.props.classNames = classes.join(' ');
+    return this;
+  };
+  this.addProps = function(props) {
+    _.extend(this.props, props);
+    return this;
+  };
+  this.attr = function(attr) {
+    if (arguments.length === 2) {
+      this.props[arguments[0]] = arguments[1];
+    } else {
+      // TODO we could treat HTML attributes as special props
+      // then we do need to fish attributes from custom props
+      _.extend(this.props, attr);
+    }
+    return this;
+  };
+  this.removeAttr = function(attr) {
+    if (_.isString(attr)) {
+      delete this.props[attr];
+    } else {
+      this.props = _.omit(this.props, attr);
+    }
   };
 };
 
