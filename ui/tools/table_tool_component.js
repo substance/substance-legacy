@@ -24,15 +24,16 @@ TableToolComponent.Prototype = function() {
   };
 
   this.render = function() {
-    var classNames = [];
+    var el = $$("button").addProps({
+      title: this.props.title,
+    });
     if (this.props.classNames) {
-      classNames = this.props.classNames.slice();
+      el.addClass(this.props.classNames);
     }
     if (this.state.disabled) {
-      classNames.push('disabled');
+      el.addClass('disabled');
     }
     var label, sel, colCount, rowCount;
-
     switch(this.props.tool) {
     case "insert_columns":
       if (this.state.disabled) {
@@ -87,10 +88,7 @@ TableToolComponent.Prototype = function() {
       }
       break;
     }
-    return $$("button", {
-      classNames: classNames.join(' '),
-      title: this.props.title,
-    }, label);
+    return el.append(label);
   };
 
   this.didMount = function() {

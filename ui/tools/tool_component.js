@@ -17,21 +17,28 @@ function ToolComponent() {
 
 ToolComponent.Prototype = function() {
 
+  this.getInitialState = function() {
+    return {
+      disable: true,
+      active: false
+    };
+  };
+
   this.render = function() {
-    var classNames = [];
+    var el = $$("button", {
+      title: this.props.title,
+    });
     if (this.props.classNames) {
-      classNames = this.props.classNames.slice();
+      el.addClass(this.props.classNames);
     }
     if (this.state.disabled) {
-      classNames.push('disabled');
+      el.addClass('disabled');
     }
     if (this.state.active) {
-      classNames.push("active");
+      el.addClass('active');
     }
-    return $$("button", {
-      classNames: classNames.join(' '),
-      title: this.props.title,
-    }, this.props.children);
+    el.append(this.props.children)
+    return el;
   };
 
   this.didMount = function() {

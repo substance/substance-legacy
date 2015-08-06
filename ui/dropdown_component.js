@@ -22,20 +22,20 @@ DropdownComponent.Prototype = function() {
   // Note: It's important that all children tools are rendered (even if not shown)
   // because only that way we can keep the disabled states accurate
   this.render = function() {
-    var classNames = ['dropdown'];
+    var el = $$('div').addClass('dropdown');
     if (this.props.classNames) {
-      classNames = classNames.concat(this.props.classNames);
+      el.addClass(this.props.classNames);
     }
     if (this.state.open) {
-      classNames.push('open');
+      el.addClass('open');
     }
-    return $$('div', {classNames: classNames.join(' ')},
-      $$('button', {
-        title: this.props.title,
-        classNames: 'toggle',
-      }, this.props.label),
-      $$('div', {classNames: 'options shadow border fill-white'}, this.props.children)
+    el.append(
+      $$('button').addClass('toggle').addProps({ title: this.props.title })
+        .append(this.props.label),
+      $$('div').addClass('options shadow border fill-white')
+        .append(this.props.children)
     );
+    return el;
   };
 
   this.didMount = function() {
