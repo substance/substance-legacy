@@ -50,18 +50,14 @@ function Component(parent, params) {
   if (!parent && parent !== "root") {
     throw new Error("Contract: every component needs to have a parent.");
   }
+
   this.__id__ = __id__++;
-
   this.parent = parent;
-
   this.children = [];
   this.refs = {};
 
+  params = params || {};
   this.key = params.key;
-  this.attributes = params.attributes;
-  this.styles = params.styles;
-  this.handlers = params.handlers;
-
   this._setProps(params.props);
   this._setState(this.getInitialState());
 
@@ -72,7 +68,7 @@ function Component(parent, params) {
 
   this._data = {
     attributes: {},
-    styles: {},
+    style: {},
     handlers: {},
     props: {},
     children: []
@@ -364,10 +360,12 @@ Component.Prototype = function ComponentPrototype() {
     var $el = $('<' + data.tagName + '>');
     $el.addClass(data.classNames);
     $el.attr(data.attributes);
-    $el.css(data.style);
+    if(data.style) {
+      $el.css(data.style);
+    }
     _.each(data.handlers, function(handler, event) {
       $el.on(event, handler.bind(this));
-    });
+    }, this);
     return $el;
   };
 
@@ -398,7 +396,7 @@ Component.Prototype = function ComponentPrototype() {
       });
       _.each(data.handlers, function(handler, event) {
         $el.on(event, handler.bind(this));
-      });
+      }, this);
     }
     return $el;
   };
@@ -607,7 +605,7 @@ Component.Prototype = function ComponentPrototype() {
     var component;
     switch(data.type) {
       case 'text':
-        component = new Component.Text(this, data);
+        component = new Component.Text(this, data.props.text);
         component._render();
         break;
       case 'element':
@@ -675,12 +673,13 @@ Component.HtmlElement = function(parent, tagName, params) {
 OO.inherit(Component.HtmlElement, Component.Container);
 
 Component.Text = function(parent, text) {
-  Component.call(this, parent, { props: { text: text } });
+  Component.call(this, parent);
+  this.text = text;
 };
 
 Component.Text.Prototype = function() {
   this._render = function() {
-    var el = document.createTextNode(this.props.text);
+    var el = document.createTextNode(this.text);
     if (this.$el) {
       this.$el.replaceWith(el);
     }
@@ -694,9 +693,10 @@ OO.inherit(Component.Text, Component);
 
 function VirtualNode() {
   this.attributes = {};
-  this.styles = {};
+  this.style = {};
   this.handlers = {};
   this.props = {};
+  this.children = [];
 }
 
 VirtualNode.Prototype = function() {
@@ -780,32 +780,40 @@ VirtualNode.Prototype = function() {
     } else {
       this.attributes = _.omit(this.attributes, attr);
     }
+    return this;
   };
   this.on = function(event, handler) {
     this.handlers[event] = handler;
+    return this;
   };
 };
 
 OO.initClass(VirtualNode);
 
 function VirtualElement(tagName) {
+  VirtualNode.call(this);
   this.type = 'element';
   this.tagName = tagName;
 }
 OO.inherit(VirtualElement, VirtualNode);
 
 function VirtualComponent(ComponentClass) {
+  VirtualNode.call(this);
   this.type = 'component';
   this.ComponentClass = ComponentClass;
 }
 OO.inherit(VirtualComponent, VirtualNode);
 
 function VirtualTextNode(text) {
+  VirtualNode.call(this);
   this.type = 'text';
   this.props = { text: text };
 }
 
 Component.$$ = function() {
+  if (arguments.length !== 1) {
+    throw new Error('Illegal usage of Component.$$.');
+  }
   var content = null;
   if (_.isString(arguments[0])) {
     content = new VirtualElement(arguments[0]);
