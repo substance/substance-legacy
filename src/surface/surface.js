@@ -19,7 +19,7 @@ function Surface(surfaceManager, doc, editor, options) {
   options = options || {};
 
   this.__id__ = __id__++;
-  this.name = options.name || __id__;
+  this.name = options.name || this.__id__;
   this.doc = doc;
   this.surfaceManager = surfaceManager;
 
@@ -141,7 +141,10 @@ Surface.Prototype = function() {
 
     // Mouse Events
     //
-    this.$element.on( 'mousedown', this._onMouseDown );
+    this.$element.on('mousedown', this._onMouseDown);
+
+    // disable drag'n'drop
+    this.$element.on('dragstart', this.onDragStart);
 
     // Document Change Events
     //
@@ -175,6 +178,9 @@ Surface.Prototype = function() {
     // Mouse Events
     //
     this.$element.off('mousedown', this._onMouseDown );
+
+    // enable drag'n'drop
+    this.$element.off('dragstart', this.onDragStart);
 
     // Keyboard Events
     //
@@ -561,6 +567,11 @@ Surface.Prototype = function() {
     console.info("We want to enable a DOM MutationObserver which catches all changes made by native interfaces (such as spell corrections, etc). Lookout for this message and try to set Surface.skipNextObservation=true when you know that you will mutate the DOM.");
   };
 
+  this.onDragStart = function(e) {
+    e.preventDefault();
+    e.stopPropagation();
+  };
+
   // ###########################################
   // Document and Selection Changes
   //
@@ -661,9 +672,25 @@ Surface.Prototype = function() {
     this.placeCaretElement();
   };
 
+  // API for TextProperties
+  this.getAnnotationsForProperty = function(path) {
+    var doc = this.getDocument();
+    var annotations = doc.getIndex('annotations').get(path);
+    var containerName = this.getContainerName();
+    if (containerName) {
+      // Anchors
+      var anchors = doc.getIndex('container-annotation-anchors').get(path, containerName);
+      annotations = annotations.concat(anchors);
+      // Fragments
+      var fragments = doc.containerAnnotationIndex.getFragments(path, containerName);
+      annotations = annotations.concat(fragments);
+    }
+    return annotations;
+  };
+
 };
 
-OO.inherit( Surface, Substance.EventEmitter );
+OO.inherit(Surface, Substance.EventEmitter);
 
 Surface.Keys =  {
   UNDEFINED: 0,

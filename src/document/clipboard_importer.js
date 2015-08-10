@@ -1,36 +1,17 @@
 var _ = require('../basics/helpers');
 var OO = require('../basics/oo');
 var HtmlImporter = require('./html_importer');
+var CLIPBOARD_CONTAINER_ID = require('./transformations/copy_selection').CLIPBOARD_CONTAINER_ID;
 
-// An importer specialized for clipboard HTML
-// which supports
-// p -> paragraph
-// h1,h2,h3,h4,h5 -> heading
-// em,i -> emphasis
-// strong,b -> strong
-// ul,ol -> list
-// table -> table
-// figure -> figure (?)
-
-var Paragraph = require('./nodes/paragraph');
-var Heading = require('./nodes/heading');
-var List = require('./nodes/list');
-var ListItem = require('./nodes/list_item');
-var Table = require('./nodes/table');
-var TableSection = require('./nodes/table_section');
-var TableRow = require('./nodes/table_row');
-var TableCell = require('./nodes/table_cell');
-var Emphasis = require('./nodes/emphasis');
-var Strong = require('./nodes/strong');
-
-function ClipboardImporter() {
-  ClipboardImporter.super.call(this, {
+function ClipboardImporter(config) {
+  if (!config.schema) {
+    throw new Error('Missing argument: config.schema is required.');
+  }
+  _.extend(config, {
     trimWhitespaces: true,
     REMOVE_INNER_WS: true,
   });
-  _.each(ClipboardImporter.nodeClasses, function(NodeClass) {
-    this.defineNodeImporter(NodeClass);
-  }, this);
+  ClipboardImporter.super.call(this, config);
 }
 
 ClipboardImporter.Prototype = function() {
@@ -40,8 +21,9 @@ ClipboardImporter.Prototype = function() {
 
     var $body = $rootEl.find('body');
     $body = this.sanitizeBody($body);
-    this.convertContainer($body, 'content');
-
+    // TODO: the containerId for the clipboard content should be
+    // shared via a constant (see)
+    this.convertContainer($body, CLIPBOARD_CONTAINER_ID);
     this.finish();
   };
 
@@ -79,39 +61,5 @@ ClipboardImporter.Prototype = function() {
 };
 
 OO.inherit(ClipboardImporter, HtmlImporter);
-
-ClipboardImporter.Emphasis = function() {
-  ClipboardImporter.Emphasis.super.apply(this, arguments);
-};
-
-OO.inherit(ClipboardImporter.Emphasis, Emphasis);
-
-ClipboardImporter.Emphasis.static.matchElement = function($el) {
-  return $el.is('em,i') || $el[0].style.fontStyle === "italic";
-};
-
-ClipboardImporter.Emphasis.static.toHtml = function(anno, converter, children) {
-  return $('<i>').attr('id', anno.id).append(children);
-};
-
-ClipboardImporter.Strong = function() {
-  ClipboardImporter.Strong.super.apply(this, arguments);
-};
-
-OO.inherit(ClipboardImporter.Strong, Strong);
-
-ClipboardImporter.Strong.static.matchElement = function($el) {
-  return $el.is('strong,b') || $el[0].style.fontWeight === "bold";
-};
-
-ClipboardImporter.Strong.static.toHtml = function(anno, converter, children) {
-  return $('<b>').attr('id', anno.id).append(children);
-};
-
-ClipboardImporter.nodeClasses =   [
-  Paragraph, Heading, List, ListItem,
-  Table, TableSection, TableRow, TableCell,
-  ClipboardImporter.Emphasis, ClipboardImporter.Strong
-];
 
 module.exports = ClipboardImporter;

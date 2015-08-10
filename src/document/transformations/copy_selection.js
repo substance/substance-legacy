@@ -29,11 +29,14 @@ var _copyPropertySelection = function(doc, selection) {
   var offset = selection.start.offset;
   var endOffset = selection.end.offset;
   var text = doc.get(path);
-  var containerNode = copy.create({
-    type: 'container',
-    id: 'clipboard_content',
-    nodes: []
-  });
+  var containerNode = copy.get(copySelection.CLIPBOARD_CONTAINER_ID);
+  if (!containerNode) {
+    containerNode = copy.create({
+      type: 'container',
+      id: copySelection.CLIPBOARD_CONTAINER_ID,
+      nodes: []
+    });
+  }
   copy.create({
     type: doc.schema.getDefaultTextType(),
     id: 'text',
@@ -60,7 +63,7 @@ var _copyContainerSelection = function(doc, selection) {
   var endComp = container.getComponent(selection.end.path);
   var containerNode = copy.create({
     type: 'container',
-    id: 'clipboard_content',
+    id: copySelection.CLIPBOARD_CONTAINER_ID,
     nodes: []
   });
   // 1. Copy nodes and annotations.
@@ -117,5 +120,7 @@ var _copyContainerSelection = function(doc, selection) {
   }
   return copy;
 };
+
+copySelection.CLIPBOARD_CONTAINER_ID = "clipboard_content";
 
 module.exports = copySelection;

@@ -75,6 +75,11 @@ HtmlExporter.Prototype = function() {
     var self = this;
     var doc = this.state.doc;
     var annotations = doc.getIndex('annotations').get(path);
+
+    if (this.config.exportAnnotationFragments && this.config.containerId) {
+      annotations = annotations.concat(doc.containerAnnotationIndex.getFragments(path, this.config.containerId));
+    }
+
     var text = doc.get(path);
 
     var annotator = new Annotator();
@@ -90,6 +95,9 @@ HtmlExporter.Prototype = function() {
     };
     annotator.onExit = function(entry, context, parentContext) {
       var anno = context.annotation;
+      if (self.config.skipTypes[anno.type]) {
+        return;
+      }
       var NodeConverter = self.getNodeConverter(anno);
       var $el = NodeConverter.static.toHtml(anno, self, context.children);
       if (!$el || !self.isElementNode($el[0])) {

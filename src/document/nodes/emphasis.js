@@ -9,7 +9,9 @@ var Emphasis = Annotation.extend({
 Emphasis.static.tagName = "em";
 
 Emphasis.static.matchElement = function($el) {
-  return $el.is(Emphasis.static.tagName);
+  return $el.is("em,i");
 };
+
+Emphasis.static.level = Number.MAX_VALUE;
 
 module.exports = Emphasis;

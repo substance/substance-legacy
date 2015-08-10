@@ -8,16 +8,6 @@ function ClipboardExporter() {
 
 ClipboardExporter.Prototype = function() {
 
-  this.getNodeConverter = function(node) {
-    switch(node.type) {
-      case 'emphasis':
-        return ClipboardImporter.Emphasis;
-      case 'strong':
-        return ClipboardImporter.Strong;
-      default:
-        return node.constructor;
-    }
-  };
 
   this.convert = function(doc, options) {
     this.initialize(doc, options);

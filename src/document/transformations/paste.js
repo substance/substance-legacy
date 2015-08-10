@@ -3,6 +3,7 @@ var Annotations = require('../annotation_updates');
 var deleteSelection = require('./delete_selection');
 var insertText = require('./insert_text');
 var breakNode = require('./break_node');
+var CLIPBOARD_CONTAINER_ID = require('./copy_selection').CLIPBOARD_CONTAINER_ID;
 
 /* jshint latedef: false */
 
@@ -20,7 +21,7 @@ var paste = function(tx, args) {
     var out = deleteSelection(tx, args);
     args.selection = out.selection;
   }
-  var nodes = pasteDoc.get('clipboard_content').nodes;
+  var nodes = pasteDoc.get(CLIPBOARD_CONTAINER_ID).nodes;
   if (nodes.length > 0) {
     var first = pasteDoc.get(nodes[0]);
     // copy of a property selection creates a doc containing
@@ -38,7 +39,7 @@ var _pasteAnnotatedText = function(tx, args) {
   var copy = args.doc;
   var selection = args.selection;
 
-  var nodes = copy.get('clipboard_content').nodes;
+  var nodes = copy.get(CLIPBOARD_CONTAINER_ID).nodes;
   var textPath = [nodes[0], 'content'];
   var text = copy.get(textPath);
   var annotations = copy.getIndex('annotations').get(textPath);
@@ -93,7 +94,7 @@ var _pasteDocument = function(tx, args) {
   }
   // transfer nodes from content document
   // TODO: transfer annotations
-  var nodeIds = pasteDoc.get('clipboard_content').nodes;
+  var nodeIds = pasteDoc.get(CLIPBOARD_CONTAINER_ID).nodes;
   var annoIndex = pasteDoc.getIndex('annotations');
   var insertedNodes = [];
   for (var i = 0; i < nodeIds.length; i++) {

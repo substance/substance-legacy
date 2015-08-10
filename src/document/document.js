@@ -60,6 +60,12 @@ function Document(schema) {
   this.isTransacting = false;
 
   this.FORCE_TRANSACTIONS = false;
+
+  // Note: using the general event queue (as opposed to calling updateEventProxies from within _notifyChangeListeners)
+  // so that handler priorities are considered correctly
+  this.connect(this, {
+    'document:changed': this.updateEventProxies
+  })
 }
 
 Document.Prototype = function() {
@@ -303,7 +309,7 @@ Document.Prototype = function() {
   };
 
   this.getClipboardImporter = function() {
-    return new ClipboardImporter();
+    return new ClipboardImporter({ schema: this.getSchema()});
   };
 
   this.getClipboardExporter = function() {
@@ -369,12 +375,19 @@ Document.Prototype = function() {
 
   this._notifyChangeListeners = function(documentChange, info) {
     info = info || {};
-    _.each(this.eventProxies, function(proxy) {
-      proxy.onDocumentChanged(documentChange, info, this);
-    }, this);
+    // HACK: update the container annotation index first
+    // TODO: we should have a better concept to define the order of listeners
+    // However, ContainerAnnotationIndex should be treated as an index
+    // this order would suffice: [containers, indexes, ]
+    this.containerAnnotationIndex.onDocumentChange(documentChange);
     this.emit('document:changed', documentChange, info, this);
   };
 
+  this.updateEventProxies = function(documentChange, info) {
+    _.each(this.eventProxies, function(proxy) {
+      proxy.onDocumentChanged(documentChange, info, this);
+    }, this);
+  };
 };
 
 Substance.inherit(Document, AbstractDocument);

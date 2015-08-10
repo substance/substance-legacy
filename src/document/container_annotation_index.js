@@ -12,9 +12,6 @@ var ContainerAnnotationIndex = function(doc) {
   this.indexes = {};
   this.containers = {};
   this.containerAnnotations = {};
-
-  // connect with high-priority so that gets updated before any UI
-  doc.connect(this, { "document:changed": this.onDocumentChange }, 1000);
 };
 
 ContainerAnnotationIndex.Prototype = function() {
@@ -35,11 +32,6 @@ ContainerAnnotationIndex.Prototype = function() {
     this.indexes = {};
     this._initialize(this.doc.data);
   };
-
-  // this.reset = function(data) {
-  //   this.indexes = {};
-  //   this._initialize(data);
-  // };
 
   this._initialize = function(data) {
     _.each(data.getNodes(), function(node) {
@@ -69,33 +61,11 @@ ContainerAnnotationIndex.Prototype = function() {
     }
   };
 
-  // this.delete = function(node) {
-  //   if (node.type === "container") {
-  //     delete this.containers[node.id];
-  //     delete this.indexes[node.id];
-  //   } else if (node.isInstanceOf('container_annotation')) {
-  //     var containerId = node.container;
-  //     delete this.containerAnnotations[node.id];
-  //     this.recompute(containerId);
-  //   }
-  // };
-
-  // this.update = function(node, path, newValue, oldValue) {
-  //   /* jshint unused: false */
-  //   if (node.type === "container") {
-  //     this.recompute(node.id);
-  //   } else if (node.isInstanceOf('container_annotation')) {
-  //     var containerId = node.container;
-  //     this.recompute(containerId);
-  //   }
-  // };
-
   this.recompute = function(containerId) {
     var container = this.containers[containerId];
-    this.indexes[containerId] = new PathAdapter.Arrays();
-    var index = this.indexes[containerId];
+    var index = this.indexes[containerId] = new PathAdapter.Arrays();
     _.each(this.containerAnnotations, function(anno) {
-      var fragments = container.getAnnotationFragments(anno);
+      var fragments = anno.getFragments();
       _.each(fragments, function(frag) {
         index.add(frag.path, frag);
       });

@@ -24,6 +24,11 @@ var insertText = function(tx, args) {
     selection = result.selection;
   }
   var range = selection.getRange();
+  // HACK(?): if the string property is not initialized yet we do it here
+  // for convenience.
+  if (tx.get(range.start.path) === undefined) {
+    tx.set(range.start.path, "");
+  }
   tx.update(range.start.path, { insert: { offset: range.start.offset, value: text } } );
   Annotations.insertedText(tx, range.start, text.length);
   return {

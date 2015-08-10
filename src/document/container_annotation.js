@@ -1,8 +1,11 @@
 'use strict';
 
-var Substance = require('../basics');
+var _ = require('../basics/helpers');
+var OO = require('../basics/oo');
+var EventEmitter = require('../basics/event_emitter');
 var Node = require('./node');
 var Selection = require('./selection');
+var PathAdapter = require('../basics/path_adapter');
 
 
 // Container Annotation
@@ -81,13 +84,13 @@ var ContainerAnnotation = Node.extend({
     if (!sel.isContainerSelection()) {
       throw new Error('Cannot change to ContainerAnnotation.');
     }
-    if (!Substance.isEqual(this.startPath, sel.start.path)) {
+    if (!_.isEqual(this.startPath, sel.start.path)) {
       tx.set([this.id, 'startPath'], sel.start.path);
     }
     if (this.startOffset !== sel.start.offset) {
       tx.set([this.id, 'startOffset'], sel.start.offset);
     }
-    if (!Substance.isEqual(this.endPath, sel.end.path)) {
+    if (!_.isEqual(this.endPath, sel.end.path)) {
       tx.set([this.id, 'endPath'], sel.end.path);
     }
     if (this.endOffset !== sel.end.offset) {
@@ -95,9 +98,85 @@ var ContainerAnnotation = Node.extend({
     }
   },
 
+  setActive: function(val) {
+    if (this.active !== val) {
+      this.active = val;
+      this.emit('active', val);
+      _.each(this.fragments, function(frag) {
+        frag.emit('active', val);
+      });
+    }
+  },
+
+  // FIXME: this implementation will not prune old fragments
+  getFragments: function() {
+    if (!this._fragments) {
+      this._fragments = new PathAdapter();
+    }
+    var fragments = [];
+    var doc = this.getDocument();
+    var startAnchor = this.getStartAnchor();
+    var endAnchor = this.getEndAnchor();
+    var container = doc.get(this.container);
+    var fragment;
+    // if start and end anchors are on the same property, then there is only one fragment
+    if (_.isEqual(startAnchor.path, endAnchor.path)) {
+      fragment = this._fragments.get(startAnchor.path);
+      if (!fragment) {
+        fragment = new ContainerAnnotation.Fragment(this, startAnchor.path, "property");
+        this._fragments.set(fragment.path, fragment);
+      } else if (!fragment.mode === "property") {
+        fragment.mode = "property";
+      }
+      fragments.push(fragment);
+    }
+    // otherwise create a trailing fragment for the property of the start anchor,
+    // full-spanning fragments for inner properties,
+    // and one for the property containing the end anchor.
+    else {
+      var text = doc.get(startAnchor.path);
+      var startComp = container.getComponent(startAnchor.path);
+      var endComp = container.getComponent(endAnchor.path);
+      if (!startComp || !endComp) {
+        throw new Error('Could not find components of AbstractContainerAnnotation');
+      }
+      fragment = this._fragments.get(startAnchor.path);
+      if (!fragment) {
+        fragment = new ContainerAnnotation.Fragment(this, startAnchor.path, "start");
+        this._fragments.set(fragment.path, fragment);
+      } else if (fragment.mode !== "start") {
+        fragment.mode = "start";
+      }
+      fragments.push(fragment);
+      for (var idx = startComp.idx + 1; idx < endComp.idx; idx++) {
+        var comp = container.getComponentAt(idx);
+        text = doc.get(comp.path);
+        fragment = this._fragments.get(comp.path);
+        if (!fragment) {
+          fragment = new ContainerAnnotation.Fragment(this, comp.path, "inner");
+          this._fragments.set(fragment.path, fragment);
+        } else if (fragment.mode !== "inner") {
+          fragment.mode = "inner";
+        }
+        fragments.push(fragment);
+      }
+      fragment = this._fragments.get(endAnchor.path);
+      if (!fragment) {
+        fragment = new ContainerAnnotation.Fragment(this, endAnchor.path, "end");
+        this._fragments.set(fragment.path, fragment);
+      } else if (fragment.mode !== "end") {
+        fragment.mode = "end";
+      }
+      fragments.push(fragment);
+    }
+    this.fragments = fragments;
+    return fragments;
+  },
+
 });
 
-ContainerAnnotation.Anchor = function(anno, isStart) {
+ContainerAnnotation.Anchor = function Anchor(anno, isStart) {
+  EventEmitter.call(this);
   this.type = "container-annotation-anchor";
   this.anno = anno;
   // TODO: remove this.node in favor of this.anno
@@ -109,6 +188,8 @@ ContainerAnnotation.Anchor = function(anno, isStart) {
 };
 
 ContainerAnnotation.Anchor.Prototype = function() {
+  _.extend(this, EventEmitter.prototype);
+
   this.zeroWidth = true;
 
   this.getTypeNames = function() {
@@ -116,9 +197,11 @@ ContainerAnnotation.Anchor.Prototype = function() {
   };
 };
 
-Substance.initClass(ContainerAnnotation.Anchor);
+OO.initClass(ContainerAnnotation.Anchor);
 
-ContainerAnnotation.Fragment = function(anno, path, mode) {
+ContainerAnnotation.Fragment = function Fragment(anno, path, mode) {
+  EventEmitter.call(this);
+
   this.type = "container_annotation_fragment";
   this.anno = anno;
   // HACK: id is necessary for Annotator
@@ -128,12 +211,22 @@ ContainerAnnotation.Fragment = function(anno, path, mode) {
 };
 
 ContainerAnnotation.Fragment.Prototype = function() {
+  _.extend(this, EventEmitter.prototype);
+
   this.getTypeNames = function() {
     return [this.type];
   };
 };
 
-Substance.initClass(ContainerAnnotation.Fragment);
+OO.initClass(ContainerAnnotation.Fragment);
+
+ContainerAnnotation.Fragment.static.toHtml = function(fragment, converter, children) {
+  var id = fragment.anno.id;
+  var $el = $('<span>')
+    .attr('id', id)
+    .append(children);
+  return $el;
+};
 
 Object.defineProperties(ContainerAnnotation.Fragment.prototype, {
   startOffset: {
@@ -144,14 +237,23 @@ Object.defineProperties(ContainerAnnotation.Fragment.prototype, {
   },
   endOffset: {
     get: function() {
-      return ( (this.mode === "end" || this.mode === "property") ? this.anno.endOffset : this.anno.getDocument().get(this.path).length);
+      var doc = this.anno.getDocument();
+      var textProp = doc.get(this.path);
+      var length = textProp.length;
+      return ( (this.mode === "end" || this.mode === "property") ? this.anno.endOffset : length);
     },
     set: function() { throw new Error('Immutable!'); }
   },
+  active: {
+    get: function() {
+      return this.anno.active;
+    },
+    set: function() { throw new Error('Immutable!'); }
+  }
 });
 
 
-ContainerAnnotation.Fragment.static.level = Number.MAX_VALUE;
+ContainerAnnotation.Fragment.static.level = 10000;
 
 Object.defineProperties(ContainerAnnotation.Anchor.prototype, {
   path: {

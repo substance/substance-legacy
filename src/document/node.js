@@ -69,12 +69,11 @@ Node.initNodeClass = Data.Node.initNodeClass;
 
 // default HTML serialization
 Node.static.toHtml = function(node, converter) {
-  var $ = converter.$;
   var $el = $('<div itemscope>')
     .attr('data-id', node.id)
     .attr('data-type', node.type);
   _.each(node.properties, function(value, name) {
-    var $prop = $('<div').attr('itemprop', name);
+    var $prop = $('<div>').attr('itemprop', name);
     if (node.getPropertyType === 'string') {
       $prop[0].appendChild(converter.annotatedText([node.id, name]));
     } else {
@@ -82,7 +81,7 @@ Node.static.toHtml = function(node, converter) {
     }
     $el.append($prop);
   });
-  return $el[0];
+  return $el;
 };
 
 Node.static.external = false;
