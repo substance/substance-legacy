@@ -1,6 +1,17 @@
 # Substance
 
-Substance is a JavaScript library for manipulating documents based on data. It enables you to build completely custom web-based editors. See Substance in action:
+
+Substance is a Javascript library for developing rich editing experiences. From simple text editors to full-featured publishing systems: Substance provides you the building blocks to realize your project.
+
+*Custom document models*: Define a custom article schema, by including common content types like paragraphs and headings and defining custom elements.
+
+*Operation based manipulation*: Substance documents are manipulated with operations that can be undone, redone and distributed over a network for concurrent manipulations (collaborative editing)
+
+*HTML/XML import export:* Substance interacts well with HTML/XML content. E.g. you can import whole XML documents or insert HTML fragments from the clipboard.
+
+*Server and client-side execution*: Substance runs in the browser and server-side environments, such as Node.js or io.js.
+
+See Substance in action:
 
 - **[Substance HTML Editor](http://cdn.substance.io/html-editor)** - A minimal HTML editor component based on Substance
 - **[Lens Writer](http://cdn.substance.io/lens-writer)** - A full-fledged scientific editor
