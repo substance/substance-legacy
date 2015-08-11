@@ -1,9 +1,8 @@
 # Substance
 
+Substance is a Javascript library for developing rich editing experiences. From simple text editors to full-featured publishing systems: Substance provides you reliable building blocks to realize your project.
 
-Substance is a Javascript library for developing rich editing experiences. From simple text editors to full-featured publishing systems: Substance provides you the building blocks to realize your project.
-
-**Custom document models**: Define a custom article schema, by including common content types like paragraphs and headings and defining custom elements.
+**Custom document models**: Define a custom article schema, by including common content types, such as paragraphs and headings and defining custom elements.
 
 **Operation based manipulation**: Substance documents are manipulated with operations that can be undone, redone and distributed over a network for concurrent manipulations (collaborative editing)
 
