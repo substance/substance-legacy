@@ -11,7 +11,8 @@ function AnnotationComponent() {
 AnnotationComponent.Prototype = function() {
 
   this.render = function() {
-    var el = $$('span', { "data-id": this.props.node.id, classNames: this.getClassNames() });
+    var el = $$('span').attr("data-id", this.props.node.id)
+      .addClass(this.getClassNames());
     if (this.props.node.active) {
       el.addClass('active');
     }
