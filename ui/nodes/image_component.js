@@ -6,19 +6,18 @@ var $$ = Component.$$;
 
 function ImageComponent() {
   Component.apply(this, arguments);
-
-  this.handleDocumentChange = this.handleDocumentChange.bind(this);
 }
 
 ImageComponent.Prototype = function() {
 
   this.render = function() {
-    return $$('img', {
-      classNames: 'image',
-      "data-id": this.props.node.id,
-      contentEditable: false,
-      src: this.props.node.src,
-    });
+    return $$('img')
+      .addClass('image')
+      .attr({
+        "data-id": this.props.node.id,
+        contentEditable: false,
+        src: this.props.node.src,
+      });
   };
 
   this.didMount = function() {

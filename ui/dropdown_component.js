@@ -6,9 +6,6 @@ var $$ = Component.$$;
 
 function DropdownComponent() {
   Component.apply(this, arguments);
-
-  this.handleDropdownToggle = this.handleDropdownToggle.bind(this);
-  this.handleClick = this.handleClick.bind(this);
 }
 
 DropdownComponent.Prototype = function() {
@@ -23,29 +20,21 @@ DropdownComponent.Prototype = function() {
   // because only that way we can keep the disabled states accurate
   this.render = function() {
     var el = $$('div').addClass('dropdown');
-    if (this.props.classNames) {
-      el.addClass(this.props.classNames);
-    }
     if (this.state.open) {
       el.addClass('open');
     }
     el.append(
-      $$('button').addClass('toggle').addProps({ title: this.props.title })
-        .append(this.props.label),
-      $$('div').addClass('options shadow border fill-white')
-        .append(this.props.children)
+      $$('button').key('toggle')
+        .addClass('toggle')
+        .attr('title', this.props.title)
+        .append(this.props.label)
+        .on('mousedown', this.handleDropdownToggle)
+        .on('click', this.handleClick),
+      $$('div').key('options')
+        .addClass('options shadow border fill-white')
+        .append(this.children)
     );
     return el;
-  };
-
-  this.didMount = function() {
-    this.$el.on('mousedown', 'button.toggle', this.handleDropdownToggle);
-    this.$el.on('click', 'button.toggle', this.handleClick);
-  };
-
-  this.willUnmount = function() {
-    this.$el.off('mousedown', 'button.toggle', this.handleDropdownToggle);
-    this.$el.off('click', 'button.toggle', this.handleClick);
   };
 
   // Prevent click behavior as we want to preserve the text selection in the doc

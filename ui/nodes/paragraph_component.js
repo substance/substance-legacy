@@ -16,9 +16,15 @@ Paragraph.Prototype = function() {
   };
 
   this.render = function() {
-    return $$('div', {classNames: "content-node paragraph", "data-id": this.props.node.id},
-      $$(TextProperty, { doc: this.props.doc, path: [ this.props.node.id, "content"] })
-    );
+    return $$('div')
+      .addClass("content-node paragraph")
+      .attr("data-id", this.props.node.id)
+      .append($$(TextProperty)
+        .addProps({
+          doc: this.props.doc,
+          path: [ this.props.node.id, "content"]
+        })
+      );
   };
 };
 

@@ -52,12 +52,19 @@ function Component(parent, params) {
   }
 
   this.__id__ = __id__++;
-  this.parent = parent;
-  this.children = [];
+  params = params || {};
+
   this.refs = {};
 
-  params = params || {};
+  this.parent = parent;
+  this.children = [];
+
   this.key = params.key;
+  this._htmlProps = {
+    classNames: params.classNames || "",
+    attributes: params.attributes || {},
+    style: params.style || {},
+  };
   this._setProps(params.props);
   this._setState(this.getInitialState());
 
@@ -356,20 +363,23 @@ Component.Prototype = function ComponentPrototype() {
     return index;
   };
 
-  this._createElement = function(data) {
+  this._createElement = function(data, scope) {
     var $el = $('<' + data.tagName + '>');
+    $el.addClass(this._htmlProps.classNames);
     $el.addClass(data.classNames);
+    $el.attr(this._htmlProps.attributes);
     $el.attr(data.attributes);
+    $el.css(this._htmlProps.style);
     if(data.style) {
       $el.css(data.style);
     }
     _.each(data.handlers, function(handler, event) {
-      $el.on(event, handler.bind(this));
+      $el.on(event, handler.bind(scope.owner));
     }, this);
     return $el;
   };
 
-  this._updateElement = function(data, oldData) {
+  this._updateElement = function(data, oldData, scope) {
     var $el = this.$el;
     var oldClassNames = oldData.classNames;
     var newClassNames = data.classNames;
@@ -395,7 +405,7 @@ Component.Prototype = function ComponentPrototype() {
         $el.off(event);
       });
       _.each(data.handlers, function(handler, event) {
-        $el.on(event, handler.bind(this));
+        $el.on(event, handler.bind(scope.owner));
       }, this);
     }
     return $el;
@@ -403,20 +413,24 @@ Component.Prototype = function ComponentPrototype() {
 
   this._render = function(data, scope) {
     if (data.type !== 'element') {
+      if (data instanceof $) {
+        throw new Error("Your render() method accidently return a jQuery instance instead of a VirtualComponent created $$.");
+      }
       throw new Error("Component.render() must return one html element: e.g., $$('div')");
     }
     if (!scope) {
       scope = {
+        owner: this,
         refs: {}
       };
     }
     var oldData = this._data;
     // the first time we need to create the component element
     if (!this.$el) {
-      this.$el = this._createElement(data);
+      this.$el = this._createElement(data, scope);
     } else {
       // update the element
-      this._updateElement(data, oldData);
+      this._updateElement(data, oldData, scope);
     }
     // TODO: we can enable this simplification when the general implementation
     // is stable
@@ -783,7 +797,14 @@ VirtualNode.Prototype = function() {
     return this;
   };
   this.on = function(event, handler) {
+    if (arguments.length !== 2 || !_.isString(event) || !_.isFunction(handler)) {
+      throw new Error('Illegal arguments for $$.on(event, handler).');
+    }
     this.handlers[event] = handler;
+    return this;
+  };
+  this.css = function(styles) {
+    _.extend(this.styles, styles);
     return this;
   };
 };

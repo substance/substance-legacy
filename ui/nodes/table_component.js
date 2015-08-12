@@ -9,9 +9,6 @@ var $$ = Component.$$;
 
 function TableComponent() {
   Component.apply(this, arguments);
-
-  this.onDoubleClick = this.onDoubleClick.bind(this);
-  this.onMouseDown = this.onMouseDown.bind(this);
 }
 
 TableComponent.Prototype = function() {
@@ -21,76 +18,70 @@ TableComponent.Prototype = function() {
   };
 
   this.render = function() {
-    var tableNode = this.props.node;
-    // HACK: make sure row col indexes are up2date
-    tableNode.getMatrix();
-    var sections = [];
-    _.each(tableNode.getSections(), function(sec) {
-      var rowEls = [];
-      var rows = sec.getRows();
-      _.each(rows, function(row) {
-        rowEls.push(this._renderRow(row));
-      }, this);
-      sections.push($$("t"+sec.sectionType, {key: sec.id }, rowEls));
-    }, this);
-
-    var modeClass = "";
+    var tableEl = $$('table')
+      .addClass("content-node table")
+      .attr({
+        "data-id": this.props.node.id,
+        contentEditable: false
+      });
     if (this.state.mode === "table") {
-      modeClass = 'table-editing-mode';
+      tableEl.addClass('table-editing-mode');
     } else if (this.state.mode === "cell") {
-      modeClass = 'cell-editing-mode';
+      tableEl.addClass('cell-editing-mode');
     }
-    var props = {
-      classNames: "content-node table " + modeClass,
-      "data-id": this.props.node.id,
-      contentEditable: false
-    };
-    return $$('table', props, sections);
+    // HACK: make sure row col indexes are up2date
+    this.props.node.getMatrix();
+    tableEl.append(this.renderTableContent());
+    return tableEl;
+  };
+
+  this.renderTableContent = function() {
+    var content = [];
+    _.each(this.props.node.getSections(), function(sec) {
+      var secEl = $$("t"+sec.sectionType).key(sec.id);
+      _.each(sec.getRows(), function(row) {
+        var rowEl = $$("tr").attr({"data-id": row.id, contentEditable:false});
+        _.each(row.getCells(), function(cell) {
+          var cellEl = $$((cell.cellType === 'head') ? 'th' : 'td')
+            .attr({
+              "data-id": cell.id,
+              "data-row": cell.rowIdx,
+              "data-col": cell.colIdx,
+            })
+            .on('mousedown', this.onMouseDown)
+            .on('doubleclick', this.onDoubleClick);
+          if (cell.colspan) {
+            cellEl.attr("colspan", cell.colspan);
+          }
+          if (cell.rowspan) {
+            cellEl.attr('rowspan', cell.rowspan);
+          }
+          if (this.state.mode === "cell") {
+            if (cell.rowIdx === this.state.row && cell.colIdx === this.state.col) {
+              cellEl.attr('contentEditable', true);
+            }
+          }
+          cellEl.append($$(TextProperty).addProps({
+            doc: this.props.doc,
+            path: [ cell.id, "content"]
+          }));
+          rowEl.append(cellEl);
+        }, this);
+        secEl.append(rowEl);
+      }, this);
+      content.push(secEl);
+    }, this);
+    return content;
   };
 
   this.didMount = function() {
     this.context.surface.connect(this, {
       "selection:changed": this.onSelectionChange
     });
-    this.$el.on('mousedown', 'th,td', this.onMouseDown);
-    this.$el.on('doubleclick', 'th,td', this.onDoubleClick);
   };
 
   this.willUnmount = function() {
     this.context.surface.disconnect(this);
-  };
-
-
-  this._renderRow = function(row) {
-    var doc = this.props.doc;
-    var cellEls = [];
-
-    var cells = row.getCells();
-    _.each(cells, function(cell) {
-      var cellTag = cell.cellType === 'head' ? 'th' : 'td';
-      var cellProps = {
-        "data-id": cell.id,
-        "data-row": cell.rowIdx,
-        "data-col": cell.colIdx,
-      };
-      if (cell.colspan) {
-        cellProps.colSpan = cell.colspan;
-      }
-      if (cell.rowspan) {
-        cellProps.rowSpan = cell.rowspan;
-      }
-      if (this.state.mode === "cell") {
-        if (cell.rowIdx === this.state.row && cell.colIdx === this.state.col) {
-          cellProps.contentEditable = "true";
-        }
-      }
-      cellEls.push($$(cellTag, cellProps, $$(TextProperty, {
-        doc: doc,
-        path: [ cell.id, "content"]
-      })));
-    }, this);
-
-    return $$("tr", {"data-id": row.id, contentEditable:false}, cellEls);
   };
 
   this.onDoubleClick = function(e) {

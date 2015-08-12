@@ -12,9 +12,6 @@ var $$ = Component.$$;
 
 function TableToolComponent() {
   Component.apply(this, arguments);
-
-  this.handleClick = this.handleClick.bind(this);
-  this.handleMouseDown = this.handleMouseDown.bind(this);
 }
 
 TableToolComponent.Prototype = function() {
@@ -24,12 +21,12 @@ TableToolComponent.Prototype = function() {
   };
 
   this.render = function() {
-    var el = $$("button").addProps({
-      title: this.props.title,
-    });
-    if (this.props.classNames) {
-      el.addClass(this.props.classNames);
-    }
+    var el = $$("button")
+      .attr({
+        title: this.props.title,
+      })
+      .on('mousedown', this.handleMouseDown)
+      .on('click', this.handleClick);
     if (this.state.disabled) {
       el.addClass('disabled');
     }

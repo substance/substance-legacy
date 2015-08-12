@@ -13,17 +13,20 @@ function ContainerNodeComponent() {
 ContainerNodeComponent.Prototype = function() {
 
   this.getChildContext = function() {
-    return { surface: this.surface };
+    return {
+      surface: this.surface
+    };
   };
 
   this.render = function() {
-    var props = {
-      classNames: "container-node " + this.props.node.id,
-      spellCheck: false,
-      "data-id": this.props.node.id,
-      contentEditable: this.props.contentEditable,
-    };
-    return $$("div", props, this.renderComponents());
+    var el = $$("div")
+      .addClass("container-node " + this.props.node.id)
+      .attr({
+        spellCheck: false,
+        "data-id": this.props.node.id
+      });
+    el.append(this.renderComponents());
+    return el;
   };
 
   this.renderComponents = function() {
@@ -37,18 +40,12 @@ ContainerNodeComponent.Prototype = function() {
         console.error('Could not resolve a component for type: ' + node.type);
         ComponentClass = UnsupporedNode;
       }
-      return $$(ComponentClass, {
-        key: node.id,
+      return $$(ComponentClass).key(node.id).addProps({
         doc: doc,
         node: node
       });
     });
   };
-
-  // this._render = function() {
-  //   debugger;
-  //   Component.prototype._render.apply(this, arguments);
-  // };
 
   this.willReceiveProps = function(newProps) {
     if (this.props.doc && this.props.doc !== newProps.doc) {

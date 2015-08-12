@@ -10,10 +10,6 @@ var $$ = Component.$$;
 
 function TextToolComponent() {
   Component.apply(this, arguments);
-
-  this.handleClick = this.handleClick.bind(this);
-  this.handleSwitchTextType = this.handleSwitchTextType.bind(this);
-  this.toggleAvailableTextTypes = this.toggleAvailableTextTypes.bind(this);
 }
 
 TextToolComponent.Prototype = function() {
@@ -26,16 +22,21 @@ TextToolComponent.Prototype = function() {
   };
 
   this.render = function() {
-    var classNames = ['text-tool-component', 'select'];
     var textTypes = this.tool.getAvailableTextTypes();
 
+    var el = $$("div")
+      .addClass('text-tool-component select');
     // Note: this is a view internal state for opening the select dropdown
-    if (this.state.open) classNames.push('open');
-    if (this.state.disabled) classNames.push('disabled');
+    if (this.state.open) {
+      el.addClass('open');
+    }
+    if (this.state.disabled) {
+      el.addClass('disabled');
+    }
 
+    // label/dropdown button
     var isTextContext = textTypes[this.state.currentTextType];
     var label;
-
     if (isTextContext) {
       label = textTypes[this.state.currentTextType].label;
     } else if (this.state.currentContext) {
@@ -43,22 +44,26 @@ TextToolComponent.Prototype = function() {
     } else {
       label = 'No selection';
     }
-
-    var currentTextTypeEl = $$('button', { href: "#", classNames: "toggle"}, label);
-
-    var availableTextTypes = [];
-    availableTextTypes = _.map(textTypes, function(textType, textTypeId) {
-      return $$('button', {
-        key: textTypeId,
-        classNames: 'option '+textTypeId,
-        "data-type": textTypeId
-      }, textType.label);
-    }.bind(this));
-
-    return $$("div", { classNames: classNames.join(' ')},
-      currentTextTypeEl,
-      $$('div', {classNames: "options shadow border fill-white"}, availableTextTypes)
+    el.append($$('button')
+      .addClass("toggle").attr('href', "#")
+      .append(label)
+      .on('click', this.handleClick)
+      .on('mousedown', this.toggleAvailableTextTypes)
     );
+
+    // dropdown options
+    var options = $$('div').addClass("options shadow border fill-white");
+    _.each(textTypes, function(textType, textTypeId) {
+      var button = $$('button').key(textTypeId)
+          .addClass('option '+textTypeId)
+          .attr("data-type", textTypeId)
+          .append(textType.label)
+          .on('click', this.handleClick)
+          .on('mousedown', this.handleSwitchTextType);
+      options.append(button);
+    }, this);
+
+    return el;
   };
 
   this.didReceiveProps = function() {
@@ -79,21 +84,10 @@ TextToolComponent.Prototype = function() {
     if (this.tool && newProps.tool !== this.tool.getName()) {
       this.tool.disconnect(this);
     }
-  }
-
-  this.didMount = function() {
-    this.$el.on('click', '.toggle', this.handleClick);
-    this.$el.on('mousedown', '.toggle', this.toggleAvailableTextTypes);
-    this.$el.on('click', '.option', this.handleClick);
-    this.$el.on('mousedown', '.option', this.handleSwitchTextType);
   };
 
   this.willUnmount = function() {
     this.tool.disconnect(this);
-    this.$el.off('click', '.toggle', this.handleClick);
-    this.$el.off('mousedown', '.toggle', this.toggleAvailableTextTypes);
-    this.$el.off('click', '.option', this.handleClick);
-    this.$el.off('mousedown', '.option', this.handleSwitchTextType);
   };
 
   this.onToolstateChanged = function(toolState) {

@@ -50,32 +50,71 @@ Writer.Prototype = function() {
   };
 
   this.getInitialState = function() {
-    var defaultContextId = this.props.contextId;
-    return {"contextId": defaultContextId || "toc"};
+    return {"contextId": this.props.contextId || "toc"};
   };
 
   this.render = function() {
-    var el = $$('div', { classNames: 'writer-component'});
+    var el = $$('div')
+      .addClass('writer-component');
     if (!this.props.doc) {
-      el.append($$('div', {}, 'Loading'));
+      el.append($$('div').append('Loading'));
     } else {
       var doc = this.props.doc;
       var ContentToolbar = this.componentRegistry.get('content_toolbar');
+      // main container
       el.append(
-        $$('div', { key: 'container', classNames: "main-container"},
-          $$(ContentToolbar, { key: 'toolbar' }),
-          $$(ContentPanel, { key: 'content', doc: doc, containerId: this.config.containerId })
-        ),
-        $$('div', { classNames: "resource-container" },
-          $$(ContextToggles, { key: "context-toggles", panelOrder: this.config.panelOrder }),
-          this._renderContextPanel(this)
-        ),
-        this._renderModalPanel(),
-        $$(StatusBar, { key: 'statusBar', doc: doc }),
-        $$('div', { key: 'clipboard', classNames: "clipboard" })
+        $$('div').key('main-container').addClass("main-container").append(
+          $$(ContentToolbar).key('toolbar'),
+          $$(ContentPanel).key('content').addProps({
+            doc: doc,
+            containerId: this.config.containerId
+          })
+        )
+      );
+      // resource container
+      el.append(
+        $$('div').key('resource-container').addClass("resource-container").append(
+          $$(ContextToggles).key("context-toggles").addProps({
+            panelOrder: this.config.panelOrder
+          }),
+          this.renderContextPanel()
+        )
+      );
+      // modal panel
+      el.append(
+        this.renderModalPanel()
+      );
+      // status bar
+      el.append(
+        $$(StatusBar).key('statusBar').addProps({ doc: doc })
+      );
+      // clipboard
+      el.append(
+        $$('div').key('clipboard').addClass("clipboard")
       );
     }
     return el;
+  };
+
+  this.renderModalPanel = function() {
+    var modalPanelElement = this._getActiveModalPanelElement();
+    if (!modalPanelElement) {
+      // Just render an empty div if no modal active available
+      return $$('div');
+    } else {
+      return $$(ModalPanel).key('modal-panel').addProps({
+        panelElement: modalPanelElement
+      });
+    }
+  };
+
+  this.renderContextPanel = function() {
+    var panelElement = this._getActivePanelElement();
+    if (!panelElement) {
+      return $$('div').append("No panels are registered");
+    } else {
+      return $$('div').key('context-panel').append(panelElement);
+    }
   };
 
   this.willReceiveProps = function(newProps) {
@@ -297,7 +336,7 @@ Writer.Prototype = function() {
   this._getActivePanelElement = function() {
     var panelComponent = this.componentRegistry.get(this.state.contextId);
     if (panelComponent) {
-      return $$(panelComponent, this._panelPropsFromState(this.state));
+      return $$(panelComponent).addProps(this._panelPropsFromState(this.state));
     } else {
       console.warn("Could not find component for contextId:", this.state.contextId);
     }
@@ -308,30 +347,11 @@ Writer.Prototype = function() {
     if (state.modal) {
       var modalPanelComponent = this.componentRegistry.get(state.modal.contextId);
       if (modalPanelComponent) {
-        return $$(modalPanelComponent, this._panelPropsFromState(state.modal));
+        return $$(modalPanelComponent).addProps(this._panelPropsFromState(state.modal));
       } else {
         console.warn("Could not find component for contextId:", state.modal.contextId);
       }
     }
-  };
-
-  this._renderModalPanel = function() {
-    var modalPanelElement = this._getActiveModalPanelElement();
-    if (!modalPanelElement) {
-      // Just render an empty div if no modal active available
-      return $$('div');
-    }
-    return $$(ModalPanel, {
-      panelElement: modalPanelElement
-    });
-  };
-
-  this._renderContextPanel = function() {
-    var panelElement = this._getActivePanelElement();
-    if (!panelElement) {
-      return $$('div', null, "No panels are registered");
-    }
-    return panelElement;
   };
 };
 

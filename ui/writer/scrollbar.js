@@ -12,7 +12,6 @@ var THUMB_MIN_HEIGHT = 7;
 function Scrollbar() {
   Component.apply(this, arguments);
 
-  this.onMouseDown = this.onMouseDown.bind(this);
   this.onMouseUp = this.onMouseUp.bind(this);
   this.onMouseMove = this.onMouseMove.bind(this);
 }
@@ -26,51 +25,50 @@ Scrollbar.Prototype = function() {
     };
   };
 
+  this.render = function() {
+    var el = $$('div')
+      .addClass('scrollbar-component'+this.props.contextId)
+      .on('mousedown', this.onMouseDown);
+
+    el.append(
+      $$('div').key("thumb")
+        .addClass("thumb")
+        .css({
+          top: this.state.thumb.top,
+          height: Math.max(this.state.thumb.height, THUMB_MIN_HEIGHT)
+        })
+    );
+
+    var highlightEls = this.state.highlights.map(function(h) {
+      return $$('div').key(h.id)
+        .addClass('highlight')
+        .css({
+          top: h.top,
+          height: h.height
+        });
+    });
+    el.append(
+      $$('div').key('highlights')
+        .addClass('highlights')
+        .append(highlightEls)
+    );
+    return el;
+  };
+
   this.didMount = function() {
      // HACK global window object!
      // TODO: why is this done?
      $(window).on('mousemove', this.mouseMove);
      $(window).on('mouseup', this.mouseUp);
-     this.$el.on('mousedown', this.onMouseDown);
   };
 
   this.willUnmount = function() {
      $(window).off('mousemove', this.mouseMove);
      $(window).off('mouseup', this.mouseUp);
-     this.$el.off('mousedown', this.onMouseDown);
-  };
-
-  this.render = function() {
-    var highlightEls = this.state.highlights.map(function(h) {
-      return $$('div', {
-        classNames: 'highlight',
-        key: h.id,
-        style: {
-          top: h.top,
-          height: h.height
-        }
-      });
-    });
-    return $$('div', {classNames: 'scrollbar-component'+this.props.contextId},
-      $$('div', {
-        key: "thumb",
-        classNames: "thumb",
-        style: {
-          top: this.state.thumb.top,
-          height: Math.max(this.state.thumb.height, THUMB_MIN_HEIGHT)
-        }
-      }),
-      $$('div', {
-          key: 'highlights',
-          classNames: 'highlights'
-        },
-        highlightEls
-      )
-    );
   };
 
   this.update = function(panelContentEl, panel) {
-    var self = this;
+    // var self = this;
     this.panelContentEl = panelContentEl;
     var contentHeight = panel.getContentHeight();
     var panelHeight = panel.getPanelHeight();

@@ -15,31 +15,43 @@ FigureComponent.Prototype = function() {
     var componentRegistry = this.context.componentRegistry;
     var contentNode = this.props.node.getContentNode();
     var ContentComponentClass = componentRegistry.get(contentNode.type);
-    var specificType = this.props.node.type;
+    var el = $$('div')
+      .addClass("content-node figure clearfix "+this.props.node.type)
+      .attr("data-id", this.props.node.id);
 
-    return $$('div', { classNames: "content-node figure clearfix "+specificType, "data-id": this.props.node.id},
-      $$('div', { classNames: 'label', contentEditable: false }, this.props.node.label),
-      $$(TextProperty, {
+    el.append($$('div')
+      .addClass('label').attr("contentEditable", false)
+      .append(this.props.node.label)
+    );
+    el.append($$(TextProperty)
+      .addClass('title')
+      .addProps({
         tagName: 'div',
-        classNames: 'title',
         doc: this.props.doc,
         path: [this.props.node.id, "title"]
-      }),
-      $$('div', { classNames: 'figure-content' },
-        $$(ContentComponentClass, {
+      })
+    );
+    el.append($$('div')
+      .addClass('figure-content')
+      .append($$(ContentComponentClass)
+        .addProps({
           doc: this.props.doc,
           node: contentNode
         })
-      ),
-      $$('div', { classNames: 'description small' },
-        $$(TextProperty, {
+      )
+    );
+    el.append($$('div')
+      .addClass('description small')
+      .append($$(TextProperty)
+        .addClass('caption')
+        .addProps({
           tagName: 'div',
-          classNames: 'caption',
           doc: this.props.doc,
           path: [this.props.node.id, "caption"]
         })
       )
     );
+    return el;
   };
 };
 

@@ -15,23 +15,23 @@ function ContentPanel() {
 ContentPanel.Prototype = function() {
 
   this.render = function() {
-    return $$('div', {classNames:"panel content-panel-component"},
-      $$(Scrollbar, {
-        key: "scrollbar",
-        id: "content-scrollbar"
-      }),
-      $$('div', { key: "scanline", classNames: 'scanline' } ),
-      $$('div', {
-          key: "panelContent",
-          classNames: "panel-content",
-          style: {
-            position: 'absolute',
-            overflow: 'auto'
-          }
-        },
-        this.renderContentEditor()
-      )
+    var el = $$('div')
+      .addClass("panel content-panel-component");
+    el.append(
+      $$(Scrollbar).key("scrollbar").attr('id', "content-scrollbar")
     );
+    el.append(
+      $$('div').key("scanline").addClass('scanline')
+    );
+    el.append(
+      $$('div').key("panelContent").addClass("panel-content")
+        .css({
+          position: 'absolute',
+          overflow: 'auto'
+        })
+        .append(this.renderContentEditor())
+    );
+    return el;
   };
 
   this.renderContentEditor = function() {
@@ -39,11 +39,11 @@ ContentPanel.Prototype = function() {
     var doc = this.props.doc;
     var containerNode = doc.get(this.props.containerId);
     var ContentContainerClass = componentRegistry.get("content_editor");
-    return $$(ContentContainerClass, {
-      key: "contentEditor",
-      doc: doc,
-      node: containerNode
-    });
+    return $$(ContentContainerClass).key("contentEditor")
+      .addProps({
+        doc: doc,
+        node: containerNode
+      });
   };
 
   // Since component gets rendered multiple times we need to update

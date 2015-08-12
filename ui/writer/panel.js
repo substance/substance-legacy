@@ -12,9 +12,13 @@ Panel.Prototype = function() {
 
   // This method must be overriden with your panel implementation
   this.render = function() {
-    return $$("div", {classNames: "panel"},
-      $$('div', {classNames: 'panel-content'}, 'YOUR_PANEL_CONTENT')
-    );
+    return $$("div")
+      .addClass("panel")
+      .append(
+        $$('div')
+          .addClass('panel-content')
+          .append('YOUR_PANEL_CONTENT')
+      );
   };
 
   this.getDocument = function() {

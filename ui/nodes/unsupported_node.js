@@ -2,6 +2,7 @@
 
 var OO = require('../../basics/oo');
 var Component = require('../component');
+var $$ = Component.$$;
 
 function UnsupportedNodeComponent() {
   Component.apply(this, arguments);
@@ -10,13 +11,15 @@ function UnsupportedNodeComponent() {
 UnsupportedNodeComponent.Prototype = function() {
 
   this.render = function() {
-    var rawJson = JSON.stringify(this.props.node.properties, null, 2);
-    var props = {
-      classNames: "content-node unsupported",
-      "data-id": this.props.node.id,
-      contentEditable: false
-    };
-    return $$('pre', props, rawJson);
+    return $$('pre')
+      .addClass("content-node unsupported")
+      .attr({
+        "data-id": this.props.node.id,
+        contentEditable: false
+      })
+      .append(
+        JSON.stringify(this.props.node.properties, null, 2)
+      );
   };
 };
 

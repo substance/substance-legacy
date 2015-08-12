@@ -9,8 +9,6 @@ var Icon = require('../font_awesome_icon');
 
 function ContextToggles() {
   Component.apply(this, arguments);
-
-  this.onContextToggleClick = this.onContextToggleClick.bind(this);
 }
 
 ContextToggles.Prototype = function() {
@@ -18,35 +16,30 @@ ContextToggles.Prototype = function() {
   this.render = function() {
     var panelOrder = this.props.panelOrder;
     var contextId = this.props.contextId;
+    var componentRegistry = this.context.componentRegistry;
 
-    var toggleComps = [];
+    var el = $$('div').addClass("context-toggles");
     _.each(panelOrder, function(panelId) {
-      var panelClass = this.context.componentRegistry.get(panelId);
-      var classNames = ["toggle-context"];
-      if (panelClass.contextId === contextId) {
-        classNames.push("active");
-      }
-      var toggle = $$('a', {
-          key: panelClass.contextId,
-          classNames: classNames.join(" "),
+      var panelClass = componentRegistry.get(panelId);
+      var toggle = $$('a').key(panelClass.contextId)
+        .addClass("toggle-context")
+        .attr({
           href: "#",
           "data-id": panelClass.contextId,
-        },
-        $$(Icon, { icon: panelClass.icon }),
-        $$('span', { classNames: 'label'}, panelClass.displayName)
+        })
+        .on('click', this.onContextToggleClick);
+      if (panelClass.contextId === contextId) {
+        toggle.addClass("active");
+      }
+      toggle.append(
+        $$(Icon).addProps({ icon: panelClass.icon })
       );
-      toggleComps.push(toggle);
-    }, this);
-
-    return $$('div', { classNames: "context-toggles" }, toggleComps);
-  };
-
-  this.didMount = function() {
-    this.$el.on('click', 'a.toggle-context', this.onContextToggleClick);
-  };
-
-  this.willUnmount = function() {
-    this.$el.off('click');
+      toggle.append(
+        $$('span').addClass('label').append(panelClass.displayName)
+      );
+      el.append(toggle);
+    });
+    return el;
   };
 
   this.onContextToggleClick = function(e) {

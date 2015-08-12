@@ -6,27 +6,27 @@ var $$ = Component.$$;
 
 function ModalPanel() {
   Component.apply(this,arguments);
-
-  this.handleCloseModal = this.handleCloseModal.bind(this);
 }
 
 ModalPanel.Prototype = function() {
 
+  this.render = function() {
+    return $$('div')
+      .addClass('modal '+this.props.panelElement.type.modalSize)
+      .append(
+        $$('div')
+          .addClass('modal-body')
+          .append(this.props.panelElement)
+          .on('click', this.preventBubbling)
+      );
+  };
+
   this.didMount = function() {
-    this.$el.on('click', '.close-modal', this.handleCloseModal);
-    this.$el.on('click', '.modal-body', this.preventBubbling());
+    this.$el.on('click', '.close-modal', this.handleCloseModal.bind(this));
   };
 
   this.willUnmount = function() {
     this.$el.off('click');
-  };
-
-  this.render = function() {
-    return $$('div', { classNames: 'modal '+this.props.panelElement.type.modalSize },
-      $$('div', { classNames: 'modal-body' },
-        this.props.panelElement
-      )
-    );
   };
 
   this.handleCloseModal = function(e) {
@@ -38,7 +38,6 @@ ModalPanel.Prototype = function() {
     e.stopPropagation();
     e.preventDefault();
   };
-
 };
 
 OO.inherit(ModalPanel, Component);

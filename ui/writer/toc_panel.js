@@ -8,30 +8,32 @@ var Panel = require('./panel');
 
 function TocPanel() {
   Panel.apply(this, arguments);
-
-  this.handleClick = this.handleClick.bind(this);
 }
 
 TocPanel.Prototype = function() {
 
   this.render = function() {
+    var el = $$("div")
+      .addClass("panel toc-panel-component");
+    var tocEntries = $$("div")
+      .addClass("toc-entries");
     var state = this.state;
-    var el = $$("div", {classNames: "panel toc-panel-component"});
-    var tocEntries = _.map(state.tocNodes, function(node) {
+    _.each(state.tocNodes, function(node) {
       var level = node.level;
-      var classNames = ["toc-entry", "level-"+level];
+      var tocEntry = $$('a').key(node.id)
+        .addClass("toc-entry", "level-"+level)
+        .attr({
+          href: "#",
+          "data-id": node.id,
+        })
+        .on('click', this.handleClick)
+        .append(node.content);
       if (state.activeNode === node.id) {
-        classNames.push("active");
+        tocEntry.addClass("active");
       }
-      return $$('a', {
-        classNames: classNames.join(" "),
-        href: "#",
-        key: node.id,
-        "data-id": node.id,
-        onClick: this.handleClick
-      }, node.content);
+      tocEntries.append(tocEntry);
     }, this);
-    el.append($$("div", {classNames: "toc-entries"}, tocEntries));
+    el.append(tocEntries);
     return el;
   };
 

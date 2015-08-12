@@ -20,9 +20,10 @@ IncludeComponent.Prototype = function() {
       console.error('Could not resolve a component for type: ' + node.type);
       ComponentClass = UnsupportedNode;
     }
-    return $$('div', { classNames: "content-node include", "data-id": this.props.node.id },
-      $$(ComponentClass, { key: node.id, doc: doc, node: node })
-    );
+    return $$('div')
+      .addClass("content-node include")
+      .attr("data-id", this.props.node.id)
+      .append($$(ComponentClass).key(node.id).addProps({ doc: doc, node: node }));
   };
 };
 

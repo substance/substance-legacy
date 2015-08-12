@@ -12,9 +12,15 @@ function HeadingComponent() {
 HeadingComponent.Prototype = function() {
 
   this.render = function() {
-    return $$('div', { classNames: "content-node heading level-"+this.props.node.level, "data-id": this.props.node.id },
-      $$(TextProperty, { doc: this.props.doc, path: [ this.props.node.id, "content"] })
-    );
+    return $$('div')
+      .addClass("content-node heading level-"+this.props.node.level)
+      .attr("data-id", this.props.node.id)
+      .append($$(TextProperty)
+        .addProps({
+          doc: this.props.doc,
+          path: [ this.props.node.id, "content"]
+        })
+      );
   };
 };
 

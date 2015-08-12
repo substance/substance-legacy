@@ -10,9 +10,6 @@ var Tool = require('../../surface/tool');
 
 function ToolComponent() {
   Component.apply(this, arguments);
-
-  this.onMouseDown = this.onMouseDown.bind(this);
-  this.onClick = this.onClick.bind(this);
 }
 
 ToolComponent.Prototype = function() {
@@ -25,19 +22,17 @@ ToolComponent.Prototype = function() {
   };
 
   this.render = function() {
-    var el = $$("button", {
-      title: this.props.title,
-    });
-    if (this.props.classNames) {
-      el.addClass(this.props.classNames);
-    }
+    var el = $$("button")
+      .attr('title', this.props.title)
+      .on('mousedown', this.onMouseDown)
+      .on('click', this.onClick);
     if (this.state.disabled) {
       el.addClass('disabled');
     }
     if (this.state.active) {
       el.addClass('active');
     }
-    el.append(this.props.children)
+    el.append(this.children);
     return el;
   };
 

@@ -9,11 +9,9 @@ function FontAwesomeIcon() {
 }
 
 FontAwesomeIcon.Prototype = function() {
-
   this.render = function() {
-    return $$('i', { classNames: 'fa ' + this.props.icon });
+    return $$('i').addClass('fa ' + this.props.icon);
   };
-
 };
 
 OO.inherit(FontAwesomeIcon, Component.Container);

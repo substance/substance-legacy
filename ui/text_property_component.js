@@ -19,14 +19,15 @@ TextPropertyComponent.Prototype = function() {
     var text = doc.get(path) || "";
     var annotations = this.getAnnotations();
 
-    var el = $$(this.props.tagName || 'span', {
-      classNames: "text-property " + (this.props.classNames || ""),
-      "data-path": this.props.path.join('.'),
-      spellCheck: false,
-      style: {
+    var el = $$(this.props.tagName || 'span')
+      .addClass("text-property")
+      .attr({
+        "data-path": this.props.path.join('.'),
+        spellCheck: false,
+      })
+      .css({
         whiteSpace: "pre-wrap"
-      },
-    });
+      });
 
     var annotator = new Annotator();
     var fragmentCounters = {};
@@ -43,7 +44,7 @@ TextPropertyComponent.Prototype = function() {
     annotator.onText = function(context, text) {
       // console.log(_logPrefix+text);
       if (text && text.length > 0) {
-        context.children.push(text);
+        context.append(text);
       }
     };
     annotator.onEnter = function(entry) {
@@ -65,35 +66,27 @@ TextPropertyComponent.Prototype = function() {
       } else {
         ViewClass = AnnotationComponent;
       }
-
-      var classNames = [];
+      var el = $$(ViewClass).addProps({
+        doc: doc,
+        node: node,
+      });
       // special support for container annotation fragments
       if (node.type === "container_annotation_fragment") {
         // TODO: this seems a bit messy
-        classNames = classNames.concat(node.anno.getTypeNames().join(' ').replace(/_/g, "-").split());
-        classNames.push("annotation-fragment");
+        el.addClass(node.anno.getTypeNames().join(' ').replace(/_/g, "-"));
+        el.addClass("annotation-fragment");
       } else if (node.type === "container-annotation-anchor") {
-        classNames = classNames.concat(node.anno.getTypeNames().join(' ').replace(/_/g, "-").split());
-        classNames.push("anchor");
-        classNames.push(node.isStart?"start-anchor":"end-anchor");
+        el.addClass(node.anno.getTypeNames().join(' ').replace(/_/g, "-"));
+        el.addClass("anchor");
+        el.addClass(node.isStart?"start-anchor":"end-anchor");
       }
-      return {
-        ViewClass: ViewClass,
-        props: {
-          doc: doc,
-          node: node,
-          classNames: classNames.join(' '),
-        },
-        children: []
-      };
+      return el;
     };
     annotator.onExit = function(entry, context, parentContext) {
       // for debugging
       // _logPrefix = _logIndent(_level--);
       // console.log(_logPrefix+"</"+entry.node.type+">");
-      var args = [context.ViewClass, context.props].concat(context.children);
-      var view = $$.apply(null, args);
-      parentContext.children.push(view);
+      parentContext.append(context);
     };
     annotator.start(el, text, annotations);
     // NOTE: this is particularly necessary for text-properties of
@@ -101,10 +94,9 @@ TextPropertyComponent.Prototype = function() {
     // as desired, and soft-breaks are not visible.
     // TODO: sometimes we do not want to do this. Make it configurable.
     el.append($$('br'));
-
-    // HACK: need to post-process as some of the data has been
-    // add using push and not processed via $$.
-    Component.$$.prepareChildren(el.children);
+    // // HACK: need to post-process as some of the data has been
+    // // add using push and not processed via $$.
+    // Component.$$.prepareChildren(el.children);
     return el;
   };
 

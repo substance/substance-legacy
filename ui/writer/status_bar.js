@@ -22,39 +22,34 @@ function StatusBar() {
 
 StatusBar.Prototype = function() {
 
+  this.render = function() {
+    var el = $$('div').addClass("status-bar-component fill-light");
+    var statusEl = $$("div").addClass("document-status").append(
+      this.props.doc.getDocumentMeta().title
+    );
+    var message = this.state.message;
+    if (message) {
+      el.addClass(message.type);
+      statusEl.append(
+        $$('div').addClass('notifications').append(
+          $$("div").addClass("icon").append(
+            $$('i').addClass('fa '+ICONS_FOR_TYPE[message.type])
+          )
+        )
+      );
+      statusEl.append(
+        $$('div').addClass('message').append(message.message)
+      );
+    }
+    el.append(statusEl);
+    return el;
+  };
+
   this.didMount = function() {
     var notifications = this.context.notifications;
     notifications.connect(this, {
       'messages:updated': this.handleNotificationUpdate
     });
-  };
-
-  this.willUpdateState = function() {
-    if (this.state.message) {
-      this.$el.removeClass(this.state.message.type);
-    }
-  };
-
-  this.render = function() {
-    var message = this.state.message;
-    var notifications;
-    if (message) {
-      this.$el.addClass(message.type);
-      notifications = $$('div', {classNames: 'notifications'},
-        $$("div", { classNames: "icon"},
-          $$('i', { classNames: 'fa '+ICONS_FOR_TYPE[message.type]})
-        ),
-        $$('div', { classNames: 'message' }, message.message)
-      );
-    } else {
-      notifications = $$('div');
-    }
-    return $$('div', {classNames: "status-bar-component fill-light"},
-      $$("div", { classNames: "document-status" },
-        this.props.doc.getDocumentMeta().title
-      ),
-      notifications
-    );
   };
 
   this.handleNotificationUpdate = function(messages) {
