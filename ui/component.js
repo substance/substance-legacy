@@ -310,6 +310,14 @@ Component.Prototype = function ComponentPrototype() {
     return this;
   };
 
+  this.css = function(style) {
+    if (style) {
+      this._data.css(style);
+      this.$el.css(style);
+    }
+    return this;
+  };
+
   this.append = function(child) {
     var isMounted = this.isMounted();
     var comp = this._compileComponent(child, {
