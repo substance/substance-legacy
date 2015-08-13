@@ -38,7 +38,6 @@ Scrollbar.Prototype = function() {
           height: Math.max(this.state.thumb.height, THUMB_MIN_HEIGHT)
         })
     );
-
     var highlightEls = this.state.highlights.map(function(h) {
       return $$('div').key(h.id)
         .addClass('highlight')
@@ -56,7 +55,6 @@ Scrollbar.Prototype = function() {
   };
 
   this.update = function(panelContentEl, panel) {
-    console.log('AAAA');
     // var self = this;
     this.panelContentEl = panelContentEl;
     var contentHeight = panel.getContentHeight();
@@ -88,15 +86,18 @@ Scrollbar.Prototype = function() {
     //   highlights.push(data);
     // });
 
-    var thumbProps = {
-     top: scrollTop / this.factor,
-     height: panelHeight / this.factor
-    };
-
-    this.setState({
-      thumb: thumbProps,
-      highlights: highlights
+    // NOTE: it is not very smart to use heavy weight rerendering
+    // when we only want to change css styles.
+    // this.setState({
+    //   thumb: thumbProps,
+    //   highlights: highlights
+    // });
+    // ... Substance.Component provides incremental API to do that
+    this.refs.thumb.css({
+      top: scrollTop / this.factor,
+      height: panelHeight / this.factor
     });
+    // TODO: bring back some mechanism to show highlights
   };
 
   this.onMouseDown = function(e) {
