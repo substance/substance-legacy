@@ -16,7 +16,7 @@ ToolComponent.Prototype = function() {
 
   this.getInitialState = function() {
     return {
-      disable: true,
+      disabled: true,
       active: false
     };
   };
@@ -32,8 +32,12 @@ ToolComponent.Prototype = function() {
     if (this.state.active) {
       el.addClass('active');
     }
-    el.append(this.children);
+    el.append(this.props.children);
     return el;
+  };
+
+  this._render = function() {
+    return Component.prototype._render.apply(this, arguments);
   };
 
   this.didMount = function() {
@@ -51,8 +55,6 @@ ToolComponent.Prototype = function() {
     this.tool.connect(this, {
       'toolstate:changed': this.onToolstateChanged
     });
-    this.$el.on('mousedown', this.onMouseDown);
-    this.$el.on('click', this.onClick);
   };
 
   this.onToolstateChanged = function(toolState/*, tool, oldState*/) {

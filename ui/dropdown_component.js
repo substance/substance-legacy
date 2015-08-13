@@ -32,7 +32,7 @@ DropdownComponent.Prototype = function() {
         .on('click', this.handleClick),
       $$('div').key('options')
         .addClass('options shadow border fill-white')
-        .append(this.children)
+        .append(this.props.children)
     );
     return el;
   };

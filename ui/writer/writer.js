@@ -102,9 +102,13 @@ Writer.Prototype = function() {
       // Just render an empty div if no modal active available
       return $$('div');
     } else {
-      return $$(ModalPanel).key('modal-panel').addProps({
+      var el = $$(ModalPanel).key('modal-panel').addProps({
         panelElement: modalPanelElement
       });
+      if (this.state.modal) {
+        el.addProps(this.state.modal);
+      }
+      return el;
     }
   };
 
@@ -131,6 +135,9 @@ Writer.Prototype = function() {
       doc.connect(this, {
         'transaction:started': this.transactionStarted,
         'document:changed': this.onDocumentChanged
+      });
+      this.surfaceManager.connect(this, {
+        "selection:changed": this.onSelectionChangedDebounced
       });
     }
   };
@@ -275,6 +282,10 @@ Writer.Prototype = function() {
     this.setState(this.getInitialState());
   };
 
+  // handler for
+  this.switchState = function(newState) {
+    this.setState(newState);
+  };
 
   // Internal Methods
   // ----------------------
@@ -334,8 +345,8 @@ Writer.Prototype = function() {
   };
 
   this._getActivePanelElement = function() {
-    var panelComponent = this.componentRegistry.get(this.state.contextId);
-    if (panelComponent) {
+    if (this.componentRegistry.contains(this.state.contextId)) {
+      var panelComponent = this.componentRegistry.get(this.state.contextId);
       return $$(panelComponent).addProps(this._panelPropsFromState(this.state));
     } else {
       console.warn("Could not find component for contextId:", this.state.contextId);
