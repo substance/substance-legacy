@@ -3,8 +3,10 @@
 var OO = require('../basics/oo');
 var _ = require('../basics/helpers');
 var Surface = require('./surface');
+var EventEmitter = require('../basics/event_emitter');
 
 var SurfaceManager = function(doc) {
+  EventEmitter.call(this);
   this.doc = doc;
   this.surfaces = {};
   this.focusedSurface = null;
@@ -28,10 +30,14 @@ SurfaceManager.Prototype = function() {
   };
 
   this.registerSurface = function(surface) {
+    surface.connect(this, {
+      'selection:changed': this.onSelectionChanged
+    });
     this.surfaces[surface.getName()] = surface;
   };
 
   this.unregisterSurface = function(surface) {
+    surface.disconnect(this);
     delete this.surfaces[surface.getName()];
     if (surface && this.focusedSurface === surface) {
       this.focusedSurface = null;
@@ -71,6 +77,10 @@ SurfaceManager.Prototype = function() {
     }
   };
 
+  this.onSelectionChanged = function(sel, surface) {
+    this.emit('selection:changed', sel, surface);
+  };
+
   this.pushState = function() {
     var state = {
       surface: this.focusedSurface,
@@ -93,6 +103,6 @@ SurfaceManager.Prototype = function() {
 
 };
 
-OO.initClass(SurfaceManager);
+OO.inherit(SurfaceManager, EventEmitter);
 
 module.exports = SurfaceManager;
