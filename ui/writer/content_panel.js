@@ -18,7 +18,9 @@ ContentPanel.Prototype = function() {
     var el = $$('div')
       .addClass("panel content-panel-component");
     el.append(
-      $$(Scrollbar).key("scrollbar").attr('id', "content-scrollbar")
+      $$(Scrollbar).key("scrollbar")
+        .attr('id', "content-scrollbar")
+        .addProps({ contextId: this.props.containerId })
     );
     el.append(
       $$('div').key("scanline").addClass('scanline')
@@ -30,6 +32,7 @@ ContentPanel.Prototype = function() {
           overflow: 'auto'
         })
         .append(this.renderContentEditor())
+        .on('scroll', this.onScroll)
     );
     return el;
   };
@@ -71,15 +74,16 @@ ContentPanel.Prototype = function() {
   };
 
   this.updateScrollbar = function() {
+    if (!this.refs || !this.refs.scrollbar || !this.refs.panelContent) {
+      // something is fishy here
+      debugger;
+    }
     var scrollbar = this.refs.scrollbar;
     var $panelContent = this.refs.panelContent.$el;
     // We need to await next repaint, otherwise dimensions will be wrong
     _.delay(function() {
       scrollbar.update($panelContent[0], this);
     }.bind(this),0);
-    // (Re)-Bind scroll event on new panelContentEl
-    $panelContent.off('scroll');
-    $panelContent.on('scroll', this._onScroll);
   };
 
   this.onScroll = function() {

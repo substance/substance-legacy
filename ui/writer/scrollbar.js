@@ -12,6 +12,7 @@ var THUMB_MIN_HEIGHT = 7;
 function Scrollbar() {
   Component.apply(this, arguments);
 
+  // used together with jquery
   this.onMouseUp = this.onMouseUp.bind(this);
   this.onMouseMove = this.onMouseMove.bind(this);
 }
@@ -27,9 +28,8 @@ Scrollbar.Prototype = function() {
 
   this.render = function() {
     var el = $$('div')
-      .addClass('scrollbar-component'+this.props.contextId)
+      .addClass('scrollbar-component '+this.props.contextId)
       .on('mousedown', this.onMouseDown);
-
     el.append(
       $$('div').key("thumb")
         .addClass("thumb")
@@ -55,19 +55,8 @@ Scrollbar.Prototype = function() {
     return el;
   };
 
-  this.didMount = function() {
-     // HACK global window object!
-     // TODO: why is this done?
-     $(window).on('mousemove', this.mouseMove);
-     $(window).on('mouseup', this.mouseUp);
-  };
-
-  this.willUnmount = function() {
-     $(window).off('mousemove', this.mouseMove);
-     $(window).off('mouseup', this.mouseUp);
-  };
-
   this.update = function(panelContentEl, panel) {
+    console.log('AAAA');
     // var self = this;
     this.panelContentEl = panelContentEl;
     var contentHeight = panel.getContentHeight();
@@ -114,15 +103,20 @@ Scrollbar.Prototype = function() {
     e.stopPropagation();
     e.preventDefault();
     this._mouseDown = true;
+    // temporarily, we bind to events on window level
+    // because could leave the this element's area while dragging
+    $(window).on('mousemove', this.onMouseMove);
+    $(window).on('mouseup', this.onMouseUp);
+
     var scrollBarOffset = this.$el.offset().top;
     var y = e.pageY - scrollBarOffset;
-    var thumbEl = this.refs.thumb.getDOMNode();
-    if (e.target !== thumbEl) {
+    var $thumbEl = this.refs.thumb.$el;
+    if (e.target !== $thumbEl[0]) {
       // Jump to mousedown position
-      this.offset = $(thumbEl).height()/2;
-      this.mouseMove(e);
+      this.offset = $thumbEl.height()/2;
+      this.onMouseMove(e);
     } else {
-      this.offset = y - $(thumbEl).position().top;
+      this.offset = y - $thumbEl.position().top;
     }
   };
 
@@ -133,6 +127,8 @@ Scrollbar.Prototype = function() {
 
   this.onMouseUp = function() {
     this._mouseDown = false;
+    $(window).off('mousemove', this.onMouseMove);
+    $(window).off('mouseup', this.onMouseUp);
   };
 
   // Handle Scroll

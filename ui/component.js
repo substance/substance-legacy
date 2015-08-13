@@ -412,8 +412,8 @@ Component.Prototype = function ComponentPrototype() {
     }
     // css styles must be overwritten explicitly (there is no '$.removeCss')
     if (!_.isEqual(oldData.style, data.style)) {
-      if (data.props.style) {
-        $el.css(data.props.style);
+      if (data.style) {
+        $el.css(data.style);
       }
     }
     if (!_.isEqual(oldData.handlers, data.handlers)) {
@@ -833,8 +833,11 @@ VirtualNode.Prototype = function() {
     this.handlers[event] = handler;
     return this;
   };
-  this.css = function(styles) {
-    _.extend(this.styles, styles);
+  this.css = function(style) {
+    if (!this.style) {
+      this.style = {};
+    }
+    _.extend(this.style, style);
     return this;
   };
 };
