@@ -23,7 +23,6 @@ TextToolComponent.Prototype = function() {
 
   this.render = function() {
     var textTypes = this.tool.getAvailableTextTypes();
-
     var el = $$("div")
       .addClass('text-tool-component select');
     // Note: this is a view internal state for opening the select dropdown
@@ -33,7 +32,6 @@ TextToolComponent.Prototype = function() {
     if (this.state.disabled) {
       el.addClass('disabled');
     }
-
     // label/dropdown button
     var isTextContext = textTypes[this.state.currentTextType];
     var label;
@@ -47,10 +45,9 @@ TextToolComponent.Prototype = function() {
     el.append($$('button')
       .addClass("toggle").attr('href', "#")
       .append(label)
-      .on('click', this.handleClick)
       .on('mousedown', this.toggleAvailableTextTypes)
+      .on('click', this.handleClick)
     );
-
     // dropdown options
     var options = $$('div').addClass("options shadow border fill-white");
     _.each(textTypes, function(textType, textTypeId) {
@@ -62,7 +59,7 @@ TextToolComponent.Prototype = function() {
           .on('mousedown', this.handleSwitchTextType);
       options.append(button);
     }, this);
-
+    el.append(options);
     return el;
   };
 
@@ -96,22 +93,29 @@ TextToolComponent.Prototype = function() {
 
   this.handleClick = function(e) {
     e.preventDefault();
+    e.stopPropagation();
   };
 
   this.handleSwitchTextType = function(e) {
     e.preventDefault();
     this.tool.switchTextType(e.currentTarget.dataset.type);
+    this.toggleDropdown();
   };
 
   this.toggleAvailableTextTypes = function(e) {
     e.preventDefault();
+    e.stopPropagation();
     if (this.tool.isDisabled()) return;
     // HACK: This only updates the view state state.open is not set on the tool itself
     // That way the dropdown automatically closes when the selection changes
-    this.setState({
+    this.toggleDropdown();
+  };
+
+  this.toggleDropdown = function() {
+    this.extendState({
       open: !this.state.open
     });
-  };
+  }
 };
 
 OO.inherit(TextToolComponent, Component);
