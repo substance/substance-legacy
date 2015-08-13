@@ -16,6 +16,7 @@ AnnotationComponent.Prototype = function() {
     if (this.props.node.active) {
       el.addClass('active');
     }
+    el.append(this.props.children);
     return el;
   };
 
