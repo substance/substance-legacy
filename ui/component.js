@@ -59,7 +59,7 @@ function Component(parent, params) {
   this.parent = parent;
   this.children = [];
 
-  this.key = params.key;
+  this._key = params._key;
   this._htmlProps = {
     classNames: params.classNames || "",
     attributes: params.attributes || {},
@@ -199,7 +199,7 @@ Component.Prototype = function ComponentPrototype() {
   };
 
   this.willUnmount = function() {
-    console.log('Will unmount', this);
+    // console.log('Will unmount', this);
   };
 
   this.send = function(action) {
@@ -355,7 +355,7 @@ Component.Prototype = function ComponentPrototype() {
     var index = {};
     for (var i = 0; i < children.length; i++) {
       var child = children[i];
-      var key = child.key;
+      var key = child._key;
       if (key) {
         index[key] = child;
       }
@@ -374,6 +374,7 @@ Component.Prototype = function ComponentPrototype() {
       $el.css(data.style);
     }
     _.each(data.handlers, function(handler, event) {
+      // console.log('Binding to', event, 'in', scope.owner);
       $el.on(event, handler.bind(scope.owner));
     }, this);
     return $el;
@@ -434,10 +435,10 @@ Component.Prototype = function ComponentPrototype() {
     }
     // TODO: we can enable this simplification when the general implementation
     // is stable
-    // if (this._simple_) {
-    //   this._renderSimple(data, scope);
-    //   return;
-    // }
+    if (this._simple_) {
+      this._renderSimple(data, scope);
+      return;
+    }
 
     var el = this.$el[0];
     var isMounted = _isInDocument(el);
@@ -446,7 +447,7 @@ Component.Prototype = function ComponentPrototype() {
     var newContent = data.children;
 
     if (_.isEqual(oldContent, newContent)) {
-      console.log('-----');
+      // console.log('-----');
       this._data = data;
       return;
     }
@@ -508,8 +509,8 @@ Component.Prototype = function ComponentPrototype() {
       }
 
       // Note: if the key property is set the component is treated preservatively
-      var newKey = _new.key;
-      var oldKey = _old.key;
+      var newKey = _new._key;
+      var oldKey = _old._key;
       if (oldKey && newKey) {
         // the component is in the right place already
         if (oldKey === newKey) {
@@ -580,6 +581,9 @@ Component.Prototype = function ComponentPrototype() {
         }
         pos++; oldPos++; newPos++;
       }
+      if (comp._key) {
+        scope.refs[comp._key] = comp;
+      }
       children.push(comp);
     }
 
@@ -613,6 +617,7 @@ Component.Prototype = function ComponentPrototype() {
     }
     this.refs = scope.refs;
     this.children = children;
+    this._data = data;
   };
 
   this._compileComponent = function(data, scope) {
@@ -628,13 +633,21 @@ Component.Prototype = function ComponentPrototype() {
         break;
       case 'component':
         component = new data.ComponentClass(this, data);
-        component._render(component.render(), scope);
+        // TODO: we have a problem here: basically this is the place
+        // where we descend into a child component implementation.
+        // The component's render implementation would expect e.g. that handlers are
+        // bound to it, and also refs created within that component.
+        // However, it is also possible to provide children via append,
+        // in the parent component's render method. Those handlers should be bound
+        // to the parent. The same for refs.
+        // To solve this, $$ would need to be contextified, which is quite ugly.
+        component._render(component.render());
         break;
       default:
         throw new Error('Illegal state.');
     }
-    if (data.key) {
-      scope.refs[data.key] = component;
+    if (data._key) {
+      scope.refs[data._key] = component;
     }
     return component;
   };
@@ -715,11 +728,12 @@ function VirtualNode() {
 
 VirtualNode.Prototype = function() {
   this.key = function(key) {
-    this.key = key;
+    this._key = key;
     return this;
   };
   this.append = function(/* ...children */) {
     var children;
+    var _children = this._getChildren();
     if (arguments.length === 1) {
       var child = arguments[0];
       if (!child) {
@@ -728,20 +742,21 @@ VirtualNode.Prototype = function() {
       if (_.isArray(child)) {
         children = child;
         Component.$$.prepareChildren(children);
-        this.children = this.children.concat(children);
+        Array.prototype.push.apply(_children, children);
       } else if (_.isString(child)) {
-        this.children.push(new VirtualTextNode(child));
+        _children.push(new VirtualTextNode(child));
       } else {
-        this.children.push(child);
+        _children.push(child);
       }
     } else {
       children = Array.prototype.slice.call(arguments,0);
       Component.$$.prepareChildren(children);
-      for (var i = 0; i < children.length; i++) {
-        this.children.push(children[i]);
-      }
+      Array.prototype.push.apply(_children, children);
     }
     return this;
+  };
+  this._getChildren = function() {
+    return this.children;
   };
   this.insertAt = function(pos, child) {
     this.children.splice(pos, 0, child);
@@ -823,6 +838,16 @@ function VirtualComponent(ComponentClass) {
   this.type = 'component';
   this.ComponentClass = ComponentClass;
 }
+VirtualComponent.Prototype = function() {
+  // Note: for VirtualComponents we put children into props
+  // so that the render method of ComponentClass can place it.
+  this._getChildren = function() {
+    if (!this.props.children) {
+      this.props.children = [];
+    }
+    return this.props.children;
+  };
+};
 OO.inherit(VirtualComponent, VirtualNode);
 
 function VirtualTextNode(text) {
