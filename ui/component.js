@@ -558,7 +558,7 @@ Component.Prototype = function ComponentPrototype() {
           comp = this._compileComponent(_new, scope);
           _replace(oldComp, comp);
           if (isMounted) comp.triggerDidMount();
-          newPos++; oldPos++;
+          pos++; newPos++; oldPos++;
         }
         // a component has been removed
         else if (oldComps[newKey] && !newComps[oldKey]) {
