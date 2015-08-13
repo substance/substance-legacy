@@ -14,6 +14,7 @@ var Basics = {};
 
 _.extend(Basics, require('./helpers'));
 _.extend(Basics, require('./oo'));
+Basics.OO = require('./oo');
 Basics.PathAdapter = require('./path_adapter');
 Basics.EventEmitter = require('./event_emitter');
 Basics.Error = require('./error');
