@@ -43,8 +43,14 @@ var __id__ = 0;
  *
  * A component can send actions via `send` which are bubbled up through all parent components
  * until one handles it.
- * Attention: the action name must match a function name.
- * TODO: maybe we should introduce a naming convention.
+ * To register an action handler, a component must register like this
+ * ```
+ *   this.actions({
+ *     "open-modal": this.openModal,
+ *     "close-modal": this.closeModal
+ *   });
+ * ```
+ * which is typically done in the constructor.
  */
 function Component(parent, params) {
   if (!parent && parent !== "root") {
@@ -70,6 +76,8 @@ function Component(parent, params) {
 
   // get context from parent (dependency injection)
   this.context = this._getContext();
+
+  this.actionHandlers = {};
 
   this.didReceiveProps();
 
@@ -205,12 +213,19 @@ Component.Prototype = function ComponentPrototype() {
   this.send = function(action) {
     var comp = this;
     while(comp) {
-      if (comp[action]) {
-        return comp[action].apply(comp, Array.prototype.slice.call(arguments, 1));
+      if (comp.actionHandlers[action]) {
+        return comp.actionHandlers[action].apply(comp, Array.prototype.slice.call(arguments, 1));
       }
       comp = comp.getParent();
     }
     throw new Error('No component handled action: ' + action);
+  };
+
+  this.actions = function(actions) {
+    _.each(actions, function(method, action) {
+      var handler = method.bind(this);
+      this.actionHandlers[action] = handler;
+    }, this);
   };
 
   this.setState = function(newState) {

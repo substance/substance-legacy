@@ -11,27 +11,21 @@ function ModalPanel() {
 ModalPanel.Prototype = function() {
 
   this.render = function() {
-    return $$('div')
-      .addClass('modal '+this.props.panelElement.type.modalSize)
-      .append(
-        $$('div')
-          .addClass('modal-body')
-          .append(this.props.panelElement)
-          .on('click', this.preventBubbling)
-      );
-  };
-
-  this.didMount = function() {
-    this.$el.on('click', '.close-modal', this.handleCloseModal.bind(this));
+    var el = $$('div').addClass('modal');
+    var modalSize = this.props.panelElement.type.modalSize;
+    if (modalSize) {
+      el.addClass(modalSize);
+    }
+    el.append($$('div')
+      .addClass('modal-body')
+      .append(this.props.panelElement)
+      .on('click', this.preventBubbling)
+    );
+    return el;
   };
 
   this.willUnmount = function() {
     this.$el.off('click');
-  };
-
-  this.handleCloseModal = function(e) {
-    e.preventDefault();
-    this.send('closeModal');
   };
 
   this.preventBubbling = function(e) {

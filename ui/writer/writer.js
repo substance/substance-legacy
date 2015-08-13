@@ -32,6 +32,16 @@ function Writer() {
   this._registerExtensions();
   this._initializeComponentRegistry();
   this._initializeToolRegistry();
+
+  // action handlers
+  this.actions({
+    "switch-state": this.switchState,
+    "switch-context": this.switchContext,
+    "open-modal": this.openModal,
+    "close-modal": this.closeModal,
+    "request-save": this.requestSave,
+    "execute-command": this.executeCommand,
+  });
 }
 
 Writer.Prototype = function() {
@@ -185,7 +195,7 @@ Writer.Prototype = function() {
     }
     // Save: cmd+s
     else if (e.keyCode === 83 && (e.metaKey||e.ctrlKey)) {
-      this.requestSave();
+      this.saveDocument();
       handled = true;
     }
     if (handled) {
@@ -224,23 +234,6 @@ Writer.Prototype = function() {
     this.emit('selection:changed', sel);
   };
 
-  // Action handlers
-  // ---------------
-
-  this.switchContext = function(contextId) {
-    this.setState({ contextId: contextId });
-  };
-
-  this.executeAction = function(actionName) {
-    return this.extensionManager.handleAction(actionName);
-  };
-
-  this.closeModal = function() {
-    var newState = _.cloneDeep(this.state);
-    delete newState.modal;
-    this.setState(newState);
-  };
-
   this.saveDocument = function() {
     var doc = this.props.doc;
     var backend = this.context.backend;
@@ -250,7 +243,6 @@ Writer.Prototype = function() {
         type: "info",
         message: "Saving ..."
       });
-
       doc.__isSaving = true;
       backend.saveDocument(doc, function(err) {
         doc.__isSaving = false;
@@ -271,20 +263,39 @@ Writer.Prototype = function() {
     }
   };
 
-  // TODO: this is a duplicate of this.executeAction()... which one?
-  this.handleAction = function(actionName) {
-    this.extensionManager.handleAction(actionName);
-  };
+  // Action handlers
+  // ---------------
 
-  this.handleCloseDialog = function(e) {
-    e.preventDefault();
-    console.log('handling close');
-    this.setState(this.getInitialState());
-  };
-
-  // handler for
+  // handles 'switch-state'
   this.switchState = function(newState) {
     this.setState(newState);
+  };
+
+  // handles 'switch-context'
+  this.switchContext = function(contextId) {
+    this.setState({ contextId: contextId });
+  };
+
+  this.openModal = function(modalState) {
+    var newState = _.cloneDeep(this.state);
+    newState.modal = modalState;
+    this.setState(newState);
+  };
+
+  // handles 'close-modal'
+  this.closeModal = function() {
+    var newState = _.cloneDeep(this.state);
+    delete newState.modal;
+    this.setState(newState);
+  };
+
+  this.requestSave = function() {
+    this.saveDocument();
+  };
+
+  // handles 'execute-command'
+  this.executeCommand = function(actionName) {
+    return this.extensionManager.handleAction(actionName);
   };
 
   // Internal Methods
