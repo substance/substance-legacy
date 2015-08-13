@@ -238,6 +238,11 @@ Component.Prototype = function ComponentPrototype() {
     }
   };
 
+  this.extendState = function(newState) {
+    newState = _.extend({}, this.state, newState);
+    this.setState(newState);
+  };
+
   this.getState = function() {
     return this.state;
   };
