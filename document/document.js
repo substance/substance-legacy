@@ -21,6 +21,7 @@ var __id__ = 0;
 function Document(schema) {
   AbstractDocument.call(this, schema);
   this.__id__ = __id__++;
+
   // all by type
   this.nodeIndex = this.addIndex('type', Data.Index.create({
     property: "type"
@@ -92,6 +93,16 @@ Document.Prototype = function() {
     this.done = [];
     // do not allow non-transactional changes after that
     this.FORCE_TRANSACTIONS = true;
+  };
+
+  this.clear = function() {
+    var self = this;
+    this.transaction(function(tx) {
+      _.each(self.data.nodes, function(id) {
+        tx.delete(id);
+      });
+    });
+    this.documentDidLoad();
   };
 
   this.getEventProxy = function(name) {

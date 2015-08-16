@@ -79,8 +79,6 @@ function Component(parent, params) {
 
   this.actionHandlers = {};
 
-  this.didReceiveProps();
-
   this._data = {
     attributes: {},
     style: {},

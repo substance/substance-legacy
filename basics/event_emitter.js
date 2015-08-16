@@ -104,6 +104,36 @@ EventEmitter.Prototype = function() {
     return this;
   };
 
+  this._connect = function (obj, methods, options) {
+    var priority = 0;
+    if (arguments.length === 3) {
+      priority = options.priority || priority;
+    }
+    for ( var event in methods ) {
+      var method = methods[event];
+      this._on( event, method, obj, priority);
+    }
+    this.__events__[event].sort(byPriorityDescending);
+    return this;
+  };
+
+  this._disconnect = function(context) {
+    var i, event, bindings;
+    // Remove all connections to the context
+    for ( event in this.__events__ ) {
+      bindings = this.__events__[event];
+      i = bindings.length;
+      while ( i-- ) {
+        // bindings[i] may have been removed by the previous step's
+        // this.off so check it still exists
+        if ( bindings[i] && bindings[i].context === context ) {
+          this._off( event, bindings[i].method, context );
+        }
+      }
+    }
+    return this;
+  };
+
   /**
    * Emit an event.
    *
@@ -148,49 +178,36 @@ EventEmitter.Prototype = function() {
    * @chainable
    */
   this.connect = function (obj, methods, options) {
-    var priority = 0;
-    if (arguments.length === 3) {
-      priority = options.priority || priority;
-    }
-    for ( var event in methods ) {
-      var method = methods[event];
-      this._on( event, method, obj, priority);
-    }
-    this.__events__[event].sort(byPriorityDescending);
-    return this;
+    /* jshint unused:false */
+    return this._connect.apply(this, arguments);
   };
 
-  this.on = function ( event, method, context, options) {
+  /**
+   * Disconnect a listener (all bindings).
+   *
+   * @method disconnect
+   * @param {Object} listener
+   * @chainable
+   */
+  this.disconnect = function(listener) {
+    return this._disconnect(listener);
+  };
+
+  this.on = function(event, method, context, options) {
     var priority = 0;
-    if (arguments.length === 3) {
+    if (arguments.length === 4) {
       priority = options.priority || priority;
     }
     this._on(event, method, context, priority);
     this.__events__[event].sort(byPriorityDescending);
   };
 
-  /**
-   * Disconnect a listener (all bindings).
-   *
-   * @method emit
-   * @param {Object} listener
-   * @chainable
-   */
-  this.disconnect = function (context) {
-    var i, event, bindings;
-    // Remove all connections to the context
-    for ( event in this.__events__ ) {
-      bindings = this.__events__[event];
-      i = bindings.length;
-      while ( i-- ) {
-        // bindings[i] may have been removed by the previous step's
-        // this.off so check it still exists
-        if ( bindings[i] && bindings[i].context === context ) {
-          this._off( event, bindings[i].method, context );
-        }
-      }
-    }
-    return this;
+  this.off = function(event, method, context) {
+    /* jshint unused:false */
+    // TODO: we could add sugar to be able to be able to just use
+    // emitter.off('event', this)
+    // i.e., without need to specify the handler again
+    return this._off.apply(this, arguments);
   };
 };
 

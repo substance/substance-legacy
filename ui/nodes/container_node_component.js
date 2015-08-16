@@ -8,6 +8,9 @@ var Surface = require('../../surface');
 
 function ContainerNodeComponent() {
   Component.apply(this, arguments);
+
+  // calling this here for initialization
+  this._initialize();
 }
 
 ContainerNodeComponent.Prototype = function() {
@@ -54,13 +57,7 @@ ContainerNodeComponent.Prototype = function() {
   };
 
   this.didReceiveProps = function() {
-    var doc = this.props.doc;
-    var editor = this.props.editor;
-    var options = {
-      name: this.props.node.id,
-      logger: this.context.notifications
-    };
-    this.surface = new Surface(this.context.surfaceManager, doc, editor, options);
+    this._initialize();
   };
 
   this.didMount = function() {
@@ -82,6 +79,15 @@ ContainerNodeComponent.Prototype = function() {
     }
   };
 
+  this._initialize = function() {
+    var doc = this.props.doc;
+    var editor = this.props.editor;
+    var options = {
+      name: this.props.node.id,
+      logger: this.context.notifications
+    };
+    this.surface = new Surface(this.context.surfaceManager, doc, editor, options);
+  };
 };
 
 OO.inherit(ContainerNodeComponent, Component);
