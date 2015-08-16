@@ -448,14 +448,6 @@ body,html {
   background-color: rgba(145, 187, 4, 0.2);
 }
 
-/* Clipboar element
------------------------------------------------------*/
-.clipboard {
-  position: fixed;
-  opacity: 0.0;
-  bottom: -1000px;
-}
-
 /* Selection style sheets
 -----------------------------------------------------*/
 
@@ -466,3 +458,5 @@ body,html {
 ::-moz-selection {
   background: rgba(0,0,0,0.1);
 }
+
+@import 'clipboard';
