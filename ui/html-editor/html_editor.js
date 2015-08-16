@@ -6,18 +6,19 @@ var Component = require('../component');
 var Surface = require('../../surface');
 var Registry = require('../../basics/registry');
 
-var HtmlArticle = require("./html_article");
-var ContainerEditor = Surface.ContainerEditor;
-
 var ToolComponent = require('../tools/tool_component');
 var TextToolComponent = require('../tools/text_tool_component');
 var ContainerComponent = require('../nodes/container_node_component');
 var ParagraphComponent = require('../nodes/paragraph_component');
 var HeadingComponent = require('../nodes/heading_component');
 
+var HtmlArticle = require("./html_article");
+var DefaultToolbar = require('./default_toolbar');
+
 var $$ = Component.$$;
 var Clipboard = Surface.Clipboard;
 var SurfaceManager = Surface.SurfaceManager;
+var ContainerEditor = Surface.ContainerEditor;
 
 var components = {
   "paragraph": ParagraphComponent,
@@ -67,7 +68,14 @@ HtmlEditor.Prototype = function() {
   this.render = function() {
     var el = $$('div').addClass('html-editor-component');
     if (this.props.toolbar) {
-      el.append($$(this.props.toolbar).key('toolbar'));
+      var toolbar;
+      if (this.props.toolbar === "default") {
+        toolbar = $$(DefaultToolbar);
+      } else {
+        toolbar = $$(this.props.toolbar);
+      }
+      toolbar.key('toolbar');
+      el.append(toolbar);
     }
     el.append($$(ContainerComponent)
       .key('bodyContainer')
