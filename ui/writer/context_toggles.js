@@ -45,7 +45,7 @@ ContextToggles.Prototype = function() {
   this.onContextToggleClick = function(e) {
     e.preventDefault();
     var newContext = $(e.currentTarget).attr("data-id");
-    this.send('switchContext', newContext);
+    this.send('switch-context', newContext);
   };
 };
 
