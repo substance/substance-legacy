@@ -14,11 +14,13 @@ function ToolComponent() {
 
 ToolComponent.Prototype = function() {
 
+  this.initialize = function() {
+    this._initializeTool();
+  };
+
   this.getInitialState = function() {
-    return {
-      disabled: true,
-      active: false
-    };
+    // Derive initial state from tool
+    return this.tool.state;
   };
 
   this.render = function() {
@@ -36,10 +38,6 @@ ToolComponent.Prototype = function() {
     return el;
   };
 
-  this._render = function() {
-    return Component.prototype._render.apply(this, arguments);
-  };
-
   this.didMount = function() {
     var toolName = this.props.tool;
     if (!toolName) {
@@ -52,6 +50,21 @@ ToolComponent.Prototype = function() {
     }
     // Derive initial state from tool
     this.state = this.tool.state;
+    this.tool.connect(this, {
+      'toolstate:changed': this.onToolstateChanged
+    });
+  };
+
+  this._initializeTool = function() {
+    var toolName = this.props.tool;
+    if (!toolName) {
+      throw new Error('Prop "tool" is mandatory.');
+    }
+    this.tool = this.context.toolRegistry.get(toolName);
+    if (!this.tool) {
+      console.warn('No tool registered with name %s', toolName);
+      this.tool = new ToolComponent.StubTool(toolName);
+    }
     this.tool.connect(this, {
       'toolstate:changed': this.onToolstateChanged
     });

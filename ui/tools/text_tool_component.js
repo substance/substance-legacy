@@ -14,11 +14,16 @@ function TextToolComponent() {
 
 TextToolComponent.Prototype = function() {
 
+  this.initialize = function() {
+    this._initializeTool();
+  };
+
   this.getInitialState = function() {
-    return {
-      disabled: true,
-      open: false
-    };
+    // TODO: is this a cool way to do custom initialization?
+    // this hook gets called once during construction
+    // see also this.willReceiveProps and this.didReceiveProps
+    // Derive initial state from tool
+    return this.tool.state;
   };
 
   this.render = function() {
@@ -44,6 +49,7 @@ TextToolComponent.Prototype = function() {
     }
     el.append($$('button')
       .addClass("toggle").attr('href', "#")
+      .attr('title', this.props.title)
       .append(label)
       .on('mousedown', this.toggleAvailableTextTypes)
       .on('click', this.handleClick)
@@ -63,7 +69,21 @@ TextToolComponent.Prototype = function() {
     return el;
   };
 
+  this.willReceiveProps = function(newProps) {
+    if (this.tool && newProps.tool !== this.tool.getName()) {
+      this.tool.disconnect(this);
+    }
+  };
+
   this.didReceiveProps = function() {
+    this._initializeTool();
+  };
+
+  this.willUnmount = function() {
+    this.tool.disconnect(this);
+  };
+
+  this._initializeTool = function() {
     var toolName = this.props.tool;
     if (!toolName) {
       throw new Error('Prop "tool" is mandatory.');
@@ -75,16 +95,6 @@ TextToolComponent.Prototype = function() {
     this.tool.connect(this, {
       'toolstate:changed': this.onToolstateChanged
     });
-  };
-
-  this.willReceiveProps = function(newProps) {
-    if (this.tool && newProps.tool !== this.tool.getName()) {
-      this.tool.disconnect(this);
-    }
-  };
-
-  this.willUnmount = function() {
-    this.tool.disconnect(this);
   };
 
   this.onToolstateChanged = function(toolState) {
@@ -115,7 +125,7 @@ TextToolComponent.Prototype = function() {
     this.extendState({
       open: !this.state.open
     });
-  }
+  };
 };
 
 OO.inherit(TextToolComponent, Component);
