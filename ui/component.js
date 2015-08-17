@@ -4,6 +4,10 @@ var OO = require('../basics/oo');
 var _ = require('../basics/helpers');
 
 var __id__ = 0;
+var _isDocumentElement;
+var _isInDocument;
+var VirtualTextNode;
+
 
 /**
  * A light-weight component implementation inspired by React and Ember.
@@ -65,6 +69,9 @@ function Component(parent, params) {
   this.parent = parent;
   this.children = [];
 
+  // get context from parent (dependency injection)
+  this.context = this._getContext();
+
   this._key = params._key;
   this._htmlProps = {
     classNames: params.classNames || "",
@@ -72,10 +79,10 @@ function Component(parent, params) {
     style: params.style || {},
   };
   this._setProps(params.props);
-  this._setState(this.getInitialState());
 
-  // get context from parent (dependency injection)
-  this.context = this._getContext();
+  this.initialize();
+
+  this._setState(this.getInitialState());
 
   this.actionHandlers = {};
 
@@ -93,6 +100,8 @@ Component.Prototype = function ComponentPrototype() {
   this.getChildContext = function() {
     return this.childContext || {};
   };
+
+  this.initialize = function() {};
 
   this.getInitialState = function() {
     return {};
@@ -361,21 +370,6 @@ Component.Prototype = function ComponentPrototype() {
   };
 
   /* Internal API */
-
-  var _isDocumentElement = function(el) {
-    // Node.DOCUMENT_NODE = 9
-    return (el.nodeType === 9);
-  };
-
-  var _isInDocument = function(el) {
-    while(el) {
-      if (_isDocumentElement(el)) {
-        return true;
-      }
-      el = el.parentNode;
-    }
-    return false;
-  };
 
   var _indexByKey = function(children) {
     var index = {};
@@ -879,21 +873,28 @@ VirtualComponent.Prototype = function() {
 };
 OO.inherit(VirtualComponent, VirtualNode);
 
-function VirtualTextNode(text) {
+VirtualTextNode = function VirtualTextNode(text) {
   VirtualNode.call(this);
   this.type = 'text';
   this.props = { text: text };
-}
+};
 
 Component.$$ = function() {
-  if (arguments.length !== 1) {
-    throw new Error('Illegal usage of Component.$$.');
-  }
   var content = null;
   if (_.isString(arguments[0])) {
+    if (arguments.length !== 1) {
+      throw new Error('Illegal usage of Component.$$.');
+    }
     content = new VirtualElement(arguments[0]);
   } else if (_.isFunction(arguments[0]) && arguments[0].prototype instanceof Component) {
+    if (arguments.length < 1 || arguments.length > 2) {
+      throw new Error('Illegal usage of Component.$$.');
+    }
     content = new VirtualComponent(arguments[0]);
+    // EXPERIMENTAL: to reduce boilerplate, we want to allow to specifiy props as 2nd argument of $$
+    if (arguments.length === 2) {
+      content.addProps(arguments[1]);
+    }
   } else {
     throw new Error('Illegal usage of Component.$$.');
   }
@@ -905,6 +906,51 @@ Component.$$.prepareChildren = function(children) {
     if(_.isString(children[i])) {
       children[i] = new VirtualTextNode(children[i]);
     }
+  }
+};
+
+_isDocumentElement = function(el) {
+  // Node.DOCUMENT_NODE = 9
+  return (el.nodeType === 9);
+};
+
+_isInDocument = function(el) {
+  while(el) {
+    if (_isDocumentElement(el)) {
+      return true;
+    }
+    el = el.parentNode;
+  }
+  return false;
+};
+
+Component.mount = function(data, $el) {
+  var component;
+  var scope = {
+    context: null,
+    refs: {}
+  };
+  switch(data.type) {
+    case 'text':
+      component = new Component.Text("root", data.props.text);
+      component._render();
+      break;
+    case 'element':
+      component = new Component.HtmlElement("root", data.tagName, data);
+      component._render(data, scope);
+      break;
+    case 'component':
+      component = new data.ComponentClass("root", data);
+      component._render(component.render());
+      break;
+    default:
+      throw new Error('Illegal state.');
+  }
+  // TODO: some code replication of Component.prototype.mount()
+  // however, we do not want to rerender right-away
+  $el.append(component.$el);
+  if (_isInDocument($el[0])) {
+    component.triggerDidMount();
   }
 };
 
