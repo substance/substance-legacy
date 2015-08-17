@@ -4,8 +4,11 @@ var OO = require('../../basics/oo');
 var Document = require('../../document');
 var Paragraph = Document.Paragraph;
 var Heading = Document.Heading;
+var List = Document.List;
+var ListItem = Document.ListItem;
 var Emphasis = Document.Emphasis;
 var Strong = Document.Strong;
+var Link = Document.Link;
 
 var HtmlImporter = Document.HtmlImporter;
 var HtmlExporter = Document.HtmlExporter;
@@ -22,8 +25,10 @@ schema.getDefaultTextType = function() {
 schema.addNodes([
   Paragraph,
   Heading,
+  List, ListItem,
   Emphasis,
-  Strong
+  Strong,
+  Link
 ]);
 
 // Importer

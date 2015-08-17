@@ -10,6 +10,7 @@ var TextToolComponent = require('../tools/text_tool_component');
 var ContainerComponent = require('../nodes/container_node_component');
 var ParagraphComponent = require('../nodes/paragraph_component');
 var HeadingComponent = require('../nodes/heading_component');
+var ListComponent = require('../nodes/list_component');
 
 var HtmlArticle = require("./html_article");
 var DefaultToolbar = require('./default_toolbar');
@@ -21,7 +22,8 @@ var ContainerEditor = Surface.ContainerEditor;
 
 var components = {
   "paragraph": ParagraphComponent,
-  "heading": HeadingComponent
+  "heading": HeadingComponent,
+  "list": ListComponent,
 };
 
 var tools = Surface.Tools;
