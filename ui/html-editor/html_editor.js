@@ -1,7 +1,6 @@
 'use strict';
 
 var _ = require("../../basics/helpers");
-var OO = require("../../basics/oo");
 var Component = require('../component');
 var Surface = require('../../surface');
 var Registry = require('../../basics/registry');
@@ -32,40 +31,39 @@ var tools = Surface.Tools;
 //
 // A simple rich text editor implementation based on Substance
 
-function HtmlEditor() {
-  Component.apply(this, arguments);
+var HtmlEditor = Component.extend({
 
-  // Document instance
-  this.doc = HtmlArticle.fromHtml(this.props.content);
+  initialize: function() {
 
-  // Editing Surface
-  this.surfaceManager = new SurfaceManager(this.doc);
-  this.clipboard = new Clipboard(this.surfaceManager, this.doc.getClipboardImporter(), this.doc.getClipboardExporter());
-  this.editor = new ContainerEditor('body');
+    // Document instance
+    this.doc = HtmlArticle.fromHtml(this.props.content);
 
-  // Component registry
-  this.componentRegistry = new Registry();
-  _.each(components, function(ComponentClass, name) {
-    this.componentRegistry.add(name, ComponentClass);
-  }, this);
+    // Editing Surface
+    this.surfaceManager = new SurfaceManager(this.doc);
+    this.clipboard = new Clipboard(this.surfaceManager, this.doc.getClipboardImporter(), this.doc.getClipboardExporter());
+    this.editor = new ContainerEditor('body');
 
-  // Tool registry
-  this.toolRegistry = new Registry();
-  _.each(tools, function(ToolClass) {
-    this.toolRegistry.add(ToolClass.static.name, new ToolClass());
-  }, this);
+    // Component registry
+    this.componentRegistry = new Registry();
+    _.each(components, function(ComponentClass, name) {
+      this.componentRegistry.add(name, ComponentClass);
+    }, this);
 
-  // Dependency Injection
-  this.childContext = {
-    componentRegistry: this.componentRegistry,
-    toolRegistry: this.toolRegistry,
-    surfaceManager: this.surfaceManager
-  };
-}
+    // Tool registry
+    this.toolRegistry = new Registry();
+    _.each(tools, function(ToolClass) {
+      this.toolRegistry.add(ToolClass.static.name, new ToolClass());
+    }, this);
 
-HtmlEditor.Prototype = function() {
+    // Dependency Injection
+    this.childContext = {
+      componentRegistry: this.componentRegistry,
+      toolRegistry: this.toolRegistry,
+      surfaceManager: this.surfaceManager
+    };
+  },
 
-  this.render = function() {
+  render: function() {
     var el = $$('div').addClass('html-editor-component');
     if (this.props.toolbar) {
       var toolbar;
@@ -87,43 +85,41 @@ HtmlEditor.Prototype = function() {
       })
     );
     return el;
-  };
+  },
 
-  this.didReceiveProps = function() {
+  didReceiveProps: function() {
     if (this.doc.toHtml() !== this.props.content) {
       this.doc.loadHtml(this.props.content);
     }
-  };
+  },
 
-  this.didMount = function() {
+  didMount: function() {
     this.surfaceManager.on('selection:changed', this.onSelectionChanged, this);
     this.clipboard.attach(this.$el[0]);
-  };
+  },
 
-  this.willUnmount = function() {
+  willUnmount: function() {
     this.dispose();
-  };
+  },
 
-  this.dispose = function() {
+  dispose: function() {
     var clipboard = this.clipboard;
     var surfaceManager = this.surfaceManager;
     if (clipboard) clipboard.detach(this.$el[0]);
     if (surfaceManager) surfaceManager.dispose();
-  };
+  },
 
-  this.getContent = function() {
+  getContent: function() {
     return this.doc.toHtml();
-  };
+  },
 
-  this.onSelectionChanged = function(sel, surface) {
+  onSelectionChanged: function(sel, surface) {
     this.toolRegistry.each(function(tool) {
       tool.update(surface, sel);
     }, this);
-  };
+  }
 
-};
-
-OO.inherit(HtmlEditor, Component);
+});
 
 // Expose some more useful components
 HtmlEditor.ToolComponent = ToolComponent;

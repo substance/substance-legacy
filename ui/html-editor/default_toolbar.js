@@ -1,6 +1,5 @@
 "use strict";
 
-var OO = require('../../basics/oo');
 var Component = require('../component');
 var $$ = Component.$$;
 
@@ -8,13 +7,9 @@ var Tool = require('../tools/tool_component');
 var TextTool = require('../tools/text_tool_component');
 var Icon = require('../font_awesome_icon');
 
-function DefaultToolbar() {
-  Component.apply(this, arguments);
-}
+var DefaultToolbar = Component.extend({
 
-DefaultToolbar.Prototype = function() {
-
-  this.render = function() {
+  render: function() {
     var el = $$("div").addClass("default-html-toolbar toolbar small fill-white");
     el.append(
       $$('div').addClass('tool-group text clearfix').append(
@@ -47,10 +42,8 @@ DefaultToolbar.Prototype = function() {
       )
     );
     return el;
-  };
-};
-
-OO.inherit(DefaultToolbar, Component);
+  },
+});
 
 module.exports = DefaultToolbar;
 
