@@ -1,6 +1,7 @@
 'use strict';
 
 var Component = require('../component');
+var _ = require('../../basics/helpers');
 var $$ = Component.$$;
 var ToolComponent = require('./tool_component');
 
@@ -24,7 +25,7 @@ var EditLinkPrompt = Component.extend({
       $$('a').attr({href: '#'})
              .addClass('save-link')
              .on('click', this.onSave)
-             .append('Delete link'),
+             .append('Update link'),
       $$('a').attr({href: '#'})
              .addClass('delete-link')
              .append('Delete link')
@@ -39,7 +40,7 @@ var LinkToolComponent = ToolComponent.extend({
     var title = this.props.title;
 
     if (this.state.mode) {
-      title += "("+this.state.mode+")";
+      title = [_.capitalize(this.state.mode), title].join(' ');
     }
 
     var el = $$('div')

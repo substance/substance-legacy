@@ -3,7 +3,12 @@ var AnnotationComponent = require('./annotation_component');
 var LinkComponent = AnnotationComponent.extend({
   render: function() {
     var el = AnnotationComponent.prototype.render.call(this);
-    return el.attr("title", this.props.node.title);
+    var titleComps = [this.props.node.url];
+    if (this.props.node.title) {
+      titleComps.push(this.props.node.title);
+    }
+
+    return el.attr("title", titleComps.join(' | '));
   },
 
   didMount: function() {

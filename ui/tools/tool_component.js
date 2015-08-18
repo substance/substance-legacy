@@ -4,6 +4,7 @@ var OO = require("../../basics/oo");
 var Component = require('../component');
 var $$ = Component.$$;
 var Tool = require('../../surface/tool');
+var _ = require('../../basics/helpers');
 
 // ToolComponent
 // -------------
@@ -27,7 +28,7 @@ ToolComponent.Prototype = function() {
     var title = this.props.title;
 
     if (this.state.mode) {
-      title += "("+this.state.mode+")";
+      title = [_.capitalize(this.state.mode), title].join(' ');
     }
 
     var el = $$("button")

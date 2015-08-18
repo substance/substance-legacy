@@ -176,6 +176,14 @@ Helpers.indexBy = require('lodash/collection/indexBy');
  */
 Helpers.sortBy = require('lodash/collection/sortBy');
 
+// String helpers
+
+/**
+ * See https://lodash.com/docs#capitalize
+ * @method capitalize
+ */
+Helpers.capitalize = require('lodash/string/capitalize');
+
 /**
  * Check if two arrays are equal.
  *
