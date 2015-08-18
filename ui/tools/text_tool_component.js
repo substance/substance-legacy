@@ -30,6 +30,7 @@ TextToolComponent.Prototype = function() {
     var textTypes = this.tool.getAvailableTextTypes();
     var el = $$("div")
       .addClass('text-tool-component select');
+
     // Note: this is a view internal state for opening the select dropdown
     if (this.state.open) {
       el.addClass('open');
@@ -108,8 +109,9 @@ TextToolComponent.Prototype = function() {
 
   this.handleSwitchTextType = function(e) {
     e.preventDefault();
+    // Modifies the tool's state so that state.open is undefined, which is nice
+    // because it means the dropdown will be closed automatically
     this.tool.switchTextType(e.currentTarget.dataset.type);
-    this.toggleDropdown();
   };
 
   this.toggleAvailableTextTypes = function(e) {
