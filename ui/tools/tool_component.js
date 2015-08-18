@@ -24,8 +24,14 @@ ToolComponent.Prototype = function() {
   };
 
   this.render = function() {
+    var title = this.props.title;
+
+    if (this.state.mode) {
+      title += "("+this.state.mode+")";
+    }
+
     var el = $$("button")
-      .attr('title', this.props.title)
+      .attr('title', title)
       .on('mousedown', this.onMouseDown)
       .on('click', this.onClick);
     if (this.state.disabled) {
@@ -34,6 +40,10 @@ ToolComponent.Prototype = function() {
     if (this.state.active) {
       el.addClass('active');
     }
+    if (this.state.mode) {
+      el.addClass(this.state.mode);
+    }
+
     el.append(this.props.children);
     return el;
   };
