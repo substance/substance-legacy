@@ -412,7 +412,8 @@ Component.Prototype = function ComponentPrototype() {
     var newAttributes = data.attributes;
     // TODO: this could be done more incrementally by using difference
     if (!_.isEqual(oldAttributes, newAttributes)) {
-      $el.removeAttr(oldAttributes);
+      var oldAttrNames = Object.keys(oldAttributes);
+      $el.removeAttr(oldAttrNames.join(" "));
       $el.attr(newAttributes);
     }
     // css styles must be overwritten explicitly (there is no '$.removeCss')
