@@ -2,9 +2,9 @@ var Annotation = require('../annotation');
 
 var Link = Annotation.extend({
   name: "link",
-
   properties: {
-    url: 'string'
+    url: 'string',
+    title: 'string'
   }
 });
 
@@ -18,7 +18,8 @@ Link.static.matchElement = function($el) {
 
 Link.static.fromHtml = function($el, converter) {
   var link = {
-    url: $el.attr('href')
+    url: $el.attr('href'),
+    title: $el.attr('title')
   };
   // Note: we need to call back the converter
   // that it can process the element's inner html.
@@ -31,6 +32,7 @@ Link.static.fromHtml = function($el, converter) {
 Link.static.toHtml = function(link, converter, children) {
   var $el = Annotation.static.toHtml(link, converter, children);
   $el.attr('href', link.url);
+  $el.attr('title', link.title);
   return $el;
 };
 
