@@ -13,8 +13,6 @@ AnnotationComponent.Prototype = function() {
   this.render = function() {
     var el = $$('span')
       .attr("data-id", this.props.node.id)
-      // `title` is currently only used by the Link type
-      .attr("title", this.props.node.title)
       .addClass(this.getClassNames());
     if (this.props.node.active) {
       el.addClass('active');

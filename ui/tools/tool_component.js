@@ -32,8 +32,10 @@ ToolComponent.Prototype = function() {
 
     var el = $$("button")
       .attr('title', title)
+      .addClass('button tool')
       .on('mousedown', this.onMouseDown)
       .on('click', this.onClick);
+
     if (this.state.disabled) {
       el.addClass('disabled');
     }
@@ -45,6 +47,13 @@ ToolComponent.Prototype = function() {
     }
 
     el.append(this.props.children);
+
+    // When we are in edit mode showing the edit prompt
+    if (/*this.state.mode === 'edit' && this.state.prompt && */ this.editPrompt) {
+      var prompt = $$(this.editPrompt);
+      el.append(prompt);
+    }
+
     return el;
   };
 

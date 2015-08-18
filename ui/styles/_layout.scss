@@ -46,6 +46,13 @@
     float: left;
     margin-right: 10px;
   }
+
+  .tool {
+    line-height: normal;
+    margin: 5px;
+    float: left;
+    position: relative;
+  }
   
   /* Toolbar Tool
   ---------------------------- */
@@ -58,8 +65,7 @@
   }
 
   .button {
-    float: left;
-    margin: 5px;
+    // float: left;
     height: 30px;
     min-width: 30px;
     text-align: center;

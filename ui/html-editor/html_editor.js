@@ -11,7 +11,7 @@ var ContainerComponent = require('../nodes/container_node_component');
 var ParagraphComponent = require('../nodes/paragraph_component');
 var HeadingComponent = require('../nodes/heading_component');
 var ListComponent = require('../nodes/list_component');
-
+var LinkComponent = require('../nodes/link_component');
 var HtmlArticle = require("./html_article");
 var DefaultToolbar = require('./default_toolbar');
 
@@ -24,6 +24,7 @@ var components = {
   "paragraph": ParagraphComponent,
   "heading": HeadingComponent,
   "list": ListComponent,
+  "link": LinkComponent
 };
 
 var tools = Surface.Tools;
